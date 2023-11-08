@@ -329,6 +329,8 @@ date
 export TRUST_BUILD_IN_TMP=1
 option_configure=" -disable-ccache"
 # Cuda
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda=download" | grep ^$HOST"\."`" != "" ]		        && option_configure=$option_configure" -cuda=download"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda11_6" | grep ^$HOST"\."`" != "" ]		        && option_configure=$option_configure" -cuda=/usr/local/cuda-11.6"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda " | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -cuda"
 # TRUST with OpenMP
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-openmp" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -openmp"
@@ -382,7 +384,6 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel21" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="impi/intel-compilers_2021.4.0/2021.4.0 imkl/2021.4.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel22" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="impi/intel-compilers_2022.1.0/2021.6.0 imkl/2022.2.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcc8" | grep ^$HOST"\."`" != "" ]				&& modules_to_load="gcccore/.8.3.0 gcc/8.3.0"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda=download" | grep ^$HOST"\."`" != "" ]		        && option_configure=$option_configure" -cuda=download"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]	&& option_configure=$option_configure" -with-64-bit-indices"

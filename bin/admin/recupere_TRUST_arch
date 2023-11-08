@@ -77,7 +77,7 @@ do
 <TABLE BORDER WIDTH="100%" NOSAVE style=\"font-size:12px;\" border 1> 
 <TR>
 <TD>Target</TD>
-<TD>Cores</TD>
+<TD>Cores/Vecto</TD>
 <TD>RAM</TD>
 <TD>Cache</TD>
 <TD>Freq</TD>
@@ -251,7 +251,7 @@ do
       NUIT2=$NUIT
       file=""
       # On ne prend que les compile opt
-      logs=`cd $REP_NUIT;ls -rt compile_*_opt_$TRUST_ARCH"_"$HOST.log 2>/dev/null | grep -v _semi_opt | grep -v _avx | grep -v _gcov | grep -v _prof | grep -v _debug`
+      logs=`cd $REP_NUIT;ls -rt compile_*_opt_$TRUST_ARCH"_"$HOST.log 2>/dev/null | grep -v _semi_opt | grep -v _gcov | grep -v _prof | grep -v _debug`
       for file in $logs
       do
 	#HOST=`echo ${file%.log} | $TRUST_Awk -F"_" '{print $NF}'`
@@ -286,7 +286,9 @@ do
 	   ram=`	$TRUST_Awk -F"=" '/ram=/      {print $2}' $PERF`
 	   cache=`	$TRUST_Awk -F"=" '/cache=/    {print $2}' $PERF`
 	   freq=`	$TRUST_Awk -F"=" '/freq=/     {print $2}' $PERF`
-	   
+	   AVX_FLAG="`grep "AVX support on C/C++ code with " $CR | grep Yes 2>/dev/null | cut -f7 -d' '`"
+	   nb_procs=$nb_procs"/"$AVX_FLAG
+
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
 	   #taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
 	   executable=`$TRUST_Awk -F":" '/Binary:/    {print $2}' $PERF` && executable=`basename $executable` && executable=${executable#TRUST_}

@@ -1,5 +1,6 @@
 # Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #
 # PARALLEL OK 9 #
+# lance_test Ce cas plante en int64 car single_lata pas encore supporte #
 
 dimension 3
 Pb_Thermohydraulique pb

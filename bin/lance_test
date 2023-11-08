@@ -1644,7 +1644,7 @@ then
 	 then
             echo $ECHO_OPTS "Running the $fiche form validation...\c" | tee -a $TMP_MAIL
             # Execution de la fiche de validation car ecart detecte
-            (cd ${Rapports_auto_root}/Validation/Rapports_automatiques/$fiche;$TRUST_ROOT/Validation/Outils/Genere_courbe/Run src/*.prm 1>rapport.log 2>&1)
+            (cd ${Rapports_auto_root}/Validation/Rapports_automatiques/$fiche; Run_fiche -export_pdf 1>rapport.log 2>&1)
             # Creation sous build si tout va bien du rapport.pdf
 	    rapport_pdf=${Rapports_auto_root}/Validation/Rapports_automatiques/$fiche/build/rapport.pdf
 	    if [ -f $rapport_pdf ]
@@ -1660,7 +1660,7 @@ then
 	 else
             echo $ECHO_OPTS "The build of the $fiche form validation is very slow. You must run the command:" | tee -a $TMP_MAIL
 	    echo $ECHO_OPTS "cd ${Rapports_auto_root}/Validation/Rapports_automatiques/$fiche" | tee -a $TMP_MAIL
-	    echo $ECHO_OPTS "$TRUST_ROOT/Validation/Outils/Genere_courbe/Run src/*.prm" | tee -a $TMP_MAIL
+	    echo $ECHO_OPTS "Run_fiche -export_pdf" | tee -a $TMP_MAIL
 	 fi
 	 echo $ECHO_OPTS "\n" | tee -a $TMP_MAIL
 	 [ "$dest" != "" ] && [ $HOST = $TRUST_HOST_ADMIN ] && cat $TMP_MAIL | mail_ -s\"[lance_test] Change detected on $HOST for the $fiche form validation.\" $dest
