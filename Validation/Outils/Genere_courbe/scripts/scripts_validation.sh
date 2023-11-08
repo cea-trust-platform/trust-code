@@ -301,6 +301,12 @@ gen_fiche()
         cp $jy_nb .
         jy_nb=`\ls *.ipynb 2>/dev/null`
         curr_dir=`pwd`
+				# Adapt the jupyter-notebook to display png or jpg image files 
+				while IFS= read -r line; 
+				do   
+					VAR="`grep "\.png\|\.jpg\|\.jpeg"`"
+					sed "s|src/$VAR|build/$VAR|" -i $jy_nb
+				done < "$curr_dir/build/used_files"
         env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $jy_nb
         status=$?
         rm -rf src
