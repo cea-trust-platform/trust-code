@@ -423,7 +423,7 @@ var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
 echo ""
 
-if [ "`echo $* | grep '\-disable\-petsc'`" != "" ] && [ "`echo $* | grep '\-enable\-petsc\-debug'`" != ""  ]
+if [ "`echo $* | grep '\-disable-petsc'`" != "" ] && [ "`echo $* | grep '\-enable-petsc-debug'`" != ""  ]
 then
    echo ""
    echo "Configure error:"
