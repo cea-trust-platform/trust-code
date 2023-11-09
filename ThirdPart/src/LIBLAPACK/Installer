@@ -113,10 +113,10 @@ then
    cd benchmark
    if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
    then
-      CFLAGS=-fopenmp make dgemm.goto || exit -1
+      CFLAGS=-fopenmp make dgemm.goto NO_AVX512=1 || exit -1
       OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
    else
-      make dgemm.goto || exit -1
+      make dgemm.goto NO_AVX512=1 || exit -1
       ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
    fi
    cd - 1>/dev/null 2>&1
