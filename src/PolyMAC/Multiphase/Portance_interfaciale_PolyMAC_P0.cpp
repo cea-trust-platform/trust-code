@@ -246,8 +246,8 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                 {
                   secmem(f, n_l) += fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort_l(0) ;
                   secmem(f,  k ) -= fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort_l(0) ;
-                  secmem(f, n_l)-= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort_l(0) ;
-                  secmem(f,  k )+= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort_l(0) ;
+                  secmem(f, n_l) -= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort_l(0) ;
+                  secmem(f,  k ) += fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort_l(0) ;
                 }
               else if (D==3)
                 {
@@ -266,7 +266,7 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   /* Wobble si besoin */
-  if ( (temps>1.e-8) && (wobble.non_nul()) && (C_lift.non_nul()))
+  if ((wobble.non_nul()) || (C_lift.non_nul()))
     {
       const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
       const DoubleTab& pvit = equation().inconnue().passe(),
@@ -315,7 +315,7 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
                 {
                   int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
                   double dv_loc = std::max(ch.v_norm(pvit, pvit, e, -1, k, n_l, nullptr, nullptr), 1.e-6);
-                  double Eo = g_ * std::abs(rho(e,n_l)-rho(e,k)) * (*d_bulles)(e,k)*(*d_bulles)(e,k)/Sigma_tab(e,ind_trav);
+                  double Eo = g_ * std::abs(rho(e,n_l)-rho(e,k)) * (*d_bulles)(e,k)*(*d_bulles)(e,k)/std::max(Sigma_tab(e,ind_trav), 1.e-6);
                   tab_wobble(e,k) = Eo * (*k_turb)(e,n_l)/(dv_loc*dv_loc) ;
                 }
         }
@@ -356,7 +356,7 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
 
               for (k=0 ; k<N ; k++)
                 if (k!=n_l) // k gas phase
-                  tab_cl(e,k) = out.Cl(n_l, k) / ( in.rho[n_l] * std::max(in.alpha[k], 1.e-6) ) ;
+                  tab_cl(e,k) = out.Cl(n_l, k) / ( std::max(in.rho[n_l], 1.e-6) * std::max(in.alpha[k], 1.e-6) ) ;
             }
         }
     }
