@@ -6,7 +6,7 @@ Domaine dom
 # BEGIN MESH #
 Read_MED {
     domain dom
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh mesh
 }
 regroupebord dom wall { left right front back down up wall wall_dup }
@@ -33,12 +33,12 @@ domaine surf1
 domaine surf2
 Read_MED {
     domain surf1
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh surf1
 }
 Read_MED {
     domain surf2
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh surf2
 }
 
@@ -89,8 +89,7 @@ Read pb
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp Champ_uniforme 3 1e2 0 0 surface { surface surf2 orientation Champ_Uniforme 3 0 0 -1 } } ,
-            perte_Charge_Singuliere { dir K regul { K0 10.0 deb 5 eps 0.005*(t>0.1) } surface { Surface surf1 orientation Champ_Uniforme 3 0 0 -1 } }
+            $sources
         }
     }
     Masse_Multiphase

@@ -6,7 +6,7 @@ Domaine dom
 # BEGIN MESH #
 Read_MED {
     domain dom
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh mesh
 }
 regroupebord dom wall { left right front back down up wall wall_dup }
@@ -33,12 +33,12 @@ domaine surf1
 domaine surf2
 Read_MED {
     domain surf1
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh surf1
 }
 Read_MED {
     domain surf2
-    file ../../mesh_poly.med
+    file ../../../mesh_poly.med
     mesh surf2
 }
 
