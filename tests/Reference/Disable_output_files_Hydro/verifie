@@ -34,8 +34,16 @@ else
     then
        echo "Error: write to the output .stop file is NOT disabled."
        exit -1
-   else
-       exit 0
+    else
+       # check log_directory option to write trust logs into a folder
+       trust $jdd $nbp -log_directory=tmp_logs 1>/dev/null 2>&1
+       if [  "`ls tmp_logs/"$jdd"*log 2>/dev/null`" = "" ]
+       then
+           echo "Error: writing logs to log_directory does not work anymore ?"
+           exit -1
+       else
+           exit 0
+       fi
    fi
 fi
 exit 0
