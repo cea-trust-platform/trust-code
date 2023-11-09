@@ -159,7 +159,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   for (int f = 0; f < nf; f++)
     if (fcl(f, 0) < 2)
       {
-        in.alpha=0., in.T=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0.;
+        in.alpha=0., in.T=0., in.p=0, in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0., in.k_WIT=0;
         int e;
         for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {

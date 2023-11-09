@@ -70,7 +70,9 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
                 for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1);
               for (i = N * f, n = 0; n < N; n++, i++)
-                for (auto &&c : idx) sten.append_line(i, c);
+                for (auto &&c : idx)
+                  if (c >= 0)
+                    sten.append_line(i, c);
             }
           else if (n_m.first == ch.le_nom().getString()) /* CLs a valeur imposee : diagonale */
             for (n = 0, i = N * f; n < N; n++, i++) sten.append_line(i, i);
