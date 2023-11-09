@@ -406,4 +406,3 @@ void Perte_Charge_Singuliere::update_K(const Equation_base& eqn, double deb, Dou
   //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
   if (!Process::me()) bilan(0) = K_, bilan(1) = deb, bilan(2) = deb_cible;
 }
-

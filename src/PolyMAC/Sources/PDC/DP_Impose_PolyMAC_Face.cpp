@@ -40,6 +40,21 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
   //fichier de sortie
   set_fichier(Nom("DP_") + identifiant_);
   set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");
+  Noms col_names;
+  if (regul_)
+    {
+      col_names.add("DP");
+      col_names.add("Flow_rate");
+      col_names.add("Target_Flow_rate");
+    }
+  else
+    {
+      col_names.add("DP");
+      col_names.add("dDP/dQ");
+      col_names.add("Q");
+      col_names.add("Q0");
+    }
+  set_col_names(col_names);
   return s;
 }
 
@@ -48,6 +63,7 @@ void DP_Impose_PolyMAC_Face::completer()
   Perte_Charge_PolyMAC_Face::completer();
   // eq_masse besoin de champ_conserve !
   if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).equation_masse().init_champ_conserve();
+  bilan().resize(3 + !regul_);
 }
 
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
@@ -65,7 +81,7 @@ void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
       Cerr << "Error when defining the surface plane for the singular porosity :" << finl;
       Cerr << "No mesh faces has been found for the surface plane." << finl;
       Cerr << "Check the coordinate of the surface plane which should match mesh coordinates." << finl;
-      exit();
+      Process::exit();
     }
 
   DoubleTrav S;
@@ -82,32 +98,41 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  //valeurs du champ de DP
-  DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
-  for (int i = 0; i < num_faces.size(); i++)
-    for (int j = 0; j < dimension; j++) xvf(i, j) = domaine_poly.xv()(num_faces(i), j);
-  DP_.valeur().valeur_aux(xvf, DP);
-
   double rho = equation().milieu().masse_volumique()(0, 0),
          fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;
 
-  for (int i = 0, f; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < domaine_poly.nb_faces())
-      {
-        secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
-        if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
-      }
+  if (regul_)
+    {
+      for (int i = 0, f; i < num_faces.size(); i++)
+        if ((f = num_faces(i)) < domaine_poly.nb_faces())
+          secmem(f) += fs(f) * pf(f) * sgn(i) * dp_regul_ * fac_rho;
+    }
+  else
+    {
+      //valeurs du champ de DP
+      DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
+      for (int i = 0; i < num_faces.size(); i++)
+        for (int j = 0; j < dimension; j++) xvf(i, j) = domaine_poly.xv()(num_faces(i), j);
+      DP_.valeur().valeur_aux(xvf, DP);
+      for (int i = 0, f; i < num_faces.size(); i++)
+        if ((f = num_faces(i)) < domaine_poly.nb_faces())
+          {
+            secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+            if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
+          }
 
-  bilan().resize(4); //DP dDP/dQ Q Q0
-  bilan()(0) = Process::mp_max(num_faces.size() ? DP(0, 0)       : -DBL_MAX);
-  bilan()(1) = Process::mp_max(num_faces.size() ? DP(0, 1) / rho : -DBL_MAX);
-  bilan()(3) = Process::mp_max(num_faces.size() ? DP(0, 2) * rho : -DBL_MAX);
-  if (Process::me()) bilan() = 0; //pour eviter un sommage en sortie
+      bilan()(0) = Process::mp_max(num_faces.size() ? DP(0, 0)       : -DBL_MAX);
+      bilan()(1) = Process::mp_max(num_faces.size() ? DP(0, 1) / rho : -DBL_MAX);
+      bilan()(3) = Process::mp_max(num_faces.size() ? DP(0, 2) * rho : -DBL_MAX);
+      if (Process::me()) bilan() = 0; //pour eviter un sommage en sortie
+    }
 }
 
 void DP_Impose_PolyMAC_Face::mettre_a_jour(double temps)
 {
   DP_Impose::mettre_a_jour(temps);
-  bilan().resize(4); //DP dDP/dQ Q Q0
+  update_dp_regul(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
+  if (regul_) return;
+
   bilan()(2) = calculate_Q(equation(), num_faces, sgn) * (Process::me() ? 0 : 1); //pour eviter le sommage en sortie
 }

@@ -16,28 +16,25 @@
 #ifndef DP_Impose_included
 #define DP_Impose_included
 
-
 #include <Perte_Charge_Singuliere.h>
 
 /*! @brief Classe DP_Impose Cette classe derivee de Perte_Charge_Singuliere est utilisee lorsque l'on veut
  *
  *     impose un Delta P (pour simuler une pompe) depuis un champ exterieur
- *     par exemple)
  *
  * @sa Perte_Charge Perte_Charge_Reguliere
  */
-class DP_Impose : public Perte_Charge_Singuliere
+class DP_Impose: public Perte_Charge_Singuliere
 {
-
-public :
-
-  ~DP_Impose() override {}
+public:
+  ~DP_Impose() override { }
   Entree& lire_donnees(Entree&);
   void mettre_a_jour(double temps);
+  void update_dp_regul(const Equation_base& eqn, double deb, DoubleVect& bilan); //regule dp_regul_ a partir du debit calcule par update_Q
 
-
-protected :
-
+protected:
   Champ_Don DP_; //le champ de delta P qu'on veut imposer
+  double dp_regul_ = DMAXFLOAT;
 };
-#endif
+
+#endif /* DP_Impose_included */

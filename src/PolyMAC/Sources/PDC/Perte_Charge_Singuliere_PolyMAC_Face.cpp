@@ -34,7 +34,12 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
     {
       bilan().resize(3); //K deb cible
       set_fichier(Nom("K_") + identifiant_);
-      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_ + "\nt K deb cible");
+      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_);
+      Noms col_names;
+      col_names.add("K");
+      col_names.add("Flow_rate");
+      col_names.add("Target_Flow_rate");
+      set_col_names(col_names);
     }
   return s;
 }
