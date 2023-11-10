@@ -20,7 +20,7 @@ install_OpenBlas()
    else
       CC=$TRUST_cc
       FC=$TRUST_F77
-   fi  
+   fi
    # On ne construit que les libs (tests plantent parfois):
    target="libs netlib"
    target="" # Il semble y avoir un soucis au build parallele (vu sur Fedora38)
@@ -31,6 +31,20 @@ install_OpenBlas()
    else
       $TRUST_MAKE $target CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
    fi
+   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
+   # Bench OpenBlas:
+   # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
+   cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
+   cd benchmark
+   if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
+   then
+      CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
+      OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
+   else
+      make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || exit -1
+      ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
+   fi
+   cd - 1>/dev/null 2>&1
 }
 install_NetLib()
 {
@@ -106,22 +120,9 @@ version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ]
 if [ "$TRUST_USE_OPENBLAS" = 1 ]
 then
    install_OpenBlas
-   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
-   # Bench OpenBlas:
-   # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
-   cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
-   cd benchmark
-   if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
-   then
-      CFLAGS=-fopenmp make dgemm.goto NO_AVX512=1 || exit -1
-      OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
-   else
-      make dgemm.goto NO_AVX512=1 || exit -1
-      ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
-   fi
-   cd - 1>/dev/null 2>&1
+   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null | head -1`
    # On copie la librairie si elle existe sinon on sort
-   if [ -f $lib ]
+   if [ "`ls $lib 2>/dev/null`" != "" ]
    then
       cp $lib ..
       cd ..
