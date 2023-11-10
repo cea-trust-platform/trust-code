@@ -33,7 +33,7 @@ class MorEqn;
  *  "nom_champ"     fixe par utilisateur sera le nom du champ generique
  *  "type_moreqn"   designe le type de morceau d equation (actuellement disponible "operateur")
  *  "numero_moreqn" designe le numero du morceau
- *                    ex : cas operateur : 0 (diffusion) 1 (convection) [ 2 (gradient) 3 (divergence) pour le cas des "flux_bords" ]
+ *                    ex : cas operateur : 0 (diffusion) 1 (convection) 2 (gradient) 3 (divergence)
  *  "type_option"   option choisie ("stabilite" ou "flux_bords")
  *  "num_compo"           numero de la composante a postraiter (a considerer uniquement pour "flux_bords" si plusieurs composantes)
  *

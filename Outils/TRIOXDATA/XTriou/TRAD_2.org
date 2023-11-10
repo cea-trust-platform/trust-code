@@ -119,11 +119,6 @@ champ_post_de_champs_post champ_generique_base champ_post_de_champs_post -1 not_
   attr source_reference chaine source_reference 1 not_set
   attr sources_reference list_nom_virgule sources_reference 1 not_set
   attr sources listchamp_generique sources 1 sources { Champ_Post.... { ... } Champ_Post.. { ... }}
-champ_post_operateur_eqn champ_post_de_champs_post operateur_eqn 1 not_set
-  attr numero_op entier numero_op 1 not_set
-  attr numero_source entier numero_source 1 not_set
-  attr sans_solveur_masse rien sans_solveur_masse 1 not_set
-  attr compo entier compo 1 If you want to post-process only one component of a vector field, you can specify the number of the component after compo keyword. By default, it is set to -1 which means that all the components will be post-processed. This feature is not available in VDF disretization.
 transformation champ_post_de_champs_post transformation -1 To create a field with a transformation.
   attr methode chaine(into=["produit_scalaire","norme","vecteur","formule","composante"]) methode 0 methode norme : will calculate the norm of a vector given by a source field NL2 methode produit_scalaire : will calculate the dot product of two vectors given by two sources fields NL2 methode composante numero integer : will create a field by extracting the integer component of a field given by a source field NL2 methode formule expression 1 : will create a scalar field located to elements using expressions with x,y,z,t parameters and field names given by a source field or several sources fields. NL2 methode vecteur expression N f1(x,y,z,t) fN(x,y,z,t) : will create a vector field located to elements by defining its N components with N expressions with x,y,z,t parameters and field names given by a source field or several sources fields.
   attr expression listchaine expression 1 see methodes formule and vecteur
@@ -146,11 +141,6 @@ extraction champ_post_de_champs_post extraction -1 To create a surface field (va
   attr domaine ref_domaine domaine 0 name of the volume field
   attr nom_frontiere chaine nom_frontiere 0 boundary name where the values of the volume field will be picked
   attr methode chaine(into=["trace","champ_frontiere"]) methode 1 name of the extraction method (trace by_default or champ_frontiere)
-morceau_equation champ_post_de_champs_post morceau_equation 1 To calculate a field related to a piece of equation. For the moment, the field which can be calculated is the stability time step of an operator equation. The problem name and the unknown of the equation should be given by Source refChamp { Pb_Champ problem_name unknown_field_of_equation }
-  attr type chaine type 0 can only be operateur for equation operators.
-  attr numero entier numero 0 numero will be 0 (diffusive operator) or 1 (convective operator).
-  attr option chaine(into=["stabilite","flux_bords","flux_surfacique_bords"]) option 0 option is stability for time steps or flux_bords for boundary fluxes or flux_surfacique_bords for boundary surfacic fluxes
-  attr compo entier compo 1 compo will specify the number component of the boundary flux (for boundary fluxes, in this case compo permits to specify the number component of the boundary flux choosen).
 definition_champ objet_lecture nul 0 Keyword to create new complex field for advanced postprocessing.
   attr name chaine name 0 The name of the new created field.
   attr champ_generique champ_generique_base champ_generique 0 not_set

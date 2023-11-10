@@ -26,6 +26,7 @@
 #include <MD_Vector_composite.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Post_Operateur_Eqn,"Operateur_Eqn|Champ_Post_Operateur_Eqn",Champ_Generique_Operateur_base);
+// XD champ_post_operateur_eqn champ_post_de_champs_post operateur_eqn 1 Post-process equation operators/sources
 
 Sortie& Champ_Post_Operateur_Eqn::printOn(Sortie& s ) const
 {
@@ -42,10 +43,10 @@ Champ_Post_Operateur_Eqn::Champ_Post_Operateur_Eqn()
 void Champ_Post_Operateur_Eqn::set_param(Param& param)
 {
   Champ_Generique_Operateur_base::set_param(param);
-  param.ajouter("numero_source",&numero_source_);
-  param.ajouter("numero_op",&numero_op_);
-  param.ajouter_flag("sans_solveur_masse",&sans_solveur_masse_);
-  param.ajouter("compo",&compo_);
+  param.ajouter("numero_source",&numero_source_); // XD_ADD_P entier the source to be post-processed (its number). If you have only one source term, numero_source will correspond to 0 if you want to post-process that unique source
+  param.ajouter("numero_op",&numero_op_); // XD_ADD_P entier numero_op will be 0 (diffusive operator) or 1 (convective operator) or  2 (gradient operator) or 3 (divergence operator).
+  param.ajouter_flag("sans_solveur_masse",&sans_solveur_masse_); // XD_ADD_P rien not_set
+  param.ajouter("compo",&compo_); // XD_ADD_P entier If you want to post-process only one component of a vector field, you can specify the number of the component after compo keyword. By default, it is set to -1 which means that all the components will be post-processed. This feature is not available in VDF disretization.
 }
 
 Entree& Champ_Post_Operateur_Eqn::readOn(Entree& s )

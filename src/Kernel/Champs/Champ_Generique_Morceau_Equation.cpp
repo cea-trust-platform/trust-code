@@ -23,6 +23,7 @@
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Morceau_Equation,"Morceau_Equation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Morceau_Equation,"Champ_Post_Morceau_Equation");
+// XD morceau_equation champ_post_de_champs_post morceau_equation 1 To calculate a field related to a piece of equation. For the moment, the field which can be calculated is the stability time step of an operator equation. The problem name and the unknown of the equation should be given by Source refChamp { Pb_Champ problem_name unknown_field_of_equation }
 
 Champ_Generique_Morceau_Equation::Champ_Generique_Morceau_Equation()
 {
@@ -52,10 +53,10 @@ Entree& Champ_Generique_Morceau_Equation::readOn(Entree& s )
 void Champ_Generique_Morceau_Equation::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("type",&type_morceau_,Param::REQUIRED);
-  param.ajouter("numero",&numero_morceau_);
-  param.ajouter("option",&option_,Param::REQUIRED);
-  param.ajouter("compo",&compo_);
+  param.ajouter("type",&type_morceau_,Param::REQUIRED); // XD_ADD_P chaine can only be operateur for equation operators.
+  param.ajouter("numero",&numero_morceau_); // XD_ADD_P entier numero will be 0 (diffusive operator) or 1 (convective operator) or  2 (gradient operator) or 3 (divergence operator).
+  param.ajouter("option",&option_,Param::REQUIRED); // XD_ADD_P chaine(into=["stabilite","flux_bords","flux_surfacique_bords"]) option is stability for time steps or flux_bords for boundary fluxes or flux_surfacique_bords for boundary surfacic fluxes
+  param.ajouter("compo",&compo_); // XD_ADD_P entier compo will specify the number component of the boundary flux (for boundary fluxes, in this case compo permits to specify the number component of the boundary flux choosen).
 }
 
 //-Initialisation de ref_eq_
