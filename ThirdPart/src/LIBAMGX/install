@@ -21,7 +21,7 @@ done
 # Fin ToDo
 log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
-#TRUST_AMGX_COMMIT=4d1bda0016
+#TRUST_AMGX_COMMIT=v2.4.0
 if [ $LIB = AmgX ]
 then
    # Build
@@ -35,6 +35,7 @@ then
       tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
       commit=4d1bda0016
+      #commit=v2.4.0 # Soucis encore selon version Cuda...
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
