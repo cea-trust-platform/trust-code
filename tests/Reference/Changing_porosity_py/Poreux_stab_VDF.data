@@ -1,6 +1,6 @@
 dimension 2
 Domaine dom
-Nom ICoCoProblemName Lire ICoCoProblemName pb
+
 Pb_hydraulique pb
 
 Mailler dom
@@ -93,6 +93,5 @@ Read pb
         }
     }
 }
-/* Solve pb */
 End
 

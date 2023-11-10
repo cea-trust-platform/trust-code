@@ -1,7 +1,7 @@
 # Thermohydraulique 3D couplee a conduction 3D #
 # PARALLEL_ONLY 2 #
 dimension 3
-Nom ICoCoProblemName Lire ICoCoProblemName pb
+
 Scheme_euler_explicit sch
 Read sch
 {
