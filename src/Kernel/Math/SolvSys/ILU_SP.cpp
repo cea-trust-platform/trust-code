@@ -83,9 +83,9 @@ void ILU_SP::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
                 exit();
               */
               const Matrice_Morse_Sym ms=ref_cast(Matrice_Morse_Sym,bloc0.valeur());
-              Matrice_Morse m2;
-              MorseSymToMorse(ms,m2);
-              factorisation(m2,v);
+              Matrice_Morse mat2;
+              MorseSymToMorse(ms,mat2);
+              factorisation(mat2,v);
             }
           else if(sub_type(Matrice_Morse,bloc0.valeur()))
             {
