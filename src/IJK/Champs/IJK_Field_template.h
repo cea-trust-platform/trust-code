@@ -62,6 +62,8 @@ public:
   void echange_espace_virtuel(int ghost, double Shear_DU=0.);
   void change_to_sheared_reference_frame(double sens, int loc, int time=1);
   void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
+  void ajouter_rho_graP_grap_un_sur_rho(IJK_Field_double& resu, const IJK_Field_double& rho);
+  void ajouter_non_symetrique_matrice_grossiere_contribution_to_secmem(IJK_Field_double& resu);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
   void update_I_sigma_kappa(const IJK_Field_double& indic_ft, const IJK_Field_double& courbure_ft, const int ft_extension, const double sigma);
   void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);

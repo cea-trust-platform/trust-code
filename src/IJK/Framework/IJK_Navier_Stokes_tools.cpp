@@ -631,6 +631,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
               pressure_rhs(i,j,k) = pressure_rhs(i,j,k) * rho_inside_secmem(i,j,k);
             }
       pressure_rhs.echange_espace_virtuel(pressure_rhs.ghost());
+      //pressure.ajouter_rho_graP_grap_un_sur_rho(pressure_rhs, rho);
     }
   else
     {
@@ -654,6 +655,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
         }
 
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+      pressure.ajouter_non_symetrique_matrice_grossiere_contribution_to_secmem(pressure_rhs);
 
       for (int k = 0; k < pressure_rhs.nk(); k++)
         {

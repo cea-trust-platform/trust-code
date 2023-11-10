@@ -101,8 +101,8 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
 
           // echange espace virtuel sur rho sans passer par IJK_Field --> mauvais remplissage des coeffs de la matrice pour le shear periodique
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Pousson
-          //set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-          //set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+          set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
+          set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
         }
       else
         coarsen_operators_[l-1].valeur().coarsen(set_grid_data<_TYPE_FUNC_>(l-1).get_rho(),
@@ -110,6 +110,8 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
                                                  1 /* compute average, not sum */);
 
       set_grid_data<_TYPE_FUNC_>(l).get_update_rho().echange_espace_virtuel(ghost);
+
+
 
       // Compute matrix coefficients at faces
       if(IS_DOUBLE)
@@ -122,6 +124,17 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
             grids_data_float_[l].compute_faces_coefficients_from_rho();
         }
     }
+
+  IJK_Field_template<_TYPE_FUNC_,TRUSTArray<_TYPE_FUNC_>>& r = set_grid_data<_TYPE_FUNC_>(0).get_update_rho();
+
+  int i2;
+  int ycible = 12;
+  std::cout << "rho solveur poisson= " << std::endl;
+  for (i2= 0; i2 < r.ni(); i2++)
+    {
+      std::cout << "i= " << i2 << ":" << " " << r(i2,ycible,-1) << " " << r(i2,ycible,0) << " " << r(i2,ycible,1) << " .......... " << r(i2,ycible,r.nk()-2) << " "<< r(i2,ycible,r.nk()-1) << " " << r(i2,ycible,r.nk()) << " " << std::endl;
+    }
+
 
   // Update coarse problem matrix:
   if (set_coarse_matrix_flag)
@@ -158,8 +171,8 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
                 r(i2,j,k) = (_TYPE_FUNC_)rho(i2,j,k);
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Poisson
           // on ajoute ca pour le shear perio, uniquement sur le premier niveau de multigrille pour l'instant
-          //set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-          //set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+          set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
+          set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
         }
       else
         {

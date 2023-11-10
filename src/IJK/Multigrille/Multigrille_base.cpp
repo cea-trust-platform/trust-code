@@ -225,14 +225,17 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
     {
       if (max_iter_gcp_ > 0)
         {
+          std::cout << "JE RENTRE DANDS resoudre_avec_gcp" << std::endl;
           resoudre_avec_gcp(ijk_x, ijk_b, ijk_residu);
         }
       else if (max_iter_gmres_ > 0)
         {
+          std::cout << "JE RENTRE DANDS resoudre_avec_gmres" << std::endl;
           resoudre_avec_gmres(ijk_x, ijk_b, ijk_residu);
         }
       else if (solv_jacobi_ > 0)
         {
+          std::cout << "JE RENTRE DANDS jacobi_residu" << std::endl;
           static int fcount = 0;
           ijk_x.data() = 0.;
           for (int i = 0; i < solv_jacobi_; i++)
@@ -245,6 +248,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
         }
       else
         {
+          std::cout << "JE RENTRE DANDS multigrille" << std::endl;
           double norm_residue;
           norm_residue = multigrille(ijk_x, ijk_b, ijk_residu);
           if (norm_residue > seuil_)

@@ -729,6 +729,49 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
 
 }
 
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_rho_graP_grap_un_sur_rho(IJK_Field_double& resu, const IJK_Field_double& rho)
+{
+  const IJK_Splitting& splitting = splitting_ref_.valeur();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  const double dxk = geom.get_constant_delta(2);
+  const double dxj = geom.get_constant_delta(1);
+  const double dxi = geom.get_constant_delta(0);
+  double Vol = dxi * dxj * dxk;
+
+  for (int j = 0 ; j < nj; j++)
+    {
+      for (int i = 0 ; i < ni; i++)
+        {
+          for (int k = 0 ; k < nk; k++)
+            {
+              double DP_x= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i+1, j, k)-IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i-1, j, k))/dxi;
+              double DP_y= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j+1, k)-IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j-1, k))/dxj;
+              double DP_z= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k+1)-IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k-1))/dxk;
+
+              double Dinvrho_x= (1./rho(i+1, j, k)-1./rho(i-1, j, k))/dxi;
+              double Dinvrho_y= (1./rho(i, j+1, k)-1./rho(i, j-1, k))/dxj;
+              double Dinvrho_z= (1./rho(i, j, k+1)-1./rho(i, j, k-1))/dxk;
+
+
+              resu(i,j,k)-= Vol * rho(i,j,k)*(DP_x*Dinvrho_x+DP_y*Dinvrho_y+DP_z*Dinvrho_z);
+            }
+        }
+    }
+
+
+
+}
+
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_non_symetrique_matrice_grossiere_contribution_to_secmem(IJK_Field_double& resu)
+{
+
+}
+
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i)

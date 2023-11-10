@@ -241,12 +241,28 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     voisins_virt_.dimensionner(n_reels);
     coeffs_virt_.dimensionner(n_reels);
 
+    int ycible = 12;
+    for (int dir=0; dir<3 ; dir++)
+      {
+        std::cout << "coefficient aux faces " << dir << std::endl;
+        for (int i2= 0; i2 < ni; i2++)
+          {
+            std::cout << coeffs_face(i2,ycible,0,dir) << " ";
+            std::cout << coeffs_face(i2,ycible,1,dir) << " ";
+            std::cout << coeffs_face(i2,ycible,2,dir) << " ";
+            std::cout << " .....  ";
+            std::cout << coeffs_face(i2,ycible,nk-2,dir) << " ";
+            std::cout << coeffs_face(i2,ycible,nk-1,dir) << " ";
+            std::cout << coeffs_face(i2,ycible,nk,dir) <<  std::endl;
+          }
+      }
     for (k = 0; k < nk; k++)
       {
         for (j = 0; j < nj; j++)
           {
             for (i = 0; i < ni; i++)
               {
+
                 ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), -1);
                 ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1));
                 ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0));
