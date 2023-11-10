@@ -188,15 +188,6 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         {
           log_directory = argv[i]+15;
           log_directory += directory_separator;
-          Nom mkdir_command("mkdir -p ");
-          mkdir_command += log_directory;
-          int return_code = system(mkdir_command);
-          if(return_code)
-            {
-              if (Process::je_suis_maitre())
-                std::cerr << "Error while creating directory:" << log_directory << std::endl;
-              Process::exit();
-            }
           arguments_info += "-log_directory => Writes the .log files into directory ";
           arguments_info += log_directory;
           arguments_info += "\n";

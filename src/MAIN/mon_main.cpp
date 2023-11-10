@@ -261,6 +261,18 @@ void mon_main::dowork(const Nom& nom_du_cas)
   // Initialisation du journal parallele (maintenant qu'on connait le rang
   //  du processeur et le nom du cas)
   {
+    // Master process creates log directory if needed
+    if (Process::je_suis_maitre() && log_directory_!="")
+      {
+        Nom mkdir_command("mkdir -p ");
+        mkdir_command += log_directory_;
+        if(system(mkdir_command))
+          {
+            Cerr << "Error while creating directory: " << log_directory_ << "\n";
+            Process::exit();
+          }
+      }
+    Process::barrier(); // Otherwise, non-master processes try to write .log file before mkdir is done
     Nom filename = log_directory_ + nom_du_cas;
     if (Process::nproc() > 1 && !journal_shared_)
       {
