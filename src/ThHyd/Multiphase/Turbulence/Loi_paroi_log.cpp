@@ -93,6 +93,8 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
 
 double Loi_paroi_log::calc_y_plus_loc(double u_par, double nu, double y, double y_p_0)
 {
+  if (u_par*y/nu < limiteur_y_p) return limiteur_y_p;
+
   double eps = eps_y_p_;
   int step = 1, iter_max = 30;
 
