@@ -533,7 +533,7 @@ add_test_case_from_validation()
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!"
 export LANG
-echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout] [\$exec] [\$directory] "
+echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout] [-ctest] [\$exec] [\$directory] "
 # Premier parametre : executable utilise (par defaut $exec)
 # Deuxieme parametre : dossier d'execution (par defaut $TRUST_TMP/tests)
 # Les fichiers .tests_$exec et .tests_$exec.html seront dans ce repertoire
@@ -571,6 +571,12 @@ distant=0
 if [ "$1" = -distant ]
 then
    distant=1
+   shift
+fi
+using_ctest=0
+if [ "$1" = -ctest ]
+then
+   using_ctest=1
    shift
 fi
 #export nomail=0 // On commente pour pouvoir faire par exemple: nomail=1 trust -check ....
@@ -624,6 +630,49 @@ else
    mkdir $rep_tests 2>/dev/null
 fi
 CHECKOUT $SORTIE 2>/dev/null
+
+if [ $using_ctest = 1 ]
+then
+   add_test_case_from_validation || exit -1
+   if [ "$project_directory" = "" ]
+   then # TRUST
+      OPT=`basename $exec` && OPT=${OPT#TRUST} && cd $TRUST_ROOT/MonoDir$OPT/src || exit -1
+      rep_tests=MonoDir$OPT/src
+   else # Baltik
+      name=`$TRUST_Awk '/^executable / && /:/ {print $3}' $project_directory/project.cfg`
+      OPT=`basename $exec` && OPT=${OPT#$name} && cd $project_directory/build/src/exec$OPT || exit -1
+      rep_tests=build/src/exec$OPT
+   fi
+   cmake .
+   ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure
+   err_ctest=$?
+   if [ "$err_ctest" -ne 0 ]
+   then
+      cat Testing/Temporary/LastTestsFailed.log | cut -f2 -d':' > liste
+      echo
+      echo -e "\033[1;31mList of failed tests:\033[00m"
+      echo "`pwd`/liste"
+      echo
+      echo -e "\033[1;31mPossible to run failed tests with:\033[00m"
+      msg=""
+      if [ "$exec" = "$exec_debug" ]
+      then
+         msg="exec=\$exec_debug"
+      elif [ "$exec" = "$exec_semi_opt" ]
+      then
+         msg="exec=\$exec_semi_opt"
+      fi
+      echo "  $msg trust -check $rep_tests/liste"
+      echo
+      echo "or:"
+      echo "   cd $rep_tests"
+      echo "   ctest --rerun-failed --output-on-failure"
+      echo
+   fi
+   exit $err_ctest
+
+fi
+
 echo $ECHO_OPTS "*****************"
 echo $ECHO_OPTS "* LIST OF TESTS *"
 echo $ECHO_OPTS "*****************"

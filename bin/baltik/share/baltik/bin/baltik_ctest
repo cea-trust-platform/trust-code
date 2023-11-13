@@ -147,31 +147,5 @@ export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS
 fi
 export PATH=$BALTIK_ROOT/bin:${PATH} 
 
-
-cd ${project_directory}/build/src/exec$OPT
-cmake .
-ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure
+lance_test -ctest -nomail -no_timeout  $project_executable_name $project_test_directory
 exit $?
-
-#echo $liste_cas | lance_test -nomail $project_executable_name $project_test_directory | tee lance_test_out
-rm -f .pb
-(echo $liste_cas | lance_test -nomail -no_timeout  $project_executable_name $project_test_directory ; status=$?;  [ $status -ne 0 ]  && echo 1 > .pb )| tee lance_test_out
-
-cat $project_report_file 2>/dev/null
-status=$?
-[ $status -ne 0 ]  && exit 2 
-echo Info_global test_seq `grep 'Successful tests cases :' $project_report_file| awk -F: '{print $NF}'` 
-echo Info_global test_par `grep 'Successful tests cases in parallel mode :' $project_report_file| awk -F: '{print $NF}'` 
-liste_pb_file=$project_directory/liste_pb
-[ "$mode" != "" ] && liste_pb_file=${liste_pb_file}.$mode
-rm -f $liste_pb_file
-if [ -s  $project_report_directory/liste ] 
-    then
-    cp  $project_report_directory/liste  $liste_pb_file
-    exit 1
-fi
-[ -f .pb ] && echo pb with lance_test && exit 2
-exit 0
-
-
-
