@@ -859,9 +859,6 @@ perte_charge_singuliere source_base perte_charge_singuliere 1 Source term that i
   attr coeff floattant coeff 1 Value (float) of friction coefficient (KX, KY, KZ).
   attr regul bloc_lecture regul 1 option to have adjustable K with flowrate target  NL2 { K0 valeur_initiale_de_k deb debit_cible eps intervalle_variation_mutiplicatif}.
   attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
-DP_Impose source_base DP_Impose 1 Source term to impose a pressure difference according to the formula : DP = A + B * (Q - Q0)
-  attr dp field_base dp 0 the parameters of the previous formula champ_uniforme 3 A B Q0 where Q0 is a volume flow (m3/s).
-  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
   attr diam_hydr champ_don_base diam_hydr 0 Hydraulic diameter value.

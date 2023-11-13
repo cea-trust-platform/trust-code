@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <math.h>
 
 Implemente_instanciable(Correction_Antal_PolyMAC_P0, "Correction_Antal_Face_PolyMAC_P0", Source_base);
+// XD Correction_Antal source_base Correction_Antal 1 Antal correction source term for multiphase problem
 
 Sortie& Correction_Antal_PolyMAC_P0::printOn(Sortie& os) const
 {

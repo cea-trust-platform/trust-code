@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Transport_turbulent_SGDH, "Transport_turbulent_SGDH|Transport_turbulent_isotrope", Transport_turbulent_base);
+// XD type_diffusion_turbulente_multiphase_SGDH type_diffusion_turbulente_multiphase_deriv SGDH 1 not_set
 
 Sortie& Transport_turbulent_SGDH::printOn(Sortie& os) const
 {
@@ -31,10 +32,10 @@ Entree& Transport_turbulent_SGDH::readOn(Entree& is)
 {
   Param param(que_suis_je());
   double Pr_t = -1;
-  param.ajouter("Pr_t|Prandtl_turbulent|Schmitt_turbulent", &Pr_t);
-  param.ajouter("sigma|sigma_turbulent", &sigma_);
-  param.ajouter("no_alpha", &no_alpha_);
-  param.ajouter("gas_turb", &gas_turb_);
+  param.ajouter("Pr_t|Prandtl_turbulent|Schmitt_turbulent", &Pr_t); // XD attr Pr_t floattant Prandtl_turbulent 1 not_set
+  param.ajouter("sigma|sigma_turbulent", &sigma_); // XD_ADD_P floattant not_set
+  param.ajouter("no_alpha", &no_alpha_); // XD_ADD_P flag not_set
+  param.ajouter("gas_turb", &gas_turb_); // XD_ADD_P flag not_set
   param.lire_avec_accolades_depuis(is);
   if (Pr_t > 0 && sigma_ != 1) Process::exit(que_suis_je() + ": cannot specify both Pr_t and sigma!");
   if (Pr_t > 0) sigma_ = 1. / Pr_t;

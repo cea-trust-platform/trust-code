@@ -25,6 +25,24 @@
  * @return (Entree&) le flot d'entree modifie
  * @throws pas un champ
  */
+
+// XD type_perte_charge_deriv objet_lecture type_perte_charge_deriv -1 not_set
+
+// XD type_perte_charge_dp type_perte_charge_deriv dp 0  DP field should have 3 components defining dp, dDP/dQ, Q0
+// XD attr dp_field field_base dp_field 0 the parameters of the previous formula (DP = dp + dDP/dQ * (Q - Q0)): uniform_field 3 dp dDP/dQ Q0 where Q0 is a mass flow rate (kg/s).
+
+// XD type_perte_charge_dp_regul type_perte_charge_deriv dp_regul 1 Keyword used to regulate the DP value in order to match a target flow rate. Syntax  : dp_regul { DP0 d deb d eps e }
+// XD attr DP0 floattant DP0 0 initial value of DP
+// XD attr deb chaine deb 0 target flow rate in kg/s
+// XD attr eps chaine eps 0 strength of the regulation (low values might be slow to find the target flow rate, high values might oscillate around the target value)
+
+
+// XD DP_Impose source_base DP_Impose 0 Source term to impose a pressure difference according to the formula : DP = dp + dDP/dQ * (Q - Q0)
+// XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+// XD attr dp_type type_perte_charge_deriv dp_type 0 mass flow rate (kg/s).
+// XD attr surface chaine(into=["surface"]) surface 0 not_set
+// XD attr bloc_surface bloc_lecture bloc_surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }.
+// XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 Entree& DP_Impose::lire_donnees(Entree& is)
 {
   Motcle acc_ouverte("{");

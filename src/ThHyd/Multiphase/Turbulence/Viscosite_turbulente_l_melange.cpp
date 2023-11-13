@@ -21,6 +21,7 @@
 #include <Noms.h>
 
 Implemente_instanciable(Viscosite_turbulente_l_melange, "Viscosite_turbulente_l_melange", Viscosite_turbulente_base);
+// XD type_diffusion_turbulente_multiphase_l_melange type_diffusion_turbulente_multiphase_deriv l_melange 1 not_set
 
 Sortie& Viscosite_turbulente_l_melange::printOn(Sortie& os) const
 {
@@ -30,7 +31,7 @@ Sortie& Viscosite_turbulente_l_melange::printOn(Sortie& os) const
 Entree& Viscosite_turbulente_l_melange::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("l_melange", &l_melange_);
+  param.ajouter("l_melange", &l_melange_); // XD_ADD_P floattant not_set
   param.lire_avec_accolades_depuis(is);
   Cout << "l_melange = " << l_melange_ << finl ;
 
