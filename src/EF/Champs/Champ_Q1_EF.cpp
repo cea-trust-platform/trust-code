@@ -200,9 +200,10 @@ void Champ_Q1_EF::calcul_y_plus(const Domaine_Cl_EF& domaine_Cl_EF, DoubleTab& y
           ndeb = 0;
           nfin = le_bord.nb_faces_tot();
 
-          for (int num_face = ndeb; num_face < nfin; num_face++)
+          for (int ind_face = ndeb; ind_face < nfin; ind_face++)
             {
 
+              int num_face=le_bord.num_face(ind_face);
               if (face_voisins(num_face, 0) != -1)
                 elem = face_voisins(num_face, 0);
               else
