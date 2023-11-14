@@ -59,9 +59,65 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
                   //4-th order interpolation
                   _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
-                  // interpolation directe de la variable monofluide
 
-                  buf+=interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i);
+                  // interpolation directe de la variable monofluide
+                  // sauf pour la vitesse ou on cherche a conserver la qdm rho_u
+                  if (monofluide_variable_==0)
+                    {
+                      buf+=interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i);
+                    }
+                  else if (monofluide_variable_==3)
+                    {
+                      int send_i_Isig;
+                      int send_j_Isig;
+                      int send_k_Isig;
+                      int recved_i_Isig;
+                      int recved_j_Isig;
+                      int recved_k_Isig;
+                      _TYPE_ indic_recevd;
+                      _TYPE_ rho_recevd;
+                      int indice_interpol;
+                      // on est dans le cas dune vitesse
+                      if (offset <0.)
+                        {
+                          //(phase==6)//interp qdm rho_u_max_ghost depuis rho_u_min_real
+                          //je recois sur z_index_max ghost les valeur envoyee et interpoler de (rho*u) sur z_index_min reel
+                          recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                          recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                          recved_k_Isig = k+2;
+
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = k+2;
+                          indic_recevd = (_TYPE_) indicatrice_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                          rho_recevd = indic_recevd * (_TYPE_)rho_v_ + ((_TYPE_)1.-indic_recevd)*(_TYPE_)rho_l_;
+                          indice_interpol=6;
+                        }
+                      else
+                        {
+                          //(phase==5)//interp qdm rho_u_min_ghost depuis rho_u_max_real
+                          //je recois sur z_index_min ghost les valeur envoyee et interpoler de (rho*u) sur z_index_max reel
+                          recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                          recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                          recved_k_Isig = k;
+                          if (nb_ghost==1)
+                            {
+                              recved_k_Isig = k+1;
+                            }
+
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = k;
+                          if (nb_ghost==1)
+                            {
+                              send_k_Isig = k+1;
+                            }
+                          indic_recevd = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                          rho_recevd = indic_recevd * (_TYPE_)rho_v_ + ((_TYPE_)1.-indic_recevd)*(_TYPE_)rho_l_;
+                          indice_interpol=5;
+                        }
+                      buf+=interpolation_for_shear_periodicity(indice_interpol, send_i, send_j, send_k, istmp, real_size_i, send_i_Isig, send_j_Isig, send_k_Isig)/rho_recevd;
+                    }
 
 
                   if (monofluide_variable_==1)
@@ -774,12 +830,13 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_non_symetrique_matrice_gr
 
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-_TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i)
+_TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i, const int send_i_rho, const int send_j_rho, const int send_k_rho)
 {
   // renvoi la valeur interpolee pour la condition de shear-periodicity
 
   int nb_points = order_interpolation_+1;
   _TYPE_* x = new _TYPE_[nb_points];
+  _TYPE_* x_rho = new _TYPE_[nb_points];
   _TYPE_* y= new _TYPE_[nb_points];
   _TYPE_* a= new _TYPE_[nb_points];
   _TYPE_* res = new _TYPE_[nb_points];
@@ -789,12 +846,17 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
     {
       x[0] = (_TYPE_) floor(istmp);
       x[1] = (_TYPE_) floor(istmp)+1;
+      x_rho[0] = (_TYPE_) floor(istmp);
+      x_rho[1] = (_TYPE_) floor(istmp)+1;
     }
   else if(nb_points==3)
     {
       x[0] = (_TYPE_)send_i-1;
       x[1] = (_TYPE_)send_i;
       x[2] = (_TYPE_)send_i+1;
+      x_rho[0] = (_TYPE_)send_i_rho-1;
+      x_rho[1] = (_TYPE_)send_i_rho;
+      x_rho[2] = (_TYPE_)send_i_rho+1;
     }
   else if(nb_points==5)
     {
@@ -803,6 +865,11 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
       x[2] = (_TYPE_)send_i;
       x[3] = (_TYPE_)send_i+1;
       x[4] = (_TYPE_)send_i+2;
+      x_rho[0] = (_TYPE_)send_i_rho-2;
+      x_rho[1] = (_TYPE_)send_i_rho-1;
+      x_rho[2] = (_TYPE_)send_i_rho;
+      x_rho[3] = (_TYPE_)send_i_rho+1;
+      x_rho[4] = (_TYPE_)send_i_rho+2;
     }
   else if(nb_points==7)
     {
@@ -813,16 +880,45 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
       x[4] = (_TYPE_)send_i+1;
       x[5] = (_TYPE_)send_i+2;
       x[6] = (_TYPE_)send_i+3;
+      x_rho[0] = (_TYPE_)send_i_rho-3;
+      x_rho[1] = (_TYPE_)send_i_rho-2;
+      x_rho[2] = (_TYPE_)send_i_rho-1;
+      x_rho[3] = (_TYPE_)send_i_rho;
+      x_rho[4] = (_TYPE_)send_i_rho+1;
+      x_rho[5] = (_TYPE_)send_i_rho+2;
+      x_rho[6] = (_TYPE_)send_i_rho+3;
     }
 
   for (int pt = 0; pt < nb_points ; pt++)
     {
-      if (phase==0)
+      if (phase==0) //interp Isigkappa_min
         y[pt] = (_TYPE_)I_sigma_kappa_ghost_zmin_(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
-      else if (phase==1)
+      else if (phase==1)//interp Isigkappa_max
         y[pt] = (_TYPE_)I_sigma_kappa_ghost_zmax_(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
-      else if (phase==2)
+      else if (phase==2)//interp phi
         y[pt] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+      else if (phase==3)//interp rho_min_ghost depuis rho_max_real
+        {
+          _TYPE_ indic = (_TYPE_) indicatrice_ghost_zmax_(((int)x_rho[pt] % real_size_i + real_size_i) % real_size_i, send_j_rho, send_k_rho);
+          y[pt] = indic*(_TYPE_)rho_v_+((_TYPE_)1.-indic)*(_TYPE_)rho_l_;
+        }
+      else if (phase==4)//interp rho_max_ghost depuis rho_min_real
+        {
+          _TYPE_ indic = (_TYPE_)indicatrice_ghost_zmin_(((int)x_rho[pt] % real_size_i + real_size_i) % real_size_i, send_j_rho, send_k_rho);
+          y[pt] = indic*(_TYPE_)rho_v_+((_TYPE_)1.-indic)*(_TYPE_)rho_l_;
+        }
+      else if (phase==5)//interp qdm rho_u_min_ghost depuis rho_u_max_real
+        {
+          _TYPE_ indic = (_TYPE_) indicatrice_ghost_zmax_(((int)x_rho[pt] % real_size_i + real_size_i) % real_size_i, send_j_rho, send_k_rho);
+          _TYPE_ rho = indic*(_TYPE_)rho_v_+((_TYPE_)1.-indic)*(_TYPE_)rho_l_;
+          y[pt] = rho*IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+        }
+      else if (phase==6)//interp qdm rho_u_max_ghost depuis rho_u_min_real
+        {
+          _TYPE_ indic = (_TYPE_) indicatrice_ghost_zmax_(((int)x_rho[pt] % real_size_i + real_size_i) % real_size_i, send_j_rho, send_k_rho);
+          _TYPE_ rho = indic*(_TYPE_)rho_v_+((_TYPE_)1.-indic)*(_TYPE_)rho_l_;
+          y[pt] = rho*IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+        }
       else
         {
           std::cout << "ce choix n existe pas" ;
@@ -854,6 +950,7 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
     }
 
   delete[] x;
+  delete[] x_rho;
   delete[] y;
   delete[] a;
   delete[] res;
@@ -1050,7 +1147,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::relever_I_sigma_kappa_ns(IJK_Fiel
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& splitting, IJK_Splitting::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, bool external_storage, int type, double rov, double rol, int use_inv_rho_in_pressure_solver, int use_unity_for_rho_in_poisson_solver)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& splitting, IJK_Splitting::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, bool external_storage, int type, double rov, double rol, int use_inv_rho_in_pressure_solver, int use_unity_for_rho_in_poisson_solver, int compo)
 {
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
@@ -1065,7 +1162,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
   // permet de gerer linterpolation monofluide de la pression en shear periodicite
   // monofluide_variable_==2 est fait pour les proprietes physiques constante par phase (rho, mu, nu etc.)
   // permet de gerer linterpolation monofluide
-  if (monofluide_variable_==1 || monofluide_variable_==2)
+  if (monofluide_variable_==1 || monofluide_variable_==2 || monofluide_variable_==3)
     {
       const int nproc_x = splitting.get_nprocessor_per_direction(0);
       const int nproc_y = splitting.get_nprocessor_per_direction(1);
@@ -1083,6 +1180,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
         }
       rho_v_ = rov;
       rho_l_ = rol;
+      compo_=compo;
     }
 
   splitting_ref_ = splitting;

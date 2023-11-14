@@ -72,8 +72,11 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
                          const int step, const int k_layer, double dt_tot);
 
 void force_zero_on_walls(IJK_Field_double& vz);
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost);
-void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost);
+
+void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0, int use_unity_for_rho_in_poisson_solver=0);
+void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0, int use_unity_for_rho_in_poisson_solver=0);
+
+
 
 //void allocate_cell_vector(FixedVector<IJK_Field_double, 3> & v, const IJK_Splitting & s, int ghost);
 template<int N>
@@ -153,7 +156,9 @@ void update_integral_indicatrice(const IJK_Field_double& indic, const double del
 double maxValue(IJK_Field_double& indic);
 
 double calculer_v_moyen(const IJK_Field_double& vx);
+double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& indic);
 double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp_rhocp, const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case);
+
 
 //double compute_spatial_mean(const IJK_Field_double& vx, const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, const int kmin, const int nktot, const int k);
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,

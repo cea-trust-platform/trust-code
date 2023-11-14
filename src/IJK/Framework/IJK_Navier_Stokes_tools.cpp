@@ -191,11 +191,11 @@ void force_zero_on_walls(IJK_Field_double& vz)
     }
 }
 
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost)
+void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, int additional_k_layers, int ncompo, bool external_storage, int type, double rov, double rol, int use_inv_rho_in_pressure_solver, int use_unity_for_rho_in_poisson_solver)
 {
-  v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
-  v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
-  v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+  v[0].allocate(s, IJK_Splitting::FACES_I, ghost, additional_k_layers, ncompo, external_storage, type, rov, rol, use_inv_rho_in_pressure_solver, use_unity_for_rho_in_poisson_solver, 0);
+  v[1].allocate(s, IJK_Splitting::FACES_J, ghost, additional_k_layers, ncompo, external_storage, type, rov, rol, use_inv_rho_in_pressure_solver, use_unity_for_rho_in_poisson_solver, 1);
+  v[2].allocate(s, IJK_Splitting::FACES_K, ghost, additional_k_layers, ncompo, external_storage, type, rov, rol, use_inv_rho_in_pressure_solver, use_unity_for_rho_in_poisson_solver, 2);
 }
 
 void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost)
@@ -2147,6 +2147,39 @@ double calculer_v_moyen(const IJK_Field_double& vx)
   v_moy /= (n_mailles_xy * geom.get_domain_length(DIRECTION_K) );
 #endif
   return v_moy;
+}
+
+
+double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& indic)
+{
+  const IJK_Splitting& splitting = vx.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const int ni = vx.ni();
+  const int nj = vx.nj();
+  const int nk = vx.nk();
+  double v_moy = 0.;
+  double indic_moy = 0.;
+  for (int k = 0; k < nk; k++)
+    {
+      for (int j = 0; j < nj; j++)
+        {
+          for (int i = 0; i < ni; i++)
+            {
+              v_moy += vx(i,j,k)*(1.-indic(i,j,k));
+              indic_moy+=1.-indic(i,j,k);
+            }
+        }
+    }
+  // somme sur tous les processeurs.
+  v_moy = Process::mp_sum(v_moy);
+  indic_moy = Process::mp_sum(indic_moy);
+  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
+  // cast en double au cas ou on voudrait faire un maillage >2 milliards
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  v_moy /= n_mailles_tot;
+  indic_moy /= n_mailles_tot;
+
+  return v_moy/indic_moy;
 }
 
 double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp_rhocp_rhocpinv, const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case)
