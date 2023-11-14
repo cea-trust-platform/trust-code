@@ -76,9 +76,9 @@ fi
 echo "Applying patch for old compilers (gcc 4.8.5) ..."
 cd ../$src_dir/src/INTERP_KERNEL; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.10.0_gnu_485.diff || exit -1
 cd - 1>/dev/null 2>&1
-# Patch for conformize3d
-echo "Applying patch for conformize3d ..."
-(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_conf3d.patch)
+# Patch for conformize3d (applique dans MC 9.12)
+#echo "Applying patch for conformize3d ..."
+#(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_conf3d.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
