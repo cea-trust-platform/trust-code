@@ -465,8 +465,8 @@ then
    if [ -f /proc/cpuinfo ]
    then
       TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-      # Limitations sur la frontale des clusters:
-      if [ -d /ccc ] || [ "${HOST#adastra}" != $HOST ] || [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
+      # Limitations sur certaines frontales de clusters:
+      if [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=8
       elif [ "${HOST#aar}" != $HOST ] || [ "${HOST#grenx}" != $HOST ] || [ "${HOST#gutta}" != $HOST ]
