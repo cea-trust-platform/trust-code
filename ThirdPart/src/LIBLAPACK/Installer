@@ -23,7 +23,7 @@ install_OpenBlas()
    fi
    # On ne construit que les libs (tests plantent parfois):
    target="libs netlib"
-   target="" # Il semble y avoir un soucis au build parallele (vu sur Fedora38)
+   #target="" # Il semble y avoir un soucis au build parallele (vu sur Fedora38). Non plante sur topaze...
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
    if [ `uname -s` = Darwin ]
    then
@@ -31,20 +31,24 @@ install_OpenBlas()
    else
       $TRUST_MAKE $target CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
    fi
-   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
-   # Bench OpenBlas:
-   # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
-   cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
-   cd benchmark
-   if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
+   BENCH=0
+   if [ $BENCH = 1 ]
    then
-      CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
-      OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
-   else
-      make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || exit -1
-      ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
+      # Bench OpenBlas:
+      # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
+      lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
+      cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
+      cd benchmark
+      if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
+      then
+         CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
+         OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
+      else
+         make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || exit -1
+         ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
+      fi
+      cd - 1>/dev/null 2>&1
    fi
-   cd - 1>/dev/null 2>&1
 }
 install_NetLib()
 {
