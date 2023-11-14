@@ -737,7 +737,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
 
-      if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl.valeur().que_suis_je() == "Entree_fluide_vitesse_imposee_ALE")
+      if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl.valeur().que_suis_je() == "Frontiere_ouverte_vitesse_imposee_ALE")
         {
 
           for (fac = ndeb; fac < nfin; fac++)
