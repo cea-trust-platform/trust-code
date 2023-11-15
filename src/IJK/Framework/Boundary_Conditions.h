@@ -36,6 +36,7 @@ public:
   double get_t0_shear() { return t0_shear_; }
   int get_defilement() { return defilement_; }
   int get_correction_interp_monofluide() { return interp_monofluide_; }
+  int get_correction_conserv_qdm() { return conserv_qdm_; }
   int get_resolution_u_prime_() { return resolution_u_prime_; }
 
 protected:
@@ -46,6 +47,7 @@ protected:
   int defilement_;
   int order_interpolation_poisson_solver_;
   int interp_monofluide_;
+  int conserv_qdm_;
   int resolution_u_prime_;
 };
 

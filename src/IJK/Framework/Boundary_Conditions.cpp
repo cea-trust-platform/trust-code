@@ -37,6 +37,7 @@ Boundary_Conditions::Boundary_Conditions()
   defilement_=0;
   order_interpolation_poisson_solver_=0;
   interp_monofluide_=0;
+  conserv_qdm_=0;
   resolution_u_prime_=0;
 }
 
@@ -54,6 +55,7 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.ajouter("defilement", &defilement_);
   param.ajouter("order_interpolation_poisson_solver", &order_interpolation_poisson_solver_);
   param.ajouter("interp_monofluide", &interp_monofluide_);
+  param.ajouter("conserv_qdm", &conserv_qdm_);
   param.ajouter("resolution_u_prime", &resolution_u_prime_);
   param.ajouter("bctype_kmin", &bctype_kmin_, Param::REQUIRED);
   param.dictionnaire("Paroi", Paroi);
