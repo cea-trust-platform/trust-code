@@ -43,6 +43,7 @@ define_soumission_batch()
    else
       qos="" && cpu=30 # 30 mn
    fi
+   [ "`id | grep genden15`" != "" ] && project="genden15"
    if [ "$gpu" = 1 ]
    then
       # Partition mi250 (4 cartes MI250X par noeud=8 cartes MI100):
