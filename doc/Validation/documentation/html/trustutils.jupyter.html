@@ -348,12 +348,20 @@ This work is based on the files package (a TRUST package that reads the son file
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="trustutils.jupyter.plot.saveFileAccumulator">
-<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.plot.</span></span><span class="sig-name descname"><span class="pre">saveFileAccumulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.plot.saveFileAccumulator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method for saving files for testing non-regression.</p>
+<dt class="sig sig-object py" id="trustutils.jupyter.plot.read_csv">
+<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.plot.</span></span><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim_whitespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.plot.read_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for loading files (wrap pandas.read_csv() function).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – name of the file we want to save.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em>) – name of the file we want to save.</p></li>
+<li><p><strong>comment</strong> (<em>char</em><em>, </em><em>default = &quot;#&quot;</em>) – Character indicating that the remainder of line should not be parsed.</p></li>
+<li><p><strong>delim_whitespace</strong> (<em>bool</em><em>, </em><em>default = True</em>) – Specifies whether or not whitespace (e.g. ‘ ‘ or ‘      ‘) will be used as the sep delimiter.</p></li>
+<li><p><strong>kwargs</strong> (<em>dictionary</em>) – additional properties available in pandas.read_csv() options</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas Dataframe</p>
 </dd>
 </dl>
 </dd></dl>
@@ -383,12 +391,12 @@ CEA Saclay - DM2S/STMF/LGLS
 validation form (i.e. a directory containing at least a ‘src’ subdirectory).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTCase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">TRUSTCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasetName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">TRUSTCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasetName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execOptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class which allows the user to load and execute a validation case</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTCase.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targetName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetDirectory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase.copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targetName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetDirectory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execOptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase.copy" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Copy a TRUST Case</p>
 </div></blockquote>
@@ -556,7 +564,7 @@ do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.addCase">
-<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">addCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directoryOrTRUSTCase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasetName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.addCase" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">addCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directoryOrTRUSTCase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasetName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execOptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.addCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a case to run to the list of globally recorded cases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -564,6 +572,7 @@ do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr 
 <li><p><strong>directoryOrTRUSTCase</strong> (<em>str</em>) – directory where the case is stored (relative to build/)</p></li>
 <li><p><strong>datasetName</strong> (<em>str</em>) – Name of the case we want to run.</p></li>
 <li><p><strong>nbProcs</strong> (<em>int</em>) – Number of processors</p></li>
+<li><p><strong>execOptions</strong> (<em>str</em>) – TRUST Options to add at the execution of the test case</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -574,7 +583,7 @@ do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.addCaseFromTemplate">
-<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">addCaseFromTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">templateData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetData</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.addCaseFromTemplate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">addCaseFromTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">templateData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbProcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetData</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execOptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.addCaseFromTemplate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a case to run to the list of globally recorded cases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -689,6 +698,12 @@ do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr 
 <dt class="sig sig-object py" id="trustutils.jupyter.run.getLastLines_">
 <span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">getLastLines_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err_pth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.getLastLines_" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get last 20 lines of an error file …</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.initBuildDirectory">
+<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">initBuildDirectory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.initBuildDirectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>triggers build directory creation and copy src stuff into it</p>
 </dd></dl>
 
 <dl class="py function">
@@ -814,7 +829,7 @@ By default, outputs of the validation forms are not saved.</p>
 <li><a class="reference internal" href="#trustutils.jupyter.plot.lastMoment"><code class="docutils literal notranslate"><span class="pre">lastMoment()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.plot.loadText"><code class="docutils literal notranslate"><span class="pre">loadText()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.plot.readFile"><code class="docutils literal notranslate"><span class="pre">readFile()</span></code></a></li>
-<li><a class="reference internal" href="#trustutils.jupyter.plot.saveFileAccumulator"><code class="docutils literal notranslate"><span class="pre">saveFileAccumulator()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.plot.read_csv"><code class="docutils literal notranslate"><span class="pre">read_csv()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.plot.timeArray"><code class="docutils literal notranslate"><span class="pre">timeArray()</span></code></a></li>
 </ul>
 </li>
@@ -853,6 +868,7 @@ By default, outputs of the validation forms are not saved.</p>
 <li><a class="reference internal" href="#trustutils.jupyter.run.extractNRCases"><code class="docutils literal notranslate"><span class="pre">extractNRCases()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.getCases"><code class="docutils literal notranslate"><span class="pre">getCases()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.getLastLines_"><code class="docutils literal notranslate"><span class="pre">getLastLines_()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.initBuildDirectory"><code class="docutils literal notranslate"><span class="pre">initBuildDirectory()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.initCaseSuite"><code class="docutils literal notranslate"><span class="pre">initCaseSuite()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.introduction"><code class="docutils literal notranslate"><span class="pre">introduction()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.printCases"><code class="docutils literal notranslate"><span class="pre">printCases()</span></code></a></li>
