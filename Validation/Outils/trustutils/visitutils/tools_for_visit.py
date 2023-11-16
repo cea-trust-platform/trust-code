@@ -51,7 +51,7 @@ def setFrame(self, iteration=-1):
     f.close()
 
 
-def saveFile(file, field, name, iteration, active=False):
+def saveFile(file, plottype, name, iteration, active=False):
     """
 
     Save files for testing non-regression.
@@ -60,8 +60,8 @@ def saveFile(file, field, name, iteration, active=False):
     --------- 
     file : str
         The .lata file we want to plot its mesh with visit.  
-    field : str
-        The field we want to plot.  
+    plottype : str
+        The plot type we want (Pseudocolor, Vector, ...)
     name : str
         The name of the field.  
     iteration : int
@@ -81,7 +81,7 @@ def saveFile(file, field, name, iteration, active=False):
         os.chdir(path)
 
         FileAccumulator.active = True
-        if field=="Mesh" or field=="Subset":
+        if plottype=="Mesh" or plottype=="Subset":
             FileAccumulator.AppendVisuMesh(file,name)
             FileAccumulator.WriteToFile("used_files")
         else:
@@ -92,13 +92,13 @@ def saveFile(file, field, name, iteration, active=False):
         os.chdir(origin)
 
 
-def showMesh(fichier, mesh="dom"):
+def showMesh(filename, mesh="dom"):
     """
     Methods to plot the mesh from a .lata file.
 
     Parameters
     ---------
-    fichier : str
+    filename : str
         The .lata file we want to plot its mesh with visit.  
     mesh : str
         name of the mesh (default="dom") 
@@ -108,43 +108,43 @@ def showMesh(fichier, mesh="dom"):
         a Visit plot 
     """
 
-    field = Show(fichier=fichier, field="Mesh", name=mesh, mesh=mesh, plotmesh=False)
+    field = Show(filename=filename, plottype="Mesh", name=mesh, mesh=mesh, plotmesh=False)
     field.plot()
 
 
-def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
+def showField(filename, plottype, name, mesh="dom", plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
     """
     Methods to plot a field from a .lata file.
 
     Parameters
     ---------
-    fichier : str
-        The .lata file we want to plot its mesh with visit.  
-    field : str
-        The field we want to plot.  
+    filename : str
+        The .lata file we want to plot its mesh with visit.
+    plottype : str
+        The plottype we want (Pseudocolor, vector, ...)
     name : str
-        The name of the field.  
+        The name of the field.
     mesh : str
-        The name of the mesh (default="dom")  
+        The name of the mesh (default="dom")
     plotmesh : bool
-        display the mesh (default=True)  
-    title : str 
-        title of the plot. 
+        display the mesh (default=True)
+    title : str
+        title of the plot.
     iteration : int
-        number of the time frame or iteration (default=-1)  
+        number of the time frame or iteration (default=-1)
     size : int
-        Size of the image.  
+        Size of the image.
     max : float
-        Maximun value ploted.  
+        Maximun value ploted.
     min : float
-        Minimum value ploted.  
+        Minimum value ploted.
          
             
     Returns
     -------
-        a Visit plot 
+        a Visit plot
     """
-    field = Show(fichier, field, name, mesh=mesh, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
+    field = Show(filename, plottype, name, mesh=mesh, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
     field.plot()
 
 
@@ -154,17 +154,17 @@ class Show(object):
     """
 
     def __init__(
-        self, fichier="", field="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
+        self, filename="", plottype="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
     ):
         """
         Constructeur
 
         Parameters
         ---------
-        fichier : str
+        filename : str
             The .lata file we want to plot its mesh with visit.  
-        field : str
-            The field we want to plot.  
+        plottype : str
+            The plottype we want (Pseudocolor, vector, ...)
         name : str
             The name of the field.  
         mesh : str
@@ -194,12 +194,12 @@ class Show(object):
         """
         #
         if not empty:
-            if fichier == "" or field == "" or name == "":
-                raise ValueError("Error: A file needed!!")
+            if filename == "" or plottype == "" or name == "":
+                raise ValueError("Error: A filename, plottype and name are needed!!")
             else:
                 # Remove former PNG files
                 # Formatage du chemin
-                tmp = fichier.rsplit("/", 1)
+                tmp = filename.rsplit("/", 1)
                 if len(tmp) != 1:
                     tmp = tmp[0] + "/"
                 else:
@@ -213,16 +213,16 @@ class Show(object):
                     os.remove(f)
 
         self.gestMsg = GestionMessages(verbose, "")
-        self.field = field
-        self.fichier = fichier
+        self.plottype = plottype
+        self.filename = filename
         # Nom et adresse
         self.name = name
-        self.nom = str(self.field + self.name)
+        self.nom = str(self.plottype + self.name)
         # Mesh(if true il la visualise)
         self.plotmesh = plotmesh
         # Mesh
         self.mesh = mesh
-        # Coordonée
+        # Coordinates
         self.xIndice = 0
         self.yIndice = 0
         # dimension 2D
@@ -276,7 +276,7 @@ class Show(object):
                     ax.axis("off")
                 plt.subplots_adjust(top=0.95)
                 self.fig.suptitle(self.title, fontsize=24)
-        self.addPlot(self.coordonee(), self.subtitle)
+        self.addPlot(self.coordinates(), self.subtitle)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
@@ -292,7 +292,7 @@ class Show(object):
             s += "SetTimeSliderState(%s)\n" % (str(arg3))
         return s
 
-    def addPlot(self, coordonee, title=""):
+    def addPlot(self, coordinates, title=""):
         """ 
         
         Methode pour afficher un graphiques.
@@ -300,8 +300,8 @@ class Show(object):
 
         Parameters
         ---------
-        coordonee : array int
-            Coordonée du plot
+        coordinates : array int
+            Coordinates of plot
         title : str 
             title of the plot.  
 
@@ -320,23 +320,23 @@ class Show(object):
         f.close()
 
         if not self.empty:
-            self.addField(fichier=self.fichier, field=self.field, name=self.name, mesh=self.mesh, plotmesh=self.plotmesh)
+            self.addField(filename=self.filename, plottype=self.plottype, name=self.name, mesh=self.mesh, plotmesh=self.plotmesh)
 
         if self.show:
-            if (self.nX == 1) & (self.nY == 1):
+            if self.nX == 1 and self.nY == 1:
                 # raise ValueError("Use plot and not plot2!!!")
                 self.flag = True
-            elif (self.nX == 1) | (self.nY == 1):
-                self.xIndice = coordonee
+            elif self.nX == 1 or self.nY == 1:
+                self.xIndice = coordinates
             else:
-                self.xIndice = coordonee[0]
-                self.yIndice = coordonee[1]
+                self.xIndice = coordinates[0]
+                self.yIndice = coordinates[1]
 
             if self.flag:
                 self.subplot = self.axs
             else:
                 try:
-                    self.subplot = self.axs[self.coordonee()]
+                    self.subplot = self.axs[self.coordinates()]
                 except:
                     print("ERROR with " + self.name + " => the subplot does not exist, inconsistent index")
                     return
@@ -346,17 +346,17 @@ class Show(object):
                 self.subtitle = title
                 self.subplot.set_title(self.subtitle)
         
-    def addField(self, fichier=None, field=None, name=None, mesh=None, plotmesh=True, min=None, max=None):
+    def addField(self, filename=None, plottype=None, name=None, mesh=None, plotmesh=True, min=None, max=None):
         """ 
         
         Method for adding a Field to a plot.
 
         Parameters
         ---------
-        fichier : str
+        filename : str
             The .lata file we want to plot its mesh with visit.  
-        field : str
-            The field we want to plot.  
+        plottype : str
+            The plottype we want (Pseudocolor, vector, ...)
         name : str
             The name of the field.  
         mesh : str
@@ -372,23 +372,23 @@ class Show(object):
         -------
         
         """
-        if fichier is None:
-            fichier = self.fichier
+        if filename is None:
+            filename = self.filename
 
         if min is None:
             min = self.min
         if max is None:
             max = self.max
-        if (field is None) | (name is None):
-            raise ValueError("Error: need field or/and name!!")
+        if plottype is None or name is None:
+            raise ValueError("Error: need plottype or/and name!!")
 
         with open(visitTmpFile_(), "a") as f:
-            if not fichier == None:
-                f.write("dbs = ('" + fichier + "') \n")
+            if not filename == None:
+                f.write("dbs = ('" + filename + "') \n")
                 f.write("ActivateDatabase(dbs) \n")
-            if not mesh is None and plotmesh and not field == "Mesh" and not field == "Histogram":
+            if not mesh is None and plotmesh and not plottype == "Mesh" and not plottype == "Histogram":
                 f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.iteration))
-            f.write(self._genAddPlot("'" + field + "'", "'" + name + "'", self.iteration))
+            f.write(self._genAddPlot("'" + plottype + "'", "'" + name + "'", self.iteration))
             f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
             if not min is None:
@@ -403,7 +403,7 @@ class Show(object):
                 f.write("SetPlotOptions(p)\n")
         f.close()
         
-        saveFile(fichier, field, name, self.iteration, active=True)
+        saveFile(filename, plottype, name, self.iteration, active=True)
 
     def visitCommand(self, string):
         """ 
@@ -455,7 +455,7 @@ class Show(object):
             f.write("annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n")
             # f.write("ResizeWindow(1,160,156) \n")
             f.write("s = SaveWindowAttributes() \n")
-            f.write("s.fileName = '" + self.fichier + name + str(self.iteration) + "_' \n")
+            f.write("s.fileName = '" + self.filename + name + str(self.iteration) + "_' \n")
             f.write("s.format = s.PNG \n")
             f.write("s.progressive = 1 \n")
             f.write("SetSaveWindowAttributes(s) \n")
@@ -465,7 +465,7 @@ class Show(object):
         os.chdir(BUILD_DIRECTORY)
         outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
 
-        pattern = os.path.join(os.getcwd(), self.fichier.split("./")[-1] + name + str(self.iteration) + "_\d\d\d\d.png")
+        pattern = os.path.join(os.getcwd(), self.filename.split("./")[-1] + name + str(self.iteration) + "_\d\d\d\d.png")
         error = 0
         for top, dirs, files in os.walk(os.getcwd()):
             for file in files:
@@ -482,7 +482,7 @@ class Show(object):
         
         os.chdir(origin)
 
-    def coordonee(self):
+    def coordinates(self):
         """
 
         Return plot coordinates.
@@ -496,9 +496,9 @@ class Show(object):
             Coordinates
         
         """
-        if (self.nX == 1) & (self.nY == 1):
+        if self.nX == 1 and self.nY == 1:
             return 0
-        elif (self.nX == 1) | (self.nY == 1):
+        elif self.nX == 1 or self.nY == 1:
             return max(self.xIndice, self.yIndice)
         else:
             return (self.xIndice, self.yIndice)
@@ -521,7 +521,7 @@ class Show(object):
         name = self.name.replace("/", "_")
         name = name.replace("(", "_")
         name = name.replace(")", "_")
-        fName = self.fichier + name + str(self.iteration)  # +"_0000.png"
+        fName = self.filename + name + str(self.iteration)  # +"_0000.png"
         from glob import glob
 
         listFiles = glob(os.path.join(BUILD_DIRECTORY, fName + "*.png"))
@@ -572,7 +572,7 @@ class Show(object):
         self.visitCommand('SetPlotOptions(MeshAtts)')
 
     def add(
-        self, fichier, field, name, xIndice=0, yIndice=0, iteration=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
+        self, filename, plottype, name, xIndice=0, yIndice=0, iteration=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
     ):
         """
 
@@ -580,26 +580,26 @@ class Show(object):
         
         Parameters
         ---------  
-        fichier : str
-            The .lata file we want to plot its mesh with visit.  
-        field : str
-            The field we want to plot.  
+        filename : str
+            The .lata file we want to plot its mesh with visit.
+        plottype : str
+            The plottype we want (Pseudocolor, vector, ...)
         name : str
-            The name of the field.    
+            The name of the field.
         xIndice : int
             Indice of the x axe.
         yIndice : int
             Indice of the y axe.
         mesh : str
-            The name of the mesh (default="dom") 
+            The name of the mesh (default="dom")
         plotmesh : bool
-            If true plot the mesh asociate with .lata file.  
+            If true plot the mesh asociate with .lata file.
         iteration : int
-            Time frame or iteration of the plot. 
+            Time frame or iteration of the plot.
         size : int
-            Size of the image.  
+            Size of the image.
         max : float
-            Maximun value ploted.  
+            Maximun value ploted.
         min : float
             Minimum value ploted.
 
@@ -612,8 +612,8 @@ class Show(object):
 
         self.xIndice = xIndice
         self.yIndice = yIndice
-        self.fichier = fichier
-        self.field = field
+        self.filename = filename
+        self.plottype = plottype
         self.name = name
         self.iteration = iteration
         self.mesh = mesh
@@ -622,7 +622,7 @@ class Show(object):
         self.max = max
         self.min = min
 
-        self.addPlot(self.coordonee(), self.subtitle)
+        self.addPlot(self.coordinates(), self.subtitle)
 
     def plot(self, show=True):
         """
@@ -1066,20 +1066,17 @@ class Show(object):
         
         """
         flag = 0
-        if nom == "field":
-            self.field = atribut
+        if nom == "plottype":
+            self.plottype = atribut
             flag = 1
         if nom == "name":
             self.name = atribut
             flag = 1
-        if nom == "field":
-            self.mesh = atribut
-            flag = 1
         if nom == "mesh":
             self.iteration = atribut
             flag = 1
-        if nom == "fichier":
-            self.fichier = atribut
+        if nom == "filename":
+            self.filename = atribut
             flag = 1
         if nom == "nom":
             self.nom = atribut
@@ -1095,17 +1092,17 @@ class export_lata_base:
      
     """
 
-    def __init__(self, fichier, field, name, saveFile, frame=-1):
+    def __init__(self, filename, plottype, name, saveFile, frame=-1):
         """
 
         Reset the class
 
         Parameters
         ---------
-        fichier : str
+        filename : str
             The .lata file we want to plot its mesh with visit.  
-        field : str
-            The field we want to plot. Egg. "PSEUDOCOLOR".
+        plottype : str
+            The plot type we want. For example, "Pseudocolor".
         name : str
             The name of the field.   
         saveFile : str
@@ -1118,8 +1115,8 @@ class export_lata_base:
         None
         
         """
-        self.fichier = fichier
-        self.field = field
+        self.filename = filename
+        self.plottype = plottype
         self.name = name
         self.saveFile = saveFile
         self.frame = frame
@@ -1132,14 +1129,14 @@ class export_lata_base:
         
         """
 
-        # Assure qu'il ne y a pas deja un fichier, si oui, il l'efface
+        # Assure qu'il n'y a pas deja un fichier, si oui, il l'efface
         file = visitTmpFile_()
         if os.path.exists(file):
             os.remove(file)
         with open(file, "a") as f:
-            f.write("dbs = ('" + self.fichier + "') \n")
+            f.write("dbs = ('" + self.filename + "') \n")
             f.write("ActivateDatabase(dbs) \n")
-        self.addPlot(self.field, self.name, self.frame)
+        self.addPlot(self.plottype, self.name, self.frame)
         f.close()
 
     def getFrames(self):
@@ -1185,17 +1182,17 @@ class export_lata_base:
         res = [int(r) - 1 for r in res]
         return res
 
-    def addPlot(self, field, name, iteration):
+    def addPlot(self, plottype, name, iteration):
         """
 
         Add a new field to the plot.
 
         Parameters
         ---------
-        field : str
-            The field we want to plot.  
+        plottype : str
+            The plot type we want (Pseudocolor, Vector, ...).
         name : str
-            The name of the field.  
+            The name of the field.
         iteration : int
             number of the time frame  or iteration
 
@@ -1205,11 +1202,11 @@ class export_lata_base:
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, iteration))
+            f.write(self._genAddPlot("'%s'" % plottype, "'%s'" % name, iteration))
             f.write("DrawPlots() \n")
         f.close()
         
-        saveFile(self.fichier, field, name, iteration, active=True)
+        saveFile(self.filename, plottype, name, iteration, active=True)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
