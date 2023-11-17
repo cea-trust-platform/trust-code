@@ -1,5 +1,8 @@
 # Hydraulique 2D : Paroi defilante #
 # PARALLEL OK #
+# VALGRIND NOT #
+# Valgrind issue due to petsc, so check is disabled in Valgrind mode #
+# issue is present in petsc 3.14 and 3.20 #
 dimension 2
 Pb_Hydraulique pb
 Domaine dom
