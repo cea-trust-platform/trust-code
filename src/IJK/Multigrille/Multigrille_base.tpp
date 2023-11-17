@@ -134,7 +134,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
 
       if (IJK_Splitting::defilement_ == 1)
         {
-          norme_residu_final = norme_ijk_moins_bord(residu);
+          norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
         }
       else
         {
@@ -247,7 +247,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
 
           if (IJK_Splitting::defilement_ == 1)
             {
-              norme_residu_final = norme_ijk_moins_bord(residu);
+              norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
             }
           else
             {
@@ -282,7 +282,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
 
       if (IJK_Splitting::defilement_ == 1)
         {
-          norme_residu_final = norme_ijk_moins_bord(residu);
+          norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
         }
       else
         {

@@ -38,6 +38,7 @@ public:
   static double shear_x_DT_ ;
   static double Lx_for_shear_perio ;
   static int defilement_ ;
+  static int nb_maille_bord_a_exclure_pour_residu_solverP_;
   static int order_interpolation_poisson_solver_;
   static double rho_liq_ref_for_poisson_;
   static double rho_vap_ref_for_poisson_;

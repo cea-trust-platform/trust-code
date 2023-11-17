@@ -47,13 +47,13 @@ double norme_ijk(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu)
 }
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-double norme_ijk_moins_bord(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu)
+double norme_ijk_moins_bord(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu, const int nb_maille_a_exclure)
 {
   const int ni = residu.ni();
   const int nj = residu.nj();
   const int nk = residu.nk();
   double somme = 0.;
-  for (int k = 1; k < nk-1; k++)
+  for (int k = nb_maille_a_exclure; k < nk-nb_maille_a_exclure; k++)
     {
       double partial1 = 0.;
       for (int j = 0; j < nj; j++)

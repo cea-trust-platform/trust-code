@@ -241,7 +241,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     voisins_virt_.dimensionner(n_reels);
     coeffs_virt_.dimensionner(n_reels);
 
-    int ycible = 12;
+    /* int ycible = 12;
     for (int dir=0; dir<3 ; dir++)
       {
         std::cout << "coefficient aux faces " << dir << std::endl;
@@ -255,14 +255,13 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
             std::cout << coeffs_face(i2,ycible,nk-1,dir) << " ";
             std::cout << coeffs_face(i2,ycible,nk,dir) <<  std::endl;
           }
-      }
+      } */
     for (k = 0; k < nk; k++)
       {
         for (j = 0; j < nj; j++)
           {
             for (i = 0; i < ni; i++)
               {
-
                 ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), -1);
                 ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1));
                 ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0));
@@ -285,16 +284,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     for (i = 0; i < n_reels; i++)
       nnz_virt += coeffs_virt_[i].size();
 
-
-    // dans le cas normal
-    // on multiplie le premier coeff diagonal de la matrice par 2 (au point 0,0,0) --> condition qui definit arbitrairement une constante de pression
-    // dans le cas shear-perio --> cela cree un comportement etrange de P en 0,0,0 --> on n impose rien ? --> d un pas de temps sur lautre, la constante de P peut donc changer. Il ne faut tenir compte que de gradP.
-    // le probleme nest peut etre pas que pour les conditions shear perio
-    //if (Process::me() == 0 && IJK_Splitting::defilement_==0)
     if (Process::me() == 0)
       coeff_diag_[0] *= 2;
-    // coeff_diag_[ni*nj*(nk/2)-(nj/2)*(ni/2)] *= 2;
-
 
     mat_.dimensionner(1, 2);
     mat_.get_bloc(0,0).typer("Matrice_Morse_Sym");

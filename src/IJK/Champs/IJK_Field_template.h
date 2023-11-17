@@ -54,7 +54,7 @@ public:
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
     localisation_(IJK_Splitting::Localisation::ELEM)
   { }
-  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0, int use_unity_for_rho_in_poisson_solver=0, int compo=0);
+  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0);
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
 
@@ -62,17 +62,15 @@ public:
   void echange_espace_virtuel(int ghost, double Shear_DU=0.);
   void change_to_sheared_reference_frame(double sens, int loc, int time=1);
   void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
-  void ajouter_rho_graP_grap_un_sur_rho(IJK_Field_double& resu, const IJK_Field_double& rho);
-  void ajouter_non_symetrique_matrice_grossiere_contribution_to_secmem(IJK_Field_double& resu);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
   void update_I_sigma_kappa(const IJK_Field_double& indic_ft, const IJK_Field_double& courbure_ft, const int ft_extension, const double sigma);
   void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);
-  _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i, const int send_i_rho=0, const int send_j_rho=0, const int send_k_rho=0);
+  _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
 
   int monofluide_variable_ = -123, order_interpolation_ = -123;
   int compo_ ;
   int use_inv_rho_in_pressure_solver_ ;
-  int use_unity_for_rho_in_poisson_solver_;
+
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmin_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmax_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
