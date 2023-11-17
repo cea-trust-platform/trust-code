@@ -86,6 +86,7 @@ cp -r clients $TRUST_ROCALUTION/clients
 # Lancement du benchmark rocALUTION sur une petite matrice type de TRUST
 cd $TRUST_ROCALUTION/clients/staging
 gunzip -c $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/VDF_10x10x10.mtx.gz > VDF_10x10x10.mtx
+gunzip -c $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/gr_30_30.mtx.gz > gr_30_30.mtx # Matrix for support
 ./benchmark VDF_10x10x10.mtx 2>&1 | tee benchmark.log
 echo "`pwd`/benchmark.log created."
 
