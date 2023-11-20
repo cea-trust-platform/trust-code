@@ -16,7 +16,15 @@ do
 -ls -l
 " > $TRUST_TMP/ssh_com
    log=`awk -v adr=$adr '($2==adr) {print $4}' $HOME/.netrc | head -1`
-   sftp_ -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>ls_arch.log 2>&1  
+   BATCHMODE=" -o BatchMode=yes "
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+      BATCHMODE=""
+   fi
+   $SSHP sftp_ -o StrictHostKeyChecking=no -o ConnectTimeout=10 $BATCHMODE -b $TRUST_TMP/ssh_com $log@$adr 1>ls_arch.log 2>&1
    #nedit ls_arch.log
    err=$?
    if [ $err = 255 ]
@@ -26,7 +34,7 @@ do
       cat ls_arch.log | awk 'BEGIN {ETAT="No connection";ok=0} /CR_/ && (NF==9) {ETAT="Compile en cours..."} /rwx/ && (ok==0) {ok=1;ETAT="Ok"} / TRUST/ {ETAT=ETAT" "$NF} END {print ETAT}'  
       #configure.ssh $log@$adr
 	  rapport=`mktemp_`
-      ssh_ $log@$adr -n "ps -efl | grep mise_a_jour_TRUST_arch | grep -v grep | grep -v kill" 1>$rapport 2>/dev/null
+      $SSHP ssh_ $log@$adr -n "ps -efl | grep mise_a_jour_TRUST_arch | grep -v grep | grep -v kill" 1>$rapport 2>/dev/null
       if [ -s $rapport ]
       then
          echo "mise_a_jour_TRUST_arch is running on $adr ! May be it is time to do: ls_arch -kill $adr "
@@ -37,7 +45,7 @@ do
       if [ $kill = 1 ]
       then
          echo "If necessary, killing mise_a_jour_TRUST_arch processes..."
-         ssh_ $log@$adr -n "cd $version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -kill"
+         $SSHP ssh_ $log@$adr -n "cd $version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -kill"
       fi
    fi
    rm ls_arch.log

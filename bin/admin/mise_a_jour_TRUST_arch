@@ -356,7 +356,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py " | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-mpi4py"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ] 		        && option_configure=" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ] 		        && option_configure=" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-openblas -disable-hwloc"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-valgrind"
@@ -434,7 +434,8 @@ teste_ftp ftp.cea.fr anonymous $TRUST_MAIL
 ##################################
 for MODULE in $MODULES
 do
-   ROOT=$version/$MODULE
+   #ROOT=$version/$MODULE
+   ROOT=$TRUST_ROOT # only TRUST in modules
    cd $ROOT
    [ $MODULE = TRUST ] && code=TRUST && exec=$ROOT/exec/TRUST$COMM$OPT && source env_TRUST.sh 
    [ $MODULE = Diphasique ] && code=dipha && exec=$ROOT/exec/dipha$COMM$OPT && . bin/Init_Dipha 
@@ -964,7 +965,7 @@ do
 	 # Premiere liste minimale de cas tests a passer
 	 NUM=liste_cherche
 	 #cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 sous_maille 1>/dev/null # Dans TRUST pas de modele de turbulence LES mais seulement RANS
-	 cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 K_epsilon 1>/dev/null
+	 cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 1>/dev/null
 	 #PAR_Impinging_jet ATTENTION En parallele plantage possible sur ce cas... => supprime de la liste liste_cherche
 	 grep -v Impinging_jet liste_cherche > tmp_liste_cherche
 	 mv tmp_liste_cherche liste_cherche

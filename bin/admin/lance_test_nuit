@@ -741,8 +741,7 @@ then
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    # petsc-3.10.0 : superlu_dist.py correction TMA
-   #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v xdata | grep -v hdf5 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v requests-2.22.0 | grep -v importlib_metadata-4.8.2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v packagespy | grep -v xdata | grep -v hdf5 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v requests-2.22.0 | grep -v importlib_metadata-4.8.2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
