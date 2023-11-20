@@ -219,7 +219,9 @@ Entree& LireMED::interpreter_(Entree& is)
     }
   else // old syntax ?
     {
-      Cerr << "ERROR: 'LireMED': expected opening brace '{' - are you using the new syntax?" << finl;
+      Cerr << "ERROR: 'Read_MED': expected opening brace '{' - are you using the new syntax?" << finl;
+      Cerr << "If you are still using the old syntax (before TRUST v1.9.3), \nyou can use -convert_data option of your application script:" << finl;
+      Cerr << "   trust -convert_data " << Objet_U::nom_du_cas() << ".data" << finl;
       Process::exit(-1);
     }
 
@@ -608,11 +610,11 @@ void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
   int typ = conn[connIndex[0]];
   type_face_ = type_medcoupling_to_type_geo_trio(typ, CELL_FROM_BOUNDARY);
   if (type_elem_.nb_type_face() != 1)  // should never happen, all is polygon normally.
-    Process::exit("LireMED: unsupported mesh element type! It has more than a single face type (for example a prism can have triangles or quadrangles as boundary faces).");
+    Process::exit("Read_MED: unsupported mesh element type! It has more than a single face type (for example a prism can have triangles or quadrangles as boundary faces).");
   // Check unique type
   auto set_of_typs = face_mesh->getAllGeoTypes();
   if (set_of_typs.size() > 1) // same as a above, should never happen
-    Process::exit("LireMED: invalid boundary mesh! More than a single face type.");
+    Process::exit("Read_MED: invalid boundary mesh! More than a single face type.");
 
   // Get max number of vertices per face - in a dedicated scope to destroy dsi quickly
   int max_som_face;

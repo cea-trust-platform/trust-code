@@ -110,6 +110,8 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   else  // Old syntax?
     {
       Cerr << "ERROR: reading 'Champ_fonc_MED': Expected opening brace '{' - are you using the new syntax?" << finl;
+      Cerr << "If you are still using the old syntax (before TRUST v1.9.3), \nyou can use -convert_data option of your application script:" << finl;
+      Cerr << "   trust -convert_data " << Objet_U::nom_du_cas() << ".data" << finl;
       Process::exit(-1);
     }
 
