@@ -35,7 +35,6 @@ def writeAddAndPartition(baseName, jdd):
     """    
     with open(baseName+"/"+baseName+".data", "w") as f:
         f.write(jdd)
-    os.chdir(run.BUILD_DIRECTORY)
     cas = run.addCase(baseName, baseName+".data",4)
     cas.partition()
 
@@ -75,6 +74,7 @@ data = {"dir": ["IBM_element_fluide"],
         "multi_dir": ["IBM_gradient_moyen"],
         "hybrid": ["IBM_hybride"]
         }
+os.chdir(run.BUILD_DIRECTORY)
 with open("template_poiseuille_tilt.data", "r") as f:
     templ = f.read()
 run.saveFileAccumulator("template_poiseuille_tilt.data")
@@ -99,6 +99,7 @@ data = {"dir": ["IBM_element_fluide"],
 data_mu = {"20": ["0.05"],
         "100": ["0.01"]
         }
+os.chdir(run.BUILD_DIRECTORY)
 with open("template_cylinder_static.data", "r") as f:
     templ = f.read()
 run.saveFileAccumulator("template_cylinder_static.data")
@@ -125,6 +126,7 @@ data = {"dir": ["IBM_element_fluide"],
 data_mu = {"20": ["0.05"],
         "100": ["0.01"]
         }
+os.chdir(run.BUILD_DIRECTORY)
 with open("template_cylinder_rotate.data", "r") as f:
     templ = f.read()
 run.saveFileAccumulator("template_cylinder_rotate.data")

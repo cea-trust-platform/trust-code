@@ -67,7 +67,7 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
 
     return matrix
 
-def read_csv(data, comment="#", delim_whitespace=True,**kwargs):
+def read_csv(data, **kwargs):
     """
     Method for loading files (wrap pandas.read_csv() function).
         
@@ -89,7 +89,7 @@ def read_csv(data, comment="#", delim_whitespace=True,**kwargs):
     origin = os.getcwd()
     os.chdir(BUILD_DIRECTORY)
 
-    df = pd.read_csv(data, comment=comment, delim_whitespace=delim_whitespace,**kwargs)
+    df = pd.read_csv(data, **kwargs)
 
     saveFileAccumulator(data)
     os.chdir(origin)
