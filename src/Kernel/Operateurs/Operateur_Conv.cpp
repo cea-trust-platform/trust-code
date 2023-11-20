@@ -34,6 +34,14 @@ Entree& Operateur_Conv::readOn(Entree& is)
       Cerr<<" Exemple:  convection { sensibility { amont } }  "<<finl;
       exit();
     }
+
+  if(mon_equation->le_nom().contient("ALE") && (valeur().que_suis_je()!="Op_Conv_ALE_VEF") )
+    {
+      Cerr<<" You should use the ALE convection operator within the Navier_Stokes_standard_ALE/Navier_Stokes_Turbulent_ALE equation "<<finl;
+      Cerr<<" Exemple:  convection { ALE { muscl } }  "<<finl;
+      Process::exit();
+    }
+
   return is;
 }
 
