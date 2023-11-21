@@ -17,7 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 
 void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset)
+                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs)
 {
   const int ni = renum_.dimension(2) - 2;
   const int nj = renum_.dimension(1) - 2;
@@ -31,33 +31,10 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
             {
               int jj ;
               int kk ;
-              if (offset !=0. && IJK_Splitting::defilement_==1)
-                {
-                  double DX = splitting.get_grid_geometry().get_constant_delta(0);
-                  double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
-                  int offset2 = (int) round(istmp);
-                  int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
-                  interpolation_for_shear_periodicity(i , offset2, istmp, ni, ii);
-                  jj = (j + nj) % nj;
-                  kk = (k + nk) % nk;
-                  renum(i, j, k) = renum(ii[indice_premier_voisin_], jj, kk);
-                  for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
-                    {
-                      renum_shear(i,j,k,pt) = renum(ii[pt], jj, kk);
-                    }
-                  delete[] ii;
-                }
-              else
-                {
-                  int ii = (i + ni ) % ni;
-                  jj = (j + nj) % nj;
-                  kk = (k + nk) % nk;
-                  renum(i, j, k) = renum(ii, jj, kk);
-                  for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
-                    {
-                      renum_shear(i,j,k,pt) = -1;
-                    }
-                }
+              int ii = (i + ni ) % ni;
+              jj = (j + nj) % nj;
+              kk = (k + nk) % nk;
+              renum(i, j, k) = renum(ii, jj, kk);
             }
 
     }
@@ -73,32 +50,8 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
             {
               {
                 int index = count++;
-
-                if (offset !=0. && IJK_Splitting::defilement_==1)
-                  {
-                    double DX = splitting.get_grid_geometry().get_constant_delta(0);
-                    double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
-                    int offset2 = (int) round(istmp);
-                    int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
-                    interpolation_for_shear_periodicity(i, offset2, istmp, ni, ii);
-                    renum(i, j, k) = index + ii[indice_premier_voisin_] - i;
-                    for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
-                      {
-                        renum_shear(i,j,k,pt) = index + ii[pt] - i;
-                      }
-                    delete[] ii;
-
-                  }
-                else
-                  {
-                    renum(i,j,k) = index;
-                    for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
-                      {
-                        renum_shear(i,j,k,pt) = -1;
-                      }
-                  }
+                renum(i,j,k) = index;
               }
-
             }
 
       virt_blocs.append_array(count); // end of virtual bloc of data
@@ -106,37 +59,18 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
 }
 
 void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting, double offset)
+                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send)
 {
   if (pe == Process::me())
     return;
 
-
-  const int ni = renum_.dimension(2) - 2;
   for (int k = kmin; k < kmax; k++)
     for (int j = jmin; j < jmax; j++)
       for (int i = imin; i < imax; i++)
         {
-          if (offset !=0. && IJK_Splitting::defilement_==1)
-            {
-              double DX = splitting.get_grid_geometry().get_constant_delta(0);
-              double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
-              int offset2 = (int) round(istmp);
-              int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
-              interpolation_for_shear_periodicity(i, offset2, istmp, ni, ii);
-              int index = renum(i, j, k) + ii[indice_premier_voisin_] - i;
-              assert(index >= 0);
-              items_to_send.append_array(index);
-              delete[] ii;
-            }
-          else
-            {
-              int index = renum(i, j, k);
-              assert(index >= 0);
-              items_to_send.append_array(index);
-            }
-
-
+          int index=renum(i, j, k);
+          assert(index >= 0);
+          items_to_send.append_array(index);
         }
 }
 
@@ -152,14 +86,12 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
     {
       x[0] = (int) floor(istmp);
       x[1] = (int) floor(istmp)+1;
-      indice_premier_voisin_ = 0;
     }
   else if(nb_points==3)
     {
       x[0] = send_i-1;
       x[1] = send_i;
       x[2] = send_i+1;
-      indice_premier_voisin_ = 1;
     }
   else if(nb_points==5)
     {
@@ -168,7 +100,6 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
       x[2] = send_i;
       x[3] = send_i+1;
       x[4] = send_i+2;
-      indice_premier_voisin_ = 2;
     }
   else if(nb_points==7)
     {
@@ -179,7 +110,6 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
       x[4] = send_i+1;
       x[5] = send_i+2;
       x[6] = send_i+3;
-      indice_premier_voisin_ = 3;
     }
 
 
@@ -223,22 +153,20 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
  */
 void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
                                      int i_voisin, int j_voisin, int k_voisin,
-                                     const double coeff, const int shear_perio)
+                                     const double coeff, IJK_Splitting splitting, const double shear_perio)
 {
-  const int indice = renum(i, j, k);
-  const int indice_voisin = renum(i_voisin, j_voisin, k_voisin);
+  const int ni = renum_.dimension(2) - 2;
+  int indice=renum(i, j, k);
+  int indice_voisin = renum(i_voisin, j_voisin, k_voisin);
 
-  bool voisin_shear = false;
-
-  int nb_point = IJK_Splitting::order_interpolation_poisson_solver_+1;
-  for (int interp = 0; interp < nb_point; interp++)
+  bool voisin_shear ;
+  if (shear_perio == 0.)
     {
-      const int indice_voisin_shear = renum_shear(i_voisin, j_voisin, k_voisin, interp);
-      if (indice_voisin_shear!=-1)
-        {
-          voisin_shear = true;
-        }
-
+      voisin_shear = false;
+    }
+  else
+    {
+      voisin_shear = true;
     }
 
   // coefficient extra diagonal (- surface_face / distance_centres_elements)
@@ -253,16 +181,22 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
 
           if(voisin_shear)
             {
-              for (int interp = 0; interp < nb_point; interp++)
+              int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
+              double DX = splitting.get_grid_geometry().get_constant_delta(0);
+              double istmp = IJK_Splitting::shear_x_time_ * shear_perio/DX;
+              int offset2 = (int) round(istmp);
+              interpolation_for_shear_periodicity(i , offset2, istmp, ni, ii);
+              for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
                 {
-                  int indice_pond = interp;
-                  if (shear_perio==-1)
+                  if (indice_voisin - i + ii[interp] >= nreels)
                     {
-                      indice_pond = nb_point-1-interp;
+                      std::cout << "attention probleme parallelle mixte shear" << std::endl;
+                      Process::exit();
                     }
-                  voisins_[indice].add(renum_shear(i_voisin, j_voisin, k_voisin, interp));
-                  coeffs_[indice].add(x*ponderation_shear_[indice_pond]);
+                  voisins_[indice].add(indice_voisin - i + ii[interp]);
+                  coeffs_[indice].add(x*ponderation_shear_[interp]);
                 }
+              delete[] ii;
             }
           else
             {
@@ -276,16 +210,22 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
 
           if(voisin_shear)
             {
-              for (int interp = 0; interp < nb_point; interp++)
+              int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
+              double DX = splitting.get_grid_geometry().get_constant_delta(0);
+              double istmp = IJK_Splitting::shear_x_time_ * shear_perio/DX;
+              int offset2 = (int) round(istmp);
+              interpolation_for_shear_periodicity(i , offset2, istmp, ni, ii);
+              for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
                 {
-                  int indice_pond = interp;
-                  if (shear_perio==-1)
+                  if (indice_voisin - i + ii[interp]  < nreels)
                     {
-                      indice_pond = nb_point-1-interp;
+                      std::cout << "attention probleme parallelle mixte shear" << std::endl;
+                      Process::exit();
                     }
-                  voisins_virt_[indice].add(renum_shear(i_voisin, j_voisin, k_voisin, interp) - nreels);
-                  coeffs_virt_[indice].add(x*ponderation_shear_[indice_pond]);
+                  voisins_virt_[indice].add(indice_voisin - i + ii[interp] - nreels);
+                  coeffs_virt_[indice].add(x*ponderation_shear_[interp]);
                 }
+              delete[] ii;
             }
           else
             {

@@ -137,6 +137,11 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                     }
 
                   dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)]=I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_;
+                  /*if (I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_<1170. and I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_>501. and jr + j == 24 and k == 0)
+                    {
+                      std::cout << "I_recevd = " << I_recevd << std::endl;
+                      std::cout << "recved_k_Isig = " << recved_k_Isig << std::endl;
+                    }*/
                 }
               else
                 {
@@ -160,6 +165,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
   int *recv_buffer_y = 0;
   double *send_buffer_offset = 0;
   double *recv_buffer_offset = 0;
+  int *send_buffer_nb_ghost = 0;
+  int *recv_buffer_nb_ghost = 0;
 
   if (pe_send_ >= 0)
     {
@@ -171,9 +178,12 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       int *buf_y = send_buffer_y;
       send_buffer_offset = new double[data_size_other_buf];
       double *buf_offset = send_buffer_offset;
+      send_buffer_nb_ghost = new int[data_size_other_buf];
+      int *buf_nb_ghost = send_buffer_nb_ghost;
       *buf_x=splitting.get_offset_local(0);
       *buf_y=splitting.get_offset_local(1);
       *buf_offset=offset;
+      *buf_nb_ghost=nb_ghost;
 
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
@@ -236,11 +246,13 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       recv_buffer_x = new int[data_size_other_buf];
       recv_buffer_y = new int[data_size_other_buf];
       recv_buffer_offset = new double[data_size_other_buf];
+      recv_buffer_nb_ghost = new int[data_size_other_buf];
     }
   ::envoyer_recevoir(send_buffer, data_size * type_size, pe_send_, recv_buffer, data_size * type_size, pe_recv_);
   ::envoyer_recevoir(send_buffer_x, data_size_other_buf * int_size, pe_send_, recv_buffer_x, data_size_other_buf * int_size, pe_recv_);
   ::envoyer_recevoir(send_buffer_y, data_size_other_buf * int_size, pe_send_, recv_buffer_y, data_size_other_buf * int_size, pe_recv_);
   ::envoyer_recevoir(send_buffer_offset, data_size_other_buf * double_size, pe_send_, recv_buffer_offset, data_size_other_buf * double_size, pe_recv_);
+  ::envoyer_recevoir(send_buffer_nb_ghost, data_size_other_buf * int_size, pe_send_, recv_buffer_nb_ghost, data_size_other_buf * int_size, pe_recv_);
 
   if (pe_recv_ >= 0)
     {
@@ -248,6 +260,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       int *buf_x = recv_buffer_x;
       int *buf_y = recv_buffer_y;
       double *buf_offset = recv_buffer_offset;
+      int *buf_nb_ghost= recv_buffer_nb_ghost;
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
@@ -276,7 +289,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                     {
                       recved_i_Isig = recevd_i + *buf_x;
                       recved_j_Isig = recevd_j + *buf_y;
-                      recved_k_Isig = k+3-nb_ghost;
+                      recved_k_Isig = k+2-*buf_nb_ghost;
                       Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
 
@@ -300,12 +313,18 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                     {
                       recved_i_Isig = recevd_i + *buf_x;
                       recved_j_Isig = recevd_j + *buf_y;
-                      recved_k_Isig = k+2-nb_ghost;
+                      recved_k_Isig = k+2-*buf_nb_ghost;
 
                       I_recevd = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
 
                   dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)]=I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_;
+                  /*if (I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_<1170. and I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_>501. and jr + j == 24 and k == 0)
+                    {
+                      std::cout << "I_recevd = " << I_recevd << std::endl;
+                      std::cout << "recved_k_Isig = " << recved_k_Isig << std::endl;
+                    }*/
+
                 }
               else
                 {
@@ -323,6 +342,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
   delete[] recv_buffer_y;
   delete[] send_buffer_offset;
   delete[] recv_buffer_offset;
+  delete[] send_buffer_nb_ghost;
+  delete[] recv_buffer_nb_ghost;
 }
 
 /*! @brief Exchange data over "ghost" number of cells.
@@ -420,6 +441,46 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
     }
 
+  /*
+    int jcible=(int) round((double) njj);
+    if (z_index == z_index_min)
+      {
+        std::cout << " check exchange_data " << std::endl;
+        for (int i = 0 ; i < nii; i++)
+          {
+            std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , nkk-1) << " , " ;
+            if(le_ghost>=1)
+              {
+                std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , nkk) << " , " ;
+              }
+            if(le_ghost>=2)
+              {
+                std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , nkk+1);
+              }
+            std::cout << std::endl;
+          }
+        std::cout << std::endl;
+      }*/
+  /*
+   if (z_index == z_index_min)
+     {
+       std::cout << " check exchange_data " << std::endl;
+       for (int i = 0 ; i < nii; i++)
+         {
+           if(le_ghost>=2)
+             {
+               std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , -2) << " , " ;
+             }
+           if(le_ghost>=1)
+             {
+               std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , -1) << " , " ;
+             }
+           std::cout << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i , jcible , 0) ;
+           std::cout << std::endl;
+         }
+       std::cout << std::endl;
+     }
+   */
   statistiques().end_count(echange_vect_counter_);
 
 
@@ -563,49 +624,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
 //		I_sigma_kappa_ghost_zmax_[ghost] --> nk-1 (premiere maille reelle)
 //		I_sigma_kappa_ghost_zmax_[ghost+1] --> nk (premiere maille ghost)
 //		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
-  /*std::cout << " I_sigma_kappa_ghost_zmin_ " << std::endl;
-  for (int i = 0 ; i < ni; i++)
-    {
-      std::cout << I_sigma_kappa_ghost_zmin_(i , 6 , 0) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmin_(i , 6 , 1) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmin_(i , 6 , 2) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmin_(i , 6 , 3) << std::endl;
-    }
-  std::cout << " I_sigma_kappa_ghost_zmax_ " << std::endl;
-  for (int i = 0 ; i < ni; i++)
-    {
-      std::cout << I_sigma_kappa_ghost_zmax_(i , 6 , 0) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmax_(i , 6 , 1) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmax_(i , 6 , 2) << " , " ;
-      std::cout << I_sigma_kappa_ghost_zmax_(i , 6 , 3) << std::endl;
-    }
-  std::cout << " indicatrice_ghost_zmin_ " << std::endl;
-  for (int i = 0 ; i < ni; i++)
-    {
-      std::cout << indicatrice_ghost_zmin_(i , 6 , 0) << " , " ;
-      std::cout << indicatrice_ghost_zmin_(i , 6 , 1) << " , " ;
-      std::cout << indicatrice_ghost_zmin_(i , 6 , 2) << " , " ;
-      std::cout << indicatrice_ghost_zmin_(i , 6 , 3) << std::endl;
-    }
-  std::cout << " indicatrice_ghost_zmax_ " << std::endl;
-  for (int i = 0 ; i < ni; i++)
-    {
-      std::cout << indicatrice_ghost_zmax_(i , 6 , 0) << " , " ;
-      std::cout << indicatrice_ghost_zmax_(i , 6 , 1) << " , " ;
-      std::cout << indicatrice_ghost_zmax_(i , 6 , 2) << " , " ;
-      std::cout << indicatrice_ghost_zmax_(i , 6 , 3) << std::endl;
-    }
-  std::cout << " interpolation_pour_z_min, z_max " << std::endl;
-  for (int i = 0 ; i < ni; i++)
-    {
 
-      int send_i = (int) round((double) i  +  offset) ;
-      _TYPE_ istmp = (_TYPE_)((double) i +  offset);
-      std::cout << interpolation_for_shear_periodicity(1, send_i, 6, 1, istmp, ni) ;
-      send_i = (int) round((double) i  -  offset) ;
-      istmp = (_TYPE_)((double) i -  offset);
-      std::cout << interpolation_for_shear_periodicity(1, send_i, 6, 2, istmp, ni) << std::endl;
-    }*/
 
 
 
@@ -778,19 +797,22 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
   // on veut se servir de la valeur exacte pour interpoler au mieux les grandeurs monofluides
   // on stock les valeurs en question dans des tableau de taille ni*nj*4 pour avoir lindicatrice reelle et ghost de chaque cote du domaine
   // Ces tableaux doivent etre lisibles par tous les procs en entier pour simplifier....
+
+
   if(monofluide_variable_==0)
     return;
 
+  IJK_Splitting splitting_ft = courbure_ft.get_splitting();
+  const IJK_Splitting& splitting = splitting_ref_.valeur();
   I_sigma_kappa_ghost_zmin_.data()=-1.e7;
   I_sigma_kappa_ghost_zmax_.data()=-1.e7;
   indicatrice_ghost_zmin_.data() =-1.e7;
   indicatrice_ghost_zmax_.data() =-1.e7;
-  IJK_Splitting splitting_ft = courbure_ft.get_splitting();
+
 
 
   int ghost_i_j = 2;
   int ghost = 2;
-  const IJK_Splitting& splitting = splitting_ref_.valeur();
   int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2);
   int last_global_j = splitting.get_nb_items_global(IJK_Splitting::ELEM, 1);
   int last_global_i = splitting.get_nb_items_global(IJK_Splitting::ELEM, 0);
@@ -819,6 +841,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
 //		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
 
 
+
+
   for (int k = 0; k < indic_ft.nk() ; k++)
     {
       const int k_reel = k + splitting_ft.get_offset_local(2) - ft_extension;
@@ -843,25 +867,25 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
                   continue;
                 }
 
-              if (k_reel<=ghost)
+              if (k_reel<ghost)
                 {
-                  // -ghost + ghost <= k_reel+ghost <= ghost+ghost
-                  // 0 <= k_reel+ghost <= 4
+                  // -ghost + ghost <= k_reel+ghost < ghost+ghost
+                  // 0 <= k_reel+ghost < 4
                   indicatrice_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = indic_ft(i,j,k);
                 }
-              else if(k_reel>=last_global_k-ghost-1)
+              else if(k_reel>last_global_k-ghost)
                 {
-                  //last_global_k+ghost-last_global_k-ghost <= k_reel-last_global_k+ghost <= last_global_k-ghost-last_global_k-ghost
-                  //0 <= k_reel-last_global_k+ghost <= 4
+                  //0 < k_reel-last_global_k+ghost <= 4
+                  //0 <= k_reel-last_global_k+ghost -1 < 4
                   indicatrice_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost-1) = indic_ft(i,j,k);
                 }
               if (monofluide_variable_==1 )
                 {
-                  if (k_reel<=ghost)
+                  if (k_reel<ghost)
                     {
                       I_sigma_kappa_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = std::abs(courbure_ft(i,j,k));
                     }
-                  else if(k_reel>=last_global_k-ghost-1)
+                  else if(k_reel>last_global_k-ghost)
                     {
                       I_sigma_kappa_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost-1) = std::abs(courbure_ft(i,j,k));
                     }
@@ -895,6 +919,32 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
       envoyer_broadcast(I_sigma_kappa_ghost_zmin_, iproc);
       envoyer_broadcast(I_sigma_kappa_ghost_zmax_, iproc);
     }
+  /*
+    int jcible=24;
+    int z_index = splitting.get_local_slice_index(2);
+    int z_index_min = 0;
+    //int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+
+    if (z_index==z_index_min)
+      {
+        std::cout << " indicatrice_ghost_zmin_ " << std::endl;
+        for (int i = 0 ; i < indicatrice_ghost_zmin_.ni(); i++)
+          {
+            std::cout << indicatrice_ghost_zmin_(i , jcible , 0) << " , " ;
+            std::cout << indicatrice_ghost_zmin_(i , jcible , 1) << " , " ;
+            std::cout << indicatrice_ghost_zmin_(i , jcible , 2) << " , " ;
+            std::cout << indicatrice_ghost_zmin_(i , jcible , 3) << std::endl;
+          }
+        std::cout << " indicatrice_ghost_zmax_ " << std::endl;
+        for (int i = 0 ; i < indicatrice_ghost_zmin_.ni(); i++)
+          {
+            std::cout << indicatrice_ghost_zmax_(i , jcible , 0) << " , " ;
+            std::cout << indicatrice_ghost_zmax_(i , jcible , 1) << " , " ;
+            std::cout << indicatrice_ghost_zmax_(i , jcible , 2) << " , " ;
+            std::cout << indicatrice_ghost_zmax_(i , jcible , 3) << std::endl;
+          }
+      }
+      */
 
 }
 
@@ -923,14 +973,17 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::relever_I_sigma_kappa_ns(IJK_Fiel
               const int j_reel = j + splitting.get_offset_local(1);
               const int k_reel = k + splitting.get_offset_local(2);
 
-              if (monofluide_variable_==1 )
+              if (monofluide_variable_==2 )
                 {
                   if (k_reel<2*ghost)
                     {
+                      // 0<=k_reel<4
                       field_ns(i,j,k)=indicatrice_ghost_zmin_(i_reel,j_reel,k_reel);
                     }
-                  else if(k_reel>last_global_k-2*ghost-1)
+                  else if(k_reel>last_global_k-2*ghost)
                     {
+                      // 0<k_reel-(last_global_k-2*ghost)<=4
+                      // 0<=k_reel-(last_global_k-2*ghost)-1<4
                       field_ns(i,j,k)=indicatrice_ghost_zmax_(i_reel,j_reel,k_reel-(last_global_k-2*ghost)-1);
                     }
                 }

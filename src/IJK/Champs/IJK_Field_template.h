@@ -97,6 +97,24 @@ public:
               }
           }
       }
+    for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
+      {
+        for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
+          {
+            for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
+              {
+                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmin_(i,j,k));
+              }
+          }
+      }
+
+
+    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
+      {
+        envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
+      }
+
+
   }
   void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_max)
   {
@@ -110,6 +128,23 @@ public:
               }
           }
       }
+    for (int k = 0; k < indicatrice_ghost_zmax_.nk() ; k++)
+      {
+        for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
+          {
+            for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
+              {
+                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmax_(i,j,k));
+              }
+          }
+      }
+
+
+    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
+      {
+        envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
+      }
+
   }
   void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_min)
   {
@@ -123,6 +158,22 @@ public:
               }
           }
       }
+    for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
+      {
+        for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
+          {
+            for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
+              {
+                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmin_(i,j,k));
+              }
+          }
+      }
+
+
+    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
+      {
+        envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
+      }
   }
   void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_max)
   {
@@ -135,6 +186,22 @@ public:
                 indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)indic_z_max(i,j,k);
               }
           }
+      }
+    for (int k = 0; k < indicatrice_ghost_zmax_.nk() ; k++)
+      {
+        for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
+          {
+            for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
+              {
+                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmax_(i,j,k));
+              }
+          }
+      }
+
+
+    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
+      {
+        envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
       }
   }
 

@@ -32,12 +32,10 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     renum_ = -1; // init a -1
     // plusieur vecteur renum pour le cas shear periodic ou une case peut renvoyer vers plusieurs
     // + 4 autres vecteur contenant les ponderation associee pour interpolation 4th order
-    renum_shear_ = new IntTab[IJK_Splitting::order_interpolation_poisson_solver_+1];
+
     ponderation_shear_ = new double[IJK_Splitting::order_interpolation_poisson_solver_+1];
     for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
       {
-        renum_shear_[interp].resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-        renum_shear_[interp] = -1;
         ponderation_shear_[interp] = 0.;
       }
 
@@ -48,10 +46,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           {
             int index = count++;
             renum(i,j,k) = index;
-            for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
-              {
-                renum_shear_[interp](i,j,k)=-1;
-              }
           }
 
 
@@ -62,7 +56,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     VECT(ArrOfInt) items_to_send(6);
     VECT(ArrOfInt) items_to_recv(6);
     VECT(ArrOfInt) blocs_to_recv(6);
-
     int npe = 0;
 
     const int pe_imin = splitting.get_neighbour_processor(0 /* left */, DIRECTION_I);
@@ -71,71 +64,24 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     const int pe_imax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_I);
     const int pe_jmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_J);
     const int pe_kmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_K);
-    int z_index = splitting.get_local_slice_index(2);
-    int z_index_min = 0;
-    int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
-
-    // duCluzeau
-    // Ici, on doit permuter les indices du vecteur solution de pression pour rendre compte des
-    // conditions de periodicites (ou de shear-periodicite)
 
     int pe = pe_kmin;
-    if (pe >= 0) // si voisin du bas existe
+    if (pe >= 0)
       {
         pe_voisins[npe] = pe;
-        if (pe != pe_kmax) // On a au moins 3 proc sur z || pekmin || pe || pe_kmax ||
+        if (pe != pe_kmax)
           {
-            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
-
-            if( z_index == z_index_min && IJK_Splitting::defilement_==1)
-              {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe],splitting, -1.);
-              }
-            else
-              {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting);
-              }
+            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
           }
         else
           {
-            // le meme processeur voisin a gauche et a droite  (par periodicite), soit 1 soit 2 proc sur z
-            // attention a l'ordre des blocs : bug pour le decoupage a deux procs --> a corriger ici ?
-            // ce dessous ne fonctionne que pour 1 proc sur z ?
-
-            if(z_index == z_index_max && IJK_Splitting::defilement_==1)
-              {
-                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe],splitting, 1.);
-              }
-            else
-              {
-                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
-              }
-            if(z_index == z_index_min && IJK_Splitting::defilement_==1)
-              {
-                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting, -1.);
-              }
-            else
-              {
-                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
-              }
-
-            if( z_index == z_index_max && IJK_Splitting::defilement_==1)
-              {
-                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe],splitting, 1.);
-              }
-            else
-              {
-                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe],splitting);
-              }
-            if( z_index == z_index_min && IJK_Splitting::defilement_==1)
-              {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting, -1.);
-              }
-            else
-              {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting);
-              }
-
+            // un processeur voisin a gauche et a droite  (par periodicite)
+            // attention a l'ordre des blocs:
+            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
+            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe]);
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
           }
         npe++;
       }
@@ -146,20 +92,17 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_jmax)
           {
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk,items_to_send[npe],
-                          splitting);
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe]);
+            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe]);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
-            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
-            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,items_to_send[npe],
-                          splitting);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk,items_to_send[npe],
-                          splitting);
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe]);
+            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe]);
+            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe]);
+            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe]);
           }
         npe++;
       }
@@ -170,19 +113,17 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_imax)
           {
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk,items_to_send[npe],
-                          splitting);
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe]);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe]);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
-            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
-            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,items_to_send[npe],
-                          splitting);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk,items_to_send[npe], splitting);
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe]);
+            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe]);
+            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe]);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe]);
           }
         npe++;
       }
@@ -191,8 +132,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_imin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
-        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,items_to_send[npe], splitting);
+        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe]);
+        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
 
@@ -200,8 +141,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_jmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
-        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,items_to_send[npe], splitting);
+        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe]);
+        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
 
@@ -209,17 +150,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_kmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
-        // autre test pour le proc pe_kmax, bloc stocke pour assurer la shear periodicite.
-        if( z_index == z_index_max && IJK_Splitting::defilement_==1)
-          {
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe], splitting, 1.);
-          }
-        else
-          {
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe], splitting);
-          }
-
+        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
+        add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
 
@@ -233,6 +165,52 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
   }
 
+
+  /*int jcible = (int) round((double)nj/2.) ;
+
+  for (int proc=0; proc<Process::nproc(); proc++)
+    {
+      if (proc==Process::me())
+        {
+          std::cout << "renum on the processor " << proc << " : " << std::endl;
+          std::cout << "renum" << std::endl;
+          for (k = -1; k < nk+1; k++)
+            {
+              for (i = -1; i < ni+1; i++)
+                {
+                  std::cout << renum(i,jcible,k) << " ";
+                }
+              std::cout << std::endl;
+            }
+          std::cout << std::endl;
+          std::cout << std::endl;
+
+          for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
+            {
+              std::cout << "renum_interp =" << interp << std::endl;
+              for (k = -1; k < nk+1; k++)
+                {
+                  for (i = -1; i < ni+1; i++)
+                    {
+                      std::cout << renum_shear(i,jcible,k, interp) << " ";
+                    }
+                  std::cout << std::endl;
+                }
+              std::cout << std::endl;
+              std::cout << std::endl;
+            }
+        }
+
+      Process::barrier();
+    }
+  for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
+    {
+      std::cout << "ponderation_shear" << interp << " : " << ponderation_shear_[interp] << std::endl;
+    }
+  */
+
+
+
   {
     const int n_reels = md_.valeur().get_nb_items_reels();
     voisins_.dimensionner(n_reels);
@@ -240,34 +218,52 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     coeff_diag_.resize(n_reels);
     voisins_virt_.dimensionner(n_reels);
     coeffs_virt_.dimensionner(n_reels);
-
-    /* int ycible = 12;
-    for (int dir=0; dir<3 ; dir++)
+    int z_index_min = 0;
+    int z_index = splitting.get_local_slice_index(2);
+    int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+    /*
+    if (z_index == z_index_min)
       {
-        std::cout << "coefficient aux faces " << dir << std::endl;
+        std::cout << "coefficient aux faces " << 2 << std::endl;
         for (int i2= 0; i2 < ni; i2++)
           {
-            std::cout << coeffs_face(i2,ycible,0,dir) << " ";
-            std::cout << coeffs_face(i2,ycible,1,dir) << " ";
-            std::cout << coeffs_face(i2,ycible,2,dir) << " ";
+            std::cout << coeffs_face(i2,jcible,0,2) << " ";
+            std::cout << coeffs_face(i2,jcible,1,2) << " ";
+            std::cout << coeffs_face(i2,jcible,2,2) << " ";
             std::cout << " .....  ";
-            std::cout << coeffs_face(i2,ycible,nk-2,dir) << " ";
-            std::cout << coeffs_face(i2,ycible,nk-1,dir) << " ";
-            std::cout << coeffs_face(i2,ycible,nk,dir) <<  std::endl;
+            std::cout << coeffs_face(i2,jcible,nk-2,2) << " ";
+            std::cout << coeffs_face(i2,jcible,nk-1,2) << " ";
+            std::cout << coeffs_face(i2,jcible,nk,2) <<  std::endl;
           }
-      } */
+      }*/
+
+
     for (k = 0; k < nk; k++)
       {
         for (j = 0; j < nj; j++)
           {
             for (i = 0; i < ni; i++)
               {
-                ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), -1);
-                ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1));
-                ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0));
-                ajoute_coeff(i,j,k,i+1,j,k,coeffs_face(i+1,j,k,0));
-                ajoute_coeff(i,j,k,i,j+1,k,coeffs_face(i,j+1,k,1));
-                ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), 1);
+                if (z_index==z_index_min && IJK_Splitting::defilement_==1 && k==0)
+                  {
+                    ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), splitting, 1.);
+                  }
+                else
+                  {
+                    ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), splitting);
+                  }
+                ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1), splitting);
+                ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0), splitting);
+                ajoute_coeff(i,j,k,i+1,j,k,coeffs_face(i+1,j,k,0), splitting);
+                ajoute_coeff(i,j,k,i,j+1,k,coeffs_face(i,j+1,k,1), splitting);
+                if (z_index==z_index_max && IJK_Splitting::defilement_==1 && k==nk-1)
+                  {
+                    ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), splitting, -1.);
+                  }
+                else
+                  {
+                    ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), splitting);
+                  }
               }
           }
       }
@@ -298,17 +294,47 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     rect.dimensionner(n_reels, md_.valeur().get_nb_items_tot() - n_reels, nnz_virt);
     rect.remplir(voisins_virt_, coeffs_virt_);
 
+    /*    if (z_index == z_index_min)
+          {
+            int nvoisin_virt = voisins_virt_.size();
+
+            std::cout << "( voisins_virt_  , coeff_virt )" << std::endl;
+            std::cout << "[ voisins_  , coeff_ ]" << std::endl;
+            for (i = 0; i < nvoisin_virt; i++)
+              {
+                int nvoisin_virt_cell = voisins_virt_[i].size();
+                int nvoisin_cell = voisins_[i].size();
+                std::cout << "element  " << i << std::endl;
+                for (j = 0; j < nvoisin_virt_cell; j++)
+                  {
+                    std::cout << " ( "<< voisins_virt_[i][j] << "," << coeffs_virt_[i][j] <<" ); " ;
+                  }
+                for (j = 0; j < nvoisin_cell; j++)
+                  {
+                    std::cout << " [ "<< voisins_[i][j] << "," << coeffs_[i][j] <<" ]; " ;
+                  }
+                std::cout << std::endl;
+              }
+          }*/
+
     voisins_ = IntLists();
     coeffs_ = DoubleLists();
     coeff_diag_.reset();
     voisins_virt_ = IntLists();
     coeffs_virt_ = DoubleLists();
     // pour voir la matrice lisiblement
-    //    carre.imprimer_formatte(Cout);
-    //    rect.imprimer_formatte(Cout);
+    //int z_index_min = 0;
+    //int z_index = splitting.get_local_slice_index(2);
+    //int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+    //if (z_index == z_index_min)
+    //{
+
+    // carre.imprimer_formatte(Cout);
+    // rect.imprimer_formatte(Cout);
+    //}
+
   }
 
-  delete[] renum_shear_;
   delete[] ponderation_shear_;
 
 }

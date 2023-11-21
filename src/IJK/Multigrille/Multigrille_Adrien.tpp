@@ -101,8 +101,11 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
 
           // echange espace virtuel sur rho sans passer par IJK_Field --> mauvais remplissage des coeffs de la matrice pour le shear periodique
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Pousson
-          set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-          set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+          if (IJK_Splitting::defilement_==1)
+            {
+              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
+              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+            }
         }
       else
         coarsen_operators_[l-1].valeur().coarsen(set_grid_data<_TYPE_FUNC_>(l-1).get_rho(),
@@ -111,7 +114,20 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
 
       set_grid_data<_TYPE_FUNC_>(l).get_update_rho().echange_espace_virtuel(ghost);
 
+      //IJK_Field_template<_TYPE_FUNC_,TRUSTArray<_TYPE_FUNC_>>& r = set_grid_data<_TYPE_FUNC_>(0).get_update_rho();
 
+      /*int z_index_min = 0;
+      int z_index = rho.get_splitting().get_local_slice_index(2);
+      //int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+      if (z_index == z_index_min)
+        {
+          int ycible = (int) round((double)r.nj()/2.);
+          std::cout << "rho solveur poisson= " << std::endl;
+          for (int i2= 0; i2 < r.ni(); i2++)
+            {
+              std::cout << "i= " << i2 << ":" << " " << r(i2,ycible,-1) << " " << r(i2,ycible,0) << " " << r(i2,ycible,1) << " .......... " << r(i2,ycible,r.nk()-2) << " "<< r(i2,ycible,r.nk()-1) << " " << r(i2,ycible,r.nk()) << r(i2,ycible,r.nk()+1)<< " " << std::endl;
+            }
+        }*/
 
       // Compute matrix coefficients at faces
       if(IS_DOUBLE)
@@ -160,8 +176,11 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
                 r(i2,j,k) = (_TYPE_FUNC_)rho(i2,j,k);
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Poisson
           // on ajoute ca pour le shear perio, uniquement sur le premier niveau de multigrille pour l'instant
-          set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-          set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+          if (IJK_Splitting::defilement_==1)
+            {
+              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
+              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+            }
         }
       else
         {
@@ -171,6 +190,20 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
         }
 
       set_grid_data<_TYPE_FUNC_>(i).get_update_rho().echange_espace_virtuel(ghost);
+      //IJK_Field_template<_TYPE_FUNC_,TRUSTArray<_TYPE_FUNC_>>& r = set_grid_data<_TYPE_FUNC_>(0).get_update_rho();
+
+      /*int z_index_min = 0;
+      int z_index = rho.get_splitting().get_local_slice_index(2);
+      //int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+      if (z_index == z_index_min)
+        {
+          int ycible = (int) round((double)r.nj()/2.);
+          std::cout << "inv_rho solveur poisson= " << std::endl;
+          for (int i2= 0; i2 < r.ni(); i2++)
+            {
+              std::cout << "i= " << i2 << ":" << " " << r(i2,ycible,-1) << " " << r(i2,ycible,0) << " " << r(i2,ycible,1) << " .......... " << r(i2,ycible,r.nk()-2) << " "<< r(i2,ycible,r.nk()-1) << " " << r(i2,ycible,r.nk()) << r(i2,ycible,r.nk()+1)<< " " << std::endl;
+            }
+        }*/
 
       if(IS_DOUBLE)
         {

@@ -714,6 +714,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
+
   poisson_solver.set_inv_rho(inv_rho); // Attention, on met l'inverse de rho.
   // Fait aussi : compute_faces_coefficients_from_inv_rho
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
