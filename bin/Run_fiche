@@ -8,6 +8,7 @@ help()
    echo "-help                          : This description."
    echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
    echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
+   echo "-export_tex                    : Produce the tex report direclty as 'build/rapport.tex'."
    echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
    echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default) and generates a PDF report."
    echo "                                 Cases are run in a sequential way even though -parallel_run is used if run is called with run.runCases(preventConcurrent=True)."
@@ -78,6 +79,7 @@ pdf=build/rapport.pdf
 save=""
 ici=`pwd`
 export_pdf=false
+export_tex=false
 coverage=false
 parallel=false
 post_run=false
@@ -133,6 +135,9 @@ do
       shift
    elif [ "$1" = -export_pdf ]; then
       export_pdf=true
+      shift
+   elif [ "$1" = -export_tex ]; then
+      export_tex=true
       shift
    elif [ "$1" = -coverage ]; then
       coverage=true
@@ -339,6 +344,27 @@ then
           else
              rm -f Run.log
              [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
+          fi
+          exit $error
+      elif $export_tex; then
+          opt_jy="--execute"
+          tmp_env=""
+          if [ "$not_run" = "1" ]; then
+             tmp_env="env JUPYTER_RUN_OPTIONS='-not_run' "
+          fi
+          curr_dir=`pwd`
+          tex=$curr_dir/build/rapport.tex
+          echo "----------------------------------------------------------------------"
+          echo "Converting Jupyter notebook into tex: build/rapport.tex"
+          echo "  > $tmp_env jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to latex --no-input --output $tex $opt_jy $prm"
+          echo "----------------------------------------------------------------------"
+          $tmp_env jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to latex --no-input --output "$tex" $opt_jy $prm 2>& 1| tee -a Run.log
+          error=${PIPESTATUS[0]}
+          if [ "$error" != 0 ]
+          then
+             echo "Error, see Run.log"
+          else
+             rm -f Run.log
           fi
           exit $error
       elif $parallel; then
