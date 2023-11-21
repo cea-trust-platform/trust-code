@@ -16,8 +16,8 @@ mailler  dom
         bord  haut      Y = 1  0.0 <= X <= 1.0 0. <= Z <= 1.
         bord  boundary  X = 0.0    0.0 <= Y <= 1  0. <= Z <= 1.
         bord  boundary  X = 1.0    0.0 <= Y <= 1  0. <= Z <= 1.
-        bord  boundary  Z = 0.0   0. <= X <= 1.  0.0 <= Y <= 1 
-        bord  boundary  Z = 1.0    0. <= X <= 1. 0.0 <= Y <= 1 
+        bord  boundary  Z = 0.0   0. <= X <= 1.  0.0 <= Y <= 1
+        bord  boundary  Z = 1.0    0. <= X <= 1. 0.0 <= Y <= 1
     }
 }
 polyedriser dom
@@ -26,10 +26,10 @@ polyedriser dom
 # BEGIN PARTITION
 Partition dom
 {
-        /* Choose Nb_parts so to have ~ 25000 cells per processor */
-        Partition_tool metis { nb_parts 4 }
-        Larg_joint 2
-        zones_name DOM
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -69,9 +69,9 @@ Read pb
 {
     Milieu_composite
     {
-    liquide_r12 Fluide_generique_EOS { model refprop10  fluid R12Liquid } 
-    saturation_r12 saturation_generique_EOS { model refprop10 fluid R12Liquid } 
-    gaz_r12 Fluide_generique_EOS { model refprop10 fluid R12vapor }
+        liquide_r12 Fluide_generique_EOS { model refprop10  fluid R12Liquid }
+        saturation_r12 saturation_generique_EOS { model refprop10 fluid R12Liquid }
+        gaz_r12 Fluide_generique_EOS { model refprop10 fluid R12vapor }
     }
     correlations
     {
@@ -129,12 +129,12 @@ Read pb
     {
         probes
         {
-                 pression                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                    alpha               alpha_gaz_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            pression                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            alpha               alpha_gaz_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
             temperature_l     temperature_liquide_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
             temperature_g         temperature_gaz_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                vitesse_l         vitesse_liquide_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                vitesse_g             vitesse_gaz_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            vitesse_l         vitesse_liquide_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            vitesse_g             vitesse_gaz_r12 periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
         }
         Format lml
         fields dt_post 1e-2

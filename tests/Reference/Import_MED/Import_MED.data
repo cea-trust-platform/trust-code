@@ -4,30 +4,32 @@ dimension 2
 
 # lecture du champ par le temps #
 champ_Fonc_med ch
-Read ch { file cInit_tDiffu.med 
-          domain Face 
-          field concentrationInitialeC1 
-          time 0. }
+Read ch { file cInit_tDiffu.med
+          domain Face
+          field concentrationInitialeC1
+          time 0.
+        }
 # lecture du champ par numero de pas de temps (ici 1 ) #
 champ_Fonc_med ch2
-Read ch2 { file cInit_tDiffu.med 
-           domain Face 
-           field concentrationInitialeC1 
-           time  -1 }
+Read ch2 { file cInit_tDiffu.med
+           domain Face
+           field concentrationInitialeC1
+           time  -1
+         }
 
 domaine dom
 domaine dom2
 # BEGIN MESH #
-Lire_Med { 
-   domaine dom 
-   file rectangle_a1.med 
-   } /* Read an old 3 format */
+Lire_Med {
+    domaine dom
+    file rectangle_a1.med
+} /* Read an old 3 format */
 Write_MED dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
 Reordonner dom
-Read_MED { 
-   domain dom2 
-   file new_rectangle_a1.med 
+Read_MED {
+    domain dom2
+    file new_rectangle_a1.med
 }
 Reordonner dom2
 # END MESH #
@@ -59,7 +61,7 @@ Read sch
     dt_max 0.1
     nb_pas_dt_max 1
 }
- 
+
 Associate pb_test_sous_zone dom
 Associate pbc  pb_test_sous_zone
 Associate pb_champ_med_interpole dom2
@@ -70,12 +72,12 @@ Discretize pbc dis
 
 Read pb_test_sous_zone
 {
-Solide
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.01
-    Cp Champ_Uniforme 1 0.5
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 0.01
+        Cp Champ_Uniforme 1 0.5
+    }
     Conduction
     {
         diffusion { negligeable }
@@ -103,21 +105,23 @@ Solide
 }
 Read pb_champ_med_interpole
 {
-Solide
-{
-    rho Champ_Uniforme 1 2
-    lambda Champ_Uniforme 1 0.01
-    Cp Champ_Uniforme 1 0.5
-}
+    Solide
+    {
+        rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 0.01
+        Cp Champ_Uniforme 1 0.5
+    }
 
     Conduction
     {
         diffusion { negligeable }
         initial_conditions {
-            temperature   Champ_Fonc_MED  { file cInit_tDiffu.med 
-                                            domain Face 
-                                            field concentrationInitialeC1 
-                                            last_time  }
+            temperature   Champ_Fonc_MED  {
+                file cInit_tDiffu.med
+                domain Face
+                field concentrationInitialeC1
+                last_time
+            }
         }
         boundary_conditions {
             GAUCHE  paroi_adiabatique

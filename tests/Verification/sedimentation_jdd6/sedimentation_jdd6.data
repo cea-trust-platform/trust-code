@@ -69,7 +69,7 @@ Read pb
 
     Correlations {
         Frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 }
-	 masse_ajoutee coef_constant { beta 0.5 } 
+         masse_ajoutee coef_constant { beta 0.5 } 
     }
 
     QDM_Multiphase

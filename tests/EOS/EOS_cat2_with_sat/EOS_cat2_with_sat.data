@@ -23,9 +23,9 @@ mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool metis { nb_parts 4 }
-  Larg_joint 2
-  zones_name DOM
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -41,7 +41,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 30
+    nb_pas_dt_max 30
     seuil_statio 1e-3
     solveur ice
     {
@@ -59,33 +59,33 @@ Discretize pb dis
 
 Read pb
 {
-		Milieu_composite
-		{
-			liquide_eau Fluide_generique_EOS { model CATHARE2  fluid WaterLiquid } 
-			gaz_eau Fluide_generique_EOS { model CATHARE2  fluid WaterVAPOR }
-			saturation_eau saturation_generique_EOS { model CATHARE2 fluid WaterLiquid }
-		}
+    Milieu_composite
+    {
+        liquide_eau Fluide_generique_EOS { model CATHARE2  fluid WaterLiquid }
+        gaz_eau Fluide_generique_EOS { model CATHARE2  fluid WaterVAPOR }
+        saturation_eau saturation_generique_EOS { model CATHARE2 fluid WaterLiquid }
+    }
 
     correlations
     {
         flux_interfacial coef_constant { liquide_eau 1.0e10 gaz_eau 1.0e10 }
     }
     QDM_Multiphase
-    {   
-        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } } 
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
         convection { amont }
-        diffusion  { negligeable } 
+        diffusion  { negligeable }
         initial_conditions
         {
-           vitesse  Champ_fonc_xyz dom 4 2.0*(x>0.5)-2.0*(x[0.5) 2.0*(x>0.5)-2.0*(x[0.5) 0.0 0.0
-           pression Champ_fonc_xyz dom 1 1.0e5 
+            vitesse  Champ_fonc_xyz dom 4 2.0*(x>0.5)-2.0*(x[0.5) 2.0*(x>0.5)-2.0*(x[0.5) 0.0 0.0
+            pression Champ_fonc_xyz dom 1 1.0e5
         }
         boundary_conditions
         {
             haut symetrie
             bas symetrie
-             gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+            gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
             droite frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
         }
     }
@@ -100,7 +100,7 @@ Read pb
             gauche frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.95 0.05
             droite frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.95 0.05
         }
-          # sources { flux_interfacial } #
+        # sources { flux_interfacial } #
     }
     Energie_Multiphase
     {
@@ -114,15 +114,15 @@ Read pb
             gauche frontiere_ouverte T_ext Champ_Front_uniforme 2 81.578 61.578
             droite frontiere_ouverte T_ext Champ_Front_uniforme 2 71.578 51.578
         }
-         # sources { flux_interfacial } #
+        # sources { flux_interfacial } #
     }
     Post_processing
     {
         probes
         {
-             rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
-               v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
-               p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
+            rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
+            v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
+            p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
             eint grav energie_interne periode 1e8 segment 1000 0 0.5 1 0.5
         }
         Format lml

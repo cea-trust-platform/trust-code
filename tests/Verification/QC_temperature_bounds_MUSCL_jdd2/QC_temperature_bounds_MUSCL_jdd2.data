@@ -58,9 +58,9 @@ lire pb
         pression 1
         loi_etat rhoT_gaz_parfait_QC
         {
-             Prandtl 1
-             Cp 1
-             rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7
+            Prandtl 1
+            Cp 1
+            rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7
         }
         traitement_pth constant
         traitement_rho_gravite standard

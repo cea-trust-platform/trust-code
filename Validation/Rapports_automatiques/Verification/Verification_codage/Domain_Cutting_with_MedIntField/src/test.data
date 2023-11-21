@@ -28,7 +28,7 @@ Partition dom
 End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
 

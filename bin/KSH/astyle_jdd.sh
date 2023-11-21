@@ -5,7 +5,7 @@
 
 echo "Usage:"
 echo "   astyle_jdd.sh [-folder folderpath]"
-echo "If -folder not specified, astyle_jdd.sh will be run on tests/Reference|Obsolete|Non-validated|EF and Validation/Rapports_automatiques/Verification/"
+echo "If -folder not specified, astyle_jdd.sh will be run on tests/Reference|Obsolete|Non-validated|EF|Turbulence_Null|CoolProp|EOS and Validation/Rapports_automatiques/Verification/"
 echo ""
 if [ "$1" = -folder ]
 then
@@ -21,6 +21,9 @@ else
    files="$files "`find $TRUST_ROOT/tests/Obsolete -name '*'.data`
    files="$files "`find $TRUST_ROOT/tests/Non-Validated -name '*'.data`
    files="$files "`find $TRUST_ROOT/tests/EF -name '*'.data`
+   files="$files "`find $TRUST_ROOT/tests/Turbulence_Null -name '*'.data`
+   files="$files "`find $TRUST_ROOT/tests/CoolProp -name '*'.data`
+   files="$files "`find $TRUST_ROOT/tests/EOS -name '*'.data`
 fi
 
 [ "$files" = "" ] && echo "Error: No datafile found" && exit

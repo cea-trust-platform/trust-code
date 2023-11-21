@@ -42,7 +42,7 @@ Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFPreP1B dis 
+VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
@@ -50,7 +50,7 @@ Read sch
     dt_start dt_fixe 1.e-6
     dt_impr 1e6
     dt_sauv 1e6
-    nb_pas_dt_max 10 
+    nb_pas_dt_max 10
 }
 
 Associate pb dom
@@ -70,8 +70,8 @@ Read pb
 
     Navier_Stokes_Standard
     {
-    	# Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
-    	methode_calcul_pression_initiale avec_sources_et_operateurs
+        # Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
+        methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression amgx gcp { precond c-amg { } rtol 1.e-5 impr }
         diffusion  { }
         convection { muscl }

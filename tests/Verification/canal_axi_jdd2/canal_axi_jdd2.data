@@ -52,14 +52,14 @@ Read sch
     {
         solveur petsc cholesky { }
         # {
-            -pc_type hypre
-            -pc_hypre_type boomeramg
-            -ksp_check_norm_iteration 4
-            -ksp_rtol 1e-10
-            -ksp_monitor
-        } #
-        seuil_convergence_implicite 1e30
-    }
+        -pc_type hypre
+        -pc_hypre_type boomeramg
+        -ksp_check_norm_iteration 4
+        -ksp_rtol 1e-10
+        -ksp_monitor
+    } #
+    seuil_convergence_implicite 1e30
+}
 }
 
 VDF dis

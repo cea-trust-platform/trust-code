@@ -4,10 +4,10 @@ dimension 3
 Domaine dom
 
 # BEGIN MESH #
-Read_MED { 
-   domain dom 
-   file MeshCFD.med 
-	 include_additional_face_groups 1 interf
+Read_MED {
+    domain dom
+    file MeshCFD.med
+    include_additional_face_groups 1 interf
 }
 /* Second read with MEDCoupling */
 VerifierCoin dom { }
@@ -56,18 +56,18 @@ Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0 0 -9.81
-mu      Champ_Uniforme 1 .000245
-    rho     Champ_Uniforme 1 840.
-    lambda  Champ_Uniforme 1 66.
-    Cp      Champ_Uniforme 1 1270.
-    Beta_th Champ_Uniforme 1 0.000276
-}
+
+    fluide_incompressible {
+        gravite champ_uniforme 3 0 0 -9.81
+        mu      Champ_Uniforme 1 .000245
+        rho     Champ_Uniforme 1 840.
+        lambda  Champ_Uniforme 1 66.
+        Cp      Champ_Uniforme 1 1270.
+        Beta_th Champ_Uniforme 1 0.000276
+    }
 
 
-Navier_Stokes_standard
+    Navier_Stokes_standard
     {
         solveur_pression Petsc Cholesky  { }
         convection { amont }
@@ -113,4 +113,4 @@ Navier_Stokes_standard
 Solve pb
 
 End
- 
+

@@ -23,9 +23,9 @@ mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool metis { nb_parts 4 }
-  Larg_joint 2
-  zones_name DOM
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -41,7 +41,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 300
+    nb_pas_dt_max 300
     seuil_statio 1e-3
     solveur ice
     {
@@ -59,10 +59,10 @@ Discretize pb dis
 
 Read pb
 {
-		Milieu_composite
-		{
-			liquide_eau Fluide_generique_coolprop { model refprop  fluid r12 phase liquid  }
-		}
+    Milieu_composite
+    {
+        liquide_eau Fluide_generique_coolprop { model refprop  fluid r12 phase liquid  }
+    }
 
     QDM_Multiphase
     {
@@ -112,9 +112,9 @@ Read pb
     {
         probes
         {
-             rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
-               v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
-               p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
+            rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
+            v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
+            p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
             eint grav energie_interne periode 1e8 segment 1000 0 0.5 1 0.5
         }
         Format lml

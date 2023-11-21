@@ -6,19 +6,19 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave cylindre
-        {
+    Pave cylindre
+    {
         Origine 0.0 0.0
         Nombre_de_Noeuds 11 121
         Longueurs 1 12
         facteurs 1.0 1.0
-        }
-        {
+    }
+    {
         Bord Inlet      Y = 12.0        0.0 <= X <= 1.0
         Bord Outlet     Y = 0.0         0.0 <= X <= 1.0
         Bord gauche     X = 0.0         0.0 <= Y <= 12.0
         Bord droite     X = 1.0         0.0 <= Y <= 12.0
-        }
+    }
 }
 # END MESH #
 
@@ -45,36 +45,36 @@ Option_PolyMAC_P0 {  }
 Schema_euler_implicite sch
 Read sch
 {
-        # Time step #
-          # Initial time [s] #
-	tinit .0
-          # Min time step #
-	dt_min 1.e-8
-          # Max time step #
-	dt_max 5.e-1  # dt_min=dt_max so dt imposed #
+    # Time step #
+    # Initial time [s] #
+    tinit .0
+    # Min time step #
+    dt_min 1.e-8
+    # Max time step #
+    dt_max 5.e-1  # dt_min=dt_max so dt imposed #
 
-	# CLF #
-        facsec 0.8
-        facsec_max 0.8
+    # CLF #
+    facsec 0.8
+    facsec_max 0.8
 
-        # Output criteria #
-          # .out files printing period #
-        dt_impr 5.e-5 # Note: small value to print at each time step #
-          # .sauv files printing period #
-	dt_sauv 100
-        periode_sauvegarde_securite_en_heures 23
+    # Output criteria #
+    # .out files printing period #
+    dt_impr 5.e-5 # Note: small value to print at each time step #
+    # .sauv files printing period #
+    dt_sauv 100
+    periode_sauvegarde_securite_en_heures 23
 
-        # Stop if one of the following criteria is checked: #
-          # End time [s] #
-	tmax 0.8
-          # Max number of time steps #
-        # nb_pas_dt_max 3 #
-          # Convergence threshold (see .dt_ev file) #
-	seuil_statio 1.e-4
+    # Stop if one of the following criteria is checked: #
+    # End time [s] #
+    tmax 0.8
+    # Max number of time steps #
+    # nb_pas_dt_max 3 #
+    # Convergence threshold (see .dt_ev file) #
+    seuil_statio 1.e-4
 
     solveur ice
     {
-        criteres_convergence { alpha 1e-5 pression 1e-2 temperature 1e-2 vitesse 1e-2 } 
+        criteres_convergence { alpha 1e-5 pression 1e-2 temperature 1e-2 vitesse 1e-2 }
         solveur petsc cli { }
         seuil_convergence_implicite 1e30
     }
@@ -87,22 +87,22 @@ Discretize pb dis
 
 Read pb
 {
-	Milieu_composite
-	{
-		gaz_helium StiffenedGas { gamma 1.4 pinf 0.0 }
-		liquide_sodium StiffenedGas { gamma 4.4 pinf 6e8 }
-	}
+    Milieu_composite
+    {
+        gaz_helium StiffenedGas { gamma 1.4 pinf 0.0 }
+        liquide_sodium StiffenedGas { gamma 4.4 pinf 6e8 }
+    }
 
     QDM_Multiphase
     {
-	evanescence { homogene { alpha_res 1e-5 alpha_res_min 1e-6 } }
+        evanescence { homogene { alpha_res 1e-5 alpha_res_min 1e-6 } }
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
         convection { amont }
         diffusion  { negligeable }
         sources
         {
             source_qdm champ_fonc_xyz dom 4  0 0 -10.0 -10.0
-	}
+        }
         initial_conditions
         {
             vitesse  Champ_Fonc_xyz dom 4 0.0 0.0 0.0 -10.0
@@ -111,27 +111,27 @@ Read pb
         boundary_conditions
         {
             droite paroi_fixe
-	    gauche paroi_fixe
-	    Inlet frontiere_ouverte_vitesse_imposee champ_front_uniforme 4 0.0 0.0 -10.0 -10.0
-            Outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 1.e5 
+            gauche paroi_fixe
+            Inlet frontiere_ouverte_vitesse_imposee champ_front_uniforme 4 0.0 0.0 -10.0 -10.0
+            Outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 1.e5
         }
     }
- 
+
     Masse_Multiphase
     {
         initial_conditions
-	{
-		alpha Champ_Fonc_xyz dom 2
-			0.2	        # first: helium #
-			0.8     	# second: sodium #
-	}
+        {
+            alpha Champ_Fonc_xyz dom 2
+            0.2	        # first: helium #
+            0.8     	# second: sodium #
+        }
         convection { amont }
         boundary_conditions
         {
             droite paroi
-	    gauche paroi
-	    Inlet frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.2 0.8
-	    Outlet frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.2 0.8
+            gauche paroi
+            Inlet frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.2 0.8
+            Outlet frontiere_ouverte a_ext Champ_Front_Uniforme 2 0.2 0.8
         }
     }
     Energie_Multiphase
@@ -139,48 +139,48 @@ Read pb
         diffusion { negligeable }
         convection { amont }
         initial_conditions
-	{
-		temperature Champ_Fonc_xyz dom 2 50.0 50.0
-	}
+        {
+            temperature Champ_Fonc_xyz dom 2 50.0 50.0
+        }
         boundary_conditions
         {
-	    droite paroi_adiabatique
-	    gauche paroi_adiabatique
-	    Inlet frontiere_ouverte_temperature_imposee Champ_Front_uniforme 2 50.0 50.0
-	    Outlet frontiere_ouverte_temperature_imposee Champ_Front_uniforme 2 50.0 50.0
+            droite paroi_adiabatique
+            gauche paroi_adiabatique
+            Inlet frontiere_ouverte_temperature_imposee Champ_Front_uniforme 2 50.0 50.0
+            Outlet frontiere_ouverte_temperature_imposee Champ_Front_uniforme 2 50.0 50.0
         }
     }
     Post_processing
     {
 
-		# Probes #
-		Probes
-		{
-		        sonde_alpha_gaz_helium alpha_gaz_helium periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_alpha_liquide_sodium alpha_liquide_sodium periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_vitesse_gaz_helium vitesse_gaz_helium periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_vitesse_liquide_sodium vitesse_liquide_sodium periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_masse_volumique masse_volumique periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_masse_volumique_gaz masse_volumiqueX periode 0.1 segment 121 0.5 0.0 0.5 12.0
-			sonde_masse_volumique_liquide masse_volumiqueY periode 0.1 segment 121 0.5 0.0 0.5 12.0
-		}
-		
+        # Probes #
+        Probes
+        {
+            sonde_alpha_gaz_helium alpha_gaz_helium periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_alpha_liquide_sodium alpha_liquide_sodium periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_vitesse_gaz_helium vitesse_gaz_helium periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_vitesse_liquide_sodium vitesse_liquide_sodium periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_masse_volumique masse_volumique periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_masse_volumique_gaz masse_volumiqueX periode 0.1 segment 121 0.5 0.0 0.5 12.0
+            sonde_masse_volumique_liquide masse_volumiqueY periode 0.1 segment 121 0.5 0.0 0.5 12.0
+        }
+
         Format lata
         fields dt_post 0.1
         {
             /* vitesse_gaz_helium elem
-	    vitesse_liquide_sodium elem
+            vitesse_liquide_sodium elem
             alpha_gaz_helium elem
             alpha_liquide_sodium elem */
             pression elem
             temperature elem
             masse_volumique elem
-	    /* masse_volumiqueX elem
-	    masse_volumiqueY elem
-            viscosite_cinematique elem
-            viscosite_dynamique elem
-            conductivite elem
-            capacite_calorifique elem */
+            /* masse_volumiqueX elem
+            masse_volumiqueY elem
+                viscosite_cinematique elem
+                viscosite_dynamique elem
+                conductivite elem
+                capacite_calorifique elem */
             energie_interne elem
         }
     }

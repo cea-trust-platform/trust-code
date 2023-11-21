@@ -7,7 +7,7 @@ Domaine dom
 Read_MED {
     domain dom
     file grossier.med
-		include_additional_face_groups 1 groupes_faces_interf
+    include_additional_face_groups 1 groupes_faces_interf
 }
 Raffiner_isotrope dom
 Corriger_frontiere_periodique { domaine dom bord perioy }
@@ -19,7 +19,7 @@ Partition dom
     Partition_tool Tranche { tranches 2 1 1 }
     Larg_joint 2
     zones_name DOM
-		Periodique 1 perioy
+    Periodique 1 perioy
 }
 End
 END PARTITION #
@@ -69,10 +69,10 @@ Read pb
         initial_conditions
         {
             vitesse Champ_uniforme 3  0.  1. 0.
-				}
-				sources { 
+        }
+        sources {
             Canal_perio {  bord perioy debit_impose 1. }
-         } 
+        }
         boundary_conditions
         {
             paroi paroi_fixe

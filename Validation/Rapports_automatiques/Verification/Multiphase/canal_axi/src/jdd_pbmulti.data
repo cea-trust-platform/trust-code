@@ -64,17 +64,17 @@ Discretize pbt dis
 
 Read pbt
 {
-	Milieu_composite
-	{
-		liquide_eau fluide_incompressible
-		{
+    Milieu_composite
+    {
+        liquide_eau fluide_incompressible
+        {
             mu       champ_uniforme 1 50.0
             rho      champ_uniforme 1 2000.0
             cp       champ_uniforme 1 3075.0
             lambda   champ_uniforme 1 0.5
             beta_th  champ_uniforme 1 0.0002
-		}
-	}
+        }
+    }
 
     QDM_Multiphase
     {

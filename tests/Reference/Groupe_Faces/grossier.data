@@ -19,7 +19,7 @@ Mailler dom
         Bord perioy   Y =  1.  0. <= X <= 1.  0. <= Z <= 1.
         Bord paroi   Z =  0.  0. <= X <= 1.  0. <= Y <= 1.
         Bord paroi   Z =  1.  0. <= X <= 1.   0. <= Y <= 1.
-				Groupe_Faces interf   Y =  0.5  0. <= X <= 1.   0. <= Z <= 1.
+        Groupe_Faces interf   Y =  0.5  0. <= X <= 1.   0. <= Z <= 1.
     }
 }
 Tetraedriser_homogene dom
@@ -77,17 +77,17 @@ Read pb
     Navier_Stokes_standard
     {
         Solveur_Pression petsc Cholesky { }
-        
-				convection { negligeable }
+
+        convection { negligeable }
         diffusion  {  }
-        
-				initial_conditions
+
+        initial_conditions
         {
             vitesse Champ_uniforme 3  0.  1. 0.
-				}
-				sources { 
+        }
+        sources {
             Canal_perio {  bord perioy debit_impose 1. }
-         } 
+        }
         boundary_conditions
         {
             paroi paroi_fixe

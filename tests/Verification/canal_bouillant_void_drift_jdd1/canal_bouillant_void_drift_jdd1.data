@@ -16,8 +16,8 @@ mailler  dom
         bord  haut      Z = 1.0    0.0 <= X <= 1.0 0.0 <= Y <= 1.
         bord  boundary  X = 0.0    0.0 <= Y <= 1.0 0.0 <= Z <= 1.
         bord  boundary  X = 1.0    0.0 <= Y <= 1.0 0.0 <= Z <= 1.
-        bord  boundary  Y = 0.0    0.0 <= X <= 1.0 0.0 <= Z <= 1. 
-        bord  boundary  Y = 1.0    0.0 <= X <= 1.0 0.0 <= Z <= 1. 
+        bord  boundary  Y = 0.0    0.0 <= X <= 1.0 0.0 <= Z <= 1.
+        bord  boundary  Y = 1.0    0.0 <= X <= 1.0 0.0 <= Z <= 1.
     }
 }
 polyedriser dom
@@ -26,10 +26,10 @@ polyedriser dom
 # BEGIN PARTITION
 Partition dom
 {
-        /* Choose Nb_parts so to have ~ 25000 cells per processor */
-        Partition_tool metis { nb_parts 4 }
-        Larg_joint 2
-        zones_name DOM
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -72,9 +72,9 @@ Read pb
     }
     correlations
     {
-	flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10  }
-	Gravite Multiphase champ_uniforme 3 0 0 -9.81
-	
+        flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10  }
+        Gravite Multiphase champ_uniforme 3 0 0 -9.81
+        
     }
     QDM_Multiphase
     {
@@ -93,10 +93,10 @@ Read pb
             bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 6 0 0 0 0 1 1
             haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000
         }
-	sources
-	{
-	
-	}
+        sources
+        {
+            
+        }
     }
     Masse_Multiphase
     {
@@ -134,18 +134,18 @@ Read pb
     }
     Post_processing
     {
-	sondes
-	{
-	  alpha_gaz_sodium alpha_gaz_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+        sondes
+        {
+              alpha_gaz_sodium alpha_gaz_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
  vitesse_liquide_sodium vitesse_liquide_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
  vitesse_gaz_sodium vitesse_gaz_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
  temperature temperature periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
  masse_volumique masse_volumique periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
  pression pression periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
 
-	}
+        }
 
-        Format lml 
+        Format lml
         fields dt_post 1e-2
         {
             vitesse_liquide_sodium elem

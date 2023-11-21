@@ -116,7 +116,7 @@ Read pb
                 source refChamp {
                     Pb_Champ pb pression_pa nom_source pression_pa
                 }
-								localisation elem
+                localisation elem
             }
         }
         format lml

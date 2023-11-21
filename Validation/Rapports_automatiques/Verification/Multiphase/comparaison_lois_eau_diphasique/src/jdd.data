@@ -27,10 +27,10 @@ polyedriser dom
 # BEGIN PARTITION
 Partition dom
 {
-        /* Choose Nb_parts so to have ~ 25000 cells per processor */
-        Partition_tool metis { nb_parts 4 }
-        Larg_joint 2
-        zones_name DOM
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -129,19 +129,19 @@ Read pb
     {
         probes
         {
-                # pression                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                    alpha               alpha_gaz_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            # pression                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            alpha               alpha_gaz_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
             temperature_l     temperature_liquide_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
             temperature_g         temperature_gaz_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                vitesse_l         vitesse_liquide_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
-                vitesse_g             vitesse_gaz_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5 #
+            vitesse_l         vitesse_liquide_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5
+            vitesse_g             vitesse_gaz_eau periode 1e8 segment 500 0.5 0 0.5 1 .5 .5 #
 
-              rho grav masse_volumique periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
+            rho grav masse_volumique periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
             alpha grav   alpha_gaz_eau periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
-                v grav         vitesse periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
-                p grav        pression periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
-                T grav     temperature periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
-             eint grav energie_interne periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
+            v grav         vitesse periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
+            p grav        pression periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
+            T grav     temperature periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
+            eint grav energie_interne periode 1e8 segment 1000 0.5 0 0.5 1 .5 .5
         }
         Format Lata
         fichier lata/jdd

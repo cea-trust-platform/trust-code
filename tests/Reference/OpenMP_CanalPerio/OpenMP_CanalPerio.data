@@ -75,15 +75,15 @@ Read pb
     Navier_Stokes_Standard
     {
         # Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
-    	methode_calcul_pression_initiale avec_sources_et_operateurs
+        methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression amgx gcp { precond sa-amg { } rtol 1.e-6 impr }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  1. 0. 0. }
         boundary_conditions {
-					periox	periodique
-					perioz	periodique
-					wall	paroi_fixe
+            periox	periodique
+            perioz	periodique
+            wall	paroi_fixe
         }
         Sources			{ canal_perio { bord periox } }
     }

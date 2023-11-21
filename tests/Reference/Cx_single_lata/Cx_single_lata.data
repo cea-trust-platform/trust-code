@@ -107,8 +107,8 @@ Read pb
             {
                 pression_pa elem
                 pression_pa som
-		vitesse elem
-		temperature elem
+                vitesse elem
+                temperature elem
             }
             Statistiques dt_post 1.
             {
@@ -123,7 +123,7 @@ Read pb
             {
                 pression_pa elem
                 pression_pa som
-		vitesse elem
+                vitesse elem
                 temperature elem
             }
             Statistiques dt_post 1.

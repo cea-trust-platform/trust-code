@@ -7,20 +7,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite
-                {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 5 3 5
-                Longueurs 1 1 1
-                }
-                {
-                Bord Entree 			X = 0.  	0. <= Y <= 1.	0. <= Z <= 1.
-                Bord Haut 			Y = 1.  	0. <= X <= 1.	0. <= Z <= 1.
-                Bord Bas 			Y = 0.     	0. <= X <= 1.	0. <= Z <= 1.
-                Bord Sortie 			X = 1.	 	0. <= Y <= 1.	0. <= Z <= 1.
-		Bord S0				Z = 0.     	0. <= X <= 1.	0. <= Y <= 1.
-		Bord S1				Z = 1.     	0. <= X <= 1.	0. <= Y <= 1.
-                }
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 5 3 5
+        Longueurs 1 1 1
+    }
+    {
+        Bord Entree 			X = 0.  	0. <= Y <= 1.	0. <= Z <= 1.
+        Bord Haut 			Y = 1.  	0. <= X <= 1.	0. <= Z <= 1.
+        Bord Bas 			Y = 0.     	0. <= X <= 1.	0. <= Z <= 1.
+        Bord Sortie 			X = 1.	 	0. <= Y <= 1.	0. <= Z <= 1.
+        Bord S0				Z = 0.     	0. <= X <= 1.	0. <= Y <= 1.
+        Bord S1				Z = 1.     	0. <= X <= 1.	0. <= Y <= 1.
+    }
 }
 Tetraedriser_homogene dom
 
@@ -29,10 +29,10 @@ Tetraedriser_homogene dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 4 }
-	Larg_joint 2
-	reorder 1
-	Nom_Zones DOM
+    Partitionneur metis { Nb_parts 4 }
+    Larg_joint 2
+    reorder 1
+    Nom_Zones DOM
 }
 Fin
 END PARTITION #
@@ -46,14 +46,14 @@ VEFPreP1B dis
 Schema_Euler_explicite sch
 Lire sch
 {
-	tinit 0
-	tmax 15.0
-        nb_pas_dt_max 5
-	dt_min 1.e-9
-	dt_max 5.
-	dt_impr 5.e-5
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 15.0
+    nb_pas_dt_max 5
+    dt_min 1.e-9
+    dt_max 5.
+    dt_impr 5.e-5
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 
@@ -65,64 +65,64 @@ Discretize pb dis
 
 Lire pb
 {
-   
-   fluide_incompressible {
-   
-        gravite champ_uniforme 3 0 0 0
-   	mu Champ_Uniforme 1 0.25
-           rho Champ_Uniforme 1 1.
-   	lambda Champ_Uniforme 1 1.
-   	Cp Champ_Uniforme 1 1.
-   	beta_th Champ_Uniforme 1 1.
-   }
-   
-   	Navier_Stokes_turbulent
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e12 }	
-		convection { negligeable } 
-		diffusion { stab { nu 1 nut 0 nu_transp 1 nut_transp 0 standard 0 } }
-		conditions_initiales {
-			vitesse Champ_Fonc_xyz dom 3 x y z
-			}
-		boundary_conditions {
-                        Bas	  	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-                        Haut 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-                        Sortie 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-                        Entree 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-			S0	 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-			S1 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
-		}
-		modele_turbulence null { } 
-	}
-        Convection_Diffusion_Temperature_turbulent
-        {
-                diffusion {  stab {  } }
-                convection { negligeable }
-                boundary_conditions 
-                {
-                        Bas 	  	frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-                        Haut 		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-                        Sortie 		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-                        Entree  	frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-			S0  		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-			S1  		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
-                }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom 1 0 }
-		modele_turbulence null { } 
-        }
 
-	Postraitement
-	{
-		format lml
-		Champs dt_post 10.
-		{
-			pression_pa som
-			vitesse som
-			temperature som
-		}
-	}
+    fluide_incompressible {
+
+        gravite champ_uniforme 3 0 0 0
+        mu Champ_Uniforme 1 0.25
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+        beta_th Champ_Uniforme 1 1.
+    }
+
+    Navier_Stokes_turbulent
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e12 }
+        convection { negligeable }
+        diffusion { stab { nu 1 nut 0 nu_transp 1 nut_transp 0 standard 0 } }
+        conditions_initiales {
+            vitesse Champ_Fonc_xyz dom 3 x y z
+        }
+        boundary_conditions {
+            Bas	  	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+            Haut 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+            Sortie 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+            Entree 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+            S0	 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+            S1 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+        }
+        modele_turbulence null { }
+    }
+    Convection_Diffusion_Temperature_turbulent
+    {
+        diffusion {  stab {  } }
+        convection { negligeable }
+        boundary_conditions
+        {
+            Bas 	  	frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+            Haut 		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+            Entree  	frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+            S0  		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+            S1  		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
+        }
+        conditions_initiales { Temperature Champ_Fonc_xyz dom 1 0 }
+        modele_turbulence null { }
+    }
+
+    Postraitement
+    {
+        format lml
+        Champs dt_post 10.
+        {
+            pression_pa som
+            vitesse som
+            temperature som
+        }
+    }
 }
 Solve pb
 Fin
 
- 
+

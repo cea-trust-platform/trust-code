@@ -74,10 +74,10 @@ Read pb
         initial_conditions {
             vitesse champ_uniforme 2 2. 1.
         }
-        sources { 
+        sources {
             Canal_perio {  bord periox debit_impose 2. }
             , Canal_perio {  bord haut debit_impose 0 }
-         } 
+        }
         boundary_conditions {
             periox periodique
             haut periodique

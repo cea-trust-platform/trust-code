@@ -2,7 +2,7 @@
 dimension 3
 Pb_hydraulique pb
 domaine dom
- 
+
 Read_MED {
     domain dom
     file Mesh_1_hexa.med
@@ -53,7 +53,7 @@ Read pb
     }
     Postraitement
     {
-       format med Champs dt_post 1e6 { pression elem vitesse elem }
+        format med Champs dt_post 1e6 { pression elem vitesse elem }
     }
 }
 Solve pb

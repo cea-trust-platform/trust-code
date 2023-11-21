@@ -3,7 +3,7 @@
   Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
-  L = 1 m                  
+  L = 1 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
@@ -26,17 +26,17 @@ regroupebord dom Sortie { OUT }
 regroupebord dom Entree { IN }
 # FIN MAILLAGE #
 
-# DEBUT DECOUPAGE 
+# DEBUT DECOUPAGE
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 FIN DECOUPAGE #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -74,7 +74,7 @@ Discretiser pb dis
 
 Read pb
 {
-    Fluide_Incompressible 
+    Fluide_Incompressible
     {
         mu  Champ_Uniforme 1 1.0
         rho Champ_Uniforme 1 1.0
@@ -115,8 +115,8 @@ Read pb
                     points_solides Champ_Fonc_MED { last_time file res_domain_mesh_40_pl_mesh_1.med domain domain_mesh field projection_Solid loc som }
                     elements_fluides Champ_Fonc_MED { last_time file res_domain_mesh_40_pl_mesh_1.med domain domain_mesh field fl_elem_number loc som }
                     correspondance_elements Champ_Fonc_MED { last_time file res_domain_mesh_40_pl_mesh_1.med domain domain_mesh field TRUST_SALOME_correspondance loc elem }
-		    impr nb_histo_boxes_impr 5
-		    formulation_linear_pwl 0
+                    impr nb_histo_boxes_impr 5
+                    formulation_linear_pwl 0
                 }
             }
         }
@@ -131,26 +131,26 @@ Read pb
 
     Post_processings
     {
-	med {
-	        format med
-        	fichier results/postdom
-        	Champs binaire dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	} 
-	lml
-	{
-		format lml fichier POISEUILLE_ALIGNED_power_law
-        	Champs dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-			y_plus_ibm som
-			u_star_ibm som
-        	}
-	}
+        med {
+            format med
+            fichier results/postdom
+            Champs binaire dt_post 1e0
+            {
+                pression elem
+                vitesse som
+            }
+        }
+        lml
+        {
+            format lml fichier POISEUILLE_ALIGNED_power_law
+            Champs dt_post 1e0
+            {
+                pression elem
+                vitesse som
+                y_plus_ibm som
+                u_star_ibm som
+            }
+        }
     }
 }
 resoudre pb

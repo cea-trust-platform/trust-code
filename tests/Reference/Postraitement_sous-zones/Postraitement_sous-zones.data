@@ -104,38 +104,38 @@ Read pb
     }
 
 
-        post_processings
+    post_processings
+    {
+        on_domaine
         {
-            on_domaine
+            fichier Postraitement_sous-zones
+            fields dt_post 5.
             {
-                fichier Postraitement_sous-zones
-                fields dt_post 5.
-                {
-                    temperature elem
-                    temperature som
-                }
-            }
-            sous_zone_1
-            {
-                fichier Postraitement_sous-zones
-                sous_zone SSZ
-                fields dt_post 5.
-                {
-                    temperature elem
-                    temperature som
-                }
-            }
-            sous_zone_2
-            {
-                fichier Postraitement_sous-zones
-                sous_zone SSZ2
-                fields dt_post 5.
-                {
-                    temperature elem
-                    temperature som
-                }
+                temperature elem
+                temperature som
             }
         }
+        sous_zone_1
+        {
+            fichier Postraitement_sous-zones
+            sous_zone SSZ
+            fields dt_post 5.
+            {
+                temperature elem
+                temperature som
+            }
+        }
+        sous_zone_2
+        {
+            fichier Postraitement_sous-zones
+            sous_zone SSZ2
+            fields dt_post 5.
+            {
+                temperature elem
+                temperature som
+            }
+        }
+    }
 }
 Solve pb
 End

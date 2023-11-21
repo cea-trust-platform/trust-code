@@ -118,7 +118,7 @@ Read pb_box
             inlet_velocity 	nodes	vitesse			periode 0.005 segment 30 -0.5334 -0.1524 0. -0.4572 -0.1524 0.
             inlet_T 	nodes	temperature		periode 0.005 segment 30 -0.5334 -0.1524 0. -0.4572 -0.1524 0.
         }
-        
+
         Format lml
         fields dt_post 0.2 # 1000 #
         {
@@ -199,7 +199,7 @@ Read pb_dom
             pression_paroi_externe  	pression_pa periode 1.e-3 point 1  -0.5334 -0.1524 0
             temperature_a_teta_22.5		temperature periode 1.e-3 point 1 -0.4576 0.1894 0
         }
-        
+
         format lml
         fields dt_post 0.2 # 1000.0 #
         {

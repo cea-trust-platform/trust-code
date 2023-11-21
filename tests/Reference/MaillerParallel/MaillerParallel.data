@@ -63,9 +63,9 @@ Read pb
         }
         convection { quick }
         diffusion { }
-        sources { 
+        sources {
             boussinesq_temperature { T0 5. } ,
-            Canal_perio { bord PerioZ } 
+            Canal_perio { bord PerioZ }
         }
         initial_conditions {
             vitesse Champ_Uniforme 3 0. 0. 0.005

@@ -68,18 +68,18 @@ Discretize pb dis
 Read pb
 {
 
-   fluide_incompressible {
+    fluide_incompressible {
         mu Champ_Uniforme       1 2.21799454e-04
-       rho Champ_Uniforme      1 943.112976
-       lambda Champ_Uniforme   1 0.806537897
-       Cp Champ_Uniforme       1 4238.62106
-       beta_th Champ_Uniforme  1 8.6e-4
-   }
-   
-       Navier_Stokes_Standard
+        rho Champ_Uniforme      1 943.112976
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+    }
+
+    Navier_Stokes_Standard
     {
         # Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
-    	methode_calcul_pression_initiale avec_sources_et_operateurs
+        methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression amgx gcp { precond c-amg { p:selector=PMIS } seuil 1.e-4 impr }
         convection { muscl }
         diffusion  {  }
