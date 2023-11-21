@@ -38,11 +38,12 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bool apply_verification, int disable_stop)
+mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, Nom log_directory, bool apply_verification, int disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
   journal_shared_ = journal_shared;
+  log_directory_ = log_directory;
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
   init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
@@ -140,7 +141,7 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
 #ifdef TRUST_USE_CUDA
-  init_cuda();
+  //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
   // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
@@ -261,7 +262,19 @@ void mon_main::dowork(const Nom& nom_du_cas)
   // Initialisation du journal parallele (maintenant qu'on connait le rang
   //  du processeur et le nom du cas)
   {
-    Nom filename(nom_du_cas);
+    // Master process creates log directory if needed
+    if (Process::je_suis_maitre() && log_directory_!="")
+      {
+        Nom mkdir_command("mkdir -p ");
+        mkdir_command += log_directory_;
+        if(system(mkdir_command))
+          {
+            Cerr << "Error while creating directory: " << log_directory_ << "\n";
+            Process::exit();
+          }
+      }
+    Process::barrier(); // Otherwise, non-master processes try to write .log file before mkdir is done
+    Nom filename = log_directory_ + nom_du_cas;
     if (Process::nproc() > 1 && !journal_shared_)
       {
         filename += "_";
@@ -335,12 +348,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
   {
     Nom nomentree = nom_du_cas;
     nomentree+=".data";
-#ifndef NDEBUG
+    /*
+    #ifndef NDEBUG
     if (Process::je_suis_maitre())
       {
         SFichier es("convert_jdd");
       }
-#endif
+    #endif */
     // La verfication est faite maintenant dans LecFicDiffuse_JDD
     // mias je garde les lignes au cas ou
     if (0)
