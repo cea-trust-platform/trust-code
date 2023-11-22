@@ -164,7 +164,7 @@ Une équation est portée par un problème et possède une référence qui permet de r
  \item \underline{Notion d'opérateur} : les opérateurs sont des parties d'une équation. Parmi les opérateurs les plus utilisés, on cite les opérateurs de convection
  et de diffusion.
   
- \item \underline{Notion de milieu} : Description du milieu fluide ou solide qu'on modélise. Le Milieu est associé au problème et aux équations. Parmi les propriétés qui caractérisent le milieu, on a:
+ \item \underline{Notion de milieu} : Description du milieu fluide ou solide qu'on modélise. Le Milieu est défini dans le problème et est connu par les équations. Parmi les propriétés qui caractérisent le milieu, on a:
  \begin{itemize}
  \item la masse volumique,
  \item la diffusivité,
@@ -398,7 +398,7 @@ La variable d'environnement $TRUST_ROOT est le chemin où le logiciel
 TRUST est installé.
 La première instruction sert à initialiser l'environnement TRUST.
 La deuxième instruction génère un fichier configure. Il est important de 
-noter que cette instruction doit être exécuter dans le répertoire
+noter que cette instruction doit être exécutée dans le répertoire
 convection_diffusion.   
 \end{lstlisting}
 \end{itemize}
@@ -409,7 +409,7 @@ La compilation de notre application \texttt{BALTIK} est assez standard. En effet
 $ cd convection_diffusion
 $ ./configure
 
-Il est important de noter que lors du rajout de nouvelles sources dans 
+Il est important de noter que lors de l'ajout de nouvelles sources dans 
 le répertoire src, il est impératif de re-exécuter cette instruction
 pour mettre à jour le fichier Makefile.
 \end{lstlisting}

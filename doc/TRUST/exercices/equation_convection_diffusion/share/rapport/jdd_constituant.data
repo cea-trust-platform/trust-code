@@ -1,5 +1,4 @@
-Constituant_Avec_Vitesse constituant
-Read constituant
+Constituant_Avec_Vitesse
 {
 	coefficient_diffusion  Champ_Uniforme 1 0.001
 	vitesse_convection Champ_Fonc_txyz dom 2 x*t y*t

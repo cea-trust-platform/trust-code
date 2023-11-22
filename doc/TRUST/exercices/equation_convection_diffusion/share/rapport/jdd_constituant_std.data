@@ -1,5 +1,4 @@
-Constituant constituant
-Read constituant
+Constituant
 {
 	coefficient_diffusion  Champ_Uniforme 1 0.001
 }
