@@ -311,7 +311,9 @@ int Modele_turbulence_hyd_base::preparer_calcul()
           Postraitement& post = ref_cast(Postraitement, itr.valeur());
           for (int i = 0; i < post.noms_champs_a_post().size(); i++)
             {
-              if (post.noms_champs_a_post()[i].contient("DISTANCE_PAROI"))
+              // The new global wall distance computation does not use the old method.
+              const Nom& chmp = post.noms_champs_a_post()[i];
+              if (!chmp.contient("DISTANCE_PAROI_GLOBALE") && chmp.contient("DISTANCE_PAROI"))
                 {
                   lire_distance_paroi();
                   contient_distance_paroi = true;
