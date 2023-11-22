@@ -465,7 +465,7 @@ then
    if [ -f /proc/cpuinfo ]
    then
       TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-      # Limitations sur certaines frontales de clusters:
+      # Limitations sur certaines frontales de clusters: sur TGCC, build TRUST/src plante si pas de limite, je met TRUST_NB_PROCS a 8
       if [ -d /ccc ] || [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=8

@@ -78,6 +78,10 @@ for phase in prepare configure make make_check make_install
   then
       option="srun -p compil -A aih@cpu -t 10:00:00 -c 10 --hint=nomultithread "
   fi
+  if [[ $machine_cible = *"orcus-amd-rocky9"* ]] && [ $phase !=  make_check ]
+  then
+      option="module load slurm ; srun -p amdq_milan --qos=1jour -t 10:00:00 -n1 -c 32 "
+  fi
   
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}
   $SSHP ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; $option ./$phase.sh $* 2>&1  " > ${log_phase}

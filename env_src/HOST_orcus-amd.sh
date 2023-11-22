@@ -81,6 +81,12 @@ define_soumission_batch()
    # test   	40		1 heure		40
    # long 	10		14 jours	200
    # visu	20		18 heures
+   # 1jour      30              1 jour
+   # 2jour      20              2 jours
+   # 7jour      15              7 jours
+   # 14jour     10              14 jours
+   # dev        80              20 minutes
+   # debug      70              4 heures
    if [ "$prod" = 1 ] || [ "$NB_PROCS" -gt 40 ]
    then
       qos=normal && cpu=2880 && node=1 # exclusive

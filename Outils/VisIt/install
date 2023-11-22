@@ -76,6 +76,7 @@ then
    [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9 && version=3_1_1
    [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian10 && version=3_1_3
    [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_3
+   [ "`grep 'Debian GNU/Linux 12' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_3
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8 && version=3_1_1
    [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8 && version=3_1_1
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27 && version=3_1_1
@@ -301,8 +302,8 @@ then
       version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
       cd $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/
       rm -f libhdf5.so.9.0.0 libhdf5_hl.so.9.0.0
-      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5.so.103.0.0 libhdf5.so.9.0.0
-      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5_hl.so.100.1.1 libhdf5_hl.so.9.0.0
+      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5.so libhdf5.so.9.0.0
+      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5_hl.so libhdf5_hl.so.9.0.0
       cd -
    fi
    #############
