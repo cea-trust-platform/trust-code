@@ -48,16 +48,16 @@ Example:
 It will write every \textbf{dt\_post \ }the mean, standard deviation and correlation value:
 
 \begin{equation*}
-\begin{matrix}t\text{{\textless}=}t_{\normalsubformula{\text{deb}}}:\hfill\null \\\text{average:
+\begin{matrix}t\text{{\textless}=}t_{\normalsubformula{\text{deb}}}\text{ or }t\text{{\textgreater}=}t_{\normalsubformula{\text{fin}}}:\hfill\null \\\text{average:
 }\overline{P(t)}=0\hfill\null \\\text{std\_deviation: }<P(t)\text{{\textgreater}=}0\hfill\null \\\text{correlation:
-}<U(t).V(t)\text{{\textgreater}=0}\hfill\null \\\text{ }\hfill\null \\t>t_{\normalsubformula{\text{deb}}}:\hfill\null
+}<U(t).V(t)\text{{\textgreater}=0}\hfill\null \\\text{ }\hfill\null \\t>t_{\normalsubformula{\text{deb}}}\text{ and }t<t_{\normalsubformula{\text{fin}}}:\hfill\null
 \\\text{average: }\overline{P(t)}=\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
-t{\underset{t_{\normalsubformula{\text{deb}}}}{\int }}P(t)\normalsubformula{\text{dt}}\hfill\null
+t{\underset{t_{\normalsubformula{\text{deb}}}}{\int }}P(s)\normalsubformula{\text{ds}}\hfill\null
 \\\text{std\_deviation: }<P(t)\text{{\textgreater}=}\sqrt{\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
 t{\underset{t_{\normalsubformula{\text{deb}}}}{\int
-}}\left[P(t)-\overline{P(t)}\right]^2\normalsubformula{\text{dt}}}\hfill\null \\\text{correlation:
+}}\left[P(s)-\overline{P(t)}\right]^2\normalsubformula{\text{ds}}}\hfill\null \\\text{correlation:
 }<U(t).V(t)\text{{\textgreater}=}\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
 t{\underset{t_{\normalsubformula{\text{deb}}}}{\int
-}}\left[U(t)-\overline{U(t)}\right].\left[V(t)-\overline{V(t)}\right]\normalsubformula{\text{dt}}\hfill\null
+}}\left[U(s)-\overline{U(t)}\right].\left[V(s)-\overline{V(t)}\right]\normalsubformula{\text{ds}}\hfill\null
 \end{matrix}\hfill 
 \end{equation*}
