@@ -163,6 +163,7 @@ class UnittestCustomMethodsTrust():
     import xyzpy.classFactoryXyz as CLFX
     import trustpy.trad2_code_gen as T2C
     import trustpy.baseTru as BTRU
+    from trustpy.trust_utilities import import_generated_module
 
     srcdir, currentdir = self._test_dir, os.getcwd()
     pname = os.path.abspath(srcdir + '/' + self._name[slot] + '.py')  # generated file with path in current dir
@@ -173,15 +174,9 @@ class UnittestCustomMethodsTrust():
       if verbose: print("generated file %s" % pname)
     self.append_path(currentdir)
 
-    # Path were module was generated should be in Python path for import to work
-    sys.path.append(os.path.abspath(srcdir))
+    # Import generated module (IMPORTANT: set it at class level, not instance!!)
+    self.__class__._TRUG[slot] = import_generated_module(pname)
 
-    # Import generated module:
-    res = {'res_import': None}
-    cmd = "import %s as res_import" % self._name[slot]
-    exec(cmd, res)  # need '.' as currentdir in PYTHONPATH to get import OK
-
-    self.__class__._TRUG[slot] = res['res_import']  ## Important, set it at class level! Not instance.
     self.assertIsNotNone(self._TRUG[slot])
     self.assertEqual(self._TRUG[slot].__file__, pname)
 

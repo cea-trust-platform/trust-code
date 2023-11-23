@@ -167,6 +167,24 @@ def log_current_name(msg=""):
 import xyzpy.loggingXyz as LOG
 logger = LOG.getLogger()   # used as global
 
+def import_generated_module(mod_path):
+  """ Import a Python module given the path of the correpsonding py file.
+  Returns the module object itself.
+  """
+  import os, sys
+
+  # Import generated module:
+  ze_dir, f = os.path.split(os.path.abspath(mod_path))
+  prevPath = sys.path[:]
+  sys.path.append(ze_dir)
+  mod_nam = os.path.splitext(f)[0]
+  res = {'res_import': None}
+  cmd = "import %s as res_import" % mod_nam
+  exec(cmd, res)  # need '.' as currentdir in PYTHONPATH to get import OK
+  # Restore sys path
+  sys.path = prevPath
+  return res['res_import']
+
 if __name__ == "__main__":
   print("INFO:    hello %s" % __file__)
   pass

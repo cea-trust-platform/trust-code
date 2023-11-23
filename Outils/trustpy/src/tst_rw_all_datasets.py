@@ -66,14 +66,9 @@ class TestCase(unittest.TestCase, UnittestCustomMethodsTrust):
     def test_all(self):
         """ Test all TRUST data files! """
         ok = True
+
         # Import generated module:
-        mod_pth, mod_nam = os.path.split(TestCase.MODULE_NAME)
-        mod_nam = os.path.splitext(mod_nam)[0]
-        sys.path.append(mod_pth)
-        res = {'res_import': None}
-        cmd = "import %s as res_import" % mod_nam
-        exec(cmd, res)  # need '.' as currentdir in PYTHONPATH to get import OK
-        MODGEN = res['res_import']
+        MODGEN = TRUU.import_generated_module(TestCase.MODULE_NAME)
 
         # Init classes:
         BTRU.initXyzClasses()
