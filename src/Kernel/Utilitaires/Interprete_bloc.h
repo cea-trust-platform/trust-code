@@ -42,6 +42,7 @@ public:
   static Interprete_bloc& interprete_courant();
   static Objet_U& objet_global(const Nom& nom);
   static int objet_global_existant(const Nom& nom);
+  inline const Noms& les_noms() const { return les_noms_ ; }
 
 protected:
   // Noms des objets lus dans le bloc:
@@ -49,5 +50,7 @@ protected:
   // Reference a l'interprete courant avant la creation de celui-ci
   REF(Interprete_bloc) pere_;
 };
+
+
 
 #endif
