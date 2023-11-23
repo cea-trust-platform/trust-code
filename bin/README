@@ -121,15 +121,16 @@ to run a calculation
              located in $TRUST_ROOT/bin
        
         syntax : Run_fiche [-help]
-               For jupyter's validation forms (new formalism in v1.9.0):
+               For jupyter's validation forms (new formalism since v1.9.0):
                  A validation_file.ipynb must exist in  $TRUST_ROOT/Validation/Rapports_automatiques/.../.../my_validation_form/
                  my_validation_form should contain src folder with a datafile at least
                  trust -jupyter => to create ipynb file
                  cd $TRUST_ROOT/Validation/Rapports_automatiques/.../.../my_validation_form/
-                 Run_fiche => will open the notebook in a webbrowser
+                 Run_fiche => will open the notebook in a web browser
                  Run_fiche -export_pdf => will create a rapport.pdf in the build directory
+                 Run_fiche -export_tex => will create a rapport.tex in the build directory
 
-               For .prm validation forms:
+               For .prm validation forms (FOR APPLICATIONS BASED ON TRUST ONLY!):
 		 A validation_file.prm must exist in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../my_validation_form/src
                  trust -prm jdd => to create a prm file
                  A rapport.pdf file is created in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../my_validation_form/build

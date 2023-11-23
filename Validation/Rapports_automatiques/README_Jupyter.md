@@ -1,8 +1,7 @@
 # Validation forms using Jupyter notebooks
 
-The validation forms of TRUST can now be either written in the (legacy) PRM format
-or using the Jupyter notebook functionality. This new format will be pushed forward
-in the coming versions of TRUST.
+The validation forms of TRUST are now written using the Jupyter notebook functionality.
+The old (legacy) PRM format is still used by applications based on TRUST (BALTIKS).
 
 A first example (and good starting point) can be run with
 ```sh
@@ -24,7 +23,7 @@ To run a Jupyter validation forms, you need a specific environment:
         source $TRUST_ROOT/env_for_python.sh
 ```
 
-  - finally, you should launch a Jupyter server (typically in this directory)
+  - finally, you should launch a Jupyter server (typically in the following directory)
 ```sh
         cd $TRUST_ROOT/Validation/Rapports_automatiques
         jupyter-notebook
@@ -42,5 +41,10 @@ To run a Jupyter validation forms, you need a specific environment:
   - to directly export the Jupyter notebook into a PDF file, you can do:
 ```sh
         Run_fiche -export_pdf [-not_run]
+```
+
+  - You can export the Jupyter notebook into a TEX file using:
+```sh
+        Run_fiche -export_tex
 ```
 
