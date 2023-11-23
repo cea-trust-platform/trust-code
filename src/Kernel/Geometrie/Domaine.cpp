@@ -50,7 +50,7 @@ Domaine::Domaine() :
   moments_a_imprimer_(0),
   axi1d_(0),
   epsilon_(Objet_U::precision_geom),
-  deformable_(0),
+  deformable_(false),
   volume_total_(-1)
 { }
 
@@ -1896,6 +1896,7 @@ void Domaine::creer_mes_domaines_frontieres(const Domaine_VF& domaine_vf)
   const Nom expr_faces("1");
   int nb_frontieres = nb_front_Cl();
   domaines_frontieres_.vide();
+
   for (int i=0; i<nb_frontieres; i++)
     {
       // Nom de la frontiere

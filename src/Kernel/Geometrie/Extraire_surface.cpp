@@ -74,7 +74,13 @@ Entree& Extraire_surface::interpreter_(Entree& is)
 void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal);
 
 // Extraction d'une ou plusieurs frontieres du domaine volumique selon certaines conditions
+
 void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
+{
+  extraire_surface_without_cleaning(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
+  NettoieNoeuds::nettoie(domaine_surfacique);
+}
+void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
 {
   domaine_surfacique.nommer(nom_domaine_surfacique);
   Parser_U condition_elements,condition_faces;
@@ -273,5 +279,5 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
       }
 
   assert(nb==nb_t);
-  NettoieNoeuds::nettoie(domaine_surfacique);
+
 }
