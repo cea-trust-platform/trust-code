@@ -22,6 +22,9 @@ do
    # For CCRT, we load libgd module since we use -without-conda configure option
    [ "$LIBGD_ROOT" != "" ] && libgd=$LIBGD_ROOT
    [ -d $TRUST_ROOT/exec/python/lib ] && libgd=$TRUST_ROOT/exec/python
+   # Pas clair sur Fedora36, 38 et prochainement sur 39, ne pas prendre libgd de conda:
+   # je teste le .so.3.0.11 car sur rhel 8 (.so.3.0.5) sur rocky 9 (.so.3.0.10)
+   [ -f /usr/lib64/libgd.so.3.0.11 ] && libgd=""
    # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
    sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib?g" ./configure || exit -1
 
