@@ -9,7 +9,7 @@ linux	rsync_ssh	tache	is242981-gpu.intra.cea.fr	-all 		-TrioCFD  			-cuda 		-wit
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD  -GENEPI3  					-clang 		-force_provided_openmpi -without-pdflatex								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 					-semi_opt 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is241762-clang.intra.cea.fr			-TrioCFD -GENEPI3 -C3D                				-clang -force_provided_openmpi -without-pdflatex  					# Fedora 34	Bat 451 LMSF titania 
-linux	rsync_ssh	cible	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex  								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
+linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
 linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex -disable-openblas   							# Fedora 38 	Bat 454 LMEC GF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD  -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania

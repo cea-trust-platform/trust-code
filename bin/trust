@@ -1287,7 +1287,7 @@ else
       exit
    fi
    # MPS and Sserver running, submit jobs with Sserver:
-   [ "$TRUST_USE_CUDA" = 1 ] && [ "`ps aux | grep nvidia-cuda-mps-control | grep -v grep`" != "" ] && [ "`ps aux | grep Sserver | grep -v grep`" != "" ] && TRUST_USE_Sjob=1
+   [ "$TRUST_USE_CUDA" = 1 ] && [ "`ps aux | grep nvidia-cuda-mps-control | grep -v grep`" != "" ] && [ "`ps fux | grep Sserver | grep -v grep`" != "" ] && TRUST_USE_Sjob=1
    # Use Sserver:
    if [ "$TRUST_USE_Sjob" = "1" ] && [ "$nsight" = "" ]
    then

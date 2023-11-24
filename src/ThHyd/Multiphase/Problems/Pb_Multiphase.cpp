@@ -32,8 +32,8 @@ Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
 // XD attr QDM_Multiphase QDM_Multiphase QDM_Multiphase 0 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
 // XD attr Masse_Multiphase Masse_Multiphase Masse_Multiphase 0 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
 // XD attr Energie_Multiphase Energie_Multiphase Energie_Multiphase 0 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
-// XD attr Energie_cinetique_turbulente Energie_cinetique_turbulente Energie_cinetique_turbulente 1 Turbulent kinetic Energy conservation equation for a turbulent mono/multi-phase problem (available in TrioCFD)
 // XD attr Echelle_temporelle_turbulente Echelle_temporelle_turbulente Echelle_temporelle_turbulente 1 Turbulent Dissipation time scale equation for a turbulent mono/multi-phase problem (available in TrioCFD)
+// XD attr Energie_cinetique_turbulente Energie_cinetique_turbulente Energie_cinetique_turbulente 1 Turbulent kinetic Energy conservation equation for a turbulent mono/multi-phase problem (available in TrioCFD)
 // XD attr Energie_cinetique_turbulente_WIT Energie_cinetique_turbulente_WIT Energie_cinetique_turbulente_WIT 1 Bubble Induced Turbulent kinetic Energy equation for a turbulent multi-phase problem (available in TrioCFD)
 // XD attr Taux_dissipation_turbulent Taux_dissipation_turbulent Taux_dissipation_turbulent 1 Turbulent Dissipation frequency equation for a turbulent mono/multi-phase problem (available in TrioCFD)
 

@@ -34,7 +34,8 @@ echo "Creation lance_test modifie ... OK"
 echo "Execution des cas tests ... you can monitor test_complet/lance_out to follow progression ..."
 export PAR_F=0
 # Generate list of tests:
-find $TRUST_TESTS -name '*.lml.gz' -follow -exec basename {} .lml.gz \; > liste_cas_xdata
+find $TRUST_TESTS -name '*.lml.gz' -follow -exec basename {} .lml.gz \; | grep -v "^Align_Multiple_CF_Beams_" > liste_cas_xdata
+# See bttriocfd #228029 for skipped Align_Multiple_CF_Beams_ tests
 echo liste_cas_xdata | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
 lanc=$?
 name=`basename $exec`
