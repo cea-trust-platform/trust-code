@@ -74,6 +74,8 @@ then
       run=1
       # On ne teste pas les cas "# PARALLEL OK #" sauf si update
       [ "`echo $* | grep update`" = "" ] && [ "`grep '# PARALLEL OK #'  */$rep/$rep.data`" != "" ] && run=0
+      # On ne teste pas les cas avec med de partitionnement car pas possible de changer de decoupage sans changer le med
+      [ "`grep -i 'Partition_tool Fichier_MED' */$rep/$rep.data 2>/dev/null`" != "" ] && run=0
       [ ! -f */$rep/$rep.lml.gz ] && run=0
       #
       if [ $run = 1 ]
@@ -146,11 +148,7 @@ export NB_PROCS=0
 while [ $err = 0 ] && [ $NB_PROCS != $MAX_NB_PROCS ]
 do 
    let NB_PROCS=$NB_PROCS+1
-   if [ "`grep -i 'Partition_tool Fichier_MED' $cas'.data' 2>/dev/null`" != "" ]
-   then
-      # si on utilise fichier de partition, pas possible de changer le nombre de procs
-      let NB_PROCS=$MAX_NB_PROCS
-   fi
+
    # On prepare
    if [ -f prepare ]
    then

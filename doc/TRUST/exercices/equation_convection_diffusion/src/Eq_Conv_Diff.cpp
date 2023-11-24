@@ -31,7 +31,6 @@ int Eq_Conv_Diff::lire_motcle_non_standard(const Motcle& mot,Entree& is)
       Cout << mot << finl;
       return Convection_Diffusion_Concentration::lire_motcle_non_standard(mot,is);
     }
-  return 1;
 }
 
 void Eq_Conv_Diff::associer_milieu_base(const Milieu_base& un_milieu)
