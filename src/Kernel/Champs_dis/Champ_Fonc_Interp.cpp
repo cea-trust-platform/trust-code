@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Discretisation_tools.h>
 #include <Champ_Fonc_Interp.h>
 #include <TRUSTTab_parts.h>
 #include <Comm_Group_MPI.h>
@@ -29,12 +30,13 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   using namespace MEDCoupling;
 
   Param param(que_suis_je());
-  Nom nom_pb_loc, nom_pb_dist, nom_dom_loc, nom_dom_dist, nat;
+  Nom nom_pb_loc, nom_pb_dist, nom_dom_loc, nom_dom_dist, nat, loc_trgt;
   param.ajouter("nom_champ", &nom_, Param::REQUIRED); // XD_ADD_P chaine Name of the field (for example: temperature).
   param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED); // XD_ADD_P chaine Name of the local problem.
   param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED); // XD_ADD_P chaine Name of the distant problem.
   param.ajouter("dom_loc", &nom_dom_loc); // XD_ADD_P chaine Name of the local domain.
   param.ajouter("dom_dist", &nom_dom_dist); // XD_ADD_P chaine Name of the distant domain.
+  param.ajouter("loc_target", &loc_trgt); // XD_ADD_P chaine Location of the target field, ie: ELEM or FACE.
   param.ajouter("default_value", &default_value_); // XD_ADD_P chaine Name of the distant domain.
   param.ajouter("nature", &nat, Param::REQUIRED); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.lire_avec_accolades_depuis(is);
@@ -45,6 +47,16 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   else dom_loc_ = ref_cast(Domaine, Interprete::objet(nom_dom_loc));
   if (nom_dom_dist == "??") dom_dist_ = pb_dist_->domaine();
   else dom_dist_ = ref_cast(Domaine, Interprete::objet(nom_dom_dist));
+
+  if (loc_trgt == "??") is_elem_trgt_ = true;
+  else if (Motcle(loc_trgt) == "ELEM") is_elem_trgt_ = true;
+  else if (Motcle(loc_trgt) == "FACE") is_elem_trgt_ = false;
+  else
+    {
+      Cerr << "Champ_Front_Interp : wrong loc_target read : " << Motcle(loc_trgt) << finl;
+      Cerr << "It should be either ELEM or FACE !" << finl;
+      Process::exit();
+    }
 
   if (nat == "IntensiveMaximum") nature_ = IntensiveMaximum;
   else if (nat == "IntensiveConservation") nature_ = IntensiveConservation;
@@ -66,8 +78,21 @@ int Champ_Fonc_Interp::initialiser(double temps)
 {
   const int ok = Champ_Fonc_P0_base::initialiser(temps);
   nb_compo_ = pb_dist_->get_champ(le_nom()).valeurs().line_size();
-  valeurs_.resize(0, nb_compo_);
-  dom_loc_->creer_tableau_elements(valeurs_);
+
+  if (is_elem_trgt_)
+    {
+      valeurs_.resize(0, nb_compo_);
+      dom_loc_->creer_tableau_elements(valeurs_);
+    }
+  else
+    {
+      Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis().valeur());
+      valeurs_.resize(dvf.nb_faces(), nb_compo_);
+      dvf.creer_tableau_faces(valeurs_);
+      valeurs_elem_.resize(0, nb_compo_);
+      dom_loc_->creer_tableau_elements(valeurs_elem_);
+    }
+
   is_initialized_ = true;
   return ok;
 }
@@ -112,10 +137,28 @@ void Champ_Fonc_Interp::update_fields()
   ConstDoubleTab_parts local_parts(valeurs()), distant_parts(distant_values);
 
   if (local_field_ == nullptr) init_fields();
-  local_array_->useExternalArrayWithRWAccess(valeurs().addr(), local_parts[0].dimension(0), nb_compo_);
+
+  // Target Stuff
+  if (is_elem_trgt_)
+    local_array_->useExternalArrayWithRWAccess(valeurs().addr(), local_parts[0].dimension(0), nb_compo_);
+  else
+    local_array_->useExternalArrayWithRWAccess(valeurs_elem_.addr(), valeurs_elem_.dimension(0), nb_compo_);
+
   local_field_->setArray(local_array_);
 
-  distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
+  // Source Stuff
+  if (distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot()) // HOHOHO
+    {
+      DoubleTab convert2elem;
+      convert2elem.resize(0, distant_parts[0].line_size());
+      dom_dist_->creer_tableau_elements(convert2elem);
+      const Domaine_VF& dvf = ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur());
+      Discretisation_tools::faces_to_cells(dvf, distant_parts[0], convert2elem);
+      distant_array_->useArray(convert2elem.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, convert2elem.dimension(0), distant_parts[0].line_size());
+    }
+  else
+    distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
+
   distant_field_->setArray(distant_array_);
 #endif
 }
@@ -153,5 +196,14 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
       update_fields();
       rmp->transfer(distant_field_, local_field_, default_value_);
     }
+
+  // Put values on faces !
+  if (!is_elem_trgt_)
+    {
+      const Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis().valeur());
+      assert (dvf.que_suis_je() == "Domaine_VEF");
+      Discretisation_tools::cells_to_faces(dvf, valeurs_elem_, valeurs());
+    }
+
 #endif
 }

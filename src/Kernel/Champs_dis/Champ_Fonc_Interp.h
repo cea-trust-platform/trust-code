@@ -37,8 +37,9 @@ protected:
   void update_fields();
   REF(Probleme_base) pb_loc_, pb_dist_;
   REF(Domaine) dom_loc_, dom_dist_;
-  bool is_initialized_ = false;
+  bool is_initialized_ = false, is_elem_trgt_ = true /* par default aux elems */;
   double default_value_ = DMAXFLOAT;
+  DoubleTab valeurs_elem_;
 
 #ifdef MEDCOUPLING_
   MEDCoupling::NatureOfField nature_;
