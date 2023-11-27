@@ -51,6 +51,7 @@ protected:
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
   Champ_Don himp_,Text_;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  int initialiser(double temps) override;
 
 };
 

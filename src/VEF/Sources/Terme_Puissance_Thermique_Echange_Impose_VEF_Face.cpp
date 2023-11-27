@@ -15,6 +15,7 @@
 
 #include <Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h>
 #include <Fluide_Incompressible.h>
+#include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
@@ -22,19 +23,10 @@
 
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_VEF_Face,"Terme_Puissance_Thermique_Echange_Impose_VEF_P1NC",Source_base);
 
-
-
-//// printOn
-//
-
 Sortie& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
-
-
-//// readOn
-//
 
 Entree& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::readOn(Entree& s )
 {
@@ -90,15 +82,6 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
   himp_.mettre_a_jour(temps);
   Text_.mettre_a_jour(temps);
 }
-
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe Terme_Puissance_Thermique_Echange_Impose_VEF_Face
-//
-////////////////////////////////////////////////////////////////////
 
 void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
                                                                           const Domaine_Cl_dis& domaine_Cl_dis)
@@ -199,4 +182,15 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::contribuer_a_avec(const 
       matrice(num_face,num_face) += hm* vol;
 
     }
+}
+
+int Terme_Puissance_Thermique_Echange_Impose_VEF_Face::initialiser(double temps)
+{
+  Nom nom_Himp = himp_->le_nom() != "??" ? himp_->le_nom() : "Himp";
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), nom_Himp, "", himp_.valeur(), equation().probleme());
+  Nom nom_Text = Text_->le_nom() != "??" ? Text_->le_nom() : "Text";
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), nom_Text, "", Text_.valeur(), equation().probleme());
+  himp_->initialiser(temps);
+  Text_->initialiser(temps);
+  return Source_base::initialiser(temps);
 }
