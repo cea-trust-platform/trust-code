@@ -413,10 +413,11 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::test_coeffs_common(const int fac1, const int 
 {
   DoubleTab inco_pert = inconnue->valeurs();
 
-  inco_pert(fac4) += EPS; // XXX : ATTENTION SIGNE
+  const int ncomp = flux_p.size_array();
+  for (int k = 0; k < ncomp; k++)  inco_pert(fac4,k) += EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,fac4,flux_p);
 
-  inco_pert(fac4) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++)  inco_pert(fac4,k) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,fac4,flux_m);
 }
 
@@ -426,10 +427,12 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::test_coeffs_common(const int fac1, const int 
 {
   DoubleTab inco_pert = inconnue->valeurs();
 
-  inco_pert(fac3) -= EPS; // XXX : ATTENTION SIGNE
+  const int ncomp = flux_p.size_array();
+  for (int k = 0; k < ncomp; k++)  inco_pert(fac3,k) -= EPS; // XXX : ATTENTION SIGNE
+
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,flux_p);
 
-  inco_pert(fac3) += 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac3,k) += 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,flux_m);
 }
 
@@ -440,19 +443,21 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::test_coeffs_common(const int fac1, const int 
   DoubleTab inco_pert = inconnue->valeurs();
   Type_Double poubelle(flux_p3.size_array());
 
+  const int ncomp = flux_p3.size_array();
+
   // pour flux3
-  inco_pert(fac3) -= EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac3,k) -= EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,flux_p3,poubelle);
 
-  inco_pert(fac3) += 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac3,k) += 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,flux_m3,poubelle);
 
   // pour flux1_2
   inco_pert = inconnue->valeurs(); // back to real values
-  inco_pert(fac2) += EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac2,k) += EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,poubelle,flux_p12);
 
-  inco_pert(fac2) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++)  inco_pert(fac2,k) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,signe,poubelle,flux_m12);
 }
 
@@ -462,11 +467,12 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::test_coeffs_common(const int fac1, const int 
 {
   DoubleTab inco_pert = inconnue->valeurs();
   Type_Double poubelle(flux_p.size_array());
+  const int ncomp = flux_p.size_array();
 
-  inco_pert(fac4) += EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac4,k) += EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,fac4,flux_p,poubelle);
 
-  inco_pert(fac4) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac4,k) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_arete<Arete_Type,Type_Double>(inco_pert,nullptr,fac1,fac2,fac3,fac4,flux_m,poubelle);
 }
 
@@ -477,10 +483,10 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::test_coeffs_fa7(const int elem, const int fac
   Type_Double flux_p(ncomp), flux_m(ncomp);
   DoubleTab inco_pert = inconnue->valeurs();
 
-  inco_pert(fac2) += EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac2,k) += EPS; // XXX : ATTENTION SIGNE
   flux_fa7<Fa7_Type,Type_Double>(inco_pert,nullptr,elem,fac1,fac2,flux_p);
 
-  inco_pert(fac2) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
+  for (int k = 0; k < ncomp; k++) inco_pert(fac2,k) -= 2.0 * EPS; // XXX : ATTENTION SIGNE
   flux_fa7<Fa7_Type,Type_Double>(inco_pert,nullptr,elem,fac1,fac2,flux_m);
 
   check_error<Type_Double>(__func__,(int)Fa7_Type,ncomp,f1,flux_p,flux_m);
