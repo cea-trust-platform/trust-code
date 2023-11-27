@@ -15,6 +15,7 @@
 
 #include <Champ_Fonc_Interp.h>
 #include <TRUSTTab_parts.h>
+#include <Comm_Group_MPI.h>
 #include <Param.h>
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
@@ -78,12 +79,26 @@ void Champ_Fonc_Interp::init_fields()
 
   local_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
   local_array_ = DataArrayDouble::New();
-  local_field_->setMesh(dom_loc_->get_mc_mesh());
+  // XXX Pb with MEDCoupling : OvelapDEC seems to modify the meshes ...
+  if (Process::nproc() > 1)
+    {
+      MCAuto<MEDCouplingUMesh> msh_cpy = dom_loc_->get_mc_mesh()->deepCopy();
+      local_field_->setMesh(msh_cpy);
+    }
+  else
+    local_field_->setMesh(dom_loc_->get_mc_mesh());
   local_field_->setNature(nature_);
 
   distant_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
   distant_array_ = DataArrayDouble::New();
-  distant_field_->setMesh(dom_dist_->get_mc_mesh());
+  // XXX Pb with MEDCoupling : OvelapDEC seems to modify the meshes ...
+  if (Process::nproc() > 1)
+    {
+      MCAuto<MEDCouplingUMesh> msh_cpy = dom_dist_->get_mc_mesh()->deepCopy();
+      distant_field_->setMesh(msh_cpy);
+    }
+  else
+    distant_field_->setMesh(dom_dist_->get_mc_mesh());
   distant_field_->setNature(nature_);
 #endif
 }
@@ -111,9 +126,32 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   Champ_Fonc_P0_base::mettre_a_jour(t);
   if (!is_initialized_) return;
 
-  MEDCouplingRemapper *rmp = dom_loc_->get_remapper(dom_dist_.valeur());
+  if (Process::nproc() > 1)
+    {
+      std::set<int> pcs;
+      for (int i=0; i<Process::nproc(); i++) pcs.insert(i);
 
-  update_fields();
-  rmp->transfer(distant_field_, local_field_, default_value_);
+      if (! is_dec_initialized_)
+        dec_ = std::make_shared<MEDCoupling::OverlapDEC>(pcs, ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_trio_u_world());
+
+      if (dom_loc_->get_mc_mesh() == nullptr) dom_loc_->build_mc_mesh();
+      if (dom_dist_->get_mc_mesh() == nullptr) dom_dist_->build_mc_mesh();
+
+      update_fields();
+      if (! is_dec_initialized_)
+        {
+          dec_->attachSourceLocalField(distant_field_);
+          dec_->attachTargetLocalField(local_field_);
+          dec_->synchronize();
+          is_dec_initialized_ = true;
+        }
+      dec_->sendRecvData(true);
+    }
+  else
+    {
+      MEDCouplingRemapper *rmp = dom_loc_->get_remapper(dom_dist_.valeur());
+      update_fields();
+      rmp->transfer(distant_field_, local_field_, default_value_);
+    }
 #endif
 }
