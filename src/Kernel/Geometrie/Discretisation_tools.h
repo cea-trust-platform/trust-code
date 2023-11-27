@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,26 +16,26 @@
 #ifndef Discretisation_tools_included
 #define Discretisation_tools_included
 
+#include <TRUSTTabs_forward.h>
 class Champ_base;
+class Domaine_VF;
 
 /*! @brief : class Discretisation_tools
  *
- *  <Description of class Discretisation_tools>
- *
- *
+ *  Useful interpolation methods !
  *
  */
 
 class Discretisation_tools
 {
-
-
 public :
   static void nodes_to_cells(const Champ_base& Hn,  Champ_base& He);
   static void cells_to_nodes(const Champ_base& He,  Champ_base& Hn);
   static void faces_to_cells(const Champ_base& Hf,  Champ_base& He);
   static void cells_to_faces(const Champ_base& He,  Champ_base& Hf);
-protected :
+
+  static void cells_to_faces(const Domaine_VF& , const DoubleTab& , DoubleTab& );
+  static void faces_to_cells(const Domaine_VF& , const DoubleTab& , DoubleTab& );
 
 };
 

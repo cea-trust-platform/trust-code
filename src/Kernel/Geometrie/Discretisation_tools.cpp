@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <Discretisation_tools.h>
-#include <TRUSTTrav.h>
+#include <Check_espace_virtuel.h>
 #include <Champ_base.h>
 #include <Domaine_VF.h>
-#include <Debog.h>
-#include <Check_espace_virtuel.h>
+#include <TRUSTTrav.h>
 #include <Device.h>
+#include <Debog.h>
 
 void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
@@ -210,5 +210,47 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   Debog::verifier("element_face sortie",tabHf);
 }
 
+void Discretisation_tools::cells_to_faces(const Domaine_VF& dom_vf, const DoubleTab& tab_elem, DoubleTab& tab_face)
+{
+  const DoubleVect& vol = dom_vf.volumes(), &volumes_entrelaces = dom_vf.volumes_entrelaces();
+  const IntTab& elem_faces = dom_vf.elem_faces();
+  const int nb_face_elem = elem_faces.line_size(), nb_comp = tab_face.line_size();
 
+  assert(tab_elem.dimension_tot(0) == dom_vf.nb_elem_tot() && tab_face.dimension_tot(0) == dom_vf.nb_faces_tot());
+  assert(tab_elem.line_size() == nb_comp);
+  assert (dom_vf.que_suis_je() == "Domaine_VEF"); // TODO FIXME
+  tab_face = 0.;
+  for (int ele = 0; ele < dom_vf.nb_elem(); ele++)
+    for (int s = 0; s < nb_face_elem; s++)
+      {
+        const int face = elem_faces(ele, s);
+        for (int comp = 0; comp < nb_comp; comp++)
+          tab_face(face, comp) += tab_elem(ele, comp) * vol(ele);
+      }
 
+  for (int f = 0; f < dom_vf.nb_faces(); f++)
+    for (int comp = 0; comp < nb_comp; comp++)
+      tab_face(f, comp) /= volumes_entrelaces(f) * nb_face_elem;
+
+  tab_face.echange_espace_virtuel();
+}
+
+void Discretisation_tools::faces_to_cells(const Domaine_VF& domaine_vf, const DoubleTab& tab_face, DoubleTab& tab_elem)
+{
+  const IntTab& elem_faces = domaine_vf.elem_faces();
+  const int nb_face_elem = elem_faces.dimension(1), nb_elem = domaine_vf.nb_elem(), nb_comp = tab_face.line_size();;
+  assert(tab_elem.dimension_tot(0) == domaine_vf.nb_elem_tot() && tab_face.dimension_tot(0) == domaine_vf.nb_faces_tot());
+  assert(tab_elem.line_size() == nb_comp);
+
+  tab_elem = 0;
+
+  for (int ele = 0; ele < nb_elem; ele++)
+    for (int comp = 0; comp < nb_comp; comp++)
+      for (int s = 0; s < nb_face_elem; s++)
+        tab_elem(ele, comp) += tab_face(elem_faces(ele, s), comp);
+
+  double inv_nb_face_elem = 1. / nb_face_elem;
+  tab_elem *= inv_nb_face_elem;
+
+  tab_elem.echange_espace_virtuel();
+}
