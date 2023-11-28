@@ -13,44 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_Interp_included
-#define Champ_Fonc_Interp_included
+#ifndef Option_Interpolation_included
+#define Option_Interpolation_included
 
-#include <Champ_Fonc_P0_base.h>
-#include <Probleme_base.h>
+#include <Interprete.h>
 
-#ifdef MEDCOUPLING_
-#include <MEDCouplingFieldDouble.hxx>
-#include <MEDCouplingRemapper.hxx>
-#include <OverlapDEC.hxx>
-#endif
+class Motcle;
 
-class Champ_Fonc_Interp : public Champ_Fonc_P0_base
+class Option_Interpolation: public Interprete
 {
-  Declare_instanciable_sans_destructeur(Champ_Fonc_Interp);
+  Declare_instanciable(Option_Interpolation);
 public:
-  virtual ~Champ_Fonc_Interp();
-  int initialiser(double ) override;
-  void mettre_a_jour(double) override;
-
-protected:
-  void init_fields();
-  void update_fields();
-  REF(Probleme_base) pb_loc_, pb_dist_;
-  REF(Domaine) dom_loc_, dom_dist_;
-  bool is_initialized_ = false, is_elem_trgt_ = true /* par default aux elems */;
-  int use_dec_ = -123, sharing_algo_ = -123;
-  double default_value_ = DMAXFLOAT;
-  DoubleTab valeurs_elem_, valeurs_faces_elem_;
-
-#ifdef MEDCOUPLING_
-  MEDCoupling::NatureOfField nature_;
-  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> local_field_, distant_field_;
-  MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> local_array_, distant_array_;
-  std::shared_ptr<MEDCoupling::OverlapDEC> dec_ = nullptr;
-  bool is_dec_initialized_ = false;
-  bool verbose_ = false;
-#endif
+  Entree& interpreter(Entree&) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  static int USE_DEC, SHARING_ALGO;
 };
 
-#endif /* Champ_Fonc_Interp_included */
+#endif /* Option_Interpolation_included */

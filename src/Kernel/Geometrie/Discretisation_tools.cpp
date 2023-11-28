@@ -220,7 +220,7 @@ void Discretisation_tools::cells_to_faces(const Domaine_VF& dom_vf, const Double
   assert(tab_elem.line_size() == nb_comp);
   assert (dom_vf.que_suis_je() == "Domaine_VEF"); // TODO FIXME
   tab_face = 0.;
-  for (int ele = 0; ele < dom_vf.nb_elem(); ele++)
+  for (int ele = 0; ele < dom_vf.nb_elem_tot(); ele++)
     for (int s = 0; s < nb_face_elem; s++)
       {
         const int face = elem_faces(ele, s);

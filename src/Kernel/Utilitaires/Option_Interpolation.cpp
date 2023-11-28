@@ -13,44 +13,50 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_Interp_included
-#define Champ_Fonc_Interp_included
+#include <Option_Interpolation.h>
+#include <Motcle.h>
+#include <Param.h>
 
-#include <Champ_Fonc_P0_base.h>
-#include <Probleme_base.h>
+Implemente_instanciable(Option_Interpolation, "Option_Interpolation", Interprete);
+// XD Option_Interpolation interprete Option_Interpolation 1 Class for interpolation fields using MEDCoupling.
 
-#ifdef MEDCOUPLING_
-#include <MEDCouplingFieldDouble.hxx>
-#include <MEDCouplingRemapper.hxx>
-#include <OverlapDEC.hxx>
-#endif
+int Option_Interpolation::USE_DEC = 1;
+int Option_Interpolation::SHARING_ALGO = 0;
 
-class Champ_Fonc_Interp : public Champ_Fonc_P0_base
+Sortie& Option_Interpolation::printOn(Sortie& os) const { return Interprete::printOn(os); }
+Entree& Option_Interpolation::readOn(Entree& is) { return Interprete::readOn(is); }
+
+Entree& Option_Interpolation::interpreter(Entree& is)
 {
-  Declare_instanciable_sans_destructeur(Champ_Fonc_Interp);
-public:
-  virtual ~Champ_Fonc_Interp();
-  int initialiser(double ) override;
-  void mettre_a_jour(double) override;
+  Param param(que_suis_je());
+  param.ajouter_non_std("sans_dec|without_dec", (this)); // XD_ADD_P rien Use remapper even for a parallel calculation
+  param.ajouter_non_std("sharing_algo", (this)); // XD_ADD_P entier Setting the DEC sharing algo : 0,1,2
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
-protected:
-  void init_fields();
-  void update_fields();
-  REF(Probleme_base) pb_loc_, pb_dist_;
-  REF(Domaine) dom_loc_, dom_dist_;
-  bool is_initialized_ = false, is_elem_trgt_ = true /* par default aux elems */;
-  int use_dec_ = -123, sharing_algo_ = -123;
-  double default_value_ = DMAXFLOAT;
-  DoubleTab valeurs_elem_, valeurs_faces_elem_;
+int Option_Interpolation::lire_motcle_non_standard(const Motcle& mot_cle, Entree& is)
+{
+  int val, retval = 1;
+  if (mot_cle == "sharing_algo")
+    {
+      is >> val;
 
-#ifdef MEDCOUPLING_
-  MEDCoupling::NatureOfField nature_;
-  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> local_field_, distant_field_;
-  MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> local_array_, distant_array_;
-  std::shared_ptr<MEDCoupling::OverlapDEC> dec_ = nullptr;
-  bool is_dec_initialized_ = false;
-  bool verbose_ = false;
-#endif
-};
+      if (val < 0 || val > 2)
+        {
+          Cerr << "Option_Interpolation : wrong sharing_algo read : " << val << finl;
+          Cerr << "Available values are 0, 1 or 2 ! See the MEDCoupling Doc ! " << finl;
+          Process::exit();
+        }
+      SHARING_ALGO = val;
+    }
+  else if (mot_cle == "sans_dec" || mot_cle == "without_dec") /* for experts only ;) */
+    {
+      Cerr << "Forcing the usage of MEDCouplingRemapper ! " << finl;
+      USE_DEC = 0;
+    }
+  else
+    retval = -1;
 
-#endif /* Champ_Fonc_Interp_included */
+  return retval;
+}
