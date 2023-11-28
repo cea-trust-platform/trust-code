@@ -2,10 +2,11 @@
 dimension 2
 pb_conduction pbt1
 pb_conduction pbt2
-Domaine dom
+Domaine dom1
+Domaine dom2
 
 # BEGIN MESH #
-Mailler dom
+Mailler dom1
 {
     Pave Cavite
     {
@@ -20,27 +21,56 @@ Mailler dom
         bord droite X = 2  0 <= Y <= 2
     }
 }
+$option_maillage1
+Mailler dom2
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds $N $N
+        Longueurs 2 2
+    }
+    {
+        bord gauche X = 0  0 <= Y <= 2
+        bord haut   Y = 2  0 <= X <= 2
+        bord bas    Y = 0  0 <= X <= 2
+        bord droite X = 2  0 <= Y <= 2
+    }
+}
+trianguler_h dom2
+$option_maillage2
 # END MESH #
 
 # BEGIN PARTITION
-Decouper dom
+Decouper dom1
 {
     partitionneur metis { nb_parts 2 }
     nb_parts_tot 2
     Larg_joint 2
-    Nom_Zones dom
+    Nom_Zones dom1
+    ecrire_med dom1.med
+}
+Decouper dom2
+{
+    $part
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom2
+    ecrire_med dom2.med
 }
 Fin
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter dom.Zones dom
+Scatter dom1.Zones dom1
+Scatter dom2.Zones dom2
 END SCATTER #
 
 Scheme_euler_implicit sch
 Read sch
 {
     tinit 0
+    tmax 50
     dt_max 1
     facsec 1e30
     facsec_max 1e30
@@ -53,15 +83,20 @@ Read sch
     }
 }
 
-PolyMAC_P0P1NC dis
+PolyMAC_P0P1NC dis_P
+VEFPreP1B dis_V
 
-associate pbt1 dom
-associate pbt2 dom
+
+associate pbt1 dom1
+associate pbt2 dom2
 probleme_couple pb
 Associate pb pbt1
 Associate pb pbt2
 Associate pb sch
-Discretize pb dis
+Discretize pbt1 dis_P
+Discretize pbt2 dis_V
+
+option_interpolation { sharing_algo 1 $dec }
 
 Read pbt1
 {
@@ -89,7 +124,7 @@ Read pbt1
             terme_puissance_thermique_echange_impose
             {
                 himp  champ_uniforme  1  1e6
-                Text  champ_fonc_fonction pbt2 temperature 1 val
+                Text  champ_fonc_interp { pb_loc pbt1 pb_dist pbt2 nom_champ temperature_elem_dom2 nature IntensiveMaximum }
             }
         }
     }
@@ -136,7 +171,7 @@ Read pbt2
             terme_puissance_thermique_echange_impose
             {
                 himp  champ_uniforme  1  1e6
-                Text  champ_fonc_fonction pbt1 temperature 1 val
+                Text  champ_fonc_interp { pb_loc pbt2 pb_dist pbt1 nom_champ temperature nature IntensiveMaximum }
             }
         }
     }

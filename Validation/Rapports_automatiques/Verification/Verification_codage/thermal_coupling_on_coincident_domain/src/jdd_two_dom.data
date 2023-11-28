@@ -1,4 +1,4 @@
-# PARALLEL NOT #
+# PARALLEL OK #
 dimension 2
 pb_conduction pbt1
 pb_conduction pbt2
@@ -11,7 +11,7 @@ Mailler dom1
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 31 31
+        Nombre_de_Noeuds $N $N
         Longueurs 2 2
     }
     {
@@ -36,6 +36,7 @@ Mailler dom2
         bord droite X = 2  0 <= Y <= 2
     }
 }
+$option_maillage_t
 # END MESH #
 
 # BEGIN PARTITION
@@ -45,13 +46,15 @@ Decouper dom1
     nb_parts_tot 2
     Larg_joint 2
     Nom_Zones dom1
+    ecrire_med dom1.med
 }
 Decouper dom2
 {
-    partitionneur metis { nb_parts 2 }
+    $part
     nb_parts_tot 2
     Larg_joint 2
     Nom_Zones dom2
+    ecrire_med dom2.med
 }
 Fin
 END PARTITION #
@@ -86,6 +89,8 @@ Associate pb pbt1
 Associate pb pbt2
 Associate pb sch
 Discretize pb dis
+
+option_interpolation { sharing_algo 1 $dec }
 
 Read pbt1
 {
