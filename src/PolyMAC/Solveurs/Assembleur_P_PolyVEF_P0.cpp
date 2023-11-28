@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,11 +36,11 @@
 #include <Debog.h>
 #include <Piso.h>
 
-Implemente_instanciable(Assembleur_P_PolyVEF_P0, "Assembleur_P_PolyVEF_P0", Assembleur_P_PolyVEF_P0P1NC);
+Implemente_instanciable(Assembleur_P_PolyVEF_P0, "Assembleur_P_PolyVEF_P0", Assembleur_P_PolyMAC_P0P1NC);
 
 Sortie& Assembleur_P_PolyVEF_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Assembleur_P_PolyVEF_P0::readOn(Entree& s) { return Assembleur_P_PolyVEF_P0P1NC::readOn(s); }
+Entree& Assembleur_P_PolyVEF_P0::readOn(Entree& s) { return Assembleur_P_PolyMAC_P0P1NC::readOn(s); }
 
 int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
 {
@@ -53,7 +53,7 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   const Op_Grad_PolyVEF_P0_Face& grad = ref_cast(Op_Grad_PolyVEF_P0_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c, &nf = dom.face_normales();
-  const IntTab& f_e = dom.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e, &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const IntTab& f_e = dom.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e, &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, j, e, eb, f, fb, ne = dom.nb_elem(), ne_tot = dom.nb_elem_tot(), nfb_tot = dom.nb_faces_bord_tot(), d, D = dimension;
 
@@ -67,7 +67,6 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   if (!stencil_done)
     {
       IntTrav stencil(0, 2);
-      stencil.set_smart_resize(1);
       for (f = 0; f < dom.nb_faces(); f++)
         for (i = 0; i < 2; i++)
           if ((e = f_e(f, i)) >= 0  ? e < ne : fcl(f, 0) != 1)
@@ -112,11 +111,10 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
 /* equation sum_k alpha_k = 1 en Pb_Multiphase */
 void Assembleur_P_PolyVEF_P0::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue()).fcl();
   int e, f, d, D = dimension, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), m, M = equation().get_champ("pression").valeurs().line_size(),
                ne_tot = le_dom_PolyMAC->nb_elem_tot(), nfb_tot = le_dom_PolyMAC->nb_faces_bord_tot();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
-  sten_a.set_smart_resize(1), sten_p.set_smart_resize(1), sten_v.set_smart_resize(1);
   /* elements : sum alpha = 1 */
   if (!aux_only)
     for (e = 0; e < le_dom_PolyMAC->nb_elem(); e++)
@@ -133,20 +131,20 @@ void Assembleur_P_PolyVEF_P0::dimensionner_continuite(matrices_t matrices, int a
   tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
   if (!aux_only) Matrix_tools::allocate_morse_matrix(ne_tot + nfb_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
   Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nfb_tot), M * (ne_tot + nfb_tot), sten_p, *matrices.at("pression"));
-  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nfb_tot), equation().inconnue()->valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nfb_tot), equation().inconnue().valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
 }
 
 void Assembleur_P_PolyVEF_P0::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   const Domaine_PolyMAC& dom = le_dom_PolyMAC.valeur();
-  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
-                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : NULL, &nf = dom.face_normales();
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &f_e = dom.face_voisins();
+  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = dom.face_normales();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue()).fcl(), &f_e = dom.face_voisins();
   const DoubleVect& ve = dom.volumes(), &pe = equation().milieu().porosite_elem();
   int e, f, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = dom.nb_elem_tot();
-  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav fac(N);
   double ar_tot;
   secmem = 0, fac = 1;
