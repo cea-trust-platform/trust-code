@@ -13,14 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
-#define Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
+#ifndef Portance_interfaciale_PolyVEF_P0_included
+#define Portance_interfaciale_PolyVEF_P0_included
 
-#include <Op_Evanescence_Homogene_Face_base.h>
+#include <Source_Portance_interfaciale_base.h>
 
-class Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face: public Op_Evanescence_Homogene_Face_base
+class Portance_interfaciale_PolyVEF_P0: public Source_Portance_interfaciale_base
 {
-  Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face);
+  Declare_instanciable(Portance_interfaciale_PolyVEF_P0);
+public:
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void mettre_a_jour(double temps) override ;
 };
 
-#endif /* Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included */
+#endif /* Portance_interfaciale_PolyVEF_P0_included */
