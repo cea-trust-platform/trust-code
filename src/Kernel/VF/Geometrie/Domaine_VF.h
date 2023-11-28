@@ -444,6 +444,15 @@ inline Frontiere_dis_base& Domaine_VF::frontiere_dis(int i)
   return les_bords_[i];
 }
 
+/*! @brief renvoie le nombre total de faces sur lesquelles sont appliquees les conditions limites :
+ *
+ *  bords, raccords, plaques.
+ *
+ */
+inline int Domaine_VF::nb_faces_bord_tot() const
+{
+  return md_vector_faces_bord()->get_nb_items_tot();
+}
 
 inline const IntVect& Domaine_VF::orientation() const
 {
