@@ -796,16 +796,6 @@ const DoubleTab& Domaine_VF::xv_bord() const
   return xv_bord_;
 }
 
-/*! @brief renvoie le nombre total de faces sur lesquelles sont appliquees les conditions limites :
- *
- *  bords, raccords, plaques.
- *
- */
-inline int Domaine_VF::nb_faces_bord_tot() const
-{
-  return md_vector_faces_bord()->get_nb_items_tot();
-}
-
 /*! @brief calcul le tableau xgr pour le calcul des moments des forces aux bords :
  *
  *
@@ -1024,3 +1014,5 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim)
   dist_paroi_initialisee_ = 1;
   Cerr <<"Initialize the y table " << domaine_.domaine().le_nom();
 }
+
+
