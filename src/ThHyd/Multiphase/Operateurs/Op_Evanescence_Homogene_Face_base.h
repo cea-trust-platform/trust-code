@@ -39,7 +39,6 @@ protected:
   virtual void calc_grad_alpha_faces(DoubleTab&) const {Process::exit(que_suis_je() + " : calc_grad_alpha_faces is not defined !");};
   virtual void calc_vort_faces(DoubleTab&) const {Process::exit(que_suis_je() + " : calc_grad_alpha_faces is not defined !");};
 
-private:
   virtual void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const { /* Do nothing */ }
   virtual void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab&) const { /* Do nothing */ }
 };

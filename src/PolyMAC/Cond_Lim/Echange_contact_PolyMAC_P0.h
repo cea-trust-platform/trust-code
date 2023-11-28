@@ -60,4 +60,5 @@ public :
 protected :
   Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
 };
+
 #endif
