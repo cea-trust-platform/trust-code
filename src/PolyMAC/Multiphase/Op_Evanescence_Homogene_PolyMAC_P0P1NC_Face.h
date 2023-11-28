@@ -21,9 +21,6 @@
 class Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face: public Op_Evanescence_Homogene_Face_base
 {
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face);
-protected:
-  void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override { /* Do nothing */ }
-  void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override { /* Do nothing */ }
 };
 
 #endif /* Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included */

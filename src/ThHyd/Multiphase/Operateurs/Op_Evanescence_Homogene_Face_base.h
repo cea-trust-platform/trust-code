@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,8 @@ protected:
   virtual void calc_vort_faces(DoubleTab&) const {Process::exit(que_suis_je() + " : calc_grad_alpha_faces is not defined !");};
 
 private:
-  virtual void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const = 0;
-  virtual void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab&) const = 0;
+  virtual void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const { /* Do nothing */ }
+  virtual void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab&) const { /* Do nothing */ }
 };
 
 #endif /* Op_Evanescence_Homogene_Face_base_included */
