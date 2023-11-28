@@ -47,12 +47,12 @@ public:
   inline void associer_champ(const Champ_Face_PolyVEF_P0& ch) { champ_ = ch; }
   inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
   {
-    le_Dom_Cl_PolyVEF_P0P1NC = static_cast<const Domaine_Cl_PolyMAC&>(le_dom_Cl_dis_base);
+    le_Dom_Cl_PolyMAC_P0P1NC = static_cast<const Domaine_Cl_PolyMAC&>(le_dom_Cl_dis_base);
   }
 
 protected:
-  REF(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyVEF_P0P1NC;
-  REF(Champ_Face_PolyVEF_P0) champ_;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC_P0P1NC;
+  OBS_PTR(Champ_Face_PolyVEF_P0) champ_;
 
   int is_init = 0;
 };

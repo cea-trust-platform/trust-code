@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,10 +55,10 @@ Entree& Op_Grad_PolyVEF_P0_Face::readOn(Entree& s)
 /*! @brief
  *
  */
-void Op_Grad_PolyVEF_P0_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch)
+void Op_Grad_PolyVEF_P0_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch)
 {
-  ref_domaine = ref_cast(Domaine_PolyVEF_P0, domaine_dis.valeur());
-  ref_dcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
+  ref_domaine = ref_cast(Domaine_PolyVEF_P0, domaine_dis);
+  ref_dcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis);
 }
 
 void Op_Grad_PolyVEF_P0_Face::completer()
@@ -71,36 +71,35 @@ void Op_Grad_PolyVEF_P0_Face::completer()
       Cerr << "Op_Grad_PolyVEF_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
-  ref_cast(Champ_Elem_PolyVEF_P0, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
+  ref_cast(Champ_Elem_PolyVEF_P0, ref_cast(Navier_Stokes_std, equation()).pression()).init_auxiliary_variables();
   last_gradp_ = -DBL_MAX;
 }
 
 void Op_Grad_PolyVEF_P0_Face::update_grad(int full_stencil) const
 {
   const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const int M = press.line_size();
-  double t_past = equation().inconnue().valeur().recuperer_temps_passe();
+  double t_past = equation().inconnue().recuperer_temps_passe();
   if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
-  dom.fgrad(M, 1, 1, ref_dcl->les_conditions_limites(), ch.fcl(), NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
+  dom.fgrad(M, 1, 1, ref_dcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
   last_gradp_ = t_past;
 }
 
 void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const IntTab& fcl = ch.fcl();
   int i, e, f, fb = 0, ne_tot = dom.nb_elem_tot(), nf_tot = dom.nb_faces_tot(), nfb_tot = dom.nb_faces_bord_tot(), d, D = dimension, n, N = ch.valeurs().line_size() / D,
                m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten(0, 2); //stencil (NS, pression)
-  sten.set_smart_resize(1);
 
   Matrice_Morse *mat = matrices["pression"], mat2;
 
@@ -120,16 +119,16 @@ void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const Conds_lim& cls = ref_dcl->les_conditions_limites();
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, fb, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = secmem.line_size() / D, m, M = press.line_size();
   update_grad();
-  Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL;
+  Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : nullptr;
 
   DoubleTrav a_v(N); //(grad p)_f, produit alpha * vol
 
