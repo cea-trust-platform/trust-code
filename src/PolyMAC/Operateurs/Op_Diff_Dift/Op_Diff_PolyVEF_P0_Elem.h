@@ -27,7 +27,7 @@ class Op_Diff_PolyVEF_P0_Elem : public Op_Diff_PolyVEF_P0_base
 public :
   Op_Diff_PolyVEF_P0_Elem();
   void completer() override;
-  void init_op_ext() const override; //fait plus de travail qu'en PolyVEF_P0P1NC: op_ext + som_ext, pe_ext...
+  void init_op_ext() const override; //fait plus de travail qu'en PolyMAC_P0P1NC: op_ext + som_ext, pe_ext...
 
   /* interface {dimensionner,ajouter}_blocs */
   int has_interface_blocs() const override { return 1; }

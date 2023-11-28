@@ -13,24 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included
-#define Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included
+#ifndef Op_Conv_EF_Stab_PolyVEF_P0_Elem_included
+#define Op_Conv_EF_Stab_PolyVEF_P0_Elem_included
 
 #include <Op_Conv_PolyMAC_base.h>
 #include <Matrice_Morse.h>
 
-/*! @brief : class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+/*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem
  *
- *  <Description of class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem>
+ *  <Description of class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem>
  *
  *
  *
  */
 
-class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem : public Op_Conv_PolyMAC_base
+class Op_Conv_EF_Stab_PolyVEF_P0_Elem : public Op_Conv_PolyMAC_base
 {
 
-  Declare_instanciable( Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_EF_Stab_PolyVEF_P0_Elem ) ;
 
 public :
   void preparer_calcul() override;
@@ -60,14 +60,14 @@ protected :
   Motcles noms_x_phases_; //leurs noms
 };
 
-class Op_Conv_Amont_PolyVEF_P0P1NC_Elem : public Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+class Op_Conv_Amont_PolyVEF_P0_Elem : public Op_Conv_EF_Stab_PolyVEF_P0_Elem
 {
-  Declare_instanciable( Op_Conv_Amont_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_Amont_PolyVEF_P0_Elem ) ;
 };
 
-class Op_Conv_Centre_PolyVEF_P0P1NC_Elem : public Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+class Op_Conv_Centre_PolyVEF_P0_Elem : public Op_Conv_EF_Stab_PolyVEF_P0_Elem
 {
-  Declare_instanciable( Op_Conv_Centre_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_Centre_PolyVEF_P0_Elem ) ;
 };
 
-#endif /* Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included */
+#endif /* Op_Conv_EF_Stab_PolyVEF_P0_Elem_included */

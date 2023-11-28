@@ -13,35 +13,37 @@
 *
 *****************************************************************************/
 
-#ifndef Source_Frottement_interfacial_base_included
-#define Source_Frottement_interfacial_base_included
+#ifndef Champ_Fonc_Elem_PolyVEF_P0_TC_included
+#define Champ_Fonc_Elem_PolyVEF_P0_TC_included
 
-#include <Sources_Multiphase_base.h>
-#include <Correlation.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Face_PolyVEF_P0.h>
+#include <TRUST_Ref.h>
 
-/*! @brief Classe Source_Frottement_interfacial_base
+/*! @brief class Champ_Fonc_Elem_PolyVEF_P0_TC for the calculation of the shear rate (taux de cisaillement)
  *
- *    Cette classe implemente un operateur de frottement interfacial
+ *    This field is a Champ_Fonc_Elem_PolyVEF_P0 with 1 value per element and per phase :
  *
- *     de la forme F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
- *     le calcul de C_{kl} est realise par la hierarchie Coefficient_Frottement_interfacial_base
+ *       Champ_Fonc_Elem_PolyVEF_P0_TC::valeurs()(e, n) returns the value of phase n in element e
+ *       The shear rate is calculated using
+ *         shear rate = sqrt(2*Sij*Sij)
+ *         Sij = 1/2(grad(u)+t grad(u))
  *
- * @sa Source_base
  */
-class Source_Frottement_interfacial_base: public Sources_Multiphase_base
+
+class Champ_Fonc_Elem_PolyVEF_P0_TC: public Champ_Fonc_Elem_PolyMAC
 {
-  Declare_base(Source_Frottement_interfacial_base);
-public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  void completer() override;
+  Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_TC);
+public:
+  void mettre_a_jour(double) override;
+  void me_calculer(double tps);
+
+  inline void associer_champ(const Champ_Face_PolyVEF_P0& ch) { champ_ = ch; }
+  inline virtual Champ_Face_PolyVEF_P0& champ_a_deriver() { return champ_.valeur(); }
+  inline virtual const Champ_Face_PolyVEF_P0& champ_a_deriver() const { return champ_.valeur(); }
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de frottement interfacial
-  double a_res_ = -1., dv_min = 0.01, beta_ = 1.;
-  int exp_res = 2 ;
-
-  virtual void dimensionner_blocs_aux(IntTrav&) const { /* Do nothing */ }
+  REF(Champ_Face_PolyVEF_P0) champ_;
 };
 
-#endif /* Source_Frottement_interfacial_base_included */
+#endif /* Champ_Fonc_Elem_PolyVEF_P0_TC_included */

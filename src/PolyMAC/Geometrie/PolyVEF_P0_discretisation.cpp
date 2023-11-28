@@ -32,7 +32,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_Cl_dis.h>
 
-Implemente_instanciable(PolyVEF_P0_discretisation, "PolyVEF_P0", PolyVEF_P0P1NC_discretisation);
+Implemente_instanciable(PolyVEF_P0_discretisation, "PolyVEF_P0", PolyMAC_P0P1NC_discretisation);
 
 Entree& PolyVEF_P0_discretisation::readOn(Entree& s) { return s; }
 
@@ -155,5 +155,5 @@ void PolyVEF_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& c
     }
 
   else
-    PolyVEF_P0P1NC_discretisation::residu(z, ch_inco, champ);
+    PolyMAC_P0P1NC_discretisation::residu(z, ch_inco, champ);
 }

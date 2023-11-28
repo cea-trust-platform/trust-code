@@ -35,7 +35,7 @@
 #include <array>
 #include <cmath>
 
-Implemente_instanciable(Champ_Face_PolyVEF_P0,"Champ_Face_PolyVEF_P0",Champ_Face_PolyVEF_P0P1NC) ;
+Implemente_instanciable(Champ_Face_PolyVEF_P0,"Champ_Face_PolyVEF_P0",Champ_Face_PolyMAC_P0P1NC) ;
 
 Sortie& Champ_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 

@@ -33,7 +33,7 @@
 #include <TRUSTTab.h>
 #include <Piso.h>
 
-Implemente_instanciable(Masse_PolyVEF_P0_Face, "Masse_PolyVEF_P0_Face", Masse_PolyVEF_P0P1NC_Face);
+Implemente_instanciable(Masse_PolyVEF_P0_Face, "Masse_PolyVEF_P0_Face", Masse_PolyMAC_P0P1NC_Face);
 
 Sortie& Masse_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

@@ -14,11 +14,14 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_P0P1NC_Elem.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Equation_base.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Synonyme_info.h>
+#include <Equation_base.h>
 
 Implemente_instanciable(Masse_PolyMAC_P0P1NC_Elem, "Masse_PolyMAC_P0P1NC_Elem|Masse_PolyMAC_P0_Elem", Masse_PolyMAC_P0P1NC_base);
+Add_synonym(Masse_PolyMAC_P0P1NC_Elem, "Masse_PolyVEF_P0_Elem");
+
 
 Sortie& Masse_PolyMAC_P0P1NC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

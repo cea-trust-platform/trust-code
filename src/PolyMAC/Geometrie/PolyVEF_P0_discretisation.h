@@ -16,9 +16,9 @@
 #ifndef PolyVEF_P0_discretisation_included
 #define PolyVEF_P0_discretisation_included
 
-#include <PolyVEF_P0P1NC_discretisation.h>
+#include <PolyMAC_P0P1NC_discretisation.h>
 
-class PolyVEF_P0_discretisation : public PolyVEF_P0P1NC_discretisation
+class PolyVEF_P0_discretisation : public PolyMAC_P0P1NC_discretisation
 {
   Declare_instanciable(PolyVEF_P0_discretisation);
 public :

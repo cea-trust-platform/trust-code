@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Echange_contact_PolyVEF_P0.h>
+#include <Echange_contact_PolyMAC_P0.h>
 #include <Frottement_externe_impose.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Frottement_global_impose.h>
@@ -59,7 +59,7 @@
 #include <set>
 #include <map>
 
-Implemente_instanciable(Domaine_PolyVEF_P0, "Domaine_PolyVEF_P0", Domaine_PolyVEF_P0P1NC);
+Implemente_instanciable(Domaine_PolyVEF_P0, "Domaine_PolyVEF_P0", Domaine_PolyMAC_P0P1NC);
 
 Sortie& Domaine_PolyVEF_P0::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
@@ -67,7 +67,7 @@ Entree& Domaine_PolyVEF_P0::readOn(Entree& is) { return Domaine_Poly_base::readO
 
 void Domaine_PolyVEF_P0::discretiser()
 {
-  /* on saut le discretiser() de Domaine_PolyVEF_P0P1NC pour eviter d'initialiser les variables de PolyVEF_P0P1NC_V1 */
+  /* on saut le discretiser() de Domaine_PolyMAC_P0P1NC pour eviter d'initialiser les variables de PolyMAC_P0P1NC_V1 */
   Domaine_Poly_base::discretiser();
   /* comme on a le vecteur complet aux faces, les volumes entrelaces sont divises par D */
   volumes_entrelaces_ /= dimension, volumes_entrelaces_dir_ /= dimension;

@@ -34,7 +34,7 @@
 #include <Champ_Face_PolyVEF_P0.h>
 #include <Op_Diff_PolyVEF_P0_Face.h>
 #include <Pb_Multiphase.h>
-#include <Echange_contact_PolyVEF_P0.h>
+#include <Echange_contact_PolyMAC_P0.h>
 #include <Flux_parietal_base.h>
 #include <Frottement_impose_base.h>
 
