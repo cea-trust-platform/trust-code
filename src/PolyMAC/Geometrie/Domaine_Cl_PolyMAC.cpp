@@ -16,13 +16,14 @@
 #include <Dirichlet_entree_fluide_leaves.h>
 #include <Champ_front_softanalytique.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Champ_Face_PolyVEF_P0P1NC.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Champ_Face_PolyVEF_P0.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Discretisation_base.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Dirichlet_homogene.h>
+#include <Domaine_PolyVEF_P0.h>
 #include <Champ_Inc_P0_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Equation_base.h>
@@ -45,13 +46,14 @@ void Domaine_Cl_PolyMAC::completer(const Domaine_dis_base& )
 
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
-  return;
+  if (sub_type(Domaine_PolyVEF_P0, domaine_vf())) return;
+
   DoubleTab& ch_tab = ch.valeurs(temps);
   int n, N = ch_tab.line_size() / (sub_type(Champ_Face_PolyVEF_P0, ch) ? dimension : 1);
 
   if (sub_type(Champ_Inc_P0_base, ch)) { /* Do nothing */ }
   else if (ch.nature_du_champ() == scalaire) { /* Do nothing */ }
-  else if (sub_type(Champ_Face_PolyVEF_P0P1NC, ch) || sub_type(Champ_Face_PolyMAC, ch))
+  else if (sub_type(Champ_Face_PolyMAC_P0P1NC, ch) || sub_type(Champ_Face_PolyMAC, ch))
     {
       Champ_Face_base& ch_face = ref_cast(Champ_Face_base, ch);
       const Domaine_VF& mon_dom_VF = ch_face.domaine_vf();

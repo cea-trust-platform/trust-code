@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,9 @@
 #ifndef Assembleur_P_PolyVEF_P0_included
 #define Assembleur_P_PolyVEF_P0_included
 
-#include <Assembleur_P_PolyVEF_P0P1NC.h>
+#include <Assembleur_P_PolyMAC_P0P1NC.h>
 
-class Assembleur_P_PolyVEF_P0 : public Assembleur_P_PolyVEF_P0P1NC
+class Assembleur_P_PolyVEF_P0 : public Assembleur_P_PolyMAC_P0P1NC
 {
   Declare_instanciable(Assembleur_P_PolyVEF_P0);
 

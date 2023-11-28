@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ class Op_Div_PolyVEF_P0 : public Operateur_Div_base
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc_base&) override;
 
   /* interface ajouter_blocs */
   int has_interface_blocs() const override
@@ -63,8 +63,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyVEF_P0) le_dom_PolyVEF_P0;
-  REF(Domaine_Cl_PolyMAC) le_dcl_PolyVEF_P0;
+  OBS_PTR(Domaine_PolyVEF_P0) le_dom_PolyVEF_P0;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dcl_PolyVEF_P0;
 };
 
 #endif

@@ -28,11 +28,21 @@
 
 
 Implemente_instanciable(Echange_contact_PolyMAC_P0,"Paroi_Echange_contact_PolyMAC_P0",Echange_externe_impose);
+Implemente_instanciable(Echange_contact_PolyVEF_P0,"Echange_contact_PolyVEF_P0",Echange_contact_PolyMAC_P0);
 using namespace MEDCoupling;
 
 Sortie& Echange_contact_PolyMAC_P0::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
+}
+Sortie& Echange_contact_PolyVEF_P0::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() << finl;
+}
+
+Entree& Echange_contact_PolyVEF_P0::readOn(Entree& s )
+{
+  return Echange_contact_PolyMAC_P0::readOn(s);
 }
 
 Entree& Echange_contact_PolyMAC_P0::readOn(Entree& s )

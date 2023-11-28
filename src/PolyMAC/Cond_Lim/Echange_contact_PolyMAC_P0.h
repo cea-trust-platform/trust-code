@@ -18,6 +18,7 @@
 
 #include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_P0_Elem.h>
+#include <Op_Diff_PolyVEF_P0_Elem.h>
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
 #include <TRUST_Ref.h>
@@ -59,5 +60,12 @@ public :
 
 protected :
   Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
+};
+
+class Echange_contact_PolyVEF_P0  : public Echange_contact_PolyMAC_P0
+{
+  Declare_instanciable(Echange_contact_PolyVEF_P0);
+public:
+  mutable OBS_PTR(Op_Diff_PolyVEF_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 };
 #endif
