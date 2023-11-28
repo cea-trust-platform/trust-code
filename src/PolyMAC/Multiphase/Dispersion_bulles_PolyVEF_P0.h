@@ -13,14 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
-#define Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
+#ifndef Dispersion_bulles_PolyVEF_P0_included
+#define Dispersion_bulles_PolyVEF_P0_included
 
-#include <Op_Evanescence_Homogene_Face_base.h>
+#include <Source_Dispersion_bulles_base.h>
 
-class Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face: public Op_Evanescence_Homogene_Face_base
+class Dispersion_bulles_PolyVEF_P0: public Source_Dispersion_bulles_base
 {
-  Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face);
+  Declare_instanciable(Dispersion_bulles_PolyVEF_P0);
+protected:
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void dimensionner_blocs_aux(IntTrav&) const override;
 };
 
-#endif /* Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included */
+#endif /* Dispersion_bulles_PolyVEF_P0_included */
