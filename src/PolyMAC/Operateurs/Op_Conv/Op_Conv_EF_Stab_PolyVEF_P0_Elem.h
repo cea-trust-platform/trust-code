@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,24 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included
-#define Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included
+#ifndef Op_Conv_EF_Stab_PolyVEF_P0_Elem_included
+#define Op_Conv_EF_Stab_PolyVEF_P0_Elem_included
 
 #include <Op_Conv_PolyMAC_base.h>
 #include <Matrice_Morse.h>
 
-/*! @brief : class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+/*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem
  *
- *  <Description of class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem>
+ *  <Description of class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem>
  *
  *
  *
  */
 
-class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem : public Op_Conv_PolyMAC_base
+class Op_Conv_EF_Stab_PolyVEF_P0_Elem : public Op_Conv_PolyMAC_base
 {
 
-  Declare_instanciable( Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_EF_Stab_PolyVEF_P0_Elem ) ;
 
 public :
   void preparer_calcul() override;
@@ -44,6 +44,7 @@ public :
 
   void check_multiphase_compatibility() const override { } //of course
 
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   void creer_champ(const Motcle& motlu) override;
 
   void mettre_a_jour(double temps) override;
@@ -52,22 +53,22 @@ public :
 
 protected :
   /* si operateur de convection de Masse_Multiphase */
-  std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
+  std::vector<OWN_PTR(Champ_Inc_base)> cc_phases_; //flux massiques (kg/m2/s)
   Motcles noms_cc_phases_; //leurs noms
-  std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
+  std::vector<OWN_PTR(Champ_Inc_base)> vd_phases_; //vitesses debitantes
   Motcles noms_vd_phases_; //leurs noms
-  std::vector<Champ_Inc> x_phases_; //titres par phase
+  std::vector<OWN_PTR(Champ_Inc_base)> x_phases_; //titres par phase
   Motcles noms_x_phases_; //leurs noms
 };
 
-class Op_Conv_Amont_PolyVEF_P0P1NC_Elem : public Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+class Op_Conv_Amont_PolyVEF_P0_Elem : public Op_Conv_EF_Stab_PolyVEF_P0_Elem
 {
-  Declare_instanciable( Op_Conv_Amont_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_Amont_PolyVEF_P0_Elem ) ;
 };
 
-class Op_Conv_Centre_PolyVEF_P0P1NC_Elem : public Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
+class Op_Conv_Centre_PolyVEF_P0_Elem : public Op_Conv_EF_Stab_PolyVEF_P0_Elem
 {
-  Declare_instanciable( Op_Conv_Centre_PolyVEF_P0P1NC_Elem ) ;
+  Declare_instanciable( Op_Conv_Centre_PolyVEF_P0_Elem ) ;
 };
 
-#endif /* Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem_included */
+#endif /* Op_Conv_EF_Stab_PolyVEF_P0_Elem_included */

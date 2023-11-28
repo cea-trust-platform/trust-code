@@ -16,8 +16,8 @@
 #include <grad_Champ_Face_PolyVEF_P0.h>
 #include <Frottement_impose_base.h>
 #include <Champ_Face_PolyVEF_P0.h>
-#include <Domaine_Cl_dis.h>
-#include <Champ_Fonc.h>
+
+
 #include <Dirichlet.h>
 #include <EChaine.h>
 

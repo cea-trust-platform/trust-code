@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,8 +22,6 @@
 #include <TRUST_Ref.h>
 #include <SFichier.h>
 
-class Champ_Fonc;
-
 /*! @brief class Op_Diff_PolyVEF_P0_base
  *
  *  Classe de base des operateurs de diffusion PolyVEF_P0
@@ -34,7 +32,7 @@ class Op_Diff_PolyVEF_P0_base: public Operateur_Diff_base
 {
   Declare_base(Op_Diff_PolyVEF_P0_base);
 public:
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
 
   void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
   void completer() override;
@@ -70,9 +68,9 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Domaine_PolyVEF_P0) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Domaine_PolyVEF_P0) le_dom_poly_;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_poly_;
+  OBS_PTR(Champ_base) diffusivite_;
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
 

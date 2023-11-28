@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ void Op_Diff_PolyVEF_P0_Face::completer()
 {
   Op_Diff_PolyVEF_P0_base::completer();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
-  Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
+  Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue());
   if (le_champ_inco.non_nul()) ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
   flux_bords_.resize(dom.premiere_face_int(), ch.valeurs().line_size());
   if (dom.nb_joints() && dom.joint(0).epaisseur() < 1)
@@ -67,10 +67,10 @@ void Op_Diff_PolyVEF_P0_Face::completer()
 double Op_Diff_PolyVEF_P0_Face::calculer_dt_stab() const
 {
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
-  const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur()).fcl();
+  const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue()).fcl();
   const DoubleTab& nf = dom.face_normales(), &vfd = dom.volumes_entrelaces_dir(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL,
-                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL); /* produit alpha * rho */
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
+                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
   update_nu();
 
@@ -105,7 +105,6 @@ void Op_Diff_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   int i, j, e, f, fb, nd, ND = equation().inconnue().valeurs().line_size(), nf_tot = dom.nb_faces_tot();
 
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
 
   /* stencil : tous les voisins de la face par un element, sans melanger les dimensions ou les composantes */
   for (f = 0; f < dom.nb_faces(); f++)
@@ -124,14 +123,13 @@ void Op_Diff_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 void Op_Diff_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : NULL; //facultatif
+  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : nullptr; //facultatif
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces();
   int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, skip;
 
   DoubleTrav w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
-  w2.set_smart_resize(1), lw2.set_smart_resize(1);
 
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,10 +13,10 @@
 *
 *****************************************************************************/
 
-#include <Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem.h>
-#include <Champ_Elem_PolyVEF_P0P1NC.h>
-#include <Champ_Face_PolyVEF_P0P1NC.h>
-#include <Masse_PolyVEF_P0P1NC_Elem.h>
+#include <Op_Conv_EF_Stab_PolyVEF_P0_Elem.h>
+#include <Champ_Elem_PolyMAC_P0P1NC.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Masse_PolyMAC_P0P1NC_Elem.h>
 #include <Convection_Diffusion_std.h>
 #include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
@@ -37,21 +37,21 @@
 #include <vector>
 #include <cmath>
 
-Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem, "Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem|Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_PolyMAC_base);
-Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_P0P1NC_Elem, "Op_Conv_Amont_PolyVEF_P0P1NC_Elem|Op_Conv_Amont_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem);
-Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_P0P1NC_Elem, "Op_Conv_Centre_PolyVEF_P0P1NC_Elem|Op_Conv_Centre_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem);
+Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_PolyMAC_base);
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_P0_Elem, "Op_Conv_Amont_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_P0_Elem, "Op_Conv_Centre_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
 
-Op_Conv_Amont_PolyVEF_P0P1NC_Elem::Op_Conv_Amont_PolyVEF_P0P1NC_Elem() { alpha = 1.0; }
-Op_Conv_Centre_PolyVEF_P0P1NC_Elem::Op_Conv_Centre_PolyVEF_P0P1NC_Elem() { alpha = 0.0; }
+Op_Conv_Amont_PolyVEF_P0_Elem::Op_Conv_Amont_PolyVEF_P0_Elem() { alpha = 1.0; }
+Op_Conv_Centre_PolyVEF_P0_Elem::Op_Conv_Centre_PolyVEF_P0_Elem() { alpha = 0.0; }
 
-// XD Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem interprete Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem 1 Class Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem
-Sortie& Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
-Sortie& Op_Conv_Amont_PolyVEF_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::printOn(os); }
-Sortie& Op_Conv_Centre_PolyVEF_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::printOn(os); }
-Entree& Op_Conv_Amont_PolyVEF_P0P1NC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::readOn(is); }
-Entree& Op_Conv_Centre_PolyVEF_P0P1NC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::readOn(is); }
+// XD Op_Conv_EF_Stab_PolyVEF_P0_Elem interprete Op_Conv_EF_Stab_PolyVEF_P0_Elem 1 Class Op_Conv_EF_Stab_PolyVEF_P0_Elem
+Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
+Sortie& Op_Conv_Centre_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
+Entree& Op_Conv_Amont_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
+Entree& Op_Conv_Centre_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
 
-Entree& Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::readOn(Entree& is)
+Entree& Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(Entree& is)
 {
   Op_Conv_PolyMAC_base::readOn(is);
   if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
@@ -60,25 +60,32 @@ Entree& Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::readOn(Entree& is)
       param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
       param.lire_avec_accolades_depuis(is);
     }
-
-  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
-    {
-      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
-      noms_cc_phases_.dimensionner(pb.nb_phases()), cc_phases_.resize(pb.nb_phases());
-      noms_vd_phases_.dimensionner(pb.nb_phases()), vd_phases_.resize(pb.nb_phases());
-      noms_x_phases_.dimensionner(pb.nb_phases()), x_phases_.resize(pb.nb_phases());
-      for (int i = 0; i < pb.nb_phases(); i++)
-        {
-          champs_compris_.ajoute_nom_compris(noms_cc_phases_[i] = Nom("debit_") + pb.nom_phase(i));
-          champs_compris_.ajoute_nom_compris(noms_vd_phases_[i] = Nom("vitesse_debitante_") + pb.nom_phase(i));
-          champs_compris_.ajoute_nom_compris(noms_x_phases_[i] = Nom("titre_") + pb.nom_phase(i));
-        }
-    }
-
   return is;
 }
 
-void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::preparer_calcul()
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Op_Conv_PolyMAC_base::get_noms_champs_postraitables(nom,opt);
+  Noms noms_compris;
+
+  if (sub_type(Masse_Multiphase, equation()))
+    {
+      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+
+      for (int i = 0; i < pb.nb_phases(); i++)
+        {
+          noms_compris.add(noms_cc_phases_[i]);
+          noms_compris.add(noms_vd_phases_[i]);
+          noms_compris.add(noms_x_phases_[i]);
+        }
+    }
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Conv_EF_Stab_PolyVEF_P0_Elem : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
+
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::preparer_calcul()
 {
   Op_Conv_PolyMAC_base::preparer_calcul();
 
@@ -89,19 +96,19 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::preparer_calcul()
 
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
     {
-      Cerr << "Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
+      Cerr << "Op_Conv_EF_Stab_PolyVEF_P0_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
       Process::exit();
     }
 }
 
-double Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::calculer_dt_stab() const
+double Op_Conv_EF_Stab_PolyVEF_P0_Elem::calculer_dt_stab() const
 {
   double dt = 1e10, fv;
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(), &nf = domaine.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl();
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue()).fcl();
   int i, e, f, d, D = dimension, n, N = std::min(vit.line_size() / D, equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf
 
@@ -124,7 +131,7 @@ double Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::calculer_dt_stab() const
   return Process::mp_min(dt);
 }
 
-void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &fcl_v = ref_cast(Champ_Face_base, vitesse_.valeur()).fcl();
@@ -136,7 +143,6 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
       {
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
-        stencil.set_smart_resize(1);
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
@@ -165,11 +171,11 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
 
 // ajoute la contribution de la convection au second membre resu
 // renvoie resu
-void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte(), &ch_vit = ref_cast(Champ_Inc_base, vitesse_.valeur());
-  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_base, ch_vit).fcl();
+  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte(), &ch_vit = ref_cast(Champ_Inc_base, vitesse_.valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Inc_P0_base, equation().inconnue()).fcl(), &fcl_v = ref_cast(Champ_Face_base, ch_vit).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face();
   const Conds_lim& cls_v = ch_vit.domaine_Cl_dis().les_conditions_limites();
   const std::string& nom_cc = cc.le_nom().getString();
@@ -225,7 +231,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
       }
 }
 
-void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::creer_champ(const Motcle& motlu)
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::creer_champ(const Motcle& motlu)
 {
   Op_Conv_PolyMAC_base::creer_champ(motlu);
   int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
@@ -246,7 +252,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::creer_champ(const Motcle& motlu)
     }
 }
 
-void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::mettre_a_jour(double temps)
+void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
@@ -256,7 +262,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::mettre_a_jour(double temps)
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir();
   DoubleTab balp;
   if (vd_phases_.size())
-    balp = equation().inconnue().valeur().valeur_aux_bords();
+    balp = equation().inconnue().valeur_aux_bords();
 
   int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size() / D;
   double Gt, fv;
@@ -281,7 +287,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::mettre_a_jour(double temps)
     for (n = 0, m = 0; n < N; n++, m += (M > 1))
       if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
         {
-          Champ_Face_PolyVEF_P0P1NC& c_ph = ref_cast(Champ_Face_PolyVEF_P0P1NC, cc_phases_[n].valeur());
+          Champ_Face_PolyMAC_P0P1NC& c_ph = ref_cast(Champ_Face_PolyMAC_P0P1NC, cc_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
           for (f = 0; f < domaine.nb_faces(); f++)
             {
@@ -299,7 +305,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem::mettre_a_jour(double temps)
       if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
         {
           const DoubleTab& alp = equation().inconnue().valeurs();
-          Champ_Face_PolyVEF_P0P1NC& c_ph = ref_cast(Champ_Face_PolyVEF_P0P1NC, vd_phases_[n].valeur());
+          Champ_Face_PolyMAC_P0P1NC& c_ph = ref_cast(Champ_Face_PolyMAC_P0P1NC, vd_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
           for (f = 0; f < domaine.nb_faces(); f++)
             {
