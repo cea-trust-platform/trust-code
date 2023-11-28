@@ -13,14 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
-#define Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
+#ifndef Op_Evanescence_Homogene_PolyVEF_P0_Face_included
+#define Op_Evanescence_Homogene_PolyVEF_P0_Face_included
 
 #include <Op_Evanescence_Homogene_Face_base.h>
+#include <Correlation.h>
 
-class Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face: public Op_Evanescence_Homogene_Face_base
+class Op_Evanescence_Homogene_PolyVEF_P0_Face: public Op_Evanescence_Homogene_Face_base
 {
-  Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face);
+  Declare_instanciable(Op_Evanescence_Homogene_PolyVEF_P0_Face);
+public:
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
-#endif /* Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included */
+#endif /* Op_Evanescence_Homogene_PolyVEF_P0_Face_included */
