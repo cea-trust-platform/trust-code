@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,37 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
-#define Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included
+#ifndef Correction_Antal_PolyVEF_P0_included
+#define Correction_Antal_PolyVEF_P0_included
+#include <Source_base.h>
 
-#include <Op_Evanescence_Homogene_Face_base.h>
-
-class Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face: public Op_Evanescence_Homogene_Face_base
+/*! @brief classe Correction_Antal_PolyVEF_P0 Correction de répulsion en paroi d'Antal dans un ecoulement multiphase
+ *
+ *
+ *
+ *
+ */
+class Correction_Antal_PolyVEF_P0: public Source_base
 {
-  Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face);
+  Declare_instanciable(Correction_Antal_PolyVEF_P0);
+public :
+  int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override {}; //of course
+  void completer() override;
+
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double temps) override { };
+protected:
+  int n_l = -1; //phase liquide
+  int is_turb = 0;
+  double Cw1_ =  -.1 ; // To adjust the force in .data
+  double Cw2_ =  .147 ; // To adjust the force in .data
 };
 
-#endif /* Op_Evanescence_Homogene_PolyMAC_P0P1NC_Face_included */
+#endif
