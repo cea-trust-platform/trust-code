@@ -461,7 +461,10 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
             if (nom != "vitesse" && nom != "pression")
               ordre.back().insert( { { nom, 0 } });
           if (!(ok = eliminer(ordre, "pression", mats_, sec, A_p_, b_p)))
-            break; //si l'elimination echoue, on sort
+            {
+              Cerr << "Echec de l'elimination!";
+              break; //si l'elimination echoue, on sort
+            }
 
           /* assemblage du systeme en pression */
           assembler("pression", A_p_, b_p, mats_, sec, matrice_pression_, *sec["pression"], p_degen_);
@@ -480,7 +483,10 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
               solv_p->reinit(), solv_p->set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
               ok = (solv_p.resoudre_systeme(matrice_pression_, *sec["pression"], *incr["pression"]) >= 0);
               if (!ok)
-                break; //le solveur a echoue -> on sort
+                {
+                  Cerr << "Echec du solveur!";
+                  break; //le solveur a echoue -> on sort
+                }
               incr["pression"]->echange_espace_virtuel();
               *incr["pression"] -= inco["pression"]->valeurs();
             }
@@ -501,7 +507,10 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
           solv_p->reinit(), solv_p->set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
           ok = (solv_p.resoudre_systeme(mat_semi_impl_, v_sec, v_incr) >= 0);
           if (!ok)
-            break; //le solveur a echoue -> on sort
+            {
+              Cerr << "Echec du solveur!";
+              break; //le solveur a echoue -> on sort
+            }
           v_incr -= v_inco; //retour en increments
         }
 
@@ -531,8 +540,16 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
         n_i.second->valeurs() += *incr[n_i.first];
       if (p_degen_)
         inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
-      if (!(ok = err_a_sum < crit_conv_["alpha"] && eq_qdm.milieu().check_unknown_range()))
-        break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+      if (!(ok = err_a_sum < crit_conv_["alpha"]))
+        {
+          Cerr << "Erreur en alpha!";
+          break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+        }
+      if (!(ok = eq_qdm.milieu().check_unknown_range()))
+        {
+          Cerr << "Sortie des bornes!";
+          break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+        }
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 

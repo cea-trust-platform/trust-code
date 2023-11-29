@@ -70,7 +70,7 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 
   /* Calcul de grad alpha aux faces */
 
-  DoubleTab grad_f_a(nf_tot, N);
+  DoubleTrav grad_f_a(nf_tot, N);
   assert ( alpha.dimension_tot(0) == ne_tot );
   const Masse_Multiphase& eq_alp = ref_cast(Masse_Multiphase, pbm.equation_masse());
   const Operateur_Grad& Op_Grad_alp = eq_alp.operateur_gradient_inconnue();

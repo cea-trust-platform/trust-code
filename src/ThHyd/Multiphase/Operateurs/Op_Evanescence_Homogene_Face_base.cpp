@@ -16,6 +16,7 @@
 #include <Op_Evanescence_Homogene_Face_base.h>
 #include <Viscosite_turbulente_base.h>
 #include <Vitesse_relative_base.h>
+#include <Discretisation_base.h>
 #include <Gravite_Multiphase.h>
 #include <Milieu_composite.h>
 #include <Champ_Face_base.h>
@@ -53,6 +54,8 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, f, n, N = inco.line_size();
+  const bool is_pvef = equation().discretisation().is_polyvef_p0();
+
   if (N == 1) return; //pas d'evanescence en simple phase!
   for (auto &&n_m : matrices)
     if (n_m.second->nb_colonnes())
@@ -64,7 +67,7 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
         for (f = 0; f < domaine.nb_faces(); f++, idx.clear())
-          if (fcl(f, 0) < 2)
+          if (is_pvef || fcl(f, 0) < 2)
             {
               for (i = N * f, n = 0; n < N; n++, i++)
                 for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
@@ -107,6 +110,8 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                               iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration_ : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
+  const bool is_pvef = equation().discretisation().is_polyvef_p0();
+
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
 
   /* recherche de phases evanescentes et traitement des seconds membres */
@@ -147,7 +152,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
     }
 
   for (f = 0; f < domaine.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
+    if (fcl(f, 0) < 2 || is_pvef)
       {
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
         for (a_max = 0, k = -1, n = 0; n < N; n++)
@@ -230,7 +235,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         Matrice_Morse& mat = *n_m.second;
         /* faces */
         for (f = 0; f < domaine.nb_faces(); f++)
-          if (fcl(f, 0) < 2)
+          if (fcl(f, 0) < 2 || is_pvef)
             for (n = 0; n < N; n++)
               if (coeff(f, n, 0))
                 {
