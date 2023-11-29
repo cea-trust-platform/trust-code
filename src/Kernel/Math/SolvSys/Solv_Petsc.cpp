@@ -1066,7 +1066,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       int pc_supported_on_gpu_by_amgx=0;
       Motcles les_precond(18);
       {
-        les_precond[0] = "NULL";               // Pas de preconditionnement
+        les_precond[0] = "nullptr";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
         les_precond[2] = "SSOR";               // Symetric Successive Over Relaxation
         les_precond[3] = "EISENSTAT";          // Symetric Successive Over Relaxation avec Eiseinstat trick
