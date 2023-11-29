@@ -13,37 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef DP_Impose_PolyMAC_Face_included
-#define DP_Impose_PolyMAC_Face_included
+#ifndef Source_Generique_Face_PolyVEF_P0_included
+#define Source_Generique_Face_PolyVEF_P0_included
 
-#include <Perte_Charge_PolyMAC_Face.h>
-#include <DP_Impose.h>
-#include <TRUSTList.h>
+#include <Source_Generique_Face_PolyMAC.h>
 
-#include <Domaine_forward.h>
-
-/*! @brief class DP_Impose_PolyMAC_Face
- *
- *
- *
- * @sa Perte_Charge_PolyMAC_Face
- */
-class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public DP_Impose
+class Source_Generique_Face_PolyVEF_P0: public Source_Generique_Face_PolyMAC_P0P1NC
 {
-  Declare_instanciable(DP_Impose_PolyMAC_Face);
-
+  Declare_instanciable(Source_Generique_Face_PolyVEF_P0);
 public:
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-  void check_multiphase_compatibility() const override { }
-  void completer() override;
-
-protected:
-  IntVect sgn;
-  double surf = -123.;//surface totale
+  DoubleTab& ajouter(DoubleTab&) const override;
 };
 
-#endif
+#endif /* Source_Generique_Face_PolyVEF_P0_included */

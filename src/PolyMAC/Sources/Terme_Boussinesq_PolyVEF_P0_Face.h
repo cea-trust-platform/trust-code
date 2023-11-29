@@ -13,37 +13,21 @@
 *
 *****************************************************************************/
 
-#ifndef DP_Impose_PolyMAC_Face_included
-#define DP_Impose_PolyMAC_Face_included
+#ifndef Terme_Boussinesq_PolyVEF_P0_Face_included
+#define Terme_Boussinesq_PolyVEF_P0_Face_included
 
-#include <Perte_Charge_PolyMAC_Face.h>
-#include <DP_Impose.h>
-#include <TRUSTList.h>
+#include <Terme_Boussinesq_PolyMAC_Face.h>
 
-#include <Domaine_forward.h>
-
-/*! @brief class DP_Impose_PolyMAC_Face
+/*! @brief class Terme_Boussinesq_scalaire_PolyVEF_P0_Face
  *
+ *  Terme Source de Boussinesq pour une dicretisation PolyVEF_P0
  *
- *
- * @sa Perte_Charge_PolyMAC_Face
  */
-class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public DP_Impose
+class Terme_Boussinesq_PolyVEF_P0_Face : public Terme_Boussinesq_PolyMAC_Face
 {
-  Declare_instanciable(DP_Impose_PolyMAC_Face);
-
+  Declare_instanciable(Terme_Boussinesq_PolyVEF_P0_Face);
 public:
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-  void check_multiphase_compatibility() const override { }
-  void completer() override;
-
-protected:
-  IntVect sgn;
-  double surf = -123.;//surface totale
 };
 
-#endif
+#endif /* Terme_Boussinesq_PolyVEF_P0_Face_included */
