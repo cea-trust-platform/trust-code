@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,9 @@ public:
     const double *d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
     const double *k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
     const double *nut;    // nut[n]        : viscosite turbulente de bulles de la phase n
-    const double *sigma;  //sigma[ind_trav]:tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
+    const double *sigma;  //sigma[ind_trav]: tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
+    const double *Tsat;   // Tsat[ind_trav]: temperature de saturation du changement de phase n <=> k
+    const double *dP_Tsat;//dP_Tsat[ind_trav]: derivee de la temperature de saturation du changement de phase n=>k ou ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1)
     DoubleTab v;          // v(n, d)       : vitesse de la phase n dans la direction d
     int e;                // indice d'element
   };

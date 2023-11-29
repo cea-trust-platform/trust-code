@@ -160,7 +160,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
             else if (src.line_size() == N * D) /* stockage N * d + n */
               for (j = 0; j < src.dimension_tot(0); j++)
                 for (d = 0; d < D; d++)
-                  dst(j, d, 0) = src(j, d, n);
+                  dst(j, d) = src(j, N * d + n);
             else abort(); //on ne connait pas
           }
       }
@@ -169,11 +169,18 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   if (la_vorticite.non_nul()) la_vorticite->mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement->mettre_a_jour(temps);
 
-  const bool is_poly = discretisation().is_polymac_family();
+  const bool is_vdf = discretisation().is_vdf(), is_polyvef = discretisation().is_polyvef_p0();
   for (n = 0; n < N; n++)
     if (grad_vit_phases_[n].non_nul())
       {
-        if (is_poly)
+        if (is_vdf || is_polyvef) // oui ... pour le vdf de corentin
+          {
+            for (int e = 0; e < domaine_dis().nb_elem(); e++)
+              for (i = 0; i < D; i++)
+                for (j = 0; j < D; j++)
+                  grad_vit_phases_[n]->valeurs()(e, D * i + j) = grad_u->valeurs()(e, N * (D * i + j) + n);
+          }
+        else
           {
             DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n]->valeurs());
             for (i = 0; i < psrc.size(); i++)
@@ -185,16 +192,9 @@ void QDM_Multiphase::mettre_a_jour(double temps)
                       for (int k = 0; k < src.dimension_tot(0); k++)
                         for (int dU = 0; dU < D; dU++)
                           for (int dX = 0; dX < D; dX++)
-                            dst(k, dX + D * dU) = src(k, dX, dU + n * D);// Les lignes et les colonnes sont inversees quand on passe dans DoubleTab_parts
+                            dst(k, dX + D * dU) = src(k, dX, dU + n * D); // Les lignes et les colonnes sont inversees quand on passe dans DoubleTab_parts
                     }
                 }
-          }
-        else // oui ... pour le vdf de corentin
-          {
-            for (int e = 0; e < domaine_dis().nb_elem(); e++)
-              for (i = 0; i < D; i++)
-                for (j = 0; j < D; j++)
-                  grad_vit_phases_[n]->valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;
           }
         grad_vit_phases_[n]->mettre_a_jour(temps);
       }
