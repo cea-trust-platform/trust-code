@@ -401,7 +401,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanement
           for (auto &&nom : noms)
             if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
-          if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p))) break; //si l'elimination echoue, on sort
+          if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p)))
+            {
+              Cerr << "Echec de l'elimination!";
+              break; //si l'elimination echoue, on sort
+            }
 
           /* assemblage du systeme en pression */
           assembler("pression", A_p, b_p, mats, sec, matrice_pression, *sec["pression"], p_degen);
@@ -419,7 +423,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
               matrice_pression.ajouter_multvect(inco["pression"]->valeurs(), *sec["pression"]); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
               solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
               ok = (solv_p.resoudre_systeme(matrice_pression, *sec["pression"], *incr["pression"]) >= 0);
-              if (!ok) break; //le solveur a echoue -> on sort
+              if (!ok)
+                {
+                  Cerr << "Echec du solveur!";
+                  break; //le solveur a echoue -> on sort
+                }
               incr["pression"]->echange_espace_virtuel();
               *incr["pression"] -= inco["pression"]->valeurs();
             }
@@ -438,7 +446,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           mat_semi_impl.ajouter_multvect(v_inco, v_sec); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
           solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
           ok = (solv_p.resoudre_systeme(mat_semi_impl, v_sec, v_incr) >= 0);
-          if (!ok) break; //le solveur a echoue -> on sort
+          if (!ok)
+            {
+              Cerr << "Echec du solveur!";
+              break; //le solveur a echoue -> on sort
+            }
           v_incr -= v_inco; //retour en increments
         }
 
@@ -460,7 +472,16 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_i : inco) n_i.second->valeurs() += *incr[n_i.first];
       if (p_degen) inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
-      if (!(ok = err_a_sum < crit_conv["alpha"] && eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+      if (!(ok = err_a_sum < crit_conv["alpha"]))
+        {
+          Cerr << "Erreur en alpha!";
+          break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+        }
+      if (!(ok = eq_qdm.milieu().check_unknown_range()))
+        {
+          Cerr << "Sortie des bornes!";
+          break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
+        }
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
@@ -685,7 +706,8 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
             /* factorisation et resolution */
             // DoubleTrav D_back = D;
             F77NAME(dgetrf)(&nb, &nb, &D(0, 0), &nb, &piv(0), &infoo);
-            if (infoo > 0) return 0; //singularite rencontree -> on sort avant de diviser par 0
+            if (infoo > 0)
+              return 0; //singularite rencontree -> on sort avant de diviser par 0
             F77NAME(dgetrs)(&trans, &nb, &nc, &D(0, 0), &nb, &piv(0), &S(0, 0), &nb, &infoo);
 
             /* stockage : S(0, .) dans b_p, S(1..nc, .) dans A_p */
