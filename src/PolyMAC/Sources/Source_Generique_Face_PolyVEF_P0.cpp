@@ -13,37 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef DP_Impose_PolyMAC_Face_included
-#define DP_Impose_PolyMAC_Face_included
+#include <Source_Generique_Face_PolyVEF_P0.h>
+#include <Domaine_PolyVEF_P0.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 
-#include <Perte_Charge_PolyMAC_Face.h>
-#include <DP_Impose.h>
-#include <TRUSTList.h>
+Implemente_instanciable(Source_Generique_Face_PolyVEF_P0, "Source_Generique_Face_PolyVEF_P0", Source_Generique_Face_PolyMAC_P0P1NC);
 
-#include <Domaine_forward.h>
+Sortie& Source_Generique_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je(); }
 
-/*! @brief class DP_Impose_PolyMAC_Face
- *
- *
- *
- * @sa Perte_Charge_PolyMAC_Face
- */
-class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public DP_Impose
+Entree& Source_Generique_Face_PolyVEF_P0::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
+
+DoubleTab& Source_Generique_Face_PolyVEF_P0::ajouter(DoubleTab& resu) const
 {
-  Declare_instanciable(DP_Impose_PolyMAC_Face);
-
-public:
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-  void check_multiphase_compatibility() const override { }
-  void completer() override;
-
-protected:
-  IntVect sgn;
-  double surf = -123.;//surface totale
-};
-
-#endif
+  OWN_PTR(Champ_base) espace_stockage;
+  const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
+  for (int f = 0; f < domaine.nb_faces(); f++)
+    resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
+  return resu;
+}
