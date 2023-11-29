@@ -23,7 +23,7 @@ jdd_cpu=OpenMP_Iterateur_$jdd_cpu$ext.data
 jdd_gpu=OpenMP_Iterateur_$jdd_gpu$ext.data
 
 mkdir -p weak_scaling$ext && cd weak_scaling$ext
-echo -e "Host     \tDOF \tConfig     \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s  \tIters    \tLoadImbalance	\tGPU Direct"
+echo -e "Host     \tDOF \t\tConfig       \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s \tIters \tLoadImb Energy[J] \tGPU Direct"
 for bench in $benchs
 do
    [ $bench = gpu ] && mpis=$mpis_gpu && source $env_gpu 1>/dev/null
@@ -89,7 +89,9 @@ do
       dof=`awk '/Total number of elements/ {print $NF}' $jdd.out_err | tail -1`
       its=`awk '/Iterations/ && /solveur/ {print $NF}' $jdd.TU`
       gpu="\t" && [ $bench = gpu ] && gpu="+"$mpi"GPU"
-      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$TRUST_USE_GPU_AWARE_MPI '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu" \t"dt" \t"s" \t"b" \t"dof/dt*0.001*0.001" \t"its" \t"lib" \t"direct}' $jdd.TU
+      direct="Off" && [ "`grep 'Enabling GPU' $jdd.out_err`" != "" ] && direct="On"
+      kj=`grep -l $jdd myjob.* 2>/dev/null | tail -1 | awk -F. '{print $2}' | xargs -I {} sacct --format=JobID,ElapsedRaw,ConsumedEnergyRaw,NodeList --jobs={} 2>/dev/null | awk '/\.batch/ {print $3}'`
+      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$direct -v kj=$kj '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu"\t"dt" \t"s" \t"b" \t"int(dof/dt*0.001*0.001)" \t"int(its)" \t"lib" \t"kj" \t\t"direct}' $jdd.TU
       cd - 1>/dev/null 2>&1
    done    
 done
