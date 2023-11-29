@@ -143,9 +143,10 @@ else
    rm -f *.dbg
    if [ ${#DEC} = 0 ]
    then
+      # make_PAR.data is called from lance_test if ${#DEC}!=0
       echo $ECHO_OPTS "To run the parallel calculation on $NB_CPUS CPUs:"
       echo $ECHO_OPTS "trust $PAR_NOM $NB_CPUS"
-      exit $NB_CPUS
    fi
+   exit $NB_CPUS
 fi
 

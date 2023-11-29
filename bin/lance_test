@@ -1124,19 +1124,17 @@ then
 		if [ "`grep -E 'BEGIN PARTITION|DEBUT DECOUPAGE' $NOM.data`" = "" ]
 		then
 		    echo " File $NOM.data not ready to check parallelism !"
-		    DEC=0
+		    export DEC=0
 		else
-		    DEC=1
+		    export DEC=1
 		    let tests_par=$tests_par+1
 		    ###############################
 		    # preparation pour le parallele
 		    ###############################
 		    # Cree les fichiers DEC..data et PAR..data
-		    # Provisoire car bug ?
-		    # NB_CPUS=2
-		    NB_CPUS_SA=$NB_CPUS
 		    echo $ECHO_OPTS "Partitioning for parallel calculation...\c"
-		    . make_PAR.data $NOM $NB_CPUS
+		    make_PAR.data $NOM $NB_CPUS
+		    NB_CPUS=$?
 		    # Solveur direct Cholesky n'est pas parallelise mais remplace par GCP pour le test de comparaison sequentiel-parallele
 		    # => le script make_PAR.data modifie les jdd SEQ_$NOM.data et PAR_$NOM.data
 		    # Or ici le script lance_test lance les jdd $NOM.data et PAR_$NOM.data puis compare leurs resultats
@@ -1170,7 +1168,6 @@ then
 		else
 		    # lancement parallele
 		    eval $EP &
-		    NB_CPUS=$NP_CPUS_SA
 		    process_pere=$!
 		fi
 		if [ $exterm = 0 ]
