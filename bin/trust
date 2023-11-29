@@ -214,28 +214,15 @@ do
       fi
    elif [ "$1" = "-doc" ]
    then
-      if [ "$project_directory" != "" ]
-      then
-          
-          doc=$project_directory/share/doc_auto/TRUST_Generic_Guide.pdf
-          if [ ! -f $doc ] 
-            then
-             doc=$project_directory/share/doc/TRUST_Generic_Guide.pdf
-	     [ ! -f $doc ] && doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
-            else
-		echo "Using doc generated"
-           fi
-      else
-         doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
-      fi
+      doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_documentation.pdf
       if [ -f $doc ]
       then
-	 for app in xpdf evince kpdf okular
-	 do
+         for app in xpdf evince kpdf okular
+         do
             $app $doc 1>/dev/null 2>&1 && exit 0
-	 done
-	 echo "No PDF reader found!"
-	 exit -1
+         done
+         echo "No PDF reader found!"
+         exit -1
       else
 	 echo "$doc not found!" 
 	 exit -1

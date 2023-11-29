@@ -74,6 +74,7 @@ define_soumission_batch()
 
    # On se base sur la frontale pour selectionner la queue par defaut:
    queue=amdq_naples && [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
+   [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max

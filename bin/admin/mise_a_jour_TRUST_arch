@@ -969,10 +969,9 @@ do
 	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche #&& echo Canal_perio_VDF_3D_Keps >> liste_cherche # dans TrioCFD
 	 # Autres ajouts
 	 echo cpu_3D >> liste_cherche
-	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
+	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche
 	 # Test outils Gmsh et VisIt
 	 echo Kernel_Gmsh2Trio_U >> liste_cherche 
-	 echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
 	 # Test MED_COUPLING_PYTHON
 	 echo Lata_conversion_scripts_jdd1 >> liste_cherche
 	 echo MED_major_jdd1 >> liste_cherche

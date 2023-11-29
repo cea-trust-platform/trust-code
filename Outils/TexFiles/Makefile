@@ -1,16 +1,11 @@
-FILE1=mini_Generic_Guide
 FILE2=mini_Reference_Manual
 FILE3=mini_prm
 FILE4=mini_jupyter
 
 
-default:  $(FILE1) $(FILE2) $(FILE3)
+default:  $(FILE2) $(FILE3)
 
 jupyter: $(FILE4)
-
-$(FILE1): $(FILE1).pdf
-$(FILE1).pdf: $(FILE1).tex Makefile 
-	pdflatex -interaction=nonstopmode $(FILE1).tex > LOG
 
 $(FILE2): $(FILE2).pdf
 $(FILE2).pdf: $(FILE2).tex Makefile 

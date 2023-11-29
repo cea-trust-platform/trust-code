@@ -2440,7 +2440,7 @@ def gen_doc_base(fr=1):
 \vspace{2cm}
 \LARGE \textbf{Support team: \href{mailto:trust@cea.fr}{trust@cea.fr}} \\
 \vspace{4cm} % espace entre ref manual et ce qui est en dessous
-Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}}\\
+%Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}}\\
  }
 \maketitle
 \newpage

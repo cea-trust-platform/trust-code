@@ -32,7 +32,8 @@ else
 fi
 
 echo "Suppression objets inutiles..."
-rm -r -f src
+# src n'est pas si inutile que cela : le test fftw lors du configure de TrioCFD plante si pas de src dans TRUST.
+#rm -r -f src
 rm -r -f externalpackages
 rm -r -f MonoDir_mpi* doc/html doc/Coverage
 rm -r -f exec/valgrind
