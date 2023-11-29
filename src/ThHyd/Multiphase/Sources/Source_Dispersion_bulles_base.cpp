@@ -45,31 +45,3 @@ Entree& Source_Dispersion_bulles_base::readOn(Entree& is)
 
   return is;
 }
-
-void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const // 100% explicit
-{
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
-  if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const DoubleTab& inco = ch.valeurs();
-  const IntTab& fcl = ch.fcl();
-
-  /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  IntTrav stencil(0, 2);
-
-  int f, k, l, N = inco.line_size();
-
-  /*faces*/
-  for (f = 0; f < domaine.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
-      for (k = 0; k < N; k++)
-        for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);
-
-  /* elements si aux */
-  dimensionner_blocs_aux(stencil);
-
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
-  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
-}

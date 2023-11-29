@@ -316,7 +316,7 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
     }
 
   // Devant
-  if(nom_dvt_=="NULL")
+  if(nom_dvt_=="nullptr")
     {
       Cerr << "We don't associate any boundary to the front of the domain " << dom.le_nom() << finl;
     }
@@ -345,7 +345,7 @@ void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom
     }
 
   // Derriere
-  if(nom_derriere_=="NULL")
+  if(nom_derriere_=="nullptr")
     {
       Cerr << "We don't associate any boundary to the back of the domain " << dom.le_nom() << finl;
     }

@@ -13,37 +13,29 @@
 *
 *****************************************************************************/
 
-#ifndef DP_Impose_PolyMAC_Face_included
-#define DP_Impose_PolyMAC_Face_included
+#ifndef Perte_Charge_PolyVEF_P0_included
+#define Perte_Charge_PolyVEF_P0_included
 
-#include <Perte_Charge_PolyMAC_Face.h>
-#include <DP_Impose.h>
-#include <TRUSTList.h>
+#include <Perte_Charge_PolyMAC.h>
 
-#include <Domaine_forward.h>
+//! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
+/**
+   Perte_Charge_Isotrope, Perte_Charge_Directionnelle et
+   Perte_Charge_Anisotrope heritent de Perte_Charge_PolyVEF_P0. Elles
+   doivent surcharger essentiellement readOn() et perte_charge().
+   readOn() est suppose lire au moins diam_hydr et sous_domaine.
 
-/*! @brief class DP_Impose_PolyMAC_Face
- *
- *
- *
- * @sa Perte_Charge_PolyMAC_Face
- */
-class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public DP_Impose
+   Ces classes sont censees remplacer Perte_Charge_PolyVEF_P0_Face
+   et Perte_Charge_PolyVEF_P0_P1NC.
+*/
+
+class Perte_Charge_PolyVEF_P0 : public Perte_Charge_PolyMAC
 {
-  Declare_instanciable(DP_Impose_PolyMAC_Face);
-
+  Declare_base(Perte_Charge_PolyVEF_P0);
 public:
-  int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
+  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-  void check_multiphase_compatibility() const override { }
-  void completer() override;
-
-protected:
-  IntVect sgn;
-  double surf = -123.;//surface totale
 };
 
-#endif
+#endif /* Perte_Charge_PolyVEF_P0_included */

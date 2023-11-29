@@ -253,7 +253,8 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           sats_all.insert( { SAT::LV_SAT, Lvap_tab.get_span() });
           sats_all.insert( { SAT::LV_SAT_DP, dP_Lvap_tab.get_span() });
 
-          z_sat.compute_all_flux_interfacial_pb_multiphase(press.get_span() /* elem reel */, sats_all, nb_max_sat, ind_trav);
+          ConstDoubleTab_parts ppart(press);
+          z_sat.compute_all_flux_interfacial_pb_multiphase(ppart[0].get_span() /* elem reel */, sats_all, nb_max_sat, ind_trav);
         }
 
   for (e = 0; e < domaine.nb_elem(); e++)
@@ -269,7 +270,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
         for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
       in.dh = dh, in.alpha = &alpha(e, 0), in.T = &temp(e, 0),  in.T_passe = &temp_p(e, 0), in.p = press(e, 0), in.nv = &nv(0, 0), in.h = &h(e, 0), in.dT_h = dT_h ? &(*dT_h)(e, 0) : nullptr, in.dP_h = dP_h ? &(*dP_h)(e, 0) : nullptr;
-      in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e, in.Lvap = &Lvap_tab(e, 0), in.dP_Lvap = &dP_Lvap_tab(e, 0), in.sigma = &Sigma_tab(e,0);
+      in.lambda = &lambda(!cL * e, 0), in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.Cp = &Cp(!cCp * e, 0), in.e = e, in.Lvap = &Lvap_tab(e, 0), in.dP_Lvap = &dP_Lvap_tab(e, 0), in.sigma = &Sigma_tab(e,0), in.Tsat = &Ts_tab(e,0), in.dP_Tsat = &dPTs_tab(e,0);
       in.d_bulles = (d_bulles) ? &(*d_bulles)(e,0) : nullptr, in.k_turb = (k_turb) ? &(*k_turb)(e,0) : nullptr, in.nut = (is_turb_) ? &nut(e,0) : nullptr;
       correlation_fi.coeffs(in, out);
 
