@@ -48,10 +48,19 @@ void Saturation_base::mettre_a_jour(double temps)
 
   // on suppose pour le moment que le champ de pression a 1 comp.
   assert(press.line_size() == 1);
-  Tsat(press.get_span_tot(), Tsat_tab.get_span_tot(), 1, 0);
-
+  // Cas PolyMAC_P0vec : le champ de pression a plus de cases que d'elements
+  if (press.dimension_tot(0) == Tsat_tab.dimension_tot(0))
+    {
+      Tsat(press.get_span_tot(), Tsat_tab.get_span_tot(), 1, 0);
+      sigma(Tsat_tab.get_span(), press.get_span(), sigma_tab.get_span(), 1, 0);
+    }
+  else
+    {
+      ConstDoubleTab_parts press_parts(press);
+      Tsat(press_parts[0].get_span_tot(), Tsat_tab.get_span_tot(), 1, 0);
+      sigma(Tsat_tab.get_span(), press_parts[0].get_span(), sigma_tab.get_span(), 1, 0);
+    }
   // call sigma
-  sigma(Tsat_tab.get_span(), press.get_span(), sigma_tab.get_span(), 1, 0);
   sigma_tab.echange_espace_virtuel();
 }
 
