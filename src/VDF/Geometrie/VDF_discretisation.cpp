@@ -551,7 +551,7 @@ void VDF_discretisation::residu(const Domaine_dis_base& z, const Champ_Inc_base&
   if (type_ch.debute_par("Champ_Face"))
     {
       loc = "champ_face";
-      nb_comp = dimension;
+      nb_comp = dimension * ch_inco.valeurs().line_size();
     }
   else
     {

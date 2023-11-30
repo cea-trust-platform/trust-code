@@ -44,9 +44,11 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems_(const DoubleTab& val
       Process::exit();
     }
 
+
   const int N = val_face.line_size(), D = Objet_U::dimension, M = le_champ().nb_comp();
   DoubleVect val_e(N * D), x(D);
   val_elem = 0.0;
+  assert(val_elem.line_size()==N * std::min(D, M));
 
   for (int p = 0; p < les_polys.size(); p++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,10 +29,10 @@ int Champ_Fonc_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
   assert(nb_noeuds == domaine_vdf().nb_faces());
   const MD_Vector& md = domaine_vdf().md_vector_faces();
   // HACK (le meme que dans Champ_Face_VDF.cpp)
-  int old_nb_comp = nb_compo_;
-  nb_compo_ = 1;
+  int old_nb_compo = nb_compo_;
+  if(nb_compo_ >= dimension) nb_compo_ /= dimension;
   creer_tableau_distribue(md);
-  nb_compo_ = old_nb_comp;
+  nb_compo_ = old_nb_compo;
   return nb_noeuds;
 }
 
