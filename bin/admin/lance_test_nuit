@@ -866,10 +866,10 @@ fi
    fi
    rm -f $tuto.new
    echo " "
-   if [ "`echo $new | grep beta`" = "" ]
-   then
-      touch doc/TRUST/Generic_Guide/Generic_Guide.tex
-   fi
+   #if [ "`echo $new | grep beta`" = "" ]
+   #then
+   #   touch doc/TRUST/Generic_Guide/Generic_Guide.tex
+   #fi
 #fi
 
 [ ! -d $TRUST_ROOT/.git ] && echo "Error: You must have $TRUST_ROOT/.git directory to do this action" && exit
@@ -1755,7 +1755,7 @@ echo $ECHO_OPTS "TrioCFD Front Tracking   mailing list http://saxifrage:3500/wws
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 #echo $ECHO_OPTS "TRUST ftp site:          ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST documentation:     ftp://$TRUST_FTP/$SECRET/doc" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest Generic Guide:    ftp://$TRUST_FTP/$SECRET/doc/TRUST_Generic_Guide.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Generic Guide:    ftp://$TRUST_FTP/$SECRET/doc/TRUST_Generic_documentation.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest Reference Manual: ftp://$TRUST_FTP/$SECRET/doc/TRUST_Reference_Manual.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest Tutorial:         ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest list of builds:   ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
@@ -3761,7 +3761,7 @@ then
    cp $TRUST_ROOT/doc/TRUST/Tutorial/TRUST_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/ICoCo_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/Baltik_tutorial.pdf $TRUST_ROOT/doc/TRUST/
-   cp $TRUST_ROOT/doc/TRUST/Generic_Guide/TRUST_Generic_Guide.pdf $TRUST_ROOT/doc/TRUST/
+   #cp $TRUST_ROOT/doc/TRUST/Generic_Guide/TRUST_Generic_Guide.pdf $TRUST_ROOT/doc/TRUST/
    # Update the version in README.md file (displayed on github)
    sed -i "s/$old/$new/g" $TRUST_ROOT/README.md
    # Commit

@@ -28,7 +28,7 @@ echo "From $TRUST_TESTS/Reference directory"
 fichier=$TRUST_TMP/References.html
 tmp=$HOME/.tmp_file
 # Ecriture de l entete du fichier
-notice=.."/doc/TRUST/TRUST_Generic_Guide.pdf"
+notice=.."/doc/TRUST/TRUST_Generic_documentation.pdf"
 echo "<!--NewPage-->
 <html>
 <head>

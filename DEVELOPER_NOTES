@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
+Developer notes version 1.9.3 : Changes since version 1.9.2 :
 -------------------------------------------------------------
 10/11/23 (TRUST) Tools        : Add -disable-hwloc option to configure to not install hwloc tool by default
 23/10/23 (TRUST) Minor change : Class Groupe_interne becomes Groupe_face as it now supports an arbitrary mix of internal or boundary faces.
