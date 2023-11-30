@@ -13,24 +13,24 @@
 *
 *****************************************************************************/
 
-#include <Champ_Face_PolyMAC_P0.h>
-#include <Domaine.h>
-#include <Domaine_VF.h>
-#include <Champ_Uniforme.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_dis.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <EChaine.h>
-#include <TRUSTTab_parts.h>
 #include <Linear_algebra_tools_impl.h>
+#include <Champ_Face_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Dirichlet_homogene.h>
+#include <Champ_Fonc_reprise.h>
+#include <Schema_Temps_base.h>
+#include <TRUSTTab_parts.h>
+#include <Champ_Uniforme.h>
+#include <Domaine_Cl_dis.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Schema_Temps_base.h>
-#include <Champ_Fonc_reprise.h>
+#include <TRUSTLists.h>
+#include <Domaine_VF.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <EChaine.h>
+#include <Domaine.h>
 #include <array>
 #include <cmath>
 #include <Pb_Multiphase.h>

@@ -50,7 +50,7 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 
   Champ_Inc_base& ch_base = ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
-  int n, N = ch_tab.line_size() / (sub_type(Champ_Face_PolyVEF_P0, ch_base) ? dimension : 1);
+  int n, N = ch_tab.line_size();
 
   if (sub_type(Champ_Inc_P0_base, ch_base)) { /* Do nothing */ }
   else if (ch_base.nature_du_champ() == scalaire) { /* Do nothing */ }
