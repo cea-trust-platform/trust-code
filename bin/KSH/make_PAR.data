@@ -14,7 +14,8 @@ SUBSTITUE ()
 {
    eps=`$TRUST_Awk '/seq faces/ {print $(NF-1)}' $NOM.data`
    sed -e "s?fichier $NOM?fichier $1?g" \
--e "s?seq faces $eps 0?seq faces $eps 1?g" $NOM.data > $1".data"
+-e "s?seq faces $eps 0?seq faces $eps 1?g" \
+-e "s? mode_db write ? mode_db read ?g" $NOM.data > $1".data"
    # Cholesky par Petsc est parallele 
    if [ "`grep -i Cholesky $1.data | grep -vi precond_local | grep -vi Petsc`" != "" ]
    then
