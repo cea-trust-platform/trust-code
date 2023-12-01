@@ -22,22 +22,20 @@ install_OpenBlas()
       FC=$TRUST_F77
    fi
    # On ne construit que les libs (tests plantent parfois):
-   target="libs netlib"
+   targets="libs netlib"
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
-   options="$target CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1"
+   options="CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1"
    if [ `uname -s` = Darwin ]
    then
-      $TRUST_MAKE $options
+      $TRUST_MAKE $targets $options
    else
-      $TRUST_MAKE $options || exit -1
+      # Warning, faire en 2 passes car parallel build peut echouer sinon (ex: Fedora38)
+      for target in $targets
+      do
+         $TRUST_MAKE $target $options
+      done   
    fi
    lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
-   # Parallel build qui parfois corrompt la librairie (vu sur Fedora 38), on refait:
-   if [ "`nm $lib 2>&1 | grep recognized`" != "" ]
-   then
-      make clean
-      make $options
-   fi 
    BENCH=0
    if [ $BENCH = 1 ]
    then
@@ -122,7 +120,8 @@ do
    ln -sf $file .
 done
 # Nom des versions a upgrader: Attention on garde encore 0.3.21 ailleurs car plantage possible sur haswell (PC Elie) avec seg fault dans MUMPS lors appel dgemmt_ (ToDo: semble corrige dans 0.3.24)
-version_openblas=0.3.21 && [ $HOST = adastra ] && version_openblas=0.3.23 # Necessaire pour adastra (-O noomp inconnue plante lapack)
+# version_openblas=0.3.21 && [ $HOST = adastra ] && version_openblas=0.3.23 # Necessaire pour adastra (-O noomp inconnue plante lapack)
+version_openblas=0.3.25 # Prendre version plus ancienne si probleme
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
 version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 
