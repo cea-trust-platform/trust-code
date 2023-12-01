@@ -17,6 +17,7 @@
 #define TRUSTChamp_Morceaux_generique_TPP_included
 
 #include <Sous_Domaine.h>
+#include <Champ_Generique_base.h>
 
 template<Champ_Morceaux_Type _TYPE_>
 Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& ch)
@@ -173,7 +174,8 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
       const IntTab& les_elems = mon_domaine->les_elems();
       const int nb_som_elem = mon_domaine->nb_som_elem();
 
-      const Champ_base *ch = ref_pb.non_nul() ? &ref_pb->get_champ(nom_champ_parametre_) : nullptr;
+      Champ espace_stockage;
+      const Champ_base *ch = !ref_pb.non_nul() ? nullptr : ref_pb->has_champ(nom_champ_parametre_) ? &ref_pb->get_champ(nom_champ_parametre_) : &ref_pb->get_champ_post(nom_champ_parametre_).get_champ(espace_stockage);
 
       DoubleTab& tab = valeurs();
 
