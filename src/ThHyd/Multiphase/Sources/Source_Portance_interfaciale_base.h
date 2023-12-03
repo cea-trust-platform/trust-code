@@ -43,6 +43,7 @@ public :
 protected:
   OWN_PTR(Correlation_base) correlation_; //correlation donnant le coeff de portance interfaciale
   int n_l = -1; //phase liquide
+  int ur_parallel_ul_ = 1 ; // Flag if lift force uses relative velocity or relative velocity projected on liquid velocity vector
   double beta_ = 1. ; // To adjust the force in .data
   double g_ = 9.81;
   OWN_PTR(Champ_Fonc_base)  wobble; // postreatment
