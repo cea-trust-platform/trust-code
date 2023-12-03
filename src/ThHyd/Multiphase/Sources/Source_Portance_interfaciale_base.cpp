@@ -29,6 +29,7 @@ Entree& Source_Portance_interfaciale_base::readOn(Entree& is)
   Param param(que_suis_je());
   param.ajouter("beta", &beta_);
   param.ajouter("g", &g_);
+  param.ajouter("ur_parallel_ul", &ur_parallel_ul_);
   param.lire_avec_accolades_depuis(is);
 
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
