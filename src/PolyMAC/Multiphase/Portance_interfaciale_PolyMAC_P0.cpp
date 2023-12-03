@@ -111,20 +111,25 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       i = nf_tot + D * e;
 
       // Experimentation sur la portance : on enleve la partie parallele a la vitesse du liquide
-      vl_norm = 0;
-      scal_ur = 0;
-      for (d = 0 ; d < D ; d++) vl_norm += pvit(i+d, n_l)*pvit(i+d, n_l);
-      vl_norm = std::sqrt(vl_norm);
-      if (vl_norm > 1.e-6)
+      if (ur_parallel_ul_)
         {
-          for (k = 0; k < N; k++)
-            for (d = 0 ; d < D ; d++) scal_ur(k) += pvit(i+d, n_l)/vl_norm * (pvit(i+d, k) -pvit(i+d, n_l));
-          for (k = 0; k < N; k++)
-            for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit(i+d, n_l)/vl_norm * scal_ur(k) ;
+          vl_norm = 0;
+          scal_ur = 0;
+          for (d = 0 ; d < D ; d++) vl_norm += pvit(i+d, n_l)*pvit(i+d, n_l);
+          vl_norm = std::sqrt(vl_norm);
+          if (vl_norm > 1.e-6)
+            {
+              for (k = 0; k < N; k++)
+                for (d = 0 ; d < D ; d++) scal_ur(k) += pvit(i+d, n_l)/vl_norm * (pvit(i+d, k) -pvit(i+d, n_l));
+              for (k = 0; k < N; k++)
+                for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit(i+d, n_l)/vl_norm * scal_ur(k) ;
+            }
+          else for (k=0 ; k<N ; k++)
+              for (d=0 ; d<D ; d++) vr_l(k, d) = pvit(i+d, k) -pvit(i+d, n_l) ;
         }
-      else for (k=0 ; k<N ; k++)
+      else
+        for (k=0 ; k<N ; k++)
           for (d=0 ; d<D ; d++) vr_l(k, d) = pvit(i+d, k) -pvit(i+d, n_l) ;
-
 
       if (D==2)
         {
@@ -222,20 +227,24 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
             pvit_l(k, d) += (pvit(f, k) - scal_u(k)) * n_f(f, d)/fs(f) ; // Corect velocity at the face
 
         // Relative velocity parallel to the liquid flow
-        vl_norm = 0;
-        scal_ur = 0;
-        for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
-        vl_norm = std::sqrt(vl_norm);
-        if (vl_norm > 1.e-6)
+        if (ur_parallel_ul_)
           {
-            for (k = 0; k < N; k++)
-              for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
-            for (k = 0; k < N; k++)
-              for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
+            vl_norm = 0;
+            scal_ur = 0;
+            for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
+            vl_norm = std::sqrt(vl_norm);
+            if (vl_norm > 1.e-6)
+              {
+                for (k = 0; k < N; k++)
+                  for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
+                for (k = 0; k < N; k++)
+                  for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
+              }
+            else for (k=0 ; k<N ; k++)
+                for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
           }
         else for (k=0 ; k<N ; k++)
             for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
-
 
         // Use local vairables for the calculation of secmem ; 100% explicit
         fac_f = beta_*pf(f) * vf(f);

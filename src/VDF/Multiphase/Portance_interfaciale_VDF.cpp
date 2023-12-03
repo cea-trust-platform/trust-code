@@ -166,18 +166,24 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
         for (k = 0 ; k<N ; k++)
           for (d = 0 ; d<D ; d++)
             pvit_l(k, d) += (pvit(f, k) - scal_u(k)) * n_f(f, d)/fs(f) ; // Corect velocity at the face
-        vl_norm = 0;
-        scal_ur = 0;
-        for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
-        vl_norm = std::sqrt(vl_norm);
-        if (vl_norm > 1.e-6)
+        if (ur_parallel_ul_)
           {
-            for (k = 0; k < N; k++)
-              for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
-            for (k = 0; k < N; k++)
-              for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
+            vl_norm = 0;
+            scal_ur = 0;
+            for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
+            vl_norm = std::sqrt(vl_norm);
+            if (vl_norm > 1.e-6)
+              {
+                for (k = 0; k < N; k++)
+                  for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
+                for (k = 0; k < N; k++)
+                  for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
+              }
+            else for (k=0 ; k<N ; k++)
+                for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
           }
-        else for (k=0 ; k<N ; k++)
+        else
+          for (k=0 ; k<N ; k++)
             for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
 
         if (D==2)
