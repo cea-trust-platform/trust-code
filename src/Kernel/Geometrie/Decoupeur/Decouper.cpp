@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
 #include <communications.h>
 #include <vector>
 #include <set>
+#include <Format_Post.h>
 
 Implemente_instanciable(Decouper,"Decouper|Partition",Interprete);
 
@@ -138,53 +139,81 @@ static void ecrire_fichier_decoupage_som(const Nom& nom_fichier_decoupage,
     }
 }
 
-static void postraiter_decoupage(const Nom& nom_fichier_lata,
+static void postraiter_decoupage(const Nom& nom_fichier,
                                  const Domaine& domaine,
                                  const IntVect& elem_part)
 {
-  Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier_lata << finl;
-
-  Format_Post_Lata post;
-
-  constexpr int IS_FIRST = 1;
   // Check and strip ".lata" :
   Nom basename;
-  if (nom_fichier_lata.finit_par(".lata"))
+  if (nom_fichier.finit_par(".lata"))
     {
-      basename = nom_fichier_lata;
+      basename = nom_fichier;
       basename.prefix(".lata");
     }
+  else if (nom_fichier.finit_par(".med"))
+    {
+      basename = nom_fichier;
+      basename.prefix(".med");
+    }
   else
-    Process::exit("Decouper: postraiter_decoupage(): the file name for postprocessing the domain should end with extension '.lata'!!");
-  post.initialize_lata(basename, Format_Post_Lata::BINAIRE, Format_Post_Lata::SINGLE_FILE);
-  post.ecrire_entete(0.0, 0, IS_FIRST);
-  post.ecrire_domaine(domaine, IS_FIRST);
-  post.ecrire_temps(0.0);
-
+    Process::exit(             "Decouper: postraiter_decoupage(): the file name for postprocessing the domain should end with extension '.lata' or '.med' !!");
   // Compute dummy field indicating partitioning:
   const int n = elem_part.size_reelle();
   DoubleTab data(n);
   for (int i = 0; i < n; i++)
     data(i) = elem_part[i];
 
-  // Write it down:
   Noms units, noms_compo;
   units.add("");
   noms_compo.add("I");
+  constexpr int IS_FIRST = 1;
 
-  post.ecrire_champ(domaine,
-                    units,
-                    noms_compo,
-                    1,           // ncomp,
-                    0.0,         //temps,
-                    "partition", // id_du_champ,
-                    domaine.le_nom(), // id_du_domaine
-                    "ELEM",      // localisation,
-                    "scalar",    //nature,
-                    data         // valeurs
-                   );
+  // ToDo merge code lata and med
+  if (nom_fichier.finit_par(".lata"))
+    {
+      Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier << finl;
+      Format_Post_Lata post;
 
-  post.finir(1);
+      post.initialize_lata(basename, Format_Post_Lata::BINAIRE, Format_Post_Lata::SINGLE_FILE);
+      post.ecrire_entete(0.0, 0, IS_FIRST);
+      post.ecrire_domaine(domaine, IS_FIRST);
+      post.ecrire_temps(0.0);
+      post.ecrire_champ(domaine,
+                        units,
+                        noms_compo,
+                        1,           // ncomp,
+                        0.0,         //temps,
+                        "partition", // id_du_champ,
+                        domaine.le_nom(), // id_du_domaine
+                        "ELEM",      // localisation,
+                        "scalar",    //nature,
+                        data         // valeurs
+                       );
+      post.finir(1);
+    }
+  else if (nom_fichier.finit_par(".med"))
+    {
+      Cerr << "Postprocessing of the splitting at the MED format: " << nom_fichier << finl;
+      Format_Post post;
+      post.typer_direct("Format_Post_Med");
+      Nom filename(nom_fichier.getPrefix(".med"));
+      post->initialize(filename, 1, "SIMPLE");
+      post->ecrire_entete(0.0, 0, IS_FIRST);
+      post->ecrire_domaine(domaine, IS_FIRST);
+      post->ecrire_temps(0.0);
+      post->ecrire_champ(domaine,
+                         units,
+                         noms_compo,
+                         -1,           // ncomp,
+                         0.0,         //temps,
+                         "partition", // id_du_champ,
+                         "domain", // id_du_domaine
+                         "ELEM",      // localisation,
+                         "scalar",    //nature,
+                         data         // valeurs
+                        );
+      post->finir(1);
+    }
 }
 
 static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
@@ -216,7 +245,8 @@ static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
 // XD attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost domaine (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
 // XD attr nom_zones chaine zones_name 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
 // XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the domaine number for each element\'s mesh. Then you can easily permute domaine numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
-// XD attr ecrire_lata chaine ecrire_lata 1 not_set
+// XD attr ecrire_lata chaine ecrire_lata 1 Save the partition field in a LATA format file for visualization
+// XD attr ecrire_med chaine ecrire_med 1 Save the partition field in a MED format file for visualization
 // XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Domaine files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty domaines from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
 // XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
 // XD attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
@@ -260,6 +290,7 @@ Entree& Decouper::lire(Entree& is)
   param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
   param.ajouter("ecrire_decoupage_sommets",&nom_fichier_decoupage_sommets);
   param.ajouter("ecrire_lata",&nom_fichier_lata);
+  param.ajouter("ecrire_med",&nom_fichier_med);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
   param.ajouter("reorder",&reorder);
   param.ajouter_flag("single_hdf",&format_hdf);
@@ -314,6 +345,8 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
 
   if (nom_fichier_lata != "?")
     postraiter_decoupage(nom_fichier_lata, ref_domaine.valeur(), elem_part);
+  if (nom_fichier_med != "?")
+    postraiter_decoupage(nom_fichier_med, ref_domaine.valeur(), elem_part);
 
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_elem = Process::mp_sum(elem_part.size_reelle());

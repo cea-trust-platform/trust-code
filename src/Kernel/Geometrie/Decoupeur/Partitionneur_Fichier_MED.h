@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
 protected:
   // Parametres du partitionneur
   REF(Domaine) ref_domaine_;
-  Nom filename_;
-  Nom fieldname_;
+  Nom filename_="";
+  Nom fieldname_="partition";
 };
 #endif

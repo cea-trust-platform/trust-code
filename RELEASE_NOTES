@@ -1,3 +1,5 @@
+XX/XX/23 (TRUST) New feature  : Partition_tool Fichier_MED can read now the partition MED file from a previous partitionned domain to create a conform partitioned mesh 
+XX/XX/23 (TRUST) New option   : Add ecrire_med option to Partition tools to write partition field into a MED file
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------

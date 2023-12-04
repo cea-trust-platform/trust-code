@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,9 @@
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
 #include <communications.h>
+#include <Champ_Fonc_MED.h>
+#include <EChaine.h>
+
 #endif
 
 // XD Partitionneur_Fichier_MED partitionneur_deriv fichier_med -1 Partitioning a domain using a MED file containing an integer field providing for each element the processor number on which the element should be located.
@@ -31,8 +34,6 @@ Implemente_instanciable_sans_constructeur(Partitionneur_Fichier_MED,"Partitionne
 
 Partitionneur_Fichier_MED::Partitionneur_Fichier_MED()
 {
-  filename_ = "";
-  fieldname_ = "";
 }
 
 /*! @brief Lecture des parametres du partitionneur sur disque.
@@ -60,7 +61,7 @@ Sortie& Partitionneur_Fichier_MED::printOn(Sortie& os) const
 void Partitionneur_Fichier_MED::set_param(Param& param)
 {
   param.ajouter("file",&filename_,Param::REQUIRED); // XD_ADD_P chaine file name of the MED file to load
-  param.ajouter("field",&fieldname_,Param::REQUIRED); // XD_ADD_P chaine field name of the integer field to load
+  param.ajouter("field",&fieldname_,Param::OPTIONAL); // XD_ADD_P chaine field name of the integer (or double) field to load
 }
 
 void Partitionneur_Fichier_MED::associer_domaine(const Domaine& domaine)
@@ -104,43 +105,78 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
 
   MCAuto<MEDCouplingField> ffield = MEDCoupling::ReadField(filename_.getString(), fieldname_.getString());
   MEDCouplingFieldInt32 * field = dynamic_cast<MEDCouplingFieldInt32 *>((MEDCouplingField *)ffield);
-
-  if(!field)
-    Process::exit("The initialized field is not composed of integers ");
-
-  DataArrayInt32 *da = field->getArray();
-  const True_int *field_values = da->begin();
-
-  const mcIdType sz = field->getNumberOfTuplesExpected();
-  elem_part.resize(sz);
-  std::copy(field_values, field_values+sz, elem_part.addr());
-  // Sanity check
-  const int nelem = ref_domaine_.valeur().nb_elem();
-  if (nelem != sz)
+  if(field)
     {
-      Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;
-      Cerr << " The file contains an array of " << sz << " values." << finl;
-      Cerr << " The area contains " << nelem << " elements" << finl;
-      exit();
-    }
-  // Checking that the full range is covered
-  MCAuto<DataArrayInt32> das = da->buildUniqueNotSorted();
-  MCAuto<DataArrayInt32> iot(DataArrayInt32::New());
-  mcIdType dnu;
-  const mcIdType max_v = das->getMaxValue(dnu);
-  iot->alloc(max_v+1, 1);
-  iot->iota();
-  if (!iot->isEqualWithoutConsideringStr(*das))
-    {
-      Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;
-      Cerr << " The file contains/lacks integer values which do not cover the range [0; n_elem[." << finl;
-      Cerr << " Are some field values missing?" << finl;
-      exit();
-    }
+      // Lecture d'une partition exacte du domaine donnee par un champ d'entiers
+      DataArrayInt32 *da = field->getArray();
+      const True_int *field_values = da->begin();
+
+      const mcIdType sz = field->getNumberOfTuplesExpected();
+      elem_part.resize(sz);
+      std::copy(field_values, field_values + sz, elem_part.addr());
+      // Sanity check
+      const int nelem = ref_domaine_.valeur().nb_elem();
+      if (nelem != sz)
+        {
+          Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;
+          Cerr << " The file contains an array of " << sz << " values." << finl;
+          Cerr << " The area contains " << nelem << " elements" << finl;
+          exit();
+        }
+      // Checking that the full range is covered
+      MCAuto<DataArrayInt32> das = da->buildUniqueNotSorted();
+      MCAuto<DataArrayInt32> iot(DataArrayInt32::New());
+      mcIdType dnu;
+      const mcIdType max_v = das->getMaxValue(dnu);
+      iot->alloc(max_v + 1, 1);
+      iot->iota();
+      if (!iot->isEqualWithoutConsideringStr(*das))
+        {
+          Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;
+          Cerr << " The file contains/lacks integer values which do not cover the range [0; n_elem[." << finl;
+          Cerr << " Are some field values missing?" << finl;
+          exit();
+        }
 #else
   Cerr << "Partitionneur_Fichier_MED requires TRUST compiled with MEDCoupling support!" << finl;
   exit();
 #endif
-
-
+    }
+  else
+    {
+      // Lecture d'une partition d'un domaine qui recouvre partiellement le domaine par un champ de double:
+      /*
+        Decouper outer_domain {
+              partitionneur metis { nb_parts 3 } zones_name outer_domain
+              ecrire_med outer_domain.med
+              }
+        Decouper inner_domain {
+              partitionneur fichier_med { file outer_domain_0000.med }
+              zones_name inner_domain
+        }
+      */
+      // Read the partition field with Champ_Fonc_MED:
+      Nom cli("");
+      cli+="{ file ";
+      cli+=filename_;
+      cli+=" domain ";
+      cli+= ffield->getMesh()->getName();
+      cli+=" field partition loc elem last_time }";
+      EChaine ech(cli);
+      Champ_Fonc_MED partition_field_outer_domain;
+      ech >> partition_field_outer_domain;
+      // Mapping between local domain and the field domain:
+      int nb_elem = ref_domaine_.valeur().nb_elem();
+      DoubleTab xp_elems;
+      ref_domaine_.valeur().calculer_centres_gravite(xp_elems);
+      IntVect elems(nb_elem);
+      partition_field_outer_domain.domaine().chercher_elements(xp_elems, elems);
+      DoubleTab double_elem_part(nb_elem);
+      partition_field_outer_domain.valeur_aux_elems(xp_elems, elems, double_elem_part);
+      // Convert double to int to fill elem_part:
+      elem_part.resize(nb_elem);
+      for (int i=0; i<nb_elem; i++)
+        elem_part(i)=(int)double_elem_part(i);
+      return;
+    }
 }
