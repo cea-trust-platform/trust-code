@@ -19,7 +19,8 @@
 #include <stat_counters.h>
 
 template<typename _TYPE_>
-void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_template<_TYPE_>& fine, Grid_Level_Data_template<_TYPE_>& coarse,
+void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_template<_TYPE_>& fine,
+                                                     Grid_Level_Data_template<_TYPE_>& coarse,
                                                      int additional_k_layers)
 {
   const IJK_Grid_Geometry& src_grid_geom = fine.get_grid_geometry();
@@ -90,13 +91,16 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
       for (int i = 0; i < n; i++)
         slice_sizes[dir][i] /= coarsen_factors_[dir];
     }
-  coarse_splitting.initialize(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2], processor_mapping);
+  coarse_splitting.initialize(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2],
+                              processor_mapping);
   const int ghost_domaine_size = fine.get_ghost_size();
   coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Coarsen_Operator_Uniform::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse, int compute_weighted_average) const
+void Coarsen_Operator_Uniform::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine,
+                                        IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse,
+                                        int compute_weighted_average) const
 {
   static Stat_Counter_Id coarsen_counter_ = statistiques().new_counter(2, "multigrille : uniform coarsen ");
   statistiques().begin_count(coarsen_counter_);
@@ -105,188 +109,47 @@ void Coarsen_Operator_Uniform::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_AR
   const int nj2 = coarse.nj();
   const int nk2 = coarse.nk();
 
-  _TYPE_ coef;
+  _TYPE_ coef = 1;
   if (compute_weighted_average)
     coef = (_TYPE_)(1. / (coarsen_factors_[0] * coarsen_factors_[1] * coarsen_factors_[2]));
-  else
-    coef = 1.;
 
+  const int Kstart = 0;
+  const int Kend = nk2;
+  const int deltaK = 1;
+  for (int K = Kstart; K != Kend; K += deltaK)
+    {
+      const int k = K*coarsen_factors_[2];
+      for (int J = 0; J < nj2; J++)
+        {
+          const int j = J*coarsen_factors_[1];
+          for (int I = 0; I < ni2; I++)
+            {
+              const int i = I*coarsen_factors_[0];
+              _TYPE_ sum = 0.;
+              for (int ii = 0; ii < coarsen_factors_[0]; ii++)
+                for (int jj = 0; jj < coarsen_factors_[1]; jj++)
+                  for (int kk = 0; kk < coarsen_factors_[2]; kk++)
+                    sum += fine(i + ii, j + jj, k + kk);
+              coarse(I,J,K) = sum * coef;
+            }
+        }
+    }
 
-  if (coarsen_factors_[2] == 2)
-    {
-      if (coarsen_factors_[1] == 2)
-        {
-          if (coarsen_factors_[0] == 2)
-            {
-              const int Kstart = 0;
-              const int Kend = nk2;
-              const int deltaK = 1;
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*2;
-                          int j = J*2;
-                          int k = K*2;
-                          _TYPE_ sum = 0.;
-                          for (int ii = 0; ii < 2; ii++)
-                            for (int jj = 0; jj < 2; jj++)
-                              for (int kk = 0; kk < 2; kk++)
-                                sum += fine(i + ii, j + jj, k + kk);
-                          coarse(I,J,K) = sum * coef;
-                        }
-                    }
-                }
-              ;
-            }
-          else
-            {
-              const int Kstart = 0;
-              const int Kend = nk2;
-              const int deltaK = 1;
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*1;
-                          int j = J*2;
-                          int k = K*2;
-                          _TYPE_ sum = 0.;
-                          for (int ii = 0; ii < 1; ii++)
-                            for (int jj = 0; jj < 2; jj++)
-                              for (int kk = 0; kk < 2; kk++)
-                                sum += fine(i + ii, j + jj, k + kk);
-                          coarse(I,J,K) = sum * coef;
-                        }
-                    }
-                }
-              ;
-            }
-        }
-      else
-        {
-          if (coarsen_factors_[0] == 2)
-            {
-              const int Kstart = 0;
-              const int Kend = nk2;
-              const int deltaK = 1;
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*2;
-                          int j = J*1;
-                          int k = K*2;
-                          _TYPE_ sum = 0.;
-                          for (int ii = 0; ii < 2; ii++)
-                            for (int jj = 0; jj < 1; jj++)
-                              for (int kk = 0; kk < 2; kk++)
-                                sum += fine(i + ii, j + jj, k + kk);
-                          coarse(I,J,K) = sum * coef;
-                        }
-                    }
-                }
-            }
-          else
-            {
-              const int Kstart = 0;
-              const int Kend = nk2;
-              const int deltaK = 1;
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*1;
-                          int j = J*1;
-                          int k = K*2;
-                          _TYPE_ sum = 0.;
-                          for (int ii = 0; ii < 1; ii++)
-                            for (int jj = 0; jj < 1; jj++)
-                              for (int kk = 0; kk < 2; kk++)
-                                sum += fine(i + ii, j + jj, k + kk);
-                          coarse(I,J,K) = sum * coef;
-                        }
-                    }
-                }
-              ;
-            }
-        }
-    }
-  else if (coarsen_factors_[2] == 3
-           && coarsen_factors_[1] == 1
-           && coarsen_factors_[0] == 1)
-    {
-      const int Kstart = 0;
-      const int Kend = nk2;
-      const int deltaK = 1;
-      for (int K = Kstart; K != Kend; K += deltaK)
-        {
-          for (int J = 0; J < nj2; J++)
-            {
-              for (int I = 0; I < ni2; I++)
-                {
-                  int i = I*1;
-                  int j = J*1;
-                  int k = K*3;
-                  _TYPE_ sum = 0.;
-                  for (int ii = 0; ii < 1; ii++)
-                    for (int jj = 0; jj < 1; jj++)
-                      for (int kk = 0; kk < 3; kk++)
-                        sum += fine(i + ii, j + jj, k + kk);
-                  coarse(I,J,K) = sum * coef;
-                }
-            }
-        }
-      ;
-    }
-  else if (coarsen_factors_[2] == 2
-           && coarsen_factors_[1] == 3
-           && coarsen_factors_[0] == 1)
-    {
-      const int Kstart = 0;
-      const int Kend = nk2;
-      const int deltaK = 1;
-      for (int K = Kstart; K != Kend; K += deltaK)
-        {
-          for (int J = 0; J < nj2; J++)
-            {
-              for (int I = 0; I < ni2; I++)
-                {
-                  int i = I*1;
-                  int j = J*3;
-                  int k = K*2;
-                  _TYPE_ sum = 0.;
-                  for (int ii = 0; ii < 1; ii++)
-                    for (int jj = 0; jj < 3; jj++)
-                      for (int kk = 0; kk < 2; kk++)
-                        sum += fine(i + ii, j + jj, k + kk);
-                  coarse(I,J,K) = sum * coef;
-                }
-            }
-        }
-      ;
-    }
-  else
-    {
-
-      Process::exit();
-    }
   statistiques().end_count(coarsen_counter_);
-
+  return;
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Coarsen_Operator_Uniform::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse,
-                                                       IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine, const int kshift) const
+void Coarsen_Operator_Uniform::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& coarse,
+                                                       IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& fine,
+                                                       const int kshift) const
 {
+  if (kshift == 1)
+    {
+      Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
+      Process::exit();
+    }
+
   static Stat_Counter_Id interpolate_counter_ = statistiques().new_counter(2, "multigrille : interpolate (uniform)");
   statistiques().begin_count(interpolate_counter_);
 
@@ -294,260 +157,31 @@ void Coarsen_Operator_Uniform::interpolate_sub_shiftk_(const IJK_Field_template<
   const int nj2 = coarse.nj();
   const int nk2 = coarse.nk();
 
-  if (coarsen_factors_[2] == 2)
-    {
-      if (coarsen_factors_[1] == 2)
-        {
-          if (coarsen_factors_[0] == 2)
-            {
-              if (kshift == 1)
-                {
-                  Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-                  Process::exit();
-                }
-              int Kstart, Kend, deltaK;
-              if (kshift <= 0)
-                {
-                  Kstart = 0;
-                  Kend = nk2;
-                  deltaK = 1;
-                }
-              else
-                {
-                  Kstart = nk2 - 1;
-                  Kend = -1;
-                  deltaK = -1;
-                }
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*2;
-                          int j = J*2;
-                          int k = K*2;
-                          _TYPE_ val = coarse(I,J,K);
-                          for (int ii = 0; ii < 2; ii++)
-                            for (int jj = 0; jj < 2; jj++)
-                              for (int kk = 0; kk < 2; kk++) // this loop must be reversed if kshift=1 !
-                                fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                        }
-                    }
-                }
-              ;
-            }
-          else
-            {
-              if (kshift == 1)
-                {
-                  Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-                  Process::exit();
-                }
-              int Kstart, Kend, deltaK;
-              if (kshift <= 0)
-                {
-                  Kstart = 0;
-                  Kend = nk2;
-                  deltaK = 1;
-                }
-              else
-                {
-                  Kstart = nk2 - 1;
-                  Kend = -1;
-                  deltaK = -1;
-                }
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*1;
-                          int j = J*2;
-                          int k = K*2;
-                          _TYPE_ val = coarse(I,J,K);
-                          for (int ii = 0; ii < 1; ii++)
-                            for (int jj = 0; jj < 2; jj++)
-                              for (int kk = 0; kk < 2; kk++) // this loop must be reversed if kshift=1 !
-                                fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                        }
-                    }
-                }
-              ;
-            }
-        }
-      else
-        {
-          if (coarsen_factors_[0] == 2)
-            {
-              if (kshift == 1)
-                {
-                  Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-                  Process::exit();
-                }
-              int Kstart, Kend, deltaK;
-              if (kshift <= 0)
-                {
-                  Kstart = 0;
-                  Kend = nk2;
-                  deltaK = 1;
-                }
-              else
-                {
-                  Kstart = nk2 - 1;
-                  Kend = -1;
-                  deltaK = -1;
-                }
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*2;
-                          int j = J*1;
-                          int k = K*2;
-                          _TYPE_ val = coarse(I,J,K);
-                          for (int ii = 0; ii < 2; ii++)
-                            for (int jj = 0; jj < 1; jj++)
-                              for (int kk = 0; kk < 2; kk++) // this loop must be reversed if kshift=1 !
-                                fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                        }
-                    }
-                }
-            }
-          else
-            {
-              if (kshift == 1)
-                {
-                  Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-                  Process::exit();
-                }
-              int Kstart, Kend, deltaK;
-              if (kshift <= 0)
-                {
-                  Kstart = 0;
-                  Kend = nk2;
-                  deltaK = 1;
-                }
-              else
-                {
-                  Kstart = nk2 - 1;
-                  Kend = -1;
-                  deltaK = -1;
-                }
-              for (int K = Kstart; K != Kend; K += deltaK)
-                {
-                  for (int J = 0; J < nj2; J++)
-                    {
-                      for (int I = 0; I < ni2; I++)
-                        {
-                          int i = I*1;
-                          int j = J*1;
-                          int k = K*2;
-                          _TYPE_ val = coarse(I,J,K);
-                          for (int ii = 0; ii < 1; ii++)
-                            for (int jj = 0; jj < 1; jj++)
-                              for (int kk = 0; kk < 2; kk++) // this loop must be reversed if kshift=1 !
-                                fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                        }
-                    }
-                }
-              ;
-            }
-        }
-    }
-  else if (coarsen_factors_[2] == 3
-           && coarsen_factors_[1] == 1
-           && coarsen_factors_[0] == 1)
-    {
-      if (kshift == 1)
-        {
-          Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-          Process::exit();
-        }
-      int Kstart, Kend, deltaK;
-      if (kshift <= 0)
-        {
-          Kstart = 0;
-          Kend = nk2;
-          deltaK = 1;
-        }
-      else
-        {
-          Kstart = nk2 - 1;
-          Kend = -1;
-          deltaK = -1;
-        }
-      for (int K = Kstart; K != Kend; K += deltaK)
-        {
-          for (int J = 0; J < nj2; J++)
-            {
-              for (int I = 0; I < ni2; I++)
-                {
-                  int i = I*1;
-                  int j = J*1;
-                  int k = K*3;
-                  _TYPE_ val = coarse(I,J,K);
-                  for (int ii = 0; ii < 1; ii++)
-                    for (int jj = 0; jj < 1; jj++)
-                      for (int kk = 0; kk < 3; kk++) // this loop must be reversed if kshift=1 !
-                        fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                }
-            }
-        }
-      ;
-    }
-  else if (coarsen_factors_[2] == 2
-           && coarsen_factors_[1] == 3
-           && coarsen_factors_[0] == 1)
-    {
-      if (kshift == 1)
-        {
-          Cerr << "error Coarsen_Operator_Uniform: kshift=1 will not work" << finl;
-          Process::exit();
-        }
-      int Kstart, Kend, deltaK;
-      if (kshift <= 0)
-        {
-          Kstart = 0;
-          Kend = nk2;
-          deltaK = 1;
-        }
-      else
-        {
-          Kstart = nk2 - 1;
-          Kend = -1;
-          deltaK = -1;
-        }
-      for (int K = Kstart; K != Kend; K += deltaK)
-        {
-          for (int J = 0; J < nj2; J++)
-            {
-              for (int I = 0; I < ni2; I++)
-                {
-                  int i = I*1;
-                  int j = J*3;
-                  int k = K*2;
-                  _TYPE_ val = coarse(I,J,K);
-                  for (int ii = 0; ii < 1; ii++)
-                    for (int jj = 0; jj < 3; jj++)
-                      for (int kk = 0; kk < 2; kk++) // this loop must be reversed if kshift=1 !
-                        fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
-                }
-            }
-        }
-      ;
-    }
-  else
-    {
+  const int Kstart = kshift <= 0 ? 0 : nk2 - 1;
+  const int Kend = kshift <= 0 ? nk2 : -1;
+  const int deltaK = kshift <= 0 ? 1 : -1;
 
-      Process::exit();
+  for (int K = Kstart; K != Kend; K += deltaK)
+    {
+      const int k = K*coarsen_factors_[2];
+      for (int J = 0; J < nj2; ++J)
+        {
+          const int j = J*coarsen_factors_[1];
+          for (int I = 0; I < ni2; ++I)
+            {
+              const int i = I*coarsen_factors_[0];
+              const _TYPE_ val = coarse(I, J, K);
+              for (int ii = 0; ii < coarsen_factors_[0]; ++ii)
+                for (int jj = 0; jj < coarsen_factors_[1]; ++jj)
+                  for (int kk = 0; kk < coarsen_factors_[2]; ++kk)
+                    fine.get_in_allocated_area(i + ii, j + jj, k + kk + kshift) = fine(i + ii, j + jj, k + kk) - val;
+            }
+        }
     }
+
   fine.shift_k_origin(kshift);
   statistiques().end_count(interpolate_counter_);
-
+  return;
 }
 
 #endif

@@ -25,8 +25,8 @@
  *
  *  - Elle demande 2 template arguments
  */
-template<template<typename,typename> class _TRUST_TABL_,typename _TYPE_, typename _TYPE_ARRAY_>
-class IJK_Vector: public TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>
+template<template<typename, typename> class _TRUST_TABL_, typename _TYPE_, typename _TYPE_ARRAY_>
+class IJK_Vector: public TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>
 {
 protected:
 
@@ -39,8 +39,8 @@ protected:
     return xxx->numero();
   }
 
-  Sortie& printOn(Sortie& s) const override { return TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::printOn(s); }
-  Entree& readOn(Entree& s) override { return TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::readOn(s); }
+  Sortie& printOn(Sortie& s) const override { return TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>::printOn(s); }
+  Entree& readOn(Entree& s) override { return TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>::readOn(s); }
 
 public:
   IJK_Vector() : TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>() { }
@@ -49,7 +49,7 @@ public:
 
   IJK_Vector& operator=(const IJK_Vector& avect)
   {
-    TRUST_Vector<_TRUST_TABL_<_TYPE_,_TYPE_ARRAY_>>::operator=(avect);
+    TRUST_Vector<_TRUST_TABL_<_TYPE_, _TYPE_ARRAY_>>::operator=(avect);
     return *this;
   }
 };

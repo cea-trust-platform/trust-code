@@ -53,12 +53,13 @@ Entree& Multigrille_Adrien::readOn(Entree& is)
   Nom ijkdis_name;
   Param param(que_suis_je());
   ajouter_param(param);
-  param.ajouter("ijkdis_name",&ijkdis_name);
+  param.ajouter("ijkdis_name", &ijkdis_name);
   param.lire_avec_accolades(is);
 
-  if (ijkdis_name!=Nom())
+  if (ijkdis_name != Nom())
     {
-      const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
+      const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
+                                                  Interprete_bloc::objet_global(ijkdis_name));
       const IJK_Splitting& split = ijkdis.get_IJK_splitting();
 
       initialize(split);
@@ -71,7 +72,8 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
   // fait dans readOn si on a lu ijkdis_name
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
   const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
-  const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
+  const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
+                                              Interprete_bloc::objet_global(ijkdis_name));
   const IJK_Splitting& split = ijkdis.get_IJK_splitting();
 
   initialize(split);
@@ -82,18 +84,19 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
 void Multigrille_Adrien::initialize(const IJK_Splitting& split)
 {
   if (solver_precision_ == precision_double_)
-    completer_template<double,ArrOfDouble>(split);
+    completer_template<double, ArrOfDouble>(split);
   else if (solver_precision_ == precision_float_)
-    completer_template<float,ArrOfFloat>(split);
+    completer_template<float, ArrOfFloat>(split);
   else if (solver_precision_ == precision_mix_)
     {
-      completer_template<float,ArrOfFloat>(split);
+      completer_template<float, ArrOfFloat>(split);
       completer_double_for_residue(split);
     }
+
   IJK_Field_float rho;
   rho.allocate(split, IJK_Splitting::ELEM, 0);
   rho.data() = 1.;
-  set_rho<float,ArrOfFloat>(rho);
+  set_rho<float, ArrOfFloat>(rho);
 }
 
 // Says that the Poisson equation has variable coefficient rho, given at elements
@@ -132,4 +135,3 @@ void Multigrille_Adrien::completer_double_for_residue(const IJK_Splitting& split
   grids_data_double_.dimensionner(1);
   grids_data_double_[0].initialize(splitting, ghost_size_, nsweeps_jacobi_residu(0));
 }
-

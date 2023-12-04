@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,21 @@ Coarsen_Operator_Uniform::Coarsen_Operator_Uniform()
 Entree& Coarsen_Operator_Uniform::readOn(Entree& is)
 {
   Coarsen_Operator_base::readOn(is);
-  // Check if valid parameters
-  bool ok = false;
-  if (coarsen_factors_[0] == 1 && coarsen_factors_[1] == 1 && coarsen_factors_[2] == 2) ok = true;
-  if (coarsen_factors_[0] == 1 && coarsen_factors_[1] == 2 && coarsen_factors_[2] == 2) ok = true;
-  if (coarsen_factors_[0] == 2 && coarsen_factors_[1] == 1 && coarsen_factors_[2] == 2) ok = true;
-  if (coarsen_factors_[0] == 2 && coarsen_factors_[1] == 2 && coarsen_factors_[2] == 2) ok = true;
-  if (coarsen_factors_[0] == 1 && coarsen_factors_[1] == 1 && coarsen_factors_[2] == 3) ok = true;
-  if (coarsen_factors_[0] == 1 && coarsen_factors_[1] == 3 && coarsen_factors_[2] == 2) ok = true;
-  if (!ok)
+
+  const int coarsenCode = coarsen_factors_[0]*100 + coarsen_factors_[1]*10 + coarsen_factors_[2];
+  switch (coarsenCode)
     {
-      Cerr << "Error in Coarsen_Operator_Uniform::readOn: invalid combination of coarsening factors" << finl;
+    case 122:
+    case 212:
+    case 221:
+    case 222:
+    case 113:
+    case 132:
+      break;
+    default:
+      Cerr << "Error in Coarsen_Operator_Uniform::readOn: invalid combination of coarsening factors\n";
       Process::exit();
+      break;
     }
   return is;
 }

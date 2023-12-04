@@ -89,8 +89,9 @@ Entree& Multigrille_base::readOn(Entree& is)
 
 
 #ifdef DUMP_X_B_AND_RESIDUE_IN_FILE
-void dump_x_b_residue_in_file(const IJK_Field_float& x, const IJK_Field_float& b, IJK_Field_float& residu,
-                              int grid_level, int step_number, Nom comment)
+void dump_x_b_residue_in_file(const IJK_Field_float& x, const IJK_Field_float& b,
+                              IJK_Field_float& residu, int grid_level, int step_number,
+                              Nom comment)
 {
 
   if (Process::je_suis_maitre())
@@ -314,4 +315,3 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
       while (1);
     }
 }
-

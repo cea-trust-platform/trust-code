@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,8 @@
 #include <stat_counters.h>
 
 template<typename _TYPE_>
-void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_TYPE_>& fine, Grid_Level_Data_template<_TYPE_>& coarse,
+void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_TYPE_>& fine,
+                                               Grid_Level_Data_template<_TYPE_>& coarse,
                                                int additional_k_layers)
 {
   //IntTab src_dest_index;
@@ -214,9 +215,11 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Coarsen_Operator_K::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse, int compute_weighted_average) const
+void Coarsen_Operator_K::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine,
+                                  IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse,
+                                  int compute_weighted_average) const
 {
-  static Stat_Counter_Id coarsen_counter_ = statistiques().new_counter(2, "multigrille : K coarsen ");
+  static Stat_Counter_Id coarsen_counter_ = statistiques().new_counter(2, "multigrille: K coarsen ");
   statistiques().begin_count(coarsen_counter_);
 
   const int index_start = 0;
@@ -263,19 +266,9 @@ void Coarsen_Operator_K::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_
   static Stat_Counter_Id interpolate_counter_ = statistiques().new_counter(2, "multigrille : interpolate (K)");
   statistiques().begin_count(interpolate_counter_);
 
-  int index_start, index_end, delta_index;
-  if (kshift <= 0)
-    {
-      index_start = 0;
-      index_end = src_dest_index_local_.dimension(0);
-      delta_index = 1;
-    }
-  else
-    {
-      index_start = src_dest_index_local_.dimension(0) - 1;
-      index_end = -1;
-      delta_index = -1;
-    }
+  const int index_start = kshift <= 0 ? 0 : src_dest_index_local_.dimension(0) - 1;
+  const int index_end = kshift <= 0 ? src_dest_index_local_.dimension(0) : -1;
+  const int delta_index = kshift <= 0 ? 1 : -1;
 
   const int ni = coarse.ni();
   const int nj = coarse.nj();
@@ -293,23 +286,15 @@ void Coarsen_Operator_K::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_
           previous_fine_k = fine_k;
           // Start a new layer from the fine mesh, take data from shifted position:
           for (int J = 0; J < nj; J++)
-            {
-              for (int I = 0; I < ni; I++)
-                {
-                  fine.get_in_allocated_area(I,J,fine_k + kshift) = fine(I,J,fine_k) - coef * coarse(I,J,coarse_k);
-                }
-            }
+            for (int I = 0; I < ni; I++)
+              fine.get_in_allocated_area(I, J, fine_k + kshift) = fine(I,J,fine_k) - coef*coarse(I, J, coarse_k);
         }
       else
         {
           // Continue on the same layer, data already shifted:
           for (int J = 0; J < nj; J++)
-            {
-              for (int I = 0; I < ni; I++)
-                {
-                  fine.get_in_allocated_area(I,J,fine_k + kshift) -= coef * coarse(I,J,coarse_k);
-                }
-            }
+            for (int I = 0; I < ni; I++)
+              fine.get_in_allocated_area(I, J, fine_k + kshift) -= coef * coarse(I, J, coarse_k);
         }
     }
   fine.shift_k_origin(kshift);
