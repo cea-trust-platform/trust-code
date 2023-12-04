@@ -18,8 +18,8 @@
 #include <Pb_Multiphase.h>
 #include <math.h>
 
-Implemente_instanciable(Correction_Antal_PolyVEF_P0, "Correction_Antal_Face_PolyVEF_P0", Source_base);
-// XD Correction_Antal source_base Correction_Antal 1 Antal correction source term for multiphase problem
+Implemente_instanciable(Correction_Antal_PolyVEF_P0, "Correction_Antal_Face_PolyVEF_P0", Correction_Antal_PolyMAC_P0);
+// XD Correction_Antal_PolyVEF_P0 Correction_Antal_PolyMAC_P0 Correction_Antal_PolyVEF_P0 1 Antal correction source term for multiphase problem
 
 Sortie& Correction_Antal_PolyVEF_P0::printOn(Sortie& os) const
 {
@@ -28,35 +28,7 @@ Sortie& Correction_Antal_PolyVEF_P0::printOn(Sortie& os) const
 
 Entree& Correction_Antal_PolyVEF_P0::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("Cw1", &Cw1_);
-  param.ajouter("Cw2", &Cw2_);
-  param.lire_avec_accolades_depuis(is);
-
-  //identification des phases
-  Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
-
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-  for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
-
-  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
-
-  pbm->creer_champ("distance_paroi_globale"); // Besoin de distance a la paroi
-
-  return is;
-}
-
-void Correction_Antal_PolyVEF_P0::completer() // We must wait for all readOn's to be sure that the bubble dispersion and lift correlations are created
-{
-  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-
-  if (!pbm.has_champ("diametre_bulles")) Process::exit("Correction_Lubchenko_PolyVEF_P0::completer() : a bubble diameter must be defined !");
-}
-
-
-void Correction_Antal_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
-{
+  return Correction_Antal_PolyMAC_P0::readOn(is);
 }
 
 void Correction_Antal_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
