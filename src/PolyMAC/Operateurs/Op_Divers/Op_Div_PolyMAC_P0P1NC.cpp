@@ -79,7 +79,7 @@ void Op_Div_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 {
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue());
-  const Conds_lim& cls = la_zcl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
   const DoubleTab& inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = domaine.face_normales();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
@@ -141,7 +141,7 @@ DoubleTab& Op_Div_PolyMAC_P0P1NC::ajouter(const DoubleTab& vit, DoubleTab& div) 
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const DoubleTab& nf = domaine.face_normales();
-  const Conds_lim& cls = la_zcl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue()).fcl();
   int i, e, f, ne_tot = domaine.nb_elem_tot(), d, D = dimension, has_f = div.dimension_tot(0) > ne_tot;
 
