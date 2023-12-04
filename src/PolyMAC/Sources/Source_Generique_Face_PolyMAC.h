@@ -42,4 +42,11 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override;
 };
 
+class Source_Generique_Face_PolyVEF_P0: public Source_Generique_Face_PolyMAC_P0P1NC
+{
+  Declare_instanciable(Source_Generique_Face_PolyVEF_P0);
+public:
+  DoubleTab& ajouter(DoubleTab&) const override;
+};
+
 #endif /* Source_Generique_Face_PolyMAC_included */

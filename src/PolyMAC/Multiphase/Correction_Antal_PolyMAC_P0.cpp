@@ -19,7 +19,7 @@
 #include <math.h>
 
 Implemente_instanciable(Correction_Antal_PolyMAC_P0, "Correction_Antal_Face_PolyMAC_P0", Source_base);
-// XD Correction_Antal source_base Correction_Antal 1 Antal correction source term for multiphase problem
+// XD Correction_Antal_PolyMAC_P0 source_base Correction_Antal_PolyMAC_P0 1 Antal correction source term for multiphase problem
 
 Sortie& Correction_Antal_PolyMAC_P0::printOn(Sortie& os) const
 {
