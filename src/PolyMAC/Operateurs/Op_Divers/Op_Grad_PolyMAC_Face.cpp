@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ void Op_Grad_PolyMAC_Face::associer(const Domaine_dis& domaine_dis, const Domain
   const Domaine_PolyMAC& zPolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
   ref_domaine = zPolyMAC_P0P1NC;
-  ref_zcl = zclPolyMAC_P0P1NC;
+  ref_dcl = zclPolyMAC_P0P1NC;
   porosite_surf.ref(equation().milieu().porosite_face());
   face_voisins.ref(zPolyMAC_P0P1NC.face_voisins());
 }
@@ -66,7 +66,7 @@ DoubleTab& Op_Grad_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu)
 
   assert_espace_virtuel_vect(inco);
   const Domaine_PolyMAC& zPolyMAC_P0P1NC = ref_domaine.valeur();
-  const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_zcl.valeur();
+  const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_dcl.valeur();
   const DoubleVect& face_surfaces = zPolyMAC_P0P1NC.face_surfaces();
 
   double coef;
@@ -137,7 +137,7 @@ void Op_Grad_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 
   assert_espace_virtuel_vect(inco);
   const Domaine_PolyMAC& zPolyMAC_P0P1NC = ref_domaine.valeur();
-  const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_zcl.valeur();
+  const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_dcl.valeur();
   const DoubleVect& face_surfaces = zPolyMAC_P0P1NC.face_surfaces();
 
   double coef;

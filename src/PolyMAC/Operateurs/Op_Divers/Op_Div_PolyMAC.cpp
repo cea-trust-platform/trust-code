@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ Entree& Op_Div_PolyMAC::readOn(Entree& s) { return s; }
 void Op_Div_PolyMAC::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
-  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
+  le_dcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
 }
 
 DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
@@ -180,7 +180,7 @@ int Op_Div_PolyMAC::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < le_dom_PolyMAC->nb_front_Cl(); num_cl++)
     {
       flux_bord = 0;
-      const Cond_lim& la_cl = la_zcl_PolyMAC->les_conditions_limites(num_cl);
+      const Cond_lim& la_cl = le_dcl_PolyMAC->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
@@ -212,8 +212,8 @@ int Op_Div_PolyMAC::impr(Sortie& os) const
 
   for (int num_cl = 0; num_cl < le_dom_PolyMAC->nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = la_zcl_PolyMAC->les_conditions_limites(num_cl).frontiere_dis();
-      const Cond_lim& la_cl = la_zcl_PolyMAC->les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = le_dcl_PolyMAC->les_conditions_limites(num_cl).frontiere_dis();
+      const Cond_lim& la_cl = le_dcl_PolyMAC->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();

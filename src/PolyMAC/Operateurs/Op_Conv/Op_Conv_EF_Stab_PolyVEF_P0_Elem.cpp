@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@
 #include <vector>
 #include <cmath>
 
-Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_PolyMAC_base);
+Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_P0_Elem, "Op_Conv_Amont_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_P0_Elem, "Op_Conv_Centre_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
 
@@ -45,54 +45,12 @@ Op_Conv_Amont_PolyVEF_P0_Elem::Op_Conv_Amont_PolyVEF_P0_Elem() { alpha = 1.0; }
 Op_Conv_Centre_PolyVEF_P0_Elem::Op_Conv_Centre_PolyVEF_P0_Elem() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyVEF_P0_Elem interprete Op_Conv_EF_Stab_PolyVEF_P0_Elem 1 Class Op_Conv_EF_Stab_PolyVEF_P0_Elem
-Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(os); }
+Entree& Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn(is); }
 Sortie& Op_Conv_Amont_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
 Sortie& Op_Conv_Centre_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
 Entree& Op_Conv_Amont_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
 Entree& Op_Conv_Centre_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
-
-Entree& Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(Entree& is)
-{
-  Op_Conv_PolyMAC_base::readOn(is);
-  if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
-    {
-      Param param(que_suis_je());
-      param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
-      param.lire_avec_accolades_depuis(is);
-    }
-
-  if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
-    {
-      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
-      noms_cc_phases_.dimensionner(pb.nb_phases()), cc_phases_.resize(pb.nb_phases());
-      noms_vd_phases_.dimensionner(pb.nb_phases()), vd_phases_.resize(pb.nb_phases());
-      noms_x_phases_.dimensionner(pb.nb_phases()), x_phases_.resize(pb.nb_phases());
-      for (int i = 0; i < pb.nb_phases(); i++)
-        {
-          champs_compris_.ajoute_nom_compris(noms_cc_phases_[i] = Nom("debit_") + pb.nom_phase(i));
-          champs_compris_.ajoute_nom_compris(noms_vd_phases_[i] = Nom("vitesse_debitante_") + pb.nom_phase(i));
-          champs_compris_.ajoute_nom_compris(noms_x_phases_[i] = Nom("titre_") + pb.nom_phase(i));
-        }
-    }
-
-  return is;
-}
-
-void Op_Conv_EF_Stab_PolyVEF_P0_Elem::preparer_calcul()
-{
-  Op_Conv_PolyMAC_base::preparer_calcul();
-
-  /* au cas ou... */
-  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  equation().init_champ_convecte();
-  flux_bords_.resize(domaine.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
-
-  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
-    {
-      Cerr << "Op_Conv_EF_Stab_PolyVEF_P0_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
-      Process::exit();
-    }
-}
 
 double Op_Conv_EF_Stab_PolyVEF_P0_Elem::calculer_dt_stab() const
 {
@@ -223,27 +181,6 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& 
                 for (n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
                   (*std::get<1>(d_m_i))(N * e + n, M * eb + m) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, m);
       }
-}
-
-void Op_Conv_EF_Stab_PolyVEF_P0_Elem::creer_champ(const Motcle& motlu)
-{
-  Op_Conv_PolyMAC_base::creer_champ(motlu);
-  int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
-  if (i >= 0 && !cc_phases_[i].non_nul())
-    {
-      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_cc_phases_[i], "kg/m2/s", dimension, 1, 0, cc_phases_[i]);
-      champs_compris_.ajoute_champ(cc_phases_[i]);
-    }
-  if (j >= 0 && !vd_phases_[j].non_nul())
-    {
-      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_vd_phases_[j], "m/s", dimension, 1, 0, vd_phases_[j]);
-      champs_compris_.ajoute_champ(vd_phases_[j]);
-    }
-  if (k >= 0 && !x_phases_[k].non_nul())
-    {
-      equation().discretisation().discretiser_champ("temperature", equation().domaine_dis(), noms_x_phases_[k], "m/s", 1, 1, 0, x_phases_[k]);
-      champs_compris_.ajoute_champ(x_phases_[k]);
-    }
 }
 
 void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
