@@ -47,7 +47,7 @@ public:
 
 protected:
   OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
-  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dcl_PolyMAC;
 };
 
 #endif /* Op_Div_PolyMAC_included */
