@@ -16,8 +16,10 @@
 #include <Force_Tchen_PolyMAC_P0.h>
 #include <Champ_Face_base.h>
 #include <Pb_Multiphase.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Force_Tchen_PolyMAC_P0, "Force_Tchen_Face_PolyMAC_P0|Tchen_force_Face_PolyMAC_P0", Source_Force_Tchen_base);
+Add_synonym(Force_Tchen_PolyMAC_P0, "Tchen_force_Face_PolyVEF_P0");
 
 Sortie& Force_Tchen_PolyMAC_P0::printOn(Sortie& os) const { return os; }
 Entree& Force_Tchen_PolyMAC_P0::readOn(Entree& is) { return Source_Force_Tchen_base::readOn(is); }

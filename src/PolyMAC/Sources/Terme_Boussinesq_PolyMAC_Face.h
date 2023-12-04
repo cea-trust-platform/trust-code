@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,13 @@ protected:
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+};
+
+class Terme_Boussinesq_PolyVEF_P0_Face : public Terme_Boussinesq_PolyMAC_Face
+{
+  Declare_instanciable(Terme_Boussinesq_PolyVEF_P0_Face);
+public:
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
 #endif /* Terme_Boussinesq_PolyMAC_Face_included */
