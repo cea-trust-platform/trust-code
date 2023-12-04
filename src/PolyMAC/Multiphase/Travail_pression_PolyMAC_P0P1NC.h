@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,6 @@ class Travail_pression_PolyMAC_P0P1NC : public Source_Travail_pression_Elem_base
   Declare_instanciable(Travail_pression_PolyMAC_P0P1NC);
 public:
   void completer() override;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
 #endif /* Travail_pression_PolyMAC_P0P1NC_included */
