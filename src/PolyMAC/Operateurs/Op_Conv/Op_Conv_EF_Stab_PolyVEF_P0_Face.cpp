@@ -20,7 +20,6 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
-
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_Face_PolyVEF_P0.h>
@@ -29,7 +28,7 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_P0_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_P0_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face ) ;
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_P0_Face, "Op_Conv_Amont_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyVEF_P0_Face);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_P0_Face, "Op_Conv_Centre_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyVEF_P0_Face);
 
@@ -37,7 +36,7 @@ Op_Conv_Amont_PolyVEF_P0_Face::Op_Conv_Amont_PolyVEF_P0_Face() { alpha = 1.0; }
 Op_Conv_Centre_PolyVEF_P0_Face::Op_Conv_Centre_PolyVEF_P0_Face() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyVEF_P0_Face interprete Op_Conv_EF_Stab_PolyVEF_P0_Face 1 Class Op_Conv_EF_Stab_PolyVEF_P0_Face
-Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_P0_Face::printOn(os); }
 Sortie& Op_Conv_Amont_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
 Sortie& Op_Conv_Centre_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
 Entree& Op_Conv_Amont_PolyVEF_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_base::readOn(is); }
