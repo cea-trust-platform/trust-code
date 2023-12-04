@@ -19,8 +19,8 @@
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <PolyMAC_P0_discretisation.h>
 #include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
