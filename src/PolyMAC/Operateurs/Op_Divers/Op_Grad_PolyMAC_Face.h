@@ -43,7 +43,7 @@ public:
 
 protected:
   OBS_PTR(Domaine_PolyMAC) ref_domaine;
-  OBS_PTR(Domaine_Cl_PolyMAC) ref_zcl;
+  OBS_PTR(Domaine_Cl_PolyMAC) ref_dcl;
   IntTab face_voisins;
   DoubleVect porosite_surf;
 };
