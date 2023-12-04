@@ -15,6 +15,7 @@
 
 #ifndef Correction_Antal_PolyMAC_P0_included
 #define Correction_Antal_PolyMAC_P0_included
+
 #include <Source_base.h>
 
 /*! @brief classe Correction_Antal_PolyMAC_P0 Correction de repulsion en paroi d'Antal dans un ecoulement multiphase
@@ -27,18 +28,15 @@ class Correction_Antal_PolyMAC_P0: public Source_base
 {
   Declare_instanciable(Correction_Antal_PolyMAC_P0);
 public :
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override {}; //of course
+  void check_multiphase_compatibility() const override { } //of course
   void completer() override;
 
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override { };
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double temps) override { };
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override { }
+  void associer_pb(const Probleme_base& ) override { }
+  void mettre_a_jour(double temps) override { }
 protected:
   int n_l = -1; //phase liquide
   int is_turb = 0;
@@ -46,4 +44,4 @@ protected:
   double Cw2_ =  .147 ; // To adjust the force in .data
 };
 
-#endif
+#endif /* Correction_Antal_PolyMAC_P0_included */

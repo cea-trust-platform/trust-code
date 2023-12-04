@@ -25,6 +25,8 @@ Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_Po
 
 Implemente_instanciable(Source_Generique_Face_PolyMAC_P0P1NC, "Source_Generique_Face_PolyMAC_P0P1NC|Source_Generique_Face_PolyMAC_P0", Source_Generique_Face_PolyMAC);
 
+Implemente_instanciable(Source_Generique_Face_PolyVEF_P0, "Source_Generique_Face_PolyVEF_P0", Source_Generique_Face_PolyMAC_P0P1NC);
+
 Sortie& Source_Generique_Face_PolyMAC::printOn(Sortie& os) const { return os << que_suis_je(); }
 
 Entree& Source_Generique_Face_PolyMAC::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
@@ -32,6 +34,10 @@ Entree& Source_Generique_Face_PolyMAC::readOn(Entree& is) { return Source_Generi
 Sortie& Source_Generique_Face_PolyMAC_P0P1NC::printOn(Sortie& os) const { return os << que_suis_je(); }
 
 Entree& Source_Generique_Face_PolyMAC_P0P1NC::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
+
+Sortie& Source_Generique_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je(); }
+
+Entree& Source_Generique_Face_PolyVEF_P0::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
 
 // Methode de calcul de la valeur sur une face encadree par elem1 et elem2 d'un champ uniforme ou non a plusieurs composantes
 inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int compo)
@@ -66,8 +72,7 @@ DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = la_zcl_PolyMAC.valeur();
-  const DoubleVect& pf = equation().milieu().porosite_face();
-  const DoubleVect& fs = domaine.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces();
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
   /* 1. faces de bord -> on ne contribue qu'aux faces de Neumann */
@@ -106,5 +111,16 @@ DoubleTab& Source_Generique_Face_PolyMAC_P0P1NC::ajouter(DoubleTab& resu) const
   for (int f = 0, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); f < domaine.nb_faces(); f++)
     if (calc_cl || fcl(f, 0) < 2)
       resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
+  return resu;
+}
+
+DoubleTab& Source_Generique_Face_PolyVEF_P0::ajouter(DoubleTab& resu) const
+{
+  OWN_PTR(Champ_base) espace_stockage;
+  const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
+  for (int f = 0; f < domaine.nb_faces(); f++)
+    resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
   return resu;
 }
