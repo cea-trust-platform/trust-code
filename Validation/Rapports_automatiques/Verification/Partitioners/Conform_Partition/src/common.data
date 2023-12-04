@@ -1,0 +1,77 @@
+# Jeux de donnes commun: 2 problemes resolus l'un apres l'autre sur les deux domaines imbriques #
+# Pas de couplage entre les deux. Juste pour verifier que les decoupages tournent #
+
+Pb_Thermohydraulique outer_pb
+VDF outer_dis
+Scheme_euler_explicit sch
+Read sch { nb_pas_dt_max 2 }
+Associate outer_pb outer_domain
+Associate outer_pb sch
+Discretize outer_pb outer_dis
+Read outer_pb
+{
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
+        gravite Champ_Uniforme 2 0 -9.81
+    }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { quick }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+            Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
+}
+Solve outer_pb
+
+Pb_conduction inner_pb
+VEFPrep1B inner_dis
+Associate inner_pb outer_domain
+Associate inner_pb sch
+Discretize inner_pb inner_dis
+Read inner_pb
+{
+    solide {
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+    }
+    Conduction
+    {
+        diffusion { }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+            Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
+    Postraitement { Champs dt_post 1e9 { temperature } }
+}
+Solve inner_pb

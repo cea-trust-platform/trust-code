@@ -172,7 +172,14 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       IntVect elems(nb_elem);
       partition_field_outer_domain.domaine().chercher_elements(xp_elems, elems);
       DoubleTab double_elem_part(nb_elem);
+      double_elem_part = -1;
       partition_field_outer_domain.valeur_aux_elems(xp_elems, elems, double_elem_part);
+      if (local_min_vect(double_elem_part)<0)
+        {
+          Cerr << "The domain " << ref_domaine_.valeur().le_nom() << " it not fully included into the domain " <<  ffield->getMesh()->getName() << " ! " << finl;
+          Cerr << "It is mandatory to use the partition field from " << filename_ << finl;
+          Process::exit();
+        }
       // Convert double to int to fill elem_part:
       elem_part.resize(nb_elem);
       for (int i=0; i<nb_elem; i++)
