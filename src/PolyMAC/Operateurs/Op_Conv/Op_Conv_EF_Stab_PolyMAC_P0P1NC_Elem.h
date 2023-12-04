@@ -29,9 +29,7 @@ class Matrice_Morse;
 
 class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem : public Op_Conv_PolyMAC_base
 {
-
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem ) ;
-
 public :
   void preparer_calcul() override;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }

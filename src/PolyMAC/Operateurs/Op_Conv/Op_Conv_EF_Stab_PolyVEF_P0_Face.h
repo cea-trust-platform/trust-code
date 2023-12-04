@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,7 @@
 #ifndef Op_Conv_EF_Stab_PolyVEF_P0_Face_included
 #define Op_Conv_EF_Stab_PolyVEF_P0_Face_included
 
-#include <Op_Conv_PolyMAC_base.h>
-#include <Matrice_Morse.h>
+#include <Op_Conv_EF_Stab_PolyMAC_P0_Face.h>
 
 /*! @brief : class Op_Conv_EF_Stab_PolyVEF_P0_Face
  *
@@ -27,31 +26,23 @@
  *
  */
 
-class Op_Conv_EF_Stab_PolyVEF_P0_Face : public Op_Conv_PolyMAC_base
+class Op_Conv_EF_Stab_PolyVEF_P0_Face : public Op_Conv_EF_Stab_PolyMAC_P0_Face
 {
 
   Declare_instanciable( Op_Conv_EF_Stab_PolyVEF_P0_Face ) ;
 
 public :
   void completer() override;
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
   double calculer_dt_stab() const override;
 
   /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  void check_multiphase_compatibility() const override { }; //of course
-  void set_incompressible(const int flag) override {}; //always compressible
+  void set_incompressible(const int flag) override { } //always compressible
 
 protected :
   double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f, porosite_e; //pour F5
-
   IntTab e_fa_d, e_fa_f; //paires de faces reliees par un sommet (2D) / arete (3D) dans chaque element : e_fa_f([e_fa_d(e, 0), e_fa_d(e, 0) + 1[, 0/1)
   DoubleTab e_fa_c;      //coefficients du flux a la facette en fonction des flux aux faces de l'element, stockes a partir de e_fa_d(e, 1)
 };
