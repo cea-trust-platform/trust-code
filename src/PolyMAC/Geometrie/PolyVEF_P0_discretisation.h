@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,16 +16,15 @@
 #ifndef PolyVEF_P0_discretisation_included
 #define PolyVEF_P0_discretisation_included
 
-#include <PolyMAC_P0P1NC_discretisation.h>
+#include <PolyMAC_P0_discretisation.h>
 
-class PolyVEF_P0_discretisation : public PolyMAC_P0P1NC_discretisation
+class PolyVEF_P0_discretisation : public PolyMAC_P0_discretisation
 {
   Declare_instanciable(PolyVEF_P0_discretisation);
 public :
   void grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
   void taux_cisaillement(const Domaine_dis&, const Domaine_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
-  void residu(const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const override ;
 
   bool is_polyvef_p0() const override { return true; }
   bool is_polymac_p0() const override { return false; } // attention heritage !

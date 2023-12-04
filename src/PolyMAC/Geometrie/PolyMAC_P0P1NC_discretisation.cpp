@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,21 +13,21 @@
 *
 *****************************************************************************/
 
-#include <PolyMAC_P0P1NC_discretisation.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
-#include <Milieu_base.h>
-#include <Equation_base.h>
+#include <PolyMAC_P0P1NC_discretisation.h>
+#include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Fonc_Tabule.h>
+#include <Domaine_Cl_dis.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Champ_Inc.h>
-#include <Schema_Temps_base.h>
-#include <Motcle.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
 #include <Operateur.h>
-#include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Motcle.h>
 
 Implemente_instanciable(PolyMAC_P0P1NC_discretisation, "PolyMAC_P0P1NC", PolyMAC_discretisation);
 
