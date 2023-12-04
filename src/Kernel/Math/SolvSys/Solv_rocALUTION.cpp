@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,20 +146,24 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
-  else if (precond==(Motcle)"PairwiseAMG" || precond == (Motcle) "Pairwise-AMG") // Converge pas sur P0P1...
+  else if (precond==(Motcle)"PairwiseAMG|Pairwise-AMG|PW-AMG") // Converge pas sur P0P1...
     {
+      // Crashe parfois en parallele:
+      // https://github.com/ROCmSoftwarePlatform/rocALUTION/issues/195
       p = new PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
       auto& pairwiseamg = dynamic_cast<PairwiseAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p);
-      pairwiseamg.SetBeta(0.25); // [0-1] default 0.25
-      pairwiseamg.SetCoarsestLevel(10000); // Sinon boucle indefiniment...
-      pairwiseamg.SetOrdering(MIS); // default
-      pairwiseamg.SetCoarseningFactor(10); // [0-20] default 4
-      pairwiseamg.SetKcycleFull(true); // default true
-      pairwiseamg.InitMaxIter(1);
+      //pairwiseamg.SetBeta(0.25); // [0-1] default 0.25
+      //pairwiseamg.SetCoarsestLevel(10000); // Sinon boucle indefiniment...
+      pairwiseamg.SetOrdering(2); // default
+      //pairwiseamg.SetCoarseningFactor(19); // [0-20] default 4
+      //pairwiseamg.InitMaxIter(1);
+
+      //pairwiseamg.SetKcycleFull(true); // default true
       precond_option(is, "");
     }
   /* Crash bizarre en sequentiel et parallele.
    * ToDo OpenMP travail sur les samples cg-rsamg_mpi.cpp et cg-rsamg.cpp
+   Le support annonce que cg-rsamg_mpi pas supporte encore...: https://github.com/ROCmSoftwarePlatform/rocALUTION/issues/196
   else if (precond==(Motcle)"RugeStuebenAMG|RSAMG|RS-AMG|C-AMG")  // Setup rapide sur CPU. Converge vite.
     {
       p = new RugeStuebenAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
