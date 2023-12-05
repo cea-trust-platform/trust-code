@@ -464,7 +464,7 @@ then
    add_package zfp
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
    [ "$TRUST_USE_CUDA" = 1 ] && add_package magma && add_package slate
-   add_package STRUMPACK 
+   add_package STRUMPACK
 fi
 
 ##############
@@ -543,7 +543,7 @@ then
       # Message cudaErrorNoKernelImageForDevice: no kernel image is available for execution on the device
    else
       [ $minimal_mumps = 0 ] && add_package hypre
-   fi   
+   fi
 fi
 
 ##########
@@ -605,11 +605,8 @@ do
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
    [ "$COPTFLAGS" = "" ] && COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
-   if [ "$FOPTFLAGS" = "" ]
-   then
-      # On compile les librairies Fortran (eg:MUMPS) en int32 donc on supprime les eventuelles conversion des int sur 8 octets:
-      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
-   fi
+   # On compile les librairies Fortran (eg:MUMPS) en int32, donc on supprime les flags de conversion int32 -> int64 en Fortran:
+   [ "$FOPTFLAGS" = "" ] && FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:
@@ -656,7 +653,7 @@ do
          # Tests with PETSC_HAVE_CUDA=1 are done below
          #  bloque de temps en temps make test
          echo No running make test
-	 err=$?
+         err=$?
       fi
       if [ $err = 0 ]
       then
@@ -676,7 +673,7 @@ do
 	    #[ -d docs ] && cp -r docs $PETSC_ROOT/$PETSC_ARCH/.
 	    # Copie des exemples
 	    #[ -d src ] && cp -r src $PETSC_ROOT/$PETSC_ARCH/.
-            cd ..
+	    cd ..
 	    echo "make install done"
 	    # On allege encore l'installation:
 	    [ "$TRUST_ENABLE_PETSC_DEBUG" = 0 ] && rm -r -f $PETSC_ROOT/../build
@@ -695,9 +692,7 @@ do
 	 if [ -f $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h ]
 	 then
 	     sed -i 's/#define PTSCOTCH_H/#define PTSCOTCH_H\n#include <mpi.h>/' $PETSC_ROOT/$PETSC_ARCH/include/ptscotch.h 1>/dev/null 2>&1
-
 	 fi
-	 
       else
          echo "make test failed." && exit -1
       fi
