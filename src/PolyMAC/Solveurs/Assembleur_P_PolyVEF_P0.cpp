@@ -36,11 +36,11 @@
 #include <Debog.h>
 #include <Piso.h>
 
-Implemente_instanciable(Assembleur_P_PolyVEF_P0, "Assembleur_P_PolyVEF_P0", Assembleur_P_PolyMAC_P0P1NC);
+Implemente_instanciable(Assembleur_P_PolyVEF_P0, "Assembleur_P_PolyVEF_P0", Assembleur_P_PolyMAC_P0);
 
 Sortie& Assembleur_P_PolyVEF_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Assembleur_P_PolyVEF_P0::readOn(Entree& s) { return Assembleur_P_PolyMAC_P0P1NC::readOn(s); }
+Entree& Assembleur_P_PolyVEF_P0::readOn(Entree& s) { return Assembleur_P_PolyMAC_P0::readOn(s); }
 
 int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
 {

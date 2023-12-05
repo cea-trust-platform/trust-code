@@ -16,27 +16,18 @@
 #ifndef Masse_PolyVEF_P0_Face_included
 #define Masse_PolyVEF_P0_Face_included
 
-#include <Masse_PolyMAC_P0P1NC_Face.h>
-#include <TRUST_Ref.h>
+#include <Masse_PolyMAC_P0_Face.h>
 
-class Domaine_PolyVEF_P0;
-
-class Masse_PolyVEF_P0_Face : public Masse_PolyMAC_P0P1NC_Face
+class Masse_PolyVEF_P0_Face : public Masse_PolyMAC_P0_Face
 {
   Declare_instanciable(Masse_PolyVEF_P0_Face);
 public:
-  void completer() override;
+  int has_interface_blocs() const override { return 1; }
 
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
-
-  /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  }
+  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
-  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const override;
 };
 
 #endif /* Masse_PolyVEF_P0_Face_included */
