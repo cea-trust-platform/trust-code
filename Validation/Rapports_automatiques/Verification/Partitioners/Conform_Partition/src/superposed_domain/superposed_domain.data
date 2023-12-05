@@ -1,0 +1,63 @@
+# PARALLEL OK #
+dimension 2
+Domaine outer_domain
+Domaine inner_domain
+
+# BEGIN MESH #
+Mailler outer_domain
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+Mailler inner_domain
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 4
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+Trianguler_H inner_domain
+# END MESH #
+
+# BEGIN PARTITION
+Decouper outer_domain
+{
+    partitionneur metis { nb_parts 3 }
+    zones_name outer_domain
+    ecrire_med outer_domain.med
+    Larg_joint 2
+}
+Decouper inner_domain
+{
+    partitionneur fichier_med { file outer_domain_0000.med }
+    zones_name inner_domain
+    ecrire_med inner_domain.med
+    Larg_joint 1
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter outer_domain.Zones outer_domain
+Scatter inner_domain.Zones inner_domain
+END SCATTER #
+
+lire_fichier ../common.data ;
