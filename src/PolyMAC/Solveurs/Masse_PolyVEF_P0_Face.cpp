@@ -33,20 +33,11 @@
 #include <TRUSTTab.h>
 #include <Piso.h>
 
-Implemente_instanciable(Masse_PolyVEF_P0_Face, "Masse_PolyVEF_P0_Face", Masse_PolyMAC_P0P1NC_Face);
+Implemente_instanciable(Masse_PolyVEF_P0_Face, "Masse_PolyVEF_P0_Face", Masse_PolyMAC_P0_Face);
 
 Sortie& Masse_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Masse_PolyVEF_P0_Face::readOn(Entree& s) { return s ; }
-
-void Masse_PolyVEF_P0_Face::completer()
-{
-  Solveur_Masse_Face_proto::associer_masse_proto(*this,le_dom_PolyMAC.valeur());
-  Solveur_Masse_base::completer();
-  Equation_base& eq = equation();
-  Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, eq.inconnue());
-  ch.init_auxiliary_variables();
-}
 
 DoubleTab& Masse_PolyVEF_P0_Face::appliquer_impl(DoubleTab& sm) const
 {
