@@ -21,7 +21,6 @@
 class Assembleur_P_PolyMAC_P0 : public Assembleur_P_PolyMAC_P0P1NC
 {
   Declare_instanciable(Assembleur_P_PolyMAC_P0);
-
 public:
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
   void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
