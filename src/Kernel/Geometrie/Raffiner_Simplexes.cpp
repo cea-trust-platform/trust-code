@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -782,6 +782,15 @@ static void build_frontier(const Frontiere&         src,
 void Raffiner_Simplexes::refine_domain(const Domaine& src,
                                        Domaine&        dest)
 {
+  // Sanity check:
+  if (src.nb_ss_domaines()!=0)
+    {
+      Cerr << finl;
+      Cerr << "You can't refine the domain " << src.le_nom() << " which have existing " << src.nb_ss_domaines() << " sub-domain(s)." << finl;
+      Cerr << "It is not implemented yet..." << finl;
+      Cerr << "Refine your domain, then define sub-domains on it." << finl;
+      Process::exit();
+    }
 
   const Nom&        cell_type          = src.type_elem().valeur().que_suis_je();
   const IntTab&     nodes_of_cells_src = src.les_elems();
