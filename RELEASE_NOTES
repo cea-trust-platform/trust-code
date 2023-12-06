@@ -1,3 +1,4 @@
+XX/XX/23 (TRUST) Fix          : Refine keywords (eg: Raffiner_simplexes, Raffiner_isotrope_parallele) were not refining sub_zones
 XX/XX/23 (TRUST) New feature  : Partition_tool Fichier_MED can read now the partition MED file from a previous partitionned domain to create a conform partitioned mesh 
 XX/XX/23 (TRUST) New option   : Add ecrire_med option to Partition tools to write partition field into a MED file
 --------------------------------------------------------------------------------------------------

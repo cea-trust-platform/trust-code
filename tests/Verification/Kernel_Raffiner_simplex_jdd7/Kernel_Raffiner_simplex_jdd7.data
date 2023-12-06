@@ -21,10 +21,22 @@ Mailler domain
 }
 
 transformer domain x*(1+y) y
+
+sous_zone ssz1
+associate ssz1 domain
+read ssz1 { Rectangle Origine 0. 0. Cotes 0.2 0.2 }
+sous_zone ssz2
+associate ssz2 domain
+read ssz2 { Rectangle Origine 0.5 0.5 Cotes 0.2 0.2 }
+
 ecrire_fichier domain domain_0.geom
+ecrire_fichier_formatte ssz1 initial_ssz1.ssz
+ecrire_fichier_formatte ssz2 initial_ssz2.ssz
 
 Raffiner_Simplexes domain
-ecrire_fichier_formatte domain domain_1.geom
+ecrire_fichier domain domain_1.geom
+ecrire_fichier_formatte ssz1 final_ssz1.ssz
+ecrire_fichier_formatte ssz2 final_ssz2.ssz
 
 Domaine initial_domain
 Domaine final_domain

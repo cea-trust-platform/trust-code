@@ -782,16 +782,6 @@ static void build_frontier(const Frontiere&         src,
 void Raffiner_Simplexes::refine_domain(const Domaine& src,
                                        Domaine&        dest)
 {
-  // Sanity check:
-  if (src.nb_ss_domaines()!=0)
-    {
-      Cerr << finl;
-      Cerr << "You can't refine the domain " << src.le_nom() << " which have existing " << src.nb_ss_domaines() << " sub-domain(s)." << finl;
-      Cerr << "It is not implemented yet..." << finl;
-      Cerr << "Refine your domain, then define sub-domains on it." << finl;
-      Process::exit();
-    }
-
   const Nom&        cell_type          = src.type_elem().valeur().que_suis_je();
   const IntTab&     nodes_of_cells_src = src.les_elems();
   const DoubleTab& nodes_src          = src.les_sommets();
@@ -821,6 +811,27 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
 
   IntTab& nodes_of_cells_dest = dest.les_elems();
   build_cells(nodes_of_cells_src,edges_of_cells_src,cell_refinement_pattern,nodes_src.dimension(0),nodes_of_cells_dest);
+
+  // Rebuild sub-domains:
+  const int nb_refined_cells_per_cell = cell_refinement_pattern.dimension(0);
+  for (int i=0; i<dest.nb_ss_domaines(); i++)
+    {
+      Sous_Domaine& ssz = dest.ss_domaine(i);
+      Cerr << "Refining sub-domain " << ssz.le_nom() << finl;
+      IntVect  old_polys = ssz.les_polys();
+      IntVect& les_polys = ssz.les_polys();
+      int old_size = old_polys.size_array();
+      les_polys.resize(old_size * nb_refined_cells_per_cell);
+      int new_poly=0;
+      for (auto& old_poly : old_polys)
+        {
+          for (int refined_cell = 0; refined_cell < nb_refined_cells_per_cell; ++refined_cell)
+            {
+              les_polys(new_poly) = old_poly * nb_refined_cells_per_cell + refined_cell;
+              new_poly++;
+            }
+        }
+    }
 
   {
     const Bords& boundaries_src  = src.faces_bord();

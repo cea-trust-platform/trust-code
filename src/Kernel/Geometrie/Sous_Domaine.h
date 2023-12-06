@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,11 @@ public :
   }
   int add_poly(const int poly);
   int remove_poly(const int poly);
-  inline const IntVect& les_polys()
+  inline const IntVect& les_polys() const
+  {
+    return les_polys_;
+  }
+  inline IntVect& les_polys()
   {
     return les_polys_;
   }
