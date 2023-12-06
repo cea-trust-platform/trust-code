@@ -184,6 +184,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       elem_part.resize(nb_elem);
       for (int i=0; i<nb_elem; i++)
         elem_part(i)=(int)double_elem_part(i);
+      nb_parts_tot = 1+int(local_max_vect(partition_field_outer_domain.valeurs()));
       return;
     }
 }

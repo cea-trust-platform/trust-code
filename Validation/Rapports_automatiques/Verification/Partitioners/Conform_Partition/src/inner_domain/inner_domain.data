@@ -35,7 +35,7 @@ Mailler inner_domain
     }
 }
 Trianguler_H inner_domain
-Transformer inner_domain x+0.0045 y+0.0055
+Transformer inner_domain x+0.001 y+0.0025
 # END MESH #
 
 # BEGIN PARTITION
