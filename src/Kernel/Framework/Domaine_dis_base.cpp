@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,8 @@
 #include <Sous_Domaine.h>
 #include <Sous_domaine_dis.h>
 #include <Sous_domaines_dis.h>
+#include <Probleme_base.h>
+#include <Discretisation_base.h>
 
 Implemente_base(Domaine_dis_base,"Domaine_dis_base",Objet_U);
 
@@ -180,3 +182,31 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
         typer_discretiser_ss_domaine(i);
     }
 }
+
+void Domaine_dis_base::creer_champ(const Motcle& motlu, const Probleme_base& pb)
+{
+  if (motlu == "VOLUME_MAILLE" && volume_maille().est_nul())
+    {
+      pb.discretisation().volume_maille(pb.schema_temps(), pb.domaine_dis(), volume_maille());
+    }
+  else if (motlu == "MESH_NUMBERING" && mesh_numbering().est_nul())
+    {
+      pb.discretisation().mesh_numbering(pb.schema_temps(), pb.domaine_dis(), mesh_numbering());
+    }
+}
+const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom, const Probleme_base& pb) const
+{
+  if (un_nom=="VOLUME_MAILLE")
+    {
+      Champ_Fonc_base& ch=ref_cast_non_const(Domaine_dis,pb.domaine_dis())->volume_maille().valeur();
+      if (est_different(ch.temps(),pb.schema_temps().temps_courant()))
+        ch.mettre_a_jour(pb.schema_temps().temps_courant());
+      return ch;
+    }
+  else if (un_nom=="MESH_NUMBERING")
+    {
+      return ref_cast_non_const(Domaine_dis,pb.domaine_dis())->mesh_numbering().valeur();
+    }
+  throw Champs_compris_erreur();
+}
+

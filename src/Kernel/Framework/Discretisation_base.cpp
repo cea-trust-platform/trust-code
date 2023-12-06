@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -269,6 +269,39 @@ void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Doma
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch.valeur());
   DoubleVect& tab = ch_fonc.valeurs();
   tab = domaine_VF.volumes();
+}
+
+void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const
+{
+  Cerr << "Discretization of the field mesh numbering" << finl;
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z.valeur());
+  Noms noms(3);
+  Noms unit(3);
+  noms[0]="nodes"; // Composante 0: numerotation des sommets
+  noms[1]="cells"; // Composante 1: numerotation des elements
+  noms[2]="faces"; // Composants 2: numerotation des faces
+  // ToDo: faire reconnaitre par VisIt les noms des composantes:
+  // La gestion des champs avec composantes par TRUST + plugin lata est une plaie...
+  // Vivement VTK pour eviter cette passerelle entre TRUST et VisIt/Paraview/Tecplot
+  discretiser_champ("champ_elem", domaine_VF, multi_scalaire, noms, unit, 3, sch.temps_courant(), ch);
+  ch.valeur().nommer("mesh_numbering");
+  DoubleTab& tab = ch.valeurs();
+  tab=0;
+  const IntTab& les_elems = z->domaine().les_elems();
+  const IntTab& elem_faces = domaine_VF.elem_faces();
+  int nb_elem = les_elems.dimension(0);
+  int nb_soms_elem = les_elems.dimension(1);
+  int nb_faces_elem = elem_faces.dimension(1);
+  for (int elem=0; elem<nb_elem; elem++)
+    {
+      for (int som = 0; som < nb_soms_elem; som++)
+        tab(elem, 0) += les_elems(elem, som);
+      tab(elem, 0) /= nb_soms_elem;
+      tab(elem, 1) = elem;
+      for (int face = 0; face < nb_faces_elem; face++)
+        tab(elem, 2) += elem_faces(elem, face);
+      tab(elem, 2) /= nb_faces_elem;
+    }
 }
 
 void Discretisation_base::residu(const Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const

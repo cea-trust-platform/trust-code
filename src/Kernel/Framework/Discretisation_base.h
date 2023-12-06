@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,6 +86,7 @@ public :
   int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
 
   void volume_maille(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const;
+  void mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const;
   virtual void residu(const Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const;
 
   static void creer_champ(Champ_Inc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,

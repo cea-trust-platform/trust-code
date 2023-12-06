@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,6 @@ Equation_base::Equation_base()
   sys_invariant_=1;
   implicite_=-1;
   has_time_factor_= false;
-  champs_compris_.ajoute_nom_compris("volume_maille");
   Nom expr_equation_non_resolue="0";
   equation_non_resolue_.setNbVar(1);
   equation_non_resolue_.setString(expr_equation_non_resolue); // Valeur par defaut, equation resolue
@@ -1183,14 +1182,6 @@ const Discretisation_base& Equation_base::discretisation() const
 
 void Equation_base::creer_champ(const Motcle& motlu)
 {
-  if (motlu == "volume_maille")
-    {
-      if (!volume_maille.non_nul())
-        {
-          discretisation().volume_maille(schema_temps(),domaine_dis(),volume_maille);
-          champs_compris_.ajoute_champ(volume_maille);
-        }
-    }
 // pour recuperer une equation const !!!!!
 
   const Equation_base& me_const =(*this);
@@ -1222,13 +1213,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 {
   Nom inco_residu (inconnue()->le_nom());
   inco_residu += "_residu";
-  if (nom=="volume_maille")
-    {
-      Champ_Fonc_base& ch_vol_maille=ref_cast_non_const(Champ_Fonc_base,volume_maille.valeur());
-      if (est_different(ch_vol_maille.temps(),inconnue()->temps()))
-        ch_vol_maille.mettre_a_jour(inconnue()->temps());
-    }
-  else if(nom == Motcle(inco_residu))
+  if(nom == Motcle(inco_residu))
     {
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,field_residu_.valeur());
       double temps_init = schema_temps().temps_init();

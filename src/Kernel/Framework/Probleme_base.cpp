@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -747,6 +747,7 @@ Equation_base& Probleme_base::equation(const Nom& type)
 
 void Probleme_base::creer_champ(const Motcle& motlu)
 {
+  domaine_dis()->creer_champ(motlu, *this);
   milieu().creer_champ(motlu);
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
@@ -762,13 +763,21 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
   Champ_base const * champ = NULL ;
-
+  try
+    {
+      champ = &domaine_dis()->get_champ(un_nom, *this);
+      if (champ) return true ;
+    }
+  catch (Champs_compris_erreur&)
+    {
+    }
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     {
       try
         {
           champ = &equation(i).get_champ(un_nom);
+          if (champ) return true ;
         }
       catch (Champs_compris_erreur&)
         {
@@ -776,6 +785,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
       try
         {
           champ = &equation(i).milieu().get_champ(un_nom);
+          if (champ) return true ;
         }
       catch (Champs_compris_erreur&)
         {
@@ -788,18 +798,24 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
       try
         {
           champ = &loi.get_champ(un_nom);
+          if (champ) return true ;
         }
       catch(Champs_compris_erreur&)
         {
         }
     }
-
-  if (champ) return true ;
   return false;
 }
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
+  try
+    {
+      return domaine_dis()->get_champ(un_nom, *this);
+    }
+  catch (Champs_compris_erreur&)
+    {
+    }
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     {

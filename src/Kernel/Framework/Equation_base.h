@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -310,7 +310,6 @@ protected :
   int implicite_;
   bool has_time_factor_; // Parameter set to 1 if convection has a prefactor (eg rhoCp in energy)
   Parametre_equation parametre_equation_;
-  Champ_Fonc volume_maille;
 
   LIST(RefObjU) liste_modeles_; //Le premier element de la liste est le modele nul
   Champs_compris champs_compris_;
