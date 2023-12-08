@@ -32,19 +32,19 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
 
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue());
   const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis());
-  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir(),  &xv = domaine.xv();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& pvit = ch.passe(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
-                     &temp = pbm.equation_energie().inconnue().passe(),
-                      &rho = equation().milieu().masse_volumique().passe(),
-                       &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
-//                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(), ,
-                        &vort  = equation().probleme().get_champ("vorticite").valeurs(),
-                         * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
-                           * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
+                     &temp  = pbm.equation_energie().inconnue().passe(),
+                      &rho   = equation().milieu().masse_volumique().passe(),
+                       &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
+                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(),
+                         &vort  = equation().probleme().get_champ("vorticite").valeurs(),
+                          * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
+                            * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, c, d, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
@@ -95,70 +95,75 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
     if (fcl(f, 0) < 2)
       {
         in.alpha=0., in.T=0., in.p=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.d_bulles=0., in.nv=0.;
-        for ( c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-          {
-            for (n = 0; n < N; n++)
-              {
-                in.alpha[n] += vf_dir(f, c)/vf(f) * alpha(e, n);
-                in.p[n]     += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-                in.T[n]     += vf_dir(f, c)/vf(f) * temp(e, n); // FIXME SI res_en_T
-                in.rho[n]   += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
-                in.mu[n]    += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
-                in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) *(*d_bulles)(e,n) : 0 ;
-                for (k = n+1; k < N; k++)
-                  if (milc.has_interface(n,k))
-                    {
-                      const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
-                      in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
-                    }
-                for (k = 0; k < N; k++)
-                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, nullptr);
-              }
-            for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
-          }
+        for ( c = 0; c < 2 ; c++)
+          if ((e = f_e(f, c)) >= 0 )
+            {
+              for (n = 0; n < N; n++)
+                {
+                  in.alpha[n] += vf_dir(f, c)/vf(f) * alpha(e, n);
+                  in.p[n]     += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
+                  in.T[n]     += vf_dir(f, c)/vf(f) * temp(e, n); // FIXME SI res_en_T
+                  in.rho[n]   += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
+                  in.mu[n]    += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
+                  in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) *(*d_bulles)(e,n) : 0 ;
+                  for (k = n+1; k < N; k++)
+                    if (milc.has_interface(n,k))
+                      {
+                        const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                        in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
+                      }
+                  for (k = 0; k < N; k++)
+                    in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, nullptr);
+                }
+              for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
+            }
 
         correlation_pi.coefficient(in, out);
 
-        /*          grad_l = 0; // we fill grad_l so that grad_l(d, d2) = du_d/dx_d2 by averaging between both elements
-                  for (d = 0 ; d<D ; d++)
-                    for (d2 = 0 ; d2<D ; d2++)
-                      for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
-                        grad_l(d, d2) += vf_dir(f, c)/vf(f)*grad_v( e ,  N * ( D*d+d2 ) + n_l ) ;
-                  //We replace the n_l components by the one calculated without interpolation to elements
-                  scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
-                  for (d = 0 ; d<D ; d++)
-                    for (d2 = 0 ; d2<D ; d2++)
-                      scal_grad(d) += grad_l(d, d2)*n_f(f, d2)/fs(f);
-                  for (d = 0 ; d<D ; d++)
-                    for (d2 = 0 ; d2<D ; d2++)
-                      grad_l(d, d2) += (grad_v(f ,n_l*D+d) - scal_grad(d)) * n_f(f, d2)/fs(f);
-                  // We calculate the local vorticity using this local gradient
-                  vort_l(0) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
-                  vort_l(1) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
-                  vort_l(2) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
-        */
-
         // Quid de n_l != 0 ?
         vort_l = 0;
-        n = 0;
-        if (D==2)
+
+        if ( (f_e(f, 0)<0) || (f_e(f,1)<0) ) vort_l(0) = f_e(f, 0)>=0 ? vort(f_e(f, 0), n_l) : vort(f_e(f, 1), n_l) ;
+        else
           {
-            for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-              vort_l(0) += vort(e, n) * vf_dir(f, c)/vf(f);
-          }
-        if (D==3)
-          {
-            for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-              for (d=0; d<D; d++)
-                vort_l(d) += vort(e, N*d+n) * vf_dir(f, c)/vf(f);
+            {
+              int orif = domaine.orientation(f);
+              DoubleTrav grad_loc(D);
+              for ( c = 0; c < 2 ; c++)
+                {
+                  e = f_e(f, c);
+                  for ( d = 0 ; d < e_f.line_size() ; d++)
+                    {
+                      int fb = e_f(e,d);
+                      int orifb = domaine.orientation(fb);
+                      if (orifb != orif) grad_loc(orifb) += .25*pvit(fb, n_l)/(xv(fb, orif)-xv(f, orif));
+                    }
+                }
+              DoubleTrav grad_ll(D,D);
+              for ( c = 0; c < 2 ; c++)
+                for (int d_U=0; d_U<D; d_U++)
+                  for (int d_X=0; d_X<D; d_X++)
+                    grad_ll(d_U,d_X) += grad_v( e, N * ( D*d_U+d_X ) + n_l) * vf_dir(f, c)/vf(f);
+              for (int oril = 0 ; oril<D ; oril++)
+                if (oril != orif)
+                  grad_ll(oril,orif) = grad_loc(oril);
+              if (D==2) vort_l(0) = grad_ll(1,0) - grad_ll(0,1);
+              else // (D==3)
+                {
+                  vort_l(0) = grad_ll(2, 1) - grad_ll(1, 2); // dUz/dy - dUy/dz
+                  vort_l(1) = grad_ll(0, 2) - grad_ll(2, 0); // dUx/dz - dUz/dx
+                  vort_l(2) = grad_ll(1, 0) - grad_ll(0, 1); // dUy/dx - dUx/dy
+                }
+            }
           }
 
         // We also need to calculate relative velocity at the face
         pvit_l = 0 ;
         for (d = 0 ; d<D ; d++)
           for (k = 0 ; k<N ; k++)
-            for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
-              pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit_elem(e, N*d+k) ;
+            for ( c = 0; c < 2 ; c++)
+              if ((e = f_e(f, c)) >= 0 )
+                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit_elem(e, N*d+k) ;
         scal_u = 0;
         for (k = 0 ; k<N ; k++)
           for (d = 0 ; d<D ; d++)
