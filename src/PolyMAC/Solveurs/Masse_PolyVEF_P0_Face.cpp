@@ -15,13 +15,13 @@
 
 #include <Linear_algebra_tools_impl.h>
 #include <Op_Grad_PolyVEF_P0_Face.h>
+#include <Frottement_impose_base.h>
 #include <Masse_PolyVEF_P0_Face.h>
 #include <Champ_Face_PolyVEF_P0.h>
-#include <Frottement_global_impose.h>
-#include <Masse_ajoutee_base.h>
-#include <Option_PolyVEF_P0.h>
 #include <Domaine_PolyVEF_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Masse_ajoutee_base.h>
+#include <Option_PolyVEF_P0.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
@@ -141,12 +141,10 @@ void Masse_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
             else if (fcl(f, 0) == 2 && sub_type(Frottement_impose_base, cls[fcl(f, 1)].valeur())) //Navier
               {
                 // Pour l'instant on fait un truc sale : on appelle un frottement global comme un frottement externe pour avoir une seule classe paroi_frottante
-                const Frottement_global_impose *cl = sub_type(Frottement_global_impose, cls[fcl(f, 1)].valeur()) ? &ref_cast(Frottement_global_impose, cls[fcl(f, 1)].valeur()) : nullptr;
-                if (!cl)
-                  Process::exit("Masse_PolyVEF_P0_Face: only Frottement_global_impose is supported!");
+                const Frottement_impose_base *cl = sub_type(Frottement_impose_base, cls[fcl(f, 1)].valeur()) ? &ref_cast(Frottement_impose_base, cls[fcl(f, 1)].valeur()) : nullptr;
+                if (!cl || cl->is_externe()) Process::exit("Masse_PolyVEF_P0_Face: only Frottement_impose_base global is supported!");
                 secmem(f, N * d + n) -= fs(f) * cl->coefficient_frottement(fcl(f, 2), n) * inco(f, N * d + n);
-                if (mat)
-                  (*mat)(N * (D * f + d) + n, N * (D * f + d) + n) += fs(f) * cl->coefficient_frottement(fcl(f, 2), n);
+                if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + n) += fs(f) * cl->coefficient_frottement(fcl(f, 2), n);
               }
           }
     }
