@@ -14,9 +14,8 @@
 *****************************************************************************/
 
 #include <Echange_contact_PolyMAC_P0.h>
-#include <Frottement_externe_impose.h>
 #include <Linear_algebra_tools_impl.h>
-#include <Frottement_global_impose.h>
+#include <Frottement_impose_base.h>
 #include <Champ_implementation_P1.h>
 #include <Connectivite_som_elem.h>
 #include <MD_Vector_composite.h>
@@ -247,10 +246,10 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
                       else if (is_dir) Mf(n, k, k) = Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) = 1; //Dirichlet -> equation u_fs = u_b
                       else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
                         Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k];
-                      else if (sub_type(Frottement_global_impose, *cl)) //Frottement_global_impose -> flux =  - coeff * v_e
-                        Meb(n, i, k) -= surf_fs[k] * ((nu) ? ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_global_impose, *cl).coefficient_frottement_grad(fcl(f, 2), n) ) ;
-                      else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
-                        Mf(n, k, k) += surf_fs[k] * ((nu) ? ref_cast(Frottement_externe_impose, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_externe_impose, *cl).coefficient_frottement_grad(fcl(f, 2), n) );
+                      else if ((sub_type(Frottement_impose_base, *cl)) && !(ref_cast(Frottement_impose_base, *cl).is_externe())) //Frottement_impose_base cas global -> flux =  - coeff * v_e
+                        Meb(n, i, k) -= surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) ) ;
+                      else if ((sub_type(Frottement_impose_base, *cl)) && (ref_cast(Frottement_impose_base, *cl).is_externe())) //Frottement_impose_base cas externe -> flux =  - coeff * v_f
+                        Mf(n, k, k) += surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) );
                       else if (sub_type(Echange_impose_base, *cl)) //Echange_impose_base -> flux =  - h * (T_{e,f} - T_ext)
                         {
                           double h = (nu) ? ref_cast(Echange_impose_base, *cl).h_imp(fcl(f, 2), n) : ref_cast(Echange_impose_base, *cl).h_imp_grad(fcl(f, 2), n) ;

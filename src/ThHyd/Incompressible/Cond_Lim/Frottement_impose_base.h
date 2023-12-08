@@ -27,8 +27,8 @@
  * n nul, v_t par contrainte
  *     imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
  *     (force subie) = - coefficient_frottement * (vitesse tangentielle)
- *     La vitesse tangentielle peut etre soit prise directement a chaque face (classe Frottement_externe_impose),
- *     soit etre prise en l'element voisin de la face (classe Frottement_global_impose)
+ *     La vitesse tangentielle peut etre soit prise directement a chaque face (classe Frottement_impose_base cas local),
+ *     soit etre prise en l'element voisin de la face (classe Frottement_impose_base cas global)
  *
  * @sa Navier
  */
@@ -51,9 +51,12 @@ public:
   void calculer_coeffs_echange(double temps) override { }
   void verifie_ch_init_nb_comp() const override { }
 
+  bool is_externe() const { return is_externe_;}
+
 protected:
   OBS_PTR(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1e10;
+  bool is_externe_ = 0;
 //  int is_calc_qdm = 1 ;
 };
 

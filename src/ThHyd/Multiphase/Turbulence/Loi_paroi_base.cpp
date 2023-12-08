@@ -15,6 +15,7 @@
 
 #include <Echange_global_impose_turbulent.h>
 #include <Frottement_impose_base.h>
+#include <Echange_impose_base.h>
 #include <Dirichlet_loi_paroi.h>
 #include <Discretisation_base.h>
 #include <Loi_paroi_base.h>
@@ -52,10 +53,10 @@ void Loi_paroi_base::completer()
         Cond_lim& cond_lim_loc = pb_->equation(i).domaine_Cl_dis().les_conditions_limites(j);
         if (sub_type(Dirichlet_loi_paroi, cond_lim_loc.valeur()))
           ref_cast(Dirichlet_loi_paroi, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
-        else if (sub_type(Frottement_impose_base, cond_lim_loc.valeur()))
+        else if sub_type(Frottement_impose_base, cond_lim_loc.valeur())
           ref_cast(Frottement_impose_base, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
-        else if (sub_type(Echange_global_impose_turbulent, cond_lim_loc.valeur()))
-          ref_cast(Echange_global_impose_turbulent, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
+        else if sub_type(Echange_impose_base, cond_lim_loc.valeur())
+          ref_cast(Echange_impose_base, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
       }
   Faces_a_calculer_.echange_espace_virtuel();
 
