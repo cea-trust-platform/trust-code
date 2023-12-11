@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -289,6 +289,7 @@ private:
   // -Si ce n'est pas le cas, les tableaux sont copies sur le host via checkDataOnHost
   inline bool checkDataOnDevice(const TRUSTArray& tab, std::string kernel_name) const
   {
+#ifdef _OPENMP
     bool flag = tab.isDataOnDevice() && computeOnDevice;
     if (!flag)
       checkDataOnHost(tab);
@@ -296,9 +297,13 @@ private:
     //  tab.set_dataLocation(Device); // non const array will be computed on device
     printKernel(flag, tab, kernel_name);
     return flag;
+#else
+    return false;
+#endif
   }
   inline bool checkDataOnDevice(TRUSTArray& tab, std::string kernel_name)
   {
+#ifdef _OPENMP
     bool flag = tab.isDataOnDevice() && computeOnDevice;
     if (!flag)
       checkDataOnHost(tab);
@@ -306,9 +311,13 @@ private:
       tab.set_dataLocation(Device); // non const array will be computed on device
     printKernel(flag, tab, kernel_name);
     return flag;
+#else
+    return false;
+#endif
   }
   inline bool checkDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name="??")
   {
+#ifdef _OPENMP
     bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice() && computeOnDevice;
     // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
     if (!flag)
@@ -320,6 +329,9 @@ private:
       tab.set_dataLocation(Device); // non const array will be computed on device
     printKernel(flag, tab, kernel_name);
     return flag;
+#else
+    return false;
+#endif
   }
 };
 
