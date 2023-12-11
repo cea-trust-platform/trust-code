@@ -80,6 +80,9 @@ cd - 1>/dev/null 2>&1
 # Patch for conformize3d (applique dans MC 9.12)
 #echo "Applying patch for conformize3d ..."
 #(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_conf3d.patch)
+# Patch for OverlapDEC
+echo "Applying patch for OverlapDEC ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/odec_multi_compo.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
