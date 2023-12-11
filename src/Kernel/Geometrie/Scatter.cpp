@@ -237,7 +237,7 @@ Entree& Scatter::interpreter(Entree& is)
 
   Cerr << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_nb_elem = Process::mp_sum(dom.nb_elem());
-  Cerr << "\nTotal number of elements = " << total_nb_elem << finl;
+  Cerr << "\nTotal nb of elements = " << total_nb_elem << finl;
   Cerr << "Number of Domaines : " << Process::nproc() << finl;
   double min_element_domaine = mp_min(dom.nb_elem());
   double max_element_domaine = mp_max(dom.nb_elem());
