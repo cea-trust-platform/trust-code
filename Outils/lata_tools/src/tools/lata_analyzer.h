@@ -41,7 +41,7 @@ public:
   int forcegroup;
 
   // Which data processing do we want ?
-  enum ProcessingOption { WRITE_LATA_MASTER, WRITE_LATA_ALL, WRITE_LATA_CONVERT, WRITE_MED, WRITE_PRM };
+  enum ProcessingOption { WRITE_LATA_MASTER, WRITE_LATA_ALL, WRITE_LATA_CONVERT, WRITE_MED, WRITE_PRM, WRITE_SINGLE_LATA };
   ProcessingOption processing_option;
 
   enum TimeAverage { NO_TIME_AVERAGE, SIMPLE_TIME_AVERAGE, LINEAR_TIME_AVERAGE, RECTANGLES_TIME_AVERAGE };

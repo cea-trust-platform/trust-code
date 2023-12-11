@@ -14,9 +14,10 @@
 *****************************************************************************/
 
 #include <Rebuild_virtual_layer.h>
+#include <Single_LataWriter.h>
+#include <lata_analyzer.h>
 #include <LataWriter.h>
 #include <LmlReader.h>
-#include <lata_analyzer.h>
 #include <LataDB.h>
 #include <stdlib.h>
 #include <iostream>
@@ -86,6 +87,7 @@ void LataAnalyzerOptions::describe()
   cerr << " writelata_convert=path/masterfile : Rewrite a lata master file and lata data files" << endl;
   cerr << "                                - database filtering (timestep, domain, component)" << endl;
   cerr << "                                - data format conversion (asciiout, binaryout, int32out, ...)" << endl;
+  cerr << " write_singlelata=path/masterfile : Rewrite a single lata file" << endl;
   cerr << " writelata_master=path/masterfile : Rewrite a lata master file" << endl;
   cerr << "                                - database filtering only, plus compute_virtual_elements, and writing a lataV2.1 master file" << endl;
   cerr << "                                (files containing data are not rewritten, master file points to existing files)" << endl;
@@ -177,6 +179,11 @@ entier LataAnalyzerOptions::parse_option(const Nom& s)
   else if (s.debute_par("writelata_convert="))
     {
       processing_option = WRITE_LATA_CONVERT;
+      output_filename = read_string_opt(s);
+    }
+  else if (s.debute_par("write_singlelata="))
+    {
+      processing_option = WRITE_SINGLE_LATA;
       output_filename = read_string_opt(s);
     }
   else if (s.debute_par("writelata_master="))
@@ -449,6 +456,95 @@ static void write_lata_convert(const LataDB& lata_db, const LataAnalyzerOptions&
   dest_db.write_master_file(opt.output_filename);
 }
 
+static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt)
+{
+  Journal(0) << "Writing fields from LataFilter to a new single lata file : " << opt.output_filename << endl;
+
+  Nom dest_prefix, dest_name;
+  LataOptions::extract_path_basename(opt.output_filename, dest_prefix, dest_name);
+
+  LataDBDataType type;
+
+  type.msb_ = (!opt.binary_out) ?  LataDBDataType::ASCII :  LataDBDataType::machine_msb_;
+  type.type_ = LataDBDataType::INT32;
+  type.array_index_ = opt.use_fortran_indexing ? LataDBDataType::F_INDEXING : LataDBDataType::C_INDEXING;
+  type.data_ordering_ = opt.use_fortran_data_ordering ? LataDBDataType::F_ORDERING : LataDBDataType::C_ORDERING;
+  type.fortran_bloc_markers_ = opt.fortran_blocs ? LataDBDataType::BLOC_MARKERS_SINGLE_WRITE : LataDBDataType::NO_BLOC_MARKER;
+  type.bloc_marker_type_ = LataDBDataType::INT32;
+  type.file_offset_ = 0;
+
+  Single_LataWriter lata_file;
+  lata_file.init_file(dest_prefix, dest_name, type, LataDBDataType::REAL32);
+
+  const entier ntimesteps = filter.get_nb_timesteps();
+
+  Journal(2) << "ntimesteps =  " << ntimesteps << endl;
+
+  // Build list of geometries to export
+  Noms geometries;
+    {
+      const entier take_all_geoms = (opt.output_domains_filter.size() == 0);
+      Noms names = filter.get_exportable_geometry_names();
+      for (entier i = 0; i < names.size(); i++)
+        if (take_all_geoms || opt.output_domains_filter.rang(names[i]) >= 0)
+          {
+            geometries.add(names[i]);
+            Journal(2) << " Geometry kept: " << names[i] << endl;
+          }
+        else
+          Journal(2) << " Geometry rejected (output selection): " << names[i] << endl;
+    }
+
+  for (entier tstep = 0; tstep < ntimesteps; tstep++)
+    {
+      if (tstep > 0)
+        {
+          // Real timestep (timestep 0 contains global definitions)
+          double t = filter.get_timestep(tstep);
+          Journal(2) << " Writing timestep to lata: " << t << endl;
+          lata_file.write_time(t);
+        }
+
+      for (entier i = 0; i < geometries.size(); i++)
+        {
+          const LataGeometryMetaData &md = filter.get_geometry_metadata(geometries[i]);
+
+          // Write geom
+          if ((md.dynamic_ && tstep > 0) || ((!md.dynamic_) && tstep == 0))
+            {
+              // Output geometry data defined at this timestep:
+              const Domain &domain = filter.get_geometry(Domain_Id(md.internal_name_, tstep, -1));
+              Journal(2) << " Writing geometry to lata: " << md.internal_name_ << endl;
+              lata_file.write_geometry(domain);
+              filter.release_geometry(domain);
+            }
+
+          // Write fields
+          if (tstep > 0)
+            {
+              // Output fields
+              LataVector<Field_UName> field_names = filter.get_exportable_field_unames(md.internal_name_);
+              for (entier j = 0; j < field_names.size(); j++)
+                {
+                  const Nom &fieldname = field_names[j].get_field_name();
+                  const Nom &complete_field_name = field_names[j].build_string();
+                  if (opt.output_components_filter.size() > 0 && opt.output_components_filter.rang(fieldname) < 0 && opt.output_components_filter.rang(complete_field_name) < 0)
+                    continue; // Ignore this component
+
+                  const LataField_base &field = filter.get_field(Field_Id(field_names[j], tstep, -1));
+                  Journal(2) << " Writing field to lata: " << field_names[j].build_string() << endl;
+                  lata_file.write_component(field);
+                  filter.release_field(field);
+                }
+            }
+
+        }
+    }
+
+  lata_file.finish();
+  Journal(0) << "Done ! " << endl;
+}
+
 static void write_med(LataFilter& filter, const LataAnalyzerOptions& opt)
 {
 #ifdef WITH_MED
@@ -493,6 +589,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
     default_int.msb_ = LataDBDataType::machine_msb_;
   else
     default_int.msb_ = LataDBDataType::ASCII;
+
   default_int.type_ = LataDBDataType::INT32;
   if (opt.use_fortran_indexing)
     default_int.array_index_ = LataDBDataType::F_INDEXING;
@@ -965,6 +1062,9 @@ int main(int argc,char **argv)
       break;
     case LataAnalyzerOptions::WRITE_LATA_CONVERT:
       write_lata_convert(lata_db, opt);
+      break;
+    case LataAnalyzerOptions::WRITE_SINGLE_LATA:
+      write_single_lata(filter, opt);
       break;
     case LataAnalyzerOptions::WRITE_LATA_ALL:
       write_lata_all(filter, opt);
