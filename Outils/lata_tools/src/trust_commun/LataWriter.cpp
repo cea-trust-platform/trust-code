@@ -22,21 +22,22 @@ void LataWriter::init_file(const Nom& path, const Nom& basename, const LataDBDat
 {
   db_.reset();
   db_.set_path_prefix(path);
-  basename_ = basename;
+
+  base_name_ = basename;
+
   db_.default_type_int_ = default_int_format;
   db_.default_float_type_ = default_float_type;
   db_.header_ = "Lata V2";
   db_.case_ = "lata_analyzer";
-  db_.software_id_ = "Trio_U";
+  db_.software_id_ = "TRUST";
+
   // Global geometries and fields:
   db_.add_timestep(0.);
 }
 
 // Add a new timestep to the lata database (new TEMPS entry)
-// Geometries and fields are always written in the last added timestep
-//  (the timestep stored within the domain or field is ignored)
-// Those written before the first call to write_time() go into global
-//  fields and geometry definitions.
+// Geometries and fields are always written in the last added timestep (the timestep stored within the domain or field is ignored)
+// Those written before the first call to write_time() go into global fields and geometry definitions.
 void LataWriter::write_time(double t)
 {
   db_.add_timestep(t);
@@ -67,22 +68,33 @@ void LataWriter::write_geometry(const Domain& dom)
       //  [ ELEM_FACES ]
       const DomainUnstructured& domain = *dom1_ptr;
       LataDBField field;
+
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        {
+          field.filename_ = base_name_;
+          field.filename_ += ".lata_single";
+        }
+
       // Write nodes
       Nom fieldname = "SOMMETS";
       field.uname_ = Field_UName(geom.name_, fieldname, "" /* localisation */);
       field.name_ = fieldname;
       field.timestep_ = tstep;
 
-      field.filename_ = basename_;
-      field.filename_ += ".lata.";
-      field.filename_ += fieldname;
-      field.filename_ += ".";
-      field.filename_ += geom.name_;
-      if (tstep > 0)
+      if (lata_option_ != SINGLE_LATA_FILE)
         {
+          field.filename_ = base_name_;
+          field.filename_ += ".lata.";
+          field.filename_ += fieldname;
           field.filename_ += ".";
-          field.filename_ += Nom(tstep);
+          field.filename_ += geom.name_;
+          if (tstep > 0)
+            {
+              field.filename_ += ".";
+              field.filename_ += Nom(tstep);
+            }
         }
+
       field.nb_comp_ = domain.dimension();
       field.geometry_ = geom.name_;
       field.datatype_ = db_.default_type_float();
@@ -90,8 +102,11 @@ void LataWriter::write_geometry(const Domain& dom)
       field.reference_ = "";
       field.size_ = domain.nb_nodes();
 
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        field.datatype_.file_offset_ = offset_;
+
       db_.add_field(field);
-      db_.write_data(tstep, field.uname_, domain.nodes_);
+      offset_ += db_.write_data(tstep, field.uname_, domain.nodes_);
 
       // Write elements
       fieldname = "ELEMENTS";
@@ -99,16 +114,20 @@ void LataWriter::write_geometry(const Domain& dom)
       field.name_ = fieldname;
       field.timestep_ = tstep;
 
-      field.filename_ = basename_;
-      field.filename_ += ".lata.";
-      field.filename_ += fieldname;
-      field.filename_ += ".";
-      field.filename_ += geom.name_;
-      if (tstep > 0)
+      if (lata_option_ != SINGLE_LATA_FILE)
         {
+          field.filename_ = base_name_;
+          field.filename_ += ".lata.";
+          field.filename_ += fieldname;
           field.filename_ += ".";
-          field.filename_ += Nom(tstep);
+          field.filename_ += geom.name_;
+          if (tstep > 0)
+            {
+              field.filename_ += ".";
+              field.filename_ += Nom(tstep);
+            }
         }
+
       field.nb_comp_ = domain.elements_.dimension(1);
       field.geometry_ = geom.name_;
       field.datatype_ = db_.default_type_int_;
@@ -116,8 +135,11 @@ void LataWriter::write_geometry(const Domain& dom)
       field.reference_ = "SOMMETS";
       field.size_ = domain.nb_elements();
 
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        field.datatype_.file_offset_ = offset_;
+
       db_.add_field(field);
-      db_.write_data(tstep, field.uname_, domain.elements_);
+      offset_ += db_.write_data(tstep, field.uname_, domain.elements_);
 
       // Write faces
       if (domain.faces_ok())
@@ -127,16 +149,20 @@ void LataWriter::write_geometry(const Domain& dom)
           field.name_ = fieldname;
           field.timestep_ = tstep;
 
-          field.filename_ = basename_;
-          field.filename_ += ".lata.";
-          field.filename_ += fieldname;
-          field.filename_ += ".";
-          field.filename_ += geom.name_;
-          if (tstep > 0)
+          if (lata_option_ != SINGLE_LATA_FILE)
             {
+              field.filename_ = base_name_;
+              field.filename_ += ".lata.";
+              field.filename_ += fieldname;
               field.filename_ += ".";
-              field.filename_ += Nom(tstep);
+              field.filename_ += geom.name_;
+              if (tstep > 0)
+                {
+                  field.filename_ += ".";
+                  field.filename_ += Nom(tstep);
+                }
             }
+
           field.nb_comp_ = domain.faces_.dimension(1);
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_int_;
@@ -144,24 +170,31 @@ void LataWriter::write_geometry(const Domain& dom)
           field.reference_ = "SOMMETS";
           field.size_ = domain.nb_faces();
 
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
+            field.datatype_.file_offset_ = offset_;
+
           db_.add_field(field);
-          db_.write_data(tstep, field.uname_, domain.faces_);
+          offset_ += db_.write_data(tstep, field.uname_, domain.faces_);
 
           fieldname = "ELEM_FACES";
           field.uname_ = Field_UName(geom.name_, fieldname, "" /* localisation */);
           field.name_ = fieldname;
           field.timestep_ = tstep;
 
-          field.filename_ = basename_;
-          field.filename_ += ".lata.";
-          field.filename_ += fieldname;
-          field.filename_ += ".";
-          field.filename_ += geom.name_;
-          if (tstep > 0)
+          if (lata_option_ != SINGLE_LATA_FILE)
             {
+              field.filename_ = base_name_;
+              field.filename_ += ".lata.";
+              field.filename_ += fieldname;
               field.filename_ += ".";
-              field.filename_ += Nom(tstep);
+              field.filename_ += geom.name_;
+              if (tstep > 0)
+                {
+                  field.filename_ += ".";
+                  field.filename_ += Nom(tstep);
+                }
             }
+
           field.nb_comp_ = domain.elem_faces_.dimension(1);
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_int_;
@@ -169,8 +202,11 @@ void LataWriter::write_geometry(const Domain& dom)
           field.reference_ = "FACES";
           field.size_ = domain.nb_elements();
 
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
+            field.datatype_.file_offset_ = offset_;
+
           db_.add_field(field);
-          db_.write_data(tstep, field.uname_, domain.elem_faces_);
+          offset_ += db_.write_data(tstep, field.uname_, domain.elem_faces_);
         }
     }
   else if (dom2_ptr)
@@ -209,16 +245,25 @@ void LataWriter::write_geometry(const Domain& dom)
           field.name_ = fieldname;
           field.timestep_ = tstep;
 
-          field.filename_ = basename_;
-          field.filename_ += ".lata.";
-          field.filename_ += fieldname;
-          field.filename_ += ".";
-          field.filename_ += geom.name_;
-          if (tstep > 0)
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
             {
-              field.filename_ += ".";
-              field.filename_ += Nom(tstep);
+              field.filename_ = base_name_;
+              field.filename_ += ".lata_single";
             }
+          else
+            {
+              field.filename_ = base_name_;
+              field.filename_ += ".lata.";
+              field.filename_ += fieldname;
+              field.filename_ += ".";
+              field.filename_ += geom.name_;
+              if (tstep > 0)
+                {
+                  field.filename_ += ".";
+                  field.filename_ += Nom(tstep);
+                }
+            }
+
           field.nb_comp_ = 1;
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_float();
@@ -226,8 +271,11 @@ void LataWriter::write_geometry(const Domain& dom)
           field.reference_ = "";
           field.size_ = coord.dimension(0);
 
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
+            field.datatype_.file_offset_ = offset_;
+
           db_.add_field(field);
-          db_.write_data(tstep, field.uname_, coord);
+          offset_ += db_.write_data(tstep, field.uname_, coord);
         }
 
       if (domain.invalid_connections_.size_array() > 0)
@@ -243,16 +291,25 @@ void LataWriter::write_geometry(const Domain& dom)
           field.name_ = fieldname;
           field.timestep_ = tstep;
 
-          field.filename_ = basename_;
-          field.filename_ += ".lata.";
-          field.filename_ += fieldname;
-          field.filename_ += ".";
-          field.filename_ += geom.name_;
-          if (tstep > 0)
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
             {
-              field.filename_ += ".";
-              field.filename_ += Nom(tstep);
+              field.filename_ = base_name_;
+              field.filename_ += ".lata_single";
             }
+          else
+            {
+              field.filename_ = base_name_;
+              field.filename_ += ".lata.";
+              field.filename_ += fieldname;
+              field.filename_ += ".";
+              field.filename_ += geom.name_;
+              if (tstep > 0)
+                {
+                  field.filename_ += ".";
+                  field.filename_ += Nom(tstep);
+                }
+            }
+
           field.nb_comp_ = 1;
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_int_;
@@ -261,8 +318,11 @@ void LataWriter::write_geometry(const Domain& dom)
           field.reference_ = "";
           field.size_ = n;
 
+          if (lata_option_ == SINGLE_LATA_FILE) // unique file
+            field.datatype_.file_offset_ = offset_;
+
           db_.add_field(field);
-          db_.write_data(tstep, field.uname_, tmp);
+          offset_ += db_.write_data(tstep, field.uname_, tmp);
         }
     }
   else
@@ -282,14 +342,24 @@ void LataWriter::write_component(const LataField_base& field)
   lata_field.uname_ = field.id_.uname_;
   lata_field.name_ = field.id_.uname_.get_field_name();
   lata_field.timestep_ = tstep;
-  lata_field.filename_ = basename_;
-  lata_field.filename_ += ".lata.";
-  lata_field.filename_ += lata_field.uname_.build_string();
-  if (tstep > 0)
+
+  if (lata_option_ == SINGLE_LATA_FILE) // unique file
     {
-      lata_field.filename_ += ".";
-      lata_field.filename_ += Nom(tstep);
+      lata_field.filename_ = base_name_;
+      lata_field.filename_ += ".lata_single";
     }
+  else
+    {
+      lata_field.filename_ = base_name_;
+      lata_field.filename_ += ".lata.";
+      lata_field.filename_ += lata_field.uname_.build_string();
+      if (tstep > 0)
+        {
+          lata_field.filename_ += ".";
+          lata_field.filename_ += Nom(tstep);
+        }
+    }
+
   lata_field.geometry_ = field.id_.uname_.get_geometry();
   lata_field.component_names_ = field.component_names_;
   // Unites a remplir
@@ -305,23 +375,31 @@ void LataWriter::write_component(const LataField_base& field)
       lata_field.size_ = int_f->data_.dimension(0);
       lata_field.datatype_ = db_.default_type_int_;
       lata_field.datatype_.array_index_ = LataDBDataType::NOT_AN_INDEX;
+
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        lata_field.datatype_.file_offset_ = offset_;
+
       db_.add_field(lata_field);
-      db_.write_data(tstep, lata_field.uname_, int_f->data_);
+      offset_ += db_.write_data(tstep, lata_field.uname_, int_f->data_);
     }
   else if (float_f)
     {
       lata_field.nb_comp_ = float_f->data_.dimension(1);
       lata_field.size_ = float_f->data_.dimension(0);
       lata_field.datatype_ = db_.default_type_float();
+
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        lata_field.datatype_.file_offset_ = offset_;
+
       db_.add_field(lata_field);
-      db_.write_data(tstep, lata_field.uname_, float_f->data_);
+      offset_ += db_.write_data(tstep, lata_field.uname_, float_f->data_);
     }
 }
 
 void LataWriter::finish()
 {
   Nom n(db_.path_prefix());
-  n += basename_;
+  n += base_name_;
   n += ".lata";
   db_.write_master_file(n);
 }

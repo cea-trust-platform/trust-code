@@ -26,7 +26,7 @@ class LataField_base;
 class LataWriter
 {
 public:
-  enum FileSplittingOption { MULTIPLE_FILES, SINGLE_FILE };
+  enum FileSplittingOption { MULTIPLE_LATA_FILES, SINGLE_LATA_FILE };
   enum ERRORS { InternalError };
 
   void init_file(const Nom& path, const Nom& basename, const LataDBDataType& default_int_format, LataDBDataType::Type default_float_type);
@@ -35,9 +35,13 @@ public:
   void write_component(const LataField_base& field);
   void finish();
 
+  void set_file_splitting_option(const FileSplittingOption op) { lata_option_ = op; }
+
 protected:
+  FileSplittingOption lata_option_ = MULTIPLE_LATA_FILES;
   LataDB db_; // This is the database where we put all data...
-  Nom basename_; // Basename for files and lata master file:
+  Nom base_name_; // Basename for files and lata master file:
+  FileOffset offset_ = 0;
 };
 
 #endif /* LataWriter_H */

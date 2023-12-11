@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Rebuild_virtual_layer.h>
-#include <Single_LataWriter.h>
 #include <lata_analyzer.h>
 #include <LataWriter.h>
 #include <LmlReader.h>
@@ -473,7 +472,8 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
   type.bloc_marker_type_ = LataDBDataType::INT32;
   type.file_offset_ = 0;
 
-  Single_LataWriter lata_file;
+  LataWriter lata_file;
+  lata_file.set_file_splitting_option(LataWriter::SINGLE_LATA_FILE); // BOOM BOOM !
   lata_file.init_file(dest_prefix, dest_name, type, LataDBDataType::REAL32);
 
   const entier ntimesteps = filter.get_nb_timesteps();
