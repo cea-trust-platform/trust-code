@@ -11,7 +11,6 @@ else
   echo "   ===> All OK in compare_lata : single vs multiple files !"
 fi
 
-
 compare_lata Cx_multiple_lata.lata Cx_single_lata.lata --max_delta 1>verifie1.log 2>&1 || exit -1
 
 numb_diff1=`awk '$1=="Number"{print $5}' verifie1.log`
@@ -34,14 +33,27 @@ else
   echo "   ===> All OK in compare_lata : lml vs lml !"
 fi
 
-## deactive car en // on ecrit pas le meme chose ... donc pas de sens si on compare lml vs lata
-#compare_lata Cx_from_single_lata_from_lata_to_lml.lml Cx_multiple_lata_from_lml_to_lata.lata --max_delta 1>verifie3.log 2>&1 || exit -1
+# on teste lata_analyzer
+lata_analyzer Cx_multiple_lata.lata write_singlelata=Cx_multiple_lata_single.lata 1>lata_analyzer1.log 2>&1 || exit -1
+compare_lata Cx_multiple_lata.lata Cx_multiple_lata_single.lata --max_delta 1>verifie3.log 2>&1 || exit -1
 
-#numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
-#if [[ "$numb_diff3" -gt "0" ]]
-#then
-#  echo "   ===> Error in compare_lata !"
-#  exit -1
-#else
-#  echo "   ===> All OK in compare_lata : lata_to_lml vs lml_to_lata !"
-#fi
+numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+if [[ "$numb_diff3" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files from lata_analyzer !"
+fi
+
+lata_analyzer ring_multiple.lata write_singlelata=ring_multiple_single.lata 1>lata_analyzer2.log 2>&1 || exit -1
+compare_lata ring_multiple.lata ring_multiple_single.lata --max_delta 1>verifie4.log 2>&1 || exit -1
+
+numb_diff4=`awk '$1=="Number"{print $5}' verifie4.log`
+if [[ "$numb_diff4" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files from lata_analyzer !"
+fi

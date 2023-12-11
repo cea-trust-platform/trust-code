@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# On teste lata_analyzer ... 
+# write_singlelata
+lata_analyzer docond_VEF_3D_single_lata.lata write_singlelata=docond_VEF_3D_single_lata_single.lata 1>lata_analyzer1.log 2>&1 || exit -1
+compare_lata docond_VEF_3D_single_lata.lata docond_VEF_3D_single_lata_single.lata --max_delta 1>verifie1.log 2>&1 || exit -1
+
+numb_diff1=`awk '$1=="Number"{print $5}' verifie1.log`
+if [[ "$numb_diff1" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files from lata_analyzer !"
+fi
+
+# writelata
+lata_analyzer docond_VEF_3D_single_lata_single.lata writelata=docond_VEF_3D_single_lata_single_multiple.lata
+compare_lata docond_VEF_3D_single_lata_single.lata docond_VEF_3D_single_lata_single_multiple.lata --max_delta 1>verifie2.log 2>&1 || exit -1
+
+numb_diff2=`awk '$1=="Number"{print $5}' verifie2.log`
+if [[ "$numb_diff2" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files from lata_analyzer !"
+fi
+
+# writelata_convert
+lata_analyzer docond_VEF_3D_single_lata_single_multiple.lata writelata_convert=titi.lata
+compare_lata docond_VEF_3D_single_lata_single_multiple.lata titi.lata --max_delta 1>verifie3.log 2>&1 || exit -1
+
+numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+if [[ "$numb_diff3" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files from lata_analyzer !"
+fi
