@@ -15,6 +15,11 @@
 
 #include <Op_Diff_Turbulent_PolyMAC_P0_Elem.h>
 #include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
+#include <Op_Diff_Turbulent_PolyVEF_P0_Face.h>
+#include <PolyMAC_P0_discretisation.h>
+#include <Viscosite_turbulente_base.h>
+#include <Transport_turbulent_base.h>
+#include <Champ_Elem_PolyMAC_P0.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
 
@@ -63,14 +68,14 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
   if (corr_.est_nul()) return; //rien a faire
 
   const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
-  if (!sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm))
+  if (! (sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) || sub_type(Op_Diff_Turbulent_PolyVEF_P0_Face, op_qdm)))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent momentum diffusion found!" << finl;
       Process::exit();
     }
 
-  const Correlation_base& corr_visc_qdm = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
-  if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc_qdm))
+  const Correlation_base& corr_visc = sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) ? ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation() : ref_cast(Op_Diff_Turbulent_PolyVEF_P0_Face, op_qdm).correlation();
+  if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent viscosity correlation found!" << finl;
       Process::exit();
@@ -87,9 +92,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
 
   // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
   ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()),
-                                                                 ref_cast(Viscosite_turbulente_base, corr_visc_qdm),
+                                                                 ref_cast(Viscosite_turbulente_base, corr_visc),
                                                                  mu);
-
   mu.echange_espace_virtuel();
 
   for (int i = 0; i < diff_turb.dimension_tot(0); i++)
