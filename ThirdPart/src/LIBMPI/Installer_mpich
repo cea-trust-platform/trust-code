@@ -85,6 +85,13 @@ then
 fi
 cd $src 
 
+if [ "`uname -s`" = Darwin ] # Darwin linkers dont support anymore -commons flag
+   then
+   echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+   echo "HACK FOR MAC"
+   sed -i "s/WRAPPER_LDFLAGS -Wl,-commons,use_dylibs/WRAPPER_LDFLAGS/g" configure
+fi
+
 ###############################
 # Lancement de la configuration
 ###############################
