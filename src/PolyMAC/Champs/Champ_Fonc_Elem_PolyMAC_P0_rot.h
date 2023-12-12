@@ -34,8 +34,8 @@ class Champ_Fonc_Elem_PolyMAC_P0_rot: public Champ_Fonc_Elem_PolyMAC
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot);
 public:
   void mettre_a_jour(double tps) override;
-  void me_calculer_2D();
-  void me_calculer_3D();
+  virtual void me_calculer_2D();
+  virtual void me_calculer_3D();
 
   inline void associer_champ(const Champ_Face_PolyMAC_P0& cha) { champ_ = cha; }
   inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }
