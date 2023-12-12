@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
 Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
+Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0");
 
 Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
