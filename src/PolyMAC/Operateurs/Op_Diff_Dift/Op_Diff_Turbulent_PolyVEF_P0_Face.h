@@ -16,8 +16,9 @@
 #ifndef Op_Diff_Turbulent_PolyVEF_P0_Face_included
 #define Op_Diff_Turbulent_PolyVEF_P0_Face_included
 
+#include <Op_Diff_PolyVEF_P0_Face.h>
 #include <Op_Dift_Multiphase_proto.h>
-#include <Op_Diff_PolyMAC_P0_Face.h>
+#include <vector>
 
 /*! @brief : class Op_Diff_Turbulent_PolyVEF_P0_Face
  *
@@ -26,7 +27,7 @@
  *
  */
 
-class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyMAC_P0_Face, public Op_Dift_Multiphase_proto
+class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyVEF_P0_Face, public Op_Dift_Multiphase_proto
 {
   Declare_instanciable( Op_Diff_Turbulent_PolyVEF_P0_Face );
 
