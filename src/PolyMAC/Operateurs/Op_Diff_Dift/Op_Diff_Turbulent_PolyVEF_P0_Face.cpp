@@ -19,9 +19,9 @@
 #include <Pb_Multiphase.h>
 #include <vector>
 
-Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_P0_Face, "Op_Diff_Turbulent_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyMAC_P0_Face", Op_Diff_PolyMAC_P0_Face );
+Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_P0_Face, "Op_Diff_Turbulent_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyMAC_P0_Face", Op_Diff_PolyVEF_P0_Face );
 
-Sortie& Op_Diff_Turbulent_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Diff_PolyMAC_P0_base::printOn(os); }
+Sortie& Op_Diff_Turbulent_PolyVEF_P0_Face::printOn(Sortie& os) const { return Op_Diff_PolyVEF_P0_Face::printOn(os); }
 
 Entree& Op_Diff_Turbulent_PolyVEF_P0_Face::readOn(Entree& is)
 {
@@ -34,26 +34,26 @@ Entree& Op_Diff_Turbulent_PolyVEF_P0_Face::readOn(Entree& is)
 
 void Op_Diff_Turbulent_PolyVEF_P0_Face::get_noms_champs_postraitables(Noms& noms,Option opt) const
 {
-  Op_Diff_PolyMAC_P0_Face::get_noms_champs_postraitables(noms,opt);
+  Op_Diff_PolyVEF_P0_Face::get_noms_champs_postraitables(noms,opt);
   get_noms_champs_postraitables_proto(que_suis_je(), noms, opt);
 }
 
 void Op_Diff_Turbulent_PolyVEF_P0_Face::creer_champ(const Motcle& motlu)
 {
-  Op_Diff_PolyMAC_P0_Face::creer_champ(motlu);
+  Op_Diff_PolyVEF_P0_Face::creer_champ(motlu);
   creer_champ_proto_face(motlu);
 }
 
 void Op_Diff_Turbulent_PolyVEF_P0_Face::completer()
 {
-  Op_Diff_PolyMAC_P0_Face::completer();
+  Op_Diff_PolyVEF_P0_Face::completer();
   nu_constant_ = 0; // if pb_hydraulique with mu champ_uniforme : fgrad is not the same!
   completer_proto_face(*this);
 }
 
 void Op_Diff_Turbulent_PolyVEF_P0_Face::preparer_calcul()
 {
-  Op_Diff_PolyMAC_P0_Face::preparer_calcul();
+  Op_Diff_PolyVEF_P0_Face::preparer_calcul();
   call_compute_nu_turb();
 }
 
@@ -61,7 +61,7 @@ void Op_Diff_Turbulent_PolyVEF_P0_Face::mettre_a_jour(double temps)
 {
   // MAJ nu_t
   nu_ou_lambda_turb_ = 0.;
-  Op_Diff_PolyMAC_P0_Face::mettre_a_jour(temps);
+  Op_Diff_PolyVEF_P0_Face::mettre_a_jour(temps);
   call_compute_nu_turb();
   mettre_a_jour_proto_face(temps);
 }
