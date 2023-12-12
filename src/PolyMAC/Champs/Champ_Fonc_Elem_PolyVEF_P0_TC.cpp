@@ -14,6 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Elem_PolyVEF_P0_TC.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Face_base.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyVEF_P0_TC, "Champ_Fonc_Elem_PolyVEF_P0_TC", Champ_Fonc_Elem_PolyMAC_P0_TC);
 
@@ -21,3 +24,32 @@ Sortie& Champ_Fonc_Elem_PolyVEF_P0_TC::printOn(Sortie& s) const { return s << qu
 
 Entree& Champ_Fonc_Elem_PolyVEF_P0_TC::readOn(Entree& s) { return s; }
 
+void Champ_Fonc_Elem_PolyVEF_P0_TC::me_calculer(double tps) //See Pope 2000 page 367 for ref
+{
+  const Champ_Face_base& vitesse = ref_cast(Champ_Face_base, champ_.valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, vitesse.domaine_vf());
+  int e, d_U, d_X, n;
+  int D = dimension, N = champ_a_deriver().valeurs().line_size()/D;
+  int ne = domaine.nb_elem();
+
+  DoubleTab& tab_tc = valeurs();
+  const DoubleTab& tab_grad = ref_cast(Navier_Stokes_std, vitesse.equation()).get_champ("gradient_vitesse").valeurs();
+
+  for (e = 0; e < ne; e++)
+    for (n = 0; n < N; n++)
+      {
+        tab_tc(e, n) = 0;
+        for (d_U = 0; d_U < D; d_U++)
+          for (d_X = 0; d_X < D; d_X++)
+            {
+              double Sij = 0.5 * (tab_grad(e, N * ( D*d_U+d_X ) + n) + tab_grad(e, N * ( D*d_U+d_X ) + n));
+              if (d_U == d_X)
+                for (int i = 0; i < D; i++)
+                  Sij += -1. / D * tab_grad(e, N * ( D*d_U+d_X ) + n); // Substract the divergence : this term is zero in incompressible NS
+              tab_tc(e, n) += Sij * Sij;
+            }
+        tab_tc(e, n) = sqrt(2 * tab_tc(e, n));
+      }
+
+  tab_tc.echange_espace_virtuel();
+}
