@@ -2,6 +2,8 @@
 # OpenMPI install script
 default_version=2.0.4
 latest_version=4.1.0
+[ `uname -s` = Darwin ] && latest_version=4.1.6
+
 version=$default_version
 # Cas ou l'on force la version la plus recente:
 [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ] && version=$latest_version
@@ -28,6 +30,14 @@ then
    gunzip -c $package | tar -xf -
 fi
 cd $src
+
+if [ "`uname -s`" = Darwin ] # Darwin linkers dont support anymore -commons flag
+   then
+   echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+   echo "HACK FOR MAC"
+   sed -i "s/OMPI_FORTRAN_WRAPPER_FLAGS=\"-Wl,-commons,use_dylibs\"/OMPI_FORTRAN_WRAPPER_FLAGS=\"\"/g" configure
+   #sed -i "s/OMPI_FORTRAN_WRAPPER_FLAGS=\"-Wl,-commons,use_dylibs\"/OMPI_FORTRAN_WRAPPER_FLAGS=\"\"/g" config/ompi_setup_fc.m4
+fi
 
 ###############################
 # Lancement de la configuration
