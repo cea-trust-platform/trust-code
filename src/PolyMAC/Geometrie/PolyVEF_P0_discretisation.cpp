@@ -91,7 +91,7 @@ void PolyVEF_P0_discretisation::taux_cisaillement(const Domaine_dis_base& z, con
   ch_grad_u.associer_domaine_dis_base(domaine);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("Taux_cisaillement");
-  ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
+  ch_grad_u.fixer_nb_comp(vit.valeurs().line_size()/dimension);
 
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
   ch_grad_u.fixer_nb_valeurs_nodales(domaine.nb_elem());

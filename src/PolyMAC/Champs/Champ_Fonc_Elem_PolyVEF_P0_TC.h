@@ -32,6 +32,10 @@
 class Champ_Fonc_Elem_PolyVEF_P0_TC: public Champ_Fonc_Elem_PolyMAC_P0_TC
 {
   Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_TC);
+
+public:
+  void me_calculer(double tps) override;
+
 };
 
 #endif /* Champ_Fonc_Elem_PolyVEF_P0_TC_included */
