@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,7 @@
 #define Op_Diff_Turbulent_PolyVEF_P0_Face_included
 
 #include <Op_Diff_PolyVEF_P0_Face.h>
-#include <Correlation.h>
-#include <Champ_Fonc.h>
+#include <Op_Dift_Multiphase_proto.h>
 #include <vector>
 
 /*! @brief : class Op_Diff_Turbulent_PolyVEF_P0_Face
@@ -28,7 +27,7 @@
  *
  */
 
-class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyVEF_P0_Face
+class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyVEF_P0_Face, public Op_Dift_Multiphase_proto
 {
   Declare_instanciable( Op_Diff_Turbulent_PolyVEF_P0_Face );
 
