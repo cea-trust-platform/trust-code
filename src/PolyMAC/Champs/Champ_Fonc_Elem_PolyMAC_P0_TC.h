@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ class Champ_Fonc_Elem_PolyMAC_P0_TC: public Champ_Fonc_Elem_PolyMAC
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC);
 public:
   void mettre_a_jour(double) override;
-  void me_calculer(double tps);
+  virtual void me_calculer(double tps);
 
   inline void associer_champ(const Champ_Face_PolyMAC_P0& ch) { champ_ = ch; }
   inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }

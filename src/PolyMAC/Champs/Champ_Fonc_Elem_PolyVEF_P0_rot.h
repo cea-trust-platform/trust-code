@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,8 @@ class Champ_Fonc_Elem_PolyVEF_P0_rot: public Champ_Fonc_Elem_PolyMAC_P0_rot
 {
   Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_rot);
 public:
-  void me_calculer_2D();
-  void me_calculer_3D();
+  void me_calculer_2D() override;
+  void me_calculer_3D() override;
 };
 
 #endif /* Champ_Fonc_Elem_PolyVEF_P0_rot_included */

@@ -35,15 +35,11 @@ public:
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;
   void completer() override;
+  void preparer_calcul() override;
   void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
-  inline const Correlation& correlation() const { return corr; }
+  inline const Correlation& correlation() const { return corr_; }
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
-
-protected:
-  Correlation corr; //correlation de viscosite turbulente
-  std::vector<Champ_Fonc> nu_t_post_; //flux massiques (kg/m2/s)
-  Motcles noms_nu_t_post_; //leurs noms
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 };
 
 #endif /* Op_Diff_PolyVEF_P0_Face_included */
