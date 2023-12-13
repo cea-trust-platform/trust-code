@@ -127,12 +127,12 @@ void Portance_interfaciale_PolyVEF_P0::ajouter_blocs(matrices_t matrices, Double
                     const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
                     in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                   }
-              for (k = 0; k < N; k++)
-                in.nv(k, n) = ch.v_norm(pvit, f, k, n, nullptr);
             }
           for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           for (d = 0; d < vort_l.dimension(0); d++) vort_l(d) += vf_dir(f, c)/vf(f) * vort(e,N*d+n_l);
         }
+      for (n = 0; n < N; n++)
+        for (k = 0; k < N; k++)  in.nv(k, n) = ch.v_norm(pvit, f, k, n, nullptr);
 
       correlation_pi.coefficient(in, out);
 
