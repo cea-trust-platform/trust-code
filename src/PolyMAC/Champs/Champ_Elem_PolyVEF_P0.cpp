@@ -54,7 +54,7 @@ void Champ_Elem_PolyVEF_P0::init_grad(int full_stencil) const
   const IntTab& f_cl = fcl();
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, le_dom_VF.valeur());
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
-  domaine.fgrad(1, 0, 0, cls, f_cl, nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
+  domaine.fgrad(1, 0, 1, cls, f_cl, nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
 }
 
 void Champ_Elem_PolyVEF_P0::calc_grad(int full_stencil) const
@@ -63,7 +63,7 @@ void Champ_Elem_PolyVEF_P0::calc_grad(int full_stencil) const
   const IntTab& f_cl = fcl();
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, le_dom_VF.valeur());
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
-  domaine.fgrad(1, 0, 0, cls, f_cl, nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
+  domaine.fgrad(1, 0, 1, cls, f_cl, nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
   grad_a_jour = 1;
   tps_last_calc_grad_ = temps();
 }
