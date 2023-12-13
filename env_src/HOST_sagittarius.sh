@@ -22,7 +22,7 @@ define_modules_config()
    module="slurm intel/compilers/2019.3.199 openmpi/intel/3.1.3 mkl/2019.3.199 hwloc" # openmpi/gcc bloque
    module="slurm" # Version gcc plus rapide en zone (et uniformite par rapport aux devs sur PC)
    #module="slurm gcc/6.5.0 openmpi/gcc-6.5.0/4.0.1 hwloc/2.7.1 texlive/gcc/2020" # Nouvelle version a tester
-   module="slurm gcc/11.2.0 openmpi/gcc11.2.0/4.1.1 hwloc/2.7.1 texlive/gcc/2020" # Nouvelle version qui passe en //
+   module="slurm gcc/11.2.0 openmpi/gcc-11.2.0/4.1.4 hwloc/2.7.1 texlive/gcc/2020" # Nouvelle version qui passe en //
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env

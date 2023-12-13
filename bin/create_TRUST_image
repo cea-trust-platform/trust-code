@@ -11,8 +11,8 @@ then
    source /home/trust_trio-public/env_TRUST-${VERSION_TRUST}.sh
    [ ! -d $TRUST_ROOT ] && exit -1
 
-   echo "Copie de la version reseau $OS de TRUST $VERSION_TRUST..."
-   cp -r $TRUST_ROOT/.. $TRUST_TMP/TRUST-$VERSION_TRUST || exit -1
+   echo "Copie de la version reseau de TRUST $VERSION_TRUST..."
+   cp -r $TRUST_ROOT $TRUST_TMP/TRUST-$VERSION_TRUST || exit -1
 
    cd $TRUST_TMP/TRUST-$VERSION_TRUST
    # Certains liens sont casses on les repare en copiant le fichier

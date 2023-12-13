@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.9.3 : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
 13/11/23 (TRUST) New feature  : New option  for DP_impose keyword: dp_regul to regulate the DP in order to match a target flow rate.
