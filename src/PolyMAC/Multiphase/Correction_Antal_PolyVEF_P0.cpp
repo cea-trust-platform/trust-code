@@ -60,7 +60,7 @@ void Correction_Antal_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const 
 void Correction_Antal_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
-  const DoubleTab& vit = ch.valeurs(), &pvit = ch.valeurs(),
+  const DoubleTab& vit = ch.valeurs(), &pvit = ch.passe(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
                     &rho   = equation().milieu().masse_volumique().passe(),
                      &d_bulles = equation().probleme().get_champ("diametre_bulles").valeurs();
@@ -90,7 +90,7 @@ void Correction_Antal_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& 
             u_par(k, d) = vit(f, N*d+k), pu_par(k,d)=pvit(f, N*d+k);
 
         // Retract component normal to the wall
-        scal_u = 0;
+        scal_u = 0, scal_pu=0;
         for (k = 0 ; k<N ; k++)
           for (d = 0 ; d<D ; d++)
             scal_u(k) += u_par(k, d)*n_y_faces(f, d), scal_pu(k)+= pu_par(k, d)*n_y_faces(f, d);
@@ -102,7 +102,7 @@ void Correction_Antal_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& 
         dv2 = 0.;
         for ( k = 0; k < N; k++)
           if (k != n_l)
-            for (d = 0 ; d<D ; d++)  dv2(k, n_l) += (u_par(k, d)-u_par(n_l, d)) * (pu_par(k, d)-pu_par(n_l, d));
+            for (d = 0 ; d<D ; d++)  dv2(k, n_l) += ( 2* (u_par(k, d)-u_par(n_l, d)) - (pu_par(k, d)-pu_par(n_l, d))) * (pu_par(k, d)-pu_par(n_l, d));
 
         for (k = 0; k < N; k++)
           if (k != n_l)
@@ -115,25 +115,24 @@ void Correction_Antal_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& 
               for (d=0 ; d<D ; d++)
                 {
                   double fac2 = fac * n_y_faces(f, d) * 2. * a_l * rho_l / db_l * std::max(0., Cw1_ + Cw2_*db_l/(2.*y_faces(f))) ;
-                  secmem_l = fac2 * dv2(k, n_l);// std::min(, 1.);
+                  secmem_l = fac2 * dv2(k, n_l);//std::min(dv2(k, n_l), 1.);
                   secmem(f, N*d+k)   += secmem_l;
                   secmem(f, N*d+n_l) -= secmem_l;
                   if (mat)
-//                    if (dv2(k, n_l)< 1.)
-                    {
-                      (*mat)(N * (D * f + d) + k, N * (D * f + d) + k) -= fac2 * 2 * (pu_par(k, d)-pu_par(n_l, d));
-                      (*mat)(N * (D * f + d) + k, N * (D * f + d) +n_l)+= fac2 * 2 * (pu_par(k, d)-pu_par(n_l, d));
-                      (*mat)(N * (D * f + d) +n_l,N * (D * f + d) + k) += fac2 * 2 * (pu_par(k, d)-pu_par(n_l, d));
-                      (*mat)(N * (D * f + d) +n_l,N * (D * f + d) +n_l)-= fac2 * 2 * (pu_par(k, d)-pu_par(n_l, d));
-                      for (int d2=0 ; d2<D ; d2++)
-                        {
-                          (*mat)(N * (D * f + d) + k, N * (D * f + d2) + k) -= fac2 * 2 * (-n_y_faces(f, d)*n_y_faces(f, d2) )*(pu_par(k, d)-pu_par(n_l, d));
-                          (*mat)(N * (D * f + d) + k, N * (D * f + d2) +n_l)+= fac2 * 2 * (-n_y_faces(f, d)*n_y_faces(f, d2) )*(pu_par(k, d)-pu_par(n_l, d));
-                          (*mat)(N * (D * f + d) +n_l,N * (D * f + d2) + k) += fac2 * 2 * (-n_y_faces(f, d)*n_y_faces(f, d2) )*(pu_par(k, d)-pu_par(n_l, d));
-                          (*mat)(N * (D * f + d) +n_l,N * (D * f + d2) +n_l)-= fac2 * 2 * (-n_y_faces(f, d)*n_y_faces(f, d2) )*(pu_par(k, d)-pu_par(n_l, d));
-                        }
-
-                    }
+                    for (int d2=0 ; d2<D ; d2++)
+                      {
+                        (*mat)(N * (D * f + d) + k, N * (D * f + d2) + k) -= fac2 * 2* (pu_par(k, d2)-pu_par(n_l, d2));
+                        (*mat)(N * (D * f + d) + k, N * (D * f + d2) +n_l)+= fac2 * 2* (pu_par(k, d2)-pu_par(n_l, d2));
+                        (*mat)(N * (D * f + d) +n_l,N * (D * f + d2) + k) += fac2 * 2* (pu_par(k, d2)-pu_par(n_l, d2));
+                        (*mat)(N * (D * f + d) +n_l,N * (D * f + d2) +n_l)-= fac2 * 2* (pu_par(k, d2)-pu_par(n_l, d2));
+                        for (int d3=0 ; d3<D ; d3++)
+                          {
+                            (*mat)(N * (D * f + d) + k, N * (D * f + d3) + k) -= fac2 * 2 * (-n_y_faces(f, d3)*n_y_faces(f, d2) )*(pu_par(k, d2)-pu_par(n_l, d2));
+                            (*mat)(N * (D * f + d) + k, N * (D * f + d3) +n_l)+= fac2 * 2 * (-n_y_faces(f, d3)*n_y_faces(f, d2) )*(pu_par(k, d2)-pu_par(n_l, d2));
+                            (*mat)(N * (D * f + d) +n_l,N * (D * f + d3) + k) += fac2 * 2 * (-n_y_faces(f, d3)*n_y_faces(f, d2) )*(pu_par(k, d2)-pu_par(n_l, d2));
+                            (*mat)(N * (D * f + d) +n_l,N * (D * f + d3) +n_l)-= fac2 * 2 * (-n_y_faces(f, d3)*n_y_faces(f, d2) )*(pu_par(k, d2)-pu_par(n_l, d2));
+                          }
+                      }
                 }
             }
       }
