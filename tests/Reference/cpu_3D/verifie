@@ -1,3 +1,4 @@
 #!/bin/bash
-[ -f PAR_cpu_3D.stop ] && lscpu
+[ -f PAR_$1.stop ] && lscpu
+compare_TU $1
 exit 0

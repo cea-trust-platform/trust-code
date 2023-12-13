@@ -1,0 +1,47 @@
+#!/bin/bash
+# Outil de NR des performances par analyse des .TU machine specifique
+check()
+{
+   # Temps par dt
+   ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
+   new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU`
+   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
+   err=$?
+   if [ $err != 0 ]
+   then
+      sdiff $1.TU.ref_$2 $1.TU
+      echo "================================"
+      echo "Performance is KO for $1 on $2 !"
+      echo "================================"
+      exit -1
+   else
+      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
+      echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
+   fi
+   # Temps total
+   tot_ref=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU.ref_$2`
+   tot_new=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU`
+   echo $tot_ref $tot_new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
+   tot_err=$?   
+   if [ $tot_err != 0 ]
+   then
+      sdiff $1.TU.ref_$2 $1.TU
+      echo "================================"
+      echo "Performance is KO for $1 on $2 !"
+      echo "================================"
+      exit -1
+   else
+      ecart=`echo $tot_ref $tot_new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
+      echo "Performance is OK ($ecart) $tot_new s < $tot_ref s (reference) for $1 on $2"
+   fi
+}
+# ToDo: prevoir dans le script trust un lock avant le lancement
+# On compare les performances avec le fichier jdd.TU.ref_$HOST_BUILD
+# Si le fichier existe
+# Si le binaire est bien opt (et pas debug ou semi_opt)
+if [ ! -f $1.TU.ref_$HOST_BUILD ] || [ ${exec%_semi_opt} != $exec ] || [ ${exec%_opt} = $exec ] 
+then
+   exit 0
+else
+   check $1 $HOST_BUILD
+fi
