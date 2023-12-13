@@ -102,7 +102,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   cd ..
 
   # Clean build folder
-  #(cd .. ; rm -rf med*)
+  (cd .. ; rm -rf med*)
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_MED" ]; then
     echo "Variable TRUST_USE_EXTERNAL_MED has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_MED"

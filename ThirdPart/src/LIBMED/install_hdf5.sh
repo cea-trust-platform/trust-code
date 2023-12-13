@@ -86,7 +86,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   make install || exit -1
 
   # Clean build folder
-  #( cd .. ; rm -rf hdf5* )
+  ( cd .. ; rm -rf hdf5* )
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_HDF" ]; then
     echo "Variable TRUST_USE_EXTERNAL_HDF has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_HDF"

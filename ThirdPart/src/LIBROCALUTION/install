@@ -90,7 +90,7 @@ gunzip -c $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/VDF_10x10x10.mtx.gz > VDF_10x1
 echo "`pwd`/benchmark.log created."
 
 # Nettoyage
-#rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
+rm -r -f $TRUST_ROOT/ThirdPart/src/LIBROCALUTION/rocALUTION
 
 # Creation de l'include:
 echo "#if defined(_COMPILE_AVEC_GCC_)
