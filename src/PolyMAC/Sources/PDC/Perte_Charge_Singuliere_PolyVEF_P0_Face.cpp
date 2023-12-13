@@ -33,7 +33,7 @@ Entree& Perte_Charge_Singuliere_PolyVEF_P0_Face::readOn(Entree& s) { return Pert
 
 void Perte_Charge_Singuliere_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const DoubleTab& vit = la_vitesse->valeurs();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   if (! matrices.count(nom_inco)) return;
@@ -41,7 +41,6 @@ void Perte_Charge_Singuliere_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matr
   int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
 
   IntTrav sten(0, 2);
-  sten.set_smart_resize(1);
 
   for (i = 0; i < num_faces.size(); i++)
     if ((f = num_faces(i)) < domaine.nb_faces())
