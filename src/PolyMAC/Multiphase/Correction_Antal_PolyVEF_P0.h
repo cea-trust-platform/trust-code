@@ -28,6 +28,7 @@ class Correction_Antal_PolyVEF_P0: public Correction_Antal_PolyMAC_P0
 {
   Declare_instanciable(Correction_Antal_PolyVEF_P0);
 public :
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
