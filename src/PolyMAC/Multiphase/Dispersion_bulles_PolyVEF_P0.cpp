@@ -37,9 +37,9 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
-  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
-  const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir(), &xp = domaine.xp(), &xv = domaine.xv(), &n_f = domaine.face_normales();
+  const IntTab& f_e = domaine.face_voisins();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
+  const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleTab& pvit = ch.passe(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
@@ -52,7 +52,7 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   DoubleTab const * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
   DoubleTab const * k_WIT = (equation().probleme().has_champ("k_WIT")) ? &equation().probleme().get_champ("k_WIT").passe() : nullptr ;
 
-  int Np = press.line_size(), D = dimension, N = pbm.nb_phases(), nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
+  int Np = press.line_size(), D = dimension, N = pbm.nb_phases(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
   DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
   if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyVEF_P0_Face, equation().operateur(0).l_op_base()).correlation()).eddy_viscosity(nut); //remplissage par la correlation
 
@@ -65,12 +65,10 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
 
   /* calculaiton of the gradient of alpha at the face */
   const Champ_Elem_PolyVEF_P0& ch_a = ref_cast(Champ_Elem_PolyVEF_P0, pbm.equation_masse().inconnue());
-  DoubleTrav grad_f_a(nf_tot + D*ne_tot, N);
-  DoubleTrav grad_loc(N,D);
-  double scal_grad_loc;
+  DoubleTrav grad_f_a(nf, N, D);
   ch_a.init_grad(0);
-  const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyVEF_P0::fgrad pour le calcul du gradient
-  const DoubleTab&  fg_w = ch_a.fgrad_w;
+  const IntTab& fgrad_d = ch_a.fgrad_d, &fgrad_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyVEF_P0::fgrad pour le calcul du gradient
+  const DoubleTab&  fgrad_w = ch_a.fgrad_w;
   const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 
@@ -99,39 +97,24 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
           }
       }
 
-  for (int n = 0; n < N; n++)
-    for (int f = 0; f < nf_tot; f++)
-      {
-        grad_f_a(f, n) = 0;
-        for (int j = fg_d(f); j < fg_d(f+1) ; j++)
+  for (int f = 0; f < nf; f++)
+    for (int i = fgrad_d(f); i < fgrad_d(f + 1); i++)
+      for (int e = fgrad_e(i), d = 0; d < D; d++)
+        for (int n = 0; n < N; n++)
           {
-            int e = fg_e(j);
-            int f_bord;
-            if ( (f_bord = e-ne_tot) < 0) //contribution d'un element
-              grad_f_a(f, n) += fg_w(j) * alpha(e, n);
-            else if (fcl_a(f_bord, 0) == 1 || fcl_a(f_bord, 0) == 2) //Echange_impose_base
-              grad_f_a(f, n) += fg_w(j) ? fg_w(j) * ref_cast(Echange_impose_base, cls_a[fcl_a(f_bord, 1)].valeur()).T_ext(fcl_a(f_bord, 2), n) : 0;
-            else if (fcl_a(f_bord, 0) == 4) //Neumann non homogene
-              grad_f_a(f, n) += fg_w(j) ? fg_w(j) * ref_cast(Neumann_paroi      , cls_a[fcl_a(f_bord, 1)].valeur()).flux_impose(fcl_a(f_bord, 2), n) : 0;
-            else if (fcl_a(f_bord, 0) == 6) // Dirichlet
-              grad_f_a(f, n) += fg_w(j) * ref_cast(Dirichlet, cls_a[fcl_a(f_bord, 1)].valeur()).val_imp(fcl_a(f_bord, 2), n);
+            int fb = e - ne_tot;
+            if ( fb < 0)//contribution d'un element
+              grad_f_a(f, n, d) += fgrad_w(i, d, 0) * alpha(e, n);
+            else if (fcl_a(fb, 0) == 4) //Neumann non homogene
+              grad_f_a(f, n, d) += fgrad_w(i, d, 0) * ref_cast(Neumann_paroi, cls_a[fcl_a(fb, 1)].valeur()).flux_impose(fcl_a(fb, 2), n);
+            else if (fcl_a(fb, 0) == 6) // Dirichlet
+              grad_f_a(f, n, d) += fgrad_w(i, d, 0) * ref_cast(Dirichlet, cls_a[fcl_a(fb, 1)].valeur()).val_imp(fcl_a(fb, 2), n);
           }
-      }
-
-  /* Calcul du grad aux elems */
-  for (int n = 0; n < N; n++)
-    for (int e = 0; e < ne_tot; e++)
-      for (int d = 0; d < D; d++)
-        {
-          grad_f_a(nf_tot + D*e +d, n) = 0 ;
-          for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-            grad_f_a(nf_tot + D*e +d, n) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
-        }
 
   /* faces */
   for (int f = 0; f < nf; f++)
     {
-      in.alpha=0., in.T=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0., in.k_WIT=0, grad_loc=0.;
+      in.alpha=0., in.T=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0., in.k_WIT=0;
       int e;
       for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
         {
@@ -150,22 +133,15 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
                     const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
                     in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                   }
-              for (int k = 0; k < N; k++) in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, f, k, n, nullptr);
-              for (int d = 0; d < D; d++) grad_loc(n,d) += vf_dir(f, c) / vf(f) * grad_f_a(nf_tot + D*e +d, n);
             }
           for (int n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           in.k_WIT   += (k_WIT)   ? vf_dir(f, c)/vf(f) * (*k_WIT)(e,0) : 0.;
           in.e = e;
         }
+      for (int n = 0; n < N; n++)
+        for (int k = 0; k < N; k++)  in.nv(k, n) = ch.v_norm(pvit, f, k, n, nullptr);
 
       correlation_db.coefficient(in, out);
-
-      for (int n = 0; n <N; n++)
-        {
-          scal_grad_loc = 0.;
-          for (int d = 0; d <D; d++) scal_grad_loc += grad_loc(n,d) * n_f(f,d)/fs(f);
-          for (int d = 0; d <D; d++) grad_loc(n,d) += (grad_f_a(f, n) - scal_grad_loc) * n_f(f,d)/fs(f);
-        }
 
       for (int k = 0; k < N; k++)
         for (int l = 0; l < N; l++)
@@ -173,7 +149,7 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
             if (k != l)
               {
                 double fac = beta_*pf(f) * vf(f);
-                secmem(f, N * d + k) += fac * ( - out.Ctd(k, l) * grad_loc(k, d) + out.Ctd(l, k) * grad_loc(l, d));
+                secmem(f, N * d + k) += fac * ( - out.Ctd(k, l) * grad_f_a(f, k, d) + out.Ctd(l, k) * grad_f_a(f, l, d));
               }
     }
 }
