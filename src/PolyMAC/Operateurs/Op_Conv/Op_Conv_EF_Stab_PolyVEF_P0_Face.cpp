@@ -200,7 +200,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
 
   int i, j, k, l, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D;
 
-  DoubleTrav F_f(0, N, N), F_fa(N, N), masse(N, N), fvf(N); //flux de masse a toutes les faces et a la facette (avec masse ajoutee)
+  DoubleTrav F_f(0, N), F_fa(N), masse(N, N), fvf(N); //flux de masse a toutes les faces et a la facette (avec masse ajoutee)
   dom.creer_tableau_faces(F_f);
   for (f = 0; f < dom.nb_faces(); f++)
     {
@@ -208,42 +208,43 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
       for (fvf = 0, d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           fvf(n) += nf(f, d) * vit(f, N * d + n);
-      /* alpha*rho a la face avec decentrement et masse ajoutee */
+      /* alpha*rho a la face avec decentrement */
       for (i = 0; i < 2; i++)
-        {
-          for (e = f_e(f, i), n = 0; n < N; n++) masse(n, n) = !a_r ? 1 : e >= 0 ? (*a_r)(e, n) : a_b(f, n) * r_b(f, n);
-          if (corr) corr->ajouter(e >= 0 ? &(*alp)(e, 0) : &a_b(f, 0), e >= 0 ? &rho(e, 0) : &r_b(f, 0), masse);
-          for (n = 0; n < N; n++)
-            for (m = 0; m < N; m++)
-              F_f(f, n, m) += masse(n, m) *  (1 + (fvf(m) * (i ? -1 : 1) > 0 ? 1 : fvf(m) ? -1 : 0) * alpha) / 2;
-        }
-      /* et produit par pf * fvf */
+        for (e = f_e(f, i), n = 0; n < N; n++)
+          F_f(f, n) += (!a_r ? 1 : e >= 0 ? (*a_r)(e, n) : a_b(f, n) * r_b(f, n)) *  (1 + (fvf(n) * (i ? -1 : 1) > 0 ? 1 : fvf(n) ? -1 : 0) * alpha) / 2;
+      /* produit par pf * fvf */
       for (n = 0; n < N; n++)
-        for (m = 0; m < N; m++)
-          F_f(f, n, m) *= pf(f) * fvf(m);
-      /* si face de bord : contribution de la face elle-meme a la convection */
+        F_f(f, n) *= pf(f) * fvf(n);
+
+      /* faces de bord: contrib a la convection (avec masse ajoutee) */
       if (fcl(f, 0))
-        for (d = 0; d < D; d++)
-          for (n = 0; n < N; n++)
-            for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
-              {
-                secmem(f, N * d + n) -= F_f(f, n, m) * inco(f, N * d + m);
-                if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += F_f(f, n, m);
-              }
+        {
+          for (masse = 0, e = f_e(f, 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+          if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
+                {
+                  secmem(f, N * d + n) -= (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m) * inco(f, N * d + m);
+                  if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m);
+                }
+        }
     }
   F_f.echange_espace_virtuel();
 
-  /* contribution des facettes dans chaque element */
+  /* contribution des facettes dans chaque element + contrib a la face si bord */
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {
+      for (masse = 0, n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+      if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+
       /* boucle sur les facettes de e */
       for (i = e_fa_d(e, 0), j = e_fa_d(e, 1); i < e_fa_d(e + 1, 0); i++)
         {
           /* flux de masse a la facette */
           for (F_fa = 0, k = 0; k < e_f.dimension(1) && (f = e_f(e, k)) >= 0; j++, k++)
             for (n = 0; n < N; n++)
-              for (m = 0; m < N; m++)
-                F_fa(n, m) += e_fa_c(j) * F_f(f, n, m);
+              F_fa(n) += e_fa_c(j) * F_f(f, n);
           for (k = 0; k < 2; k++)
             if ((f = e_fa_f(i, k)) < dom.nb_faces()) /* face d'arrivee */
               for (l = 0; l < 2; l++)
@@ -251,7 +252,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                   for (n = 0; n < N; n++)
                     for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
                       {
-                        double fac = (k ? -1 : 1) * F_fa(n, m) * (1 + (F_fa(n, m) * (l ? -1 : 1) > 0 ? 1 : F_fa(n, m) ? -1 : 0) * alpha) / 2;
+                        double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * (1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2;
                         secmem(f, N * d + n) -= fac * inco(fb, N * d + m);
                         if (mat) (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
                       }
