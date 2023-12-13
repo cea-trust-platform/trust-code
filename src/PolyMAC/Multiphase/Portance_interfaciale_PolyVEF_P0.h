@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@ class Portance_interfaciale_PolyVEF_P0: public Source_Portance_interfaciale_base
 {
   Declare_instanciable(Portance_interfaciale_PolyVEF_P0);
 public:
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void mettre_a_jour(double temps) override ;
 };
