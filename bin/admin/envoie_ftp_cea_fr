@@ -57,8 +57,8 @@ cp_ftp *.pdf $SECRET/doc/.
 if [ "$livraison" = 1 ]
 then
    # README_INSTALL
-   rm -f $GRAVAGE/README_INSTALL
-   cp $TRUST_ROOT/bin/README_INSTALL $GRAVAGE/.
+   #rm -f $GRAVAGE/README_INSTALL
+   #cp $TRUST_ROOT/bin/README_INSTALL $GRAVAGE/.
    #######################
    # Copie sur le site :
    # Si version officielle

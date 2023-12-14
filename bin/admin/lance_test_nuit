@@ -386,7 +386,7 @@ check_components()
                            # Debut de partie a revoir !!!!
                            WORKBETA=""
                            trustversion=""
-                           [ "$Composant" == "flica5" ] && trustversion=1.9.2
+                           [ "$Composant" == "flica5" ] && trustversion=1.9.3
                            [ "$Composant" == "module3D" ] && trustversion=1.9.2
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
