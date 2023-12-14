@@ -1217,12 +1217,17 @@ void Solv_Petsc::create_solver(Entree& entree)
                     if (rang==10) // C-AMG
                       {
                         add_option("pc_gamg_type","classical");
+                        // Convergence degradee 3.14 -> 3.20 malgre les deux options suivantes:
+                        add_option("mg_levels_pc_type","sor");
+                        add_option("pc_gamg_threshold","0.");
                       }
                     else // SA-AMG
                       {
                         add_option("pc_gamg_type","agg");
                         add_option("pc_gamg_agg_nsmooths","0");
-//                        add_option("pc_gamg_agg_nsmooths","1"); //Crash
+                        // Ajout pour retrouver la convergence de PETSc 3.14:
+                        add_option("pc_gamg_aggressive_square_graph","1");
+                        add_option("mg_levels_pc_type","sor");
                       }
                   }
                 break;
@@ -1644,7 +1649,9 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
       astring.debute_par("pc_") ||
       astring.debute_par("sub_pc_") ||
       astring.debute_par("mat_") ||
-      astring.debute_par("vec_") || cli)
+      astring.debute_par("vec_") ||
+      astring.debute_par("mg_") ||
+      cli)
     option+=option_prefix_;
 
   option+=astring;

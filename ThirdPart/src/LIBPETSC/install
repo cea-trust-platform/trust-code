@@ -537,7 +537,8 @@ then
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       # PETSc 3.20 necessite une montee de version pour Hypre sur GPU:
-      [ ! -f ../hypre-2.19.0.tar.gz ] && add_package hypre
+      [ ! -f ../hypre-2.19.0.tar.gz ] && add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=80" # Necessaire pour topaze, pas a6000 (sm_86) ?
+      # Message cudaErrorNoKernelImageForDevice: no kernel image is available for execution on the device
    else
       [ $minimal_mumps = 0 ] && add_package hypre
    fi   
