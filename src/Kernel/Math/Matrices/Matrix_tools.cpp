@@ -683,8 +683,13 @@ void Matrix_tools::extend_matrix(Matrice_Morse& mat, int nl, int nc)
 }
 
 /**
-*
-*/
+ * @brief This function reduces the bandwidth of a matrix represented by the given compressed row storage (CRS) format (Fortran numerotation)
+ *
+ * @param ia The array of row pointers in CRS format.
+ * @param ja The array of column indices in CRS format.
+ * @param iperm The array to store the inverse permutation vector.
+ * @return ArrOfInt The permutation vector.
+ */
 ArrOfInt Matrix_tools::reduce_bandwith(const ArrOfInt& ia, const ArrOfInt& ja, ArrOfInt& iperm)
 {
   // ia, ja, perm, iperm : Fortran numerotation
