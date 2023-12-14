@@ -18,7 +18,7 @@ else
 	exit
 fi
 
-datas=`ls *.data 2>/dev/null`
+datas=`ls *.data */*.data 2>/dev/null`
 if [ "$datas" = "" ]
 then
 	echo "no datafile in src."

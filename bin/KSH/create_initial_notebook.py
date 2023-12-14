@@ -32,9 +32,13 @@ parameters = "from trustutils import run \n \n"
 parameters += "run.TRUST_parameters(\"" + version + "\")"
 
 testCases = "from trustutils import run\n \n"
+testCases += "run.reset()\n"
 
 for datafile in Files:
-    testCases += "run.addCase(\".\",\"%s\",nbProcs=1) \n"%datafile
+    dirname_, basename_ = os.path.split(datafile)
+    if dirname_ == "":
+        dirname_ = "."
+    testCases += "run.addCase(\"%s\",\"%s\",nbProcs=1) \n" % (dirname_,basename_)
 testCases += "run.printCases()\n"
 testCases += "run.runCases()"
 
