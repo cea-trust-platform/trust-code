@@ -14,4 +14,7 @@ echo "Testing reading $matrix with petsc_matrix.sh..."
 #   trust -valgrind valgrind 1>valgrind.out_err 2>&1
 #   [ $? != 0 ] && echo "Valgrind errors ! Check `pwd`/valgrind.out_err" && exit -1
 #fi
-exit 0
+
+# Checking the number of iterations:
+awk -v jdd=$1 '/Iterations \/ solveur/ {its=int($4);print "Classical AMG iterations for "jdd": "its;exit !(its<=60)}' $1.TU
+exit $?
