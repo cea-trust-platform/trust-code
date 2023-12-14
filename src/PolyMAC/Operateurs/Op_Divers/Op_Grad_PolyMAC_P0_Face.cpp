@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ void Op_Grad_PolyMAC_P0_Face::completer()
       Cerr << "Op_Grad_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
-  if (ref_cast(Navier_Stokes_std, equation()).grad_P().non_nul())
+  if (sub_type(Navier_Stokes_std, equation()) && ref_cast(Navier_Stokes_std, equation()).grad_P().non_nul())
     {
       Champ_Face_PolyMAC_P0& gradp = ref_cast(Champ_Face_PolyMAC_P0, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur());
       gradp.init_auxiliary_variables();

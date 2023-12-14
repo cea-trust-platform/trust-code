@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,9 @@
  *
  *  Cette classe permettant d'instancier plusieurs phases d'un coup
  *
- *  Chaque sous phases possèdent la même loi d'état
+ *  Chaque sous phase possede la meme loi d'etat
  *
- *  Deux paramètres : 'nbPhases' et 'fluide'
+ *  Deux parametres : 'nbPhases' et 'fluide'
  *
  * @sa Fluide_base
  */

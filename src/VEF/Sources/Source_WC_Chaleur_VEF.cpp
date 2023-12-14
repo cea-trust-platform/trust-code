@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
 {
   /*
    * NOTA BENE :
-   * On a discretisé P_EOS avec une directive = temperature qui donne en VEF :
+   * On a discretise P_EOS avec une directive = temperature qui donne en VEF :
    * Ptot => aux faces
    * la_vitesse => faces car vef
    * grad_Ptot => elem
@@ -56,7 +56,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
   const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
   const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
 
-  // On sait que grad_Ptot est un champ elem => on pense à la conductivite (elem en vef !! )
+  // On sait que grad_Ptot est un champ elem => on pense a la conductivite (elem en vef !! )
   DoubleTab grad_Ptot;
   const DoubleTab& lambda = eqHyd.milieu().conductivite()->valeurs();
   const int nb = lambda.size_totale(), nbcomp = la_vitesse.line_size();

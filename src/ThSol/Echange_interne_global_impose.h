@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ class Champ_Don;
  *     Echange_global_impose ou la paroi d'echange est interne au domaine.
  *     La temperature exterieure definie dans Echange_global_impose devient alors la
  *     temperature situee de l'autre cote de la paroi interne.
- *     L'implicitation de cette CL demande un traitement spécial, voir Op_Diff_EF::ajouter_contributions_bords()
+ *     L'implicitation de cette CL demande un traitement special, voir Op_Diff_EF::ajouter_contributions_bords()
  *
  * @sa Echange_impose_base Echange_global_impose
  */

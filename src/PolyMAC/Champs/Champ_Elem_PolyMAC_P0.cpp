@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ void Champ_Elem_PolyMAC_P0::init_grad(int full_stencil) const
   if (fgrad_d.size()) return;
   const IntTab& f_cl = fcl();
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_VF.valeur());
-  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
   domaine.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
 }
 
@@ -49,7 +49,7 @@ void Champ_Elem_PolyMAC_P0::calc_grad(int full_stencil) const
   if (grad_a_jour) return;
   const IntTab& f_cl = fcl();
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_VF.valeur());
-  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
   domaine.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
   grad_a_jour = 1;
   tps_last_calc_grad_ = temps();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,8 +26,8 @@ class Champ_Don;
  *     Echange_externe_impose ou la paroi d'echange est interne au domaine.
  *     La temperature exterieures definie dans Echange_externe_impose devient alors la
  *     temperature situee de l'autre cote de la paroi interne.
- *     Lorsque la température est au centre de l'élément (VDF par ex), on modifie aussi le h_gap
- *     fourni pour prendre en compte la demi-maille située de l'autre côté de la paroi.
+ *     Lorsque la temperature est au centre de l'element (VDF par ex), on modifie aussi le h_gap
+ *     fourni pour prendre en compte la demi-maille situee de l'autre cote de la paroi.
  *
  * @sa Echange_impose_base Echange_global_impose
  */

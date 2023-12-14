@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,7 +134,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   /*
    * SECOND TERM : convective
-   * = - u grad(Y) = [ Y div (rho*u) - div( rho*u*Y ) ] / rho
+   * = - u grad(Y) = [ Y div (rho*u) - div( rho*u*Y ) ] / rho
    * or
    * = - u grad(T) = [ T div (rho*u) - div( rho*u*T ) ] / rho*Cp
    */
@@ -200,7 +200,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
    */
 
   // Elie Saikali
-  // Je garde ce test pour debug ... TODO : a voir si on peut virer tout ça...
+  // Je garde ce test pour debug ... TODO : a voir si on peut virer tout ca...
   int test_op=0;
   {
     char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");

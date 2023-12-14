@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ int Groupes_Faces::nb_faces(Type_Face type) const
 }
 
 // Mise a jour des indices des groupes de faces avec table inversee: reverse_index[ancien_numero] = nouveau numero:
-// necessaire lorsque les numeros des faces ont été modifiés
+// necessaire lorsque les numeros des faces ont ete modifies
 void Groupes_Faces::renumerote(ArrOfInt& reverse_index)
 {
   for (auto &itr : *this)

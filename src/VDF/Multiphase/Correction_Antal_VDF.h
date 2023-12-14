@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Correction_Antal_VDF_included
 #include <Source_base.h>
 
-/*! @brief classe Correction_Antal_PolyMAC_P0 Correction de répulsion en paroi d'Antal dans un ecoulement multiphase
+/*! @brief classe Correction_Antal_PolyMAC_P0 Correction de repulsion en paroi d'Antal dans un ecoulement multiphase
  *
  *
  *

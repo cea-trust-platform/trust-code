@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, co
 {
   /*
    * NOTA BENE :
-   * On a discretisé P_EOS avec une directive = temperature qui donne en VDF :
+   * On a discretise P_EOS avec une directive = temperature qui donne en VDF :
    * Ptot => aux elems
    * la_vitesse => faces car vdf
    * grad_Ptot => faces car vdf

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,9 +65,9 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
         {
           is >> nbSubPhases_;
         }
-      else if(Motcle(mot) == "DIAMETRES" || Motcle(mot) == "DIAMETERS") // Définition du paramètre diamètres
+      else if(Motcle(mot) == "DIAMETRES" || Motcle(mot) == "DIAMETERS") // Definition du parametre diametres
         {
-          if (nbSubPhases_ < 0) // on vérifie que le nombre de sous phases est déjà défini
+          if (nbSubPhases_ < 0) // on verifie que le nombre de sous phases est eja defini
             {
               Cerr << "Fluide_MUSIG : you need to define nbPhases before " << mot  << finl;
               Process::exit();
@@ -113,7 +113,7 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
           diametres_.resize(nbSubPhases_);
           for( int i =0; i<nbSubPhases_; i++)
             {
-              if(repartionType == 0) //linéaire
+              if(repartionType == 0) //lineaire
                 {
                   Cout << "definitions of diameters" << finl;
                   diametres_[i] = rMin + i*(rMax-rMin)/(nbSubPhases_-1);
@@ -121,12 +121,12 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
                 }
               else if(repartionType == 1) //exponentielle
                 {
-                  Cout << "Fluide_MUSIG - Diametre : répartition exponentielle pas encore implémentée" << finl;
+                  Cout << "Fluide_MUSIG - Diametre : repartition exponentielle pas encore implementee" << finl;
                   Process::exit();
                 }
               else if(repartionType == 2) //logarithmique
                 {
-                  Cout << "Fluide_MUSIG - Diametre : répartition logarithmique pas encore implémentée" << finl;
+                  Cout << "Fluide_MUSIG - Diametre : repartition logarithmique pas encore impementee" << finl;
                   Process::exit();
                 }
               else
@@ -157,7 +157,7 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
   return is;
 }
 
-int Fluide_MUSIG::initialiser(const double temps) // Cette surcahrge est probablement pas nécessaire
+int Fluide_MUSIG::initialiser(const double temps) // Cette surcahrge est probablement pas necessaire
 {
   return 1;
 }

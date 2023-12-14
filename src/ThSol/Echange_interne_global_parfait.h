@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Echange_interne_global_impose.h>
 
 
-/*! @brief Classe Echange_interne_global_parfait Cette classe represente le cas particulier d'un échange interne parfait (h=+inf)
+/*! @brief Classe Echange_interne_global_parfait Cette classe represente le cas particulier d'un echange interne parfait (h=+inf)
  *
  *     Marche seulement en EF pour le moment.
  *

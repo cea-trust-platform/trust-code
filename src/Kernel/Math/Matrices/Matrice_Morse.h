@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,9 +37,9 @@
  *     Remarque: dans ce commentaire le [] est a prendre au sens fortran:
  *                     tab1[1] designe la premiere valeur de tab1
  *
- *     C'est aussi le format décrit dans la page Wikipedia :
+ *     C'est aussi le format decrit dans la page Wikipedia :
  *         https://fr.wikipedia.org/wiki/Matrice_creuse
- *     en faisant un +1 sur tous les éléments des tableaux d'indices (IA et JA dans la page)
+ *     en faisant un +1 sur tous les elements des tableaux d'indices (IA et JA dans la page)
  *     -----------------------------------------------------------------------
  *
  * @sa Matrice_Base Matrice_Morse_Sym

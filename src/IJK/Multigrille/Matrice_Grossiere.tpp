@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
     // duCluzeau
     // Ici, on doit permuter les indices du vecteur solution de pression pour rendre compte des
-    // conditions de periodicites (ou de shear-periodicité)
+    // conditions de periodicites (ou de shear-periodicite)
 
     int pe = pe_kmin;
     if (pe >= 0) // si voisin du bas existe

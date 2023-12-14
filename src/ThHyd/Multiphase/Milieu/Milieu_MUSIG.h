@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ private :
   std::vector<Fluide_MUSIG> fluidesMUSIG_;
 
   // Pour toutes les phases, on sauvegarde un tableau de 3 int :
-  // numero de phases pour le milieu | numéro de FluideMUSIG (-1 si pas FluideMUSIG) | index de la phase dans fluideMUSIG.
+  // numero de phases pour le milieu | numero de FluideMUSIG (-1 si pas FluideMUSIG) | index de la phase dans fluideMUSIG.
   std::vector<std::vector<int>> indexMilieuToIndexFluide_; // il y a sans doute mieux
 };
 

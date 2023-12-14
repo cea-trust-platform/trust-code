@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
  *
  * )
  *      exemple:
- *      Champ_Fonc_Tabule { probleme ch }
+ *      Champ_Fonc_Tabule { probleme ch }
  *      1 (nombre de composantes)
  *      {
  *      2

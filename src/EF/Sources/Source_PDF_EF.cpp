@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1145,7 +1145,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
           if (itisok)
             {
               cells(0) = int(fluid_elems(i));
-              champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf); // vf la vitesse totale interpolée au pt fluide
+              champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf); // vf la vitesse totale interpolee au pt fluide
               double Vn = 0.;
               for(int j = 0; j < nb_comp; j++) Vn +=vf(0, j) * normale(0,j);
               DoubleTab v_ref_t(1, nb_comp);

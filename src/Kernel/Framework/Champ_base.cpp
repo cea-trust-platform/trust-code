@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -673,7 +673,7 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
       const Champ_Inc_base& chi=ref_cast(Champ_Inc_base, *this);
       if (!chi.mon_equation_non_nul())
         {
-          Cerr<<"no equation assocuate to "<<que_suis_je()<<finl;
+          Cerr<<"no equation associated to "<<que_suis_je()<<finl;
           impose_cl_diri=0;
         }
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ public :
   inline Champ_front& h_eff() { return coeff_heff; }
   inline const Champ_front& h_eff() const { return coeff_heff; }
 
-  // Température effective
+  // Temperature effective
   inline Champ_front& T_eff() { return temperature_Teff; }
   inline const Champ_front& T_eff() const { return temperature_Teff; }
 

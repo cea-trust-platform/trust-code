@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   int nb_elem_tot=domaine_dis_base.nb_elem_tot();
 
   // TODO : FIXME
-  // XXX : codage pas coherent... à voir : volumes ou volumes_entrelaces ???
+  // XXX : codage pas coherent... a voir : volumes ou volumes_entrelaces ???
   if (tabHe.line_size() == 1)
     {
       int nb_faces = domaine_vf.nb_faces();
