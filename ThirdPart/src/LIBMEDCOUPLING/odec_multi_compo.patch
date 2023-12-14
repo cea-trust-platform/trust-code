@@ -1,3 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 12d18dff..5ee9428d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -61,7 +61,7 @@ INCLUDE(SalomeSetupPlatform)
+ #    add_definitions(-Weverything)
+ #    add_definitions(-Wno-inconsistent-missing-override)
+ #    add_definitions(-Wno-c++98-compat -Wno-c++98-compat-pedantic)
+-#    add_definitions(-Wno-sign-conversion)
++#    add_definitions(-Wsign-conversion)
+ #    add_definitions(-Wno-switch-enum)
+ #
+ #    add_definitions(-Wno-documentation-unknown-command) # \image in Doxygen
 diff --git a/resources/dev/mc_suppr_valgrind b/resources/dev/mc_suppr_valgrind
 index 9609c388..869db276 100644
 --- a/resources/dev/mc_suppr_valgrind
@@ -266,10 +279,19 @@ index 36875b06..e7ac3d2a 100644
        The interpolation is performed as the \ref MEDCoupling::MEDCouplingRemapper "remapper" does.
  
 diff --git a/src/ParaMEDMEM/OverlapElementLocator.cxx b/src/ParaMEDMEM/OverlapElementLocator.cxx
-index eb91d63f..c185c105 100644
+index eb91d63f..0a1f7985 100644
 --- a/src/ParaMEDMEM/OverlapElementLocator.cxx
 +++ b/src/ParaMEDMEM/OverlapElementLocator.cxx
-@@ -123,8 +123,7 @@ namespace MEDCoupling
+@@ -35,6 +35,8 @@
+ 
+ #include <limits>
+ 
++//#define DEC_DEBUG
++
+ using namespace std;
+ 
+ namespace MEDCoupling 
+@@ -123,8 +125,7 @@ namespace MEDCoupling
                               _domain_bounding_boxes,bbSize, MPI_DOUBLE, 
                               *comm);
    
@@ -279,7 +301,7 @@ index eb91d63f..c185c105 100644
      _proc_pairs.clear();//first is source second is target
      _proc_pairs.resize(_group.size());
      for(int i=0;i<_group.size();i++)
-@@ -133,18 +132,19 @@ namespace MEDCoupling
+@@ -133,18 +134,19 @@ namespace MEDCoupling
            _proc_pairs[i].push_back(j);
    }
  
@@ -305,7 +327,15 @@ index eb91d63f..c185c105 100644
          }
      //Keeping todo list of current proc. _to_do_list contains a set of pair where at least _group.myRank() appears once.
      //This proc will be in charge to perform interpolation of any of element of '_to_do_list'
-@@ -163,7 +163,7 @@ namespace MEDCoupling
+@@ -157,13 +159,13 @@ namespace MEDCoupling
+ #ifdef DEC_DEBUG
+     std::stringstream scout;
+     scout << "(" << myProcId << ") my TODO list is: ";
+-    for (std::vector< ProcCouple >::const_iterator itdbg=_to_do_list.begin(); itdbg!=_to_do_list.end(); itdbg++)
+-      scout << "(" << (*itdbg).first << "," << (*itdbg).second << ")";
++    for (const ProcCouple& pc: _to_do_list)
++      scout << "(" << pc.first << "," << pc.second << ")";
+     std::cout << scout.str() << "\n";
  #endif
    }
  
@@ -314,7 +344,7 @@ index eb91d63f..c185c105 100644
     * Then try to reduce as much as possible the variance of the num of jobs per proc by selecting the right duplicate
     * to remove:
     *  - take the most loaded proc i,
-@@ -175,58 +175,66 @@ namespace MEDCoupling
+@@ -175,58 +177,66 @@ namespace MEDCoupling
    {
      using namespace std;
      int infinity = std::numeric_limits<int>::max();
@@ -412,7 +442,7 @@ index eb91d63f..c185c105 100644
          // For this proc, job with less loaded second proc:
          int min_sz = infinity;
          map<ProcCouple, int> & max_map = full_set[max_id];
-@@ -235,20 +243,25 @@ namespace MEDCoupling
+@@ -235,20 +245,25 @@ namespace MEDCoupling
            {
            // Use a reverse iterator here increases our chances to hit a couple of the form (i, myProcId)
            // meaning that the final matrix computed won't have to be sent: save some comm.
@@ -445,7 +475,7 @@ index eb91d63f..c185c105 100644
              proc_valid[max_id] = false;
              continue;
            }
-@@ -262,25 +275,33 @@ namespace MEDCoupling
+@@ -262,32 +277,40 @@ namespace MEDCoupling
  
          // Now update all counts of valid maps:
          procID = 0;
@@ -494,6 +524,148 @@ index eb91d63f..c185c105 100644
      _to_do_list=_all_todo_lists[myProcId];
  
  #ifdef DEC_DEBUG
+     std::stringstream scout;
+     scout << "(" << myProcId << ") my TODO list is: ";
+-    for (std::vector< ProcCouple >::const_iterator itdbg=_to_do_list.begin(); itdbg!=_to_do_list.end(); itdbg++)
+-      scout << "(" << (*itdbg).first << "," << (*itdbg).second << ")";
++    for (const ProcCouple& pc: _to_do_list)
++      scout << "(" << pc.first << "," << pc.second << ")";
+     std::cout << scout.str() << "\n";
+ #endif
+   }
+@@ -308,22 +331,30 @@ namespace MEDCoupling
+     int myProcId=_group.myRank();
+     _procs_to_send_mesh.clear();
+     _procs_to_send_field.clear();
+-    for(int i=_group.size()-1;i>=0;i--)
++    for(int i=0;i<_group.size();i++)
+       {
+-        const std::vector< ProcCouple >& anRemoteProcToDoList=_all_todo_lists[i];
+-        for(std::vector< ProcCouple >::const_iterator it=anRemoteProcToDoList.begin();it!=anRemoteProcToDoList.end();it++)
++        for(const ProcCouple& pc: _all_todo_lists[i])
+           {
+-            if((*it).first==myProcId)
++            if(pc.first==myProcId)
+               {
+                 if(i!=myProcId)
+                   _procs_to_send_mesh.push_back(Proc_SrcOrTgt(i,true));
+-                _procs_to_send_field.push_back((*it).second);
++                _procs_to_send_field.push_back(pc.second);
+               }
+-            if((*it).second==myProcId)
++            if(pc.second==myProcId)
+               if(i!=myProcId)
+                 _procs_to_send_mesh.push_back(Proc_SrcOrTgt(i,false));
+           }
+       }
++    // Sort to avoid deadlocks!!
++    std::sort(_procs_to_send_mesh.begin(), _procs_to_send_mesh.end());
++#ifdef DEC_DEBUG
++    std::stringstream scout;
++    scout << "(" << _group.myRank() << ") PROC TO SEND list is: ";
++    for (const auto& pc: _procs_to_send_mesh)
++      scout << "(" << pc.first << "," << (pc.second ? "src":"tgt") << ") ";
++    std::cout << scout.str() << "\n";
++#endif
+   }
+ 
+ 
+@@ -335,42 +366,35 @@ namespace MEDCoupling
+   {
+     int myProcId=_group.myRank();
+     //starting to receive every procs whose id is lower than myProcId.
+-    std::vector< ProcCouple > toDoListForFetchRemaining;
+-    for(std::vector< ProcCouple >::const_iterator it=_to_do_list.begin();it!=_to_do_list.end();it++)
++    std::vector<Proc_SrcOrTgt> firstRcv, secondRcv;
++    for (const ProcCouple& pc: _to_do_list)
+       {
+-        int first = (*it).first, second = (*it).second;
+-        if(first!=second)
++        if(pc.first == pc.second) continue; // no xchg needed
++
++        if(pc.first==myProcId)
+           {
+-            if(first==myProcId)
+-              {
+-                if(second<myProcId)
+-                  receiveRemoteMeshFrom(second,false);
+-                else
+-                  toDoListForFetchRemaining.push_back(ProcCouple(first,second));
+-              }
+-            else
+-              {//(*it).second==myProcId
+-                if(first<myProcId)
+-                  receiveRemoteMeshFrom(first,true);
+-                else
+-                  toDoListForFetchRemaining.push_back(ProcCouple(first,second));
+-              }
++            if(pc.second<myProcId)      firstRcv.push_back(Proc_SrcOrTgt(pc.second,false));
++            else                        secondRcv.push_back(Proc_SrcOrTgt(pc.second, false));
+           }
+-      }
+-    //sending source or target mesh to remote procs
+-    for(std::vector< Proc_SrcOrTgt >::const_iterator it2=_procs_to_send_mesh.begin();it2!=_procs_to_send_mesh.end();it2++)
+-      sendLocalMeshTo((*it2).first,(*it2).second,matrix);
+-    //fetching remaining meshes
+-    for(std::vector< ProcCouple >::const_iterator it=toDoListForFetchRemaining.begin();it!=toDoListForFetchRemaining.end();it++)
+-      {
+-        if((*it).first!=(*it).second)
+-          {
+-            if((*it).first==myProcId)
+-              receiveRemoteMeshFrom((*it).second,false);
+-            else//(*it).second==myProcId
+-              receiveRemoteMeshFrom((*it).first,true);
++        else
++          {//pc.second==myProcId
++            if(pc.first<myProcId)       firstRcv.push_back(Proc_SrcOrTgt(pc.first,true));
++            else                        secondRcv.push_back(Proc_SrcOrTgt(pc.first,true));
+           }
+       }
++    // Actual receiving, in order please to avoid deadlocks!
++    std::sort(firstRcv.begin(), firstRcv.end());
++    for (const Proc_SrcOrTgt& pst: firstRcv)
++      receiveRemoteMeshFrom(pst.first, pst.second);
++
++    // Sending source or target mesh to remote procs (_procs_to_send_mesh is sorted too!)
++    for (const Proc_SrcOrTgt& pst: _procs_to_send_mesh)
++      sendLocalMeshTo(pst.first, pst.second,matrix);
++
++    // Actual 2nd receiving, in order again please to avoid deadlocks!
++    std::sort(secondRcv.begin(), secondRcv.end());
++    for (const Proc_SrcOrTgt& pst: secondRcv)
++      receiveRemoteMeshFrom(pst.first, pst.second);
+   }
+   
+   std::string OverlapElementLocator::getSourceMethod() const
+@@ -452,6 +476,14 @@ namespace MEDCoupling
+    */
+   void OverlapElementLocator::sendLocalMeshTo(int procId, bool sourceOrTarget, OverlapInterpolationMatrix& matrix) const
+   {
++#ifdef DEC_DEBUG
++    int rank = _group.myRank();
++    std::string st = sourceOrTarget ? "src" : "tgt";
++    std::stringstream scout;
++    scout << "(" << rank << ") SEND part of " << st << " TO: " << procId;
++    std::cout << scout.str() << "\n";
++#endif
++
+    //int myProcId=_group.myRank();
+    const double *distant_bb=0;
+    MEDCouplingPointSet *local_mesh=0;
+@@ -486,6 +518,13 @@ namespace MEDCoupling
+    */
+   void OverlapElementLocator::receiveRemoteMeshFrom(int procId, bool sourceOrTarget)
+   {
++#ifdef DEC_DEBUG
++    int rank = _group.myRank();
++    std::string st = sourceOrTarget ? "src" : "tgt";
++    std::stringstream scout;
++    scout << "(" << rank << ") RCV part of " << st << " FROM: " << procId;
++    std::cout << scout.str() << "\n";
++#endif
+     DataArrayIdType *old2new_map=0;
+     MEDCouplingPointSet *m=0;
+     receiveMesh(procId,m,old2new_map);
 diff --git a/src/ParaMEDMEM/OverlapElementLocator.hxx b/src/ParaMEDMEM/OverlapElementLocator.hxx
 index 780f9333..8edbb20c 100644
 --- a/src/ParaMEDMEM/OverlapElementLocator.hxx
