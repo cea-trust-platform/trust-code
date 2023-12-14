@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <TRUSTVect.h>
 #include <FichierHDFPar.h>
 #include <communications.h>
+#include <Matrix_tools.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -1656,24 +1657,13 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
         }
       if (reorder && loop==0)
         {
-          // Reduce the bandwith of a the matrix connectivity between parts:
           // ToDo forcer a ne pas changer la partition 0 !
-          ArrOfInt riord(nb_parties_+1);
-          ArrOfInt levels(nb_parties_+1);
-          ArrOfInt mask(nb_parties_+1);
-          int maskval = 1;
-          for (int i_part=0 ; i_part<nb_parties_+1; i_part++)
-            mask[i_part] = maskval;
-          int init=1;
-          int nlev;
-          F77NAME(PERPHN)(&nb_parties_, ja.addr(), ia.addr(), &init, mask.addr(), &maskval, &nlev, riord.addr(), levels.addr());
+          // Reduce the bandwith of a the matrix connectivity between parts:
+          ArrOfInt iperm;
+          ArrOfInt renum = Matrix_tools::reduce_bandwith(ia, ja, iperm);
+          renum-=1; // Fortran -> C
 
-          // Renumber the elem_part array:
-          ArrOfInt renum(nb_parties_);
-          for (int i_part=0; i_part < nb_parties_; i_part++)
-            renum[riord[i_part]-1]=i_part;
-          int size=elem_part.size_reelle();
-          for (int i=0; i<size; i++)
+          for (int i=0; i<renum.size_array(); i++)
             elem_part[i]=renum[elem_part[i]];
           elem_part.echange_espace_virtuel();
           // Rebuild the liste_elems_sous_domaines_

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,6 +94,9 @@ public :
 
   //add empty rows/columns to matrix
   static void extend_matrix(Matrice_Morse& mat, int nl, int nc);
+
+  // Compute permutation to reduce matrix bandwidth:
+  static ArrOfInt reduce_bandwith(const ArrOfInt& ia, const ArrOfInt& ja, ArrOfInt& iperm);
 };
 
 #endif /* Matrix_tools_included */

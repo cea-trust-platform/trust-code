@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <TRUSTTab.h>
 #include <Array_tools.h>
-
+#include <Sparskit.h>
 #include <algorithm>
 
 // conversion to morse format
@@ -682,3 +682,27 @@ void Matrix_tools::extend_matrix(Matrice_Morse& mat, int nl, int nc)
   mat.set_nb_columns(nc); //plus facile
 }
 
+/**
+*
+*/
+ArrOfInt Matrix_tools::reduce_bandwith(const ArrOfInt& ia, const ArrOfInt& ja, ArrOfInt& iperm)
+{
+  // ia, ja, perm, iperm : Fortran numerotation
+  int nb_rows = ia.size_array() - 1;
+  ArrOfInt mask(nb_rows);
+  int init=1;
+  int maskval = 1;
+  mask = maskval;
+  int nlev;
+  if (iperm.size_array()!=nb_rows)
+    iperm.resize(nb_rows);
+  ArrOfInt levels(nb_rows+1);
+  F77NAME(PERPHN)(&nb_rows, ja.addr(), ia.addr(), &init, mask.addr(), &maskval, &nlev, iperm.addr(), levels.addr());
+  // subroutine perphn(n,ja,ia,init,iperm,mask,maskval,nlev,riord,levels)
+  // SPARSKIT2/ORDERINGS/levset.f
+
+  ArrOfInt perm(nb_rows);
+  for (int i=0; i < nb_rows; i++)
+    perm[iperm[i] - 1] = i + 1;
+  return perm;
+}
