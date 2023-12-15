@@ -25,7 +25,7 @@ Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_Po
 
 Implemente_instanciable(Source_Generique_Face_PolyMAC_P0P1NC, "Source_Generique_Face_PolyMAC_P0P1NC|Source_Generique_Face_PolyMAC_P0", Source_Generique_Face_PolyMAC);
 
-Implemente_instanciable(Source_Generique_Face_PolyVEF_P0, "Source_Generique_Face_PolyVEF_P0", Source_Generique_Face_PolyMAC_P0P1NC);
+Implemente_instanciable(Source_Generique_Face_PolyVEF, "Source_Generique_Face_PolyVEF_P0", Source_Generique_Face_PolyMAC_P0P1NC);
 
 Sortie& Source_Generique_Face_PolyMAC::printOn(Sortie& os) const { return os << que_suis_je(); }
 
@@ -35,9 +35,9 @@ Sortie& Source_Generique_Face_PolyMAC_P0P1NC::printOn(Sortie& os) const { return
 
 Entree& Source_Generique_Face_PolyMAC_P0P1NC::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
 
-Sortie& Source_Generique_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je(); }
+Sortie& Source_Generique_Face_PolyVEF::printOn(Sortie& os) const { return os << que_suis_je(); }
 
-Entree& Source_Generique_Face_PolyVEF_P0::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
+Entree& Source_Generique_Face_PolyVEF::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
 
 // Methode de calcul de la valeur sur une face encadree par elem1 et elem2 d'un champ uniforme ou non a plusieurs composantes
 inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int compo)
@@ -114,7 +114,7 @@ DoubleTab& Source_Generique_Face_PolyMAC_P0P1NC::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-DoubleTab& Source_Generique_Face_PolyVEF_P0::ajouter(DoubleTab& resu) const
+DoubleTab& Source_Generique_Face_PolyVEF::ajouter(DoubleTab& resu) const
 {
   OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
