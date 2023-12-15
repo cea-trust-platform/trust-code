@@ -13,43 +13,19 @@
 *
 *****************************************************************************/
 
-#include <Perte_Charge_Anisotrope_PolyVEF_P0_Face.h>
-#include <Motcle.h>
-#include <Param.h>
+#ifndef Perte_Charge_PolyMAC_P0P1NC_included
+#define Perte_Charge_PolyMAC_P0P1NC_included
 
-Implemente_instanciable(Perte_Charge_Anisotrope_PolyVEF_P0_Face, "Perte_Charge_Anisotrope_Face_PolyVEF_P0", Perte_Charge_PolyVEF_P0);
+#include <Perte_Charge_PolyMAC.h>
 
-Sortie& Perte_Charge_Anisotrope_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Perte_Charge_Anisotrope_PolyVEF_P0_Face::readOn(Entree& s)
+class Perte_Charge_PolyMAC_P0P1NC : public Perte_Charge_PolyMAC
 {
-  Perte_Charge_PolyVEF_P0::readOn(s);
-  if (v->nb_comp() != dimension)
-    {
-      Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
-      Process::exit();
-    }
-  return s;
-}
+  Declare_base(Perte_Charge_PolyMAC_P0P1NC);
+public:
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+};
 
-void Perte_Charge_Anisotrope_PolyVEF_P0_Face::set_param(Param& param)
-{
-  Perte_Charge_PolyVEF_P0::set_param(param);
-  param.ajouter_non_std("lambda_ortho", (this), Param::REQUIRED);
-  param.ajouter("direction", &v, Param::REQUIRED);
-}
-
-int Perte_Charge_Anisotrope_PolyVEF_P0_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  if (mot == "lambda_ortho")
-    return lire_motcle_non_standard_impl(mot, is);
-  else
-    return Perte_Charge_PolyVEF_P0::lire_motcle_non_standard(mot, is);
-}
-
-void Perte_Charge_Anisotrope_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                                  double dh, double nu, double reynolds, double& coeff_ortho,
-                                                                  double& coeff_long, double& u_l, DoubleVect& v_valeur) const
-{
-  coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
-}
+#endif /* Perte_Charge_PolyMAC_P0P1NC_included */
