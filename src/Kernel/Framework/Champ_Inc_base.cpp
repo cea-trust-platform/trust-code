@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -752,6 +752,10 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
               for (s = f_s(f, k), n = 0; n < N; n++)
                 result(fb, n) += valeurs()(s, n) / n_som;
           }
+      else if (que_suis_je() == "Champ_P1NC")
+        for (j = 0; j < fr.nb_faces_tot(); j++)
+          for (f = fr.num_face(j), fb = domaine.fbord(f), n = 0; n < N; n++)
+            result(fb, n) = valeurs()(f, n);
       else
         Process::exit("Champ_Inc_base::valeur_aux_bords() : must code something!");
     }
