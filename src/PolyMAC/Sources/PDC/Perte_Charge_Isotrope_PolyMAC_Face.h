@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Perte_Charge_Isotrope_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC.h>
+#include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge isotrope (proportionnelle a -u )
 /**
@@ -31,7 +32,7 @@
  }
  */
 
-class Perte_Charge_Isotrope_PolyMAC_Face: public Perte_Charge_PolyMAC
+class Perte_Charge_Isotrope_PolyMAC_Face: public Perte_Charge_PolyMAC, public PDC_Isotrope_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_Face);
 public:

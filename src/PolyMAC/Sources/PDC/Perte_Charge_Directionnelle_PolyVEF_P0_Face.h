@@ -17,6 +17,7 @@
 #define Perte_Charge_Directionnelle_PolyVEF_P0_Face_included
 
 #include <Perte_Charge_PolyVEF_P0.h>
+#include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge directionnelle (selon un vecteur unitaire v)
 /**
@@ -33,7 +34,7 @@
 
  */
 
-class Perte_Charge_Directionnelle_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0
+class Perte_Charge_Directionnelle_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Directionnelle_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Directionnelle_PolyVEF_P0_Face);
 public:
@@ -48,8 +49,6 @@ protected:
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
                            DoubleVect& v_valeur) const override;
-
-  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 #endif /* Perte_Charge_Directionnelle_PolyVEF_P0_Face_included */
