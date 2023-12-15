@@ -16,10 +16,10 @@
 #ifndef Perte_Charge_PolyVEF_P0_included
 #define Perte_Charge_PolyVEF_P0_included
 
-#include <Perte_Charge_PolyMAC.h>
+#include <Perte_Charge_PolyMAC_P0P1NC.h>
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
-/**
+/*
    Perte_Charge_Isotrope, Perte_Charge_Directionnelle et
    Perte_Charge_Anisotrope heritent de Perte_Charge_PolyVEF_P0. Elles
    doivent surcharger essentiellement readOn() et perte_charge().
@@ -27,14 +27,16 @@
 
    Ces classes sont censees remplacer Perte_Charge_PolyVEF_P0_Face
    et Perte_Charge_PolyVEF_P0_P1NC.
+
 */
 
-class Perte_Charge_PolyVEF_P0 : public Perte_Charge_PolyMAC
+class Perte_Charge_PolyVEF_P0 : public Perte_Charge_PolyMAC_P0P1NC
 {
   Declare_base(Perte_Charge_PolyVEF_P0);
 public:
   int has_interface_blocs() const override { return 1; }
   void check_multiphase_compatibility() const override { }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
