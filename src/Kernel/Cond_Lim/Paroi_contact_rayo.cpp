@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,8 +65,8 @@ void Paroi_contact_rayo::complement(Nom& ajout)
           if (rayo == 1) ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
         }
       else ajout = mon_equation->discretisation().is_polymac_p0p1nc() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
-                     mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
-
+                     mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " :
+                     mon_equation->discretisation().is_polyvef_p0() ? "paroi_echange_contact_PolyVEF_P0 " : "paroi_echange_contact_PolyMAC ";
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,11 +111,8 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                               iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration_ : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
-<<<<<<< HEAD
-=======
   const bool is_pvef = equation().discretisation().is_polyvef_p0();
 
->>>>>>> 900d4693b (polyvef stuff)
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
 
   /* recherche de phases evanescentes et traitement des seconds membres */
