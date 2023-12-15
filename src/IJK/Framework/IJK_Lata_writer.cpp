@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,8 +35,8 @@ void dumplata_header(const char *filename)
       master_file.set_bin(0);
       master_file.ouvrir(filename);
       master_file << "LATA_V2.1" << finl;
-      master_file << "titi" << finl;
-      master_file << "Trio_U" << finl;
+      master_file << "IJK specific format" << finl;
+      master_file << "TRUST Version " << TRUST_VERSION << finl;
       Nom format = (sizeof(int)==8 ? "INT64" : "INT32");
       master_file << "Format LITTLE_ENDIAN,C_INDEXING,C_ORDERING,F_MARKERS_NO,"<<format<<",REAL32" << finl;
       master_file.close();

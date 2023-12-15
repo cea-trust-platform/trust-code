@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -978,9 +978,9 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name, const Options_Par
       SFichier& sfichier = fichier.get_SFichier();
       if (fichier.is_master())
         {
-          sfichier << "LATA_V2.1 Trio_U Version1.6 or later" << finl;
+          sfichier << "LATA_V2.1 TRUST version " << TRUST_VERSION << finl;
           sfichier << Objet_U::nom_du_cas() << finl;
-          sfichier << "Trio_U verbosity=0" << finl;
+          sfichier << "TRUST verbosity=0" << finl;
 
           sfichier << "Format ";
           switch(format)

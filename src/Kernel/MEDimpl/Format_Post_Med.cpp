@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -223,9 +223,9 @@ int Format_Post_Med::ecrire_entete_med(Nom& nom_fich,const int est_le_premier_po
   if (est_le_premier_post && Process::je_suis_maitre())
     {
       SFichier s(nom_fich);
-      s << "Trio_U" << " " << "Version "  << "1" << finl;
+      s << "TRUST Version "  << TRUST_VERSION << finl;
       s << nom_du_cas() << finl;
-      s << "Trio_U" << finl;
+      s << "TRUST" << finl;
     }
   return 1;
 }

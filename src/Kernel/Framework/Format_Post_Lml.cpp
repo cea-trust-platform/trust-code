@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -226,9 +226,9 @@ int Format_Post_Lml::ecrire_entete_lml(Nom& nom_fich,const int est_le_premier_po
 
       if (Process::je_suis_maitre())
         {
-          s << "Trio_U" << " " << "Version "  << "1" << finl;
+          s << "TRUST" << " " << "Version " << TRUST_VERSION << finl;
           s << nom_du_cas() << finl;
-          s << "Trio_U" << finl;
+          s << "TRUST" << finl;
         }
 
       s.flush();
