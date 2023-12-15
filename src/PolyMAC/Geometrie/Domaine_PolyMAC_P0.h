@@ -32,15 +32,16 @@ public :
   //en preservant exactement les champs verifiant [nu grad T]_e = cte.
   //Entrees : N             : nombre de composantes
   //          is_p          : 1 si on traite le champ de pression (inversion Neumann / Dirichlet)
+  //          vec           : 1 si on veut le vecteur complet a la face
   //          cls           : conditions aux limites
-  //          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyMAC_P0)
+  //          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyVEF_P0)
   //          nu(e, n, ..)  : diffusivite aux elements (optionnel)
-  //          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyMAC_P0_Elem)
+  //          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyVEF_P0_Elem)
   //          virt          : 1 si on veut aussi le flux aux faces virtuelles
   //          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
   //Sorties : phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
   //          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
-  void fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
+  void fgrad(int N, int is_p, int vec, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
              int virt, int full_stencil, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c) const;
 
   //MD_Vectors pour Champ_Face_PolyMAC_P0 (faces + d x elems)

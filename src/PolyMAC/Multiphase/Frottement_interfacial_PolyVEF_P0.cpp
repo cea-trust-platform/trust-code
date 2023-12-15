@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ void Frottement_interfacial_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, 
   const DoubleTab& inco = ch.valeurs();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
   int f, k, l, d, D = dimension, N = inco.line_size() / D;
   /* faces */
   for (f = 0; f < domaine.nb_faces(); f++)

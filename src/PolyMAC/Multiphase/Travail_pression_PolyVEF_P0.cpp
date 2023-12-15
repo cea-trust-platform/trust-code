@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ void Travail_pression_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const 
     if (n_m.first == "pression" || (n_m.first == "alpha" && !semi_impl.count("alpha")) || n_m.first == "vitesse")
       {
         Matrice_Morse& mat = *n_m.second, mat2;
-        IntTrav sten(0, 2);
+        IntTab sten(0, 2);
         if (n_m.first == "pression") /* pression : dependance locale, implicite */
           for (e = 0; e < ne; e++)
             for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * e + n, M * e + m);

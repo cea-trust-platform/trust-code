@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ void Masse_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
   int i, j, f, d, D = dimension, n, N = inco.line_size() / D;
 
-  IntTrav sten(0, 2);
+  IntTab sten(0, 2);
   for (f = 0, i = 0; f < dom.nb_faces(); f++)
     for (d = 0; d < D; d++)
       for (n = 0; n < N; n++, i++)
