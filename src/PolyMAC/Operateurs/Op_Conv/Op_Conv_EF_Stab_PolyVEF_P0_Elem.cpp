@@ -127,7 +127,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& 
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte(), &ch_vit = ref_cast(Champ_Inc_base, vitesse_.valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Inc_P0_base, equation().inconnue()).fcl(), &fcl_v = ref_cast(Champ_Face_base, ch_vit).fcl();
-  const DoubleVect& pf = equation().milieu().porosite_face(), & fs = domaine.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face();
   const Conds_lim& cls_v = ch_vit.domaine_Cl_dis().les_conditions_limites();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords(), &nf = domaine.face_normales();
@@ -171,7 +171,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& 
             if (e < domaine.nb_elem())
               for (d = 0; d < D; d++)
                 for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
-                  (*m_vit)(N * e + n, Mv * (D * f + d) + m) += (i ? -1 : 1) * nf(f, d)/fs(f) * dv_flux(n);
+                  (*m_vit)(N * e + n, Mv * (D * f + d) + m) += (i ? -1 : 1) * nf(f, d) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m_i : d_cc)
           for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
