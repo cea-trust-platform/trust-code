@@ -51,7 +51,10 @@ void LataWriter::write_geometry(const Domain& dom)
   // Build a geometry database entry and add it to database
   LataDBGeometry geom;
   geom.name_ = dom.id_.name_;
-  geom.elem_type_ = dom.element_type_to_string(dom.elt_type_);
+
+  Nom type_elem = dom.is_rectangle() ? Nom("RECTANGLE") : dom.element_type_to_string(dom.elt_type_);
+
+  geom.elem_type_ = type_elem;
   geom.timestep_ = tstep;
   db_.add_geometry(geom);
 

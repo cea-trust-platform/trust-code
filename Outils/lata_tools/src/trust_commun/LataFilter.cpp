@@ -751,10 +751,13 @@ Field_UNames LataFilter::get_exportable_field_unames(const char *geometry) const
   Motcle geom(geometry);
   for (entier i = 0; i < fields_metadata_.size(); i++)
     if (geom == fields_metadata_[i].geometry_name_ || geom == "*")
-      // Do not show faces located fields to the user...
-      if (fields_metadata_[i].localisation_ != LataField_base::FACES || opt_.export_fields_at_faces_)
-        unames.add(fields_metadata_[i].uname_);
-
+      {
+        // Do not show faces located fields to the user...
+        if (fields_metadata_[i].localisation_ != LataField_base::FACES || opt_.export_fields_at_faces_)
+          unames.add(fields_metadata_[i].uname_);
+        else
+          Journal(filter_info_level) << "LataFilter::get_exportable_field_unames - Ignored field " << fields_metadata_[i].uname_ << endl;
+      }
   return unames;
 }
 

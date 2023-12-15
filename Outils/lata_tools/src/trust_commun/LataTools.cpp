@@ -34,7 +34,7 @@ std::ostream& Journal(entier level)
 {
   if (level <= journal_level)
     {
-      cerr << "[" << level << "] ";
+      if (level != 0) cerr << "[" << level << "] ";
       return cerr;
     }
   else

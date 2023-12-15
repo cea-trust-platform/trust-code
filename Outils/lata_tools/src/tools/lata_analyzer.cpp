@@ -458,6 +458,8 @@ static void write_lata_convert(const LataDB& lata_db, const LataAnalyzerOptions&
 static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt)
 {
   Journal(0) << "Writing fields from LataFilter to a new single lata file : " << opt.output_filename << endl;
+  if (!opt.export_fields_at_faces_)
+    Journal(0) << "   *** Attention : FACES fields will not be written ! To write them, use the option : 'export_fields_at_faces' " << endl;
 
   Nom dest_prefix, dest_name;
   LataOptions::extract_path_basename(opt.output_filename, dest_prefix, dest_name);
@@ -473,6 +475,7 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
   type.file_offset_ = 0;
 
   LataWriter lata_file;
+  if (opt.export_fields_at_faces_) lata_file.write_faces_fields();
   lata_file.set_file_splitting_option(LataWriter::SINGLE_LATA_FILE); // BOOM BOOM !
   lata_file.init_file(dest_prefix, dest_name, type, LataDBDataType::REAL32);
 
@@ -579,36 +582,25 @@ static void write_med(LataFilter& filter, const LataAnalyzerOptions& opt)
 
 static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
 {
-  Journal(2) << "Writing fields from LataFilter to lata file" << endl;
+  Journal(0) << "Writing fields from LataFilter to multiple lata files : " << opt.output_filename << endl;
+  if (!opt.export_fields_at_faces_)
+    Journal(0) << "   *** Attention : FACES fields will not be written ! To write them, use the option : 'export_fields_at_faces' " << endl;
 
   Nom new_prefix, new_basename;
   LataOptions::extract_path_basename(opt.output_filename, new_prefix, new_basename);
 
   LataDBDataType default_int;
-  if (opt.binary_out)
-    default_int.msb_ = LataDBDataType::machine_msb_;
-  else
-    default_int.msb_ = LataDBDataType::ASCII;
-
+  default_int.msb_ = (opt.binary_out) ? LataDBDataType::machine_msb_ : LataDBDataType::ASCII;
   default_int.type_ = LataDBDataType::INT32;
-  if (opt.use_fortran_indexing)
-    default_int.array_index_ = LataDBDataType::F_INDEXING;
-  else
-    default_int.array_index_ = LataDBDataType::C_INDEXING;
-  if (opt.use_fortran_data_ordering)
-    default_int.data_ordering_ = LataDBDataType::F_ORDERING;
-  else
-    default_int.data_ordering_ = LataDBDataType::C_ORDERING;
-  if (opt.fortran_blocs)
-    default_int.fortran_bloc_markers_ = LataDBDataType::BLOC_MARKERS_SINGLE_WRITE;
-  else
-    default_int.fortran_bloc_markers_ = LataDBDataType::NO_BLOC_MARKER;
+  default_int.array_index_ = (opt.use_fortran_indexing) ? LataDBDataType::F_INDEXING : LataDBDataType::C_INDEXING;
+  default_int.data_ordering_ = (opt.use_fortran_data_ordering) ? LataDBDataType::F_ORDERING : LataDBDataType::C_ORDERING;
+  default_int.fortran_bloc_markers_ = (opt.fortran_blocs) ? LataDBDataType::BLOC_MARKERS_SINGLE_WRITE : LataDBDataType::NO_BLOC_MARKER;
   default_int.bloc_marker_type_ = LataDBDataType::INT32;
   default_int.file_offset_ = 0;
 
   LataWriter lata_writer;
-  lata_writer.init_file(new_prefix, new_basename,
-                        default_int, LataDBDataType::REAL32);
+  if (opt.export_fields_at_faces_) lata_writer.write_faces_fields();
+  lata_writer.init_file(new_prefix, new_basename, default_int, LataDBDataType::REAL32);
 
   const entier time_average = (opt.time_average_ != LataAnalyzerOptions::NO_TIME_AVERAGE);
   const entier ntimesteps = time_average ? 2 : filter.get_nb_timesteps();
@@ -831,6 +823,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
         }
     }
   lata_writer.finish();
+  Journal(0) << "Done ! " << endl;
 }
 
 template <class TAB>

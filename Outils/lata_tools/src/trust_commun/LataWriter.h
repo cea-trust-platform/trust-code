@@ -30,9 +30,10 @@ public:
   enum ERRORS { InternalError };
 
   void init_file(const Nom& path, const Nom& basename, const LataDBDataType& default_int_format, LataDBDataType::Type default_float_type);
-  void write_time(double t);
-  void write_geometry(const Domain& dom);
+  void write_faces_fields() { write_faces_fields_ = true; }
   void write_component(const LataField_base& field);
+  void write_geometry(const Domain& dom);
+  void write_time(double t);
   void finish();
 
   void set_file_splitting_option(const FileSplittingOption op) { lata_option_ = op; }
@@ -42,6 +43,7 @@ protected:
   LataDB db_; // This is the database where we put all data...
   Nom base_name_; // Basename for files and lata master file:
   FileOffset offset_ = 0;
+  bool write_faces_fields_ = false;
 };
 
 #endif /* LataWriter_H */

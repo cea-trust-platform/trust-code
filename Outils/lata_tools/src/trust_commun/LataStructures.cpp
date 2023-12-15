@@ -364,6 +364,8 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
   // 2) Read nodes, elements and faces data
   elt_type_ = Domain::element_type_from_string(geom.elem_type_);
 
+  if (geom.elem_type_.debute_par("RECTANGLE")) is_rectangle_ = true;
+
   lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "SOMMETS", "*"), nodes_, decal_nodes, nb_sommets);
   lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "ELEMENTS", "*"), elements_, decal_elements, nbelements);
   set_lata_block_offset(LataField_base::SOM, decal_nodes);

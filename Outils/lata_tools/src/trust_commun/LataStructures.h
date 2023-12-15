@@ -106,12 +106,15 @@ public:
 
   static Motcle lata_element_name(Domain::Element type);
 
+  const bool& is_rectangle() const { return is_rectangle_;}
+
 protected:
   // If the Domain has been loaded from a lata file and it's not the
   // first block this is the offset in the lata file:
   entier decal_nodes_lata_;
   entier decal_elements_lata_;
   entier decal_faces_lata_;
+  bool is_rectangle_ = false;
 };
 
 class DomainUnstructured: public Domain
