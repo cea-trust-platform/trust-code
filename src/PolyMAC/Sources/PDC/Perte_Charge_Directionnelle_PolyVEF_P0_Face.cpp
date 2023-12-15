@@ -15,7 +15,6 @@
 
 #include <Perte_Charge_Directionnelle_PolyVEF_P0_Face.h>
 #include <Motcle.h>
-#include <Equation_base.h>
 #include <Param.h>
 
 Implemente_instanciable(Perte_Charge_Directionnelle_PolyVEF_P0_Face, "Perte_Charge_Directionnelle_Face_PolyVEF_P0", Perte_Charge_PolyVEF_P0);
@@ -39,35 +38,9 @@ void Perte_Charge_Directionnelle_PolyVEF_P0_Face::set_param(Param& param)
   param.ajouter("direction", &v, Param::REQUIRED);
 }
 
-void Perte_Charge_Directionnelle_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho,
+void Perte_Charge_Directionnelle_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
+                                                                      double dh, double nu, double reynolds, double& coeff_ortho,
                                                                       double& coeff_long, double& u_l, DoubleVect& v_valeur) const
 {
-  // Calcul de lambda
-  lambda.setVar(0, reynolds);
-  lambda.setVar(1, t);
-  lambda.setVar(2, pos[0]);
-  if (dimension > 1)
-    lambda.setVar(3, pos[1]);
-  if (dimension > 2)
-    lambda.setVar(4, pos[2]);
-
-  // Calcul de v et ||v||^2
-  //  DoubleVect v_valeur(dimension);
-  double vcarre = 0;
-  v.valeur().valeur_a(pos, v_valeur);
-  for (int dim = 0; dim < dimension; dim++)
-    vcarre += v_valeur[dim] * v_valeur[dim];
-  v_valeur /= sqrt(vcarre);
-  // Calcul de u.v
-  double scal = 0;
-  for (int dim = 0; dim < dimension; dim++)
-    scal += u[dim] * v_valeur[dim];
-  /*
-   // Calcul du resultat
-   for (int dim=0;dim<dimension;dim++)
-   p_charge[dim] = -lambda.eval()*scal*v_valeur[dim]*norme_u/2./dh;
-   */
-  u_l = scal;
-  coeff_long = lambda.eval() * norme_u / 2. / dh;
-  coeff_ortho = 0;
+  coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
 }
