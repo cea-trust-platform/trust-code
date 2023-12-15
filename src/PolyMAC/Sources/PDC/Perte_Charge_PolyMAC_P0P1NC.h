@@ -13,42 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef Perte_Charge_Directionnelle_PolyVEF_P0_Face_included
-#define Perte_Charge_Directionnelle_PolyVEF_P0_Face_included
+#ifndef Perte_Charge_PolyMAC_P0P1NC_included
+#define Perte_Charge_PolyMAC_P0P1NC_included
 
-#include <Perte_Charge_PolyVEF_P0.h>
-#include <PDC_PolyMAC_impl.h>
+#include <Perte_Charge_PolyMAC.h>
 
-//!  Perte de charge directionnelle (selon un vecteur unitaire v)
-/**
- du/dt = - volume * lambda(Re,x,y,z,t) * u.(v / ||v||) * (v / ||v||) * ||u|| / (2 * Dh)
-
- Lecture des arguments :
-
- Perte_Charge_Directionnelle_PolyVEF_P0_Face diametre_hydraulique {
- lambda expression(Re,x,y,z,t)
- diam_hydr champ_don
- direction champ_don
- [sous_domaine nom]
- }
-
- */
-
-class Perte_Charge_Directionnelle_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Directionnelle_PolyMAC
+class Perte_Charge_PolyMAC_P0P1NC : public Perte_Charge_PolyMAC
 {
-  Declare_instanciable(Perte_Charge_Directionnelle_PolyVEF_P0_Face);
+  Declare_base(Perte_Charge_PolyMAC_P0P1NC);
 public:
-  void mettre_a_jour(double temps) override
-  {
-    diam_hydr->mettre_a_jour(temps);
-    v->mettre_a_jour(temps);
-  }
-
-protected:
-  void set_param(Param& titi) override;
-  //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
-                           DoubleVect& v_valeur) const override;
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
-#endif /* Perte_Charge_Directionnelle_PolyVEF_P0_Face_included */
+#endif /* Perte_Charge_PolyMAC_P0P1NC_included */

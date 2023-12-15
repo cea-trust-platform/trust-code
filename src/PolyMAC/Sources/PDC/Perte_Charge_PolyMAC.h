@@ -46,10 +46,6 @@ class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
 public:
   DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;

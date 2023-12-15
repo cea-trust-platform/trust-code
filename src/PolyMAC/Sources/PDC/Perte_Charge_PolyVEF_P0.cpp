@@ -30,11 +30,11 @@
 #include <Sous_Domaine.h>
 #include <Param.h>
 
-Implemente_base(Perte_Charge_PolyVEF_P0, "Perte_Charge_PolyVEF_P0", Perte_Charge_PolyMAC);
+Implemente_base(Perte_Charge_PolyVEF_P0, "Perte_Charge_PolyVEF_P0", Perte_Charge_PolyMAC_P0P1NC);
 
 Sortie& Perte_Charge_PolyVEF_P0::printOn(Sortie& s) const { return s << que_suis_je() << endl; }
 
-Entree& Perte_Charge_PolyVEF_P0::readOn(Entree& is) { return Perte_Charge_PolyMAC::readOn(is); }
+Entree& Perte_Charge_PolyVEF_P0::readOn(Entree& is) { return Perte_Charge_PolyMAC_P0P1NC::readOn(is); }
 
 void Perte_Charge_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
