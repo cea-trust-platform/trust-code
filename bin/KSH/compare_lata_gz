@@ -50,8 +50,8 @@ if ! ends_with "$file2" ".gz" ; then
     is_file2_gz=false
 fi
 
-[ "$is_file1_gz" = true ] && mkdir -p compare_lata_tmp1_
-[ "$is_file2_gz" = true ] && mkdir -p compare_lata_tmp2_
+[ "$is_file1_gz" = true ] && dir_lata1_=`mktemp_ -d`
+[ "$is_file2_gz" = true ] && dir_lata2_=`mktemp_ -d`
 
 if [ "$is_file1_gz" = false ] && [ "$is_file2_gz" = false ]; then
 	# cas 1 : cas classique
@@ -59,8 +59,8 @@ if [ "$is_file1_gz" = false ] && [ "$is_file2_gz" = false ]; then
 	exit 0
 else
 	# cas 2 : pas classique
-	[ "$is_file1_gz" = true ] && copy_and_unzip $file1 compare_lata_tmp1_
-	[ "$is_file2_gz" = true ] && copy_and_unzip $file2 compare_lata_tmp2_
+	[ "$is_file1_gz" = true ] && copy_and_unzip $file1 $dir_lata1_
+	[ "$is_file2_gz" = true ] && copy_and_unzip $file2 $dir_lata2_
 
 	base_name1=$file1
 	base_name2=$file2
@@ -69,8 +69,8 @@ else
 
 	file1_new=$file1
 	file2_new=$file2
-	[ "$is_file1_gz" = true ] && file1_new=compare_lata_tmp1_/$base_name1
-	[ "$is_file2_gz" = true ] && file2_new=compare_lata_tmp2_/$base_name2
+	[ "$is_file1_gz" = true ] && file1_new=$dir_lata1_/$base_name1
+	[ "$is_file2_gz" = true ] && file2_new=$dir_lata2_/$base_name2
 
 	file1_lata=true
 	if ends_with "$base_name1" ".lml" || ends_with "$base_name1" ".med"; then
@@ -84,12 +84,12 @@ else
 
 	if [ "$is_file1_gz" = true ] && [ "$file1_lata" = true ]; then
 		base_name1=$(basename "$file1" .tar.gz)
-		file1_new=compare_lata_tmp1_/${base_name1}/${base_name1}.lata
+		file1_new=${dir_lata1_}/${base_name1}/${base_name1}.lata
 	fi
 
 	if [ "$is_file2_gz" = true ] && [ "$file2_lata" = true ]; then
 		base_name2=$(basename "$file2" .tar.gz)
-		file2_new=compare_lata_tmp2_/${base_name2}/${base_name2}.lata
+		file2_new=${dir_lata2_}/${base_name2}/${base_name2}.lata
 	fi
 
 	# et la normalement c'est bon
@@ -97,11 +97,12 @@ else
 
    	[ $? != 0 ] && err=1
 
-	[ "$is_file1_gz" = true ] && rm -rf compare_lata_tmp1_
-	[ "$is_file2_gz" = true ] && rm -rf compare_lata_tmp2_
+	[ "$is_file1_gz" = true ] && rm -rf $dir_lata1_
+	[ "$is_file2_gz" = true ] && rm -rf $dir_lata2_
 
 	[ "$err" != 0 ] && exit -1
    	exit 0
 fi
 
 [ $? != 0 ] && exit -1
+
