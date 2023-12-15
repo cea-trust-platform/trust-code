@@ -74,7 +74,7 @@ void grad_Champ_Face_PolyMAC_P0::update_tab_grad(int full_stencil)
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, domaine_vf());
   const Conds_lim& cls = champ_a_deriver().domaine_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
 
-  domaine.fgrad(champ_a_deriver().valeurs().line_size(), 0, cls, f_cl, nullptr, nullptr, 1, full_stencil, gradve_d, gradve_e, gradve_w);
+  domaine.fgrad(champ_a_deriver().valeurs().line_size(), 0, 0, cls, f_cl, nullptr, nullptr, 1, full_stencil, gradve_d, gradve_e, gradve_w);
 }
 
 void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
