@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
   void mettre_a_jour(double temps) override
   {
     diam_hydr->mettre_a_jour(temps);
-    v.mettre_a_jour(temps);
+    v->mettre_a_jour(temps);
   }
 
 protected:
@@ -49,7 +49,7 @@ protected:
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
                            DoubleVect& v_valeur) const override;
 
-  Champ_Don v; //!< Vecteur directeur de la perte de charge.
+  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 #endif /* Perte_Charge_Directionnelle_PolyVEF_P0_Face_included */
