@@ -26,7 +26,7 @@ class Perte_Charge_Singuliere_PolyVEF_P0_Face : public Perte_Charge_Singuliere_P
 {
   Declare_instanciable(Perte_Charge_Singuliere_PolyVEF_P0_Face);
 public:
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
