@@ -52,7 +52,8 @@ void LataWriter::write_geometry(const Domain& dom)
   LataDBGeometry geom;
   geom.name_ = dom.id_.name_;
 
-  Nom type_elem = dom.is_rectangle() ? Nom("RECTANGLE") : dom.element_type_to_string(dom.elt_type_);
+  Nom type_elem = dom.element_type_to_string(dom.elt_type_);
+  if (write_faces_fields_ && dom.is_rectangle()) type_elem = "RECTANGLE"; // sinon pas de maillage dual dans lata plugin !
 
   geom.elem_type_ = type_elem;
   geom.timestep_ = tstep;
