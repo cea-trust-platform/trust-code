@@ -22,12 +22,14 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 
-Implemente_instanciable(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0P1NC", Source_base);
-Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC_P0");
+Implemente_instanciable(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0", Source_base);
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC_P0P1NC");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyVEF_P0");
 
-Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0P1NC");
-Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0");
 Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0P1NC");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyVEF_P0");
 
 Sortie& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je(); }
 
