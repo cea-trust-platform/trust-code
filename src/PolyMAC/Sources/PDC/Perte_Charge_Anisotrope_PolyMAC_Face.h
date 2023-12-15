@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_Anisotrope_PolyMAC_Face_included
 #define Perte_Charge_Anisotrope_PolyMAC_Face_included
 
-#include <Perte_Charge_PolyMAC.h>
+#include <Perte_Charge_PolyMAC_P0P1NC.h>
 #include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge anisotrope (selon un vecteur unitaire v et dans le plan orthogonal a ce vecteur)
@@ -61,16 +61,25 @@ protected:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
-                           DoubleVect& v_valeur) const override;
+  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
 };
 
-class Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_Anisotrope_PolyMAC_Face
+/////////////////////////////////////////////////
+
+class Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_PolyMAC_P0P1NC, public PDC_Anisotrope_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face);
 public:
-  int has_interface_blocs() const override { return 1; }
-  void check_multiphase_compatibility() const override { }
+  void mettre_a_jour(double temps) override
+  {
+    diam_hydr->mettre_a_jour(temps);
+    v->mettre_a_jour(temps);
+  }
+
+protected:
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
 };
 
 #endif /* Perte_Charge_Anisotrope_PolyMAC_Face_included */
