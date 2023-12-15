@@ -17,6 +17,7 @@
 #define Perte_Charge_Circulaire_PolyVEF_P0_Face_included
 
 #include <Perte_Charge_PolyVEF_P0.h>
+#include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge anisotrope (selon un vecteur unitaire v et dans le plan orthogonal a ce vecteur)
 /**
@@ -46,7 +47,7 @@
 
 */
 
-class Perte_Charge_Circulaire_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0
+class Perte_Charge_Circulaire_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Circulaire_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Circulaire_PolyVEF_P0_Face);
 public:
@@ -63,11 +64,6 @@ protected:
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
                            DoubleVect& v_valeur) const override;
-private:
-  OWN_PTR(Champ_Don_base) diam_hydr_ortho;
-  mutable Parser_U lambda_ortho;
-  mutable DoubleVect v_valeur;
-  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 #endif /* Perte_Charge_Circulaire_PolyVEF_P0_Face_included */
