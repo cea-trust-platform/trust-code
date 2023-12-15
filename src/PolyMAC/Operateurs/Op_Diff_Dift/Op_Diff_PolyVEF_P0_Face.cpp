@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ void Op_Diff_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 
   int i, j, e, f, fb, nd, ND = equation().inconnue().valeurs().line_size(), nf_tot = dom.nb_faces_tot();
 
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
 
   /* stencil : tous les voisins de la face par un element, sans melanger les dimensions ou les composantes */
   for (f = 0; f < dom.nb_faces(); f++)
