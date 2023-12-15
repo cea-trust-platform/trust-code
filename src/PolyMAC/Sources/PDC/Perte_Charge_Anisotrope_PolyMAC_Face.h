@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Perte_Charge_Anisotrope_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC.h>
+#include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge anisotrope (selon un vecteur unitaire v et dans le plan orthogonal a ce vecteur)
 /**
@@ -46,7 +47,7 @@
 
 */
 
-class Perte_Charge_Anisotrope_PolyMAC_Face: public Perte_Charge_PolyMAC
+class Perte_Charge_Anisotrope_PolyMAC_Face: public Perte_Charge_PolyMAC, public PDC_Anisotrope_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Anisotrope_PolyMAC_Face);
 public:
@@ -62,11 +63,6 @@ protected:
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
                            DoubleVect& v_valeur) const override;
-
-private:
-
-  mutable Parser_U lambda_ortho;
-  Champ_Don v; //!< Vecteur directeur de la perte de charge.
 };
 
 class Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_Anisotrope_PolyMAC_Face
