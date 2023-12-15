@@ -37,8 +37,6 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
 
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
   const Domaine_PolyMAC& le_dom_poly()  const  { return ref_cast(Domaine_PolyMAC, le_dom_vf_.valeur()); }
 
 };
