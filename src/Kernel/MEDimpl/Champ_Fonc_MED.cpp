@@ -299,13 +299,13 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       Cerr << "Creating a filter to access efficiently values in " << nom_fichier_med_ << finl;
       if ((int) filter.size() != le_champ().valeurs().dimension(0))
         {
-          Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain!" << finl;
+          Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain (not the same number of entities)!" << finl;
           Process::exit();
         }
     }
   else if (field_size != le_champ().valeurs().dimension(0))
     {
-      Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl;
+      Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field (not the same number of entities)!" << finl;
       Process::exit();
     }
   le_champ().nommer(nom_champ_);
@@ -490,8 +490,10 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
     }
   if (!ok)
     {
-      Cerr << "Unable to find into file " << fileName << " a field named like :" << finl;
-      Cerr << fieldNamesGuess << finl;
+      Cerr << "Unable to find into file '" << fileName << "' a field named like :" << finl;
+      Cerr << "  " << fieldNamesGuess << finl;
+      Cerr << "supported by mesh '" << meshName << "'" << finl;
+      Cerr << finl;
       Cerr << "This file contains the field(s) named:" << finl;
       for (unsigned i=0; i<fieldNames.size(); i++)
         Cerr << fieldNames[i] << finl;

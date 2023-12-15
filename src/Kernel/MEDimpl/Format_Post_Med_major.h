@@ -25,7 +25,7 @@ class Format_Post_Med_major : public Format_Post_Med
 public:
   Format_Post_Med_major()
   {
-    ecr_med.set_major_mode(true);
+    ecr_med_.set_major_mode(true);
   }
 
 protected:

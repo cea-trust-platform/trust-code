@@ -49,7 +49,7 @@ Format_Post_Med::Format_Post_Med()
 void Format_Post_Med::reset()
 {
   med_basename_ = "??";
-  ecr_med.set_major_mode(false);
+  ecr_med_.set_major_mode(false);
 }
 
 /*! @brief erreur => exit
@@ -332,16 +332,16 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine
     {
       SFichier s;
       s.ouvrir(nom_fich, ios::app);
-      s << "format MED: " << ecr_med.version() << finl;
+      s << "format MED: " << ecr_med_.version() << finl;
       s << "dimension: " << dim << finl;
       s << "domaine: " << domaine.le_nom() << finl;
       s << "nb_proc: " << Process::nproc() << finl;
-      Cerr << "Opening MED file " << nom_fic << " with " << ecr_med.version() << " format. ";
-      if (!ecr_med.get_major_mode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
+      Cerr << "Opening MED file " << nom_fic << " with " << ecr_med_.version() << " format. ";
+      if (!ecr_med_.get_major_mode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
       Cerr << finl;
     }
-  ecr_med.set_file_name_and_dom(nom_fic, domaine);
-  ecr_med.ecrire_domaine_dis(domaine_dis_base, append);
+  ecr_med_.set_file_name_and_dom(nom_fic, domaine);
+  ecr_med_.ecrire_domaine_dis(domaine_dis_base, append);
   return 1;
 
 }
@@ -365,7 +365,7 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
                                       const DoubleTab& valeurs,Nom& nom_fich)
 {
   Nom fic = nom_pdb.nom_me(me());
-  ecr_med.set_file_name_and_dom(fic, dom);
+  ecr_med_.set_file_name_and_dom(fic, dom);
 
   Nom nom_post(id_du_champ);
   Noms noms_compo_courts(noms_compo);
@@ -420,11 +420,11 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(nom_post);
 
   if (loc_post == "SOM")
-    ecr_med.ecrire_champ("CHAMPPOINT", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+    ecr_med_.ecrire_champ("CHAMPPOINT", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else if (loc_post == "ELEM")
-    ecr_med.ecrire_champ("CHAMPMAILLE", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+    ecr_med_.ecrire_champ("CHAMPMAILLE", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else if (loc_post == "FACES")
-    ecr_med.ecrire_champ("CHAMPFACES", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+    ecr_med_.ecrire_champ("CHAMPFACES", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else
     {
       Cerr << "We do not know to postprocess " << id_du_champ
