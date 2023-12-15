@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -318,13 +318,6 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
 #else
 
   // Retrieve (or build!) the MEDCouplingUMesh associated with the domain:
-  if (dom_->get_mc_mesh() == nullptr)  // was not already filled when the domain was read from MED for example
-    {
-      Cerr << "EcrMED: Creating a MEDCouplingUMesh object for the domain '" << dom_->le_nom() << "'" << finl;
-      dom_->build_mc_mesh();
-    }
-  else
-    Cerr << "EcrMED: Found an existing MEDCouplingUMesh object for the domain '" << dom_->le_nom() << "'" << finl;
   mcumesh_ = dom_->get_mc_mesh();
   mesh_dimension_ = mcumesh_->getMeshDimension();
   MEDCouplingUMesh *mc_no_const = const_cast<MEDCouplingUMesh *>(mcumesh_);  // because of setCoords() and setMeshAtLevel()
@@ -422,40 +415,31 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab&
   field->setTime(time, timestep_.at(field_name), -1);
   field->setTimeUnit("s");
 
-  // Try to get directly the mesh from the domain:
-  if (dom_->get_mc_mesh() != nullptr)
+  // Get directly the U-mesh from the domain, except in some weird cases:
+  if (nom_dom == "PARTICULES")
+    {
+      MEDCoupling::CheckFileForRead(file_name);
+      std::string mesh_name = nom_dom.getString();
+      MCAuto<MEDFileMesh> mm(MEDFileMesh::New(file_name,mesh_name));
+      MEDFileMesh *mmPtr(mm);
+      MEDFileUMesh *mmuPtr=dynamic_cast<MEDFileUMesh *>(mmPtr);
+      if(!mmuPtr)
+        {
+          std::ostringstream oss;
+          oss << "ReadUMeshFromFile : With fileName=\""<< file_name << "\", meshName=\""<< mesh_name << "\" exists but it is not an unstructured mesh !";
+          throw INTERP_KERNEL::Exception(oss.str());
+        }
+      const MCAuto<MEDCouplingUMesh> umesh_particles = mmuPtr->getMeshAtLevel(1);
+      field->setMesh(umesh_particles);
+    }
+  else
     {
       if (type == "CHAMPFACES")
         field->setMesh(dom_->get_mc_face_mesh());
       else
         field->setMesh(dom_->get_mc_mesh());
     }
-  else
-    {
-      // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
-      std::string mesh_name = nom_dom.getString();
-      if (nom_dom!="PARTICULES")
-        {
-          const MCAuto<MEDCouplingUMesh> umesh = MEDCoupling::ReadUMeshFromFile(file_name, mesh_name, 0);
-          field->setMesh(umesh);
-        }
-      else
-        {
-          MEDCoupling::CheckFileForRead(file_name);
-          MCAuto<MEDFileMesh> mm(MEDFileMesh::New(file_name,mesh_name));
-          MEDFileMesh *mmPtr(mm);
-          MEDFileUMesh *mmuPtr=dynamic_cast<MEDFileUMesh *>(mmPtr);
-          if(!mmuPtr)
-            {
-              std::ostringstream oss;
-              oss << "ReadUMeshFromFile : With fileName=\""<< file_name << "\", meshName=\""<< mesh_name << "\" exists but it is not an unstructured mesh !";
-              throw INTERP_KERNEL::Exception(oss.str());
-            }
 
-          const MCAuto<MEDCouplingUMesh> umesh_particles = mmuPtr->getMeshAtLevel(1);
-          field->setMesh(umesh_particles);
-        }
-    }
   // Fill array:
   int size = val.dimension(0);
   if (size>0)

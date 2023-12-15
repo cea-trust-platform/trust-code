@@ -312,14 +312,17 @@ public:
   /// MEDCoupling:
   ///
 #ifdef MEDCOUPLING_
-  inline const MEDCouplingUMesh* get_mc_mesh() const         {   return mc_mesh_;   };
-  inline const MEDCouplingUMesh* get_mc_face_mesh() const    {   return mc_face_mesh_;   };
+  inline const MEDCouplingUMesh* get_mc_mesh() const;
+  inline const MEDCouplingUMesh* get_mc_face_mesh() const;
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  {   mc_mesh_ = m;   };
   // remapper with other domains
   MEDCouplingRemapper* get_remapper(Domaine&);
 #endif
   void build_mc_mesh() const;
   void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
+  bool is_mc_mesh_ready() const { return mc_mesh_ready_; }
+  // Used in Interprete_geometrique_base for example - method is const, because mc_mesh_ready_ is mutable:
+  void set_mc_mesh_ready(bool flag) const { mc_mesh_ready_ = flag; }
 
   ///
   /// Parallelism and virtual items management
@@ -390,6 +393,8 @@ protected:
   ///! MEDCoupling version of the face domain:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
   std::map<const Domaine*, MEDCoupling::MEDCouplingRemapper> rmps;
+
+  mutable bool mc_mesh_ready_ = false;
 #endif
 
   void duplique_bords_internes();
@@ -888,5 +893,22 @@ inline IntTab& Domaine::set_aretes_som() {  return aretes_som_; }
  */
 inline const IntTab& Domaine::elem_aretes() const {   return elem_aretes_; }
 inline IntTab& Domaine::set_elem_aretes() {   return elem_aretes_; }
+
+#ifdef MEDCOUPLING_
+inline const MEDCouplingUMesh* Domaine::get_mc_mesh() const
+{
+  if (!mc_mesh_ready_)
+    build_mc_mesh();
+  return mc_mesh_;
+}
+
+inline const MEDCouplingUMesh* Domaine::get_mc_face_mesh() const
+{
+//  if (!mc_face_mesh_ready_)
+//    build_mc_face_mesh();
+  return mc_face_mesh_;
+}
+
+#endif
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -183,8 +183,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           liremed.associer_domaine(dom_med_);
           liremed.retrieve_MC_objects();
           const MEDCouplingUMesh* new_um = liremed.get_mc_mesh();
-          if (le_domaine.get_mc_mesh() == nullptr)
-            le_domaine.build_mc_mesh();
           const MEDCouplingUMesh* root_um = le_domaine.get_mc_mesh();
           try
             {
@@ -224,7 +222,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
               if (est_different(BB1(i,j), BB2(i,j)))
                 {
                   Cerr << "Error, Champ_Fonc_MED can't read the partitionned MED files." << finl;
-                  Cerr << "Cause if seems the MED partition is different than the " << dom_calcul.le_nom() << " domain partition." << finl;
+                  Cerr << "=> it seems that the MED partition is different than the '" << dom_calcul.le_nom() << "' domain partition." << finl;
                   Process::exit();
                 }
           Cerr << "Ok MED partition matches the domain partition so reading multiple MED files..." << finl;
@@ -544,7 +542,7 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
                                                     const std::string& fieldName, const int iteration, const int order)
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
-  bool fast = meshName == domaine().le_nom() && domaine().get_mc_mesh() != nullptr;
+  bool fast = meshName == domaine().le_nom() && domaine().is_mc_mesh_ready();
   Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName << " on the " << meshName << " mesh into " << fileName << " file";
   MCAuto<MEDCouplingField> ffield;
   Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int)(domaine().get_mc_mesh() != nullptr) << finl;

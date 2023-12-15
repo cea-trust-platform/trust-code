@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -812,11 +812,6 @@ void LireMED::lire_geom(bool subDom)
 
   retrieve_MC_objects();
 
-  // Stockage du mesh au niveau du domaine, utile pour:
-  //  - Champ_Fonc_MED plus rapide (maillage non relu)
-  //  - futurs developpements avec MEDCoupling
-  dom.set_mc_mesh(mcumesh_);
-
   // Reading vertices and element descriptions:
   DoubleTab sommets2;
   IntTab les_elems2;
@@ -875,6 +870,9 @@ void LireMED::lire_geom(bool subDom)
   // We might have created several boundaries with the same name
   RegroupeBord r;
   r.rassemble_bords(dom);
+
+  // MCUMesh object will be rebuilt next time it is retreived:
+  dom.set_mc_mesh_ready(false);
 
   Cerr<<"Reading of the MED domain ended."<<finl;
 #endif // MEDCOUPLING_

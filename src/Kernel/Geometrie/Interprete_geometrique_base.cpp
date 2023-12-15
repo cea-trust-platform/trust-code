@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,8 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
       dom.groupes_faces().associer_domaine(dom);
       dom.type_elem().associer_domaine(dom);
       dom.fixer_premieres_faces_frontiere();
-//      dom.associer_domaine(domaine(j));
+      // MEDCouplingUMesh object in domaine is now invalid:
+      dom.set_mc_mesh_ready(false);
     }
   return is;
 }
