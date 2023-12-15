@@ -26,7 +26,7 @@
 #include <Operateur.h>
 #include <Front_VF.h>
 
-Implemente_instanciable(Echange_contact_PolyMAC_P0, "Paroi_Echange_contact_PolyMAC_P0", Echange_contact_PolyMAC_P0P1NC);
+Implemente_instanciable(Echange_contact_PolyMAC_P0, "Paroi_Echange_contact_PolyMAC_P0|Paroi_Echange_contact_PolyVEF_P0", Echange_contact_PolyMAC_P0P1NC);
 using namespace MEDCoupling;
 
 Sortie& Echange_contact_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
