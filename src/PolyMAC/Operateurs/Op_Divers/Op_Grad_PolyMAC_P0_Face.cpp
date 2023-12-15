@@ -66,7 +66,7 @@ void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
     return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
-  domaine.fgrad(M, 1, ref_dcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
+  domaine.fgrad(M, 1, 0, ref_dcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
   last_gradp_ = t_past;
 }
 

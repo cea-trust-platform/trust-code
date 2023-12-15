@@ -107,19 +107,20 @@ void Domaine_PolyMAC_P0::init_stencils() const
   CRIMP(fsten_d), CRIMP(fsten_eb);
 }
 
-//pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
+//pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu = nullptr) ou [n_f.nu.grad T]_f ou (grad p)_f (si is_p = 1)
 //en preservant exactement les champs verifiant [nu grad T]_e = cte.
 //Entrees : N             : nombre de composantes
 //          is_p          : 1 si on traite le champ de pression (inversion Neumann / Dirichlet)
+//          vec           : vecteur complet
 //          cls           : conditions aux limites
-//          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyMAC_P0)
+//          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyVEF_P0)
 //          nu(e, n, ..)  : diffusivite aux elements (optionnel)
-//          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyMAC_P0_Elem)
+//          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyVEF_P0_Elem)
 //          virt          : 1 si on veut aussi le flux aux faces virtuelles
 //          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
 //Sorties : phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
-//          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
-void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
+//          phif_e(i), phif_c(i, n, c)           : indices/coefficients de [nf.nu.grad T]_f ou de [grad p]_f
+void Domaine_PolyMAC_P0::fgrad(int N, int is_p, int vec, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
                                int virt, int full_stencil, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c) const
 {
 #ifdef _COMPILE_AVEC_PGCC_AVANT_22_7
@@ -133,14 +134,13 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
   int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
   unsigned long ll;
   double x, eps_g = 1e-6, eps = 1e-10, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, fac[3], vol_s;
-  init_stencils();
-  phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
+  init_stencils(), phif_e.resize(0), vec ? phif_c.resize(fsten_eb.dimension(0), D, N) : phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
 
   std::vector<int> s_eb, s_f; //listes d'elements/bord, de faces autour du sommet
   std::vector<double> surf_fs, vol_es; //surfaces partielles des faces connectees au sommet (meme ordre que s_f)
   std::vector<std::array<std::array<double, 3>,2>> vec_fs;//pour chaque facette, base de (D-1) vecteurs permettant de la parcourir
   std::vector<std::vector<int>> se_f; /* se_f[i][.] : faces connectees au i-eme element connecte au sommet s */
-  DoubleTrav M, B, X, Ff, Feb, Mf, Meb, W(1), x_fs, A, S; //systeme M.(grad u) = B dans chaque element, flux a la face Ff.u_fs + Feb.u_eb, equations Mf.u_fs = Meb.u_eb
+  DoubleTrav M, B, X, Ff, Feb, Gf, Geb, Mf, Meb, W(1), x_fs, A, S; //systeme M.(grad u) = B dans chaque element, flux/gradient a la face {F,G}f.u_fs + {F,G}eb.u_eb, equations Mf.u_fs = Meb.u_eb
   IntTrav piv, ctr[3];
   for (i = 0; first_fgrad_ && i < 3; i++) domaine().creer_tableau_sommets(ctr[i]);
 
@@ -212,7 +212,8 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
 
             /* gradients par maille en fonctions des (u_eb, u_fs), flux F = Ff.u_fs + Feb.u_eb, et systeme Mf.u_fs = Feb.u_eb */
             Ff.resize(n_f, n_f, N), Feb.resize(n_f, n_eb, N), Mf.resize(N, n_f, n_f), Meb.resize(N, n_eb, n_f);
-            for (Ff = 0, Feb = 0, Mf = 0, Meb = 0, i = 0; i < n_e; i++)
+            if (vec) Gf.resize(n_f, D, n_f, N), Geb.resize(n_f, D, n_eb, N);
+            for (Ff = 0, Feb = 0, Gf = 0, Geb = 0, Mf = 0, Meb = 0, i = 0; i < n_e; i++)
               for (e = s_eb[i], M.resize(n_ef = (int)se_f[i].size(), D), B.resize(D, n_m = std::max(D, n_ef)), X.resize(n_ef, D), piv.resize(n_ef), n = 0; n < N; n++)
                 {
                   if (essai < 2) /* essais 0 et 1 : gradient consistant donne par (u_e, (u_fs)_{f v e, s})*/
@@ -230,26 +231,32 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
                       for (sgn = e == f_e(f = s_f[k = se_f[i][j]], 0) ? 1 : -1, d = 0; d < D; d++) /* essai 2 : gradient non consistant */
                         X(j, d) = surf_fs[k] / vol_es[i] * sgn * nf(f, d) / fs(f);
 
-                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_PolyMAC_P0_Elem */
+                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_PolyVEF_P0_Elem */
                   for (j = 0; j < n_ef; j++)
                     {
                       k = se_f[i][j], f = s_f[k], sgn = e == f_e(f, 0) ? 1 : -1; //face et son indice
                       const Cond_lim_base *cl = fcl(f, 0) ? &cls[fcl(f, 1)].valeur() : nullptr; //si on est sur une CL, pointeur vers celle-ci
-                      int is_dir = cl && (is_p ? sub_type(Neumann, *cl) : sub_type(Dirichlet, *cl) || sub_type(Dirichlet_homogene, *cl)); //est-elle de Dirichlet?
+                      int is_dir = cl && (is_p || sub_type(Dirichlet, *cl) || sub_type(Dirichlet_homogene, *cl)); //dans le cas de la pression, toutes les CL sont de Dirichlet
                       for (l = 0; l < n_ef; l++)
                         {
                           x = sgn * nu_dot(nu, e, n, &nf(f, 0), &X(l, 0)) * surf_fs[k] / fs(f); //contribution au flux
                           if (sgn > 0) Ff(k, se_f[i][l], n) += x, Feb(k, i, n) -= x; //flux amont->aval
+                          if (vec)
+                            for (d = 0; d < D; d++) //pression : gradient complet
+                              {
+                                double y = nu_dot(nu, e, n, i3[d], &X(l, 0)) * surf_fs[k] * vfd(f, e != f_e(f, 0)) / vf(f);
+                                Gf(k, d, se_f[i][l], n) += y, Geb(k, d, i, n) -= y;
+                              }
                           if (!is_dir) Mf(n, se_f[i][l], k) += x, Meb(n, i, k) += x; //equation sur u_fs (sauf si CL Dirichlet)
                         }
                       if (!cl) continue; //rien de l'autre cote
                       else if (is_dir) Mf(n, k, k) = Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) = 1; //Dirichlet -> equation u_fs = u_b
-                      else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
+                      else if (sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
                         Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k];
-                      else if ((sub_type(Frottement_impose_base, *cl)) && !(ref_cast(Frottement_impose_base, *cl).is_externe())) //Frottement_impose_base cas global -> flux =  - coeff * v_e
+                      else if (sub_type(Frottement_impose_base, *cl) && !ref_cast(Frottement_impose_base, *cl).is_externe()) //Frottement_impose_base global -> flux =  - coeff * v_e
                         Meb(n, i, k) -= surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) ) ;
-                      else if ((sub_type(Frottement_impose_base, *cl)) && (ref_cast(Frottement_impose_base, *cl).is_externe())) //Frottement_impose_base cas externe -> flux =  - coeff * v_f
-                        Mf(n, k, k) += surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) );
+                      else if (sub_type(Frottement_impose_base, *cl) && ref_cast(Frottement_impose_base, *cl).is_externe()) //Frottement_impose_base externe -> flux =  - coeff * v_f
+                        Mf(n, k, k)  += surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) );
                       else if (sub_type(Echange_impose_base, *cl)) //Echange_impose_base -> flux =  - h * (T_{e,f} - T_ext)
                         {
                           double h = (nu) ? ref_cast(Echange_impose_base, *cl).h_imp(fcl(f, 2), n) : ref_cast(Echange_impose_base, *cl).h_imp_grad(fcl(f, 2), n) ;
@@ -264,12 +271,19 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
             for (W.resize(nw = (int)std::lrint(W(0))), n = 0; n < N; n++)
               piv = 0, F77NAME(dgelsy)(&n_f, &n_f, &n_eb, &Mf(n, 0, 0), &n_f, &Meb(n, 0, 0), &n_f, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
-            /* substitution dans Feb */
+            /* substitution dans Feb et Geb */
             for (i = 0; i < n_f; i++)
               for (j = 0; j < n_eb; j++)
                 for (n = 0; n < N; n++)
                   for (k = 0; k < n_f; k++)
                     Feb(i, j, n) += Ff(i, k, n) * Meb(n, j, k);
+            if (vec)
+              for (i = 0; i < n_f; i++)
+                for (d = 0; d < D; d++)
+                  for (j = 0; j < n_eb; j++)
+                    for (n = 0; n < N; n++)
+                      for (k = 0; k < n_f; k++)
+                        Geb(i, d, j, n) += Gf(i, d, k, n) * Meb(n, j, k);
 
             /* A : forme bilineaire */
             if (essai == 2) break;//pas la peine pour VFSYM
@@ -291,10 +305,16 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
         if (first_fgrad_) ctr[essai](s) = 1;
 
         /* stockage dans phif_c */
-        for (i = 0; i < n_f; i++)
-          for (f = s_f[i], j = 0; j < n_eb; j++)
-            for (k = (int)(std::lower_bound(fsten_eb.addr() + fsten_d(f), fsten_eb.addr() + fsten_d(f + 1), s_eb[j]) - fsten_eb.addr()), n = 0; n < N; n++)
-              phif_c(k, n) += Feb(i, j, n) / fs(f);
+        if (vec)
+          for (i = 0; i < n_f; i++)
+            for (f = s_f[i], j = 0; j < n_eb; j++)
+              for (k = (int)(std::lower_bound(fsten_eb.addr() + fsten_d(f), fsten_eb.addr() + fsten_d(f + 1), s_eb[j]) - fsten_eb.addr()), d = 0; d < D; d++)
+                for (n = 0; n < N; n++)
+                  phif_c(k, d, n) += Geb(i, d, j, n) / fs(f);
+        else for (i = 0; i < n_f; i++)
+            for (f = s_f[i], j = 0; j < n_eb; j++)
+              for (k = (int)(std::lower_bound(fsten_eb.addr() + fsten_d(f), fsten_eb.addr() + fsten_d(f + 1), s_eb[j]) - fsten_eb.addr()), n = 0; n < N; n++)
+                phif_c(k, n) += Feb(i, j, n) / fs(f);
       }
 
 
@@ -307,9 +327,15 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
         for (n = 0; n < N; n++) scale(n) = nu_dot(nu, f_e(f, 0), n, &nf(f, 0), &nf(f, 0)) / (fs(f) * vf(f)); //ordre de grandeur des coefficients
         for (j = fsten_d(f); j < fsten_d(f + 1); j++)
           {
-            for (skip = !full_stencil && fsten_eb(j) != f_e(f, 0), n = 0; n < N; n++) skip &= std::fabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
+            if (!vec)
+              for (skip = !full_stencil && fsten_eb(j) != f_e(f, 0), n = 0; n < N; n++) skip &= std::fabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
+            else for (skip = !full_stencil && fsten_eb(j) != f_e(f, 0), d = 0; d < D; d++)
+                for (n = 0; n < N; n++) skip &= std::fabs(phif_c(j, d, n)) < 1e-8 * scale(n);
             if (skip) continue;
-            for (n = 0; n < N; n++) phif_c(i, n) = phif_c(j, n);
+            if (!vec)
+              for (n = 0; n < N; n++) phif_c(i, n) = phif_c(j, n);
+            else for (d = 0; d < D; d++)
+                for (n = 0; n < N; n++) phif_c(i, d, n) = phif_c(j, d, n);
             phif_e.append_line(fsten_eb(j)), i++;
           }
       }
