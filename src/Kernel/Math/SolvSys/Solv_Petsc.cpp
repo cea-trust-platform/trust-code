@@ -940,7 +940,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(15);
+      Motcles les_precond(16);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -953,10 +953,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[8] = "BLOCK_JACOBI_ICC";   // Block Jacobi ICC preconditioner (code dans PETSc, optimise)
         les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
         les_precond[10] = "C-AMG";    // Classical AMG
-        les_precond[11] = "SA-AMG";   // Aggregated AMG
+        les_precond[11] = "SA-AMG";   // Smooth Aggregated AMG
         les_precond[12] = "GS";   // Gauss-Seidel
         les_precond[13] = "PCSHELL"; // user defined preconditionner
         les_precond[14] = "LU|MUMPS";   // MUMPS LU
+        les_precond[15] = "UA-AMG";   // Unsmoothed Aggregated AMG
       }
 
       if (pc!="")
@@ -1171,7 +1172,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                 break;
               }
             case 10: // Classical AMG
-            case 11: // Aggregated AMG
+            case 11: // Smooth Aggregated AMG
+            case 15: // Unsmoothed Aggregated AMG
               {
                 pc_supported_on_gpu_by_amgx=1;
                 pc_supported_on_gpu_by_petsc=1;
@@ -1201,12 +1203,16 @@ void Solv_Petsc::create_solver(Entree& entree)
                         add_amgx_option("p:strength",strength,"Choose the strength of connection metric to use. Allowable options are AHAT and ALL");
                         if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.25","All edges with strength below this threshold will be discarded. Higher: faster setup, lower memory but lower convergence");
                       }
-                    else // SA-AMG
+                    else if (rang==11) // SA-AMG
                       {
                         add_amgx_option("p:algorithm","AGGREGATION");
                         add_amgx_option("p:selector","SIZE_2");
                         add_amgx_option("p:max_matching_iterations","100000");
                         add_amgx_option("p:max_unassigned_percentage","0.0");
+                      }
+                    else
+                      {
+                        Process::exit("Not supported for AmgX");
                       }
                     add_amgx_option("smoother:relaxation_factor","0.8");
                   }
@@ -1214,20 +1220,29 @@ void Solv_Petsc::create_solver(Entree& entree)
                   {
                     // ToDo : trouver des parametres pour PETSc afin d'avoir une comparaison possible CPU vs GPU (meme its par exemple):
                     add_option("pc_type","gamg");
+                    // Ajout pour retrouver la convergence de PETSc 3.14:
+                    //add_option("mg_levels_pc_type","sor");
+                    //add_option("pc_gamg_threshold","0.");
                     if (rang==10) // C-AMG
                       {
+                        // Convergence fortement degradee 3.14 -> 3.20 malgre les options precedentes...
                         add_option("pc_gamg_type","classical");
-                        // Convergence degradee 3.14 -> 3.20 malgre les deux options suivantes:
-                        add_option("mg_levels_pc_type","sor");
-                        add_option("pc_gamg_threshold","0.");
                       }
-                    else // SA-AMG
+                    else if (rang==11) // SA-AMG
+                      {
+                        add_option("pc_gamg_type","agg");
+                        add_option("pc_gamg_agg_nsmooths","1");
+                        //add_option("pc_gamg_aggressive_square_graph","1");
+                      }
+                    else if (rang==15) // UA-AMG
                       {
                         add_option("pc_gamg_type","agg");
                         add_option("pc_gamg_agg_nsmooths","0");
-                        // Ajout pour retrouver la convergence de PETSc 3.14:
-                        add_option("pc_gamg_aggressive_square_graph","1");
-                        add_option("mg_levels_pc_type","sor");
+                        //add_option("pc_gamg_aggressive_square_graph","1");
+                      }
+                    else
+                      {
+                        Process::exit("Usupported precond for PETSc.");
                       }
                   }
                 break;

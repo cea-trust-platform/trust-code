@@ -4,7 +4,7 @@ cpu=4
 make_PAR.data base.data $cpu
 liste_cas=""
 libs=petsc && [ "$TRUST_USE_CUDA" = 1 ] && libs="petsc amgx"
-pcs="ssor c-amg sa-amg"
+pcs="ssor c-amg sa-amg ua-amg boomeramg"
 for pc in $pcs
 do
    for lib in $libs

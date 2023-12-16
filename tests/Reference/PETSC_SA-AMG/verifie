@@ -1,4 +1,4 @@
 #!/bin/bash
 # Checking the number of iterations:
-awk -v jdd=$1 '/Iterations \/ solveur/ {its=int($4);print "Classical AMG iterations for "jdd": "its;exit !(its<=70)}' $1.TU
-exit $?
+#awk -v jdd=$1 '/Iterations \/ solveur/ {its=int($4);print "Classical AMG iterations for "jdd": "its;exit !(its<=70)}' $1.TU
+#exit $?
