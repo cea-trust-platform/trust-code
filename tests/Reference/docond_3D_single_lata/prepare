@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/Reference/docond_3D/*geom.gz .
+
+gunzip -c Pb1.geom.gz > Pb1.geom || exit -1
+gunzip -c Pb2.geom.gz > Pb2.geom || exit -1

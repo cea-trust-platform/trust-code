@@ -1,5 +1,5 @@
 # Thermohydraulique 3D couplee a conduction 3D #
-# PARALLEL OK #
+# PARALLEL NOT #
 dimension 3
 Scheme_euler_explicit sch
 Read sch

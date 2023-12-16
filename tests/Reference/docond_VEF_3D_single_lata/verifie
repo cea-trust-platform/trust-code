@@ -15,7 +15,7 @@ else
 fi
 
 # writelata
-lata_analyzer docond_VEF_3D_single_lata_single.lata writelata=docond_VEF_3D_single_lata_single_multiple.lata
+lata_analyzer docond_VEF_3D_single_lata_single.lata writelata=docond_VEF_3D_single_lata_single_multiple.lata 1>lata_analyzer2.log 2>&1 || exit -1
 compare_lata docond_VEF_3D_single_lata_single.lata docond_VEF_3D_single_lata_single_multiple.lata --max_delta 1>verifie2.log 2>&1 || exit -1
 
 numb_diff2=`awk '$1=="Number"{print $5}' verifie2.log`
@@ -28,7 +28,7 @@ else
 fi
 
 # writelata_convert
-lata_analyzer docond_VEF_3D_single_lata_single_multiple.lata writelata_convert=titi.lata
+lata_analyzer docond_VEF_3D_single_lata_single_multiple.lata writelata_convert=titi.lata 1>lata_analyzer3.log 2>&1 || exit -1
 compare_lata docond_VEF_3D_single_lata_single_multiple.lata titi.lata --max_delta 1>verifie3.log 2>&1 || exit -1
 
 numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
