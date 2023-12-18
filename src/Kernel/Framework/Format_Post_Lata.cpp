@@ -543,6 +543,10 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
   return 1;
 }
 
+
+// E Saikali : on ajoute cette liste qui est utile pour un probleme couple dans le cas ou on ecrit dans meme fichier
+static Noms liste_single_lata_ecrit;
+
 /*! @brief Low level routine to write a mesh into a LATA file.
  *
  * Also called directly in TrioCFD, by Postraitement_ft_lata for interface writing.
@@ -576,7 +580,13 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   int decalage_sommets = 1, decalage_elements = 1;
 
   {
-    Fichier_Lata fichier_geom(basename_geom, extension_geom, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+    const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
+               should_erase = (!un_seul_fichier_lata_) ? true /* Always erase */ : (offset_elem_ < 0 && not_in_list);
+
+    Fichier_Lata fichier_geom(basename_geom, extension_geom, should_erase ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+
+    // on ajout dans la liste si pas dedans et si un_seul_fichier_lata_ !!!
+    if (not_in_list && un_seul_fichier_lata_) liste_single_lata_ecrit.add(lata_basename_); // BOOM !
 
     nom_fichier_geom = fichier_geom.get_filename();
     int nb_col;
