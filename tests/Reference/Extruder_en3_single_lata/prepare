@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/Reference/Extruder_en3/*geom .
+
