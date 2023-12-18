@@ -47,6 +47,7 @@ protected:
   MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> local_array_, distant_array_;
   std::shared_ptr<MEDCoupling::OverlapDEC> dec_ = nullptr;
   bool is_dec_initialized_ = false;
+  bool verbose_ = false;
 #endif
 };
 

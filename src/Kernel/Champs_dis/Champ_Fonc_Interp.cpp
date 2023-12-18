@@ -18,6 +18,7 @@
 #include <TRUSTTab_parts.h>
 #include <Comm_Group_MPI.h>
 #include <Param.h>
+#include <MEDLoader.hxx>
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
 // XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 1 Field that is interpolated from a distant domain via MEDCoupling (remapper).
@@ -103,6 +104,7 @@ void Champ_Fonc_Interp::init_fields()
   using namespace MEDCoupling;
 
   local_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
+  local_field_->setName(le_nom().getString());
   local_array_ = DataArrayDouble::New();
   // XXX Pb with MEDCoupling : OvelapDEC seems to modify the meshes ...
   if (Process::nproc() > 1)
@@ -116,6 +118,7 @@ void Champ_Fonc_Interp::init_fields()
 
   distant_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
   distant_array_ = DataArrayDouble::New();
+  distant_field_->setName(le_nom().getString());
   // XXX Pb with MEDCoupling : OvelapDEC seems to modify the meshes ...
   if (Process::nproc() > 1)
     {
@@ -166,6 +169,7 @@ void Champ_Fonc_Interp::update_fields()
 void Champ_Fonc_Interp::mettre_a_jour(double t)
 {
 #ifdef MEDCOUPLING_
+  using MEDCoupling::WriteField;
   Champ_Fonc_P0_base::mettre_a_jour(t);
   if (!is_initialized_) return;
 
@@ -195,6 +199,12 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
       MEDCouplingRemapper *rmp = dom_loc_->get_remapper(dom_dist_.valeur());
       update_fields();
       rmp->transfer(distant_field_, local_field_, default_value_);
+
+      if (verbose_)
+        {
+          WriteField("/tmp/source" + le_nom().getString() + Nom(Process::me()).getString() + ".med", distant_field_, true);
+          WriteField("/tmp/target" + le_nom().getString() + Nom(Process::me()).getString() + ".med", local_field_, true);
+        }
     }
 
   // Put values on faces !
