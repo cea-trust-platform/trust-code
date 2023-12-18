@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
+18/12/23 (TRUST) Baltiks      : project_directory is now determined from the location of env_BALTIK.sh, first step to make baltiks relocatables.
 -------------------------------------------------------------
 Developer notes version 1.9.3 : Changes since version 1.9.2 :
 -------------------------------------------------------------

@@ -86,7 +86,7 @@ void LataAnalyzerOptions::describe()
   cerr << " writelata_convert=path/masterfile : Rewrite a lata master file and lata data files" << endl;
   cerr << "                                - database filtering (timestep, domain, component)" << endl;
   cerr << "                                - data format conversion (asciiout, binaryout, int32out, ...)" << endl;
-  cerr << " write_singlelata=path/masterfile : Rewrite a single lata file" << endl;
+  cerr << " write_singlelata=path/singlelatafile : Rewrite a single lata file" << endl;
   cerr << " writelata_master=path/masterfile : Rewrite a lata master file" << endl;
   cerr << "                                - database filtering only, plus compute_virtual_elements, and writing a lataV2.1 master file" << endl;
   cerr << "                                (files containing data are not rewritten, master file points to existing files)" << endl;

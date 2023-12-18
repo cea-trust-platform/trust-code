@@ -4,7 +4,7 @@
 err=0
 # check if TRUST env is sourced. Otherwise source it !
 if [ ! -d "${TRUST_ROOT}" ]; then
-  DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+  DIR=$(cd "$( dirname "${BASH_SOURCE[0]:-${(%):-%x}}" )" && pwd)
   source $DIR/env_TRUST.sh || err=1
 fi
 

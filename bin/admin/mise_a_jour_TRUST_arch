@@ -370,6 +370,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gmsh" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gmsh"
 # IHM
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-plot2d" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-plot2d"
+# hwloc
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-hwloc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-hwloc"
 # Documentation
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-pdflatex" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -without-pdflatex"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
