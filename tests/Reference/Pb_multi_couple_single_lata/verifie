@@ -1,23 +1,27 @@
 #!/bin/bash
 
 err=0
-compare_lata_gz Pb_multi_couple_single_lata.tar.gz Pb_multi_couple_single_lata.lml.gz 1>verifie1.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
 
-compare_lata_gz Pb_multi_couple_single_lata.tar.gz Pb_multi_couple_single_lata.lata 1>verifie2.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
+# Do not test for 64 version since targz are generated with 32 version
+if [ "$TRUST_INT64" != 1 ]; then
+  compare_lata_gz Pb_multi_couple_single_lata.tar.gz Pb_multi_couple_single_lata.lml.gz 1>verifie1.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
 
-compare_lata_gz Pb_multi_couple_single_lata.lata Pb_multi_couple_single_lata.tar.gz 1>verifie3.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
+  compare_lata_gz Pb_multi_couple_single_lata.tar.gz Pb_multi_couple_single_lata.lata 1>verifie2.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
 
-compare_lata_gz pb_fluide.tar.gz pb_fluide.lml 1>verifie4.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
+  compare_lata_gz Pb_multi_couple_single_lata.lata Pb_multi_couple_single_lata.tar.gz 1>verifie3.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
 
-compare_lata_gz pb_fluide.tar.gz pb_fluide.lata 1>verifie5.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
+  compare_lata_gz pb_fluide.tar.gz pb_fluide.lml 1>verifie4.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
 
-compare_lata_gz pb_fluide.lata pb_fluide.tar.gz 1>verifie6.log 2>&1 || exit -1
-[ $? != 0 ] && err=1
+  compare_lata_gz pb_fluide.tar.gz pb_fluide.lata 1>verifie5.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
+
+  compare_lata_gz pb_fluide.lata pb_fluide.tar.gz 1>verifie6.log 2>&1 || exit -1
+  [ $? != 0 ] && err=1
+fi
 
 if [ "$err" != 0 ]; then
   echo "Error in compare_lata_gz !"

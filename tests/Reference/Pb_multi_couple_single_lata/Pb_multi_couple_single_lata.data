@@ -1,6 +1,5 @@
 # pb_Multiphase 2D couplee a conduction 2D #
 # PARALLEL NOT #
-# lance_test Ce cas plante en int64 car single_lata pas encore supporte en int64 #
 
 dimension 2
 Pb_conduction pb1
