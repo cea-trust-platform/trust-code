@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,28 +46,48 @@ using MEDCoupling::DataArrayDouble;
 
 Implemente_instanciable_sans_constructeur(Domaine,"Domaine",Objet_U);
 
-Domaine::Domaine() :
-  moments_a_imprimer_(0),
-  axi1d_(0),
-  epsilon_(Objet_U::precision_geom),
-  deformable_(false),
-  volume_total_(-1)
-{ }
+Domaine::Domaine()
+{
+  clear();
+}
 
 /*! @brief Reset the Domaine completely except for its name.
  */
 void Domaine::clear()
 {
-  Nom n = nom_;
-  // Erase MD structures to authorize copy of a (void) array afterwards
   sommets_.reset();
+  renum_som_perio_.reset();
+  elem_ = Elem_geom();
   mes_elems_.reset();
   aretes_som_.reset();
   elem_aretes_.reset();
+  mes_faces_bord_.vide();
+  mes_faces_raccord_.vide();
+  mes_bords_int_.vide();
+  mes_groupes_faces_.vide();
+  mes_faces_joint_.vide();
+  ind_faces_virt_bord_.reset();
+  cg_moments_.reset();
   elem_virt_pe_num_.reset();
-  // Now we can safely do:
-  *this = Domaine();
-  nom_= n;
+  domaines_frontieres_.vide();
+  les_ss_domaines_.vide();
+
+  moments_a_imprimer_ = 0;
+  bords_a_imprimer_.vide();
+  bords_a_imprimer_sum_.vide();
+
+  axi1d_ = 0;
+  epsilon_ = Objet_U::precision_geom;
+  deformable_ = false;
+  fichier_lu_ = Nom();
+
+#ifdef MEDCOUPLING_
+  mc_mesh_.nullify();
+  mc_face_mesh_.nullify();
+  rmps.clear();
+#endif
+
+  volume_total_ = -1;
 }
 
 /*! @brief Ecrit la Domaine sur un flot de sortie.

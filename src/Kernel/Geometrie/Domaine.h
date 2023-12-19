@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -289,7 +289,7 @@ public:
   ///
   /// Various
   ///
-  void clear();
+  virtual void clear();
   void fill_from_list(std::list<Domaine*>& lst);
   void merge_wo_vertices_with(Domaine& z);
   inline bool axi1d() const {  return axi1d_;  }
