@@ -783,18 +783,10 @@ fi
 #then
    echo " "
    echo "Mark new version in following files:"
-   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp
+   for MAIN in $TRUST_ROOT/src/Kernel/Utilitaires/TRUST_Version.h
    do
       CHECKOUT $MAIN 1>/dev/null 2>&1
-      version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
-      echo "  "$version"=>"$new": "$MAIN
-      echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
-      CHECKIN $MAIN 1>/dev/null 2>&1
-   done
-   for MAIN in $TRUST_ROOT/src/MAIN/mon_main.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/src/Trust_Fixes/mon_main.cpp
-   do
-      CHECKOUT $MAIN 1>/dev/null 2>&1
-      version=`$TRUST_Awk '/version :/ {print $6}' $MAIN`
+      version=`$TRUST_Awk '/#define/ {print $3}' $MAIN`
       echo "  "$version"=>"$new": "$MAIN
       echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
       CHECKIN $MAIN 1>/dev/null 2>&1
