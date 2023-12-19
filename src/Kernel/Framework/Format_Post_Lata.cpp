@@ -817,7 +817,13 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   Nom filename_champ;
   int size_tot, nb_compo;
   {
-    Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+    const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
+               should_erase = (!un_seul_fichier_lata_) ? true /* Always erase */ : (offset_elem_ < 0 && not_in_list);
+
+    Fichier_Lata fichier_champ(basename_champ, extension_champ, should_erase ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+
+    // on ajout dans la liste si pas dedans et si un_seul_fichier_lata_ !!!
+    if (not_in_list && un_seul_fichier_lata_) liste_single_lata_ecrit.add(lata_basename_); // BOOM !
 
     // XXX Elie Saikali : attention offset ici avant write_doubletab ! sinon decalage d'un champ !
     if (un_seul_fichier_lata_)
@@ -896,7 +902,13 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
   int size_tot, nb_compo;
   const IntTab& valeurs = static_cast<const IntTab&>(val);
   {
-    Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+    const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
+               should_erase = (!un_seul_fichier_lata_) ? true /* Always erase */ : (offset_elem_ < 0 && not_in_list);
+
+    Fichier_Lata fichier_champ(basename_champ, extension_champ, should_erase ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+
+    // on ajout dans la liste si pas dedans et si un_seul_fichier_lata_ !!!
+    if (not_in_list && un_seul_fichier_lata_) liste_single_lata_ecrit.add(lata_basename_); // BOOM !
 
     if (un_seul_fichier_lata_)
       if (fichier_champ.is_master())
