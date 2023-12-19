@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,8 +73,9 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
   dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", 1, temps, lambda);
   dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", 1, temps, Cp);
   dis.discretiser_champ("champ_elem", domaine_dis, "dilatabilite", "K-1", 1, temps, beta_th);
-  dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
-  for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_comme_T_ })
+  dis.discretiser_champ("champ_elem", domaine_dis, "rho_cp_elem", "J/m^3/K", 1, temps, rho_cp_elem_);
+  dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
+  for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_elem_, (Champ*) &rho_cp_comme_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
 
   if (id_composite == -1)
@@ -126,13 +127,13 @@ void Fluide_reel_base::mettre_a_jour(double t)
   nu.mettre_a_jour(t);
   alpha.mettre_a_jour(t);
   beta_th.mettre_a_jour(t);
-  rho_cp_comme_T_.mettre_a_jour(t);
+  if (rho_cp_comme_T_.non_nul()) update_rho_cp(t);
 
   const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
   const DoubleTab& temp = ch_T.valeurs(), &pres = ch_p.valeurs();
 
   DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs(),
-             &tab_beta = beta_th.valeurs(), &tab_rCp = rho_cp_comme_T_.valeurs();
+             &tab_beta = beta_th.valeurs();
 
   const DoubleTab& tab_rho = masse_volumique().valeurs();
 
@@ -156,7 +157,6 @@ void Fluide_reel_base::mettre_a_jour(double t)
         {
           tab_nu(i) = tab_mu(i) / tab_rho(!cR * i);
           tab_alpha(i) = tab_lambda(i) / tab_rho(!cR * i) / tab_Cp(i);
-          tab_rCp(i) = tab_rho(!cR * i) * tab_Cp(i);
         }
     }
   first_maj_ = 0;
