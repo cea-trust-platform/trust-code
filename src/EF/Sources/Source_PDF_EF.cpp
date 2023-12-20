@@ -196,7 +196,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
       interpolation_lue_.valeur().discretise(pb.discretisation(),le_dom_dis_base);
       if (type_vitesse_imposee_ == 1)
         {
-          if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen")
+          if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen" || interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
             {
               const Interpolation_IBM_mean_gradient& interp = ref_cast(Interpolation_IBM_mean_gradient,interpolation_lue_.valeur());
               this->compute_vitesse_imposee_projete(interp.solid_elems_.valeur().valeurs(), interp.solid_points_.valeur().valeurs(), -2.0, 1e-6);
