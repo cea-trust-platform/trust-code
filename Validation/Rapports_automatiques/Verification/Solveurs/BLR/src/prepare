@@ -1,0 +1,22 @@
+#!/bin/bash
+gunzip -c $TRUST_ROOT/tests/Reference/Collecteur/collecteur_chaud.geom.gz > collecteur_chaud.geom
+make_PAR.data base.data
+liste_cas=""
+pcs="boomeramg mumps strumpack"
+pcs="strumpack mumps boomeramg"
+for pc in $pcs
+do
+   cas=$pc
+   liste_cas=$liste_cas" "$cas
+   cp PAR_base.data PAR_$cas.data
+   cp SEQ_base.data     $cas.data 
+   for jdd in PAR_$cas.data $cas.data
+   do
+      #cli="-ksp_type cg -ksp_rtol 1.e-5"
+      #cli="cli { }"
+      [ $pc = boomeramg ] && sed -i "1,$ s?XXX?petsc gcp { impr rtol 1.e-5 precond boomeramg { } }?" $jdd
+      [ $pc = mumps ]     && sed -i "1,$ s?XXX?petsc gcp { impr rtol 1.e-5 precond ilu_mumps { epsilon 1.e-4 }     $cli }?" $jdd
+      [ $pc = strumpack ] && sed -i "1,$ s?XXX?petsc gcp { impr rtol 1.e-5 precond ilu_strumpack { epsilon 1.e-4 } $cli }?" $jdd
+   done
+done
+exit 0

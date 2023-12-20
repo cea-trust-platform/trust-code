@@ -1,0 +1,4 @@
+#!/bin/bash
+out=${1%.data}.out 
+ncomp=`$TRUST_Awk 'BEGIN {n=0} /Norme du residu/ {n++} /Norm of the residue/ {n++} END {print n}' $out`
+awk -f $TRUST_AWK/compteU.awk -v ncomp=$ncomp -v compU=${1%.data}.res -v convU=/dev/null $out 
