@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ Equation_base& Pb_Thermohydraulique_Turbulent::equation(int i)
  */
 void Pb_Thermohydraulique_Turbulent::associer_milieu_base(const Milieu_base& mil)
 {
-  if sub_type(Fluide_Incompressible,mil)
+  if (sub_type(Fluide_base, mil) && ref_cast(Fluide_base, mil).is_incompressible())
     {
       const Fluide_base& mi = ref_cast(Fluide_base,mil);
       eq_hydraulique.associer_milieu_base(mi);
