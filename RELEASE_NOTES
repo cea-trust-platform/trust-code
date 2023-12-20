@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
-19/12/23 (TRUST) Fix          : The new post-processing format "single_lata" can be used with a TRUST 64 bits version.
+19/12/23 (TRUST) Fix          : The new post-processing format "single_lata" can be used with a TRUST 64 bit integers version.
 18/12/23 (TRUST) New feature  : Add option "write_singlelata" to lata_analyzer : useful to merge multiple binary lata files in a single one ! To resplit into multiple files, use "writelata".
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3 : Enhancements, modifications and corrected bugs since version 1.9.2 :

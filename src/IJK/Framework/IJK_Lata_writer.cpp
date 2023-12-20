@@ -35,8 +35,8 @@ void dumplata_header(const char *filename)
       master_file.set_bin(0);
       master_file.ouvrir(filename);
       master_file << "LATA_V2.1" << finl;
-      master_file << "IJK specific format" << finl;
-      master_file << "TRUST Version " << TRUST_VERSION << finl;
+      master_file << "IJK_specific_format" << finl;
+      master_file << "TRUST" << finl;
       Nom format = (sizeof(int)==8 ? "INT64" : "INT32");
       master_file << "Format LITTLE_ENDIAN,C_INDEXING,C_ORDERING,F_MARKERS_NO,"<<format<<",REAL32" << finl;
       master_file.close();
