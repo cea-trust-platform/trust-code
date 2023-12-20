@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,8 @@
 #include <Sous_domaine_dis.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
+#include <Champ_Don_Fonc_xyz.h>
+#include <Champ_Don_Fonc_txyz.h>
 #include <Param.h>
 
 Implemente_base_sans_constructeur(Perte_Charge_VEF,"Perte_Charge_VEF",Source_base);
@@ -99,6 +101,20 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 //                                                            //
 ////////////////////////////////////////////////////////////////
 
+double valeur_a_la_face(const Champ_Don& le_ch, const IntTab& f_e, int f)
+{
+  assert(le_ch.valeurs().line_size() == 1);
+  double s = 0.0, val = 0.0;
+  for (int i = 0, e; i < 2; i++)
+    if ((e = f_e(f, i)) > -1)
+      {
+        val += le_ch.valeurs()(e, 0);
+        s += 1.0;
+      }
+  val /= s;
+  return val;
+}
+
 DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
 {
   const Domaine_VEF& zvef=le_dom_VEF.valeur();
@@ -107,15 +123,16 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
   const Sous_domaine_VF& ssz = sous_domaine ? le_sous_domaine_dis.valeur() : Sous_domaine_VF();
+  const IntTab& f_e = zvef.face_voisins();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
   DoubleVect pos(dimension);
   DoubleVect v_valeur(dimension);
   // Optimisations pour les cas ou nu ou diam_hydr sont constants
-  bool nu_constant=sub_type(Champ_Uniforme,nu.valeur())?true:false;
-
-  bool dh_constant=sub_type(Champ_Uniforme,diam_hydr.valeur())?true:false;
+  const bool nu_constant = sub_type(Champ_Uniforme, nu.valeur()), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
+             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu.valeur()) || sub_type(Champ_Don_Fonc_txyz, nu.valeur()),
+             dh_xyz = sub_type(Champ_Don_Fonc_xyz, diam_hydr.valeur()) || sub_type(Champ_Don_Fonc_txyz, diam_hydr.valeur());
 
   // Le temps actuel
   double t=equation().schema_temps().temps_courant();
@@ -143,11 +160,8 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
           for (int i=0; i<dimension; i++)
             pos[i]=xv(la_face,i);
 
-          // Calcul de nu
-          double nu_valeur = nu_constant ? nu(0,0) : nu->valeur_a_compo(pos,0);
-
-          // Calcul du diametre hydraulique
-          double dh_valeur = dh_constant ? diam_hydr(0,0) : diam_hydr->valeur_a_compo(pos,0);
+          const double nu_valeur = nu_constant ? nu(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
+          const double dh_valeur = dh_constant ? diam_hydr(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
 
           // Calcul du reynolds
           double reynolds=norme_u*dh_valeur/nu_valeur;
@@ -189,18 +203,18 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
   const Sous_domaine_VF& ssz=sous_domaine?le_sous_domaine_dis.valeur():Sous_domaine_VF();
   const Domaine_VEF& zvef=le_dom_VEF.valeur();
+  const IntTab& f_e = zvef.face_voisins();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
   double norme_u;
-  double dh_valeur;
   double reynolds;
   DoubleVect pos(dimension);
   DoubleVect v_valeur(dimension);
   // Optimisations pour les cas ou nu ou diam_hydr sont constants
-  bool nu_constant=sub_type(Champ_Uniforme,nu.valeur())?true:false;
-  double nu_valeur;
-  bool dh_constant=sub_type(Champ_Uniforme,diam_hydr.valeur())?true:false;
+  const bool nu_constant = sub_type(Champ_Uniforme, nu.valeur()), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
+             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu.valeur()) || sub_type(Champ_Don_Fonc_txyz, nu.valeur()),
+             dh_xyz = sub_type(Champ_Don_Fonc_xyz, diam_hydr.valeur()) || sub_type(Champ_Don_Fonc_txyz, diam_hydr.valeur());
 
   // Le temps actuel
   double t=equation().schema_temps().temps_courant();
@@ -240,19 +254,8 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
       for (int i=0; i<dimension; i++)
         pos[i]=xv(la_face,i);
 
-      // Calcul de nu
-      if (!nu_constant)
-        {
-          nu_valeur=nu->valeur_a_compo(pos,0);
-        }
-      else nu_valeur=nu(0,0);
-
-      // Calcul du diametre hydraulique
-      if (!dh_constant)
-        {
-          dh_valeur=diam_hydr->valeur_a_compo(pos,0);
-        }
-      else dh_valeur=diam_hydr(0,0);
+      const double nu_valeur = nu_constant ? nu(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
+      const double dh_valeur = dh_constant ? diam_hydr(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
 
       // Calcul du reynolds
       reynolds=norme_u*dh_valeur/nu_valeur;
