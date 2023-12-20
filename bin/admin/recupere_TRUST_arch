@@ -88,7 +88,6 @@ do
 <TD>MPI</TD>
 <TD>Exec</TD>
 <TD>Build</TD>
-<TD>Tools</TD>
 <TD>Petsc</TD>
 <TD>Med</TD>
 <TD>MedC</TD>
@@ -96,6 +95,7 @@ do
 <TD>plot2</TD>
 <TD>ICoCo</TD>
 <TD>trioxd</TD>
+<TD>gnuplt</TD>
 <TD>Gmsh</TD>
 <TD>VisIt</TD>
 <TD>fiche</TD>
@@ -272,7 +272,7 @@ do
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
     TRIOXDATA="<TD $BLANC>NOT</TD>" && [ "`grep TRIOXDATA:OK $CR`" != "" ] && TRIOXDATA="<TD $VERT>OK</TD>"
 	TRIOXDATA=$TRIOXDATA && [ "`grep TRIOXDATA:error $CR`" != "" ] && TRIOXDATA="<TD $ROUGE>KO</TD>"
-	TOOLS="<TD $ROUGE>Echec</TD>" && [ "`grep BUILD_TOOLS=OK $CR`" != "" ] && TOOLS="<TD $VERT>Succes</TD>"
+	GNUPLOT="<TD $ROUGE>KO</TD>" && [ "`grep gnuplot=OK $CR`" != "" ] && GNUPLOT="<TD $VERT>OK</TD>"
 	nvidia=`grep " Device " $CR | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
 	[ "$nvidia" = "" ] && nvidia=`$TRUST_Awk -F= '/Nvidia=/ {print $2}' $CR`
 	COL2="";taux=$vide
@@ -391,7 +391,6 @@ $TD$TRUST_CC$FTD
 $TD$MPI$FTD
 $TD$executable$FTD
 <TD $COL1><A HREF="compile_$NOM.log">$comp</A>$FTD
-$TOOLS
 $PETSC
 $MED
 $MEDCOUPL
@@ -399,6 +398,7 @@ $LATATOOLS
 $PLOT2D
 $ICOCO
 $TRIOXDATA
+$GNUPLOT
 $GMSH
 $VISIT
 $runfich

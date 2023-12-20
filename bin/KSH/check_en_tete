@@ -82,7 +82,7 @@ $TRUST_Awk 'BEGIN {en_tete=1}
 $TRUST_ROOT/bin/KSH/check_license_in_file.sh --mode c -add $tmp_file || exit -1
    if [ "`diff $tmp_file $file`" != "" ]
    then
-      mv -f $tmp_file $file
+      cat $tmp_file > $file
       echo entete $file updated
    else
       rm -f $tmp_file
