@@ -1,0 +1,40 @@
+# Reading a MED file and then modifying the domain in TRUST (e.g. with VerifierCoin)
+  was buggy. The internal MEDCoupling object was not properly updated.
+ #
+
+dimension 2
+Pb_Thermohydraulique pb
+
+Domaine dom_init
+Read_MED { domain dom_init file mesh_simple_tri.med }
+
+# Here the geometric interprete was breaking internal MC representation: #
+VerifierCoin dom_init { }
+
+# This output was not containing the splited corner: #
+ecrire_MED dom_init dom.med
+
+Domaine dom
+Read_MED { domain dom file dom.med }
+
+VEFPreP1b dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.0
+	nb_pas_dt_max 3
+    tmax  10
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+postraiter_domaine { 
+    domaine dom
+    format lml
+}
+
+End
+

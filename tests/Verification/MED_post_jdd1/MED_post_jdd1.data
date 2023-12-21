@@ -1,0 +1,36 @@
+# Reading a MED file with orphan nodes was buggy.
+  Unused node was cleaned by TRUST, but internal MEDCoupling
+  objet not correctly updated, leading to an invalid mesh.
+ #
+dimension 2
+Pb_Thermohydraulique pb
+
+Domaine dom_init
+Read_MED { domain dom_init file shape.med }
+
+ecrire_MED dom_init dom.med
+
+Domaine dom
+Read_MED { domain dom file dom.med }
+
+VEFPreP1b dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.0
+	nb_pas_dt_max 3
+    tmax  10
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+postraiter_domaine { 
+    domaine dom 
+    format lml
+}
+
+End
+
