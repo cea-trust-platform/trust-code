@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,7 +141,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   KSPGetPC(SolveurPetsc_, &PreconditionneurPetsc_);
 
   // Add options if PETSc solver is used:
-  if (PE_Groups::get_nb_groups()==1 && !disable_TU )
+  if (PE_Groups::get_nb_groups()==1 && !disable_TU)
     {
       // _petsc.TU is only printed if one group calculation (e.g. Execute_parallel failed)
       Nom petsc_TU(":");
@@ -1433,6 +1433,7 @@ const Nom Solv_Petsc::config()
 int Solv_Petsc::instance=-1;
 int Solv_Petsc::numero_solveur=0;
 #ifdef PETSCKSP_H
+// Attention, bug apres PETSc 3.14 le logging avec PetscLogStage est tres cher pour MatSetValues (appel MPI meme en sequentiel!). Vu sur Flica5 avec appel frequents a Update_matrix
 PetscLogStage Solv_Petsc::KSPSolve_Stage_=0;
 
 // Sortie Maple d'une matrice morse
@@ -1823,7 +1824,6 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   //////////////////////////
   // Solve the linear system
   //////////////////////////
-  PetscLogStagePush(KSPSolve_Stage_);
   int size_residu = nb_it_max_ + 1;
   //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
   ArrOfDouble residu(size_residu);
@@ -1871,6 +1871,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #ifdef PETSCKSP_H
 int Solv_Petsc::solve(ArrOfDouble& residu)
 {
+  PetscLogStagePush(KSPSolve_Stage_);
   double start = Statistiques::get_time_now();
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
@@ -1962,6 +1963,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
         }
     }
   if (verbose) Cout << finl << "[Petsc] Time to solve system:    \t" << Statistiques::get_time_now() - start << finl;
+  PetscLogStagePop();
   return Reason < 0 ? (int)Reason : nbiter;
 }
 #endif
@@ -2781,7 +2783,6 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
           cpt++;
         }
     }
-
   /****************************/
   /* Assemblage de la matrice */
   /****************************/
