@@ -10,7 +10,8 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 12 12 10
+        /* Nombre_de_Noeuds 12 12 10 */
+        Nombre_de_Noeuds 16 16 12
         Longueurs 0.01 0.01 0.006
     }
     {
@@ -77,7 +78,7 @@ Read pb
         boundary_conditions {
             Haut paroi_fixe
             Bas paroi_fixe
-            Gauche paroi_fixe
+            Gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
             Droit paroi_fixe
             Sud Symetrie
             Nord Symetrie
