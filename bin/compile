@@ -268,6 +268,24 @@ then
 fi
 echo>>$COMPILE
 
+######
+# CGNS
+######
+if [ $TRUST_USE_CGNS = 1 ]
+then
+  LCGNS=$TRUST_CGNS_HOME_DIR/build/src/libcgns.a
+  if [ -f $LCGNS ]
+  then
+    echo "LIBCGNS:OK"
+  else
+    echo "LIBCGNS:KO !!!"
+    echo ""
+    echo "You specified to use the CGNS library in your TRUST configuration. However, we can not find the static library (libcgns.a) in the path $TRUST_CGNS_HOME_DIR/build/src !!"
+    echo "Either verify your CGNS installation or re-configure TRUST without the option -with-cgns=$TRUST_CGNS_HOME_DIR ... " 
+    echo "BUILD_EXEC=KO" && exit -1 
+  fi
+fi
+
 #####
 # EOS
 #####

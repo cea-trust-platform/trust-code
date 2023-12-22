@@ -163,6 +163,15 @@ done
 ####
 VC="" && [ "$TRUST_DISABLE_VC" != 1 ] && VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
 
+######
+# CGNS
+######
+if [ $TRUST_USE_CGNS = 1 ] ; then
+  CGNS="\$(TRUST_CGNS_HOME_DIR)/build/src/libcgns.a"
+else
+  CGNS=""
+fi
+
 #####
 # EOS
 #####
@@ -224,6 +233,7 @@ do
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"            >> $fic
    [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"          >> $fic
    [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                  >> $fic
+   [ "$CGNS" != "" ] && echo $ECHO_OPTS "$CGNS \\"              >> $fic
    [ "$EOS" != "" ] && echo $ECHO_OPTS "$EOS \\"                >> $fic
    [ "$COOLPROP" != "" ] && echo $ECHO_OPTS "$COOLPROP \\"      >> $fic
    [ "`ls ${TRUST_ROCALUTION}/lib/librocalution.* 2>/dev/null`" != "" ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic

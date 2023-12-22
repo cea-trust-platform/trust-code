@@ -337,6 +337,7 @@ echo "   -without-visit                    Do not install VisIt."
 echo " "
 echo -e "\033[1m\033[4mOptions for post-processing tools\033[0m"
 echo " "
+echo "   -with-cgns=<path_to_cgns>         Compiles TRUST and links with an external static // CGNS library useful for post-processing."
 echo "   -download-visit                   Download a version of VisIt rather trying to build a version."
 echo "   -for_appli_salome                 Force the configuration for TRUST application in Salome platform."
 echo " "
@@ -393,6 +394,7 @@ export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
+export TRUST_USE_CGNS=0
 export TRUST_USE_EOS=0
 export TRUST_USE_COOLPROP=0
 export TRUST_USE_REFPROP=0
@@ -413,6 +415,7 @@ unset CUDA_NVCC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
+unset CGNS_HOME
 unset EOS_HOME
 unset COOLPROP_HOME
 unset REFPROP_HOME
@@ -532,6 +535,11 @@ do
    elif [ "${1#-rocm}" != "$1" ]
    then
       export TRUST_USE_ROCM=1
+   elif [ "${1#-with-cgns}" != "$1" ]
+   then
+      # Proper include files for CGNS are managed by script bin/cree_include
+      export TRUST_USE_CGNS=1
+      export CGNS_HOME=${1#-with-cgns=} 
    elif [ "${1#-with-eos}" != "$1" ]
    then
       # Proper include files for EOS are managed by script bin/cree_include
@@ -766,6 +774,15 @@ then
 else
     echo "unset TRUST_USE_EXTERNAL_HDF" >> $var
     #echo "unset HDF5_ROOT_DIR" >> $var
+fi
+
+if [ "$CGNS_HOME" != "" ]
+then
+    echo "export TRUST_USE_CGNS=1" >> $var
+    echo "export TRUST_CGNS_HOME_DIR=$CGNS_HOME" >> $var
+else
+    echo "export TRUST_USE_CGNS=0" >> $var
+    echo "unset CGNS_HOME" >> $var
 fi
 
 if [ "$EOS_HOME" != "" ]
