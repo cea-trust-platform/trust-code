@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -290,7 +290,12 @@ void Champ_front_synt::mettre_a_jour(double temps)
   double kappa_min = kappa_e / KeOverKmin; // plus petit nombre d'onde
   //double delta_kappa = (min(kappa_eta,kappa_max) - kappa_min) / nbModes; // repartition lineaire des modes => pas bon
   double delta_kappa = pow( (std::min(kappa_eta,kappa_max) / kappa_min ), 1./(nbModes-1.)); // repartition logarithmique des modes => OK
-
+  if (kappa_max <= kappa_min)
+    {
+      Cerr << "Error: kappa_max(=" << kappa_max << ") <= kappa_min(=" << kappa_min << ")" << finl;
+      Cerr << "You should either refine your mesh or increase the ratioCutoffWavenumber value in " << que_suis_je() << finl;
+      Process::exit();
+    }
   //Cerr << "Remarkable wavenumbers for the method of synthetic turbulence generation:" << finl;
   //Cerr << "kappa_min = " << kappa_min << finl;
   //Cerr << "kappa_e = " << kappa_e << finl;
