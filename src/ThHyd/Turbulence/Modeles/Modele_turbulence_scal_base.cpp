@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -249,7 +249,9 @@ int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temp
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   if (sch.nb_pas_dt() == 0)
     return 0;
-  if (dt_impr_nusselt_ <= dt || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt() == 1 || sch.stationnaire_atteint()) && dt_impr_nusselt_ != DMAXFLOAT))
+  if (dt_impr_nusselt_ <= dt
+      || ((sch.temps_cpu_max_atteint() || (!get_disable_stop() && sch.stop_lu()) || sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt() == 1 || sch.stationnaire_atteint())
+          && dt_impr_nusselt_ != DMAXFLOAT))
     return 1;
   else
     {
