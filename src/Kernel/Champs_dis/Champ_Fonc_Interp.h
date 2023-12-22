@@ -42,6 +42,7 @@ protected:
   int use_dec_ = -123, sharing_algo_ = -123;
   double default_value_ = DMAXFLOAT;
   DoubleTab valeurs_elem_, valeurs_faces_elem_;
+  Champ espace_stockage_;
 
 #ifdef MEDCOUPLING_
   MEDCoupling::NatureOfField nature_;

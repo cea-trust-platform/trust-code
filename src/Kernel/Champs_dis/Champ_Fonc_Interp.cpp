@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Discretisation_tools.h>
+#include <Champ_Generique_base.h>
 #include <Option_Interpolation.h>
 #include <Champ_Fonc_Interp.h>
 #include <TRUSTTab_parts.h>
@@ -95,7 +96,9 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
 int Champ_Fonc_Interp::initialiser(double temps)
 {
   const int ok = Champ_Fonc_P0_base::initialiser(temps);
-  nb_compo_ = pb_dist_->get_champ(le_nom()).valeurs().line_size();
+  const Champ_base& ch = pb_dist_->has_champ(le_nom()) ? pb_dist_->get_champ(le_nom()) : pb_dist_->get_champ_post(le_nom()).get_champ(espace_stockage_);
+
+  nb_compo_ = ch.valeurs().line_size();
 
   if (is_elem_trgt_)
     {
@@ -153,7 +156,9 @@ void Champ_Fonc_Interp::update_fields()
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
-  const DoubleTab& distant_values = pb_dist_->get_champ(le_nom()).valeurs();
+  const Champ_base& ch = pb_dist_->has_champ(le_nom()) ? pb_dist_->get_champ(le_nom()) : pb_dist_->get_champ_post(le_nom()).get_champ(espace_stockage_);
+
+  const DoubleTab& distant_values = ch.valeurs();
   ConstDoubleTab_parts local_parts(valeurs()), distant_parts(distant_values);
 
   if (local_field_ == nullptr) init_fields();
@@ -167,22 +172,15 @@ void Champ_Fonc_Interp::update_fields()
   local_field_->setArray(local_array_);
 
   // Source Stuff
-  if (distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot()) // HOHOHO
+  if (pb_dist_->domaine_dis().valeur().que_suis_je() == "Domaine_VEF" &&  distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot())
     {
-      if (!valeurs_faces_elem_.get_md_vector().non_nul())
-        {
-          valeurs_faces_elem_.resize(0, distant_parts[0].line_size());
-          dom_dist_->creer_tableau_elements(valeurs_faces_elem_);
-        }
-
-      const Domaine_VF& dvf = ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur());
-      Discretisation_tools::faces_to_cells(dvf, distant_parts[0], valeurs_faces_elem_);
-
-      distant_array_->useArray(valeurs_faces_elem_.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, valeurs_faces_elem_.dimension(0), distant_parts[0].line_size());
+      Cerr << finl << "ERROR in Champ_Fonc_Interp : in problem " << pb_loc_->le_nom() << ", the distant field is located at faces!" << finl;
+      Cerr << "Use a postprocessing field located at elements instead of " << le_nom() << finl;
+      Cerr << "In your case, try : " << le_nom() << "_elem_" << pb_dist_->domaine().le_nom() << finl;
+      Process::exit();
     }
-  else
-    distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
 
+  distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
   distant_field_->setArray(distant_array_);
 #endif
 }
