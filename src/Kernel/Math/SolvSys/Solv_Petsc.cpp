@@ -940,7 +940,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(16);
+      Motcles les_precond(18);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -958,6 +958,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[13] = "PCSHELL"; // user defined preconditionner
         les_precond[14] = "LU|MUMPS";   // MUMPS LU
         les_precond[15] = "UA-AMG";   // Unsmoothed Aggregated AMG
+        les_precond[16] = "ILU_MUMPS";      // Incomplete ILU with a Block Low Ranking from MUMPS
+        les_precond[17] = "ILU_STRUMPACK";  // Incomplete ILU with a Block Low Ranking from STRUMPACK
       }
 
       if (pc!="")
@@ -1129,6 +1131,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 14:
               {
+                // LU|MUMPS { ordering XXX }
                 //preconditionnement_non_symetrique_ = 1;
                 add_option("sub_pc_type", "lu");
                 add_option("sub_pc_factor_mat_solver_type","mumps");
@@ -1296,6 +1299,33 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCShellSetContext(PreconditionneurPetsc_, &pc_user_);
                 PCShellSetDestroy(PreconditionneurPetsc_, PCShellUserDestroy);
 
+                break;
+              }
+            case 16:
+              {
+                // ILU_MUMPS:
+                add_option("pc_type", "cholesky"); // Attention, si on met LU en sequentiel il n'utilise pas MUMPS...
+                add_option("pc_factor_mat_solver_type", "mumps");
+                add_option("mat_mumps_icntl_35", "1"); // BLR enabled
+                //add_option("mat_mumps_icntl_36", "??"); controls the choice of BLR factorization variant
+                //add_option("mat_mumps_icntl_38", "??"); sets the estimated compression rate of LU factors with BLR
+                add_option("mat_mumps_cntl_7", (double)epsilon.value()); // Droping parameter
+                if (limpr()) add_option("mat_mumps_icntl_4","3"); // verobose
+                check_not_defined(level);
+                break;
+              }
+            case 17:
+              {
+                // ILU_STRUMPACK:
+                add_option("pc_type", "ilu");
+                add_option("mat_type", "aij");
+                add_option("pc_factor_mat_solver_type", "strumpack");
+                add_option("mat_strumpack_compression","BLR"); // Type of rank-structured compression in sparse LU factors (choose one of) NONE HSS BLR HODLR BLR_HODLR ZFP_BLR_HODLR LOSSLESS LOSSY
+                add_option("mat_strumpack_compression_rel_tol", (double)epsilon.value()); // Compression parameter
+                //add_option("mat_strumpack_compression_abs_tol", (Nom)epsilon.value()); // Compression parameter
+                //add_option("mat_strumpack_compression_lossy_precision,"1-64"); // Precision when using lossy compression [1-64],
+                if (limpr()) add_option("mat_strumpack_verbose", "1"); // Provisoire
+                check_not_defined(level);
                 break;
               }
             default:
