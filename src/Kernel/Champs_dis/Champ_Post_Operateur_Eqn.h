@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ protected:
   int numero_source_,numero_op_, numero_masse_;
   REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
-  Entity localisation_inco_=NODE;
+  Entity localisation_inco_ = Entity::NODE;
   int compo_;                            //Pour identifier la composante a recuperer
 };
 

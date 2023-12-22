@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,11 +116,11 @@ inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statist
   Nom loc_post;
 
   //contenu de la methode get_nom_localisation()
-  if (loc==ELEMENT)
+  if (loc==Entity::ELEMENT)
     loc_post = "ELEM";
-  else if (loc==NODE)
+  else if (loc==Entity::NODE)
     loc_post = "SOM";
-  else if (loc==FACE)
+  else if (loc==Entity::FACE)
     loc_post = "FACES";
   else
     {
@@ -182,11 +182,11 @@ Nom Postraitement::get_nom_localisation(const Entity& loc)
 {
   Nom loc_post;
 
-  if (loc==ELEMENT)
+  if (loc==Entity::ELEMENT)
     loc_post = "ELEM";
-  else if (loc==NODE)
+  else if (loc==Entity::NODE)
     loc_post = "SOM";
-  else if (loc==FACE)
+  else if (loc==Entity::FACE)
     loc_post = "FACES";
   else
     {

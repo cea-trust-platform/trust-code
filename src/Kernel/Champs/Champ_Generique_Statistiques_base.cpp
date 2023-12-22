@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,9 +63,9 @@ int Champ_Generique_Statistiques_base::completer_post_statistiques(const Domaine
 
   Nom localisation;
   const Entity& loc = get_localisation(0);
-  if (loc==ELEMENT)
+  if (loc==Entity::ELEMENT)
     localisation = "ELEM";
-  else if (loc==NODE)
+  else if (loc==Entity::NODE)
     localisation = "SOM";
   else
     {

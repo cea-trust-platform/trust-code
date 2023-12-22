@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -138,18 +138,18 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
   const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_.valeur().domaine_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
     {
-      localisation_inco_=FACE;
+      localisation_inco_=Entity::FACE;
       ok=1;
     }
   if (md== zvf.domaine().les_elems().get_md_vector())
     {
-      localisation_inco_=ELEMENT;
+      localisation_inco_=Entity::ELEMENT;
       ok=1;
     }
   if (md == zvf.domaine().les_sommets().get_md_vector())
     {
       ok=1;
-      localisation_inco_=NODE;
+      localisation_inco_=Entity::NODE;
     }
   if (ok==0)
     {
@@ -176,13 +176,13 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 
   switch (localisation_inco_)
     {
-    case ELEMENT:
+    case Entity::ELEMENT:
       directive="CHAMP_ELEM";
       break;
-    case NODE:
+    case Entity::NODE:
       directive="CHAMP_SOMMETS";
       break;
-    case FACE:
+    case Entity::FACE:
       directive="CHAMP_FACE";
       break;
     default:

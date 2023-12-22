@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,13 +66,13 @@ void Source_Generique_base::completer()
   post_bidon.associer_nom_et_pb_base("", equation().probleme());
   ch_source_->completer(post_bidon);
   Entity loc = ch_source_->get_localisation();
-  if (((loc == ELEMENT) && (localisation_source() != "elem"))
-      || ((loc == FACE) && (localisation_source() != "faces")))
+  if (((loc == Entity::ELEMENT) && (localisation_source() != "elem"))
+      || ((loc == Entity::FACE) && (localisation_source() != "faces")))
     {
       Nom nom_loc;
-      if (loc == ELEMENT)
+      if (loc == Entity::ELEMENT)
         nom_loc = "elem";
-      else if (loc == FACE)
+      else if (loc == Entity::FACE)
         nom_loc = "faces";
       Cerr << "----------------------------------------------------------------" << finl;
       Cerr << "Error during TRUST calculation :" << finl;

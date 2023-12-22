@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -218,7 +218,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
 {
   Entity loc;
   //Pour initialisation
-  loc = NODE;
+  loc =Entity::NODE;
 
   const Champ_base& ch = get_ref_champ_base();
   const Domaine_dis_base& z_dis_base = get_ref_domaine_dis_base();
@@ -226,17 +226,17 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
   // Champs discrets a une seule localisation :
   if ((sub_type(Champ_Inc_P0_base, ch) || sub_type(Champ_Fonc_P0_base, ch)) && index <= 0)
     {
-      loc = ELEMENT;
+      loc = Entity::ELEMENT;
     }
   else if ((sub_type(Champ_Inc_P1_base, ch)|| sub_type(Champ_Fonc_P1_base, ch)) && index <= 0)
     {
-      loc = NODE;
+      loc = Entity::NODE;
     }
   else if ((ch.que_suis_je().debute_par("Champ_Face_PolyMAC")
             || ch.que_suis_je().debute_par("Champ_Fonc_Face_PolyMAC")
             || ch.valeurs().dimension(0) == ref_cast(Domaine_VF,z_dis_base).nb_faces()) && index <= 0)
     {
-      loc = FACE;
+      loc = Entity::FACE;
     }
   else
     {
@@ -317,13 +317,13 @@ const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Enti
 
   switch(index1)
     {
-    case ELEMENT:
+    case Entity::ELEMENT:
       {
         switch(index2)
           {
-          case NODE:
+          case Entity::NODE:
             return domaine.les_elems();
-          case FACE:
+          case Entity::FACE:
             return domaine_vf.elem_faces();
           default :
             {
@@ -332,13 +332,13 @@ const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Enti
           }
         break;
       }
-    case FACE:
+    case Entity::FACE:
       {
         switch(index2)
           {
-          case NODE:
+          case Entity::NODE:
             return domaine_vf.face_sommets();
-          case ELEMENT:
+          case Entity::ELEMENT:
             return domaine_vf.face_voisins();
           default :
             {

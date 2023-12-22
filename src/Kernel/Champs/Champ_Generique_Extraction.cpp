@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -317,8 +317,8 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   const DoubleTab& sommets_source = dom.les_sommets();
   int num_premiere_face = la_frontiere.num_premiere_face();
   Entity index1,index2;
-  index1 = FACE;
-  index2 = NODE;
+  index1 = Entity::FACE;
+  index2 = Entity::NODE;
   const IntTab& face_sommets = source.get_ref_connectivity(index1,index2);
   int nb_som_faces = zvf_source.nb_som_face();
 
@@ -420,7 +420,7 @@ const Domaine_dis_base& Champ_Generique_Extraction::get_ref_domaine_dis_base() c
 Entity Champ_Generique_Extraction::get_localisation(const int index) const
 {
   Entity loc;
-  loc = ELEMENT;
+  loc = Entity::ELEMENT;
   return loc;
 }
 

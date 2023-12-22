@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ class Postraitement_base;
 class Discretisation_base;
 class Param;
 
-enum Entity { NODE, SEGMENT, FACE, ELEMENT };
+enum class Entity { NODE, SEGMENT, FACE, ELEMENT };
 
 /*! @brief Classe de base des champs generiques pour importation d un champ discret et actions elementaires sur ce champ
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ Entity Champ_Generique_Divergence::get_localisation(const int index) const
   Entity loc;
   Nom type_op = Op_Div_.valeur().que_suis_je();
   if (((type_op=="Op_Div_VEF_P1NC") || (type_op=="Op_Div_VDF_Face")) && (index <= 0))
-    loc = ELEMENT;
+    loc = Entity::ELEMENT;
   else
     {
       Cerr << "Error of type : Divergence operator " << type_op << " is not possible for the defined field " << nom_post_ << finl;

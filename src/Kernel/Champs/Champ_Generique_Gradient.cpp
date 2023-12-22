@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -213,9 +213,9 @@ Entity Champ_Generique_Gradient::get_localisation(const int index) const
   Entity loc;
   Nom type_op = Op_Grad_.valeur().que_suis_je();
   if ((type_op=="Op_Grad_P1NC_to_P0") && (index <= 0))
-    loc = ELEMENT;
+    loc = Entity::ELEMENT;
   else if ((type_op=="Op_Grad_P0_to_Face") && (index <= 0))
-    loc=FACE;
+    loc=Entity::FACE;
   else
     {
       Cerr << "Error of type : Gradient operator " << type_op << " is not possible for the defined field " << nom_post_ << finl;

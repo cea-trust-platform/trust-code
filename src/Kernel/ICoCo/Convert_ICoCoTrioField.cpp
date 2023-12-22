@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
 
 void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 {
-  build_triomesh(ch.get_ref_domaine_dis_base(), afield, ch.get_localisation() == NODE, ch.get_localisation() == FACE);
+  build_triomesh(ch.get_ref_domaine_dis_base(), afield, ch.get_localisation() == Entity::NODE, ch.get_localisation() == Entity::FACE);
 
   afield.setName(ch.le_nom().getString());
   afield._time1 = afield._time2 = ch.get_time(), afield._itnumber = 0;

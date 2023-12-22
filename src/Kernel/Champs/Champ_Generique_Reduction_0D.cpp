@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -254,11 +254,11 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
             {
               Entity loc;
               loc = get_localisation();
-              if (loc==ELEMENT)
+              if (loc==Entity::ELEMENT)
                 zvf.domaine().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
-              else if (loc==NODE)
+              else if (loc==Entity::NODE)
                 zvf.domaine().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
-              else if (loc==FACE)
+              else if (loc==Entity::FACE)
                 zvf.creer_tableau_faces(vect_source,Array_base::NOCOPY_NOINIT);
               vect_source = 0.;
             }
@@ -359,7 +359,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au ELEM
-      if (get_localisation()==ELEMENT)
+      if (get_localisation()==Entity::ELEMENT)
         {
           int nb_elem = zvf.nb_elem();
           if (methode_ =="L1_norm")
@@ -384,7 +384,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au FACE
-      if (get_localisation()==FACE)
+      if (get_localisation()==Entity::FACE)
         {
           // Calcul des volumes de controle a chaque face
           int nb_face = zvf.nb_faces();
@@ -458,7 +458,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au NODE
-      if (get_localisation()==NODE)
+      if (get_localisation()==Entity::NODE)
         {
           // Calcul des volumes de controle a chaque sommet
           int nb_som = zvf.nb_som();
@@ -523,7 +523,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au ELEM
-      if (get_localisation()==ELEMENT)
+      if (get_localisation()==Entity::ELEMENT)
         {
           int nb_elem = zvf.nb_elem();
           for (int i=0; i<nb_elem; i++)
@@ -534,7 +534,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au FACE
-      if (get_localisation()==FACE)
+      if (get_localisation()==Entity::FACE)
         {
           // Calcul des volumes de controle a chaque face
           int nb_face = zvf.nb_faces();
@@ -573,7 +573,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au NODE
-      if (get_localisation()==NODE)
+      if (get_localisation()==Entity::NODE)
         {
           // Calcul des volumes de controle a chaque sommet
           int nb_som = zvf.nb_som();
@@ -624,7 +624,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au ELEM
-      if (get_localisation()==ELEMENT)
+      if (get_localisation()==Entity::ELEMENT)
         {
           Champ source_espace_stockage2;
           const Champ_base& source2 = get_source(1).get_champ(source_espace_stockage2);
@@ -664,11 +664,11 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       DoubleVect un;
       Entity loc;
       loc = get_localisation();
-      if (loc==ELEMENT)
+      if (loc==Entity::ELEMENT)
         zvf.domaine().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
-      else if (loc==NODE)
+      else if (loc==Entity::NODE)
         zvf.domaine().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
-      else if (loc==FACE)
+      else if (loc==Entity::FACE)
         zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
       un = 1.;
       if (methode_=="somme" || methode_=="sum")
@@ -678,7 +678,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
       else if (methode_=="moyenne" || methode_=="average")
         {
-          if (loc==FACE && composante_VDF>=0)
+          if (loc==Entity::FACE && composante_VDF>=0)
             {
               // Dans le cas vectoriel en VDF, il ne faut compter que les
               // faces de la composante etudiee :
