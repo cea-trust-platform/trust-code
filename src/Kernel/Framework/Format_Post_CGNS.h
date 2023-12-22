@@ -36,20 +36,24 @@ public:
   int initialize_by_default(const Nom& file_basename) override;
   int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
 
+  int completer_post(const Domaine&, const int, const Nature_du_champ&, const int, const Noms&, const Motcle&, const Nom&) override { return 1; }
+  int preparer_post(const Nom&, const int, const int, const double) override { return 1; }
+
+  int ecrire_domaine(const Domaine& , const int ) override;
+
+
 private:
   Nom cgns_basename_;
-
-  inline void verify_if_cgns(const char * nom_funct) const
-  {
-#ifdef HAS_CGNS
-    return;
-#else
-    Cerr << "Format_Post_CGNS::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
-    Process::exit();
-#endif
-  }
-
-
 };
+
+inline void verify_if_cgns(const char * nom_funct)
+{
+#ifdef HAS_CGNS
+  return;
+#else
+  Cerr << "Format_Post_CGNS::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
+  Process::exit();
+#endif
+}
 
 #endif /* Format_Post_CGNS_included */

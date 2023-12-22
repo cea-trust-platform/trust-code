@@ -30,7 +30,7 @@ void Format_Post_CGNS::reset()
 
 Sortie& Format_Post_CGNS::printOn(Sortie& os) const
 {
-  Process::exit("Format_Post_CGNS::printOn - Should not be calles ! ");
+  Process::exit("Format_Post_CGNS::printOn - Should not be called ! ");
   return os;
 }
 
@@ -57,5 +57,96 @@ int Format_Post_CGNS::initialize(const Nom& file_basename, const int format, con
 {
   verify_if_cgns(__func__);
   cgns_basename_ = file_basename;
+  return 1;
+}
+
+int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+{
+  verify_if_cgns(__func__);
+  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
+  const int dim = domaine.les_sommets().dimension(1), nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
+  const int icelldim = dim, iphysdim = Objet_U::dimension;
+  assert (dim = Objet_U::dimension); // TODO FIXME : NOT CORRECT .. just for the moment
+
+  int index_file, index_base, index_zone;
+  char basename[33];
+
+  std::string fn = cgns_basename_.getString() + ".cgns"; // file name
+  strcpy(basename, domaine.le_nom().getChar()); // dom name
+
+  if (cg_open(fn.c_str(), CG_MODE_WRITE, &index_file)) cg_error_exit();
+
+  cg_base_write(index_file, basename, icelldim, iphysdim, &index_base);
+
+
+  /*
+   * Fill coords
+   */
+  std::vector<double> xCoords(nb_som), yCoords(nb_som), zCoords;
+  if (dim > 2) zCoords.resize(nb_som);
+
+  for (int i = 0; i < nb_som; i++)
+    {
+      xCoords[i] = domaine.les_sommets()(i, 0);
+      yCoords[i] = domaine.les_sommets()(i, 1);
+      if (dim > 2) zCoords[i] = domaine.les_sommets()(i, 2);
+    }
+
+  const IntTab& les_elems = domaine.les_elems();
+
+  cgsize_t isize[3][1], ielem[nb_elem][les_elems.dimension(1)]; // 8 for hexa
+
+  /* vertex size */
+  isize[0][0] = nb_som;
+  /* cell size */
+  isize[1][0] = nb_elem;
+  /* boundary vertex size (zero if elements not sorted) */
+  isize[2][0] = 0;
+
+  /* create zone */
+  cg_zone_write(index_file, index_base, basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &index_zone);
+
+  int index_coord;
+
+  /* write grid coordinates (user must use SIDS-standard names here) */
+  cg_coord_write(index_file, index_base, index_zone, CGNS_ENUMV(RealDouble), "CoordinateX", xCoords.data(), &index_coord);
+  cg_coord_write(index_file, index_base, index_zone, CGNS_ENUMV(RealDouble), "CoordinateY", yCoords.data(), &index_coord);
+
+  if (dim > 2)
+    cg_coord_write(index_file, index_base, index_zone, CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &index_coord);
+
+  /* set element connectivity: */
+  /* ---------------------------------------------------------- */
+  /* do all the HEXA_8 elements (this part is mandatory): */
+  /* maintain SIDS-standard ordering */
+  /* index no of first element */
+  int nelem_start = 1;
+
+  for (int i = 0; i < nb_elem; i++)
+    {
+      ielem[i][0] = les_elems(i, 0) + 1; // 1
+      ielem[i][1] = les_elems(i, 1) + 1; // 2
+      ielem[i][2] = les_elems(i, 3) + 1; // 4
+      ielem[i][3] = les_elems(i, 2) + 1; // 3
+      ielem[i][4] = les_elems(i, 4) + 1; // 5
+      ielem[i][5] = les_elems(i, 5) + 1; // 6
+      ielem[i][6] = les_elems(i, 7) + 1; // 8
+      ielem[i][7] = les_elems(i, 6) + 1; // 7
+    }
+
+  int nelem_end = nb_elem;
+
+  /* unsorted boundary elements */
+  int nbdyelem = 0, index_section;
+  /* write CGNS_ENUMV(HEXA_8) element connectivity (user can give any name) */
+  cg_section_write(index_file, index_base, index_zone, "Elem", CGNS_ENUMV(HEXA_8), nelem_start, nelem_end, nbdyelem, ielem[0], &index_section);
+
+
+  /* close CGNS file */
+  cg_close(index_file);
+  printf("\nSuccessfully wrote unstructured grid to file xxxx.cgns\n");
+
+  Process::exit();
+
   return 1;
 }
