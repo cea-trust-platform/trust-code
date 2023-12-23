@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Format_Post_CGNS.h>
+#include <TRUST_2_CGNS.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Format_Post_CGNS, "Format_Post_CGNS", Format_Post_base);
@@ -36,8 +37,8 @@ Sortie& Format_Post_CGNS::printOn(Sortie& os) const
 
 Entree& Format_Post_CGNS::readOn(Entree& is)
 {
-  Format_Post_base::readOn(is);
-  return is;
+  verify_if_cgns(__func__);
+  return Format_Post_base::readOn(is);
 }
 
 void Format_Post_CGNS::set_param(Param& param)
@@ -63,101 +64,78 @@ int Format_Post_CGNS::initialize(const Nom& file_basename, const int format, con
 int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
   verify_if_cgns(__func__);
-
+#ifdef HAS_CGNS
   if (est_le_premier_post)
     {
       std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      if (cg_open(fn.c_str(), CG_MODE_WRITE, &index_file_)) cg_error_exit();
+      if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_)) cg_error_exit();
+      Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
-
+#endif
   return 1;
 }
 
 int Format_Post_CGNS::finir(const int est_le_dernier_post)
 {
+#ifdef HAS_CGNS
   if (est_le_dernier_post)
     {
       std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      cg_close(index_file_);
-      Cerr << "CGNS file " << fn << " closed !" << finl;
+      cg_close(fileId_);
+      Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
+#endif
   return 1;
 }
 
 int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   verify_if_cgns(__func__);
+#ifdef HAS_CGNS
+  /* 1 : Instance of TRUST_2_CGNS */
+  TRUST_2_CGNS TRUST2CGNS;
+  TRUST2CGNS.associer_domaine_TRUST(domaine);
+
   Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
+  CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
+
+  /* 2 : Fill coords */
+  std::vector<double> xCoords, yCoords, zCoords;
+  TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
+
   const int dim = domaine.les_sommets().dimension(1), nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
   const int icelldim = dim, iphysdim = Objet_U::dimension;
+  int zoneId, coordsId;
 
-  int index_zone;
-  char basename[33];
-
+  /* 3 : Base write */
+  char basename[99];
   strcpy(basename, domaine.le_nom().getChar()); // dom name
+  cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_);
 
-  cg_base_write(index_file_, basename, icelldim, iphysdim, &index_base_);
-
-  /*
-   * Fill coords
-   */
-  std::vector<double> xCoords(nb_som), yCoords(nb_som), zCoords;
-  if (dim > 2) zCoords.resize(nb_som);
-
-  for (int i = 0; i < nb_som; i++)
-    {
-      xCoords[i] = domaine.les_sommets()(i, 0);
-      yCoords[i] = domaine.les_sommets()(i, 1);
-      if (dim > 2) zCoords[i] = domaine.les_sommets()(i, 2);
-    }
-
-  const IntTab& les_elems = domaine.les_elems();
-
+  /* 4 : Vertex, cell & boundary vertex sizes */
   cgsize_t isize[3][1];
-
-
-  /* vertex size */
   isize[0][0] = nb_som;
-  /* cell size */
   isize[1][0] = nb_elem;
-  /* boundary vertex size (zero if elements not sorted) */
-  isize[2][0] = 0;
+  isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
-  /* create zone */
-  cg_zone_write(index_file_, index_base_, basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &index_zone);
+  /* 5 : Create zone */
+  cg_zone_write(fileId_, baseId_, basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId);
 
-  int index_coord;
+  /* 6 : Write grid coordinates */
+  cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateX", xCoords.data(), &coordsId);
+  cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateY", yCoords.data(), &coordsId);
+  if (dim > 2) cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &coordsId);
 
-  /* write grid coordinates (user must use SIDS-standard names here) */
-  cg_coord_write(index_file_, index_base_, index_zone, CGNS_ENUMV(RealDouble), "CoordinateX", xCoords.data(), &index_coord);
-  cg_coord_write(index_file_, index_base_, index_zone, CGNS_ENUMV(RealDouble), "CoordinateY", yCoords.data(), &index_coord);
+  /* 7 : Set element connectivity */
+  std::vector<cgsize_t> elems;
+  cgsize_t start = 1, end;
+  int nsom = TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+  end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
 
-  if (dim > 2)
-    cg_coord_write(index_file_, index_base_, index_zone, CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &index_coord);
-
-  /* set element connectivity */
-  std::vector<cgsize_t> ielem; // 8 for hexa
-  cgsize_t nelem_start = 1, nelem_end;
-
-  for (int i = 0; i < nb_elem; i++)
-    {
-      ielem.push_back(les_elems(i, 0) + 1);
-      ielem.push_back(les_elems(i, 1) + 1);
-      ielem.push_back(les_elems(i, 3) + 1);
-      ielem.push_back(les_elems(i, 2) + 1);
-      ielem.push_back(les_elems(i, 4) + 1);
-      ielem.push_back(les_elems(i, 5) + 1);
-      ielem.push_back(les_elems(i, 7) + 1);
-      ielem.push_back(les_elems(i, 6) + 1);
-    }
-
-  nelem_end = nelem_start + (cgsize_t)ielem.size()/ 8 - 1;
-
-  /* unsorted boundary elements */
-  int nbdyelem = 0, index_section;
-  /* write CGNS_ENUMV(HEXA_8) element connectivity (user can give any name) */
-  cg_section_write(index_file_, index_base_, index_zone, "Elem", CGNS_ENUMV(HEXA_8), nelem_start, nelem_end, nbdyelem, ielem.data(), &index_section);
-
+  /* 8 : Write domaine */
+  int sectionId;
+  cg_section_write(fileId_, baseId_, zoneId, "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId);
+#endif
 
   return 1;
 }

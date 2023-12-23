@@ -13,48 +13,35 @@
 *
 *****************************************************************************/
 
-#ifndef Format_Post_CGNS_included
-#define Format_Post_CGNS_included
+#ifndef TRUST_2_CGNS_included
+#define TRUST_2_CGNS_included
 
-#include <TRUSTTabs_forward.h>
-#include <Format_Post_base.h>
-
+#include <TRUST_Ref.h>
 #include <cgns++.h>
+#include <vector>
 
-class Format_Post_CGNS : public Format_Post_base
+#ifdef HAS_CGNS
+#include <pcgnslib.h>
+using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
+#endif
+
+class Domaine;
+class Motcle;
+
+
+class TRUST_2_CGNS
 {
-  Declare_instanciable_sans_constructeur(Format_Post_CGNS);
 public:
-  Format_Post_CGNS();
+  void associer_domaine_TRUST(const Domaine&);
+  void fill_coords(std::vector<double>& , std::vector<double>& , std::vector<double>&);
 
-  void reset() override;
-  void set_param(Param& param) override;
-  int initialize_by_default(const Nom&) override;
-  int initialize(const Nom&, const int, const Nom&) override;
-
-  int completer_post(const Domaine&, const int, const Nature_du_champ&, const int, const Noms&, const Motcle&, const Nom&) override { return 1; }
-  int preparer_post(const Nom&, const int, const int, const double) override { return 1; }
-
-  int ecrire_entete(const double, const int, const int) override;
-  int finir(const int) override;
-
-  int ecrire_domaine(const Domaine&, const int) override;
+#ifdef HAS_CGNS
+  int convert_connectivity(const CGNS_TYPE, std::vector<cgsize_t>&);
+  CGNS_TYPE convert_elem_type(const Motcle&);
+#endif
 
 private:
-  Nom cgns_basename_;
-#ifdef HAS_CGNS
-  int fileId_ = -123, baseId_ = -123;
-#endif
+  REF(Domaine) dom_trust_;
 };
 
-inline void verify_if_cgns(const char * nom_funct)
-{
-#ifdef HAS_CGNS
-  return;
-#else
-  Cerr << "Format_Post_CGNS::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
-  Process::exit();
-#endif
-}
-
-#endif /* Format_Post_CGNS_included */
+#endif /* TRUST_2_CGNS_included */
