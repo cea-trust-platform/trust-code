@@ -113,7 +113,8 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_pre
 
   const IntTab& les_elems = domaine.les_elems();
 
-  cgsize_t isize[3][1], ielem[nb_elem][les_elems.dimension(1)]; // 8 for hexa
+  cgsize_t isize[3][1];
+
 
   /* vertex size */
   isize[0][0] = nb_som;
@@ -134,31 +135,28 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   if (dim > 2)
     cg_coord_write(index_file_, index_base_, index_zone, CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &index_coord);
 
-  /* set element connectivity: */
-  /* ---------------------------------------------------------- */
-  /* do all the HEXA_8 elements (this part is mandatory): */
-  /* maintain SIDS-standard ordering */
-  /* index no of first element */
-  int nelem_start = 1;
+  /* set element connectivity */
+  std::vector<cgsize_t> ielem; // 8 for hexa
+  cgsize_t nelem_start = 1, nelem_end;
 
   for (int i = 0; i < nb_elem; i++)
     {
-      ielem[i][0] = les_elems(i, 0) + 1; // 1
-      ielem[i][1] = les_elems(i, 1) + 1; // 2
-      ielem[i][2] = les_elems(i, 3) + 1; // 4
-      ielem[i][3] = les_elems(i, 2) + 1; // 3
-      ielem[i][4] = les_elems(i, 4) + 1; // 5
-      ielem[i][5] = les_elems(i, 5) + 1; // 6
-      ielem[i][6] = les_elems(i, 7) + 1; // 8
-      ielem[i][7] = les_elems(i, 6) + 1; // 7
+      ielem.push_back(les_elems(i, 0) + 1);
+      ielem.push_back(les_elems(i, 1) + 1);
+      ielem.push_back(les_elems(i, 3) + 1);
+      ielem.push_back(les_elems(i, 2) + 1);
+      ielem.push_back(les_elems(i, 4) + 1);
+      ielem.push_back(les_elems(i, 5) + 1);
+      ielem.push_back(les_elems(i, 7) + 1);
+      ielem.push_back(les_elems(i, 6) + 1);
     }
 
-  int nelem_end = nb_elem;
+  nelem_end = nelem_start + (cgsize_t)ielem.size()/ 8 - 1;
 
   /* unsorted boundary elements */
   int nbdyelem = 0, index_section;
   /* write CGNS_ENUMV(HEXA_8) element connectivity (user can give any name) */
-  cg_section_write(index_file_, index_base_, index_zone, "Elem", CGNS_ENUMV(HEXA_8), nelem_start, nelem_end, nbdyelem, ielem[0], &index_section);
+  cg_section_write(index_file_, index_base_, index_zone, "Elem", CGNS_ENUMV(HEXA_8), nelem_start, nelem_end, nbdyelem, ielem.data(), &index_section);
 
 
   return 1;
