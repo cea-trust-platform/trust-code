@@ -33,17 +33,20 @@ public:
 
   void reset() override;
   void set_param(Param& param) override;
-  int initialize_by_default(const Nom& file_basename) override;
-  int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
+  int initialize_by_default(const Nom&) override;
+  int initialize(const Nom&, const int, const Nom&) override;
 
   int completer_post(const Domaine&, const int, const Nature_du_champ&, const int, const Noms&, const Motcle&, const Nom&) override { return 1; }
   int preparer_post(const Nom&, const int, const int, const double) override { return 1; }
 
-  int ecrire_domaine(const Domaine& , const int ) override;
+  int ecrire_entete(const double, const int, const int) override;
+  int finir(const int) override;
 
+  int ecrire_domaine(const Domaine&, const int) override;
 
 private:
   Nom cgns_basename_;
+  int index_file_ = -123, index_base_ = -123;
 };
 
 inline void verify_if_cgns(const char * nom_funct)
