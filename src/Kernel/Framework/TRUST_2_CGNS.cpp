@@ -54,6 +54,32 @@ int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize
           elems.push_back(les_elems(i, 6) + 1);
         }
       return 8;
+    case CGNS_ENUMV(QUAD_4):
+      for (int i = 0; i < nb_elem; i++)
+        {
+          elems.push_back(les_elems(i, 0) + 1);
+          elems.push_back(les_elems(i, 1) + 1);
+          elems.push_back(les_elems(i, 3) + 1);
+          elems.push_back(les_elems(i, 2) + 1);
+        }
+      return 4;
+    case CGNS_ENUMV(TETRA_4):
+      for (int i = 0; i < nb_elem; i++)
+        {
+          elems.push_back(les_elems(i, 0) + 1);
+          elems.push_back(les_elems(i, 1) + 1);
+          elems.push_back(les_elems(i, 2) + 1);
+          elems.push_back(les_elems(i, 3) + 1);
+        }
+      return 4;
+    case CGNS_ENUMV(TRI_3):
+      for (int i = 0; i < nb_elem; i++)
+        {
+          elems.push_back(les_elems(i, 0) + 1);
+          elems.push_back(les_elems(i, 1) + 1);
+          elems.push_back(les_elems(i, 2) + 1);
+        }
+      return 3;
     default:
       {
         Cerr << "Type not yet coded in TRUST_2_CGNS::convert_connectivity ! Call the 911 !" << finl;
@@ -65,7 +91,14 @@ int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize
 
 CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
 {
-  if (type == "HEXAEDRE" || type == "HEXAEDRE_VEF") return CGNS_ENUMV(HEXA_8);
+  if (type == "HEXAEDRE" || type == "HEXAEDRE_VEF")
+    return CGNS_ENUMV(HEXA_8);
+  else if (type == "RECTANGLE" || type == "QUADRANGLE" || type == "QUADRANGLE_3D")
+    return CGNS_ENUMV(QUAD_4);
+  else if (type == "TRIANGLE" || type == "TRIANGLE_3D")
+    return CGNS_ENUMV(TRI_3);
+  else if (type == "TETRAEDRE")
+    return CGNS_ENUMV(TETRA_4);
   else
     {
       Cerr << "The type " << type << " is not yet available for the CGNS format ! Call the 911 !" << finl;
