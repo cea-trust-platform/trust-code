@@ -275,7 +275,7 @@ Entree& Postraitement::readOn(Entree& s)
     }
 
   bool is_supported = false, is_single_lata = false;
-  std::vector<Motcle> supported = { "LATA", "SINGLE_LATA", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
+  std::vector<Motcle> supported = { "CGNS" , "LATA", "SINGLE_LATA", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
 
   for (auto &itr : supported)
     if (Motcle(format) == itr)
