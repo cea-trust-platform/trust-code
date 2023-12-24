@@ -65,21 +65,19 @@ int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize
       return 4;
     case CGNS_ENUMV(TETRA_4):
       for (int i = 0; i < nb_elem; i++)
-        {
-          elems.push_back(les_elems(i, 0) + 1);
-          elems.push_back(les_elems(i, 1) + 1);
-          elems.push_back(les_elems(i, 2) + 1);
-          elems.push_back(les_elems(i, 3) + 1);
-        }
+        for (int j = 0; j < 4; j++)
+          elems.push_back(les_elems(i, j) + 1);
       return 4;
     case CGNS_ENUMV(TRI_3):
       for (int i = 0; i < nb_elem; i++)
-        {
-          elems.push_back(les_elems(i, 0) + 1);
-          elems.push_back(les_elems(i, 1) + 1);
-          elems.push_back(les_elems(i, 2) + 1);
-        }
+        for (int j = 0; j < 3; j++)
+          elems.push_back(les_elems(i, j) + 1);
       return 3;
+    case CGNS_ENUMV(BAR_2):
+      for (int i = 0; i < nb_elem; i++)
+        for (int j = 0; j < 2; j++)
+          elems.push_back(les_elems(i, j) + 1);
+      return 2;
     default:
       {
         Cerr << "Type not yet coded in TRUST_2_CGNS::convert_connectivity ! Call the 911 !" << finl;
@@ -97,6 +95,8 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
     return CGNS_ENUMV(QUAD_4);
   else if (type == "TRIANGLE" || type == "TRIANGLE_3D")
     return CGNS_ENUMV(TRI_3);
+  else if (type == "SEGMENT" || type == "SEGMENT_2D")
+    return CGNS_ENUMV(BAR_2);
   else if (type == "TETRAEDRE")
     return CGNS_ENUMV(TETRA_4);
   else
