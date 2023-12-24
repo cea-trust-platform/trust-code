@@ -88,7 +88,19 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
   return 1;
 }
 
-int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
+{
+  ecrire_domaine_(domaine);
+
+  // Si on a des frontieres domaine, on les ecrit egalement
+  const LIST(REF(Domaine)) bords = domaine.domaines_frontieres();
+  for (int i = 0; i < bords.size(); i++)
+    ecrire_domaine(bords[i].valeur(), est_le_premier_post);
+
+  return 1;
+}
+
+void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
 {
   verify_if_cgns(__func__);
 #ifdef HAS_CGNS
@@ -136,6 +148,4 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   int sectionId;
   cg_section_write(fileId_, baseId_, zoneId, "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId);
 #endif
-
-  return 1;
 }

@@ -42,6 +42,8 @@ public:
 
 private:
   Nom cgns_basename_;
+  void ecrire_domaine_(const Domaine& );
+
 #ifdef HAS_CGNS
   int fileId_ = -123, baseId_ = -123;
 #endif
