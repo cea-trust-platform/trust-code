@@ -565,6 +565,8 @@ do
 	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
       echo "rm *.lata.* / *.lata_single / core.* / convert_jdd files."
       rm -f *.lata_single core.* convert_jdd
+      echo "rm *.cgns files."
+      rm -f *.cgns
       find . -maxdepth 1 -name '*.lata.*' -exec  rm  {} \;
       echo "rm *_Channel_Flow_Rate_* / *_Pressure_Gradient_* files."
       rm -f *_Channel_Flow_Rate_* *_Pressure_Gradient_*
