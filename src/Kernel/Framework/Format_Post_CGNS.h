@@ -36,6 +36,7 @@ public:
   int preparer_post(const Nom&, const int, const int, const double) override { return 1; }
 
   int ecrire_entete(const double, const int, const int) override;
+  int ecrire_temps(const double) override;
   int finir(const int) override;
 
   int ecrire_domaine(const Domaine&, const int) override;
@@ -45,7 +46,9 @@ private:
   void ecrire_domaine_(const Domaine& );
 
 #ifdef HAS_CGNS
-  int fileId_ = -123, baseId_ = -123;
+  std::vector<double> time_post_;
+  std::vector<int> baseId_, zoneId_;
+  int fileId_ = -123;
 #endif
 };
 

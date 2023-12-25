@@ -75,16 +75,46 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
   return 1;
 }
 
+int Format_Post_CGNS::ecrire_temps(const double t)
+{
+#ifdef HAS_CGNS
+  time_post_.push_back(t);
+#endif
+  return 1;
+}
+
 int Format_Post_CGNS::finir(const int est_le_dernier_post)
 {
 #ifdef HAS_CGNS
   if (est_le_dernier_post)
     {
+      assert((int ) baseId_.size() == (int ) zoneId_.size());
+      const int nsteps = static_cast<int>(time_post_.size());
+
+      for (int i = 0; i < (int) baseId_.size(); i++)
+        {
+          /* create BaseIterativeData */
+          cg_biter_write(fileId_, baseId_[i], "TimeIterValues", nsteps);
+
+          /* go to BaseIterativeData level and write time values */
+          cg_goto(fileId_, baseId_[i], "BaseIterativeData_t", 1, "end");
+
+          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
+          cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &nuse, time_post_.data());
+
+          /* create ZoneIterativeData */
+          cg_ziter_write(fileId_, baseId_[i], zoneId_[i], "ZoneIterativeData");
+          cg_goto(fileId_, baseId_[i], "Zone_t", zoneId_[i], "ZoneIterativeData_t", 1, "end");
+
+          cg_simulation_type_write(fileId_, baseId_[i], CGNS_ENUMV(TimeAccurate));
+        }
+
       std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      cg_close(fileId_);
+      cg_close (fileId_);
       Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
 #endif
+
   return 1;
 }
 
@@ -93,9 +123,8 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_pr
   ecrire_domaine_(domaine);
 
   // Si on a des frontieres domaine, on les ecrit egalement
-  const LIST(REF(Domaine)) bords = domaine.domaines_frontieres();
-  for (int i = 0; i < bords.size(); i++)
-    ecrire_domaine(bords[i].valeur(), est_le_premier_post);
+  const LIST(REF(Domaine))& bords = domaine.domaines_frontieres();
+  for (auto& itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
 
   return 1;
 }
@@ -117,12 +146,13 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
 
   const int dim = domaine.les_sommets().dimension(1), nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
   const int icelldim = dim, iphysdim = Objet_U::dimension;
-  int zoneId, coordsId;
+  int coordsId;
 
   /* 3 : Base write */
+  baseId_.push_back(-123);
   char basename[99];
   strcpy(basename, domaine.le_nom().getChar()); // dom name
-  cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_);
+  cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back());
 
   /* 4 : Vertex, cell & boundary vertex sizes */
   cgsize_t isize[3][1];
@@ -131,12 +161,13 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
   /* 5 : Create zone */
-  cg_zone_write(fileId_, baseId_, basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId);
+  zoneId_.push_back(-123);
+  cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back());
 
   /* 6 : Write grid coordinates */
-  cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateX", xCoords.data(), &coordsId);
-  cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateY", yCoords.data(), &coordsId);
-  if (dim > 2) cg_coord_write(fileId_, baseId_, zoneId, CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &coordsId);
+  cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateX", xCoords.data(), &coordsId);
+  cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateY", yCoords.data(), &coordsId);
+  if (dim > 2) cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateZ", zCoords.data(), &coordsId);
 
   /* 7 : Set element connectivity */
   std::vector<cgsize_t> elems;
@@ -146,6 +177,6 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
 
   /* 8 : Write domaine */
   int sectionId;
-  cg_section_write(fileId_, baseId_, zoneId, "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId);
+  cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId);
 #endif
 }
