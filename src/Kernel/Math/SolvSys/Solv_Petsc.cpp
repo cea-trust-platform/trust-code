@@ -1310,7 +1310,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //add_option("mat_mumps_icntl_36", "??"); controls the choice of BLR factorization variant
                 //add_option("mat_mumps_icntl_38", "??"); sets the estimated compression rate of LU factors with BLR
                 add_option("mat_mumps_cntl_7", (double)epsilon.value()); // Droping parameter
-                if (limpr()) add_option("mat_mumps_icntl_4","3"); // verobose
+                //if (limpr()) add_option("mat_mumps_icntl_4","3"); // verobose
                 check_not_defined(level);
                 break;
               }
@@ -1324,7 +1324,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 add_option("mat_strumpack_compression_rel_tol", (double)epsilon.value()); // Compression parameter
                 //add_option("mat_strumpack_compression_abs_tol", (Nom)epsilon.value()); // Compression parameter
                 //add_option("mat_strumpack_compression_lossy_precision,"1-64"); // Precision when using lossy compression [1-64],
-                if (limpr()) add_option("mat_strumpack_verbose", "1"); // Provisoire
+                //if (limpr()) add_option("mat_strumpack_verbose", "1"); // Provisoire
                 check_not_defined(level);
                 break;
               }
@@ -1899,6 +1899,57 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 }
 
 #ifdef PETSCKSP_H
+#include <signal.h>
+
+// Function to handle signals
+void handleSignal(int signum)
+{
+  if (signum==8)
+    {
+      Cerr << "SIGFPE from PETSc KSPSolve() !" << finl;
+      throw signum;
+    }
+  else if (signum==11)
+    {
+      Cerr << "SIGSEGV from PETSc KSPSolve() !" << finl;
+      throw signum;
+    }
+  else
+    {
+      fprintf(stderr, "Signal %d received from PETSc. Exiting...\n", signum);
+      Process::exit();
+    }
+}
+// Function where signal handlers are set up
+void setupSignalHandlers()
+{
+  // Configure the sigaction structure for SIGFPE
+  struct sigaction sa_fpe;
+  sa_fpe.sa_handler = handleSignal;
+  sigemptyset(&sa_fpe.sa_mask);
+  sa_fpe.sa_flags = 0;
+
+  // Install the signal handler for SIGFPE
+  if (sigaction(SIGFPE, &sa_fpe, NULL) == -1)
+    {
+      fprintf(stderr, "Error installing signal handler for SIGFPE.\n");
+      Process::exit(EXIT_FAILURE);
+    }
+
+  // Configure the sigaction structure for SIGSEGV
+  struct sigaction sa_segv;
+  sa_segv.sa_handler = handleSignal;
+  sigemptyset(&sa_segv.sa_mask);
+  sa_segv.sa_flags = 0;
+
+  // Install the signal handler for SIGSEGV
+  if (sigaction(SIGSEGV, &sa_segv, NULL) == -1)
+    {
+      fprintf(stderr, "Error installing signal handler for SIGSEGV.\n");
+      Process::exit(EXIT_FAILURE);
+    }
+}
+
 int Solv_Petsc::solve(ArrOfDouble& residu)
 {
   PetscLogStagePush(KSPSolve_Stage_);
@@ -1942,6 +1993,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
         KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
     }
   // Solve
+  setupSignalHandlers();
   if (gpu_) statistiques().begin_count(gpu_library_counter_);
   KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   if (gpu_) statistiques().end_count(gpu_library_counter_);
@@ -1949,7 +2001,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
   if (Reason==KSP_DIVERGED_ITS && (convergence_with_nb_it_max_ || ignore_nb_it_max_)) Reason = KSP_CONVERGED_ITS;
-  if (Reason<0 && limpr()>-1)
+  if (Reason<0)
     {
       Cerr << "No convergence on the resolution with the Petsc solver." << finl;
       Cerr << "Reason given by Petsc: ";
@@ -1961,6 +2013,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
       else if (Reason==KSP_DIVERGED_INDEFINITE_PC)       Cerr << "KSP_DIVERGED_INDEFINITE_PC" << finl;
       else if (Reason==KSP_DIVERGED_NANORINF)            Cerr << "KSP_DIVERGED_NANORINF" << finl;
       else if (Reason==KSP_DIVERGED_INDEFINITE_MAT)      Cerr << "KSP_DIVERGED_INDEFINITE_MAT" << finl;
+      else if (Reason==KSP_DIVERGED_PC_FAILED)           Cerr << "KSP_DIVERGED_PC_FAILED" << finl;
       else if (Reason==KSP_DIVERGED_ITS)
         {
           Cerr << "KSP_DIVERGED_ITS" << finl;
@@ -1968,6 +2021,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           Cerr << "You can change the maximal number of iterations with the -ksp_max_it option." << finl;
         }
       else Cerr << (int)Reason << finl;
+      throw Reason;
     }
   if (Reason<0 && !return_on_error_) exit();
   PetscInt nbiter=-1;
@@ -2802,6 +2856,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
             }
           catch(...)
             {
+              // ToDo: changer car PETSc est en C: pas d'exception lancee
               Cerr << "We detect that the PETSc matrix coefficients are changed without pre-allocation." << finl;
               Cerr << "Try one of the following option:" << finl;
               Cerr << "- Rebuild the matrix each time instead of updating the coefficients (slower)." << finl;
