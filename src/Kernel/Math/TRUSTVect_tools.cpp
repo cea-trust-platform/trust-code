@@ -16,6 +16,13 @@
 #include <TRUSTVect.h>
 #include <TRUSTVect_tools.tpp>
 
+// Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
+#ifdef _OPENMP
+static bool timer=true;
+#else
+static bool timer=false;
+#endif
+
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_>
 void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
@@ -72,7 +79,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
           if (IS_CARRE) p_resu += alpha * x * x;
         }
     }
-  end_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
+  if (timer) end_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -149,7 +156,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
           //printf("After resu %p %p %f\n,",(void*)&x, (void*)&p_resu, p_resu);
         }
     }
-  end_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
+  if (timer) end_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -251,7 +258,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
             }
         }
     }
-  end_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
+  if (timer) end_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -435,7 +442,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
           }
         } */
     }
-  end_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
+  if (timer) end_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
   return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 }
 // Explicit instanciation for templates:
@@ -523,7 +530,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
             }
         }
     }
-  end_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
+  if (timer) end_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
   return sum;
 }
 // Explicit instanciation for templates:
@@ -564,7 +571,7 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   const int bloc_end = resu.size_array(); // Process until end of vector
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
-  end_timer(kernelOnDevice, "invalidate_data(x)");
+  if (timer) end_timer(kernelOnDevice, "invalidate_data(x)");
 }
 // FIN code pour debug
 // ==================================================================================================================================
@@ -626,7 +633,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
         for (int i=begin_bloc; i<end_bloc; i++)
           sum += vx_ptr[i] * vy_ptr[i];
     }
-  end_timer(kernelOnDevice, "local_prodscal(vx,vy)");
+  if (timer) end_timer(kernelOnDevice, "local_prodscal(vx,vy)");
   return sum;
 }
 // Explicit instanciation for templates:
