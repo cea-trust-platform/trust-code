@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2313,4 +2313,29 @@ void Matrice_Morse::sort_stencil()
   for (int i = 0; i + 1 < tab1_.size(); i++) //indice de ligne
     std::sort(tab2_.addr() + tab1_(i) - 1, tab2_.addr() + tab1_(i + 1) - 1);
   morse_matrix_structure_has_changed_ = sorted_ = 1;
+}
+
+// Check the matrix is diagonal:
+// Faster than using:
+// IntTab stencil;
+// A.get_stencil(stencil);
+// Matrix_tools::is_diagonal_stencil(A.nb_lignes(), A.nb_colonnes(), stencil);
+bool Matrice_Morse::is_diagonal()
+{
+  bool is_diagonal = true;
+  const int n = nb_lignes();
+  for (int i = 0; i < n; i++)
+    {
+      const int k1 = get_tab1()(i) - 1;
+      const int k2 = get_tab1()(i + 1) - 1;
+      for (int k = k1; k < k2; k++)
+        {
+          if (k2-k1>1 || get_tab2()(k)-1!=i)
+            {
+              is_diagonal = false;
+              break;
+            }
+        }
+    }
+  return is_diagonal;
 }
