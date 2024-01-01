@@ -17,6 +17,10 @@
 #include <TRUST_2_CGNS.h>
 #include <Param.h>
 
+#ifdef HAS_CGNS
+#define CGNS_STR_SIZE 32
+#endif
+
 Implemente_instanciable_sans_constructeur(Format_Post_CGNS, "Format_Post_CGNS", Format_Post_base);
 
 Format_Post_CGNS::Format_Post_CGNS()
@@ -110,7 +114,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
           cg_goto(fileId_, baseId_[i], "Zone_t", zoneId_[i], "ZoneIterativeData_t", 1, "end");
 
           cgsize_t idata[2];
-          idata[0] = 32;
+          idata[0] = CGNS_STR_SIZE;
           idata[1] = nsteps;
           cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_.c_str());
 
@@ -159,7 +163,7 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
-  char basename[99];
+  char basename[CGNS_STR_SIZE];
   strcpy(basename, domaine.le_nom().getChar()); // dom name
   cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back());
 
@@ -221,14 +225,14 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
       if (LOC == "SOM")
         {
           std::string sn = solname + "_SOM";
-          sn.resize(32, ' ');
+          sn.resize(CGNS_STR_SIZE, ' ');
           solname_ += sn;
           cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], sn.c_str(), CGNS_ENUMV(Vertex), &flowId_);
         }
       else if (LOC == "ELEM")
         {
           std::string sn = solname + "_ELEM";
-          sn.resize(32, ' ');
+          sn.resize(CGNS_STR_SIZE, ' ');
           solname_ += sn;
           cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], sn.c_str(), CGNS_ENUMV(CellCenter), &flowId_);
         }
