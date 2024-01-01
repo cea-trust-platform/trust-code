@@ -79,6 +79,9 @@ int Format_Post_CGNS::ecrire_temps(const double t)
 {
 #ifdef HAS_CGNS
   time_post_.push_back(t);
+  flowId_++;
+  fieldId_ = 0; // reset
+  solname_written_ = false;
 #endif
   return 1;
 }
@@ -105,6 +108,11 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
           /* create ZoneIterativeData */
           cg_ziter_write(fileId_, baseId_[i], zoneId_[i], "ZoneIterativeData");
           cg_goto(fileId_, baseId_[i], "Zone_t", zoneId_[i], "ZoneIterativeData_t", 1, "end");
+
+          cgsize_t idata[2];
+          idata[0] = 32;
+          idata[1] = nsteps;
+          cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_.c_str());
 
           cg_simulation_type_write(fileId_, baseId_[i], CGNS_ENUMV(TimeAccurate));
         }
@@ -136,6 +144,7 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
   /* 1 : Instance of TRUST_2_CGNS */
   TRUST_2_CGNS TRUST2CGNS;
   TRUST2CGNS.associer_domaine_TRUST(domaine);
+  doms_written_.push_back(domaine.le_nom());
 
   Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
@@ -149,7 +158,7 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
   int coordsId;
 
   /* 3 : Base write */
-  baseId_.push_back(-123);
+  baseId_.push_back(-123); // pour chaque dom, on a une baseId
   char basename[99];
   strcpy(basename, domaine.le_nom().getChar()); // dom name
   cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back());
@@ -179,4 +188,61 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine)
   int sectionId;
   cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId);
 #endif
+}
+
+int Format_Post_CGNS::get_index_domain(const Nom& nom)
+{
+  int ind = -1;
+#ifdef HAS_CGNS
+  auto it = find(doms_written_.begin(), doms_written_.end(), nom);
+  if (it != doms_written_.end()) // element found
+    ind = it - doms_written_.begin(); // sinon utilse std::distance ...
+#endif
+  return ind;
+}
+
+int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps,
+                                   const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation,
+                                   const Nom& nature, const DoubleTab& valeurs)
+{
+#ifdef HAS_CGNS
+  fieldId_++; // XXX
+  Motcle LOC(localisation);
+
+  std::vector<double> field_cgns;
+  for (int i = 0; i < valeurs.dimension(0); i++)
+    field_cgns.push_back(valeurs(i, 0));
+
+  const int ind = get_index_domain(domaine.le_nom());
+
+  if (!solname_written_)
+    {
+      std::string solname = "FlowSolution" + std::to_string(temps);
+      if (LOC == "SOM")
+        {
+          std::string sn = solname + "_SOM";
+          sn.resize(32, ' ');
+          solname_ += sn;
+          cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], sn.c_str(), CGNS_ENUMV(Vertex), &flowId_);
+        }
+      else if (LOC == "ELEM")
+        {
+          std::string sn = solname + "_ELEM";
+          sn.resize(32, ' ');
+          solname_ += sn;
+          cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], sn.c_str(), CGNS_ENUMV(CellCenter), &flowId_);
+        }
+      else if (LOC == "FACES")
+        {
+          throw;
+          std::string sn = solname + "_FACES";
+          cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], sn.c_str(), CGNS_ENUMV(FaceCenter), &flowId_);
+        }
+    }
+
+  cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), field_cgns.data(), &fieldId_);
+
+  solname_written_ = true;
+#endif
+  return 1;
 }

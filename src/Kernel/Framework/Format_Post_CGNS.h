@@ -40,15 +40,21 @@ public:
   int finir(const int) override;
 
   int ecrire_domaine(const Domaine&, const int) override;
+  int ecrire_item_int(const Nom&, const Nom&, const Nom&, const Nom&, const Nom&, const IntVect&, const int) override { return 1; }
+  int ecrire_champ(const Domaine&, const Noms&, const Noms&, int, double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&) override;
 
 private:
   Nom cgns_basename_;
   void ecrire_domaine_(const Domaine& );
+  int get_index_domain(const Nom&);
 
 #ifdef HAS_CGNS
+  bool solname_written_ = false;
+  std::string solname_ = "";
+  std::vector<Nom> doms_written_;
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_;
-  int fileId_ = -123;
+  int fileId_ = -123, flowId_ = 0, fieldId_ = 0;
 #endif
 };
 
