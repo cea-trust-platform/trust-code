@@ -47,6 +47,7 @@ private:
   Nom cgns_basename_;
   void ecrire_domaine_(const Domaine& );
   int get_index_domain(const Nom&);
+  void ecrire_champ_(const Domaine&, const int, const double, const Nom&, const Nom&, const DoubleTab&);
 
 #ifdef HAS_CGNS
   bool solname_written_ = false;

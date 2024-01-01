@@ -209,13 +209,22 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
                                    const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation,
                                    const Nom& nature, const DoubleTab& valeurs)
 {
+  const int nb_cmp = valeurs.dimension(1);
+  for (int i = 0; i < nb_cmp; i++)
+    ecrire_champ_(domaine, i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, valeurs);
+
+  return 1;
+}
+
+void Format_Post_CGNS::ecrire_champ_(const Domaine& domaine, const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const DoubleTab& valeurs)
+{
 #ifdef HAS_CGNS
   fieldId_++; // XXX
   Motcle LOC(localisation);
 
   std::vector<double> field_cgns;
   for (int i = 0; i < valeurs.dimension(0); i++)
-    field_cgns.push_back(valeurs(i, 0));
+    field_cgns.push_back(valeurs(i, comp));
 
   const int ind = get_index_domain(domaine.le_nom());
 
@@ -248,5 +257,4 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
   solname_written_ = true;
 #endif
-  return 1;
 }
