@@ -18,6 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Format_Post_base.h>
+#include <map>
 
 #include <cgns++.h>
 
@@ -45,17 +46,20 @@ public:
 
 private:
   Nom cgns_basename_;
-  void ecrire_domaine_(const Domaine& );
-  int get_index_domain(const Nom&);
-  void ecrire_champ_(const Domaine&, const int, const double, const Nom&, const Nom&, const DoubleTab&);
 
 #ifdef HAS_CGNS
-  bool solname_written_ = false;
-  std::string solname_ = "";
+  bool solname_elem_written_ = false, solname_som_written_ = false;
+  std::string solname_elem_ = "", solname_som_ = "";
+  std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
+  std::map<std::string, std::string> solname_map_; /* { Loc , solname_ } */
   std::vector<Nom> doms_written_;
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_;
-  int fileId_ = -123, flowId_ = 0, fieldId_ = 0;
+  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
+
+  int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+  void ecrire_domaine_(const Domaine& , const Nom&);
+  void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 #endif
 };
 
