@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Op_Grad_PolyVEF_P0_Face.h>
-#include <Masse_PolyVEF_P0_Face.h>
+#include <Masse_PolyVEF_Face.h>
 #include <Champ_Elem_PolyVEF_P0.h>
-#include <Champ_Face_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine_Cl_PolyMAC.h>
@@ -54,8 +54,8 @@ void Op_Grad_PolyVEF_P0_Face::completer()
 
 void Op_Grad_PolyVEF_P0_Face::update_grad(int full_stencil) const
 {
-  const Domaine_PolyVEF_P0& dom = ref_cast(Domaine_PolyVEF_P0, ref_domaine.valeur());
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Domaine_PolyVEF& dom = ref_cast(Domaine_PolyVEF, ref_domaine.valeur());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
                              sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const int M = press.line_size();
@@ -71,7 +71,7 @@ void Op_Grad_PolyVEF_P0_Face::update_grad(int full_stencil) const
 void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const IntTab& fcl = ch.fcl();
   int i, e, f, fb = 0, ne_tot = dom.nb_elem_tot(),
                nf_tot = dom.nb_faces_tot(), nfb_tot = dom.nb_faces_bord_tot(), d,
@@ -101,7 +101,7 @@ void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const Conds_lim& cls = ref_dcl->les_conditions_limites();
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& vfd = dom.volumes_entrelaces_dir(),

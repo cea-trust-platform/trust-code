@@ -51,7 +51,8 @@ void Paroi_contact::complement(Nom& ajout)
       else
         ajout = mon_equation->discretisation().is_polymac_p0p1nc() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
                 mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " :
-                mon_equation->discretisation().is_polyvef_p0() ? "paroi_echange_contact_PolyVEF_P0 " : "paroi_echange_contact_PolyMAC ";
+                mon_equation->discretisation().is_polyvef() ? "paroi_echange_contact_PolyVEF " : "paroi_echange_contact_PolyMAC ";
+
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";
