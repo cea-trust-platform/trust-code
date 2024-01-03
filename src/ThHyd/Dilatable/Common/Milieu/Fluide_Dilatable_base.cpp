@@ -232,6 +232,14 @@ void Fluide_Dilatable_base::set_Cp(double Cp_)
 
 void Fluide_Dilatable_base::update_rho_cp(double temps)
 {
+  // Si l'inconnue est sur le device, on copie les donnees aussi:
+  if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
+    {
+      // ToDo OpenMP or Kokkos deplacer tout cela dans Milieu_base::initialiser ?
+      mapToDevice(rho.valeurs(), "rho");
+      mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
+      mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
+    }
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
   DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
@@ -359,6 +367,13 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     initialiser_radiatives(temps);
 
+  if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
+    {
+      // ToDo OpenMP or Kokkos deplacer tout cela dans Milieu_base::initialiser ?
+      mapToDevice(rho.valeurs(), "rho");
+      mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
+      mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
+    }
   return 1;
 }
 

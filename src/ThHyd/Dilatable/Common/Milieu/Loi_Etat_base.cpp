@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -190,6 +190,7 @@ void Loi_Etat_base::calculer_nu()
       const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       double rhoelem;
       int face, nfe = elem_faces.line_size();
+      // ToDo OpenMP or Kokkos
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);

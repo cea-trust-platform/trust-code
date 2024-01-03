@@ -1683,6 +1683,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       Matrice_Morse_Diag diag;
       if (precond_diag)
         {
+          // ToDo OpenMP or Kokkos precond_diag
           statistiques().begin_count(assemblage_sys_counter_);
           const int nb_case = inconnue().valeurs().dimension_tot(0);
           const int nb_comp = inconnue().valeurs().line_size();

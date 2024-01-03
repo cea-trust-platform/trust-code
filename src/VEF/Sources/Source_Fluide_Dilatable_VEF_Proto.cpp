@@ -112,6 +112,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
             }
         }
       // Boucle faces internes
+      // ToDo OpenMP or Kokkos
       for (int face=premiere_face_interne ; face<nb_faces; face++)
         for (int comp=0 ; comp<dimension ; comp++)
           resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);

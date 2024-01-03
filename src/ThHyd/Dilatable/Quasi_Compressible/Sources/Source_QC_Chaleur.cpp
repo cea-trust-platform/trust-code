@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,11 +59,17 @@ DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
    * Here grad(P_tot) = 0 (uniform in space)
    */
 
-  int i, nsom = resu.dimension(0);
   const Fluide_Quasi_Compressible& FQC = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur());
   double Pth = FQC.pression_th(), Pthn = FQC.pression_thn();
   double dpth = ( Pth - Pthn ) / dt_;
-  for (i=0 ; i<nsom ; i++) resu(i) += dpth * volumes(i) * porosites(i);
-
+  // resu+=dpth*volumes*porosites
+  int nsom = resu.dimension(0);
+  for (int i=0 ; i<nsom ; i++)
+    resu(i) += dpth * volumes(i) * porosites(i);
+  // ToDo OpenMP or Kokkos : implement in TRUSTVect_tools a method ajoute_alpha_v_w (+=alpha*v*w) ?
+  /* Ne marche pas detect inf en debug: */
+  /* DoubleVect vol(volumes);
+  vol*=porosites;
+  ajoute_alpha_v(resu, dpth, vol); */
   return resu;
 }

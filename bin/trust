@@ -882,9 +882,10 @@ elif [ "$NCU" = 1 ]
 then
    rm -f $NOM.qdrep.ncu-rep
    # Detect ncu location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
-   ncu=`ls /opt/nvidia/nsight-systems/*/bin/ncu $CUDA_ROOT/*/bin/ncu $CUDA_ROOT/bin/ncu 2>/dev/null | tail -1`
+   ncu=`ls $TRUST_ROOT/env/gpu/install/*/*/*/compilers/bin/ncu /opt/nvidia/nsight-systems/*/bin/ncu $CUDA_ROOT/*/bin/ncu $CUDA_ROOT/bin/ncu 2>/dev/null | tail -1`
    export PATH=`dirname $ncu`:$PATH
    nsight="ncu --target-processes all -o $NOM.qdrep.ncu-rep"
+   echo $nsight
 elif [ "$CS" = 1 ]
 then
    exec="compute-sanitizer --tool $CS_OPTION $binary"

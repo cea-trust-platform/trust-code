@@ -35,9 +35,10 @@ Navier_Stokes_Fluide_Dilatable_Proto::Navier_Stokes_Fluide_Dilatable_Proto() : c
 DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const
 {
   const int n = vit.dimension(0), ncomp = vit.line_size();
-
+// ToDo OpenMP or Kokkos
   for (int i=0 ; i<n ; i++)
-    for (int j=0 ; j<ncomp ; j++) rhovitesse(i,j) = tab_rho(i,0)*vit(i,j);
+    for (int j=0 ; j<ncomp ; j++)
+      rhovitesse(i,j) = tab_rho(i,0)*vit(i,j);
 
   rhovitesse.echange_espace_virtuel();
   Debog::verifier("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse : ", rhovitesse);
@@ -394,7 +395,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       eqn.solv_masse()->set_name_of_coefficient_temporel("rho_comme_v");
       eqn.solv_masse().appliquer(secmemV);
       DoubleTrav dr(tab_rho_face_n);
-      for (int i=0; i<dr.size_totale(); i++) dr(i)=(tab_rho_face_n(i)/tab_rho_face_np1(i)-1.)/dt;
+      // ToDo OpenMP or Kokkos
+      for (int i=0; i<dr.size_totale(); i++)
+        dr(i)=(tab_rho_face_n(i)/tab_rho_face_np1(i)-1.)/dt;
 
       // on sert de vpoint pour calculer
       rho_vitesse_impl(dr,vit,vpoint);

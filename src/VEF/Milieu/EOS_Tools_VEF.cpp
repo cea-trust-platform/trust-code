@@ -178,6 +178,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const Domaine& dom=le_dom->domaine();
 
   // calcul de la somme des volumes entrelacees autour d'un sommet
+  // ToDo OpenMP or Kokkos
   volume_int_som=0.;
   for (face=0 ; face<nb_faces_tot ; face++)
     for (som=0 ; som<nsf ; som++)
@@ -191,6 +192,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   double pond;
   pond=1./nsf; // version_originale
+  // ToDo OpenMP or Kokkos
   for (face=0 ; face<nb_faces_tot ; face++)
     {
       for (som=0 ; som<nsf ; som++)
@@ -211,6 +213,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   int decal=0;
   int p_has_elem=zp1b.get_alphaE();
   int nb_case=nb_elem_tot*p_has_elem;
+  // ToDo OpenMP or Kokkos
   for (elem=0 ; elem<nb_case ; elem++)
     {
       rn=0;
@@ -229,7 +232,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
   int p_has_som=zp1b.get_alphaS();
   nb_case=nb_som_tot*p_has_som;
-
+// ToDo OpenMP
   for (som=0 ; som<nb_case ; som++)
     tab_dZ(decal+som) = ((tab_rhonp1_som(som))-(tab_rhon_som(som)))/dt;
 
@@ -248,7 +251,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   double coefdivelem=1,coefdivsom=1;
   decal=0;
   nb_case=nb_elem_tot*p_has_elem;
-
+// ToDo OpenMP
   for (elem=0 ; elem<nb_case ; elem++)
     tab_W(elem) = -coefdivelem*tab_dZ(elem) * volumes(elem);
 
