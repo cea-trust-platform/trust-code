@@ -72,7 +72,7 @@ void Loi_paroi_base::completer()
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   const IntTab& f_e = domaine.face_voisins();
 
-  const bool is_polymacp0 = pb_->discretisation().is_polymac_p0(), is_vdf = pb_->discretisation().is_vdf(), is_polyVEF = pb_->discretisation().is_polyvef_p0();
+  const bool is_polymacp0 = pb_->discretisation().is_polymac_p0(), is_vdf = pb_->discretisation().is_vdf(), is_polyVEF = pb_->discretisation().is_polyvef();
   DoubleTab& tab_y = valeurs_loi_paroi_["y"];
   for (int f = 0; f < tab_y.dimension_tot(0); f++)
     for (int n = 0; n < tab_y.dimension_tot(1); n++)

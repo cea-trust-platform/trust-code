@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Assembleur_P_PolyVEF_P0.h>
-#include <Champ_Face_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
 #include <Op_Div_PolyVEF_P0.h>
@@ -35,7 +35,7 @@ Entree& Op_Div_PolyVEF_P0::readOn(Entree& s) { return s; }
 void Op_Div_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const DoubleTab& inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
   const IntTab& f_e = dom.face_voisins();
   int i, e, f, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
@@ -70,7 +70,7 @@ void Op_Div_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 void Op_Div_PolyVEF_P0::ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
   const DoubleTab& nf = dom.face_normales();
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
