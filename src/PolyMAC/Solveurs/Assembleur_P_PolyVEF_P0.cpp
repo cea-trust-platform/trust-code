@@ -18,9 +18,9 @@
 #include <Assembleur_P_PolyVEF_P0.h>
 #include <Op_Grad_PolyVEF_P0_Face.h>
 #include <Neumann_sortie_libre.h>
-#include <Champ_Face_PolyVEF_P0.h>
-#include <Masse_PolyVEF_P0_Face.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
+#include <Masse_PolyVEF_Face.h>
+#include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Matrice_Diagonale.h>
 #include <Navier_Stokes_std.h>
@@ -49,7 +49,7 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Domaine_PolyVEF_P0& dom = ref_cast(Domaine_PolyVEF_P0, le_dom_PolyMAC.valeur());
+  const Domaine_PolyVEF& dom = ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
   const Op_Grad_PolyVEF_P0_Face& grad = ref_cast(Op_Grad_PolyVEF_P0_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c, &nf = dom.face_normales();

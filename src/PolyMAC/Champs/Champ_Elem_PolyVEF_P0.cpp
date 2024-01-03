@@ -15,7 +15,7 @@
 
 #include <Champ_Elem_PolyVEF_P0.h>
 #include <Connectivite_som_elem.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
 
 Implemente_instanciable(Champ_Elem_PolyVEF_P0,"Champ_Elem_PolyVEF_P0",Champ_Elem_PolyMAC_P0);
@@ -24,9 +24,9 @@ Sortie& Champ_Elem_PolyVEF_P0::printOn(Sortie& s) const { return s << que_suis_j
 
 Entree& Champ_Elem_PolyVEF_P0::readOn(Entree& s) { return Champ_Elem_PolyMAC_P0::readOn(s) ; }
 
-const Domaine_PolyVEF_P0& Champ_Elem_PolyVEF_P0::domaine_PolyVEF_P0() const
+const Domaine_PolyVEF& Champ_Elem_PolyVEF_P0::domaine_PolyVEF() const
 {
-  return ref_cast(Domaine_PolyVEF_P0, le_dom_VF.valeur());
+  return ref_cast(Domaine_PolyVEF, le_dom_VF.valeur());
 }
 
 void Champ_Elem_PolyVEF_P0::init_auxiliary_variables()

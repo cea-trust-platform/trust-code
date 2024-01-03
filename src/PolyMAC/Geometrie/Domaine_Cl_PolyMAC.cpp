@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,13 +17,13 @@
 #include <Champ_front_softanalytique.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
-#include <Champ_Face_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Discretisation_base.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Dirichlet_homogene.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Domaine_PolyVEF.h>
 #include <Champ_Inc_P0_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Equation_base.h>
@@ -46,7 +46,7 @@ void Domaine_Cl_PolyMAC::completer(const Domaine_dis& )
 
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
-  if (sub_type(Domaine_PolyVEF_P0, domaine_vf())) return;
+  if (sub_type(Domaine_PolyVEF, domaine_vf())) return;
 
   Champ_Inc_base& ch_base = ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
