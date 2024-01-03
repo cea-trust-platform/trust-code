@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,8 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
           if ((eb = fgrad_e(j)) < ne_tot)
             mat(e, eb) += (i ? 1 : -1) * pf(f) * fs(f) * fgrad_c(j, 0);
 
-  if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
+  const bool is_first_proc_with_real_elems = Process::me() == Process::mp_min(domaine.nb_elem() ? Process::me() : 1e8);
+  if (!has_P_ref && is_first_proc_with_real_elems) mat(0, 0) *= 2;
 
   return 1;
 }
