@@ -17,13 +17,13 @@
 #include <Champ_front_softanalytique.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
-#include <Champ_Face_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Discretisation_base.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Dirichlet_homogene.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Domaine_PolyVEF.h>
 #include <Champ_Inc_P0_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Equation_base.h>
@@ -46,7 +46,7 @@ void Domaine_Cl_PolyMAC::completer(const Domaine_dis_base& )
 
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
-  if (sub_type(Domaine_PolyVEF_P0, domaine_vf())) return;
+  if (sub_type(Domaine_PolyVEF, domaine_vf())) return;
 
   DoubleTab& ch_tab = ch.valeurs(temps);
   int n, N = ch_tab.line_size();

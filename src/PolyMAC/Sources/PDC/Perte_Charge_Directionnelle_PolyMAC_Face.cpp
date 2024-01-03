@@ -77,13 +77,13 @@ void Perte_Charge_Directionnelle_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const 
 
 /////////////////////////////////////////////////
 
-Implemente_instanciable(Perte_Charge_Directionnelle_PolyVEF_P0_Face, "Perte_Charge_Directionnelle_Face_PolyVEF_P0", Perte_Charge_PolyVEF_P0);
+Implemente_instanciable(Perte_Charge_Directionnelle_PolyVEF_Face, "Perte_Charge_Directionnelle_Face_PolyVEF_P0", Perte_Charge_PolyVEF);
 
-Sortie& Perte_Charge_Directionnelle_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Sortie& Perte_Charge_Directionnelle_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-Entree& Perte_Charge_Directionnelle_PolyVEF_P0_Face::readOn(Entree& s)
+Entree& Perte_Charge_Directionnelle_PolyVEF_Face::readOn(Entree& s)
 {
-  Perte_Charge_PolyVEF_P0::readOn(s);
+  Perte_Charge_PolyVEF::readOn(s);
   if (v->nb_comp() != dimension)
     {
       Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
@@ -92,15 +92,15 @@ Entree& Perte_Charge_Directionnelle_PolyVEF_P0_Face::readOn(Entree& s)
   return s;
 }
 
-void Perte_Charge_Directionnelle_PolyVEF_P0_Face::set_param(Param& param)
+void Perte_Charge_Directionnelle_PolyVEF_Face::set_param(Param& param)
 {
-  Perte_Charge_PolyVEF_P0::set_param(param);
+  Perte_Charge_PolyVEF::set_param(param);
   param.ajouter("direction", &v, Param::REQUIRED);
 }
 
-void Perte_Charge_Directionnelle_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                                      double dh, double nu, double reynolds, double& coeff_ortho,
-                                                                      double& coeff_long, double& u_l, DoubleVect& v_valeur) const
+void Perte_Charge_Directionnelle_PolyVEF_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
+                                                                   double dh, double nu, double reynolds, double& coeff_ortho,
+                                                                   double& coeff_long, double& u_l, DoubleVect& v_valeur) const
 {
   coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
 }

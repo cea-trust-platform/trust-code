@@ -44,14 +44,14 @@ void Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const Double
 
 /////////////////////////////////////////////////
 
-Implemente_instanciable(Perte_Charge_Isotrope_PolyVEF_P0_Face, "Perte_Charge_Isotrope_Face_PolyVEF_P0", Perte_Charge_PolyVEF_P0);
+Implemente_instanciable(Perte_Charge_Isotrope_PolyVEF_Face, "Perte_Charge_Isotrope_Face_PolyVEF_P0", Perte_Charge_PolyVEF);
 
-Sortie& Perte_Charge_Isotrope_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-Entree& Perte_Charge_Isotrope_PolyVEF_P0_Face::readOn(Entree& s) { return Perte_Charge_PolyVEF_P0::readOn(s); }
+Sortie& Perte_Charge_Isotrope_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Entree& Perte_Charge_Isotrope_PolyVEF_Face::readOn(Entree& s) { return Perte_Charge_PolyVEF::readOn(s); }
 
-void Perte_Charge_Isotrope_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                                double dh, double nu, double reynolds, double& coeff_ortho,
-                                                                double& coeff_long, double& u_l, DoubleVect& v_valeur) const
+void Perte_Charge_Isotrope_PolyVEF_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
+                                                             double dh, double nu, double reynolds, double& coeff_ortho,
+                                                             double& coeff_long, double& u_l, DoubleVect& v_valeur) const
 {
   coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
 }

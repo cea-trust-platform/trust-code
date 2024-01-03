@@ -19,7 +19,7 @@
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Operateur.h>
 
-class Domaine_PolyVEF_P0;
+class Domaine_PolyVEF;
 
 /*! @brief : class Champ_Elem_PolyVEF_P0
  *
@@ -31,7 +31,7 @@ class Champ_Elem_PolyVEF_P0: public Champ_Elem_PolyMAC_P0
 {
   Declare_instanciable(Champ_Elem_PolyVEF_P0);
 public:
-  const Domaine_PolyVEF_P0& domaine_PolyVEF_P0() const;
+  const Domaine_PolyVEF& domaine_PolyVEF() const;
   void init_auxiliary_variables() override;
   void init_grad(int full_stencil) const;      // Call to initialise the tables ; no updates necessary
   void calc_grad(int full_stencil) const;      // Call to calculate the tables ; updates necessary

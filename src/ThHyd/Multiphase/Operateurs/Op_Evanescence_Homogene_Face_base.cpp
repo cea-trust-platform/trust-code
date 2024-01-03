@@ -54,7 +54,7 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, f, n, N = inco.line_size();
-  const bool is_pvef = equation().discretisation().is_polyvef_p0();
+  const bool is_pvef = equation().discretisation().is_polyvef();
 
   if (N == 1) return; //pas d'evanescence en simple phase!
   for (auto &&n_m : matrices)
@@ -110,7 +110,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                               iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration_ : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
-  const bool is_pvef = equation().discretisation().is_polyvef_p0();
+  const bool is_pvef = equation().discretisation().is_polyvef();
 
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
 

@@ -20,7 +20,7 @@
 
 /*! @brief class Op_Div_PolyVEF_P0
  *
- *   Cette classe represente l'operateur de divergence. La discretisation est PolyVEF_P0
+ *   Cette classe represente l'operateur de divergence. La discretisation est PolyVEF
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
  *
