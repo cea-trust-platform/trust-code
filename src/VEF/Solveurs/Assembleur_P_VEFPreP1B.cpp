@@ -915,7 +915,8 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
       Matrice_Bloc& mat_bloc_p1_p1 = ref_cast(Matrice_Bloc, matrice.get_bloc(P1,P1).valeur());
       Matrice_Morse_Sym& A11RR = ref_cast(Matrice_Morse_Sym,mat_bloc_p1_p1.get_bloc(0,0).valeur());
       // On impose une pression de reference sur un sommet si support P0 ou si pas de CL de Neumann
-      if (((!(Process::mp_max(CL_neumann))) || ((domaine_VEF.get_alphaE()) && (domaine_VEF.get_cl_pression_sommet_faible()==1) ) ) && Process::je_suis_maitre())
+      const bool is_first_proc_with_real_elems = Process::me() == Process::mp_min(le_dom_VEF->nb_elem() ? Process::me() : 1e8);
+      if (((!(Process::mp_max(CL_neumann))) || ((domaine_VEF.get_alphaE()) && (domaine_VEF.get_cl_pression_sommet_faible()==1) ) ) && is_first_proc_with_real_elems)
         {
           int sommet_referent=0;
           double distance=DMAXFLOAT;
@@ -948,7 +949,8 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
       Matrice_Bloc& mat_bloc_pa_pa = ref_cast(Matrice_Bloc, matrice.get_bloc(Pa,Pa).valeur());
       Matrice_Morse_Sym& A22RR = ref_cast(Matrice_Morse_Sym,mat_bloc_pa_pa.get_bloc(0,0).valeur());
       // On impose une pression de reference sur une arete en P0+Pa uniquement
-      if ((domaine_VEF.get_alphaE() && !domaine_VEF.get_alphaS()) && Process::je_suis_maitre())
+      const bool is_first_proc_with_real_elems = Process::me() == Process::mp_min(le_dom_VEF->nb_elem() ? Process::me() : 1e8);
+      if ((domaine_VEF.get_alphaE() && !domaine_VEF.get_alphaS()) && is_first_proc_with_real_elems)
         {
           int arete_referente=0;
           double distance=DMAXFLOAT;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -687,7 +687,8 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
   Matrice_Bloc& mat_bloc = ref_cast(Matrice_Bloc, matrice.valeur());
   Matrice_Morse_Sym& A00RR = ref_cast(Matrice_Morse_Sym,mat_bloc.get_bloc(0,0).valeur());
   // Recherche de l'element sur lequel on impose la pression de reference
-  if (Process::je_suis_maitre() && !A00RR.get_est_definie())
+  const bool is_first_proc_with_real_elems = Process::me() == Process::mp_min(le_dom_VEF->nb_elem() ? Process::me() : 1e8);
+  if (is_first_proc_with_real_elems && !A00RR.get_est_definie())
     {
       int element_referent=0;
       double distance=DMAXFLOAT;

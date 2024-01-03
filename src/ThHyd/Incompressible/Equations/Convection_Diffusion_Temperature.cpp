@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -403,7 +403,7 @@ double Convection_Diffusion_Temperature::get_time_factor() const
 // ajoute les contributions des operateurs et des sources
 void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  const double rhoCp = get_time_factor();
+  const double rhoCp = domaine_dis()->nb_elem() ? get_time_factor() : 1.0;
 
   // Test de verification de la methode contribuer_a_avec
   for (int op=0; op<nombre_d_operateurs(); op++)

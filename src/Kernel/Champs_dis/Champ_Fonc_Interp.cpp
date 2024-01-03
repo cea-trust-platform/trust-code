@@ -172,7 +172,9 @@ void Champ_Fonc_Interp::update_fields()
   local_field_->setArray(local_array_);
 
   // Source Stuff
-  if (pb_dist_->domaine_dis().valeur().que_suis_je() == "Domaine_VEF" &&  distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot())
+  if (pb_dist_->domaine_dis().valeur().que_suis_je() == "Domaine_VEF"
+      && pb_dist_->domaine_dis()->nb_elem() > 0
+      && distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot())
     {
       Cerr << finl << "ERROR in Champ_Fonc_Interp : in problem " << pb_loc_->le_nom() << ", the distant field is located at faces!" << finl;
       Cerr << "Use a postprocessing field located at elements instead of " << le_nom() << finl;
