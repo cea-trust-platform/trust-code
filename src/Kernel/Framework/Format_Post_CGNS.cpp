@@ -295,16 +295,11 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
   else // ELEM // TODO FIXME FACES
     fieldId_elem_++;
 
-  /* 2 : Fill field values */
-  std::vector<double> field_cgns;
-  for (int i = 0; i < valeurs.dimension(0); i++)
-    field_cgns.push_back(valeurs(i, comp));
-
-  /* 3 : Get corresponding domain index */
+  /* 2 : Get corresponding domain index */
   const int ind = get_index_nom_vector(doms_written_, nom_dom);
   assert (ind > -1);
 
-  /* 4 : Write solution names for iterative data later */
+  /* 3 : Write solution names for iterative data later */
   if (!solname_som_written_ && LOC == "SOM")
     {
       std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
@@ -323,10 +318,24 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
       solname_elem_written_ = true;
     }
 
-  /* 5 : Dump field */
-  if (LOC == "SOM")
-    cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), field_cgns.data(), &fieldId_som_);
-  else // ELEM // TODO FIXME FACES
-    cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), field_cgns.data(), &fieldId_elem_);
+  /* 4 : Fill field values & dump to cgns file */
+  if (valeurs.dimension(1) == 1) /* No stride ! */
+    {
+      if (LOC == "SOM")
+        cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), valeurs.addr(), &fieldId_som_);
+      else // ELEM // TODO FIXME FACES
+        cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), valeurs.addr(), &fieldId_elem_);
+    }
+  else
+    {
+      std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
+      for (int i = 0; i < valeurs.dimension(0); i++)
+        field_cgns.push_back(valeurs(i, comp));
+
+      if (LOC == "SOM")
+        cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), field_cgns.data(), &fieldId_som_);
+      else // ELEM // TODO FIXME FACES
+        cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), field_cgns.data(), &fieldId_elem_);
+    }
 }
 #endif
