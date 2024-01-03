@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ class Domaine_dis;
 class Motcle;
 class Param;
 
-/*! @brief Classe de base des formats de postraitements pour les champs (lata, med, lml, meshtv).
+/*! @brief Classe de base des formats de postraitements pour les champs (lata, med, cgns, lml, meshtv).
  *
  *  Utilisation de la classe par l'interface generique:
  *  -typer un objet format de postraitement
