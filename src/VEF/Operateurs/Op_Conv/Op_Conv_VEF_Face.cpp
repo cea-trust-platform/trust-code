@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -775,7 +775,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                 if (num10 < nb_faces_bord)
                                   {
                                     #pragma omp atomic
-                                    flux_b_addr[num10 * ncomp_ch_transportnb_elem_tote] += flux;
+                                    flux_b_addr[num10 * ncomp_ch_transporte] += flux;
                                   }
                                 if (num20 < nb_faces_bord)
                                   {

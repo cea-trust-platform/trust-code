@@ -380,41 +380,41 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   int nb_faces = domaine_VEF.nb_faces();
   int nb_faces_bord = domaine_VEF.premiere_face_int();
 
-
-//  const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
-//  const double * face_normales_addr = mapToDevice(domaine_VEF.face_normales());
-//  const double * nu_addr = mapToDevice(nu, "nu");
-//  const double * grad_addr = mapToDevice(grad_, "grad");
-//  DoubleTab resu_cop = resu;
-//  DoubleTab flux_cop = tab_flux_bords;
-//  double * resu_addr = computeOnTheDevice(resu, "resu");
-//  double * tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
-//  start_timer();
-//  #pragma omp target teams distribute parallel for if (computeOnDevice)
-//  for (int num_face=0; num_face<nb_faces; num_face++)
-//    {
-//      for (int k=0; k<2; k++)
-//        {
-//          int elem = face_voisins_addr[2*num_face+k];
-//          if (elem>=0)
-//            {
-//              int ori = 1 - 2 * k;
-//              for (int i = 0; i < nb_comp; i++)
-//                for (int j = 0; j < nb_comp; j++)
-//                  {
-//                    double flux = ori * face_normales_addr[num_face * nb_comp + j]
-//                                  * (nu_addr[elem] * grad_addr[elem * nb_comp * nb_comp + i * nb_comp + j] /* + Re(elem, i, j) */ );
-//                    #pragma omp atomic
-//                    resu_addr[num_face * nb_comp + i] -= flux;
-//                    if (num_face < nb_faces_bord)
-//                      #pragma omp atomic
-//                      tab_flux_bords_addr[num_face * nb_comp + i] -= flux;
-//                  }
-//            }
-//        } // Fin de la boucle sur les 2 elements comnuns a la face
-//    } // Fin de la boucle sur les faces
-//  end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
-
+#ifndef KOKKOS_
+  const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
+  const double * face_normales_addr = mapToDevice(domaine_VEF.face_normales());
+  const double * nu_addr = mapToDevice(nu, "nu");
+  const double * grad_addr = mapToDevice(grad_, "grad");
+  DoubleTab resu_cop = resu;
+  DoubleTab flux_cop = tab_flux_bords;
+  double * resu_addr = computeOnTheDevice(resu, "resu");
+  double * tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (computeOnDevice)
+  for (int num_face=0; num_face<nb_faces; num_face++)
+    {
+      for (int k=0; k<2; k++)
+        {
+          int elem = face_voisins_addr[2*num_face+k];
+          if (elem>=0)
+            {
+              int ori = 1 - 2 * k;
+              for (int i = 0; i < nb_comp; i++)
+                for (int j = 0; j < nb_comp; j++)
+                  {
+                    double flux = ori * face_normales_addr[num_face * nb_comp + j]
+                                  * (nu_addr[elem] * grad_addr[elem * nb_comp * nb_comp + i * nb_comp + j] /* + Re(elem, i, j) */ );
+                    #pragma omp atomic
+                    resu_addr[num_face * nb_comp + i] -= flux;
+                    if (num_face < nb_faces_bord)
+                      #pragma omp atomic
+                      tab_flux_bords_addr[num_face * nb_comp + i] -= flux;
+                  }
+            }
+        } // Fin de la boucle sur les 2 elements comnuns a la face
+    } // Fin de la boucle sur les faces
+  end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
+#else
   CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
   CDoubleTabView nu_v = nu.view_ro();
@@ -498,7 +498,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //    tab_flux_bords.sync_to_host();
 //
 //  }
-
+#endif
 
   // Update flux_bords on symmetry:
   const int nb_bords=domaine_VEF.nb_front_Cl();

@@ -281,33 +281,33 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       end_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
-
-//  const int *face_voisins_addr = mapToDevice(face_voisins);
-//  const double *porosite_face_addr = mapToDevice(porosite_face);
-//  const double *face_normales_addr = mapToDevice(face_normales);
-//  const int *elem_faces_addr = mapToDevice(elem_faces);
-//  const double *pre_addr = mapToDevice(pre, "pre");
-//  double *grad_addr = computeOnTheDevice(grad, "grad");
-//  start_timer();
-//  #pragma omp target teams distribute parallel for if (computeOnDevice)
-//  for (int elem = 0; elem < nb_elem_tot; elem++)
-//    {
-//      for (int indice = 0; indice < nfe; indice++)
-//        {
-//          double pe = pre_addr[elem];
-//          int face = elem_faces_addr[nfe * elem + indice];
-//          double signe = 1;
-//          if (elem != face_voisins_addr[2 * face])
-//            signe = -1;
-//          for (int comp = 0; comp < dimension; comp++)
-//            {
-//              #pragma omp atomic
-//              grad_addr[dimension * face + comp] -= pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];
-//            }
-//        }
-//    }
-//  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-
+#ifndef KOKKOS_
+  const int *face_voisins_addr = mapToDevice(face_voisins);
+  const double *porosite_face_addr = mapToDevice(porosite_face);
+  const double *face_normales_addr = mapToDevice(face_normales);
+  const int *elem_faces_addr = mapToDevice(elem_faces);
+  const double *pre_addr = mapToDevice(pre, "pre");
+  double *grad_addr = computeOnTheDevice(grad, "grad");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (computeOnDevice)
+  for (int elem = 0; elem < nb_elem_tot; elem++)
+    {
+      for (int indice = 0; indice < nfe; indice++)
+        {
+          double pe = pre_addr[elem];
+          int face = elem_faces_addr[nfe * elem + indice];
+          double signe = 1;
+          if (elem != face_voisins_addr[2 * face])
+            signe = -1;
+          for (int comp = 0; comp < dimension; comp++)
+            {
+              #pragma omp atomic
+              grad_addr[dimension * face + comp] -= pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];
+            }
+        }
+    }
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+#else
   CIntTabView face_voisins_v = face_voisins.view_ro();
   CDoubleArrView porosite_face_v = porosite_face.view_ro();
   CDoubleTabView face_normales_v = face_normales.view_ro();
@@ -340,7 +340,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
 
   grad.sync_to_host();
-
+#endif
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& grad) const
@@ -693,34 +693,35 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   bool alphaS = domaine_VEF.get_alphaS();
   int nb_som_par_face = sommets.dimension(1);
 
-//  const int *face_voisins_addr = mapToDevice(face_voisins);
-//  const int *sommets_addr = mapToDevice(sommets);
-//  const double *face_normales_addr = mapToDevice(face_normales);
-//  const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
-//  double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
-//  start_timer();
-//  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-//  for (int face = 0; face < nb_faces_bord; face++)
-//    {
-//      int elem = face_voisins_addr[face * 2];
-//      double pres_tot = 0.;
-//      // Contribution de la pression P0
-//      if (alphaE)
-//        pres_tot += pression_P1B_addr[elem];
-//      // Contribution de la pression P1
-//      if (alphaS)
-//        {
-//          double pres_som = 0.;
-//          for (int som = 0; som < nb_som_par_face; som++)
-//            pres_som += pression_P1B_addr[nps + sommets_addr[face * nb_som_par_face + som]];
-//          pres_tot += coeff_P1 * pres_som;
-//        }
-//      // Calcul de la resultante et du couple de pression
-//      for (int i = 0; i < dimension; i++)
-//        flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
-//    }
-//  end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
-
+#ifndef KOKKOS_
+  const int *face_voisins_addr = mapToDevice(face_voisins);
+  const int *sommets_addr = mapToDevice(sommets);
+  const double *face_normales_addr = mapToDevice(face_normales);
+  const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
+  double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+  for (int face = 0; face < nb_faces_bord; face++)
+    {
+      int elem = face_voisins_addr[face * 2];
+      double pres_tot = 0.;
+      // Contribution de la pression P0
+      if (alphaE)
+        pres_tot += pression_P1B_addr[elem];
+      // Contribution de la pression P1
+      if (alphaS)
+        {
+          double pres_som = 0.;
+          for (int som = 0; som < nb_som_par_face; som++)
+            pres_som += pression_P1B_addr[nps + sommets_addr[face * nb_som_par_face + som]];
+          pres_tot += coeff_P1 * pres_som;
+        }
+      // Calcul de la resultante et du couple de pression
+      for (int i = 0; i < dimension; i++)
+        flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
+    }
+  end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+#else
   CIntTabView face_voisins_v = face_voisins.view_ro();
   CIntTabView sommets_v = sommets.view_ro();
   CDoubleTabView face_normales_v = face_normales.view_ro();
@@ -755,19 +756,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 
   flux_bords_.sync_to_host();
-
-//  // Comparison
-//  for (int i = 0; i < 10; i++)
-//    for (int j = 0; j< flux_bords2.dimension_tot(1); j++)
-//      {
-//        double diff = abs(flux_bords2(i,j) - flux_bords_(i,j));
-//        if (diff > 1.0e-10)
-//          {
-//            Cerr << "(" << i  << ","  << j << ") " << flux_bords_(i,j) << " vs " << flux_bords2(i,j) << finl;
-//            throw;
-//          }
-//      }
-
+#endif
 }
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
