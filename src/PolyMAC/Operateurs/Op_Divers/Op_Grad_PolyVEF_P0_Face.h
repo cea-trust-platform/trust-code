@@ -18,13 +18,13 @@
 
 #include <Op_Grad_PolyMAC_P0_Face.h>
 
-class Champ_Face_PolyVEF_P0;
+class Champ_Face_PolyVEF;
 
 /*! @brief class Op_Grad_PolyVEF_P0_Face
  *
  *   Cette classe represente l'operateur de gradient
- *   La discretisation est PolyVEF_P0
- *   On calcule le gradient d'un champ_Elem_PolyVEF_P0 (la pression)
+ *   La discretisation est PolyVEF
+ *   On calcule le gradient d'un champ_Elem_PolyVEF (la pression)
  *
  *
  * @sa Operateur_Grad_base

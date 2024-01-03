@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 
 Implemente_instanciable(Option_PolyVEF_P0,"Option_PolyVEF_P0",Interprete);
 
-// XD Option_PolyVEF_P0 interprete Option_PolyVEF_P0 1 Class of PolyVEF_P0 options.
+// XD Option_PolyVEF_P0 interprete Option_PolyVEF_P0 1 Class of PolyVEF options.
 // XD attr interp_ve1 rien interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
 // XD attr traitement_axi rien traitement_axi 1 Flag used to relax the time-step stability criterion in case of a thin slice geometry while modelling an axi-symetrical case
 
