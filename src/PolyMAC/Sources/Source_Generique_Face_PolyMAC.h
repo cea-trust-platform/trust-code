@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,9 +42,9 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override;
 };
 
-class Source_Generique_Face_PolyVEF_P0: public Source_Generique_Face_PolyMAC_P0P1NC
+class Source_Generique_Face_PolyVEF: public Source_Generique_Face_PolyMAC_P0P1NC
 {
-  Declare_instanciable(Source_Generique_Face_PolyVEF_P0);
+  Declare_instanciable(Source_Generique_Face_PolyVEF);
 public:
   DoubleTab& ajouter(DoubleTab&) const override;
 };
