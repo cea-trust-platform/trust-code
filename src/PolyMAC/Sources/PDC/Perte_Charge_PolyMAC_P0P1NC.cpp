@@ -16,10 +16,10 @@
 #include <Multiplicateur_diphasique_base.h>
 #include <Perte_Charge_PolyMAC_P0P1NC.h>
 #include <Fluide_Incompressible.h>
-#include <Champ_Face_PolyVEF_P0.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Champ_Face_PolyVEF.h>
+#include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyVEF_P0.h>
+#include <Domaine_PolyVEF.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_composite.h>
 #include <Champ_Uniforme.h>

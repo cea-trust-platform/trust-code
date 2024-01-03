@@ -15,7 +15,7 @@
 
 #include <Op_Diff_Turbulent_PolyMAC_P0_Elem.h>
 #include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
-#include <Op_Diff_Turbulent_PolyVEF_P0_Face.h>
+#include <Op_Diff_Turbulent_PolyVEF_Face.h>
 #include <PolyMAC_P0_discretisation.h>
 #include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
@@ -24,8 +24,8 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyMAC_P0_Elem|Op_Diff_Turbulente_PolyMAC_P0_Elem", Op_Diff_PolyMAC_P0_Elem );
-Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyVEF_P0_Elem");
-Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulente_PolyVEF_P0_Elem");
+Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyVEF_Elem");
+Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulente_PolyVEF_Elem");
 
 Sortie& Op_Diff_Turbulent_PolyMAC_P0_Elem::printOn(Sortie& os) const { return Op_Diff_PolyMAC_P0_base::printOn(os); }
 
@@ -68,13 +68,13 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
   if (corr_.est_nul()) return; //rien a faire
 
   const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
-  if (! (sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) || sub_type(Op_Diff_Turbulent_PolyVEF_P0_Face, op_qdm)))
+  if (! (sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) || sub_type(Op_Diff_Turbulent_PolyVEF_Face, op_qdm)))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent momentum diffusion found!" << finl;
       Process::exit();
     }
 
-  const Correlation_base& corr_visc = sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) ? ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation() : ref_cast(Op_Diff_Turbulent_PolyVEF_P0_Face, op_qdm).correlation();
+  const Correlation_base& corr_visc = sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm) ? ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation() : ref_cast(Op_Diff_Turbulent_PolyVEF_Face, op_qdm).correlation();
   if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent viscosity correlation found!" << finl;

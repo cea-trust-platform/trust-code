@@ -113,9 +113,9 @@ void Domaine_PolyMAC_P0::init_stencils() const
 //          is_p          : 1 si on traite le champ de pression (inversion Neumann / Dirichlet)
 //          vec           : vecteur complet
 //          cls           : conditions aux limites
-//          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyVEF_P0)
+//          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_PolyVEF)
 //          nu(e, n, ..)  : diffusivite aux elements (optionnel)
-//          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyVEF_P0_Elem)
+//          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_PolyVEF_Elem)
 //          virt          : 1 si on veut aussi le flux aux faces virtuelles
 //          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
 //Sorties : phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
@@ -231,7 +231,7 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, int vec, const Conds_lim& cls, c
                       for (sgn = e == f_e(f = s_f[k = se_f[i][j]], 0) ? 1 : -1, d = 0; d < D; d++) /* essai 2 : gradient non consistant */
                         X(j, d) = surf_fs[k] / vol_es[i] * sgn * nf(f, d) / fs(f);
 
-                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_PolyVEF_P0_Elem */
+                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_PolyVEF_Elem */
                   for (j = 0; j < n_ef; j++)
                     {
                       k = se_f[i][j], f = s_f[k], sgn = e == f_e(f, 0) ? 1 : -1; //face et son indice

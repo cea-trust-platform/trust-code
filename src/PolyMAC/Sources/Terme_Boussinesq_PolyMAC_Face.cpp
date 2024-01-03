@@ -37,17 +37,17 @@ Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0P
 Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0_Face");
 Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_Face");
 
-Implemente_instanciable(Terme_Boussinesq_PolyVEF_P0_Face, "Boussinesq_PolyVEF_P0_Face", Terme_Boussinesq_PolyMAC_Face);
-Add_synonym(Terme_Boussinesq_PolyVEF_P0_Face, "Boussinesq_temperature_Face_PolyVEF_P0");
-Add_synonym(Terme_Boussinesq_PolyVEF_P0_Face, "Boussinesq_concentration_PolyVEF_P0_Face");
+Implemente_instanciable(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_PolyVEF_Face", Terme_Boussinesq_PolyMAC_Face);
+Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0");
+Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_concentration_PolyVEF_Face");
 
 Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s) const { return Terme_Boussinesq_base::printOn(s); }
 
 Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s) { return Terme_Boussinesq_base::readOn(s); }
 
-Sortie& Terme_Boussinesq_PolyVEF_P0_Face::printOn(Sortie& s) const { return Terme_Boussinesq_PolyMAC_Face::printOn(s); }
+Sortie& Terme_Boussinesq_PolyVEF_Face::printOn(Sortie& s) const { return Terme_Boussinesq_PolyMAC_Face::printOn(s); }
 
-Entree& Terme_Boussinesq_PolyVEF_P0_Face::readOn(Entree& s) { return Terme_Boussinesq_PolyMAC_Face::readOn(s); }
+Entree& Terme_Boussinesq_PolyVEF_Face::readOn(Entree& s) { return Terme_Boussinesq_PolyMAC_Face::readOn(s); }
 
 void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
@@ -92,7 +92,7 @@ void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
       }
 }
 
-void Terme_Boussinesq_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Terme_Boussinesq_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();

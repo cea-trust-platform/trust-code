@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_Anisotrope_PolyMAC_Face_included
 #define Perte_Charge_Anisotrope_PolyMAC_Face_included
 
-#include <Perte_Charge_PolyVEF_P0.h>
+#include <Perte_Charge_PolyVEF.h>
 #include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge anisotrope (selon un vecteur unitaire v et dans le plan orthogonal a ce vecteur)
@@ -84,9 +84,9 @@ protected:
 
 /////////////////////////////////////////////////
 
-class Perte_Charge_Anisotrope_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Anisotrope_PolyMAC
+class Perte_Charge_Anisotrope_PolyVEF_Face: public Perte_Charge_PolyVEF, public PDC_Anisotrope_PolyMAC
 {
-  Declare_instanciable(Perte_Charge_Anisotrope_PolyVEF_P0_Face);
+  Declare_instanciable(Perte_Charge_Anisotrope_PolyVEF_Face);
 public:
   void mettre_a_jour(double temps) override
   {

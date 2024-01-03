@@ -49,7 +49,7 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
 
-  const bool is_polyVEF = pb_->discretisation().is_polyvef_p0(), is_VDF = pb_->discretisation().is_vdf();
+  const bool is_polyVEF = pb_->discretisation().is_polyvef(), is_VDF = pb_->discretisation().is_vdf();
 
   int nf_tot = domaine.nb_faces_tot(), D = dimension, N = vit.line_size() / (is_polyVEF ? D : 1);
 
@@ -82,7 +82,7 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
               u_parallel(d) = pvit_elem(e, N * d + n) - u_orth * (-n_f(f, d)) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
             yloc = y_loc(f, n);
           }
-        else if (is_polyVEF) // PolyVEF_P0 case : vitesse chelou sur la face de bord
+        else if (is_polyVEF) // PolyVEF case : vitesse chelou sur la face de bord
           {
             for (int d = 0; d < D; d++)
               u_orth -= vit(f, N * d + n) * n_f(f, d) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
