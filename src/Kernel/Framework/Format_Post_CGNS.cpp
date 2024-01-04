@@ -14,11 +14,20 @@
 *****************************************************************************/
 
 #include <Format_Post_CGNS.h>
+#include <Comm_Group_MPI.h>
 #include <TRUST_2_CGNS.h>
 #include <Param.h>
 
 #ifdef HAS_CGNS
 #define CGNS_STR_SIZE 32
+#endif
+
+#ifdef MPI_
+#ifdef INT_is_64_
+#define MPI_ENTIER MPI_LONG
+#else
+#define MPI_ENTIER MPI_INT
+#endif
 #endif
 
 Implemente_instanciable_sans_constructeur(Format_Post_CGNS, "Format_Post_CGNS", Format_Post_base);
@@ -72,7 +81,15 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
   if (est_le_premier_post)
     {
       std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_)) cg_error_exit();
+      if (is_parallel())
+        {
+          cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
+          if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_)) cg_error_exit();
+        }
+      else
+        {
+          if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_)) cg_error_exit();
+        }
       Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
 #endif
@@ -173,7 +190,10 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
 int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
 {
 #ifdef HAS_CGNS
-  ecrire_domaine_(domaine, domaine.le_nom());
+  if (is_parallel())
+    ecrire_domaine_par_(domaine, domaine.le_nom());
+  else
+    ecrire_domaine_(domaine, domaine.le_nom());
 
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine))& bords = domaine.domaines_frontieres();
@@ -217,6 +237,117 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 }
 
 #ifdef HAS_CGNS
+void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& nom_dom)
+{
+  /* 1 : Instance of TRUST_2_CGNS */
+  TRUST_2_CGNS TRUST2CGNS;
+  TRUST2CGNS.associer_domaine_TRUST(domaine);
+  doms_written_.push_back(nom_dom);
+
+  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
+  CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
+
+  /* 2 : Fill coords */
+  std::vector<double> xCoords, yCoords, zCoords;
+  TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
+
+  const int icelldim = domaine.les_sommets().dimension(1), iphysdim = Objet_U::dimension;
+  const int nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
+  const int nb_zones = Process::nproc(), proc_me = Process::me();
+
+  /* 3 : Base write */
+  baseId_.push_back(-123); // pour chaque dom, on a une baseId
+  char basename[CGNS_STR_SIZE];
+  strcpy(basename, nom_dom.getChar()); // dom name
+  cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back());
+
+  /* 4 : We need global nb_elems/nb_soms => MPI_Allgather */
+  std::vector<int> global_nb_elem, global_nb_som;
+  global_nb_elem.assign(nb_zones, -123 /* default */);
+  global_nb_som.assign(nb_zones, -123 /* default */);
+
+#ifdef MPI_
+//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
+  MPI_Allgather(&nb_elem, 1, MPI_ENTIER, global_nb_elem.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+  MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+  /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
+   *
+   *  - All processors write the same information.
+   *  - Only zone meta-data is written to the library at this stage ... So no worries ^^
+   */
+  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId;
+  std::string zonename;
+  int gridId;
+
+  for (int iz = 0; iz != nb_zones; ++iz)
+    {
+      cgsize_t start = 1, end = global_nb_elem[iz] /* nb_elem local */;
+
+      cgsize_t isize[3][1];
+      isize[0][0] = global_nb_som[iz]; /* nb_som local */
+      isize[1][0] = end; /* nb_elem local */
+      isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
+
+      zoneId_.push_back(-123);
+      zonename = nom_dom.getString() + std::to_string(iz);
+      zonename.resize(CGNS_STR_SIZE, ' ');
+
+      /* 5.1 : Create zone */
+      if (cg_zone_write(fileId_, baseId_.back(), zonename.c_str(), isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cg_zone_write !" << finl, cgp_error_exit();
+
+      if (cg_grid_write(fileId_, baseId_.back(), zoneId_.back(), "GridCoordinates", &gridId) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cg_grid_write !" << finl, cgp_error_exit();
+
+      /* 5.2 : Construct the grid coordinates nodes */
+      coordsIdx.push_back(-123), coordsIdy.push_back(-123);
+      if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateX", &coordsIdx.back()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write - X !" << finl, cgp_error_exit();
+
+      if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateY", &coordsIdy.back()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write - Y !" << finl, cgp_error_exit();
+
+      if (icelldim > 2)
+        {
+          coordsIdz.push_back(-123);
+          if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_ENUMV(RealDouble), "CoordinateZ", &coordsIdz.back()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write - Z !" << finl, cgp_error_exit();
+        }
+
+      /* 5.3 : Construct the sections to host connectivity later */
+      sectionId.push_back(-123);
+      if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId.back()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_section_write !" << finl, cgp_error_exit();
+    }
+
+  /* 6 : Write grid coordinates */
+  cgsize_t min = 1, max = nb_som /* nb_som local */;
+
+  if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdx[proc_me], &min, &max, xCoords.data()) != CG_OK)
+    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - X !" << finl, cgp_error_exit();
+
+  if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdy[proc_me], &min, &max, yCoords.data()) != CG_OK)
+    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
+
+  if (icelldim > 2)
+    if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdz[proc_me], &min, &max, zCoords.data()) != CG_OK)
+      Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
+
+  /* 7 : Set element connectivity */
+  std::vector<cgsize_t> elems;
+  TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+
+  max = nb_elem; /* now we need local elem */
+  if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_[proc_me], sectionId[proc_me], min, max, elems.data()) != CG_OK)
+    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
+
+  // TO REMOVE !
+  cgp_close (fileId_);
+  Process::exit();
+}
+
 void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_dom)
 {
   /* 1 : Instance of TRUST_2_CGNS */

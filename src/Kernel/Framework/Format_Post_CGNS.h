@@ -78,6 +78,7 @@ public:
   int ecrire_champ(const Domaine&, const Noms&, const Noms&, int, double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&) override;
 
 private:
+  inline bool is_parallel() const { return Process::nproc() > 1; }
   Nom cgns_basename_;
 
 #ifdef HAS_CGNS
@@ -92,6 +93,7 @@ private:
 
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
   void ecrire_domaine_(const Domaine& , const Nom&);
+  void ecrire_domaine_par_(const Domaine& , const Nom&);
   void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 #endif
 };
