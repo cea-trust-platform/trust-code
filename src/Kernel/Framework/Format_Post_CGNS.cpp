@@ -84,6 +84,15 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
       if (is_parallel())
         {
           cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
+
+          /*
+           * Elie Saikali XXX NOTA BENE XXX
+           * We need sometimes to write planes, boundaries where some processors have no elements/vertices ...
+           * This wont work because the default PIO mode of CGNS is COLLECTIVE. We want it to be INDEPENDENT !
+           */
+          if (cgp_pio_mode((CGNS_ENUMT(PIOmode_t)) CGP_INDEPENDENT) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_entete : cgp_pio_mode !" << finl, cgp_error_exit();
+
           if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_entete : cgp_open !" << finl, cgp_error_exit();
         }
@@ -129,12 +138,9 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_pr
   else
     ecrire_domaine_(domaine, domaine.le_nom());
 
-  if (!is_parallel()) // TODO FIXME
-    {
-      // Si on a des frontieres domaine, on les ecrit egalement
-      const LIST(REF(Domaine))& bords = domaine.domaines_frontieres();
-      for (auto& itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
-    }
+  // Si on a des frontieres domaine, on les ecrit egalement
+  const LIST(REF(Domaine)) &bords = domaine.domaines_frontieres();
+  for (auto &itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
 #endif
   return 1;
 }
@@ -219,7 +225,7 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
 
   const int icelldim = domaine.les_sommets().dimension(1), iphysdim = Objet_U::dimension;
   const int nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
-  const int nb_zones = Process::nproc(), proc_me = Process::me();
+  const int nb_procs = Process::nproc(), proc_me = Process::me();
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
@@ -231,8 +237,8 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
 
   /* 4 : We need global nb_elems/nb_soms => MPI_Allgather. Thats the only information required ! */
   std::vector<int> global_nb_elem, global_nb_som;
-  global_nb_elem.assign(nb_zones, -123 /* default */);
-  global_nb_som.assign(nb_zones, -123 /* default */);
+  global_nb_elem.assign(nb_procs, -123 /* default */);
+  global_nb_som.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
 //  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
@@ -242,24 +248,42 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
 
   /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
-   *  - All processors write the same information.
+   *  - All processors THAT HAVE nb_elem > 0 write the same information.
    *  - Only zone meta-data is written to the library at this stage ... So no worries ^^
    */
-  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId;
+  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, proc_non_zero_elem;
   std::string zonename;
   int gridId;
 
-  for (int iz = 0; iz != nb_zones; ++iz)
-    {
-      cgsize_t start = 1, end = global_nb_elem[iz] /* nb_elem local */;
+  const auto min_nb_elem = std::min_element(global_nb_elem.begin(), global_nb_elem.end());
+  int nb_zones_to_write = nb_procs;
 
+  if (*min_nb_elem <= 0) // not all procs will write !
+    {
+      // remplir proc_non_zero_elem avec le numero de proc si nb_elem > 0 !!
+      for (int i = 0; i < static_cast<int>(global_nb_elem.size()); i++)
+        if (global_nb_elem[i] > 0) proc_non_zero_elem.push_back(i);
+
+      nb_zones_to_write = static_cast<int>(proc_non_zero_elem.size());
+    }
+
+  const bool all_write = proc_non_zero_elem.empty(); // all procs will write !
+
+  // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+  for (int i = 0; i != nb_zones_to_write; i++)
+    {
+      const int indZ = all_write ? i : proc_non_zero_elem[i]; // procID
+      const int ne_loc = global_nb_elem[indZ], ns_loc = global_nb_som[indZ]; /* nb_elem & nb_som local */
+      assert (ne_loc > 0);
+
+      cgsize_t start = 1, end = ne_loc;
       cgsize_t isize[3][1];
-      isize[0][0] = global_nb_som[iz]; /* nb_som local */
-      isize[1][0] = end; /* nb_elem local */
+      isize[0][0] = ns_loc;
+      isize[1][0] = end;
       isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
       zoneId_.push_back(-123);
-      zonename = nom_dom.getString() + std::to_string(iz);
+      zonename = nom_dom.getString() + "_" + std::to_string(indZ);
       zonename.resize(CGNS_STR_SIZE, ' ');
 
       /* 5.1 : Create zone */
@@ -290,26 +314,41 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
         Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_section_write !" << finl, cgp_error_exit();
     }
 
-  /* 6 : Write grid coordinates */
-  cgsize_t min = 1, max = nb_som /* nb_som local */;
+//  Process::barrier();
 
-  if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdx[proc_me], &min, &max, xCoords.data()) != CG_OK)
-    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - X !" << finl, cgp_error_exit();
+  /* 6 : Write grid coordinates & set connectivity */
+  if (nb_elem > 0) // this proc will write !
+    {
+      cgsize_t min = 1, max = nb_som;
+      int indx = -123;
+      if (all_write) indx = proc_me;
+      else
+        for (int i = 0; i < nb_zones_to_write; i++)
+          if (proc_non_zero_elem[i] == proc_me)
+            {
+              indx = i;
+              break;
+            }
 
-  if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdy[proc_me], &min, &max, yCoords.data()) != CG_OK)
-    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
+      /* 6.1 : Write grid coordinates */
+      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdx[indx], &min, &max, xCoords.data()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - X !" << finl, cgp_error_exit();
 
-  if (icelldim > 2)
-    if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[proc_me], coordsIdz[proc_me], &min, &max, zCoords.data()) != CG_OK)
-      Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
+      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdy[indx], &min, &max, yCoords.data()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
 
-  /* 7 : Set element connectivity */
-  std::vector<cgsize_t> elems;
-  TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+      if (icelldim > 2)
+        if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdz[indx], &min, &max, zCoords.data()) != CG_OK)
+          Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
 
-  max = nb_elem; /* now we need local elem */
-  if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_[proc_me], sectionId[proc_me], min, max, elems.data()) != CG_OK)
-    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
+      /* 6.2 : Set element connectivity */
+      std::vector<cgsize_t> elems;
+      TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+
+      max = nb_elem; /* now we need local elem */
+      if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
+    }
 }
 
 void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_dom)
@@ -466,6 +505,7 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
  */
 void Format_Post_CGNS::finir_par_()
 {
+  Process::barrier();
   std::string fn = cgns_basename_.getString() + ".cgns"; // file name
   if (cgp_close (fileId_) != CG_OK)
     Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_close !" << finl, cgp_error_exit();
