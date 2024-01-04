@@ -152,25 +152,24 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 #ifdef HAS_CGNS
   const std::string LOC = Motcle(localisation).getString();
   /* 1 : if first time called ... build different supports for mixed locations */
-  if (!is_parallel()) // TODO FIXME
-    if (static_cast<int>(time_post_.size()) == 1)
-      {
-        if (static_cast<int>(fld_loc_map_.size()) == 0)
-          fld_loc_map_.insert( { LOC , domaine.le_nom() });/* ici on utilise le 1er support */
-        else
-          {
-            const bool in_map = (fld_loc_map_.count(LOC) != 0);
-            if (!in_map) // XXX here we need a new support ... sorry
-              {
-                Nom nom_dom = domaine.le_nom();
-                nom_dom += "_";
-                nom_dom += LOC;
-                Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-                ecrire_domaine_(domaine, nom_dom);
-                fld_loc_map_.insert( { LOC, nom_dom } );
-              }
-          }
-      }
+  if (static_cast<int>(time_post_.size()) == 1)
+    {
+      if (static_cast<int>(fld_loc_map_.size()) == 0)
+        fld_loc_map_.insert( { LOC , domaine.le_nom() });/* ici on utilise le 1er support */
+      else
+        {
+          const bool in_map = (fld_loc_map_.count(LOC) != 0);
+          if (!in_map) // XXX here we need a new support ... sorry
+            {
+              Nom nom_dom = domaine.le_nom();
+              nom_dom += "_";
+              nom_dom += LOC;
+              Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
+              is_parallel() ? ecrire_domaine_par_(domaine, nom_dom) : ecrire_domaine_(domaine, nom_dom); // XXX Attention
+              fld_loc_map_.insert( { LOC, nom_dom } );
+            }
+        }
+    }
 
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
@@ -505,7 +504,7 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
  */
 void Format_Post_CGNS::finir_par_()
 {
-  Process::barrier();
+//  Process::barrier();
   std::string fn = cgns_basename_.getString() + ".cgns"; // file name
   if (cgp_close (fileId_) != CG_OK)
     Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_close !" << finl, cgp_error_exit();
