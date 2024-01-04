@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
+      double rhocp = mon_equation->domaine_dis()->nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0) : 1.0;
       diffu_turb /= rhocp;
       diffu /= rhocp;
     }
