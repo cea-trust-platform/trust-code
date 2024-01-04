@@ -114,101 +114,10 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
 #ifdef HAS_CGNS
   if (est_le_dernier_post)
     {
-      assert(static_cast<int>(baseId_.size()) == static_cast<int>(zoneId_.size()));
-      const int nsteps = static_cast<int>(time_post_.size());
-
-      std::vector<int> ind_doms_dumped;
-
-      /* 1 : on iter juste sur le map fld_loc_map_; ie: pas domaine dis ... */
-      for (auto &itr : fld_loc_map_)
-        {
-          const std::string& LOC = itr.first;
-          const Nom& nom_dom = itr.second;
-          const int ind = get_index_nom_vector(doms_written_, nom_dom);
-          ind_doms_dumped.push_back(ind);
-          assert(ind > -1);
-
-          /* create BaseIterativeData */
-          if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_biter_write !" << finl, cg_error_exit();
-
-          /* go to BaseIterativeData level and write time values */
-          if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
-
-          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
-          if (cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &nuse, time_post_.data()) != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
-
-          /* create ZoneIterativeData */
-          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_ziter_write !" << finl, cg_error_exit();
-
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
-
-          cgsize_t idata[2];
-          idata[0] = CGNS_STR_SIZE;
-          idata[1] = nsteps;
-
-          if (LOC == "SOM")
-            {
-              if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
-            }
-          else
-            {
-              if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
-            }
-
-          if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-            Cerr << "Error Format_Post_CGNS::finir : cg_simulation_type_write !" << finl, cg_error_exit();
-        }
-
-      /* 2 : on iter sur les autres domaines; ie: domaine dis */
-      for (int i = 0; i < static_cast<int>(doms_written_.size()); i++)
-        {
-          if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
-            {
-              const Nom& nom_dom = doms_written_[i];
-              const int ind = get_index_nom_vector(doms_written_, nom_dom);
-              assert(ind > -1);
-
-              /* create BaseIterativeData */
-              if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_biter_write !" << finl, cg_error_exit();
-
-              /* go to BaseIterativeData level and write time values */
-              if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
-
-              cgsize_t nuse = static_cast<cgsize_t>(nsteps);
-              if (cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &nuse, time_post_.data()) != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
-
-              /* create ZoneIterativeData */
-              if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_ziter_write !" << finl, cg_error_exit();
-
-              if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
-
-              if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-                Cerr << "Error Format_Post_CGNS::finir : cg_simulation_type_write !" << finl, cg_error_exit();
-            }
-          else { /* Do Nothing */ }
-        }
-
-      /* 3 : close cgns file */
-      std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      if (cg_close(fileId_) != CG_OK)
-        Cerr << "Error Format_Post_CGNS::finir : cg_close !" << finl, cg_error_exit();
-
-      Cerr << "**** CGNS file " << fn << " closed !" << finl;
+      if (is_parallel()) finir_par_();
+      else finir_();
     }
 #endif
-
   return 1;
 }
 
@@ -220,9 +129,12 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_pr
   else
     ecrire_domaine_(domaine, domaine.le_nom());
 
-  // Si on a des frontieres domaine, on les ecrit egalement
-  const LIST(REF(Domaine))& bords = domaine.domaines_frontieres();
-  for (auto& itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
+  if (!is_parallel()) // TODO FIXME
+    {
+      // Si on a des frontieres domaine, on les ecrit egalement
+      const LIST(REF(Domaine))& bords = domaine.domaines_frontieres();
+      for (auto& itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
+    }
 #endif
   return 1;
 }
@@ -234,34 +146,63 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 #ifdef HAS_CGNS
   const std::string LOC = Motcle(localisation).getString();
   /* 1 : if first time called ... build different supports for mixed locations */
-  if (static_cast<int>(time_post_.size()) == 1)
-    {
-      if (static_cast<int>(fld_loc_map_.size()) == 0)
-        fld_loc_map_.insert( { LOC , domaine.le_nom() });/* ici on utilise le 1er support */
-      else
-        {
-          const bool in_map = (fld_loc_map_.count(LOC) != 0);
-          if (!in_map) // XXX here we need a new support ... sorry
-            {
-              Nom nom_dom = domaine.le_nom();
-              nom_dom += "_";
-              nom_dom += LOC;
-              Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-              ecrire_domaine_(domaine, nom_dom);
-              fld_loc_map_.insert( { LOC, nom_dom } );
-            }
-        }
-    }
+  if (!is_parallel()) // TODO FIXME
+    if (static_cast<int>(time_post_.size()) == 1)
+      {
+        if (static_cast<int>(fld_loc_map_.size()) == 0)
+          fld_loc_map_.insert( { LOC , domaine.le_nom() });/* ici on utilise le 1er support */
+        else
+          {
+            const bool in_map = (fld_loc_map_.count(LOC) != 0);
+            if (!in_map) // XXX here we need a new support ... sorry
+              {
+                Nom nom_dom = domaine.le_nom();
+                nom_dom += "_";
+                nom_dom += LOC;
+                Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
+                ecrire_domaine_(domaine, nom_dom);
+                fld_loc_map_.insert( { LOC, nom_dom } );
+              }
+          }
+      }
 
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
-  for (int i = 0; i < nb_cmp; i++)
-    ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC),  valeurs);
+
+  if (is_parallel())
+    for (int i = 0; i < nb_cmp; i++)
+      ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, domaine.le_nom(),  valeurs);
+  else
+    for (int i = 0; i < nb_cmp; i++)
+      ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC),  valeurs);
 #endif
   return 1;
 }
 
+/*
+ * ****************************************
+ * METHODES PRIVEES CLASSE Format_Post_CGNS
+ * ****************************************
+ */
+
 #ifdef HAS_CGNS
+
+int Format_Post_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
+{
+  int ind = -1;
+  auto it = find(vect.begin(), vect.end(), nom);
+
+  if (it != vect.end()) // element found
+    ind = it - vect.begin(); // XXX sinon utilse std::distance ...
+
+  return ind;
+}
+
+/*
+ * *********************
+ * Pour ecriture domaine
+ * *********************
+ */
 void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& nom_dom)
 {
   /* 1 : Instance of TRUST_2_CGNS */
@@ -369,12 +310,6 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
   max = nb_elem; /* now we need local elem */
   if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_[proc_me], sectionId[proc_me], min, max, elems.data()) != CG_OK)
     Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
-
-  // TO REMOVE !
-  if (cgp_close (fileId_) != CG_OK)
-    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_close !" << finl, cgp_error_exit();
-
-  Process::exit();
 }
 
 void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_dom)
@@ -434,6 +369,16 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_do
   int sectionId;
   if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
     Cerr << "Error Format_Post_CGNS::ecrire_domaine_ : cg_section_write !" << finl, cg_error_exit();
+}
+
+/*
+ * ********************
+ * Pour ecriture champs
+ * ********************
+ */
+void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
+{
+  // TODO FIXME
 }
 
 void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
@@ -514,15 +459,114 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
     }
 }
 
-int Format_Post_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
+/*
+ * *******************
+ * Pour ecriture iters
+ * *******************
+ */
+void Format_Post_CGNS::finir_par_()
 {
-  int ind = -1;
-  auto it = find(vect.begin(), vect.end(), nom);
+  std::string fn = cgns_basename_.getString() + ".cgns"; // file name
+  if (cgp_close (fileId_) != CG_OK)
+    Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_close !" << finl, cgp_error_exit();
 
-  if (it != vect.end()) // element found
-    ind = it - vect.begin(); // XXX sinon utilse std::distance ...
+  Cerr << "**** CGNS file " << fn << " closed !" << finl;
+}
 
-  return ind;
+void Format_Post_CGNS::finir_()
+{
+  assert(static_cast<int>(baseId_.size()) == static_cast<int>(zoneId_.size()));
+  const int nsteps = static_cast<int>(time_post_.size());
+
+  std::vector<int> ind_doms_dumped;
+
+  /* 1 : on iter juste sur le map fld_loc_map_; ie: pas domaine dis ... */
+  for (auto &itr : fld_loc_map_)
+    {
+      const std::string& LOC = itr.first;
+      const Nom& nom_dom = itr.second;
+      const int ind = get_index_nom_vector(doms_written_, nom_dom);
+      ind_doms_dumped.push_back(ind);
+      assert(ind > -1);
+
+      /* create BaseIterativeData */
+      if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_biter_write !" << finl, cg_error_exit();
+
+      /* go to BaseIterativeData level and write time values */
+      if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
+
+      cgsize_t nuse = static_cast<cgsize_t>(nsteps);
+      if (cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &nuse, time_post_.data()) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
+
+      /* create ZoneIterativeData */
+      if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_ziter_write !" << finl, cg_error_exit();
+
+      if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
+
+      cgsize_t idata[2];
+      idata[0] = CGNS_STR_SIZE;
+      idata[1] = nsteps;
+
+      if (LOC == "SOM")
+        {
+          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
+        }
+      else
+        {
+          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
+        }
+
+      if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::finir : cg_simulation_type_write !" << finl, cg_error_exit();
+    }
+
+  /* 2 : on iter sur les autres domaines; ie: domaine dis */
+  for (int i = 0; i < static_cast<int>(doms_written_.size()); i++)
+    {
+      if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
+        {
+          const Nom& nom_dom = doms_written_[i];
+          const int ind = get_index_nom_vector(doms_written_, nom_dom);
+          assert(ind > -1);
+
+          /* create BaseIterativeData */
+          if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_biter_write !" << finl, cg_error_exit();
+
+          /* go to BaseIterativeData level and write time values */
+          if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
+
+          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
+          if (cg_array_write("TimeValues", CGNS_ENUMV(RealDouble), 1, &nuse, time_post_.data()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_array_write !" << finl, cg_error_exit();
+
+          /* create ZoneIterativeData */
+          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_ziter_write !" << finl, cg_error_exit();
+
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_goto !" << finl, cg_error_exit();
+
+          if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir : cg_simulation_type_write !" << finl, cg_error_exit();
+        }
+      else { /* Do Nothing */ }
+    }
+
+  /* 3 : close cgns file */
+  std::string fn = cgns_basename_.getString() + ".cgns"; // file name
+  if (cg_close(fileId_) != CG_OK)
+    Cerr << "Error Format_Post_CGNS::finir : cg_close !" << finl, cg_error_exit();
+
+  Cerr << "**** CGNS file " << fn << " closed !" << finl;
 }
 
 #endif

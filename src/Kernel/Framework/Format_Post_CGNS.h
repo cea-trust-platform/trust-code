@@ -95,6 +95,9 @@ private:
   void ecrire_domaine_(const Domaine& , const Nom&);
   void ecrire_domaine_par_(const Domaine& , const Nom&);
   void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void ecrire_champ_par_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void finir_();
+  void finir_par_();
 #endif
 };
 
