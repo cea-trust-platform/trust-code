@@ -13,43 +13,24 @@
 *
 *****************************************************************************/
 
-#include <grad_Champ_Face_PolyVEF.h>
-#include <Frottement_impose_base.h>
-#include <Champ_Face_PolyVEF.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Dirichlet.h>
-#include <EChaine.h>
+#ifndef Assembleur_P_PolyVEF_P0P1_included
+#define Assembleur_P_PolyVEF_P0P1_included
 
-Implemente_instanciable(grad_Champ_Face_PolyVEF, "grad_Champ_Face_PolyVEF", Champ_Fonc_Elem_PolyMAC);
+#include <Assembleur_P_PolyMAC_P0.h>
 
-Sortie& grad_Champ_Face_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
-
-Entree& grad_Champ_Face_PolyVEF::readOn(Entree& s) { return s; }
-
-void grad_Champ_Face_PolyVEF::mettre_a_jour(double tps)
+class Assembleur_P_PolyVEF_P0P1 : public Assembleur_P_PolyMAC_P0
 {
-  if (temps() != tps)
-    me_calculer();
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
+  Declare_instanciable(Assembleur_P_PolyVEF_P0P1);
 
-void grad_Champ_Face_PolyVEF::me_calculer()
-{
-  const Domaine_PolyVEF& domaine = ref_cast(Domaine_PolyVEF, domaine_vf());
-  const DoubleTab& n_f = domaine.face_normales();
-  const DoubleVect& ve = domaine.volumes();
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const int D = dimension, N = valeurs().line_size()/(D*D), ne = domaine.nb_elem();
-  int e, f, i, c, n, d_U, d_X;
+public:
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  // void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  // void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+  int modifier_solution(DoubleTab&) override;
 
-  valeurs() = 0;
+private:
+  IntTab div_v_tab1, div_v_tab2, div_p_tab1, div_p_tab2, grad_tab1, grad_tab2; //stencils des matrices "div" (lignes reelles seulement) et "grad" (toutes les lignes)
+};
 
-  for (e=0; e<ne ; e++)
-    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 && (c = e == f_e(f,0) ? 0 : 1) > -1; i++)
-      for (n = 0 ; n<N ; n++)
-        for (d_U = 0; d_U < D; d_U++)
-          for (d_X = 0; d_X < D; d_X++)
-            valeurs()(e, N * ( D*d_U+d_X ) + n) += 1/ve(e) * (c == 0 ? 1 : -1) * n_f(f, d_X) * champ_a_deriver().valeurs()(f, N*d_U + n);
-
-  valeurs().echange_espace_virtuel();
-}
+#endif /* Assembleur_P_PolyVEF_P0P1_included */
