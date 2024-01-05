@@ -186,6 +186,14 @@ else
   COOLPROP=""
 fi
 
+########
+# Kokkos
+########
+if [ $TRUST_USE_KOKKOS = 1 ] ; then
+   KOKKOS="-L$TRUST_KOKKOS_ROOT/lib64 -lkokkoscontainers -lkokkoscore -lkokkossimd"
+else
+   KOKKOS=""
+fi
 # Cela m'a fait transpirer: si -lm alors -L/usr/lib/x86_64-linux-gnu ajoute et conflit entre MPI systeme et MPI livre si mix nvc++/g++:
 # Si TRUST_CC_BAXE_EXTP GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
 [ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS=" -L/usr/lib/x86_64-linux-gnu "$SYSLIBS
@@ -233,6 +241,7 @@ do
    [ "$CGNS" != "" ] && echo $ECHO_OPTS "$CGNS \\"              >> $fic
    [ "$EOS" != "" ] && echo $ECHO_OPTS "$EOS \\"                >> $fic
    [ "$COOLPROP" != "" ] && echo $ECHO_OPTS "$COOLPROP \\"      >> $fic
+   [ "$KOKKOS" != "" ] && echo $ECHO_OPTS "$KOKKOS \\"          >> $fic
    [ "`ls ${TRUST_ROCALUTION}/lib/librocalution.* 2>/dev/null`" != "" ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic

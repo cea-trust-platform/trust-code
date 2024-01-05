@@ -49,8 +49,8 @@ def add_library_for_dir(s2):
     import os
     tgt_nam = f"obj_{s2}"
     strout = f"add_library({tgt_nam} OBJECT  ${{srcs}} )\n"
-    if os.environ["TRUST_USE_KOKKOS"]:
-        strout += f"target_link_libraries({tgt_nam} Kokkos::kokkos )\n"
+#    if os.environ["TRUST_USE_KOKKOS"]:
+#        strout += f"target_link_libraries({tgt_nam} Kokkos::kokkos )\n"
     strout += "set(listlibs ${listlibs} " +s2 +" PARENT_SCOPE    )\n"
     strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
     strout+="add_DEPENDENCIES(obj_"+s2+" check_sources_"+s2+")\n"
@@ -202,19 +202,19 @@ endif()
 
 
 ''')
-    if os.environ["TRUST_USE_KOKKOS"]:
-        out.write('''
-
-cmake_policy(SET CMP0011 NEW)
-cmake_policy(SET CMP0012 NEW)
-cmake_policy(SET CMP0074 NEW)
-list(APPEND CMAKE_PREFIX_PATH $ENV{TRUST_KOKKOS_ROOT})
-find_package(Kokkos REQUIRED)
-if(Kokkos_ENABLE_CUDA)
-  kokkos_check(OPTIONS CUDA_LAMBDA)
-endif()
-
-''')  
+#    if os.environ["TRUST_USE_KOKKOS"]:
+#       out.write('''
+#
+#cmake_policy(SET CMP0011 NEW)
+#cmake_policy(SET CMP0012 NEW)
+#cmake_policy(SET CMP0074 NEW)
+#list(APPEND CMAKE_PREFIX_PATH $ENV{TRUST_KOKKOS_ROOT})
+#find_package(Kokkos REQUIRED)
+    #if(Kokkos_ENABLE_CUDA)
+#  kokkos_check(OPTIONS CUDA_LAMBDA)
+#endif()
+#
+    #''')
 
     out.write('set(listdir '+' '.join(listdirorg)+')\n')
     out.write('''
@@ -335,17 +335,17 @@ set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
     out.write('\n')
     
     # nvcc_wrapper does not want -std=c++14:
-    if os.environ["TRUST_USE_KOKKOS"]:
-        out.write('''
-cmake_policy(SET CMP0007 NEW)
-foreach(v DEBUG MINSIZEREL RELEASE PROFIL SEMI_OPT)
-    set(_tmp_flgs)
-    string(REPLACE " " ";" flags_list ${CMAKE_CXX_FLAGS_${v}})
-    list(REMOVE_ITEM flags_list "-std=c++14")
-    string(REPLACE ";" " " _tmp_flgs "${flags_list}")
-    set(CMAKE_CXX_FLAGS_${v} ${_tmp_flgs} CACHE STRING "" FORCE)
-endforeach()
-''')
+#    if os.environ["TRUST_USE_KOKKOS"]:
+#        out.write('''
+#cmake_policy(SET CMP0007 NEW)
+#foreach(v DEBUG MINSIZEREL RELEASE PROFIL SEMI_OPT)
+#    set(_tmp_flgs)
+#    string(REPLACE " " ";" flags_list ${CMAKE_CXX_FLAGS_${v}})
+#    list(REMOVE_ITEM flags_list "-std=c++14")
+#    string(REPLACE ";" " " _tmp_flgs "${flags_list}")
+#    set(CMAKE_CXX_FLAGS_${v} ${_tmp_flgs} CACHE STRING "" FORCE)
+#endforeach()
+#''')
 
     out.write('FOREACH (liba ${list_libs})\n')
     out.write('''        set (staticlib lib${liba}.a )
@@ -379,7 +379,7 @@ ENDIF(NOT VISUAL)
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
     out.write('# PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:\n')
-    out.write('include_directories(SYSTEM ${METIS_ROOT}/include ${TRUST_CGNS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_ROOT}/lib/src/LIBROCALUTION/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include )\n')
+    out.write('include_directories(SYSTEM ${METIS_ROOT}/include ${TRUST_CGNS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_ROOT}/lib/src/LIBROCALUTION/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include $ENV{TRUST_KOKKOS_ROOT}/include )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''
@@ -413,9 +413,9 @@ endif(NOT COMPIL_DYN)
    add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
    include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
    target_link_libraries(${trio} ${libtrio} ${syslib})
-   if($ENV{TRUST_USE_KOKKOS})
-     target_link_libraries(${trio} Kokkos::kokkos)
-   endif()
+#   if($ENV{TRUST_USE_KOKKOS})
+#     target_link_libraries(${trio} Kokkos::kokkos)
+#   endif()
    install (TARGETS ${trio} DESTINATION exec)
 
 

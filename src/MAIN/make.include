@@ -1,5 +1,6 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(MPI_INCLUDE)\
+	-I$(TRUST_KOKKOS_ROOT)/include\
 	-I$(PETSC_ROOT)/$(TRUST_ARCH)$(OPT)/include\
 	-I$(TRUST_ROOT)/lib/src/LIBROCALUTION/include\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
