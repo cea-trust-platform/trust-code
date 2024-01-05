@@ -89,6 +89,7 @@ private:
   std::vector<Nom> doms_written_;
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_;
+  std::vector<std::vector<int>> global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
 
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);

@@ -245,6 +245,8 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
   MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
+  global_nb_elem_.push_back(global_nb_elem); // XXX
+
   /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
    *  - All processors THAT HAVE nb_elem > 0 write the same information.
@@ -266,6 +268,7 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
       nb_zones_to_write = static_cast<int>(proc_non_zero_elem.size());
     }
 
+  proc_non_zero_write_.push_back(proc_non_zero_elem); // XXX
   const bool all_write = proc_non_zero_elem.empty(); // all procs will write !
 
   // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
@@ -442,26 +445,9 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
    *  - Only field meta-data is written to the library at this stage ... So no worries ^^
    *  - And just once per dt !
    */
-  std::vector<int> global_nb_vals, proc_non_zero_vals;
-  global_nb_vals.assign(nb_procs, -123 /* default */);
-
-#ifdef MPI_
-  MPI_Allgather(&nb_vals, 1, MPI_ENTIER, global_nb_vals.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
-
-  const auto min_nb_elem = std::min_element(global_nb_vals.begin(), global_nb_vals.end());
-  int nb_zones_to_write = nb_procs;
-
-  if (*min_nb_elem <= 0) // not all procs will write !
-    {
-      // remplir proc_non_zero_elem avec le numero de proc si nb_elem > 0 !!
-      for (int i = 0; i < static_cast<int>(global_nb_vals.size()); i++)
-        if (global_nb_vals[i] > 0) proc_non_zero_vals.push_back(i);
-
-      nb_zones_to_write = static_cast<int>(proc_non_zero_vals.size());
-    }
-
-  const bool all_write = proc_non_zero_vals.empty(); // all procs will write !
+  const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
+  int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
+  const bool all_write = proc_non_zero_write_[ind].empty(); // all procs will write !
 
   if (!solname_som_written_ && LOC == "SOM")
     {
@@ -471,7 +457,7 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
       // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
       for (int i = 0; i != nb_zones_to_write; i++)
         {
-          const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+          const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
 
           if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
@@ -491,7 +477,7 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
       // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
       for (int i = 0; i != nb_zones_to_write; i++)
         {
-          const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+          const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
 
           if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
@@ -505,7 +491,7 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
 
   for (int i = 0; i != nb_zones_to_write; i++)
     {
-      const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+      const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
 
       if (LOC == "SOM")
         {
@@ -527,7 +513,7 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
       if (all_write) indx = proc_me;
       else
         for (int i = 0; i < nb_zones_to_write; i++)
-          if (proc_non_zero_vals[i] == proc_me)
+          if (proc_non_zero_write_[ind][i] == proc_me)
             {
               indx = i;
               break;
