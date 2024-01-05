@@ -13,43 +13,28 @@
 *
 *****************************************************************************/
 
-#include <grad_Champ_Face_PolyVEF.h>
-#include <Frottement_impose_base.h>
-#include <Champ_Face_PolyVEF.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Dirichlet.h>
-#include <EChaine.h>
+#ifndef Champ_Elem_PolyVEF_P0P1_included
+#define Champ_Elem_PolyVEF_P0P1_included
 
-Implemente_instanciable(grad_Champ_Face_PolyVEF, "grad_Champ_Face_PolyVEF", Champ_Fonc_Elem_PolyMAC);
+#include <Champ_Elem_PolyMAC_P0.h>
+#include <Operateur.h>
 
-Sortie& grad_Champ_Face_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+class Domaine_PolyVEF;
 
-Entree& grad_Champ_Face_PolyVEF::readOn(Entree& s) { return s; }
-
-void grad_Champ_Face_PolyVEF::mettre_a_jour(double tps)
+/*! @brief : class Champ_Elem_PolyVEF_P0P1
+ *
+ *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
+ *  Degres de libertes : valeur aux elements + flux aux faces
+ *
+ */
+class Champ_Elem_PolyVEF_P0P1: public Champ_Elem_PolyMAC_P0
 {
-  if (temps() != tps)
-    me_calculer();
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
+  Declare_instanciable(Champ_Elem_PolyVEF_P0P1);
+public:
+  const Domaine_PolyVEF& domaine_PolyVEF() const;
+  void init_auxiliary_variables() override;
+  DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
+};
 
-void grad_Champ_Face_PolyVEF::me_calculer()
-{
-  const Domaine_PolyVEF& domaine = ref_cast(Domaine_PolyVEF, domaine_vf());
-  const DoubleTab& n_f = domaine.face_normales();
-  const DoubleVect& ve = domaine.volumes();
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const int D = dimension, N = valeurs().line_size()/(D*D), ne = domaine.nb_elem();
-  int e, f, i, c, n, d_U, d_X;
-
-  valeurs() = 0;
-
-  for (e=0; e<ne ; e++)
-    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 && (c = e == f_e(f,0) ? 0 : 1) > -1; i++)
-      for (n = 0 ; n<N ; n++)
-        for (d_U = 0; d_U < D; d_U++)
-          for (d_X = 0; d_X < D; d_X++)
-            valeurs()(e, N * ( D*d_U+d_X ) + n) += 1/ve(e) * (c == 0 ? 1 : -1) * n_f(f, d_X) * champ_a_deriver().valeurs()(f, N*d_U + n);
-
-  valeurs().echange_espace_virtuel();
-}
+#endif /* Champ_Elem_PolyVEF_P0P1_included */
