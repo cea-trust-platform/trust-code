@@ -20,7 +20,6 @@
 #include <Connectivite_som_elem.h>
 #include <MD_Vector_composite.h>
 #include <Dirichlet_homogene.h>
-#include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Option_PolyMAC_P0.h>
 #include <MD_Vector_tools.h>
@@ -131,7 +130,7 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, int vec, const Conds_lim& cls, c
   const DoubleTab& nf = face_normales(), &xs = domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
   const Static_Int_Lists& s_e = som_elem();
-  int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
+  int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai, is_pvef = false;
   unsigned long ll;
   double x, eps_g = 1e-6, eps = 1e-10, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, fac[3], vol_s;
   init_stencils(), phif_e.resize(0), vec ? phif_c.resize(fsten_eb.dimension(0), D, N) : phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
@@ -236,13 +235,13 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, int vec, const Conds_lim& cls, c
                     {
                       k = se_f[i][j], f = s_f[k], sgn = e == f_e(f, 0) ? 1 : -1; //face et son indice
                       const Cond_lim_base *cl = fcl(f, 0) ? &cls[fcl(f, 1)].valeur() : nullptr; //si on est sur une CL, pointeur vers celle-ci
-                      int is_dir = cl && (is_p || sub_type(Dirichlet, *cl) || sub_type(Dirichlet_homogene, *cl)); //dans le cas de la pression, toutes les CL sont de Dirichlet
+                      int is_dir = cl && (is_p ? is_pvef || sub_type(Neumann, *cl) : sub_type(Dirichlet, *cl) || sub_type(Dirichlet_homogene, *cl)); //est-elle de Dirichlet?
                       for (l = 0; l < n_ef; l++)
                         {
                           x = sgn * nu_dot(nu, e, n, &nf(f, 0), &X(l, 0)) * surf_fs[k] / fs(f); //contribution au flux
                           if (sgn > 0) Ff(k, se_f[i][l], n) += x, Feb(k, i, n) -= x; //flux amont->aval
                           if (vec)
-                            for (d = 0; d < D; d++) //pression : gradient complet
+                            for (d = 0; d < D; d++) //gradient complet
                               {
                                 double y = nu_dot(nu, e, n, i3[d], &X(l, 0)) * surf_fs[k] * vfd(f, e != f_e(f, 0)) / vf(f);
                                 Gf(k, d, se_f[i][l], n) += y, Geb(k, d, i, n) -= y;
@@ -251,7 +250,7 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, int vec, const Conds_lim& cls, c
                         }
                       if (!cl) continue; //rien de l'autre cote
                       else if (is_dir) Mf(n, k, k) = Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) = 1; //Dirichlet -> equation u_fs = u_b
-                      else if (sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
+                      else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
                         Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k];
                       else if (sub_type(Frottement_impose_base, *cl) && !ref_cast(Frottement_impose_base, *cl).is_externe()) //Frottement_impose_base global -> flux =  - coeff * v_e
                         Meb(n, i, k) -= surf_fs[k] * ((nu) ? ref_cast(Frottement_impose_base, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_impose_base, *cl).coefficient_frottement_grad(fcl(f, 2), n) ) ;
