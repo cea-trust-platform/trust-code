@@ -35,15 +35,16 @@ void Perte_Charge_Singuliere_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
 {
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const DoubleTab& vit = la_vitesse->valeurs();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   if (! matrices.count(nom_inco)) return;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
-  int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
+  int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
 
   IntTrav sten(0, 2);
 
   for (i = 0; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < domaine.nb_faces())
+    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
       for (d = 0; d < D; d++)
         for (db = 0; db < D; db++)
           for (n = 0; n < N; n++)
@@ -61,13 +62,13 @@ void Perte_Charge_Singuliere_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const DoubleTab& vit = la_vitesse->valeurs(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(),
                    *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;
-  const IntTab& f_e = domaine.face_voisins();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
-  int i, j, e, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
+  int i, j, e, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
   DoubleTrav aar_f(N), vn(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < domaine.nb_faces())
+    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
       {
         double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K() / D;
         if (pbm)
