@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <kokkos++.h>
 
 #ifdef KOKKOS_
-
+#pragma diag_suppress 177
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
 
