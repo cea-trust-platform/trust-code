@@ -176,10 +176,10 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
   if (is_parallel())
     for (int i = 0; i < nb_cmp; i++)
-      ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, domaine.le_nom(),  valeurs);
+      ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC), valeurs);
   else
     for (int i = 0; i < nb_cmp; i++)
-      ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC),  valeurs);
+      ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC), valeurs);
 #endif
   return 1;
 }
@@ -416,7 +416,155 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_do
  */
 void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
-  // TODO FIXME
+  std::string LOC = Motcle(localisation).getString();
+
+  if (LOC == "FACES")
+    {
+      Cerr << "FACES FIELDS ARE NOT YET TREATED ... " << finl;
+//      throw;
+      return;
+    }
+
+  /* 1 : Increment fieldIds */
+  if (LOC == "SOM") fieldId_som_++;
+  else // ELEM // TODO FIXME FACES
+    fieldId_elem_++;
+
+  /* 2 : Get corresponding domain index */
+  const int ind = get_index_nom_vector(doms_written_, nom_dom);
+  assert(ind > -1);
+
+  const int nb_procs = Process::nproc(), proc_me = Process::me(), nb_vals = valeurs.dimension(0);
+
+  /* 3 : CREATION OF FILE STRUCTURE
+   *
+   *  - All processors THAT HAVE nb_vals > 0 write the same information.
+   *  - Only field meta-data is written to the library at this stage ... So no worries ^^
+   *  - And just once per dt !
+   */
+  std::vector<int> global_nb_vals, proc_non_zero_vals;
+  global_nb_vals.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+  MPI_Allgather(&nb_vals, 1, MPI_ENTIER, global_nb_vals.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+  const auto min_nb_elem = std::min_element(global_nb_vals.begin(), global_nb_vals.end());
+  int nb_zones_to_write = nb_procs;
+
+  if (*min_nb_elem <= 0) // not all procs will write !
+    {
+      // remplir proc_non_zero_elem avec le numero de proc si nb_elem > 0 !!
+      for (int i = 0; i < static_cast<int>(global_nb_vals.size()); i++)
+        if (global_nb_vals[i] > 0) proc_non_zero_vals.push_back(i);
+
+      nb_zones_to_write = static_cast<int>(proc_non_zero_vals.size());
+    }
+
+  const bool all_write = proc_non_zero_vals.empty(); // all procs will write !
+
+  if (!solname_som_written_ && LOC == "SOM")
+    {
+      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+      solname.resize(CGNS_STR_SIZE, ' ');
+
+      // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+      for (int i = 0; i != nb_zones_to_write; i++)
+        {
+          const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
+
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "FlowSolution_t", flowId_som_, "end") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_goto !" << finl, cgp_error_exit();
+        }
+
+      solname_som_written_ = true;
+    }
+
+  if (!solname_elem_written_ && LOC == "ELEM")
+    {
+      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+      solname.resize(CGNS_STR_SIZE, ' ');
+
+      // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+      for (int i = 0; i != nb_zones_to_write; i++)
+        {
+          const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
+
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "FlowSolution_t", flowId_elem_, "end") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_goto !" << finl, cgp_error_exit();
+        }
+
+      solname_elem_written_ = true;
+    }
+
+  for (int i = 0; i != nb_zones_to_write; i++)
+    {
+      const int indZ = all_write ? i : proc_non_zero_vals[i]; // procID
+
+      if (LOC == "SOM")
+        {
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_[indZ], flowId_som_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), &fieldId_som_) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
+        }
+      else if (LOC == "ELEM")
+        {
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_[indZ], flowId_elem_, CGNS_ENUMV(RealDouble), id_du_champ.getChar(), &fieldId_elem_) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
+        }
+    }
+
+  /* 4 : Fill field values & dump to cgns file */
+  if (nb_vals > 0) // this proc will write !
+    {
+      cgsize_t min = 1, max = nb_vals;
+      int indx = -123;
+      if (all_write) indx = proc_me;
+      else
+        for (int i = 0; i < nb_zones_to_write; i++)
+          if (proc_non_zero_vals[i] == proc_me)
+            {
+              indx = i;
+              break;
+            }
+
+      if (valeurs.dimension(1) == 1) /* No stride ! */
+        {
+          if (LOC == "SOM")
+            {
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_som_, fieldId_som_, &min, &max, valeurs.addr()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
+
+            }
+          else // ELEM // TODO FIXME FACES
+            {
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_elem_, fieldId_elem_, &min, &max, valeurs.addr()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
+            }
+        }
+      else
+        {
+          std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
+          for (int i = 0; i < nb_vals; i++)
+            field_cgns.push_back(valeurs(i, comp));
+
+          if (LOC == "SOM")
+            {
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_som_, fieldId_som_, &min, &max, field_cgns.data()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
+            }
+          else // ELEM // TODO FIXME FACES
+            {
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_elem_, fieldId_elem_, &min, &max, field_cgns.data()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
+            }
+        }
+    }
 }
 
 void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
