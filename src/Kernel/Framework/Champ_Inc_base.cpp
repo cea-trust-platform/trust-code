@@ -26,6 +26,7 @@
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
 #include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
 #include <Domaine.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
@@ -707,4 +708,26 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
         Process::exit("Champ_Inc_base::valeur_aux_bords() : must code something!");
     }
   return result;
+}
+
+void Champ_Inc_base::init_sacl(int aretes, int is_p) const
+{
+  int i, j, f, n, sa;
+  const Domaine_VF& dom = ref_cast(Domaine_VF, domaine_dis_base());
+  const IntTab& f_sa = aretes ? dom.face_aretes() : dom.face_sommets();
+  std::multimap<int, std::array<int, 2>> sa_cl; //sa_cl[s] = (indice de CL, numero dans la CL) pour les CL de Dirichlet touchant s ou a
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
+  for (n = 0; n < cls.size(); n++)
+    if (is_p ? sub_type(Neumann, cls[n].valeur()) : sub_type(Dirichlet, cls[n].valeur()) || sub_type(Dirichlet_homogene, cls[n].valeur()))
+      {
+        const Front_VF& fvf = ref_cast(Front_VF, cls[n]->frontiere_dis());
+        for (i = 0; i < fvf.nb_faces_tot(); i++)
+          for (f = fvf.num_face(i), j = 0; j < f_sa.dimension(1) && (sa = f_sa(f, j)) >= 0; j++)
+            sa_cl.insert({ sa, {{ n, i }}});
+      }
+  //remplissage de sacl_d_, sacl_c_;
+  for (sacl_d_[aretes][is_p].resize((aretes ? dom.domaine().nb_aretes_tot() : dom.nb_som_tot()) + 1), sa = 0; sa < (aretes ? dom.domaine().nb_aretes_tot() : dom.nb_som_tot()); sa++)
+    sacl_d_[aretes][is_p](sa + 1) = sacl_d_[aretes][is_p](sa) + (int)sa_cl.count(sa);
+  sacl_c_[aretes][is_p].resize((int)sa_cl.size(), 2), i = 0;
+  for (auto &&n_i : sa_cl) sacl_c_[aretes][is_p](i, 0) = n_i.second[0], sacl_c_[aretes][is_p](i, 1) = n_i.second[1], i++;
 }

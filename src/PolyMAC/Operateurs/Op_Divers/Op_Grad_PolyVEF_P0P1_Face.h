@@ -13,43 +13,44 @@
 *
 *****************************************************************************/
 
-#include <grad_Champ_Face_PolyVEF.h>
-#include <Frottement_impose_base.h>
-#include <Champ_Face_PolyVEF.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Dirichlet.h>
-#include <EChaine.h>
+#ifndef Op_Grad_PolyVEF_P0P1_Face_included
+#define Op_Grad_PolyVEF_P0P1_Face_included
 
-Implemente_instanciable(grad_Champ_Face_PolyVEF, "grad_Champ_Face_PolyVEF", Champ_Fonc_Elem_PolyMAC);
+#include <Op_Grad_PolyMAC_P0_Face.h>
 
-Sortie& grad_Champ_Face_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+class Champ_Face_PolyVEF;
 
-Entree& grad_Champ_Face_PolyVEF::readOn(Entree& s) { return s; }
-
-void grad_Champ_Face_PolyVEF::mettre_a_jour(double tps)
+/*! @brief class Op_Grad_PolyVEF_P0P1_Face
+ *
+ *   Cette classe represente l'operateur de gradient
+ *   La discretisation est PolyVEF
+ *   On calcule le gradient d'un champ_Elem_PolyVEF (la pression)
+ *
+ *
+ * @sa Operateur_Grad_base
+ */
+class Op_Grad_PolyVEF_P0P1_Face : public Op_Grad_PolyMAC_P0_Face
 {
-  if (temps() != tps)
-    me_calculer();
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
+  Declare_instanciable(Op_Grad_PolyVEF_P0P1_Face);
+public:
+  void completer() override;
 
-void grad_Champ_Face_PolyVEF::me_calculer()
-{
-  const Domaine_PolyVEF& domaine = ref_cast(Domaine_PolyVEF, domaine_vf());
-  const DoubleTab& n_f = domaine.face_normales();
-  const DoubleVect& ve = domaine.volumes();
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const int D = dimension, N = valeurs().line_size()/(D*D), ne = domaine.nb_elem();
-  int e, f, i, c, n, d_U, d_X;
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const override { return 1; };
+  /* fonctions etendues : permet de remmlir les lignes des faces virtuelles en reglant virt = 1 */
+  void dimensionner_blocs_ext(matrices_t matrices, int virt, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs_ext(matrices_t matrices, DoubleTab& secmem, int virt, const tabs_t& semi_impl = {}) const;
+  /* interface standard -> avec virt = 0 */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override
+  {
+    dimensionner_blocs_ext(matrices, 0, semi_impl);
+  }
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
+  {
+    ajouter_blocs_ext(matrices, secmem, 0, semi_impl);
+  }
 
-  valeurs() = 0;
+  void check_multiphase_compatibility() const override { }; //ok
+};
 
-  for (e=0; e<ne ; e++)
-    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 && (c = e == f_e(f,0) ? 0 : 1) > -1; i++)
-      for (n = 0 ; n<N ; n++)
-        for (d_U = 0; d_U < D; d_U++)
-          for (d_X = 0; d_X < D; d_X++)
-            valeurs()(e, N * ( D*d_U+d_X ) + n) += 1/ve(e) * (c == 0 ? 1 : -1) * n_f(f, d_X) * champ_a_deriver().valeurs()(f, N*d_U + n);
-
-  valeurs().echange_espace_virtuel();
-}
+#endif /* Op_Grad_PolyVEF_P0P1_Face_included */

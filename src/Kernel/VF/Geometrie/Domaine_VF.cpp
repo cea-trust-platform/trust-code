@@ -796,6 +796,33 @@ const DoubleTab& Domaine_VF::xv_bord() const
   return xv_bord_;
 }
 
+void Domaine_VF::init_som_arete() const
+{
+  som_arete_.resize(domaine().nb_som_tot());
+  const IntTab& a_s = domaine().aretes_som();
+  for (int i = 0; i < a_s.dimension_tot(0); i++)
+    for (int j = 0; j < 2; j++) som_arete_[a_s(i, j)][a_s(i, !j)] = i;
+}
+
+void Domaine_VF::init_face_aretes() const
+{
+  if (dimension < 3)
+    face_aretes_.ref(face_sommets_); //2D : aretes == sommets
+  else
+    {
+      face_aretes_.resize(0, face_sommets_.dimension(1));
+      creer_tableau_faces(face_aretes_);
+      for (int f = 0; f < nb_faces_tot(); f++)
+        for (int i = 0, s; i < face_sommets_.dimension(1); i++)
+          if ((s = face_sommets_(f, i)) >= 0)
+            {
+              int sb = face_sommets_(f, i + 1 < face_sommets_.dimension(1) && face_sommets_(f, i + 1) >= 0 ? i + 1 : 0);
+              face_aretes_(f, i) = som_arete()[std::min(s, sb)].at(std::max(s, sb));
+            }
+          else face_aretes_(f, i) = -1;
+    }
+}
+
 /*! @brief calcul le tableau xgr pour le calcul des moments des forces aux bords :
  *
  *
