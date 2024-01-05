@@ -15,6 +15,7 @@
 
 #include <DP_Impose_PolyVEF_Face.h>
 #include <Domaine_PolyVEF.h>
+#include <Champ_Face_base.h>
 #include <Champ_Don_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
@@ -57,13 +58,12 @@ void DP_Impose_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
 {
   const Domaine_Poly_base& dom = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces(), &vf = dom.volumes_entrelaces();
-  const DoubleTab& vit = equation().inconnue().valeurs(), *alp =
-                           sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir(), &nf =
-                                 dom.face_normales();
-  const IntTab& f_e = dom.face_voisins();
+  const DoubleTab& vit = equation().inconnue().valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
+                   &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales();
+  const IntTab& f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_base, equation().inconnue()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
-  int i, j, e, f, d, db, D = dimension, n, N = vit.line_size() / D;
+  int i, j, e, f, d, db, D = dimension, n, N = vit.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
   double rho = equation().milieu().masse_volumique().valeurs()(0, 0),
          fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;
@@ -83,7 +83,7 @@ void DP_Impose_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
       DP_.valeur().valeur_aux(xvf, DP);
 
       for (a_f = 1, i = 0; i < num_faces.size(); i++)
-        if ((f = num_faces(i)) < dom.nb_faces())
+        if ((f = num_faces(i)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
           {
             if (alp)
               for (a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
