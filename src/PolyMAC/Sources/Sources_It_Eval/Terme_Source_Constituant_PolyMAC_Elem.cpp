@@ -24,6 +24,7 @@
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC|Source_Constituant_Elem_PolyMAC_P0P1NC", Terme_Source_PolyMAC_base);
 Add_synonym(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC_P0");
+Add_synonym(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC_P0P1");
 
 Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 

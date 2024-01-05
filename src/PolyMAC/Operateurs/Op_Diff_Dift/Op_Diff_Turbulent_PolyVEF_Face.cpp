@@ -21,7 +21,8 @@
 #include <Pb_Multiphase.h>
 #include <vector>
 
-Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulent_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyVEF_P0_Face", Op_Diff_PolyVEF_Face );
+Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulente_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyVEF_P0P1_Face", Op_Diff_PolyVEF_Face );
+
 
 Sortie& Op_Diff_Turbulent_PolyVEF_Face::printOn(Sortie& os) const { return Op_Diff_PolyVEF_base::printOn(os); }
 

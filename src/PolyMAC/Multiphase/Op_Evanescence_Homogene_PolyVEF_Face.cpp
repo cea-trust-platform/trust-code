@@ -31,7 +31,7 @@
 #include <Dirichlet.h>
 #include <SETS.h>
 
-Implemente_instanciable(Op_Evanescence_Homogene_PolyVEF_Face, "Op_Evanescence_HOMOGENE_PolyVEF_Face", Op_Evanescence_Homogene_Face_base);
+Implemente_instanciable(Op_Evanescence_Homogene_PolyVEF_Face, "Op_Evanescence_HOMOGENE_PolyVEF_P0_Face|Op_Evanescence_HOMOGENE_PolyVEF_P0P1_Face", Op_Evanescence_Homogene_Face_base);
 
 Sortie& Op_Evanescence_Homogene_PolyVEF_Face::printOn(Sortie& os) const { return os; }
 Entree& Op_Evanescence_Homogene_PolyVEF_Face::readOn(Entree& is) { return Op_Evanescence_Homogene_Face_base::readOn(is); }
@@ -41,9 +41,10 @@ void Op_Evanescence_Homogene_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
+  const IntTab& fcl = ch.fcl();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
-  int i, j, f, d, D = dimension, n, N = inco.line_size() / D;
+  int i, j, f, d, D = dimension, n, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
   if (N == 1) return; //pas d'evanescence en simple phase!
   for (auto &&n_m : matrices)
     if (n_m.second->nb_colonnes())
@@ -54,14 +55,15 @@ void Op_Evanescence_Homogene_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
         for (f = 0; f < domaine.nb_faces(); f++, idx.clear())
-          for (d = 0; d < D; d++)
-            {
-              for (i = N * (D * f + d), n = 0; n < N; n++, i++)
-                for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
-                  idx.insert(mat.get_tab2()(j) - 1);
-              for (i = N * (D * f + d), n = 0; n < N; n++, i++)
-                for (auto &&c : idx) sten.append_line(i, c);
-            }
+          if (!p0p1 || fcl(f, 0) < 3)
+            for (d = 0; d < D; d++)
+              {
+                for (i = N * (D * f + d), n = 0; n < N; n++, i++)
+                  for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+                    idx.insert(mat.get_tab2()(j) - 1);
+                for (i = N * (D * f + d), n = 0; n < N; n++, i++)
+                  for (auto &&c : idx) sten.append_line(i, c);
+              }
 
         Matrix_tools::allocate_morse_matrix(mat.nb_lignes(), mat.nb_colonnes(), sten, mat2);
         mat = mat2; //pour forcer l'ordre des coefficients dans la matrice (accelere les operations ligne a ligne)
@@ -75,7 +77,7 @@ void Op_Evanescence_Homogene_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const IntTab& f_e = domaine.face_voisins();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
                    &rho = equation().milieu().masse_volumique().passe(),
                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
@@ -86,7 +88,7 @@ void Op_Evanescence_Homogene_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
                          *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
 
   const DoubleVect& vf = domaine.volumes_entrelaces(), &dh_e = milc.diametre_hydraulique_elem();
-  int d, D = dimension, e, f, i, j, k, n, m, N = inco.line_size() / D, Nk = (k_turb) ? (*k_turb).line_size() : 0, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size();
+  int d, D = dimension, e, f, i, j, k, n, m, N = inco.line_size() / D, Nk = (k_turb) ? (*k_turb).line_size() : 0, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size(), p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
   if (N == 1) return; //pas d'evanescence en simple phase!
 
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
@@ -130,84 +132,85 @@ void Op_Evanescence_Homogene_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
     }
 
   for (f = 0; f < domaine.nb_faces(); f++)
-    {
-      /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
-      for (a_max = 0, k = -1, n = 0; n < N; n++)
-        {
-          for (a_m = 0, i = 0; i < 2; i++)
-            if ((e = f_e(f, i)) >= 0)
-              a_m += vfd(f, i) / vf(f) * alpha(e, n);
-          if (a_m > a_max) k = n, a_max = a_m;
-        }
-      if (k < 0) abort();
-
-      if (correlation_vd)
-        {
-          for (n = 0; n < N; n++)
-            for (d = 0; d < D; d++) in.v(d, n) = inco(f, N * d + n);
-          for (in.alpha = 0, in.rho = 0, in.mu = 0, in.d_bulles = 0, in.k = 0, in.nut = 0, in.dh = 0, in.g = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            {
-              for (n = 0; n < N; n++)
-                {
-                  in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
-                  in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
-                  in.mu(n) += vfd(f, i) / vf(f) * mu(!cM * e, n);
-                  in.d_bulles(n)+=vfd(f, i) / vf(f) *((d_bulles) ? (*d_bulles)(e, n) : -1.) ;
-                  in.dh += vfd(f, i) / vf(f) * dh_e(e);
-                  for (m = n+1; m < N; m++)
-                    if (milc.has_interface(n, m))
-                      {
-                        const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
-                        Interface_base& sat = milc.get_interface(n, m);
-                        in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
-                      }
-                }
-              for (n = 0; n < Nk; n++) in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.), in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
-              for (d = 0; d < D; d++) in.g(d) += vfd(f, i) / vf(f) * (*gravity)(e,d);
-              if (correlation_vd->needs_grad_alpha())
-                for (n = 0; n < N; n++)
-                  for (d = 0; d < D; d++) in.gradAlpha(d, n) = gradAlpha(f, d, n);
-              if (correlation_vd->needs_vort())
-                for (n = 0; n < N; n++)
-                  for (d = 0; d < D; d++) in.vort(d, n) = vort(f, d, n);
-            }
-          correlation_vd->vitesse_relative(in, out);
-        }
-
-      /* phases evanescentes : avec alpha amont. La phase majoritaire ne peut pas etre evanescente! */
-      for (coeff = 0, d = 0; d < D; d++)
-        for (n = 0; n < N; n++)
+    if (!p0p1 || fcl(f, 0) < 3)
+      {
+        /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
+        for (a_max = 0, k = -1, n = 0; n < N; n++)
           {
             for (a_m = 0, i = 0; i < 2; i++)
               if ((e = f_e(f, i)) >= 0)
                 a_m += vfd(f, i) / vf(f) * alpha(e, n);
-            if (n != k && a_m < a_eps)
-              {
-                coeff(d, n, 1) = mat_diag(N * (D * f + d) + k, N * (D * f + d) + k) * (coeff(d, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
-                double flux = coeff(d, n, 0) * secmem(f, N * d + n) + coeff(d, n, 1) * (inco(f, N * d + n) - inco(f, N * d + k) - out.vr(n, k, d));
-                secmem(f, N * d + k) += flux, secmem(f, N * d + n) -= flux;
-              }
+            if (a_m > a_max) k = n, a_max = a_m;
           }
+        if (k < 0) abort();
 
-      /* lignes de matrices */
-      for (auto &&n_m : matrices)
-        if (n_m.second->nb_colonnes())
+        if (correlation_vd)
           {
-            int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
-            Matrice_Morse& mat = *n_m.second;
-            for (d = 0; d < D; d++)
-              for (n = 0; n < N; n++)
-                if (coeff(d, n, 0))
-                  for (i = mat.get_tab1()(N * (D * f + d) + n) - 1, j = mat.get_tab1()(N * (D * f + d) + k) - 1; i < mat.get_tab1()(N * (D * f + d) + n + 1) - 1; i++, j++)
-                    {
-                      assert(mat.get_tab2()(i) == mat.get_tab2()(j));
-                      int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
-                      mat.get_set_coeff()(j) +=  coeff(d, n, 0) * mat.get_set_coeff()(i) - coeff(d, n, 1) * ((c == N * (D * f + d) + n) - (c == N * (D * f + d) + k));
-                      mat.get_set_coeff()(i) += -coeff(d, n, 0) * mat.get_set_coeff()(i) + coeff(d, n, 1) * ((c == N * (D * f + d) + n) - (c == N * (D * f + d) + k));
-
-                      mat.get_set_coeff()(j) +=  - coeff(d, n, 1) * ( - out.dvr(n, k, d, N * d + n) * (c == N * f + n) -  out.dvr(n, k, d, N * d + k) * (c == N * f + k));
-                      mat.get_set_coeff()(i) +=  + coeff(d, n, 1) * ( - out.dvr(n, k, d, N * d + n) * (c == N * f + n) -  out.dvr(n, k, d, N * d + k) * (c == N * f + k));
-                    }
+            for (n = 0; n < N; n++)
+              for (d = 0; d < D; d++) in.v(d, n) = inco(f, N * d + n);
+            for (in.alpha = 0, in.rho = 0, in.mu = 0, in.d_bulles = 0, in.k = 0, in.nut = 0, in.dh = 0, in.g = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+              {
+                for (n = 0; n < N; n++)
+                  {
+                    in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
+                    in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
+                    in.mu(n) += vfd(f, i) / vf(f) * mu(!cM * e, n);
+                    in.d_bulles(n)+=vfd(f, i) / vf(f) *((d_bulles) ? (*d_bulles)(e, n) : -1.) ;
+                    in.dh += vfd(f, i) / vf(f) * dh_e(e);
+                    for (m = n+1; m < N; m++)
+                      if (milc.has_interface(n, m))
+                        {
+                          const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
+                          Interface_base& sat = milc.get_interface(n, m);
+                          in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                        }
+                  }
+                for (n = 0; n < Nk; n++) in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.), in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
+                for (d = 0; d < D; d++) in.g(d) += vfd(f, i) / vf(f) * (*gravity)(e,d);
+                if (correlation_vd->needs_grad_alpha())
+                  for (n = 0; n < N; n++)
+                    for (d = 0; d < D; d++) in.gradAlpha(d, n) = gradAlpha(f, d, n);
+                if (correlation_vd->needs_vort())
+                  for (n = 0; n < N; n++)
+                    for (d = 0; d < D; d++) in.vort(d, n) = vort(f, d, n);
+              }
+            correlation_vd->vitesse_relative(in, out);
           }
-    }
+
+        /* phases evanescentes : avec alpha amont. La phase majoritaire ne peut pas etre evanescente! */
+        for (coeff = 0, d = 0; d < D; d++)
+          for (n = 0; n < N; n++)
+            {
+              for (a_m = 0, i = 0; i < 2; i++)
+                if ((e = f_e(f, i)) >= 0)
+                  a_m += vfd(f, i) / vf(f) * alpha(e, n);
+              if (n != k && a_m < a_eps)
+                {
+                  coeff(d, n, 1) = mat_diag(N * (D * f + d) + k, N * (D * f + d) + k) * (coeff(d, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+                  double flux = coeff(d, n, 0) * secmem(f, N * d + n) + coeff(d, n, 1) * (inco(f, N * d + n) - inco(f, N * d + k) - out.vr(n, k, d));
+                  secmem(f, N * d + k) += flux, secmem(f, N * d + n) -= flux;
+                }
+            }
+
+        /* lignes de matrices */
+        for (auto &&n_m : matrices)
+          if (n_m.second->nb_colonnes())
+            {
+              int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
+              Matrice_Morse& mat = *n_m.second;
+              for (d = 0; d < D; d++)
+                for (n = 0; n < N; n++)
+                  if (coeff(d, n, 0))
+                    for (i = mat.get_tab1()(N * (D * f + d) + n) - 1, j = mat.get_tab1()(N * (D * f + d) + k) - 1; i < mat.get_tab1()(N * (D * f + d) + n + 1) - 1; i++, j++)
+                      {
+                        assert(mat.get_tab2()(i) == mat.get_tab2()(j));
+                        int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
+                        mat.get_set_coeff()(j) +=  coeff(d, n, 0) * mat.get_set_coeff()(i) - coeff(d, n, 1) * ((c == N * (D * f + d) + n) - (c == N * (D * f + d) + k));
+                        mat.get_set_coeff()(i) += -coeff(d, n, 0) * mat.get_set_coeff()(i) + coeff(d, n, 1) * ((c == N * (D * f + d) + n) - (c == N * (D * f + d) + k));
+
+                        mat.get_set_coeff()(j) +=  - coeff(d, n, 1) * ( - out.dvr(n, k, d, N * d + n) * (c == N * f + n) -  out.dvr(n, k, d, N * d + k) * (c == N * f + k));
+                        mat.get_set_coeff()(i) +=  + coeff(d, n, 1) * ( - out.dvr(n, k, d, N * d + n) * (c == N * f + n) -  out.dvr(n, k, d, N * d + k) * (c == N * f + k));
+                      }
+            }
+      }
 }
