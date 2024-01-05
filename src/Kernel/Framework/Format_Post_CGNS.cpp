@@ -181,10 +181,10 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
   if (is_parallel())
     for (int i = 0; i < nb_cmp; i++)
-      ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC), valeurs);
+      ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
   else
     for (int i = 0; i < nb_cmp; i++)
-      ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, localisation, fld_loc_map_.at(LOC), valeurs);
+      ecrire_champ_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
 #endif
   return 1;
 }
@@ -426,16 +426,32 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_do
  * Pour ecriture champs
  * ********************
  */
-void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
+void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-
   if (LOC == "FACES")
     {
       Cerr << "FACES FIELDS ARE NOT YET TREATED ... " << finl;
 //      throw;
       return;
     }
+
+  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
+
+  if (LOC == "SOM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_SOM_");
+    }
+  else if (LOC == "ELEM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_ELEM_");
+    }
+
+  Nom& id_champ = id_du_champ_modifie;
 
   /* 1 : Increment fieldIds */
   if (LOC == "SOM") fieldId_som_++;
@@ -500,12 +516,12 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
     {
       if (LOC == "SOM")
         {
-          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_som_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_som_) != CG_OK)
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
         }
       else if (LOC == "ELEM")
         {
-          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_elem_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_elem_) != CG_OK)
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
         }
     }
@@ -558,7 +574,7 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
     }
 }
 
-void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const Nom& id_du_champ, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
+void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
 
@@ -568,6 +584,23 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
 //      throw;
       return;
     }
+
+  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
+
+  if (LOC == "SOM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_SOM_");
+    }
+  else if (LOC == "ELEM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_ELEM_");
+    }
+
+  Nom& id_champ = id_du_champ_modifie;
 
   /* 1 : Increment fieldIds */
   if (LOC == "SOM") fieldId_som_++;
@@ -608,12 +641,12 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
     {
       if (LOC == "SOM")
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
+          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_ : cg_field_write !" << finl, cg_error_exit();
         }
       else // ELEM // TODO FIXME FACES
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
+          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_ : cg_field_write !" << finl, cg_error_exit();
         }
     }
@@ -625,12 +658,12 @@ void Format_Post_CGNS::ecrire_champ_(const int comp, const double temps, const N
 
       if (LOC == "SOM")
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
+          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_ : cg_field_write !" << finl, cg_error_exit();
         }
       else // ELEM // TODO FIXME FACES
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
+          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_ : cg_field_write !" << finl, cg_error_exit();
         }
     }

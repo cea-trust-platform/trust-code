@@ -93,10 +93,10 @@ private:
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
 
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
-  void ecrire_domaine_(const Domaine& , const Nom&);
-  void ecrire_domaine_par_(const Domaine& , const Nom&);
-  void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void ecrire_champ_par_(const int, const double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void ecrire_domaine_(const Domaine&, const Nom&);
+  void ecrire_domaine_par_(const Domaine&, const Nom&);
+  void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void ecrire_champ_par_(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
   void finir_();
   void finir_par_();
 #endif
