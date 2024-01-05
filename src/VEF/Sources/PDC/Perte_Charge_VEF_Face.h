@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,6 @@ class Perte_Charge_VEF_Face: public Source_base, public Terme_Source_Qdm
 public:
 
   DoubleTab& ajouter(DoubleTab&) const override =0;
-  DoubleTab& calculer(DoubleTab&) const override =0;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double) override;
 

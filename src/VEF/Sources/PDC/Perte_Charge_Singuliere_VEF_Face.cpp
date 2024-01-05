@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,12 +108,6 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::ajouter(DoubleTab& resu) const
         }
     }
   return resu;
-}
-
-DoubleTab& Perte_Charge_Singuliere_VEF_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
 }
 
 void Perte_Charge_Singuliere_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const

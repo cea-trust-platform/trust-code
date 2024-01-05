@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -282,13 +282,6 @@ void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matri
 
 
 }
-
-DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
-
 
 void Perte_Charge_Reguliere_VEF_P1NC::completer()
 {
