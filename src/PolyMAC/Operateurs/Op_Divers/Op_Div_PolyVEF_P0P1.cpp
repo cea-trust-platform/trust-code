@@ -73,11 +73,11 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
   const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = dom.face_normales(), &xs = dom.domaine().coord_sommets(), &vfd = dom.volumes_entrelaces_dir();
-  const IntTab& f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &e_s = dom.domaine().les_elems(), &e_f = dom.elem_faces(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1);
-  const DoubleVect& pf = equation().milieu().porosite_face(), &ve = dom.volumes();
+  const IntTab& f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &e_s = dom.domaine().les_elems(), &e_f = dom.elem_faces(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1), &es_d = dom.elem_som_d();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &ve = dom.volumes(), &v_es = dom.vol_elem_som();
   int i, j, k, e, f, s = 0, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = vit.line_size() / D, has_P_ref = 0, has_s = secmem.dimension_tot(0) > ne_tot, ok, sgn;
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
-  double prefac, fac;
+  double prefac, prefac2, fac;
   DoubleTrav v(2, D), S_se(e_s.dimension(1), D);
   flux_bords_.resize(dom.nb_faces_bord(), N);
   for (i = 0; i < cls.size(); i++)
@@ -121,11 +121,11 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
 
       /* contribs aux sommets */
       if (has_s)
-        for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+        for (i = 0, j = es_d(e); i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++, j++)
           if (s < dom.nb_som() && scl_d(s) == scl_d(s + 1))
-            for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-              for (prefac = pf(f) * vfd(f, e != f_e(f, 0)) / ve(e), d = 0; d < D; d++)
-                for (fac = prefac * S_se(i, d), n = 0; n < N; n++)
+            for (k = 0; k < e_f.dimension(1) && (f = e_f(e, k)) >= 0; k++)
+              for (prefac = pf(f) * vfd(f, e != f_e(f, 0)) / ve(e), prefac2 = (e == f_e(f, 0) ? 1 : -1) * pf(f) * v_es(j) / ve(e), d = 0; d < D; d++)
+                for (fac = prefac * S_se(i, d) - prefac2 * nf(f, d), n = 0; n < N; n++)
                   {
                     secmem(ne_tot + s, n) += fac * vit(f, N * d + n);
                     if (matv && fcl(f, 0) < 2)
