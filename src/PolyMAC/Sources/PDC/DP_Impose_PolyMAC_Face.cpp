@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
     }
   //fichier de sortie
   set_fichier(Nom("DP_") + identifiant_);
-  set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");
+  set_description(Nom("DP impose sur la surface ") + identifiant_);
   Noms col_names;
   if (regul_)
     {
