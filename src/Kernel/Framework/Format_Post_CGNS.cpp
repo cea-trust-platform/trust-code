@@ -97,13 +97,16 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
 
           if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_entete : cgp_open !" << finl, cgp_error_exit();
+
+          Cerr << "**** Parallel CGNS file " << fn << " opened !" << finl;
         }
       else
         {
           if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_entete : cg_open !" << finl, cg_error_exit();
+
+          Cerr << "**** CGNS file " << fn << " opened !" << finl;
         }
-      Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
 #endif
   return 1;
@@ -273,7 +276,9 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
   proc_non_zero_write_.push_back(proc_non_zero_elem); // XXX
   const bool all_write = proc_non_zero_elem.empty(); // all procs will write !
 
+
   // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+  zoneId_.clear(); // XXX commencons par ca
   for (int i = 0; i != nb_zones_to_write; i++)
     {
       const int indZ = all_write ? i : proc_non_zero_elem[i]; // procID
@@ -318,6 +323,8 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
         Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_section_write !" << finl, cgp_error_exit();
     }
 
+  zoneId_par_.push_back(zoneId_); // XXX : Dont touch
+
 //  Process::barrier();
 
   /* 6 : Write grid coordinates & set connectivity */
@@ -335,14 +342,14 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
             }
 
       /* 6.1 : Write grid coordinates */
-      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdx[indx], &min, &max, xCoords.data()) != CG_OK)
+      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdx[indx], &min, &max, xCoords.data()) != CG_OK)
         Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - X !" << finl, cgp_error_exit();
 
-      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdy[indx], &min, &max, yCoords.data()) != CG_OK)
+      if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdy[indx], &min, &max, yCoords.data()) != CG_OK)
         Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
 
       if (icelldim > 2)
-        if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_[indx], coordsIdz[indx], &min, &max, zCoords.data()) != CG_OK)
+        if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdz[indx], &min, &max, zCoords.data()) != CG_OK)
           Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
 
       /* 6.2 : Set element connectivity */
@@ -350,7 +357,7 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
       TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
 
       max = nb_elem; /* now we need local elem */
-      if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
+      if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
         Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
     }
 }
@@ -458,14 +465,12 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
       solname_som_ += solname;
 
       // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
-      for (int i = 0; i != nb_zones_to_write; i++)
+      for (int ii = 0; ii != nb_zones_to_write; ii++)
         {
-          const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
-
-          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
 
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "FlowSolution_t", flowId_som_, "end") != CG_OK)
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "FlowSolution_t", flowId_som_, "end") != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_goto !" << finl, cgp_error_exit();
         }
 
@@ -479,32 +484,28 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
       solname_elem_ += solname;
 
       // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
-      for (int i = 0; i != nb_zones_to_write; i++)
+      for (int ii = 0; ii != nb_zones_to_write; ii++)
         {
-          const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
-
-          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[indZ], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_sol_write !" << finl, cgp_error_exit();
 
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "FlowSolution_t", flowId_elem_, "end") != CG_OK)
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "FlowSolution_t", flowId_elem_, "end") != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cg_goto !" << finl, cgp_error_exit();
         }
 
       solname_elem_written_ = true;
     }
 
-  for (int i = 0; i != nb_zones_to_write; i++)
+  for (int ii = 0; ii != nb_zones_to_write; ii++)
     {
-      const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
-
       if (LOC == "SOM")
         {
-          if (cgp_field_write(fileId_, baseId_[ind], zoneId_[indZ], flowId_som_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_som_) != CG_OK)
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_som_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_som_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
         }
       else if (LOC == "ELEM")
         {
-          if (cgp_field_write(fileId_, baseId_[ind], zoneId_[indZ], flowId_elem_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_elem_) != CG_OK)
+          if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_elem_, CGNS_DOUBLE_TYPE, id_du_champ.getChar(), &fieldId_elem_) != CG_OK)
             Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write !" << finl, cgp_error_exit();
         }
     }
@@ -527,13 +528,13 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
         {
           if (LOC == "SOM")
             {
-              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_som_, fieldId_som_, &min, &max, valeurs.addr()) != CG_OK)
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_som_, fieldId_som_, &min, &max, valeurs.addr()) != CG_OK)
                 Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
 
             }
           else // ELEM // TODO FIXME FACES
             {
-              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_elem_, fieldId_elem_, &min, &max, valeurs.addr()) != CG_OK)
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_elem_, fieldId_elem_, &min, &max, valeurs.addr()) != CG_OK)
                 Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
             }
         }
@@ -545,12 +546,12 @@ void Format_Post_CGNS::ecrire_champ_par_(const int comp, const double temps, con
 
           if (LOC == "SOM")
             {
-              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_som_, fieldId_som_, &min, &max, field_cgns.data()) != CG_OK)
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_som_, fieldId_som_, &min, &max, field_cgns.data()) != CG_OK)
                 Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
             }
           else // ELEM // TODO FIXME FACES
             {
-              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_[indx], flowId_elem_, fieldId_elem_, &min, &max, field_cgns.data()) != CG_OK)
+              if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_elem_, fieldId_elem_, &min, &max, field_cgns.data()) != CG_OK)
                 Cerr << "Error Format_Post_CGNS::ecrire_champ_par_ : cgp_field_write_data !" << finl, cgp_error_exit();
             }
         }
@@ -657,7 +658,6 @@ void Format_Post_CGNS::finir_par_()
 
       const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
       int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
-      const bool all_write = proc_non_zero_write_[ind].empty(); // all procs will write !
 
       /* create BaseIterativeData */
       if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
@@ -671,21 +671,19 @@ void Format_Post_CGNS::finir_par_()
       if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
         Cerr << "Error Format_Post_CGNS::finir_par_ : cg_array_write !" << finl, cgp_error_exit();
 
-      // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
-      for (int i = 0; i != nb_zones_to_write; i++)
-        {
-          const int indZ = all_write ? i : proc_non_zero_write_[ind][i]; // procID
+      cgsize_t idata[2];
+      idata[0] = CGNS_STR_SIZE;
+      idata[1] = nsteps;
 
+      // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+      for (int ii = 0; ii != nb_zones_to_write; ii++)
+        {
           /* create ZoneIterativeData */
-          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[indZ], "ZoneIterativeData") != CG_OK)
+          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], "ZoneIterativeData") != CG_OK)
             Cerr << "Error Format_Post_CGNS::finir_par_ : cg_ziter_write !" << finl, cgp_error_exit();
 
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "ZoneIterativeData_t", 1, "end") != CG_OK)
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "ZoneIterativeData_t", 1, "end") != CG_OK)
             Cerr << "Error Format_Post_CGNS::finir_par_ : cg_goto !" << finl, cgp_error_exit();
-
-          cgsize_t idata[2];
-          idata[0] = CGNS_STR_SIZE;
-          idata[1] = nsteps;
 
           if (LOC == "SOM")
             {
@@ -703,55 +701,53 @@ void Format_Post_CGNS::finir_par_()
         Cerr << "Error Format_Post_CGNS::finir_par_ : cg_simulation_type_write !" << finl, cgp_error_exit();
     }
 
-//  /* 2 : on iter sur les autres domaines; ie: domaine dis */
-//  for (int i = 0; i < static_cast<int>(doms_written_.size()); i++)
-//    {
-//      if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
-//        {
-//          const Nom& nom_dom = doms_written_[i];
-//          const int ind = get_index_nom_vector(doms_written_, nom_dom);
-//          assert(ind > -1);
-//
-//          const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
-//          int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
-//          const bool all_write = proc_non_zero_write_[ind].empty(); // all procs will write !
-//
-//          /* create BaseIterativeData */
-//          if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-//            Cerr << "Error Format_Post_CGNS::finir_ : cg_biter_write !" << finl, cg_error_exit();
-//
-//          /* go to BaseIterativeData level and write time values */
-//          if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-//            Cerr << "Error Format_Post_CGNS::finir_ : cg_goto !" << finl, cg_error_exit();
-//
-//          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
-//          if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-//            Cerr << "Error Format_Post_CGNS::finir_ : cg_array_write !" << finl, cg_error_exit();
-//
-//          // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
-//          for (int ii = 0; ii != nb_zones_to_write; ii++)
-//            {
-//              const int indZ = all_write ? ii : proc_non_zero_write_[ind][ii]; // procID
-//              /* create ZoneIterativeData */
-//              if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[indZ], "ZoneIterativeData") != CG_OK)
-//                Cerr << "Error Format_Post_CGNS::finir_ : cg_ziter_write !" << finl, cg_error_exit();
-//
-//              if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[indZ], "ZoneIterativeData_t", 1, "end") != CG_OK)
-//                Cerr << "Error Format_Post_CGNS::finir_ : cg_goto !" << finl, cg_error_exit();
-//            }
-//
-//          if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-//            Cerr << "Error Format_Post_CGNS::finir_ : cg_simulation_type_write !" << finl, cg_error_exit();
-//        }
-//      else { /* Do Nothing */ }
-//    }
+  /* 2 : on iter sur les autres domaines; ie: domaine dis */
+  for (int i = 0; i < static_cast<int>(doms_written_.size()); i++)
+    {
+      if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
+        {
+          const Nom& nom_dom = doms_written_[i];
+          const int ind = get_index_nom_vector(doms_written_, nom_dom);
+          assert(ind > -1);
+
+          const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
+          int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
+
+          /* create BaseIterativeData */
+          if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir_ : cg_biter_write !" << finl, cg_error_exit();
+
+          /* go to BaseIterativeData level and write time values */
+          if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir_ : cg_goto !" << finl, cg_error_exit();
+
+          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
+          if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir_ : cg_array_write !" << finl, cg_error_exit();
+
+          // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
+          for (int ii = 0; ii != nb_zones_to_write; ii++)
+            {
+              /* create ZoneIterativeData */
+              if (cg_ziter_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], "ZoneIterativeData") != CG_OK)
+                Cerr << "Error Format_Post_CGNS::finir_ : cg_ziter_write !" << finl, cg_error_exit();
+
+              if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "ZoneIterativeData_t", 1, "end") != CG_OK)
+                Cerr << "Error Format_Post_CGNS::finir_ : cg_goto !" << finl, cg_error_exit();
+            }
+
+          if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::finir_ : cg_simulation_type_write !" << finl, cg_error_exit();
+        }
+      else { /* Do Nothing */ }
+    }
 
 //  Process::barrier();
   std::string fn = cgns_basename_.getString() + ".cgns"; // file name
   if (cgp_close (fileId_) != CG_OK)
     Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_close !" << finl, cgp_error_exit();
 
-  Cerr << "**** CGNS file " << fn << " closed !" << finl;
+  Cerr << "**** Parallel CGNS file " << fn << " closed !" << finl;
 }
 
 void Format_Post_CGNS::finir_()
