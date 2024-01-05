@@ -152,6 +152,29 @@ public:
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
   DoubleTab valeur_aux_bords() const override;
 
+  /* conditions aux limites de Dirichlet touchant chaque sommet : scl_c([scl_d(s), scl_d(s + 1)[, .) = (numero de CL, indice de face dans la CL) */
+  const IntTab& scl_d(int is_p) const
+  {
+    if (!sacl_d_[0][is_p].size()) init_sacl(0, is_p);
+    return sacl_d_[0][is_p];
+  }
+  const IntTab& scl_c(int is_p) const
+  {
+    if (!sacl_d_[0][is_p].size()) init_sacl(0, is_p);
+    return sacl_c_[0][is_p];
+  }
+  /* pareil, mais pour les aretes */
+  const IntTab& acl_d(int is_p) const
+  {
+    if (!sacl_d_[dimension > 2][is_p].size()) init_sacl(dimension > 2, is_p);
+    return sacl_d_[dimension > 2][is_p];
+  }
+  const IntTab& acl_c(int is_p) const
+  {
+    if (!sacl_d_[dimension > 2][is_p].size()) init_sacl(dimension > 2, is_p);
+    return sacl_c_[dimension > 2][is_p];
+  }
+
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { }
 
@@ -173,6 +196,9 @@ protected:
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
   bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
+  /* pour scl_d / scl_c */
+  void init_sacl(int a, int is_p) const;
+  mutable IntTab sacl_d_[2][2], sacl_c_[2][2];
 };
 
 #endif /* Champ_Inc_base_included */
