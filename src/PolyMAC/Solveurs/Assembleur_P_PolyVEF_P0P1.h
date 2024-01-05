@@ -13,29 +13,24 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
-#include <Synonyme_info.h>
-#include <Milieu_base.h>
+#ifndef Assembleur_P_PolyVEF_P0P1_included
+#define Assembleur_P_PolyVEF_P0P1_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1");
+#include <Assembleur_P_PolyMAC_P0.h>
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
+class Assembleur_P_PolyVEF_P0P1 : public Assembleur_P_PolyMAC_P0
 {
-  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter_->evaluateur());
-  eval_puis.associer_domaines(domaine_dis, domaine_cl_dis);
-}
+  Declare_instanciable(Assembleur_P_PolyVEF_P0P1);
 
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter_->evaluateur());
-  eval_puis.associer_champs(la_puissance);
-}
+public:
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  // void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  // void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+  int modifier_solution(DoubleTab&) override;
+
+private:
+  IntTab div_v_tab1, div_v_tab2, div_p_tab1, div_p_tab2, grad_tab1, grad_tab2; //stencils des matrices "div" (lignes reelles seulement) et "grad" (toutes les lignes)
+};
+
+#endif /* Assembleur_P_PolyVEF_P0P1_included */

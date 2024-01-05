@@ -192,9 +192,28 @@ public :
   inline const MEDCouplingUMesh* get_mc_face_mesh() const;
   inline const MEDCouplingUMesh* get_mc_dual_mesh() const;
 #endif
+  //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
+  inline const std::vector<std::map<int, int> >& som_arete() const
+  {
+    if (!som_arete_.size()) init_som_arete();
+    return som_arete_;
+  }
+
+
+  inline const IntTab& face_aretes() const
+  {
+    if (face_aretes_.nb_dim() != 2) init_face_aretes();
+    return face_aretes_;
+  }
 
 private:
   DoubleVect face_surfaces_;                // surface des faces
+
+  void init_som_arete() const;
+  mutable std::vector<std::map<int, int> > som_arete_;
+
+  void init_face_aretes() const; //correspondance face -> aretes
+  mutable IntTab face_aretes_;
 
 protected:
 
