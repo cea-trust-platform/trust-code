@@ -20,7 +20,7 @@
 #include <Dirichlet.h>
 #include <EChaine.h>
 
-Implemente_instanciable(grad_Champ_Face_PolyVEF, "grad_Champ_Face_PolyVEF_P0|grad_Champ_Face_PolyVEF_P0P1", Champ_Fonc_Elem_PolyMAC);
+Implemente_instanciable(grad_Champ_Face_PolyVEF, "grad_Champ_Face_PolyVEF", Champ_Fonc_Elem_PolyMAC);
 
 Sortie& grad_Champ_Face_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

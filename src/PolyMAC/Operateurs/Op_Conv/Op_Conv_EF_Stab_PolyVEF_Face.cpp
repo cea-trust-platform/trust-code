@@ -28,9 +28,9 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face ) ;
-Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_Face, "Op_Conv_Amont_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyVEF_Face);
-Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_Face, "Op_Conv_Centre_PolyVEF_P0_Face", Op_Conv_EF_Stab_PolyVEF_Face);
+Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face|Op_Conv_EF_Stab_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face ) ;
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_Face, "Op_Conv_Amont_PolyVEF_P0_Face|Op_Conv_Amont_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyVEF_Face);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_Face, "Op_Conv_Centre_PolyVEF_P0_Face|Op_Conv_Centre_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyVEF_Face);
 
 Op_Conv_Amont_PolyVEF_Face::Op_Conv_Amont_PolyVEF_Face() { alpha = 1.0; }
 Op_Conv_Centre_PolyVEF_Face::Op_Conv_Centre_PolyVEF_Face() { alpha = 0.0; }
@@ -154,14 +154,14 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
-
+  const IntTab& fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
+  int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
   IntTab stencil(0, 2);
   /* stencil : toutes les faces connectees par une facette de e_fa_f, avec melange des phases si correlation de masse ajoutee */
@@ -169,9 +169,10 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
     for (j = 0; j < 2; j++)
       if ((f = e_fa_f(i, j)) < dom.nb_faces())
         for (fb = e_fa_f(i, !j), d = 0; d < D; d++)
-          for (n = 0; n < N; n++)
-            for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
-              stencil.append_line(N * (D * f + d) + n, N * (D * fb + d) + m);
+          if (!p0p1 || (fcl(f, 0) < 3 && fcl(fb, 0) < 3))
+            for (n = 0; n < N; n++)
+              for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                stencil.append_line(N * (D * f + d) + n, N * (D * fb + d) + m);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * D * nf_tot, N * D * nf_tot, stencil, mat2);
@@ -198,7 +199,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                      a_b = pbm ? pbm->equation_masse().inconnue().valeur_aux_bords() : DoubleTab(), r_b = pbm ? equation().milieu().masse_volumique().valeur_aux_bords() : DoubleTab();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
-  int i, j, k, l, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D;
+  int i, j, k, l, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
   DoubleTrav F_f(0, N), F_fa(N), masse(N, N), fvf(N); //flux de masse a toutes les faces et a la facette (avec masse ajoutee)
   dom.creer_tableau_faces(F_f);
@@ -215,20 +216,6 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
       /* produit par pf * fvf */
       for (n = 0; n < N; n++)
         F_f(f, n) *= pf(f) * fvf(n);
-
-      /* faces de bord: contrib a la convection (avec masse ajoutee) */
-      if (fcl(f, 0))
-        {
-          for (masse = 0, e = f_e(f, 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
-          if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
-          for (d = 0; d < D; d++)
-            for (n = 0; n < N; n++)
-              for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
-                {
-                  secmem(f, N * d + n) -= (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m) * inco(f, N * d + m);
-                  if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m);
-                }
-        }
     }
   F_f.echange_espace_virtuel();
 
@@ -246,15 +233,16 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (n = 0; n < N; n++)
               F_fa(n) += e_fa_c(j) * F_f(f, n);
           for (k = 0; k < 2; k++)
-            if ((f = e_fa_f(i, k)) < dom.nb_faces()) /* face d'arrivee */
+            if ((f = e_fa_f(i, k)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 3)) /* face d'arrivee */
               for (l = 0; l < 2; l++)
                 for (fb = e_fa_f(i, l), d = 0; d < D; d++)
                   for (n = 0; n < N; n++)
                     for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
                       {
-                        double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * (1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2;
+                        double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * ((1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2 - (fb == f));
                         secmem(f, N * d + n) -= fac * inco(fb, N * d + m);
-                        if (mat) (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
+                        if (mat && (!p0p1 || fcl(fb, 0) < 3))
+                          (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
                       }
         }
     }
