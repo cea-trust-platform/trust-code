@@ -190,7 +190,8 @@ fi
 # Kokkos
 ########
 if [ $TRUST_USE_KOKKOS = 1 ] ; then
-   KOKKOS="-L$TRUST_KOKKOS_ROOT/lib64 -lkokkoscontainers -lkokkoscore -lkokkossimd"
+   KOKKOS="-L$TRUST_KOKKOS_ROOT/lib64 -lkokkoscontainers -lkokkoscore"
+   [ -f $TRUST_KOKKOS_ROOT/lib64/libkokkossimd.a ] && KOKKOS=$KOKKOS" -lkokkossimd"
 else
    KOKKOS=""
 fi

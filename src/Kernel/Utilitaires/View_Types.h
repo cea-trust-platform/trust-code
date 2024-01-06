@@ -20,8 +20,13 @@
 
 #ifdef KOKKOS_
 #pragma diag_suppress 177
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wconversion"
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
+#pragma GCC diagnostic pop
 
 // The DualView type allowing semi-automatic sync between host and device.
 //  !WARNING! --> I choose 'LayoutRight' to stick to default data layout in TRUST

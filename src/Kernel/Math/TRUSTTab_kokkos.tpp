@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
 
   using t_host = typename DualViewTab<_TYPE_>::t_host;  // Host type
   using t_dev = typename DualViewTab<_TYPE_>::t_dev;    // Device type
-  using size_type = typename DualViewTab<_TYPE_>::size_type;
+  //using size_type = typename DualViewTab<_TYPE_>::size_type;
 
   const std::string& nom = this->le_nom().getString();
 
@@ -149,7 +149,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
 
   using t_host = typename DualViewTab3<_TYPE_>::t_host;  // Host type
   using t_dev = typename DualViewTab3<_TYPE_>::t_dev;    // Device type
-  using size_type = typename DualViewTab3<_TYPE_>::size_type;
+  //using size_type = typename DualViewTab3<_TYPE_>::size_type;
 
   const std::string& nom = this->le_nom().getString();
 
@@ -249,7 +249,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
 
   using t_host = typename DualViewTab4<_TYPE_>::t_host;  // Host type
   using t_dev = typename DualViewTab4<_TYPE_>::t_dev;    // Device type
-  using size_type = typename DualViewTab4<_TYPE_>::size_type;
+  //using size_type = typename DualViewTab4<_TYPE_>::size_type;
 
   const std::string& nom = this->le_nom().getString();
 
