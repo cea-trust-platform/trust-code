@@ -461,7 +461,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
 
           const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int nb_faces_bord = le_bord.nb_faces();
+          int nb_faces_bord = le_bord.nb_faces_tot();
           int num1=0;
           int num2=nb_faces_bord;
 
