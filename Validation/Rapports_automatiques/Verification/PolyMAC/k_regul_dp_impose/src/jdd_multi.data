@@ -4,12 +4,15 @@ dimension 3
 Pb_multiphase pb
 Domaine dom
 # BEGIN MESH #
-Read_MED {
+Read_MED
+{
+    $poly
     domain dom
-    file ../../../mesh_poly.med
+    file mesh.med
     mesh mesh
+    include_additional_face_groups 2 surf1 surf2
 }
-regroupebord dom wall { left right front back down up wall wall_dup }
+regroupebord dom wall { wall iwall iwall_dup }
 # END MESH #
 
 # BEGIN PARTITION
@@ -27,20 +30,6 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 $dis dis
-option_vdf { p_imposee_aux_faces oui }
-
-domaine surf1
-domaine surf2
-Read_MED {
-    domain surf1
-    file ../../../mesh_poly.med
-    mesh surf1
-}
-Read_MED {
-    domain surf2
-    file ../../../mesh_poly.med
-    mesh surf2
-}
 
 Schema_euler_implicite sch
 Read sch
