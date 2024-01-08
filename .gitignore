@@ -22,6 +22,7 @@ make.lock
 .ipynb_checkpoints/
 instancie_src_*.cpp
 src/**/CMakeLists.txt
+*.swp
 
 # XDATA stuff
 Outils/TRIOXDATA/IHMTRIO.sh
