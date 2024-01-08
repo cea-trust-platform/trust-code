@@ -429,10 +429,10 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
   // resize_tab est virtuelle, si c'est un Vect ou un Tab elle appelle le
   // resize de la classe derivee:
   elements.resize_tab(sz, ArrOfInt::NOCOPY_NOINIT);
-  double x, y = 0, z = 0;
+  double y = 0, z = 0;
   for (int i = 0; i < sz; i++)
     {
-      x = positions(i, 0);
+      double x = positions(i, 0);
       if (dim > 1)
         y = positions(i, 1);
       if (dim > 2)
@@ -443,24 +443,26 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
     {
       // Securite car vu sur un calcul FT (cache qui augmente indefiniment, nombre de particules variables...)
       if (cached_memory>1e8) // 100Mo/proc
-        // Vide le cache
-        cached_elements_.reset();
-      cached_positions_.reset();
-    }
-  else
-    {
-      // Met en cache
-      cached_positions_.add(positions);
-      cached_elements_.add(elements);
-      cached_memory += positions.size_array() * (int) sizeof(double);
-      cached_memory += elements.size_array() * (int) sizeof(int);
-      if (cached_memory > 1e7)   // 10Mo
         {
-          Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";
-          if (cached_memory < 1e6)
-            Cerr << int(cached_memory / 1024) << " KBytes" << finl;
-          else
-            Cerr << int(cached_memory / 1024 / 1024) << " MBytes" << finl;
+          // Vide le cache
+          cached_elements_.reset();
+          cached_positions_.reset();
+        }
+      else
+        {
+          // Met en cache
+          cached_positions_.add(positions);
+          cached_elements_.add(elements);
+          cached_memory += positions.size_array() * (int) sizeof(double);
+          cached_memory += elements.size_array() * (int) sizeof(int);
+          if (cached_memory > 1e7)   // 10Mo
+            {
+              Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";
+              if (cached_memory < 1e6)
+                Cerr << int(cached_memory / 1024) << " KBytes" << finl;
+              else
+                Cerr << int(cached_memory / 1024 / 1024) << " MBytes" << finl;
+            }
         }
     }
   return elements;
