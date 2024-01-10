@@ -43,6 +43,22 @@ Sortie& Assembleur_P_PolyVEF_P0P1::printOn(Sortie& s) const { return s << que_su
 
 Entree& Assembleur_P_PolyVEF_P0P1::readOn(Entree& s) { return Assembleur_P_PolyMAC_P0::readOn(s); }
 
+const IntVect& Assembleur_P_PolyVEF_P0P1::ps_used() const
+{
+  if (ps_used_.get_md_vector().non_nul()) return ps_used_;
+  const Domaine_PolyVEF& dom = ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
+  const IntTab& f_s = dom.face_sommets(), &fcl = ch.fcl();
+
+  dom.domaine().creer_tableau_sommets(ps_used_);
+  for (int f = 0; f < dom.nb_faces_tot(); f++)
+    if (fcl(f, 0) < 3)
+      for (int i = 0, s; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+        ps_used_(s) = 1;
+  ps_used_.echange_espace_virtuel();
+  return ps_used_;
+}
+
 int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
 {
   set_resoudre_increment_pression(incr_pression);
@@ -97,14 +113,6 @@ int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVe
     if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
-  return 1;
-}
-
-int Assembleur_P_PolyVEF_P0P1::modifier_solution(DoubleTab& pression)
-{
-  DoubleTab_parts ppart(pression);
-  for (int i = 0; !has_P_ref && i < ppart.size(); i++)
-    ppart[i] -= mp_min_vect(ppart[i]);
   return 1;
 }
 
