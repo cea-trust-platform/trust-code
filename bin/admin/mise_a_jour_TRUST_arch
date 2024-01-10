@@ -395,7 +395,7 @@ option_configure=" -disable-ccache"
 # system mpi, for cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_system_mpi"
 # coolprop
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp_6.6.0"
 # eos
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/EOS_code/install"
 # no conda
