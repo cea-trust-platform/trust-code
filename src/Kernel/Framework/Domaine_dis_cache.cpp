@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,22 @@ Domaine_dis& Domaine_dis_cache::build_or_get(const Nom& type, const Domaine& dom
   return *cache_[key];
 }
 
+Domaine_dis& Domaine_dis_cache::build_or_get_poly_post(const Nom& type, const Domaine& dom)
+{
+  std::string new_type = dom.le_nom().getString() + "_" + type.getString();
+  for (auto &itr : cache_)
+    if (itr.first.find(new_type) != std::string::npos)
+      return *cache_[itr.first];
+
+  return build_or_get(type, dom);
+}
+
 Domaine_dis& Domaine_dis_cache::Build_or_get(const Nom& type, const Domaine& dom)
 {
   return Get_instance().build_or_get(type, dom);
+}
+
+Domaine_dis& Domaine_dis_cache::Build_or_get_poly_post(const Nom& type, const Domaine& dom)
+{
+  return Get_instance().build_or_get_poly_post(type, dom);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,10 @@ public:
   static Domaine_dis_cache& Get_instance();
 
   static Domaine_dis& Build_or_get(const Nom& type, const Domaine& dom);
+  static Domaine_dis& Build_or_get_poly_post(const Nom& type, const Domaine& dom);
+
   Domaine_dis& build_or_get(const Nom& type, const Domaine& dom);
+  Domaine_dis& build_or_get_poly_post(const Nom& type, const Domaine& dom);
 
 private:
   Domaine_dis_cache() {}
