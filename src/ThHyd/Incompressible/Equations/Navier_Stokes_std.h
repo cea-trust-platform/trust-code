@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,6 +118,7 @@ public :
 
   inline Matrice& matrice_pression() { return matrice_pression_; }
   inline Assembleur& assembleur_pression() { return assembleur_pression_; }
+  inline const Assembleur& assembleur_pression() const { return assembleur_pression_; }
   inline Champ_Inc& pression() { return la_pression; }
   inline Champ_Inc& grad_P() { return gradient_P; }
   inline const Champ_Inc& grad_P() const { return gradient_P; }
