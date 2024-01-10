@@ -17,6 +17,9 @@
 #include <Connectivite_som_elem.h>
 #include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Champ_Face_PolyVEF.h>
+#include <Assembleur_P_PolyVEF_P0P1.h>
+#include <Navier_Stokes_std.h>
 
 Implemente_instanciable(Champ_Elem_PolyVEF_P0P1,"Champ_Elem_PolyVEF_P0P1",Champ_Elem_PolyMAC_P0);
 
