@@ -258,7 +258,7 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
    *  - All processors THAT HAVE nb_elem > 0 write the same information.
    *  - Only zone meta-data is written to the library at this stage ... So no worries ^^
    */
-  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, proc_non_zero_elem;
+  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, sectionId2, proc_non_zero_elem;
   std::string zonename;
   int gridId;
 
@@ -276,7 +276,42 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
 
   proc_non_zero_write_.push_back(proc_non_zero_elem); // XXX
   const bool all_write = proc_non_zero_elem.empty(); // all procs will write !
+  const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
 
+  /* ces vecteurs restes vide sauf si poly */
+  std::vector<cgsize_t> sf, sf_offset, ef, ef_offset;
+  std::vector<int> global_nb_sf, global_nb_ef, global_nb_sf_offset, global_nb_ef_offset;
+  int nb_sf = -123, nb_sf_offset = -123, nb_ef = -123, nb_ef_offset = -123;
+
+  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+    {
+      nb_sf = TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre);
+      nb_sf_offset = static_cast<int>(sf.size());
+
+      global_nb_sf.assign(nb_procs, -123 /* default */);
+      global_nb_sf_offset.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
+      MPI_Allgather(&nb_sf, 1, MPI_ENTIER, global_nb_sf.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_sf_offset, 1, MPI_ENTIER, global_nb_sf_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+      if (is_polyedre) // Pas pour polygone
+        {
+          nb_ef = TRUST2CGNS.convert_connectivity_nface(ef, ef_offset);
+          nb_ef_offset = static_cast<int>(ef.size());
+
+          global_nb_ef.assign(nb_procs, -123 /* default */);
+          global_nb_ef_offset.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
+          MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_ef.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+          MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_ef_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+        }
+    }
 
   // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
   zoneId_.clear(); // XXX commencons par ca
@@ -320,8 +355,32 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
 
       /* 5.3 : Construct the sections to host connectivity later */
       sectionId.push_back(-123);
-      if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId.back()) != CG_OK)
-        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_section_write !" << finl, cgp_error_exit();
+
+      if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+        {
+          end = start + static_cast<cgsize_t>(global_nb_sf[indZ]) -1;
+          cgsize_t maxoffset = static_cast<cgsize_t>(global_nb_sf_offset[indZ]);
+
+          if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId.back()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_poly_section_write !" << finl, cgp_error_exit();
+
+          if (is_polyedre) // Pas pour polygone
+            {
+              sectionId2.push_back(-123);
+              start = end + 1;
+
+              end = start + static_cast<cgsize_t>(global_nb_ef[indZ]) -1;
+              maxoffset = static_cast<cgsize_t>(global_nb_ef_offset[indZ]);
+
+              if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, maxoffset, 0, &sectionId2.back()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_poly_section_write !" << finl, cgp_error_exit();
+            }
+        }
+      else
+        {
+          if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId.back()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_section_write !" << finl, cgp_error_exit();
+        }
     }
 
   zoneId_par_.push_back(zoneId_); // XXX : Dont touch
@@ -354,12 +413,31 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
           Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
 
       /* 6.2 : Set element connectivity */
-      std::vector<cgsize_t> elems;
-      TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+      if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+        {
+          max = min + nb_sf -1;
 
-      max = nb_elem; /* now we need local elem */
-      if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
-        Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
+          if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, sf.data(), sf_offset.data()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+
+          if (is_polyedre) // Pas pour polygone
+            {
+              min = max + 1;
+              max = min + nb_ef -1;
+
+              if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId2[indx], min, max, ef.data(), ef_offset.data()) != CG_OK)
+                Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+            }
+        }
+      else
+        {
+          std::vector<cgsize_t> elems;
+          TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+
+          max = nb_elem; /* now we need local elem */
+          if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
+            Cerr << "Error Format_Post_CGNS::ecrire_domaine_par_ : cgp_elements_write_data !" << finl, cgp_error_exit();
+        }
     }
 }
 
