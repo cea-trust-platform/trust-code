@@ -28,15 +28,16 @@ using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
 class Domaine;
 class Motcle;
 
-
 class TRUST_2_CGNS
 {
 public:
   void associer_domaine_TRUST(const Domaine&);
-  void fill_coords(std::vector<double>& , std::vector<double>& , std::vector<double>&);
+  void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
 #ifdef HAS_CGNS
   int convert_connectivity(const CGNS_TYPE, std::vector<cgsize_t>&);
+  int convert_connectivity_ngon(std::vector<cgsize_t>&, std::vector<cgsize_t>&, const bool);
+  int convert_connectivity_nface(std::vector<cgsize_t>&, std::vector<cgsize_t>&);
   CGNS_TYPE convert_elem_type(const Motcle&);
 #endif
 

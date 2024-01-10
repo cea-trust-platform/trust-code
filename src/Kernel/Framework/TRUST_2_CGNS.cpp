@@ -13,7 +13,10 @@
 *
 *****************************************************************************/
 
+#include <Domaine_dis_cache.h>
 #include <TRUST_2_CGNS.h>
+#include <Domaine_VF.h>
+#include <Polyedre.h>
 #include <Domaine.h>
 
 void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine& dom)
@@ -99,6 +102,8 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
     return CGNS_ENUMV(BAR_2);
   else if (type == "TETRAEDRE")
     return CGNS_ENUMV(TETRA_4);
+  else if (type == "POLYEDRE" || type == "POLYGONE" || type == "PRISME" || type == "PRISME_HEXAG" || type == "POLYGONE_3D")
+    return CGNS_ENUMV(NGON_n);
   else
     {
       Cerr << "The type " << type << " is not yet available for the CGNS format ! Call the 911 !" << finl;
@@ -106,4 +111,97 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
       return CGNS_ENUMV(ElementTypeNull);
     }
 }
+
+int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff)
+{
+  const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+  const Domaine_VF& vf = ref_cast (Domaine_VF, domaine_dis.valeur());
+  const IntTab& ef = vf.elem_faces();
+
+  eoff.push_back(0); // first index = > 0 !
+
+  int s = 0;
+  for (int i = 0; i < ef.dimension(0); i++)
+    {
+      for (int j = 0; j < ef.dimension(1); j++)
+        {
+          if (ef(i, j) > -1)
+            {
+              econ.push_back(ef(i, j) + 1);
+              s++;
+            }
+          else
+            break;
+        }
+      eoff.push_back(s);
+    }
+
+  // multiply by -1 repeated faces
+  for (int i = (int)econ.size() -1; i >0; i-- )
+    {
+      int val = econ[i];
+      for (int j = i-1; j > 0; j--)
+        if (econ[j] == val)
+          {
+            econ[i] *= -1;
+            break;
+          }
+    }
+
+  return ef.dimension(0);
+}
+
+int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, const bool is_polyedre)
+{
+  if (is_polyedre)
+    {
+      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+      const Domaine_VF& vf = ref_cast(Domaine_VF, domaine_dis.valeur());
+      const IntTab& fs = vf.face_sommets();
+
+      eoff.push_back(0); // first index = > 0 !
+
+      int s = 0;
+      for (int i = 0; i < fs.dimension(0); i++)
+        {
+          for (int j = 0; j < fs.dimension(1); j++)
+            {
+              if (fs(i, j) > -1)
+                {
+                  econ.push_back(fs(i, j) + 1);
+                  s++;
+                }
+              else
+                break;
+            }
+          eoff.push_back(s);
+        }
+      return fs.dimension(0);
+    }
+  else // POLYGONE
+    {
+      const IntTab& les_elems =  dom_trust_->les_elems();
+
+      eoff.push_back(0); // first index = > 0 !
+
+      int s = 0;
+      for (int i = 0; i < les_elems.dimension(0); i++)
+        {
+          for (int j = 0; j < les_elems.dimension(1); j++)
+            {
+              if (les_elems(i, j) > -1)
+                {
+                  econ.push_back(les_elems(i, j) + 1);
+                  s++;
+                }
+              else
+                break;
+            }
+          eoff.push_back(s);
+        }
+
+      return les_elems.dimension(0);
+    }
+}
+
 #endif

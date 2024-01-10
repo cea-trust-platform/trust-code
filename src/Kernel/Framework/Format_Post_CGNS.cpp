@@ -146,6 +146,7 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_pr
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine)) &bords = domaine.domaines_frontieres();
   for (auto &itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
+
 #endif
   return 1;
 }
@@ -410,15 +411,40 @@ void Format_Post_CGNS::ecrire_domaine_(const Domaine& domaine, const Nom& nom_do
       Cerr << "Error Format_Post_CGNS::ecrire_domaine_ : cg_coord_write - Z !" << finl, cg_error_exit();
 
   /* 7 : Set element connectivity */
-  std::vector<cgsize_t> elems;
-  cgsize_t start = 1, end;
-  int nsom = TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
-  end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
-
-  /* 8 : Write domaine */
   int sectionId;
-  if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
-    Cerr << "Error Format_Post_CGNS::ecrire_domaine_ : cg_section_write !" << finl, cg_error_exit();
+  cgsize_t start = 1, end;
+
+  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+    {
+      const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
+      std::vector<cgsize_t> sf, sf_offset;
+
+      end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre)) -1;
+
+      if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, 0, sf.data(), sf_offset.data(), &sectionId))
+        cg_error_exit();
+
+      if (is_polyedre) // Pas pour polygone
+        {
+          std::vector<cgsize_t> ef, ef_offset;
+
+          start = end + 1;
+          end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_nface(ef, ef_offset)) -1;
+
+          if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, 0, ef.data(), ef_offset.data(), &sectionId))
+            cg_error_exit();
+        }
+    }
+  else
+    {
+      std::vector<cgsize_t> elems;
+
+      int nsom = TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+      end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
+
+      if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
+        Cerr << "Error Format_Post_CGNS::ecrire_domaine_ : cg_section_write !" << finl, cg_error_exit();
+    }
 }
 
 /*
