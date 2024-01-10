@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,4 +134,18 @@ void Multigrille_Adrien::completer_double_for_residue(const IJK_Splitting& split
   Cerr << "Multigrille_Adrien::completer_double_for_residue" << finl;
   grids_data_double_.dimensionner(1);
   grids_data_double_[0].initialize(splitting, ghost_size_, nsweeps_jacobi_residu(0));
+}
+
+double Multigrille_Adrien::multigrille_failure()
+{
+  IJK_Field_double& b = get_storage_double(STORAGE_RHS, 0);
+  IJK_Field_double& x = get_storage_double(STORAGE_X, 0);
+  IJK_Field_double& residu = get_storage_double(STORAGE_RESIDUE, 0);
+
+  set_coarse_matrix().build_matrix(set_grid_data<double>(0).get_faces_coefficients());
+  coarse_solver(x, b);
+  jacobi_residu(x, &b, 0, 0 /* not jacobi */, &residu);
+  double norme_residu_final = norme_ijk(residu);
+  return norme_residu_final;
+
 }

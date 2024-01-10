@@ -308,9 +308,15 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           iteration++;
           if (iteration > max_iter_mixed_solver_)
             {
-              Cerr << "Error in Multigrille_base: mixed precision solver did not converge in "
-                   << max_iter_mixed_solver_ << " iterations." << finl;
-              Process::exit();
+              // Try to solve system on original grid with other solver
+              nr = multigrille_failure();
+              if (nr < seuil_)
+                break;
+              else
+                {
+                  Cerr << "Error in Multigrille_base: mixed precision solver did not converge in "
+                       << max_iter_mixed_solver_ << " iterations." << finl;
+                }
             }
         }
       while (1);
