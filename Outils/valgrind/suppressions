@@ -5,6 +5,37 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ######
+###### Cas test PETSC_SA-AMG en parallele utilisant PETSc 3.20
+######
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:MatStashBlockTypeSetUp
+   ...
+}
+
+######
+###### Cas test utilisant PETSc Cholesky suite passage Petsc 3.20 et MUMPS 5.5.1
+######
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__mumps_build_sort_index_m_MOD_mumps_build_sort_index
+   fun:__dmumps_fac_asm_master_m_MOD_dmumps_fac_asm_niv2
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatFactorNumeric_MUMPS
+   ...
+}
+
+######
 ###### Cas test upwind seq et parallele
 ######
 
