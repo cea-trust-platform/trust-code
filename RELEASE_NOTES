@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+11/01/24 (TRUST) Tools        : Git repository of 'externalpackages' was reset to start fresh from version 1.9.3
 10/01/24 (TRUST) Minor change : TRUST can be linked to a pre-compiled static library of CoolProp 6.6.0 version
 10/01/24 (TRUST) Fix          : Nusselt.face file was not updated at the end of computation if this latter is stopped by putting 1 in .stop file
 19/12/23 (TRUST) Fix          : The new post-processing format "single_lata" can be used with a TRUST 64 bit integers version.

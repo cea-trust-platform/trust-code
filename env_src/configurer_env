@@ -1029,7 +1029,7 @@ then
     remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     if [ $remove_stdcpp_conda -eq 1 ]
     then
-       echo "Warning! Look for a newer conda package than libstdcxx-ng=9.3.0 to avoid this hack:"
+       echo "Warning! Look for a newer conda package than libstdcxx-ng=11.2.0 to avoid this hack:"
        #rm $TRUST_ROOT/exec/python/lib/libstdc++.so*
        #dirlibstd=`dirname $libstd_sys`
        for file in `ls $TRUST_ROOT/exec/python/lib/libstdc++.so* 2>/dev/null`
