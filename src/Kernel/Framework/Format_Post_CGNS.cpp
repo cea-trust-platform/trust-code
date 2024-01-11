@@ -76,13 +76,31 @@ int Format_Post_CGNS::initialize(const Nom& file_basename, const int format, con
   return 1;
 }
 
+// E Saikali : on ajoute cette liste qui est utile pour un probleme couple dans le cas ou on ecrit dans meme fichier
+// Soucis plus tard car ecrire_temps est pas appelee si pb > 1. donc pour le moment on n'autorise paq
+static Noms liste_cgns_ecrit;
+
 int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
   verify_if_cgns(__func__);
+
 #ifdef HAS_CGNS
+  std::string fn = cgns_basename_.getString() + ".cgns"; // file name
+  const bool not_in_list =  !liste_cgns_ecrit.contient_(cgns_basename_);
+
+  if (not_in_list) liste_cgns_ecrit.add(cgns_basename_);
+  else
+    {
+      Cerr << "==============================================================================================================================================================" << finl;
+      Cerr << "==============================================================================================================================================================" << finl;
+      Cerr << "Error Format_Post_CGNS::ecrire_entete - We can not write coupled problems in same file. Please use the ***fichier*** keyword to dump field in seperate files !" << finl;
+      Cerr << "==============================================================================================================================================================" << finl;
+      Cerr << "==============================================================================================================================================================" << finl;
+      Process::exit();
+    }
+
   if (est_le_premier_post)
     {
-      std::string fn = cgns_basename_.getString() + ".cgns"; // file name
       if (is_parallel())
         {
           cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
@@ -292,7 +310,6 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
       global_nb_sf_offset.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
       MPI_Allgather(&nb_sf, 1, MPI_ENTIER, global_nb_sf.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
       MPI_Allgather(&nb_sf_offset, 1, MPI_ENTIER, global_nb_sf_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
@@ -306,7 +323,6 @@ void Format_Post_CGNS::ecrire_domaine_par_(const Domaine& domaine, const Nom& no
           global_nb_ef_offset.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
           MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_ef.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
           MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_ef_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
