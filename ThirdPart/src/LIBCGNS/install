@@ -1,0 +1,61 @@
+#!/bin/bash
+package=$TRUST_ROOT/externalpackages/CGNS/CGNS.tar.gz
+[ ! -f $package ] && echo "$package not found! Update your makefile." && exit -1
+
+echo ""
+echo "@@@@@@@@@@"
+echo "Installing CGNS Library from externalpackages : $package"
+echo "@@@@@@@@@@"
+echo ""
+
+# Where we do make install
+install_dir=$TRUST_ROOT/lib/src/LIBCGNS
+rm -rf $install_dir
+mkdir -p $install_dir
+
+# Where we copy srcs and do cmake and make
+build_dir=$TRUST_ROOT/build/lib/LIBCGNS
+rm -rf $build_dir
+mkdir -p $build_dir
+
+# Go to build
+cd $build_dir
+
+tar -xzf $package
+cd CGNS
+
+mkdir -p build
+cd build
+
+# We compile only the static library
+sed -i 's/set(CGNS_BUILD_SHARED "ON"/set(CGNS_BUILD_SHARED "OFF"/' ../CMakeLists.txt
+# We need parallel hdf5 also
+sed -i 's/set(HDF5_NEED_MPI "OFF"/set(HDF5_NEED_MPI "ON"/' ../CMakeLists.txt
+
+# We use the hdf5 of TRUST
+cmake .. -DCMAKE_PREFIX_PATH=$TRUST_ROOT/lib/src/LIBMED/hdf5_install -DCGNS_ENABLE_PARALLEL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$install_dir
+
+# make & install
+$TRUST_MAKE
+make install
+
+rm -rf $build_dir
+
+# Headers for TRUST include
+include_trust=$TRUST_ROOT/include/CGNS
+rm -rf $include_trust
+mkdir -p $include_trust
+
+echo "Adding CGNS header files to $include_trust !"
+ln -nsf $install_dir/include/* $include_trust/.
+echo "#define HAS_CGNS" > $include_trust/cgns++.h
+
+# some tools to exec
+echo "Adding some CGNS tools to $TRUST_ROOT/exec !"
+ln -nsf $install_dir/bin/cgns* $TRUST_ROOT/exec/.
+
+echo ""
+echo "@@@@@@@@@@"
+echo "Installing CGNS Library : Done !!"
+echo "@@@@@@@@@@"
+echo ""

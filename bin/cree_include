@@ -10,8 +10,6 @@ cd $INC
 mkdir -p $INC/backward
 # includes for external libs eos and coolprop
 mkdir -p $INC/EOS $INC/CoolProp
-# includes for external lib CGNS
-mkdir -p $INC/CGNS
 
 # Ajout des fichiers deprecated by TRUST 1.9.0:
 for file in ArrOfDouble.h ArrOfInt.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h ConstDoubleTab_parts.h
@@ -35,22 +33,6 @@ file="Create_domain_from_sous_zone.h"
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Create_domain_from_sub_domain.h" > backward/$file
 file="Faces_Interne.h"
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Bord_Interne.h" > backward/$file
-
-# CGNS includes in CGNS if 
-if [ "$TRUST_CGNS_HOME_DIR" != "" ]
-then
-    ln -nsf $TRUST_CGNS_HOME_DIR/src/*.h CGNS/.
-    ln -nsf $TRUST_CGNS_HOME_DIR/build/src/*.h CGNS/.
-    echo "#define HAS_CGNS" > CGNS/cgns++.h
-    echo "TRUST configured with the CGNS library found in $TRUST_CGNS_HOME_DIR"
-    echo "CGNS header files added in $TRUST_ROOT/include/CGNS !"
-else
-    echo "TRUST not configured with CGNS. Cleaning include/CGNS ..."
-    #rm -rf CGNS/*
-    echo "#undef HAS_CGNS" > $TRUST_TMP/cgns++.h.tmp
-    [ "`diff CGNS/cgns++.h $TRUST_TMP/cgns++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CGNS/* && cp $TRUST_TMP/cgns++.h.tmp CGNS/cgns++.h
-    rm $TRUST_TMP/cgns++.h.tmp
-fi
 
 # EOS includes in EOS if 
 if [ "$TRUST_EOS_HOME_DIR" != "" ]

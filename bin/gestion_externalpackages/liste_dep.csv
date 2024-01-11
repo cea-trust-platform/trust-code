@@ -242,3 +242,4 @@ MinicondaLocChannLinux,widgetsnbextension-3.5.2-py37h06a4308_0.conda,,ND,"BSD-3-
 MinicondaLocChannLinux,zeromq-4.3.4-h2531618_0.conda,,ND,"LGPL-3.0-or-later",,https://repo.anaconda.com/pkgs/main/linux-64/zeromq-4.3.4-h2531618_0.conda,
 MinicondaLocChannLinux,zstd-1.5.5-hc292b87_0.conda,,ND,"BSD-3-Clause",,https://repo.anaconda.com/pkgs/main/linux-64/zstd-1.5.5-hc292b87_0.conda,
 General,osqp-0.6.0.tar.gz,librairie,AG,"Apache License V2.0",https://osqp.org/,https://github.com/osqp/osqp/archive/refs/tags/v0.6.0.tar.gz,
+CGNS,CGNS.tar.gz,librairie,ES,"GNU Lesser General Public License",https://github.com/CGNS/CGNS,

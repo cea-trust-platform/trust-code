@@ -166,11 +166,7 @@ VC="" && [ "$TRUST_DISABLE_VC" != 1 ] && VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib 
 ######
 # CGNS
 ######
-if [ $TRUST_USE_CGNS = 1 ] ; then
-  CGNS="\$(TRUST_CGNS_HOME_DIR)/build/src/libcgns.a"
-else
-  CGNS=""
-fi
+CGNS="" && [ "$TRUST_DISABLE_CGNS" != 1 ] && CGNS="-L\$(TRUST_ROOT)/lib/src/LIBCGNS/lib -lcgns"
 
 #####
 # EOS

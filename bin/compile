@@ -231,7 +231,7 @@ then
    # env_src/make.all_includes.TRUST pour les includes aussi
    LIBAMGX="" && [ "$TRUST_USE_CUDA" = 1 ] && LIBAMGX=LIBAMGX
    LIBROCALUTION="" && [ "$TRUST_ROCALUTION" = $TRUST_ROOT/lib/src/LIBROCALUTION ] && LIBROCALUTION=LIBROCALUTION
-   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING  `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` $LIBAMGX $LIBROCALUTION LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC`"
+   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING  `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` $LIBAMGX $LIBROCALUTION LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC` `[ "$TRUST_DISABLE_CGNS" != 1 ] && echo LIBCGNS`"
    time=`date "+%s"`
    for rep in $reps
    do
@@ -271,19 +271,17 @@ echo>>$COMPILE
 ######
 # CGNS
 ######
-if [ $TRUST_USE_CGNS = 1 ]
+if [ "$TRUST_DISABLE_CGNS" = 1 ]
 then
-  LCGNS=$TRUST_CGNS_HOME_DIR/build/src/libcgns.a
-  if [ -f $LCGNS ]
-  then
-    echo "LIBCGNS:OK"
-  else
-    echo "LIBCGNS:KO !!!"
-    echo ""
-    echo "You specified to use the CGNS library in your TRUST configuration. However, we can not find the static library (libcgns.a) in the path $TRUST_CGNS_HOME_DIR/build/src !!"
-    echo "Either verify your CGNS installation or re-configure TRUST without the option -with-cgns=$TRUST_CGNS_HOME_DIR ... " 
-    echo "BUILD_EXEC=KO" && exit -1 
-  fi
+   if [ -d "$TRUST_ROOT/include/CGNS" ]
+   then
+      echo "#undef HAS_CGNS" > $TRUST_TMP/cgns++.h.tmp
+      [ "`diff $TRUST_ROOT/include/CGNS/cgns++.h $TRUST_TMP/cgns++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf $TRUST_ROOT/include/CGNS/* && cp $TRUST_TMP/cgns++.h.tmp $TRUST_ROOT/include/CGNS/cgns++.h
+      rm $TRUST_TMP/cgns++.h.tmp
+   else
+     mkdir -p $TRUST_ROOT/include/CGNS
+     echo "#undef HAS_CGNS" > $TRUST_ROOT/include/CGNS/cgns++.h
+   fi
 fi
 
 #####

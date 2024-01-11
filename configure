@@ -314,6 +314,7 @@ echo "   -disable-mpi                      Disable MPI library detection/install
 echo "   -disable-mpi4py                   Disable mpi4py installation."
 echo "   -disable-ccache                   Disable ccache detection/installation."
 echo "   -disable-mpiio                    Disable MPI-IO mode for writing of .xyz binary output file."
+echo "   -disable-cgns                     Disable the build/link of the CGNS library."
 echo "   -disable-optionals                Disable all optionals librairies and tools."
 echo "   -disable-tools                    Disable all tools to build only a binary."
 echo "   -disable-metis                    Disable metis library installation."
@@ -337,7 +338,6 @@ echo "   -without-visit                    Do not install VisIt."
 echo " "
 echo -e "\033[1m\033[4mOptions for post-processing tools\033[0m"
 echo " "
-echo "   -with-cgns=<path_to_cgns>         Compiles TRUST and links with an external static // CGNS library useful for post-processing."
 echo "   -download-visit                   Download a version of VisIt rather trying to build a version."
 echo "   -for_appli_salome                 Force the configuration for TRUST application in Salome platform."
 echo " "
@@ -369,7 +369,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 $*
+  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
@@ -389,12 +389,12 @@ export TRUST_DISABLE_HWLOC=0
 export TRUST_DISABLE_PETSC_OPTIONALS=0
 export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
+export TRUST_DISABLE_CGNS=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
-export TRUST_USE_CGNS=0
 export TRUST_USE_EOS=0
 export TRUST_USE_COOLPROP=0
 export TRUST_USE_REFPROP=0
@@ -415,7 +415,6 @@ unset CUDA_NVCC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
-unset CGNS_HOME
 unset EOS_HOME
 unset COOLPROP_HOME
 unset REFPROP_HOME
@@ -535,11 +534,6 @@ do
    elif [ "${1#-rocm}" != "$1" ]
    then
       export TRUST_USE_ROCM=1
-   elif [ "${1#-with-cgns}" != "$1" ]
-   then
-      # Proper include files for CGNS are managed by script bin/cree_include
-      export TRUST_USE_CGNS=1
-      export CGNS_HOME=${1#-with-cgns=} 
    elif [ "${1#-with-eos}" != "$1" ]
    then
       # Proper include files for EOS are managed by script bin/cree_include
@@ -614,6 +608,10 @@ do
    elif [ "${1#-disable-mpiio}" != "$1" ]
    then
       export TRUST_DISABLE_MPIIO=1
+
+   elif [ "${1#-disable-cgns}" != "$1" ]
+   then
+      export TRUST_DISABLE_CGNS=1
 
    elif [ "${1#-disable-check_sources}" != "$1" ]
    then
@@ -739,6 +737,7 @@ do
 done
 echo "TRUST_USE_OPENBLAS=$TRUST_USE_OPENBLAS && export TRUST_USE_OPENBLAS # Enable OpenBLAS instead of Netlib for BLAS/LAPACK library" >> $var
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
+echo "TRUST_DISABLE_CGNS=$TRUST_DISABLE_CGNS && export TRUST_DISABLE_CGNS  # Disable/enable CGNS library."   >> $var
 echo "TRUST_DISABLE_PETSC_OPTIONALS=$TRUST_DISABLE_PETSC_OPTIONALS && export TRUST_DISABLE_PETSC_OPTIONALS	# Disable/enable PETSc visualization features"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
@@ -774,15 +773,6 @@ then
 else
     echo "unset TRUST_USE_EXTERNAL_HDF" >> $var
     #echo "unset HDF5_ROOT_DIR" >> $var
-fi
-
-if [ "$CGNS_HOME" != "" ]
-then
-    echo "export TRUST_USE_CGNS=1" >> $var
-    echo "export TRUST_CGNS_HOME_DIR=$CGNS_HOME" >> $var
-else
-    echo "export TRUST_USE_CGNS=0" >> $var
-    echo "unset CGNS_HOME" >> $var
 fi
 
 if [ "$EOS_HOME" != "" ]
