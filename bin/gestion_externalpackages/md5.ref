@@ -213,15 +213,12 @@ ffb6120e2309a2280471716301824805  lapack/OpenBLAS-0.3.21.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 9be6e048224797bf531f94b7a8aaa99d  osqp-0.6.0.tar.gz
-273764c714f0a215703359ace93c212c  petsc/ButterflyPACK-2.2.2.tar.gz
 da26c4b43d53a9a6096775245cee847f  petsc/MUMPS_5.5.1.tar.gz
-7fa49bd4f6d33dc94a643a87fee706fd  petsc/MUMPS_5.6.1.tar.gz
 177aae28430aad8a66e7adceb0b1293e  petsc/STRUMPACK_7.1.4.tar.gz
 e9e7bc594b77ae4b58d943cdc286d679  petsc/SuiteSparse-5.13.0.tar.gz
 c6312359371445ec0aa3efc64dcc4979  petsc/hypre-2.29.0.tar.gz
 af200b5cee080a516af4198c06882a7e  petsc/magma-2.7.1.tar.gz
 82e3b09d577580747fbcada30d9b4228  petsc/metis-5.1.0-p10.tar.gz
-0771bb2dd4a9ce692cfb036d5a3e0b71  petsc/ml-13.2.0.tar.gz
 5549747a1a653f1e1909d40fff52ddb9  petsc/parmetis-4.0.3-p8.tar.gz
 d7fb92173bd7df04831ba1fd8219e229  petsc/petsc-3.20.0.tar.gz
 7922e88bf861ed117efe9a334399471e  petsc/scalapack-5bad7487f4.tar.gz

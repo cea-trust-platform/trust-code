@@ -1,9 +1,9 @@
-XX/XX/23 (TRUST) New keyword  : Add two ILU preconditioners based on Block Low Ranking parametrized (epsilon) compression: petsc gcp|gmres { precond ilu_mumps|ilu_strumpack { epsilon value } ... }. May be useful on problems with solver slow convergence.
-XX/XX/23 (TRUST) New keyword  : Add "petsc LU_Strumpack { }" as direct solver from STRUMPACK library
-XX/XX/23 (TRUST) Library      : Update PETSc to 3.20.0 (dependancies like MUMPS, Hypre,... not updated yet)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+12/01/24 (TRUST) New keyword  : Add "petsc LU_Strumpack { }" as direct solver from STRUMPACK library
+12/01/24 (TRUST) New keyword  : Add two ILU preconditioners based on Block Low Ranking parametrized (epsilon) compression: petsc gcp|gmres { precond ilu_mumps|ilu_strumpack { epsilon value } ... }. May be useful on problems with solver slow convergence.
+12/01/24 (TRUST) Library      : Update PETSc to 3.20.0 (dependancies like MUMPS,... not updated yet)
 11/01/24 (TRUST) Tools        : Git repository of 'externalpackages' was reset to start fresh from version 1.9.3
 10/01/24 (TRUST) Minor change : TRUST can be linked to a pre-compiled static library of CoolProp 6.6.0 version
 10/01/24 (TRUST) Fix          : Nusselt.face file was not updated at the end of computation if this latter is stopped by putting 1 in .stop file
