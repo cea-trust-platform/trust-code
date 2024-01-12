@@ -28,7 +28,7 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
 {
   //IntTab src_dest_index;
   src_dest_index_.set_smart_resize(1);
-  src_dest_index_.resize(0,2);
+  src_dest_index_.resize(0, 2);
   coarsen_coefficients_.set_smart_resize(1);
   coarsen_coefficients_.resize_array(0);
   avg_coefficients_.set_smart_resize(1);
@@ -169,6 +169,7 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
     if (error)
       Process::exit();
   }
+
   coarse_splitting.initialize(grid_geom, slice_size_i, slice_size_j, coarse_slice_size_k, processor_mapping);
   const int ghost_domaine_size = fine.get_ghost_size();
   coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
@@ -189,13 +190,12 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
     const int coarse_start = coarse_k_offset;
     const int coarse_nlocal = coarse.get_splitting().get_nb_elem_local(DIRECTION_K);
 
-
     const int n = src_dest_index_.dimension(0);
     Journal() << "Coarsen_Operator_K: local coarsening coefficients:\nfine_k coarse_k coarsen_coeff avg_coeff:" << endl;
     for (int i = 0; i < n; i++)
       {
-        const int fine_k = src_dest_index_(i,0);
-        const int coarse_k = src_dest_index_(i,1);
+        const int fine_k = src_dest_index_(i, 0);
+        const int coarse_k = src_dest_index_(i, 1);
         // Find coefficients that affect the local values on this processor,
         // either at interpolation step or at coarsening step
         if ((fine_k >= fine_start && fine_k < fine_start + fine_nlocal)
@@ -215,8 +215,8 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Coarsen_Operator_K::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine,
-                                  IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse,
+void Coarsen_Operator_K::coarsen_(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& fine,
+                                  IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& coarse,
                                   int compute_weighted_average) const
 {
   static Stat_Counter_Id coarsen_counter_ = statistiques().new_counter(2, "multigrille: K coarsen ");
@@ -261,7 +261,9 @@ void Coarsen_Operator_K::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Coarsen_Operator_K::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine, const int kshift) const
+void Coarsen_Operator_K::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& coarse,
+                                                 IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& fine,
+                                                 const int kshift) const
 {
   static Stat_Counter_Id interpolate_counter_ = statistiques().new_counter(2, "multigrille : interpolate (K)");
   statistiques().begin_count(interpolate_counter_);

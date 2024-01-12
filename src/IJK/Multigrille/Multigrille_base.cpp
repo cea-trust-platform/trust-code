@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -262,22 +262,23 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
       IJK_Field_float& float_residue = get_storage_float(STORAGE_RESIDUE, 0);
       float_b.data() = 0.;
 
-      int i, j, k;
       const int ni = ijk_x.ni();
       const int nj = ijk_x.nj();
       const int nk = ijk_x.nk();
-      for (k = 0; k < nk; k++)
-        for (j = 0; j < nj; j++)
-          for (i = 0; i < ni; i++)
-            float_b(i,j,k) = (float)ijk_b(i,j,k);
+
+      for (int k = 0; k < nk; k++)
+        for (int j = 0; j < nj; j++)
+          for (int i = 0; i < ni; i++)
+            float_b(i, j, k) = (float)ijk_b(i, j, k);
+
       int iteration = 0;
       do
         {
           if (iteration > 0)
-            for (k = 0; k < nk; k++)
-              for (j = 0; j < nj; j++)
-                for (i = 0; i < ni; i++)
-                  float_b(i,j,k) = (float)(-ijk_residu(i,j,k));
+            for (int k = 0; k < nk; k++)
+              for (int j = 0; j < nj; j++)
+                for (int i = 0; i < ni; i++)
+                  float_b(i, j, k) = (float)(-ijk_residu(i, j, k));
 
 
           // Launch multigrid solver in single precision:
@@ -288,10 +289,10 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           double single_precision_residue = multigrille(float_x, float_b, float_residue);
 
           // Update x:
-          for (k = 0; k < nk; k++)
-            for (j = 0; j < nj; j++)
-              for (i = 0; i < ni; i++)
-                ijk_x(i,j,k) += float_x(i,j,k);
+          for (int k = 0; k < nk; k++)
+            for (int j = 0; j < nj; j++)
+              for (int i = 0; i < ni; i++)
+                ijk_x(i, j, k) += float_x(i, j, k);
 
           if (single_precision_residue < seuil_)
             break;
