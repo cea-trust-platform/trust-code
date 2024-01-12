@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,38 +12,61 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-
-#ifndef Postraitements_included
-#define Postraitements_included
-
 #include <Postraitement_base.h>
-#include <TRUST_Deriv.h>
-#include <TRUST_List.h>
+#include <Motcle.h>
+#include <Param.h>
 
-/*! @brief classe Postraitements Cette classe represente une liste de postraitements
- *
- * @sa Postraitement
- */
+Implemente_base_sans_constructeur(Postraitement_base,"Postraitement_base",Objet_U);
 
-class Probleme_base;
-class Entree;
-class Motcle;
+const char * const Postraitement_base::demande_description = "DESCRIPTION";
 
-class Postraitements : public LIST(DERIV(Postraitement_base))
+Postraitement_base::Postraitement_base() :
+  temps_(0.)
 {
-  Declare_instanciable(Postraitements);
+}
 
-public:
-  int lire_postraitements(Entree& is, const Motcle& motlu, const Probleme_base& mon_pb);
-  void postraiter();
-  void traiter_postraitement();
-  void mettre_a_jour(double temps);
-  void init();
-  void finir();
-  int sauvegarder(Sortie& os) const override;
-  int reprendre(Entree& is) override;
-  void completer();
-  void completer_sondes();
-};
+Sortie& Postraitement_base::printOn(Sortie& os) const
+{
+  return os;
+}
 
-#endif
+Entree& Postraitement_base::readOn(Entree& is)
+{
+  Cerr<<"Reading of data for a "<<que_suis_je()<<" post-processing object "<<finl;
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
+
+int Postraitement_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  return -1;
+}
+
+void Postraitement_base::associer_nom_et_pb_base(const Nom& nom,
+                                                 const Probleme_base& mon_pb)
+{
+  le_nom_ = nom;
+  mon_probleme = mon_pb;
+}
+
+const Nom& Postraitement_base::le_nom() const
+{
+  return le_nom_;
+}
+
+void Postraitement_base::mettre_a_jour(double temps)
+{
+  temps_ = temps;
+}
+
+int Postraitement_base::sauvegarder(Sortie& os) const
+{
+  return 0;
+}
+
+int Postraitement_base::reprendre(Entree& is)
+{
+  return 0;
+}

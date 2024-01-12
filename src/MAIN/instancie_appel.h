@@ -26,6 +26,7 @@ void instancie_src_Kernel_Math_Matrices();
 void instancie_src_Kernel_Math_SolvSys();
 void instancie_src_Kernel_MEDimpl();
 void instancie_src_Kernel_Operateurs();
+void instancie_src_Kernel_Postraitement();
 void instancie_src_Kernel_Schemas_Temps();
 void instancie_src_Kernel_Solveurs();
 void instancie_src_Kernel_Statistiques_temps();

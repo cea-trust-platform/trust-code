@@ -1,21 +1,23 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/include/CGNS\
+	-I$(TRUST_MED_ROOT)/include\
+	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
-	-I$(TRUST_ROOT)/src/Kernel/Framework\
-	-I$(TRUST_ROOT)/src/Kernel/Postraitement\
+	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
+	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/ICoCo\
+	-I$(TRUST_ROOT)/src/Kernel/MEDimpl\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
+	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/Kernel/Statistiques_temps\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Lois_Paroi\
-	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Operateurs\
-	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Modeles\
 	
 
-Lib = $(TRUST_LIB)/libthhyd_dilatable_common
+Lib = $(TRUST_LIB)/libkernel_postraitement

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,61 +12,53 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Postraitement_base.h>
-#include <Motcle.h>
-#include <Param.h>
 
-Implemente_base_sans_constructeur(Postraitement_base,"Postraitement_base",Objet_U);
+#ifndef Postraitement_base_included
+#define Postraitement_base_included
 
-const char * const Postraitement_base::demande_description = "DESCRIPTION";
+#include <TRUST_Ref.h>
+#include <Nom.h>
 
-Postraitement_base::Postraitement_base() :
-  temps_(0.)
+class Probleme_base;
+class Entree;
+class Sortie;
+class Motcle;
+class Param;
+
+/*! @brief Classe de base pour l'ensemble des postraitements.
+ *
+ * @sa Postraitements
+ */
+
+class Postraitement_base : public Objet_U
 {
-}
+  Declare_base_sans_constructeur(Postraitement_base);
+public:
+  Postraitement_base();
+  virtual void associer_nom_et_pb_base(const Nom&, const Probleme_base&);
+  const Nom& le_nom() const override;
+  virtual void set_param(Param& param)=0;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  virtual void postraiter(int forcer) = 0;
+  virtual void mettre_a_jour(double temps);
+  virtual void init() {}
+  virtual void finir() {}
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
+  virtual void completer() = 0;
+  virtual void completer_sondes() {}
 
-Sortie& Postraitement_base::printOn(Sortie& os) const
-{
-  return os;
-}
+  enum Format { ASCII, BINAIRE };
+  enum Type_Champ { CHAMP=0, STATISTIQUE=1 };
+  enum Localisation { SOMMETS=0, ELEMENTS=1, FACES=2 };
+  enum Type_Post { ERREUR=-1, ENTIER=0, REEL=1, DOUBLE=2 };
 
-Entree& Postraitement_base::readOn(Entree& is)
-{
-  Cerr<<"Reading of data for a "<<que_suis_je()<<" post-processing object "<<finl;
-  Param param(que_suis_je());
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
+  static const char * const demande_description;
 
-int Postraitement_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  return -1;
-}
+protected:
+  Nom le_nom_;
+  REF(Probleme_base) mon_probleme;
+  double temps_;
+};
 
-void Postraitement_base::associer_nom_et_pb_base(const Nom& nom,
-                                                 const Probleme_base& mon_pb)
-{
-  le_nom_ = nom;
-  mon_probleme = mon_pb;
-}
-
-const Nom& Postraitement_base::le_nom() const
-{
-  return le_nom_;
-}
-
-void Postraitement_base::mettre_a_jour(double temps)
-{
-  temps_ = temps;
-}
-
-int Postraitement_base::sauvegarder(Sortie& os) const
-{
-  return 0;
-}
-
-int Postraitement_base::reprendre(Entree& is)
-{
-  return 0;
-}
+#endif

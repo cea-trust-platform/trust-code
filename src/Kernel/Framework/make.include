@@ -6,6 +6,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/Postraitement\
 	-I$(TRUST_ROOT)/src/Kernel/ICoCo\
 	-I$(TRUST_ROOT)/src/Kernel/MEDimpl\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\

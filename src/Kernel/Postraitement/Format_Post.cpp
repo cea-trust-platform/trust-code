@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,45 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Sondes_Int_included
-#define Sondes_Int_included
+#include <Format_Post.h>
 
-#include <TRUST_List.h>
-#include <Sonde_Int.h>
+Implemente_instanciable(Format_Post,"Format_Post",DERIV(Format_Post_base));
 
-/*! @brief classe Sondes_Int Cette classe represente une liste d'objets de type Sonde_Int.
- *
- * @sa Sonde_Int Postraitement
- */
-
-class Sondes_Int : public LIST(Sonde_Int)
+Sortie& Format_Post::printOn(Sortie& os) const
 {
-  Declare_instanciable(Sondes_Int);
-public:
-  inline void ouvrir_fichiers();
-  inline void fermer_fichiers();
-  void associer_post(const Postraitement&);
-  void postraiter(double );
-  void mettre_a_jour(double temps, double tinit);
-
-private:
-  REF(Postraitement) mon_post;
-};
-
-/*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
- *
- */
-inline void Sondes_Int::ouvrir_fichiers()
-{
-  for (auto &itr : *this) itr.ouvrir_fichier();
+  return DERIV(Format_Post_base)::printOn(os);
 }
 
-/*! @brief Ferme tous les fichiers des sondes de la liste.
- *
- */
-inline void Sondes_Int::fermer_fichiers()
+Entree& Format_Post::readOn(Entree& is)
 {
-  for (auto &itr : *this) itr.fermer_fichier();
+  return DERIV(Format_Post_base)::readOn(is);
 }
 
-#endif /* Sondes_Int_included */
+
+/*! @brief
+ *
+ * @param (Nom& typ) le nom de type au Format_Post
+ */
+void Format_Post::typer_direct(const Nom& typ)
+{
+  DERIV(Format_Post_base)::typer(typ);
+}
+

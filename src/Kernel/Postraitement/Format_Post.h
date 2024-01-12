@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,52 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef Postraitement_base_included
-#define Postraitement_base_included
+#ifndef Format_Post_included
+#define Format_Post_included
 
-#include <TRUST_Ref.h>
-#include <Nom.h>
+#include <Format_Post_base.h>
+#include <TRUST_Deriv.h>
 
-class Probleme_base;
-class Entree;
-class Sortie;
-class Motcle;
-class Param;
-
-/*! @brief Classe de base pour l'ensemble des postraitements.
- *
- * @sa Postraitements
- */
-
-class Postraitement_base : public Objet_U
+class Format_Post : public DERIV(Format_Post_base)
 {
-  Declare_base_sans_constructeur(Postraitement_base);
-public:
-  Postraitement_base();
-  virtual void associer_nom_et_pb_base(const Nom&, const Probleme_base&);
-  const Nom& le_nom() const override;
-  virtual void set_param(Param& param)=0;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  virtual void postraiter(int forcer) = 0;
-  virtual void mettre_a_jour(double temps);
-  virtual void init() {}
-  virtual void finir() {}
-  int sauvegarder(Sortie& os) const override;
-  int reprendre(Entree& is) override;
-  virtual void completer() = 0;
-  virtual void completer_sondes() {}
+  Declare_instanciable(Format_Post);
 
-  enum Format { ASCII, BINAIRE };
-  enum Type_Champ { CHAMP=0, STATISTIQUE=1 };
-  enum Localisation { SOMMETS=0, ELEMENTS=1, FACES=2 };
-  enum Type_Post { ERREUR=-1, ENTIER=0, REEL=1, DOUBLE=2 };
-
-  static const char * const demande_description;
-
-protected:
-  Nom le_nom_;
-  REF(Probleme_base) mon_probleme;
-  double temps_;
+public :
+  void typer_direct(const Nom& );
 };
 
 #endif

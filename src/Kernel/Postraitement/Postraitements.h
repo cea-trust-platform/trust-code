@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,27 +13,37 @@
 *
 *****************************************************************************/
 
-#include <Format_Post.h>
+#ifndef Postraitements_included
+#define Postraitements_included
 
-Implemente_instanciable(Format_Post,"Format_Post",DERIV(Format_Post_base));
+#include <Postraitement_base.h>
+#include <TRUST_Deriv.h>
+#include <TRUST_List.h>
 
-Sortie& Format_Post::printOn(Sortie& os) const
-{
-  return DERIV(Format_Post_base)::printOn(os);
-}
-
-Entree& Format_Post::readOn(Entree& is)
-{
-  return DERIV(Format_Post_base)::readOn(is);
-}
-
-
-/*! @brief
+/*! @brief classe Postraitements Cette classe represente une liste de postraitements
  *
- * @param (Nom& typ) le nom de type au Format_Post
+ * @sa Postraitement
  */
-void Format_Post::typer_direct(const Nom& typ)
-{
-  DERIV(Format_Post_base)::typer(typ);
-}
 
+class Probleme_base;
+class Entree;
+class Motcle;
+
+class Postraitements : public LIST(DERIV(Postraitement_base))
+{
+  Declare_instanciable(Postraitements);
+
+public:
+  int lire_postraitements(Entree& is, const Motcle& motlu, const Probleme_base& mon_pb);
+  void postraiter();
+  void traiter_postraitement();
+  void mettre_a_jour(double temps);
+  void init();
+  void finir();
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
+  void completer();
+  void completer_sondes();
+};
+
+#endif

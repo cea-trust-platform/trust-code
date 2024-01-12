@@ -2,6 +2,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(MPI_INCLUDE)\
 	-I$(PETSC_ROOT)/$(TRUST_ARCH)$(OPT)/include\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/Postraitement\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
