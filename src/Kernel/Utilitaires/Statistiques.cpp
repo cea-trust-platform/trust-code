@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -471,7 +471,7 @@ void Statistiques::begin_count_(const int id)
 #ifdef PETSCKSP_H
       Nom info(si.description[id]);
       info+="\n";
-      PetscInfo(0,info);
+      PetscInfo(0,"%s",info.getChar());
 #endif
 #ifdef VTRACE
       // Level 1 only to avoid MPI calls
