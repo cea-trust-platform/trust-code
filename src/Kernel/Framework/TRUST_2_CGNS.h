@@ -21,7 +21,10 @@
 #include <vector>
 
 #ifdef HAS_CGNS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <pcgnslib.h>
+#pragma GCC diagnostic pop
 using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
 #endif
 

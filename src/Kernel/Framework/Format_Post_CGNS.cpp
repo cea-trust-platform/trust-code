@@ -222,7 +222,7 @@ int Format_Post_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const N
   auto it = find(vect.begin(), vect.end(), nom);
 
   if (it != vect.end()) // element found
-    ind = it - vect.begin(); // XXX sinon utilse std::distance ...
+    ind = static_cast<int>(it - vect.begin()); // XXX sinon utilse std::distance ...
 
   return ind;
 }

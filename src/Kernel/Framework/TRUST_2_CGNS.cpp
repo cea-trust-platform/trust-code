@@ -137,9 +137,9 @@ int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::v
     }
 
   // multiply by -1 repeated faces
-  for (int i = (int)econ.size() -1; i >0; i-- )
+  for (int i = static_cast<int>(econ.size()) -1; i >0; i-- )
     {
-      int val = econ[i];
+      int val = static_cast<int>(econ[i]);
       for (int j = i-1; j > 0; j--)
         if (econ[j] == val)
           {
