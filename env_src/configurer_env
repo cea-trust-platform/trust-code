@@ -767,7 +767,7 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 # we add ncurses and libffi to overcome an issue with vi on Ub20 if env_for_python.sh loaded
-pkgs="ncurses libffi pyqt nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`"
+pkgs="ncurses libffi pyqt nomkl numpy matplotlib swig cmake scipy sympy libstdcxx-ng libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
 [ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 [ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" # internet OK sous Mac
@@ -1029,7 +1029,7 @@ then
     remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     if [ $remove_stdcpp_conda -eq 1 ]
     then
-       echo "Warning! Look for a newer conda package than libstdcxx-ng=11.2.0 to avoid this hack:"
+       echo "Warning! Look for a newer conda package than libstdcxx-ng=13.2.0 to avoid this hack:"
        #rm $TRUST_ROOT/exec/python/lib/libstdc++.so*
        #dirlibstd=`dirname $libstd_sys`
        for file in `ls $TRUST_ROOT/exec/python/lib/libstdc++.so* 2>/dev/null`

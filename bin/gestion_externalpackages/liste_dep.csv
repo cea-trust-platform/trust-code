@@ -175,6 +175,7 @@ MinicondaLocChannLinux,libxcb-1.15-h7f8727e_0.conda,,ND,"BSD3?",,https://repo.an
 MinicondaLocChannLinux,libxkbcommon-1.0.1-hfa300c1_0.conda,,ND,"MIT/X11",,https://repo.anaconda.com/pkgs/main/linux-64/libxkbcommon-1.0.1-hfa300c1_0.conda,
 MinicondaLocChannLinux,libxml2-2.9.14-h74e7548_0.conda,,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/libxml2-2.9.14-h74e7548_0.conda,
 MinicondaLocChannLinux,libxslt-1.1.35-h4e12654_0.conda,,,,,https://repo.anaconda.com/pkgs/main/linux-64/libxslt-1.1.35-h4e12654_0.conda,
+MinicondaLocChannLinux,libstdcxx-ng-13.2.0-h7e041cc_3.conda,,ND,"GPL-3.0-only",,https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-13.2.0-h7e041cc_3.conda,
 MinicondaLocChannLinux,lz4-c-1.9.4-h6a678d5_0.conda,,ND,"BSD-2-Clause",,https://repo.anaconda.com/pkgs/main/linux-64/lz4-c-1.9.4-h6a678d5_0.conda,
 MinicondaLocChannLinux,m4-1.4.18-h4e445db_0.conda,outil,ND,"GPL-3.0",,https://repo.anaconda.com/pkgs/main/linux-64/m4-1.4.18-h4e445db_0.conda,
 MinicondaLocChannLinux,markupsafe-2.1.1-py37h7f8727e_0.conda,,ND,"BSD-3-Clause",,https://repo.anaconda.com/pkgs/main/linux-64/markupsafe-2.1.1-py37h7f8727e_0.conda,
