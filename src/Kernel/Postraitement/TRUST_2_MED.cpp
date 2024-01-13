@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 #include <TRUSTTabs.h>
-#include <Motcle.h>
-#include <Noms.h>
 #include <Char_ptr.h>
 #include <sys/stat.h>
+#include <Motcle.h>
 #include <fstream>
+#include <Noms.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

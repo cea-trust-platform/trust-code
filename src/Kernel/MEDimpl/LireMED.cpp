@@ -30,7 +30,7 @@
 #include <RegroupeBord.h>
 #include <Char_ptr.h>
 #include <fstream>
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>

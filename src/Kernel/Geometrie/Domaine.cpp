@@ -37,7 +37,7 @@
 #include <Conds_lim.h>
 #include <NettoieNoeuds.h>
 #include <Polyedre.h>
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 
 #ifdef MEDCOUPLING_
 using MEDCoupling::DataArrayInt;

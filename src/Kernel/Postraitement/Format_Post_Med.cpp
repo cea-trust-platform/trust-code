@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Format_Post_Med.h>
-#include <EcrMED.h>
+#include <Ecrire_MED.h>
 #include <EcrFicPartage.h>
 #include <EFichier.h>
 #include <Param.h>

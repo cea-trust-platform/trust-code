@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <EcrMED.h>
+#include <Ecrire_MED.h>
 #include <Domaine.h>
 #include <med++.h>
 #include <Domaine_VF.h>
@@ -21,7 +21,7 @@
 #include <Char_ptr.h>
 #include <medcoupling++.h>
 #include <ctime>
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDFileMesh.hxx>
@@ -40,7 +40,7 @@ using MEDCoupling::GetAllFieldIterations;
 using MEDCoupling::MEDFileMesh;
 #endif
 
-Implemente_instanciable(EcrMED,"Write_MED|ecrire_med",Interprete);
+Implemente_instanciable(Ecrire_MED,"Write_MED|ecrire_med",Interprete);
 
 // Anonymous namespace for local functions:
 namespace
@@ -56,27 +56,17 @@ const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
 
 } // namespace
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& EcrMED::printOn(Sortie& os) const
+Sortie& Ecrire_MED::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& EcrMED::readOn(Entree& is)
+Entree& Ecrire_MED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-EcrMED::EcrMED(const Nom& file_name, const Domaine& dom):
+Ecrire_MED::Ecrire_MED(const Nom& file_name, const Domaine& dom):
   major_mode_(false),
   nom_fichier_(file_name),
   dom_(dom)
@@ -86,7 +76,7 @@ EcrMED::EcrMED(const Nom& file_name, const Domaine& dom):
 {
 }
 
-void EcrMED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
+void Ecrire_MED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
 {
   nom_fichier_ = file_name;
   dom_ = dom;
@@ -95,7 +85,7 @@ void EcrMED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
 // XD Ecrire_MED interprete Write_MED -1 Write a domain to MED format into a file.
 // XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
 // XD attr file chaine file 0 Name of file.
-Entree& EcrMED::interpreter(Entree& is)
+Entree& Ecrire_MED::interpreter(Entree& is)
 {
   Cerr<<"syntax : Write_MED [ append ] nom_dom nom_fic "<<finl;
   bool append=false;
@@ -121,15 +111,15 @@ Entree& EcrMED::interpreter(Entree& is)
 }
 
 #ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time)
+void Ecrire_MED::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time)
 {
   med_non_installe();
 }
-void EcrMED::ecrire_domaine(bool m)
+void Ecrire_MED::ecrire_domaine(bool m)
 {
   med_non_installe();
 }
-void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   med_non_installe();
 }
@@ -138,7 +128,7 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
 /*! @brief For each bord get starting and ending index (by construction in TRUST, face indices at the
  * boundary are grouped)
  */
-void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
+void Ecrire_MED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
 {
   const Domaine& dom = dom_.valeur();
   int nb_bords = dom.nb_front_Cl(), nb_faces_int = dom.nb_groupes_faces();
@@ -176,7 +166,7 @@ void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_j
 //    }
 }
 
-void EcrMED::ecrire_domaine(bool append)
+void Ecrire_MED::ecrire_domaine(bool append)
 {
   if (Process::nproc()>Process::multiple_files)
     {
@@ -211,7 +201,7 @@ void EcrMED::ecrire_domaine(bool append)
  * - or, we only write boundary faces. In this case we can still preserve face numbering for all 'classical' borders (i.e. not
  * joints) since by construction TRUST places those faces first, but faces of **joints** are renumbered.
  */
-void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base)
+void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base)
 {
   // Fill arrays all_faces_bords and noms_bords
   Noms noms_bords_and_jnts;
@@ -309,7 +299,7 @@ void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_
  *
  * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
  */
-void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   if (Objet_U::dimension==0)
     Process::exit("Dimension is not defined. Check your data file.");
@@ -354,8 +344,8 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
  *   @param type_elem le type des elems du domaine
  *   @param time le temps
  */
-void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
-                          const Noms& noms_compo, const Nom& type_elem, double time)
+void Ecrire_MED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+                              const Noms& noms_compo, const Nom& type_elem, double time)
 {
   if (Process::nproc()>Process::multiple_files)
     {

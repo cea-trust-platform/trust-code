@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,10 +13,12 @@
 *
 *****************************************************************************/
 
-#include <MergeMEDfiles.h>
-#include <Nom.h>
+#include <Merge_MED.h>
 #include <glob.h>
+#include <Nom.h>
+
 #include <medcoupling++.h>
+
 #ifdef MEDCOUPLING_
 #include <MCAuto.hxx>
 #include <MEDLoader.hxx>
@@ -25,32 +27,13 @@
 using namespace MEDCoupling;
 #endif
 
-Implemente_instanciable(MergeMEDfiles,"Merge_MED",Interprete);
+Implemente_instanciable(Merge_MED,"Merge_MED",Interprete);
 // XD Merge_MED interprete Merge_MED 0 This keyword allows to merge multiple MED files produced during a parallel computation into a single MED file.
 // XD attr med_files_base_name chaine med_files_base_name 0 Base name of multiple med files that should appear as base_name_xxxxx.med, where xxxxx denotes the MPI rank number. If you specify NOM_DU_CAS, it will automatically take the basename from your datafile's name.
 // XD attr time_iterations chaine(into=["all_times","last_time"]) time_iterations 0 Identifies whether to merge all time iterations present in the MED files or only the last one.
 
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& MergeMEDfiles::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& MergeMEDfiles::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Sortie& Merge_MED::printOn(Sortie& os) const { return Interprete::printOn(os); }
+Entree& Merge_MED::readOn(Entree& is) { return Interprete::readOn(is); }
 
 // Method that glob all med files found in the directory and returns
 // a list of strings
@@ -77,14 +60,14 @@ std::vector<std::string> glob_med_files(const std::string& fileName)
 // This is an internal function that performs the field merging
 // and write a single med file
 // Two cases are examined depending whether the field is a P0 or a P1 field
-void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
-                                const std::vector< std::string >& meshes_names,
-                                const std::vector<std::string>& listmed,
-                                const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
-                                const int mesh_numb,
-                                const int iter_numb,
-                                Nom out_file,
-                                bool& first_time, const bool isCell) const
+void Merge_MED::mergeFields(const std::vector< std::string >& field_names,
+                            const std::vector< std::string >& meshes_names,
+                            const std::vector<std::string>& listmed,
+                            const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
+                            const int mesh_numb,
+                            const int iter_numb,
+                            Nom out_file,
+                            bool& first_time, const bool isCell) const
 {
   // Wee loop on all field names
   for (const auto & fld_name: field_names)
@@ -145,14 +128,14 @@ struct less_than_key
   }
 };
 
-/*! @brief MergeMEDfiles::interpreter(Entree& is)
+/*! @brief Merge_MED::interpreter(Entree& is)
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
-Entree& MergeMEDfiles::interpreter(Entree& is)
+Entree& Merge_MED::interpreter(Entree& is)
 {
-  Cerr<<"Syntax MergeMEDfiles::interpreter [NOM_DU_CAS|med_files_base_name] [all_times|last_time]"<<finl;
+  Cerr<<"Syntax Merge_MED::interpreter [NOM_DU_CAS|med_files_base_name] [all_times|last_time]"<<finl;
   Nom med_name,time_opt;
   is >> med_name>> time_opt;
 
@@ -233,7 +216,7 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
 
 #else /* No MEDCOUPLING_ */
 
-Entree& MergeMEDfiles::interpreter(Entree& is)
+Entree& Merge_MED::interpreter(Entree& is)
 {
   Cerr << "Version compiled without MEDCoupling" << finl;
   Process::exit();
@@ -241,14 +224,14 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
   return is;
 }
 
-void MergeMEDfiles::mergeFields(const std::vector< std::string >& field_names,
-                                const std::vector< std::string >& meshes_names,
-                                const std::vector<std::string>& listmed,
-                                const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
-                                const int mesh_numb,
-                                const int iter_numb,
-                                Nom out_file,
-                                bool& first_time, const bool isCell) const
+void Merge_MED::mergeFields(const std::vector< std::string >& field_names,
+                            const std::vector< std::string >& meshes_names,
+                            const std::vector<std::string>& listmed,
+                            const std::vector< std::pair< std::pair< True_int,True_int>,double >>& lst_dt,
+                            const int mesh_numb,
+                            const int iter_numb,
+                            Nom out_file,
+                            bool& first_time, const bool isCell) const
 {
   Cerr << "Version compiled without MEDCoupling" << finl;
   Process::exit();

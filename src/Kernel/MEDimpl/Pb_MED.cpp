@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Postraitement.h>
 #include <Interprete_bloc.h>
 #include <Domaine_dis_cache.h>
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 
 Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);

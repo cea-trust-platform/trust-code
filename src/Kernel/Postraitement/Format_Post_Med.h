@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Format_Post_base.h>
-#include <EcrMED.h>
+#include <Ecrire_MED.h>
 
 /*! @brief : Classe de postraitement des champs euleriens au format med.
  *
@@ -88,7 +88,7 @@ protected:
   virtual int completer_post_med(const Nom& nom_fich2, const Nom& nom1, const Nom& nom2);
   virtual int preparer_post_med(const Nom& nom_fich1, const Nom& nom_fich2, const Nom& nom_fich3, const Nom& id_du_domaine, const int est_le_premier_post);
 
-  EcrMED ecr_med_;
+  Ecrire_MED ecr_med_;
 };
 
 #endif

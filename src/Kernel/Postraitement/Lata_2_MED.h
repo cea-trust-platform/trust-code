@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,36 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef LataToMED_included
-#define LataToMED_included
+#ifndef Lata_2_MED_included
+#define Lata_2_MED_included
 
-/*! @brief Classe LataToMED Ecr un fichier MED
- *
- *     Structure du jeu de donnee (en dimension 2) :
- *     LataToMED dom medfile
+/*! @brief Classe Lata_2_MED  Converts lata file to med
  *
  */
 #include <Interprete.h>
 
-class LataToMED : public Interprete
+class Lata_2_MED : public Interprete
 {
-  Declare_instanciable(LataToMED);
+  Declare_instanciable(Lata_2_MED);
 public :
   Entree& interpreter(Entree&) override;
 };
 
-class latatoother: public Interprete
-{
-  Declare_instanciable(latatoother);
-public:
-  Entree& interpreter(Entree& is) override;
-};
-
-class LmlToLata: public Interprete
-{
-  Declare_instanciable(LmlToLata);
-public:
-  Entree& interpreter(Entree& is) override;
-};
-
-#endif /* LataToMED_included */
+#endif /* Lata_2_MED_included */

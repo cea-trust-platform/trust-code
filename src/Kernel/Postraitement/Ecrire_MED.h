@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef EcrMED_included
-#define EcrMED_included
+#ifndef Ecrire_MED_included
+#define Ecrire_MED_included
 
 #include <TRUSTTabs_forward.h>
 #include <Interprete.h>
@@ -35,16 +35,16 @@ class Champ_Inc_base;
 class Domaine_dis_base;
 class Domaine;
 
-/*! @brief Classe EcrMED Ecrit un fichier MED.
+/*! @brief Classe Ecrire_MED Ecrit un fichier MED.
  *
  *     Structure du jeu de donnee :
  *     Write_MED dom medfile.med
  */
-class EcrMED : public Interprete
+class Ecrire_MED : public Interprete
 {
-  Declare_instanciable(EcrMED);
+  Declare_instanciable(Ecrire_MED);
 public :
-  EcrMED(const Nom& file_name, const Domaine& dom);
+  Ecrire_MED(const Nom& file_name, const Domaine& dom);
 
   void set_file_name_and_dom(const Nom& file_name, const Domaine& dom);
 
@@ -79,8 +79,8 @@ protected:
 
 #ifdef MEDCOUPLING_
   const MEDCoupling::MEDCouplingUMesh *mcumesh_ = nullptr;   ///! Real owner is Domain class
-  MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! EcrMED is the owner
+  MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! Ecrire_MED is the owner
 #endif
 };
 
-#endif /* EcrMED_included */
+#endif /* Ecrire_MED_included */

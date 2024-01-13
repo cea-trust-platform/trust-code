@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ Entree& Ecrire_Champ_MED::interpreter(Entree& is)
   Champ_Don_base& chp = ref_cast(Champ_Don_base,obj_champ);
 
 
-  /*  EcrMED ecrmed;
+  /*  Ecrire_MED ecrmed;
       ecrmed.ecrire_domaine(nom_fic,dom,nom_domaine);
       ecrmed.ecrire_champ("CHAMPMAILLE",nom_fic,nom_domaine,"critere",const DoubleTab&val,const Noms& unite,const Nom& type_elem,double time,int compteur)
   */

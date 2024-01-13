@@ -19,7 +19,7 @@
 #include <EFichier.h>
 #include <EChaine.h>
 #include <medcoupling++.h>
-#include <trust_med_utils.h>
+#include <TRUST_2_MED.h>
 #include <Comm_Group_MPI.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>

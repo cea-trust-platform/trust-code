@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@
 #include <Scatter.h>
 #include <EChaine.h>
 #include <LireMED.h>
-#include <EcrMED.h>
+#include <Ecrire_MED.h>
 #include <unistd.h>
 #include <Lapack.h>
 #include <numeric>
