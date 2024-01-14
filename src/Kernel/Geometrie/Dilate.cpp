@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ Entree& Dilate::interpreter_(Entree& is)
   double alpha;
   associer_domaine(is);
   is >> alpha;
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     {
       Cerr << "Dilate can not be use in parallel." << finl;
       Cerr << "Put rather this interpreter in the " << finl;

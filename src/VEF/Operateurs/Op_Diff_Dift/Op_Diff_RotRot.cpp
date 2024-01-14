@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -107,7 +107,7 @@ int Op_Diff_RotRot::calculer_vorticite(DoubleTab& solution, const DoubleTab& cur
   // sequentiel pour le moment.
   // Pour le cas parallele, il faut s'inspirer de la classe N_S.cpp.
 
-  if (Process::nproc() == 1)
+  if (Process::is_sequential())
     {
       //On considere que la matrice de vorticite est une matrice
       //morse par defaut, et on applique la methode inverse()

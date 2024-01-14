@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -407,7 +407,7 @@ void Echange_contact_Correlation_VDF::calculer_CL()
         {
           Cerr << "Erreur de communication entre les processeurs " <<ME<< " et " <<mon_voisin << finl;
           Cerr << "dans Echange_contact_Correlation_VDF::calculer_CL" << finl;
-          if (Process::nproc()>1) Cerr << "Verifier que votre decoupage est bien en tranches selon l'axe du modele 1D." << finl;
+          if (Process::is_parallel()) Cerr << "Verifier que votre decoupage est bien en tranches selon l'axe du modele 1D." << finl;
           exit();
 
         }

@@ -278,7 +278,7 @@ private:
   {
     if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
       {
-        std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
+        std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
         std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
                   << " with a loop on array [" << toString(tab.addrForDevice()).c_str() << "] of " << tab.size_array()
                   << " elements" << std::endl ;

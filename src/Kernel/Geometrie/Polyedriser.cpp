@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -245,7 +245,7 @@ Entree& Polyedriser::interpreter_(Entree& is)
       Cerr << "Interpreter "<<que_suis_je()<<" cannot be applied for dimension " << dimension <<finl;
       exit();
     }
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     {
       Cerr << "Interpreter "<<que_suis_je()<<" cannot be applied during a parallel calculation !" << finl;
       Cerr << "The mesh can't be changed after it has been partitioned." << finl;

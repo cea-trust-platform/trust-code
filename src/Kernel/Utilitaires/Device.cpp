@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -216,7 +216,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
       #pragma omp target enter data map(alloc:ptr[0:size])
       if (clock_on)
         {
-          std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
+          std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
           printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free)\n", clock.c_str(), ms, arrayName.c_str(), toString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024));
         }
@@ -249,7 +249,7 @@ void deleteOnDevice(_TYPE_* ptr, int size)
   if (Objet_U::computeOnDevice)
     {
       std::string clock;
-      if (PE_Groups::get_nb_groups()>0 && Process::nproc()>1) clock = "[clock]#"+std::to_string(Process::me());
+      if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
       else
         clock = "[clock]  ";
       int bytes = sizeof(_TYPE_) * size;

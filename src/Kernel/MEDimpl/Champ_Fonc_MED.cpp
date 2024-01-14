@@ -127,7 +127,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   int multiple_med = 0;
   Nom tmp(nom_fichier_med_);
   tmp.prefix("0001.med");
-  if (tmp!=nom_fichier_med_ && Process::nproc()>1)
+  if (tmp!=nom_fichier_med_ && Process::is_parallel())
     {
       multiple_med = 1;
       /*
@@ -156,7 +156,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         {
           // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
           const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
-          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0 && !nom_decoup_lu)
+          if (Process::is_parallel() && mp_max((int)(le_domaine.nb_som()>0)) != 0 && !nom_decoup_lu)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom_ << finl;
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
@@ -238,7 +238,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     }
   // FIN MODIF ELI LAUCOIN (06/03/2012)
   /* si on est en parallele : creation du filtre */
-  if (Process::nproc() > 1 && field_size != le_champ().valeurs().dimension(0))
+  if (Process::is_parallel() && field_size != le_champ().valeurs().dimension(0))
     {
       EFichier fdec;
       fdec.ouvrir(nom_decoup_);

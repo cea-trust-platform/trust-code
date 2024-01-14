@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -705,7 +705,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   int decoupage_som = 0;
   // On n'ecrit qu'une seule fois le fichier decoupage_som
   // et uniquement en sequentiel
-  if (Process::nproc() == 1 && equation().schema_temps().nb_pas_dt() == 0)
+  if ((Process::is_sequential()) && equation().schema_temps().nb_pas_dt() == 0)
     decoupage_som = 1;
   //SFichier* os=NULL;
   SChaine decoup_som;
@@ -833,7 +833,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       Cerr << "Or insert the line:" << finl;
       Cerr << "VerifierCoin " << dom.le_nom() << " { [Read_file " << nom_fichier << ".decoupage_som] }" << finl;
       Cerr << "after the mesh is finished to be read and built." << finl;
-      if (Process::nproc() > 1)
+      if (Process::is_parallel())
         Cerr << "and BEFORE the keyword \"Decouper\" during the partition of the mesh." << finl;
       else
         Cerr << "and BEFORE the keyword \"Discretiser\"." << finl;

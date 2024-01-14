@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
   param.lire_avec_accolades_depuis(is);
   int lecture_decoupage_som=(decoup_som!=""?1:0);
 
-  if (Process::nproc()>1 && expert_only==0)
+  if (Process::is_parallel() && expert_only==0)
     {
       Cerr << que_suis_je() << " interpreter can be used only for sequential calculation." << finl;
       Cerr << "For parallel calculation, please use "<< que_suis_je() <<" interpreter" << finl;

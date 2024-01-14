@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -705,7 +705,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
   // Mettre une methode a Domaine::nettoie
   // Attention: les lignes suivantes pas compatibles avec TRUST < v1.4.6
 
-  if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )
+  if (Process::is_sequential() && (NettoieNoeuds::NettoiePasNoeuds==0) )
     NettoieNoeuds::nettoie(dom);
 
   return is;

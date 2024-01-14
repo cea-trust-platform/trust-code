@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -201,7 +201,7 @@ void zero(Matrice_Bloc_Sym& matrice)
       {
         Matrice_Bloc& bloc_ij=ref_cast(Matrice_Bloc, matrice.get_bloc(i,j).valeur());
         ref_cast(Matrice_Morse, bloc_ij.get_bloc(0,0).valeur()).clean();
-        if(Process::nproc()>1)
+        if(Process::is_parallel())
           {
             ref_cast(Matrice_Morse, bloc_ij.get_bloc(0,1).valeur()).clean();
             ref_cast(Matrice_Morse, bloc_ij.get_bloc(1,0).valeur()).clean();
@@ -235,7 +235,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
       // Les decoupages doivent etre de largeur de joint de 2
       // si le support P1 ou Pa est utilise...
-      if (Process::nproc() > 1 &&
+      if (Process::is_parallel() &&
           domaine_vef.domaine().nb_joints() &&
           domaine_vef.domaine().joint(0).epaisseur() < 2 &&
           (domaine_vef.get_alphaS() || domaine_vef.get_alphaA()))

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,7 +100,7 @@ private:
     eval_conv.associer_domaines(zvdf, zclvdf );
 
     if (is_QUICK || is_CENTRE4)
-      if ( Process::nproc()>1 && zvdf.domaine().nb_joints() && zvdf.domaine().joint(0).epaisseur()<2)
+      if ( Process::is_parallel() && zvdf.domaine().nb_joints() && zvdf.domaine().joint(0).epaisseur()<2)
         {
           Cerr << "Overlapping width (given by larg_joint option) of  " << zvdf.domaine().joint(0).epaisseur() << finl;
           Cerr << "is not enough for Quick scheme in VDF parallel calculation." << finl;

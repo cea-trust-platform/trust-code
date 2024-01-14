@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,7 @@ int Precond_local::precond(const Matrice_Base& mat,
                            const DoubleVect& secmem,
                            DoubleVect& solution)
 {
-  if(Process::nproc()>1)
+  if(Process::is_parallel())
     {
       Cerr << "Precond_local::precond not coded for nproc > 1" << finl;
       exit();

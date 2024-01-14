@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
         filename_ += extension;
         // Pour un calcul sequentiel, on ouvre un fichier SFichier
         // pour ne pas bufferiser en memoire
-        if  (Process::nproc() == 1)
+        if  (Process::is_sequential())
           fichier_ = new SFichier;
         else
           {
@@ -173,7 +173,7 @@ int Fichier_Lata::is_master() const
  */
 void Fichier_Lata::syncfile()
 {
-  if (is_parallel_ && Process::nproc() > 1)
+  if (is_parallel_ && Process::is_parallel())
     fichier_->syncfile();
 }
 

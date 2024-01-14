@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -196,7 +196,7 @@ int ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, co
                   fich.put(tmp.addr(), j, dim + nb_comp /* nb colonnes en ascii */);
                   // On flushe regulierement en sequentiel car sur certains tres gros maillages
                   // stack overflow possible...
-                  if (Process::nproc()==1) fich.syncfile();
+                  if (Process::is_sequential()) fich.syncfile();
                   j = 0;
                 }
             }
@@ -544,7 +544,7 @@ Nom& EcritureLectureSpecial::get_Output()
   static Nom option=Output;
 
   // disable MPIIO in sequential mode
-  if (Output=="EcrFicPartageMPIIO" && Process::nproc()==1) option="EcrFicPartageBin";
+  if (Output=="EcrFicPartageMPIIO" && Process::is_sequential()) option="EcrFicPartageBin";
 
   // disable MPIIO if TRUST_DISABLE_MPIIO=1
   char* theValue = getenv("TRUST_DISABLE_MPIIO");

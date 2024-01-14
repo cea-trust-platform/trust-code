@@ -78,7 +78,7 @@ public:
   int ecrire_champ(const Domaine&, const Noms&, const Noms&, int, double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&) override;
 
 private:
-  inline bool is_parallel() const { return Process::nproc() > 1; }
+
   Nom cgns_basename_;
 
 #ifdef HAS_CGNS

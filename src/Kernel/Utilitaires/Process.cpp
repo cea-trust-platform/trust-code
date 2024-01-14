@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,6 +106,16 @@ int Process::nproc()
 {
   const int n = PE_Groups::current_group().nproc();
   return n;
+}
+
+bool Process::is_parallel()
+{
+  return Process::nproc() > 1;
+}
+
+bool Process::is_sequential()
+{
+  return Process::nproc() == 1;
 }
 
 /*! @brief renvoie mon rang dans le groupe de communication courant.
@@ -280,7 +290,7 @@ void Process::exit(const Nom& message ,int i)
 #else
 #define MPI_ENTIER MPI_INT
 #endif
-      if (Process::nproc()>1)
+      if (Process::is_parallel())
         {
           const MPI_Comm& mpi_comm=ref_cast(Comm_Group_MPI,PE_Groups::groupe_TRUST()).get_mpi_comm();
           int tag = 666;

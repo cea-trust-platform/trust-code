@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,7 +117,7 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
                                          Domaine& dest,
                                          ArrOfInt& renum_som)
 {
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       Cerr << "extraire_domaine_bord in parallel: the domain created will not have a distributed structure\n"
            << " (this will be done one day... ask to B.Mathieu)" << finl;

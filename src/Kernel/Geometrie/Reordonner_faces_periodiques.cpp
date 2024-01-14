@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -271,7 +271,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
         {
           Cerr << " This boundary is not detected as periodic (geometric error > precision_geom)" << finl;
           message();
-          if (Process::nproc()>1) Cerr << "Or you forgot to define the periodic boundary in the Decouper keyword." << finl;
+          if (Process::is_parallel()) Cerr << "Or you forgot to define the periodic boundary in the Decouper keyword." << finl;
         } // attendre qu'on ait ecrit pour continuer (sinon risque de exit() avant d'avoir affiche le message)
       Process::barrier();
       return 0;

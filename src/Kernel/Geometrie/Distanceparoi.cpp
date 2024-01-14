@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ Entree& Distanceparoi::readOn(Entree& is)
 
 Entree& Distanceparoi::interpreter_(Entree& is)
 {
-  if(Process::nproc()>1)
+  if(Process::is_parallel())
     {
       Cerr << " Distance_paroi : the calculation of the distance to the wall is made in sequential mode !! " << finl;
       exit();

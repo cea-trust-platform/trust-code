@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -303,7 +303,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
     } // fin de la boucle
-  //   if(Process::nproc()==1)
+  //   if(Process::is_sequential())
   //     Process::Journal()<<"OpVEFFaAmont ap interne resu[8]="<<resu(8,0)<<","<<resu(8,1)<<finl;
   //   if((Process::nproc()==2)&&(Process::me()==0))
   //     Process::Journal()<<"OpVEFFaAmont ap interne resu[4]="<<resu(4,0)<<","<<resu(4,1)<<finl;

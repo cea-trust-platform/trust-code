@@ -1661,7 +1661,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             aCKN = 0.5;
           precond_diag = param.precoditionnement_diag();
           // Bug fixed : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
-          //if (precond_diag==1 && Process::nproc()>1)
+          //if (precond_diag==1 && Process::is_parallel())
           //  {
           //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << finl;
           //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << finl;

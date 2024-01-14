@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -138,7 +138,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
           exit();
         }
     }
-  if ((rang == 0) && (Process::nproc()>1))
+  if ((rang == 0) && (Process::is_parallel()))
     {
       Cerr << "When the subareas are defined as lists of elements" << finl;
       Cerr << "it is necessary to split them for parallel computing." << finl;
@@ -351,7 +351,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
     case 4 :
       {
         // Intervalle (only be used in sequential calculation)
-        if (Process::nproc()>1)
+        if (Process::is_parallel())
           {
             Cerr << "You can't use Intervalle option for parallel calculation." << finl;
             exit();

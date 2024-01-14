@@ -867,7 +867,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   pm.SetLocalNrow(nb_rows_);
   pm.SetLocalNcol(nb_rows_);
 
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     {
       int boundary_nnz = md.items_to_send_.get_data().size_array();
 
@@ -930,7 +930,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   std::copy(tab2_c.begin(), tab2_c.end(), col);
   std::copy(coeff_c.begin(), coeff_c.end(), val);
   mat.SetLocalDataPtrCSR(&row_offset, &col, &val, "mat", coeff_c.size());
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     {
       row_offset = new True_int[ghost_tab1_c.size()];
       col = new True_int[ghost_tab2_c.size()];
@@ -942,7 +942,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
     }
   /* Cela serait plus simple en passant les std::vector mais valgrind rale lors d'un free_host a la fin lors de ~GlobalMatrix :-(
   mat.SetLocalDataPtrCSR(reinterpret_cast<int **>(&tab1_c), reinterpret_cast<int **>(&tab2_c), reinterpret_cast<double **>(&coeff_c), "mat", coeff_c.size());   // LocalMatrix
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     mat.SetGhostDataPtrCSR(reinterpret_cast<int **>(&ghost_tab1_c), reinterpret_cast<int **>(&ghost_tab2_c),
                            reinterpret_cast<double **>(&ghost_coeff_c), "ghost", ghost_coeff_c.size());    // LocalMatrix ghost
   */

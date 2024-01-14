@@ -217,7 +217,7 @@ Entree& Domaine::readOn(Entree& s)
   read_former_domaine(s);
   check_domaine();
 
-  if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )
+  if (Process::is_sequential() && (NettoieNoeuds::NettoiePasNoeuds==0) )
     {
       NettoieNoeuds::nettoie(*this);
       nbsom = mp_sum(sommets_.dimension(0));
@@ -275,7 +275,7 @@ void Domaine::check_domaine()
       corriger_type(frontiere(i).faces(), type_elem().valeur());
   }
 
-  if (mes_faces_bord_.size() == 0 && mes_faces_raccord_.size() == 0 && Process::nproc() == 1)
+  if (mes_faces_bord_.size() == 0 && mes_faces_raccord_.size() == 0 && Process::is_sequential())
     Cerr << "Warning, the reread domaine " << nom_ << " has no defined boundaries (none boundary or connector)." << finl;
 
   mes_faces_bord_.associer_domaine(*this);
@@ -985,7 +985,7 @@ void Domaine::merge_wo_vertices_with(Domaine& dom2)
 void Domaine::fill_from_list(std::list<Domaine*>& lst)
 {
   Cerr << "Filling domain from list of domains in progress... " << finl;
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     Process::exit("Error in Domaine::fill_from_list() : compression prohibited in parallel mode");
   if (lst.size() == 0)
     Process::exit("Error in Domaine::fill_from_list() : compression prohibited in parallel mode");

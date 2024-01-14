@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ LecFicDistribue::LecFicDistribue(const char* name, IOS_OPEN_MODE mode)
 int LecFicDistribue::ouvrir(const char* name, IOS_OPEN_MODE mode)
 {
   Nom nom_fic(name);
-  if(Process::nproc()>1)
+  if(Process::is_parallel())
     nom_fic=nom_fic.nom_me(Process::me());
 
 #ifdef FILESYSTEM_NON_GLOBAL

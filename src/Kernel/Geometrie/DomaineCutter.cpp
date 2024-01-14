@@ -1445,7 +1445,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
           if (format == Decouper::HDF5_SINGLE)  // create HDF5 file only once!
             {
               fic_hdf.create(nom_fichier_hdf5);
-              if(Process::nproc() > 1)
+              if(Process::is_parallel())
                 {
                   // creating datasets
                   Noms dataset_names;
@@ -1590,7 +1590,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                   if(domaines_index[i_part] >=0)
                     dname += "_" + std::to_string(domaines_index[i_part]);
                   Nom datasetname(dname);
-                  if(Process::nproc() > 1)
+                  if(Process::is_parallel())
                     fic_hdf.fill_dataset(datasetname, os_hdf);
                   else
                     fic_hdf.create_and_fill_dataset_SW(datasetname, os_hdf);

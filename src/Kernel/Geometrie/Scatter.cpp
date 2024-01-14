@@ -127,7 +127,7 @@ Entree& Scatter::interpreter(Entree& is)
   // Nom des fichiers de decoupage : nomentree.xxxx
   Nom nomentree;
   is >> nomentree;
-  if (Process::nproc()==1)
+  if (Process::is_sequential())
     {
       Motcle n(nomentree);
       if (n != ";" && n != "unlock;")

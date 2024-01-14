@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Ret
       if (bytes == -1) statistiques().end_count(gpu_kernel_counter_, 0, onDevice);
       if (clock_on) // Affichage
         {
-          std::string clock(Process::nproc() > 1 ? "[clock]#" + std::to_string(Process::me()) : "[clock]  ");
+          std::string clock(Process::is_parallel() ? "[clock]#" + std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
           if (bytes == -1)
             if (onDevice)

@@ -402,7 +402,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 11:
       {
-        if (Process::nproc()>1) Process::exit("Cholesky_lapack can't be used for parallel calculation.");
+        if (Process::is_parallel()) Process::exit("Cholesky_lapack can't be used for parallel calculation.");
         solveur_direct_=petsc;
         // Lapack, old and slow (non pas vrai sur petites matrices d'ordre 100 - 10000 !)
         add_option("pc_factor_nonzeros_along_diagonal", ""); // Moins robuste que MUMPS pour un pivot nul donc on reordonne pour eviter
@@ -411,7 +411,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 12:
       {
-        if (Process::nproc()>1) Process::exit("Cholesky_umfpack can't be used for parallel calculation.");
+        if (Process::is_parallel()) Process::exit("Cholesky_umfpack can't be used for parallel calculation.");
         solveur_direct_=umfpack;
         // Umfpack, sequential only but fast...
         KSPSetType(SolveurPetsc_, KSPPREONLY);
@@ -428,7 +428,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 17:
       {
-        if (Process::nproc()>1) Process::exit("Cholesky_cholmod can't be used for parallel calculation.");
+        if (Process::is_parallel()) Process::exit("Cholesky_cholmod can't be used for parallel calculation.");
         solveur_direct_=cholmod;
         // Cholmod Cholesky (pas LU), sequentiel, supporte multi-GPU
         if (!matrice_symetrique_)
@@ -697,7 +697,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 6:
               {
-                if (Process::nproc()>1)
+                if (Process::is_parallel())
                   {
                     Cerr << "factored_matrix option is not available for parallel calculation." << finl;
                     exit();
@@ -792,7 +792,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                   }
                 else if (rang_mumps==1 || rang_mumps==2)
                   {
-                    if (Process::nproc()==1)
+                    if (Process::is_sequential())
                       {
                         Cerr << "You can't use the parallel ordering " << motlu << " during a sequential calculation." << finl;
                         Process::exit();
@@ -1531,7 +1531,7 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
   else if (save_matrix_==2)
     {
       // Format matrix market ToDo : method
-      if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
+      if (Process::is_parallel()) Process::exit("Error, matrix market format is not available yet in parallel.");
       Nom filename(Objet_U::nom_du_cas());
       filename += "_matrix";
       filename += (Nom) instance;
@@ -2150,7 +2150,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
 
   // Dans le cas de save_matrix_ en parallele
   // Sinon, cela bloque avec sbaij:
-  if (save_matrix_==1 && Process::nproc()>1) mataij_=1;
+  if (save_matrix_==1 && Process::is_parallel()) mataij_=1;
 
   // Error in PETSc when read/save the factored matrix if matrix is sbaij
   // so aij is selected instead:
@@ -2188,7 +2188,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
               if (!matrices_identiques)
                 {
                   Cerr << "Error: matrix PETSc are different according to the symmetric storage or not." << finl;
-                  if (Process::nproc() > 1) Cerr << "Check if the matrix is correct in parallel." << finl;
+                  if (Process::is_parallel()) Cerr << "Check if the matrix is correct in parallel." << finl;
                   Cerr << "Contact TRUST support team." << finl;
                   if (nb_rows_ < 10)
                     {
@@ -2297,7 +2297,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
           // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
           // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
           // On passe de 35 a 40 pour faire passer le cas cavite_entrainee_2D_jdd2 (suite passage a MUMPS 5.2.0)
-          if (Process::nproc() == 1)
+          if (Process::is_sequential())
             add_option("mat_mumps_icntl_14", "40");
           else
             add_option("mat_mumps_icntl_14", "90");
@@ -2490,7 +2490,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
     VecSetSizes(SecondMembrePetsc_, nb_rows_, PETSC_DECIDE);
 
   // Set type:
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     VecSetType(SecondMembrePetsc_, gpu_ ? VECMPICUDA : VECMPI);
   else
     VecSetType(SecondMembrePetsc_, gpu_ ? VECSEQCUDA : VECSEQ);
@@ -2693,17 +2693,17 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   if (mataij == 0)
     {
       // On utilise SBAIJ pour une matrice symetrique (plus rapide que AIJ)
-      MatSetType(MatricePetsc, (Process::nproc() == 1 ? MATSEQSBAIJ : MATMPISBAIJ));
+      MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQSBAIJ : MATMPISBAIJ));
     }
   else
     {
       // On utilise AIJ car je n'arrive pas a faire marcher avec BAIJ
 #ifdef PETSC_HAVE_CUDA
       if (gpu_)
-        MatSetType(MatricePetsc, (Process::nproc()==1?MATSEQAIJCUSPARSE:MATMPIAIJCUSPARSE));
+        MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJCUSPARSE : MATMPIAIJCUSPARSE));
       else
 #endif
-        MatSetType(MatricePetsc, (Process::nproc() == 1 ? MATSEQAIJ : MATMPIAIJ));
+        MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusparse to aijviennacl via CLI
@@ -2912,7 +2912,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       Mat localA;
       PetscInt nRowsLocal;
       const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
-      if (Process::nproc()==1) // sequential AIJ
+      if (Process::is_sequential()) // sequential AIJ
         {
           // Make localA point to the same memory space as A does
           localA = MatricePetsc_;
@@ -2974,7 +2974,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
               RowLocal++;
             }
         }
-      if (Process::nproc()>1) MatDestroy(&localA);
+      if (Process::is_parallel()) MatDestroy(&localA);
       new_stencil = mp_max(new_stencil);
     }
   if (verbose) Cout << "[Petsc] Time to check stencil:   \t" << Statistiques::get_time_now() - start << finl;

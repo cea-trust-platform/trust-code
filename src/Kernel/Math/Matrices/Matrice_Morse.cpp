@@ -195,7 +195,7 @@ Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
 
 void Matrice_Morse::WriteFileMTX(const Nom& name) const
 {
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       Cerr << "Warning, matrix market format is not available yet in parallel." << finl;
       return;
@@ -1062,7 +1062,7 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
   // B.Mat: au 20/4/2005, DoubleVect::norme() est bugge, donc la methode n'a
   // sans doute jamais ete validee en parallele. Je retire norme() et je mets
   // ceci:
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       Cerr << "Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution, "
            << "coeff_seuil double) const \n has never been tested in parallel" << finl;
@@ -1262,7 +1262,7 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
   // B.Mat: au 20/4/2005, DoubleVect::norme() est bugge, donc la methode n'a
   // sans doute jamais ete validee en parallele. Je retire norme() et je mets
   // ceci:
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       Cerr << "Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution, "
            << "double coeff_seuil) const \n has never been tested in parallel" << finl;

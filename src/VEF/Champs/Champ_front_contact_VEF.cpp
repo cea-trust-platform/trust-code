@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@ Entree& Champ_front_contact_VEF::readOn(Entree& is)
   Cerr << "      connecte a                : " << nom_pb2 << " " << nom_bord2 << " " << nom_inco << finl;
 
   fixer_nb_comp(1); // prevu pour la temperature.
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     connect_est_remplit = 1;
   else
     connect_est_remplit = 0;
@@ -78,7 +78,7 @@ int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inc
   remplir_elems_voisin_bord();
 
   // Check/initialize Raccord boundaries in parallel:
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       nom_bord = nom_bord2;
       associer_ch_inc_base(l_inconnue2.valeur());
@@ -570,7 +570,7 @@ DoubleVect& Champ_front_contact_VEF::trace_face_raccord(const Front_VF& fr_vf,co
     fr_vf.frontiere().trace_face_distant(y,x);
   else
     {
-      if (Process::nproc()>1)
+      if (Process::is_parallel())
         {
           // On teste si on a bien un raccord distant homogene car sinon le tableau connect n'est pas rempli en parallele
           // En effet remplir_connect_bords n'est fait qu'en sequentiel

@@ -101,7 +101,7 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
 
   if (est_le_premier_post)
     {
-      if (is_parallel())
+      if (Process::is_parallel())
         {
           cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
 
@@ -146,7 +146,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
 #ifdef HAS_CGNS
   if (est_le_dernier_post)
     {
-      if (is_parallel()) finir_par_();
+      if (Process::is_parallel()) finir_par_();
       else finir_();
     }
 #endif
@@ -156,7 +156,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
 int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
 {
 #ifdef HAS_CGNS
-  if (is_parallel())
+  if (Process::is_parallel())
     ecrire_domaine_par_(domaine, domaine.le_nom());
   else
     ecrire_domaine_(domaine, domaine.le_nom());
@@ -189,7 +189,7 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
               nom_dom += "_";
               nom_dom += LOC;
               Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-              is_parallel() ? ecrire_domaine_par_(domaine, nom_dom) : ecrire_domaine_(domaine, nom_dom); // XXX Attention
+              Process::is_parallel() ? ecrire_domaine_par_(domaine, nom_dom) : ecrire_domaine_(domaine, nom_dom); // XXX Attention
               fld_loc_map_.insert( { LOC, nom_dom } );
             }
         }
@@ -198,7 +198,7 @@ int Format_Post_CGNS::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
 
-  if (is_parallel())
+  if (Process::is_parallel())
     for (int i = 0; i < nb_cmp; i++)
       ecrire_champ_par_(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
   else

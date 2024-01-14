@@ -401,7 +401,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
       Champ_Inc p_tab = FWC.inco_chaleur(); // Initialize with same discretization
       p_tab->nommer("Pression_EOS");
       p_tab->valeurs() = FWC.pression_th_tab(); // Use good values
-      if (special && Process::nproc() > 1)
+      if (special && Process::is_parallel())
         Cerr << "ATTENTION : For a parallel calculation, the field Pression_EOS is not saved in xyz format ... " << finl;
       else
         bytes += p_tab->sauvegarder(os);
@@ -431,7 +431,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
   field_tag += pb.domaine().le_nom();
   field_tag += Nom(temps,pb.reprise_format_temps());
 
-  if (EcritureLectureSpecial::is_lecture_special() && Process::nproc() > 1)
+  if (EcritureLectureSpecial::is_lecture_special() && Process::is_parallel())
     {
       Cerr << "Error in Convection_Diffusion_Espece_Binaire_WC::reprendre !" << finl;
       Cerr << "Use the sauv file to resume a parallel WC calculation (Pression_EOS is required) ... " << finl;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ void Partitionneur_Metis::set_param(Param& param)
 
 int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if(Process::nproc() >1)
+  if(Process::is_parallel())
     {
       Cerr << "WARNING! You're using a sequential algorithm on " << nproc() << "processors " << finl;
       Cerr << "Use PARMETIS for parallel domain cutting" << finl;

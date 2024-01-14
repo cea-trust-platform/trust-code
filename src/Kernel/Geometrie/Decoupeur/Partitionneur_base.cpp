@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -645,7 +645,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
   // Initialisation du tableau renum_som_perio
   for (int i = 0; i < nb_sommets_reels; i++)
     renum_som_perio[i] = i;
-  int parallel_algo = Process::nproc() > 1;
+  int parallel_algo = Process::is_parallel();
   Reordonner_faces_periodiques::renum_som_perio(domaine, liste_bords_perio, renum_som_perio,
                                                 parallel_algo /* pas d'espace virtuel en sequentiel */);
 

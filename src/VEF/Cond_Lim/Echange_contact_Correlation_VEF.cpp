@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -810,7 +810,7 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
               if (limpr(temps,mon_eqn.schema_temps().pas_de_temps()))
                 {
                   //Cout << ii << " " << patch_courant << finl;
-                  if (Process::nproc()>1) Cout << "Processeur " << Process::me() << " ";
+                  if (Process::is_parallel()) Cout << "Processeur " << Process::me() << " ";
                   Cout << ma_front_vf.le_nom() << " patch " << patch_courant;
                   Cout << " : flux radiatif=sigma*eps/(2-eps)*(TP2^4-TP1^4)= " << flux_radiatif(patch_courant) << " W/m2";
                   Cout << " TP2= " << pow(Tp24,0.25) << " K";

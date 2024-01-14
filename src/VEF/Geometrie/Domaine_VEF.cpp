@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -866,7 +866,7 @@ void Domaine_VEF::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_d
   // Cerr << "Nombre d'aretes superflues periodiques      =  " << nb_aretes_perio_superflues << finl;
   // Cerr << "Nombre d'aretes non superflues periodiques  =  " << nb_aretes_periodiques-nb_aretes_perio_superflues << finl;
 
-  if (Process::nproc()==1) // On se limite au sequentiel car il y'a un soucis pour le calcul de total_nombre_aretes_superflues (les items communs pour les aretes n'est pas construit!)
+  if (Process::is_sequential()) // On se limite au sequentiel car il y'a un soucis pour le calcul de total_nombre_aretes_superflues (les items communs pour les aretes n'est pas construit!)
     if (!est_egal(somme_nombre_aretes_superflues_prevues_par_domaine,total_nombre_aretes_superflues) && je_suis_maitre())
       {
         Cerr << "La somme des aretes superflues prevues par domaine n'est pas egale au nombre d'aretes superflues trouvees sur le domaine." << finl;

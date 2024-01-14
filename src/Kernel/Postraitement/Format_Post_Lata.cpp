@@ -703,7 +703,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   }
 
   // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles sur les sommets, les elements et les faces...
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
       {
         IntTab data(1,2);
@@ -978,7 +978,7 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
   }
 
   // Astuce pour les donnees paralleles des faces:
-  if ((id_item == "FACES" && Process::nproc() > 1) && (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO))
+  if ((id_item == "FACES" && Process::is_parallel()) && (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO))
     {
       const int n = valeurs.dimension(0);
       IntTab data(1,2);

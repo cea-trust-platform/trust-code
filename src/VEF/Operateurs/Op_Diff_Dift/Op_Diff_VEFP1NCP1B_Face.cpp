@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -3254,7 +3254,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   DoubleTab gradient1(dimension);
 
   Motcle type;
-  if (Process::nproc()>1)
+  if (Process::is_parallel())
     type="_PAR";
   else
     type="_SEQ";

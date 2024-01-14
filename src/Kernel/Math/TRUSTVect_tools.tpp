@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -265,7 +265,7 @@ inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
   if (md.non_nul()) n = md.valeur().nb_items_seq_tot() * x.line_size();
   else
     {
-      assert(Process::nproc() == 1); // Coding error: mp_moyenne_vect is used on a not distributed TRUSTVect<double> !
+      assert(Process::is_sequential()); // Coding error: mp_moyenne_vect is used on a not distributed TRUSTVect<double> !
       n = x.size_totale();
     }
   return s / n;

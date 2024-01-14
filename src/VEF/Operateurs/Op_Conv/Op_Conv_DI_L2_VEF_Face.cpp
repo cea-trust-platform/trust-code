@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -262,7 +262,7 @@ void qrsolv( DoubleTab& A, int& N, DoubleVect& B, DoubleVect& X, int& sing,
 //methode du gradient biconjugue
 void gradient_biconjugue(DoubleTab A, int n, DoubleVect b, DoubleVect& x, int& sing, int& niter)
 {
-  if (Process::nproc() > 1)
+  if (Process::is_parallel())
     {
       Cerr << "OpVEF_DI_L2.cpp: gradient_biconjugue() n'est pas parallele" << finl;
       assert(0);
@@ -314,7 +314,7 @@ void gradient_biconjugue(DoubleTab A, int n, DoubleVect b, DoubleVect& x, int& s
     {
       while ( ( r_norme > seuil ) && (niter++ < nmax) )
         {
-          assert(Process::nproc() == 1); // B.M. code visiblement faux en parallele
+          assert(Process::is_sequential()); // B.M. code visiblement faux en parallele
           dnew = dotproduct_array(r_tilda, r);
 
           if(dold == 0.)        niter = nmax ;
