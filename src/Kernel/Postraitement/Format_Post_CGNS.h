@@ -16,11 +16,8 @@
 #ifndef Format_Post_CGNS_included
 #define Format_Post_CGNS_included
 
-#include <TRUSTTabs_forward.h>
 #include <Format_Post_base.h>
-#include <map>
-
-#include <cgns++.h>
+#include <Ecrire_CGNS.h>
 
 /*! @brief classe Format_Post_CGNS
  *
@@ -78,38 +75,8 @@ public:
   int ecrire_champ(const Domaine&, const Noms&, const Noms&, int, double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&) override;
 
 private:
-
   Nom cgns_basename_;
-
-#ifdef HAS_CGNS
-  bool solname_elem_written_ = false, solname_som_written_ = false;
-  std::string solname_elem_ = "", solname_som_ = "";
-  std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
-  std::map<std::string, std::string> solname_map_; /* { Loc , solname_ } */
-  std::vector<Nom> doms_written_;
-  std::vector<double> time_post_;
-  std::vector<int> baseId_, zoneId_;
-  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
-  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
-
-  int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
-  void ecrire_domaine_(const Domaine&, const Nom&);
-  void ecrire_domaine_par_(const Domaine&, const Nom&);
-  void ecrire_champ_(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void ecrire_champ_par_(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void finir_();
-  void finir_par_();
-#endif
+  Ecrire_CGNS cgns_writer_;
 };
-
-inline void verify_if_cgns(const char * nom_funct)
-{
-#ifdef HAS_CGNS
-  return;
-#else
-  Cerr << "Format_Post_CGNS::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
-  Process::exit();
-#endif
-}
 
 #endif /* Format_Post_CGNS_included */
