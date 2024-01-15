@@ -673,7 +673,7 @@ then
          then
             export OPT="" && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
          else
-            export OPT="_opt"
+            export OPT="_opt" && [ "$build_type" = "Debug" ] && OPT=""
             [ "$TRUST_DISABLE_PETSC" != 1 ] && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
          fi
 
@@ -710,10 +710,6 @@ then
    [ $compile_opt -eq 0 ] && echo "No opt compilation, so stop"  | tee -a $COMPILE && exit 0
    echo >>$COMPILE
 fi
-#
-# Pour HP et realiser un executable share lib portable (SHLIB_PATH) :
-#
-[ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && [ -f $TRUST_ROOT/exec/TRUST$COMM$OPT ] && chatr -B immediate -B nonfatal +s enable $TRUST_ROOT/exec/TRUST$COMM$OPT 1>/dev/null
 
 ############################
 # Creation des outils TRUST

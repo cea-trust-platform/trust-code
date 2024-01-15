@@ -1,5 +1,5 @@
 # Kokkos
-lib=$(TRUST_LIB)/src/LIBKOKKOS/lib64/libkokkoscore.a
+lib=$(TRUST_LIB)/src/LIBKOKKOS/$(TRUST_ARCH)$(OPT)/lib64/libkokkoscore.a
 
 all: $(lib) 
 $(lib): install_kokkos.sh makefile

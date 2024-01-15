@@ -23,6 +23,7 @@ make.lock
 instancie_src_*.cpp
 src/**/CMakeLists.txt
 *.swp
+.idea/
 
 # XDATA stuff
 Outils/TRIOXDATA/IHMTRIO.sh

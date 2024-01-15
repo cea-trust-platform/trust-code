@@ -12,12 +12,14 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
     echo "# Installing `basename $archive` ..."
     # Sub shell to get back to correct dir:
     (  
-        mkdir -p $build_dir
+      mkdir -p $build_dir
 
-        cd $build_dir
-        tar xzf $archive || exit -1
-        src_dir=$build_dir/kokkos
-
+      cd $build_dir
+      tar xzf $archive || exit -1
+      src_dir=$build_dir/kokkos
+      for CMAKE_BUILD_TYPE in Release Debug
+      do
+        rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
         CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
@@ -26,21 +28,28 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         [ "$TRUST_USE_CUDA" = 1 ]                                && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
         [ "$TRUST_USE_ROCM" = 1 ]                                && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON" && echo "ToDo and test" && exit -1
         CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
-        CMAKE_OPT="$CMAKE_OPT -DCMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR"
-        # Autres options: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
-        # Kokkos_ENABLE_DEBUG_BOUNDS_CHECK (increase run time, debug?)
-        # Kokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK
+        CMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR/$TRUST_ARCH`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
+        CMAKE_OPT="$CMAKE_OPT -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX"
+        # Activation de check supplementaires au run-time en mode debug:
+        if [ $CMAKE_BUILD_TYPE = Debug ]
+        then
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=ON"           # Use bounds checking: increase run time
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON"  # Debug check on dual views
+        fi
+        # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
         echo "cmake ../kokkos $CMAKE_OPT" >$log_file
         cmake ../kokkos $CMAKE_OPT 1>>$log_file 2>&1 
         [ $? != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1
 
         make -j$TRUST_NB_PHYSICAL_PROCS install  1>>$log_file 2>&1
         [ $? != 0 ] && echo "Error when compiling Kokkos - look at $log_file" && exit -1
-       
-        # Clean build:
-        rm -rf $build_dir
+        echo "Kokkos $CMAKE_BUILD_TYPE installed under $CMAKE_INSTALL_PREFIX"
+        cd ..
+      done
+      # Clean build:
+      rm -rf $build_dir
     )   
-    echo "# Kokkos OK! Path to Kokkos is: $KOKKOS_ROOT_DIR"
+    #echo "# Kokkos OK! Path to Kokkos is: $KOKKOS_ROOT_DIR"
 else
     echo "# Kokkos: already installed. Doing nothing."
 fi
