@@ -134,7 +134,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host() const
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::init_view_tab3() const
 {
-  long dims[3] = {this->dimension_tot(0), this->dimension_tot(1), this->dimension_tot(2)};
+  long dims[3] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0};
 
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab3_.h_view.is_allocated())
@@ -145,8 +145,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   if (is_init) return;
   this->dual_view_init_ = true;
 
-  if(nb_dim() != 3)
-    Process::exit("Wrong dim number in view init!");
+  //if(nb_dim() != 3)
+  //  Process::exit("Wrong dim number in view init!");
 
   using t_host = typename DualViewTab3<_TYPE_>::t_host;  // Host type
   //using t_dev = typename DualViewTab3<_TYPE_>::t_dev;    // Device type
@@ -160,7 +160,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1], dims[2]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addr()), dims[0], dims[1], dims[2]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
   auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
@@ -234,7 +234,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host3() const
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::init_view_tab4() const
 {
-  long dims[4] = {this->dimension_tot(0), this->dimension_tot(1), this->dimension_tot(2), this->dimension_tot(3)};
+  long dims[4] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0 , nb_dim_>3 ? this->dimension_tot(3) : 0};
 
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab4_.h_view.is_allocated())
@@ -246,8 +246,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   if (is_init) return;
   this->dual_view_init_ = true;
 
-  if(nb_dim() != 4)
-    Process::exit("Wrong dim number in view init!");
+  //if(nb_dim() != 4)
+  //  Process::exit("Wrong dim number in view init!");
 
   using t_host = typename DualViewTab4<_TYPE_>::t_host;  // Host type
   //using t_dev = typename DualViewTab4<_TYPE_>::t_dev;    // Device type
@@ -261,7 +261,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1], dims[2], dims[3]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addr()), dims[0], dims[1], dims[2], dims[3]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
   auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
