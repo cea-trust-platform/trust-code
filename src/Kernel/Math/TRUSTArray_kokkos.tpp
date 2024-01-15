@@ -38,15 +38,16 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   dual_view_init_ = true;
 
   using t_host = typename DualViewArr<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewArr<_TYPE_>::t_dev;    // Device type
+  //using t_dev = typename DualViewArr<_TYPE_>::t_dev;    // Device type
   //using size_type = typename DualViewArr<_TYPE_>::size_type;
 
-  const std::string& nom = this->le_nom().getString();
+  //const std::string& nom = this->le_nom().getString();
 
   // Re-use already TRUST allocated data:
-  t_host host_view = t_host((_TYPE_ *)this->addr(), ze_dim);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addr()), ze_dim);
   // Empty view on device - just a memory allocation:
-  t_dev device_view = t_dev(nom, ze_dim);
+  //t_dev device_view = t_dev(nom, ze_dim);
+  auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 
   // Dual view is made as an assembly of the two views:
   dual_view_arr_ = DualViewArr<_TYPE_>(device_view, host_view);

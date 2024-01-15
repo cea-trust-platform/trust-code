@@ -50,10 +50,10 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
 //    Process::exit("Wrong dim number in view init!");
 
   using t_host = typename DualViewTab<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewTab<_TYPE_>::t_dev;    // Device type
+  //using t_dev = typename DualViewTab<_TYPE_>::t_dev;    // Device type
   //using size_type = typename DualViewTab<_TYPE_>::size_type;
 
-  const std::string& nom = this->le_nom().getString();
+  //const std::string& nom = this->le_nom().getString();
 
   // Re-use data already allocated on host to create host-view:
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -61,9 +61,10 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addr()), dims[0], dims[1]);
   // Empty view on device - just a memory allocation:
-  t_dev device_view = t_dev(nom, dims[0], dims[1]);
+  //t_dev device_view = t_dev(nom, dims[0], dims[1]);
+  auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 
   // Dual view is made as an assembly of the two views:
   dual_view_tab2_ = DualViewTab<_TYPE_>(device_view, host_view);
@@ -148,10 +149,10 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
     Process::exit("Wrong dim number in view init!");
 
   using t_host = typename DualViewTab3<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewTab3<_TYPE_>::t_dev;    // Device type
+  //using t_dev = typename DualViewTab3<_TYPE_>::t_dev;    // Device type
   //using size_type = typename DualViewTab3<_TYPE_>::size_type;
 
-  const std::string& nom = this->le_nom().getString();
+  //const std::string& nom = this->le_nom().getString();
 
   // Re-use data already allocated on host to create host-view:
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -161,7 +162,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   //          for GPU processing, but avoids having to explicitely copying the data ...)
   t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1], dims[2]);
   // Empty view on device - just a memory allocation:
-  t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
+  //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
+  auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 
   // Dual view is made as an assembly of the two views:
   dual_view_tab3_ = DualViewTab3<_TYPE_>(device_view, host_view);
@@ -248,10 +250,10 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
     Process::exit("Wrong dim number in view init!");
 
   using t_host = typename DualViewTab4<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewTab4<_TYPE_>::t_dev;    // Device type
+  //using t_dev = typename DualViewTab4<_TYPE_>::t_dev;    // Device type
   //using size_type = typename DualViewTab4<_TYPE_>::size_type;
 
-  const std::string& nom = this->le_nom().getString();
+  //const std::string& nom = this->le_nom().getString();
 
   // Re-use data already allocated on host to create host-view:
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -261,7 +263,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   //          for GPU processing, but avoids having to explicitely copying the data ...)
   t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1], dims[2], dims[3]);
   // Empty view on device - just a memory allocation:
-  t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
+  //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
+  auto device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 
   // Dual view is made as an assembly of the two views:
   dual_view_tab4_ = DualViewTab4<_TYPE_>(device_view, host_view);
