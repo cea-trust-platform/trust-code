@@ -44,9 +44,9 @@ Entree& Coarsen_Operator_Uniform::readOn(Entree& is)
   const int coarsenCode = coarsen_factors_[0]*100 + coarsen_factors_[1]*10 + coarsen_factors_[2];
   switch (coarsenCode)
     {
+    case 112:
     case 122:
     case 212:
-    case 221:
     case 222:
     case 113:
     case 132:
