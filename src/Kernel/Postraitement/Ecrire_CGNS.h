@@ -26,22 +26,28 @@ class Ecrire_CGNS
 {
 #ifdef HAS_CGNS
 public:
-  void open_cgns_file(const std::string& );
-  void add_time(const double );
-  void close_cgns_file(const std::string& );
+  void cgns_open_file(const std::string& );
+  void cgns_close_file(const std::string& );
+
+  void cgns_add_time(const double );
 
   void cgns_write_domaine(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   void cgns_write_field(const Domaine&, const Noms&, double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 
 private:
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
-  void ecrire_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
-  void ecrire_domaine_par(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
-  void ecrire_champ_seq(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void ecrire_champ_par(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void finir_seq(const std::string& );
-  void finir_par(const std::string& );
 
+  // Version sequentielle
+  void cgns_write_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
+  void cgns_write_field_seq(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void cgns_write_iters_seq();
+
+  // Version parallele
+  void cgns_write_domaine_par(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
+  void cgns_write_field_par(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void cgns_write_iters_par();
+
+  // Attributes
   bool solname_elem_written_ = false, solname_som_written_ = false;
   std::string solname_elem_ = "", solname_som_ = "";
   std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */

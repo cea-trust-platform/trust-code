@@ -84,7 +84,7 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
   if (est_le_premier_post)
     {
 #ifdef HAS_CGNS
-      cgns_writer_.open_cgns_file(fn);
+      cgns_writer_.cgns_open_file(fn);
 #endif
     }
   return 1;
@@ -93,7 +93,7 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
 int Format_Post_CGNS::ecrire_temps(const double t)
 {
 #ifdef HAS_CGNS
-  cgns_writer_.add_time(t);
+  cgns_writer_.cgns_add_time(t);
 #endif
   return 1;
 }
@@ -104,7 +104,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
     {
 #ifdef HAS_CGNS
       std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      cgns_writer_.close_cgns_file(fn);
+      cgns_writer_.cgns_close_file(fn);
 #endif
     }
   return 1;
