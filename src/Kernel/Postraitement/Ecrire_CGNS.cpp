@@ -72,9 +72,10 @@ void Ecrire_CGNS::close_cgns_file(const std::string& fn)
   Process::is_parallel() ? finir_par(fn) : finir_seq(fn);
 }
 
-void Ecrire_CGNS::cgns_write_domaine(const Domaine& dom, const Nom& nom_dom)
+void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
-  Process::is_parallel() ? ecrire_domaine_par(dom, nom_dom) : ecrire_domaine_seq(dom, nom_dom);
+  Process::is_parallel() ? ecrire_domaine_par(dom, nom_dom, som, elem, type_e) :
+  ecrire_domaine_seq(dom, nom_dom, som, elem, type_e);
 }
 
 void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_compo, double temps,
@@ -96,7 +97,11 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
               nom_dom += "_";
               nom_dom += LOC;
               Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-              Process::is_parallel() ? ecrire_domaine_par(domaine, nom_dom) : ecrire_domaine_seq(domaine, nom_dom); // XXX Attention
+              Motcle type_e = domaine.type_elem().valeur().que_suis_je();
+
+              Process::is_parallel() ? ecrire_domaine_par(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e) :
+              ecrire_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
+
               fld_loc_map_.insert( { LOC, nom_dom } );
             }
         }
@@ -135,22 +140,21 @@ int Ecrire_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& n
  * Pour ecriture domaine
  * *********************
  */
-void Ecrire_CGNS::ecrire_domaine_par(const Domaine& domaine, const Nom& nom_dom)
+void Ecrire_CGNS::ecrire_domaine_par(const Domaine * domaine,const Nom& nom_dom, const DoubleTab& les_som, const IntTab& les_elem, const Motcle& type_elem)
 {
   /* 1 : Instance of TRUST_2_CGNS */
   TRUST_2_CGNS TRUST2CGNS;
-  TRUST2CGNS.associer_domaine_TRUST(domaine);
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
   doms_written_.push_back(nom_dom);
 
-  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */
   std::vector<double> xCoords, yCoords, zCoords;
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
-  const int icelldim = domaine.les_sommets().dimension(1), iphysdim = Objet_U::dimension;
-  const int nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
+  const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension;
+  const int nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0);
   const int nb_procs = Process::nproc(), proc_me = Process::me();
 
   /* 3 : Base write */
@@ -206,6 +210,7 @@ void Ecrire_CGNS::ecrire_domaine_par(const Domaine& domaine, const Nom& nom_dom)
 
   if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
     {
+      assert(domaine != nullptr);
       nb_sf = TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre);
       nb_sf_offset = static_cast<int>(sf.size());
 
@@ -360,21 +365,20 @@ void Ecrire_CGNS::ecrire_domaine_par(const Domaine& domaine, const Nom& nom_dom)
     }
 }
 
-void Ecrire_CGNS::ecrire_domaine_seq(const Domaine& domaine, const Nom& nom_dom)
+void Ecrire_CGNS::ecrire_domaine_seq(const Domaine * domaine,const Nom& nom_dom, const DoubleTab& les_som, const IntTab& les_elem, const Motcle& type_elem)
 {
   /* 1 : Instance of TRUST_2_CGNS */
   TRUST_2_CGNS TRUST2CGNS;
-  TRUST2CGNS.associer_domaine_TRUST(domaine);
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
   doms_written_.push_back(nom_dom);
 
-  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */
   std::vector<double> xCoords, yCoords, zCoords;
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
-  const int icelldim = domaine.les_sommets().dimension(1), iphysdim = Objet_U::dimension, nb_som = domaine.nb_som(), nb_elem = domaine.nb_elem();
+  const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension, nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0);
   int coordsId;
 
   /* 3 : Base write */
@@ -413,6 +417,7 @@ void Ecrire_CGNS::ecrire_domaine_seq(const Domaine& domaine, const Nom& nom_dom)
 
   if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
     {
+      assert (domaine != nullptr);
       const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
       std::vector<cgsize_t> sf, sf_offset;
 

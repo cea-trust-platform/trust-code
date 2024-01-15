@@ -19,15 +19,17 @@
 #include <Polyedre.h>
 #include <Domaine.h>
 
-void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine& dom)
+void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine * dom, const DoubleTab& som, const IntTab& elem)
 {
-  dom_trust_ = dom;
+  if (dom) dom_trust_ = *dom;
+  sommets_ = som;
+  elems_ = elem;
 }
 
 void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>& yCoords, std::vector<double>& zCoords)
 {
-  const int dim = dom_trust_->les_sommets().dimension(1), nb_som = dom_trust_->nb_som();
-  const DoubleTab& sommets = dom_trust_->les_sommets();
+  const int dim = sommets_->dimension(1), nb_som = sommets_->dimension(0);
+  const DoubleTab& sommets = sommets_.valeur();
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -40,8 +42,8 @@ void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>
 #ifdef HAS_CGNS
 int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize_t>& elems)
 {
-  const int nb_elem = dom_trust_->nb_elem();
-  const IntTab& les_elems =  dom_trust_->les_elems();
+  const int nb_elem = elems_->dimension(0);
+  const IntTab& les_elems =  elems_.valeur();
   switch (type)
     {
     case CGNS_ENUMV(HEXA_8):
@@ -114,6 +116,7 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
 
 int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff)
 {
+  assert (dom_trust_.non_nul());
   const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
   const Domaine_VF& vf = ref_cast (Domaine_VF, domaine_dis.valeur());
   const IntTab& ef = vf.elem_faces();
@@ -153,6 +156,7 @@ int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::v
 
 int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, const bool is_polyedre)
 {
+  assert (dom_trust_.non_nul());
   if (is_polyedre)
     {
       const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());

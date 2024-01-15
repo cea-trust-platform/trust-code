@@ -71,6 +71,7 @@ public:
   int finir(const int) override;
 
   int ecrire_domaine(const Domaine&, const int) override;
+  int ecrire_domaine_low_level(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   int ecrire_item_int(const Nom&, const Nom&, const Nom&, const Nom&, const Nom&, const IntVect&, const int) override { return 1; }
   int ecrire_champ(const Domaine&, const Noms&, const Noms&, int, double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&) override;
 

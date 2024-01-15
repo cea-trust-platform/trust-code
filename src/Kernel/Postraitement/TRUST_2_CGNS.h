@@ -16,6 +16,7 @@
 #ifndef TRUST_2_CGNS_included
 #define TRUST_2_CGNS_included
 
+#include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
 #include <cgns++.h>
 #include <vector>
@@ -34,7 +35,7 @@ class Motcle;
 class TRUST_2_CGNS
 {
 public:
-  void associer_domaine_TRUST(const Domaine&);
+  void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&);
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
 #ifdef HAS_CGNS
@@ -46,6 +47,8 @@ public:
 
 private:
   REF(Domaine) dom_trust_;
+  REF(DoubleTab) sommets_;
+  REF(IntTab) elems_;
 };
 
 #endif /* TRUST_2_CGNS_included */

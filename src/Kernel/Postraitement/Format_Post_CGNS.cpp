@@ -110,15 +110,23 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
   return 1;
 }
 
-int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
+int Format_Post_CGNS::ecrire_domaine_low_level(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
 #ifdef HAS_CGNS
-  cgns_writer_.cgns_write_domaine(domaine, domaine.le_nom());
+  cgns_writer_.cgns_write_domaine(dom, nom_dom, som, elem, type_e);
+#endif
+  return 1;
+}
+
+int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
+{
+  Motcle type_e = domaine.type_elem().valeur().que_suis_je();
+  ecrire_domaine_low_level(&domaine, domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_e);
 
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine)) &bords = domaine.domaines_frontieres();
   for (auto &itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
-#endif
+
   return 1;
 }
 

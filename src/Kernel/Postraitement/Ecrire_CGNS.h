@@ -30,13 +30,13 @@ public:
   void add_time(const double );
   void close_cgns_file(const std::string& );
 
-  void cgns_write_domaine(const Domaine&, const Nom&);
+  void cgns_write_domaine(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   void cgns_write_field(const Domaine&, const Noms&, double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 
 private:
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
-  void ecrire_domaine_seq(const Domaine&, const Nom&);
-  void ecrire_domaine_par(const Domaine&, const Nom&);
+  void ecrire_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
+  void ecrire_domaine_par(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   void ecrire_champ_seq(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
   void ecrire_champ_par(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
   void finir_seq(const std::string& );
