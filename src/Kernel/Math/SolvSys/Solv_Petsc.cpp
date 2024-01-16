@@ -1902,7 +1902,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #include <signal.h>
 
 // Function to handle signals
-void handleSignal(int signum)
+void handleSignal(True_int signum)
 {
   if (signum==8)
     {
