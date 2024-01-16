@@ -31,9 +31,11 @@
 #endif
 #endif
 
-void Ecrire_CGNS::cgns_open_file(const std::string& fn)
+void Ecrire_CGNS::cgns_open_file(const Nom& nom)
 {
-  if (Process::is_parallel())
+  std::string fn = nom.getString() + ".cgns"; // file name
+
+  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
       cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
 
@@ -52,6 +54,9 @@ void Ecrire_CGNS::cgns_open_file(const std::string& fn)
     }
   else
     {
+      if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
+        fn = nom.getString() + "_" + std::to_string(Process::me()) + ".cgns"; // file name
+
       if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
         Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, cg_error_exit();
 
@@ -67,9 +72,11 @@ void Ecrire_CGNS::cgns_add_time(const double t)
   solname_elem_written_ = false, solname_som_written_ = false; // reset
 }
 
-void Ecrire_CGNS::cgns_close_file(const std::string& fn)
+void Ecrire_CGNS::cgns_close_file(const Nom& nom)
 {
-  if (Process::is_parallel())
+  std::string fn = nom.getString() + ".cgns"; // file name
+
+  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
       cgns_write_iters_par();
 
@@ -81,6 +88,9 @@ void Ecrire_CGNS::cgns_close_file(const std::string& fn)
     }
   else
     {
+      if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
+        fn = nom.getString() + "_" + std::to_string(Process::me()) + ".cgns"; // file name
+
       cgns_write_iters_seq();
 
       if (cg_close(fileId_) != CG_OK)
@@ -92,7 +102,7 @@ void Ecrire_CGNS::cgns_close_file(const std::string& fn)
 
 void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
-  if (Process::is_parallel())
+  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     cgns_write_domaine_par(dom, nom_dom, som, elem, type_e);
   else
     cgns_write_domaine_seq(dom, nom_dom, som, elem, type_e);
@@ -119,8 +129,10 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
               Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
               Motcle type_e = domaine.type_elem().valeur().que_suis_je();
 
-              Process::is_parallel() ? cgns_write_domaine_par(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e) :
-              cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
+              if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+                cgns_write_domaine_par(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
+              else
+                cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
 
               fld_loc_map_.insert( { LOC, nom_dom } );
             }
@@ -130,7 +142,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
 
-  if (Process::is_parallel())
+  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     for (int i = 0; i < nb_cmp; i++)
       cgns_write_field_par(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
   else
@@ -192,55 +204,58 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
 
   /* 5 : Create zone */
   zoneId_.push_back(-123);
-  if (cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_zone_write !" << finl, cg_error_exit();
-
-  /* 6 : Write grid coordinates */
-  if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", xCoords.data(), &coordsId) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - X !" << finl, cg_error_exit();
-
-  if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateY", yCoords.data(), &coordsId) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Y !" << finl, cg_error_exit();
-
-  if (icelldim > 2)
-    if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", zCoords.data(), &coordsId) != CG_OK)
-      Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Z !" << finl, cg_error_exit();
-
-  /* 7 : Set element connectivity */
-  int sectionId;
-  cgsize_t start = 1, end;
-
-  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+  if (nb_elem) // XXX cas // mais MULTIPLE_FILES
     {
-      assert (domaine != nullptr);
-      const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
-      std::vector<cgsize_t> sf, sf_offset;
+      if (cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_zone_write !" << finl, cg_error_exit();
 
-      end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre)) -1;
+      /* 6 : Write grid coordinates */
+      if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", xCoords.data(), &coordsId) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - X !" << finl, cg_error_exit();
 
-      if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, 0, sf.data(), sf_offset.data(), &sectionId))
-        cg_error_exit();
+      if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateY", yCoords.data(), &coordsId) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Y !" << finl, cg_error_exit();
 
-      if (is_polyedre) // Pas pour polygone
+      if (icelldim > 2)
+        if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", zCoords.data(), &coordsId) != CG_OK)
+          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Z !" << finl, cg_error_exit();
+
+      /* 7 : Set element connectivity */
+      int sectionId;
+      cgsize_t start = 1, end;
+
+      if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
         {
-          std::vector<cgsize_t> ef, ef_offset;
+          assert (domaine != nullptr);
+          const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
+          std::vector<cgsize_t> sf, sf_offset;
 
-          start = end + 1;
-          end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_nface(ef, ef_offset)) -1;
+          end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre)) -1;
 
-          if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, 0, ef.data(), ef_offset.data(), &sectionId))
+          if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, 0, sf.data(), sf_offset.data(), &sectionId))
             cg_error_exit();
+
+          if (is_polyedre) // Pas pour polygone
+            {
+              std::vector<cgsize_t> ef, ef_offset;
+
+              start = end + 1;
+              end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_nface(ef, ef_offset)) -1;
+
+              if (cg_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, 0, ef.data(), ef_offset.data(), &sectionId))
+                cg_error_exit();
+            }
         }
-    }
-  else
-    {
-      std::vector<cgsize_t> elems;
+      else
+        {
+          std::vector<cgsize_t> elems;
 
-      int nsom = TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
-      end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
+          int nsom = TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
+          end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
 
-      if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_section_write !" << finl, cg_error_exit();
+          if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_section_write !" << finl, cg_error_exit();
+        }
     }
 }
 
@@ -281,60 +296,65 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
   const int ind = get_index_nom_vector(doms_written_, nom_dom);
   assert(ind > -1);
 
-  /* 3 : Write solution names for iterative data later */
-  if (!solname_som_written_ && LOC == "SOM")
+  const int nb_vals = valeurs.dimension(0);
+
+  if (nb_vals)
     {
-      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
-      solname.resize(CGNS_STR_SIZE, ' ');
-      solname_som_ += solname;
-
-      if (cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
-
-      solname_som_written_ = true;
-    }
-
-  if (!solname_elem_written_ && LOC == "ELEM")
-    {
-      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
-      solname.resize(CGNS_STR_SIZE, ' ');
-      solname_elem_ += solname;
-
-      if (cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
-
-      solname_elem_written_ = true;
-    }
-
-  /* 4 : Fill field values & dump to cgns file */
-  if (valeurs.dimension(1) == 1) /* No stride ! */
-    {
-      if (LOC == "SOM")
+      /* 3 : Write solution names for iterative data later */
+      if (!solname_som_written_ && LOC == "SOM")
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+          std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+          solname.resize(CGNS_STR_SIZE, ' ');
+          solname_som_ += solname;
+
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
+
+          solname_som_written_ = true;
         }
-      else // ELEM // TODO FIXME FACES
-        {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
-        }
-    }
-  else
-    {
-      std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
-      for (int i = 0; i < valeurs.dimension(0); i++)
-        field_cgns.push_back(valeurs(i, comp));
 
-      if (LOC == "SOM")
+      if (!solname_elem_written_ && LOC == "ELEM")
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+          std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+          solname.resize(CGNS_STR_SIZE, ' ');
+          solname_elem_ += solname;
+
+          if (cg_sol_write(fileId_, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
+
+          solname_elem_written_ = true;
         }
-      else // ELEM // TODO FIXME FACES
+
+      /* 4 : Fill field values & dump to cgns file */
+      if (valeurs.dimension(1) == 1) /* No stride ! */
         {
-          if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+          if (LOC == "SOM")
+            {
+              if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+            }
+          else // ELEM // TODO FIXME FACES
+            {
+              if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+            }
+        }
+      else
+        {
+          std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
+          for (int i = 0; i < valeurs.dimension(0); i++)
+            field_cgns.push_back(valeurs(i, comp));
+
+          if (LOC == "SOM")
+            {
+              if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+            }
+          else // ELEM // TODO FIXME FACES
+            {
+              if (cg_field_write(fileId_, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+            }
         }
     }
 }
@@ -366,26 +386,29 @@ void Ecrire_CGNS::cgns_write_iters_seq()
       if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
         Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
 
-      /* create ZoneIterativeData */
-      if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
-
-      if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
-
-      cgsize_t idata[2];
-      idata[0] = CGNS_STR_SIZE;
-      idata[1] = nsteps;
-
-      if (LOC == "SOM")
+      if (zoneId_[ind] != -123)
         {
-          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
-        }
-      else if (LOC == "ELEM")
-        {
-          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+          /* create ZoneIterativeData */
+          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
+
+          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+
+          cgsize_t idata[2];
+          idata[0] = CGNS_STR_SIZE;
+          idata[1] = nsteps;
+
+          if (LOC == "SOM")
+            {
+              if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+            }
+          else if (LOC == "ELEM")
+            {
+              if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+            }
         }
 
       if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
@@ -413,13 +436,15 @@ void Ecrire_CGNS::cgns_write_iters_seq()
           if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
             Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
 
-          /* create ZoneIterativeData */
-          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
+          if (zoneId_[ind] != -123)
+            {
+              /* create ZoneIterativeData */
+              if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
 
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
-
+              if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+            }
           if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
             Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, cg_error_exit();
         }

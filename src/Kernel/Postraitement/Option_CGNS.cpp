@@ -20,7 +20,8 @@
 Implemente_instanciable(Option_CGNS, "Option_CGNS", Interprete);
 // XD Option_CGNS interprete Option_CGNS 1 Class for CGNS options.
 
-int Option_CGNS::SINGLE_PRECISION = 0; /* NOT BY DEFAULT */
+bool Option_CGNS::SINGLE_PRECISION = false; /* NOT BY DEFAULT */
+bool Option_CGNS::MULTIPLE_FILES = false; /* NOT BY DEFAULT */
 
 Sortie& Option_CGNS::printOn(Sortie& os) const { return Interprete::printOn(os); }
 Entree& Option_CGNS::readOn(Entree& is) { return Interprete::readOn(is); }
@@ -29,6 +30,7 @@ Entree& Option_CGNS::interpreter(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter_non_std("SINGLE_PRECISION", (this)); // XD_ADD_P rien If used, data will be written with a single_precision format inside the CGNS file (it concerns both mesh coordinates and field values).
+  param.ajouter_non_std("MULTIPLE_FILES", (this)); // XD_ADD_P rien If used, data will be written in separate files (ie: one file per processor).
   param.lire_avec_accolades_depuis(is);
   return is;
 }
@@ -40,7 +42,12 @@ int Option_CGNS::lire_motcle_non_standard(const Motcle& mot_cle, Entree& is)
   if (mot_cle == "SINGLE_PRECISION")
     {
       Cerr << mot_cle << " => CGNS data will be written in a single precision format ..." << finl;
-      SINGLE_PRECISION = 1;
+      SINGLE_PRECISION = true;
+    }
+  else if (mot_cle == "MULTIPLE_FILES")
+    {
+      Cerr << mot_cle << " => CGNS data will be written in a multiple files ..." << finl;
+      MULTIPLE_FILES = true;
     }
   else
     retval = -1;

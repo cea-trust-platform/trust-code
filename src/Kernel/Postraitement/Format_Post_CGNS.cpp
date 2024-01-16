@@ -67,7 +67,6 @@ static Noms liste_cgns_ecrit;
 int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
   verify_if_cgns(__func__);
-  std::string fn = cgns_basename_.getString() + ".cgns"; // file name
   const bool not_in_list =  !liste_cgns_ecrit.contient_(cgns_basename_);
 
   if (not_in_list) liste_cgns_ecrit.add(cgns_basename_);
@@ -84,7 +83,7 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
   if (est_le_premier_post)
     {
 #ifdef HAS_CGNS
-      cgns_writer_.cgns_open_file(fn);
+      cgns_writer_.cgns_open_file(cgns_basename_);
 #endif
     }
   return 1;
@@ -103,8 +102,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
   if (est_le_dernier_post)
     {
 #ifdef HAS_CGNS
-      std::string fn = cgns_basename_.getString() + ".cgns"; // file name
-      cgns_writer_.cgns_close_file(fn);
+      cgns_writer_.cgns_close_file(cgns_basename_);
 #endif
     }
   return 1;

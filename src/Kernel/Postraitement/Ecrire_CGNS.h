@@ -21,13 +21,14 @@
 #include <map>
 
 class Domaine;
+class Nom;
 
 class Ecrire_CGNS
 {
 #ifdef HAS_CGNS
 public:
-  void cgns_open_file(const std::string& );
-  void cgns_close_file(const std::string& );
+  void cgns_open_file(const Nom& );
+  void cgns_close_file(const Nom& );
 
   void cgns_add_time(const double );
 
