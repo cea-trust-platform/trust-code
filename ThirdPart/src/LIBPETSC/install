@@ -301,6 +301,7 @@ then
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
 else
+   with_gpu="--with-cudac=0" # Disable the Cuda Compiler search
    echo "****************************************"
    echo "CUDA support is not activated for PETSc "
    echo "****************************************"
