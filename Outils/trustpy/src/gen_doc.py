@@ -32,12 +32,15 @@ class TRUSTDocGenerator:
   def __init__(self, py_mod=None):
     """ @param py_mod (str): path to the automatically generated Python module
     """
+    import re
     self.py_mod = py_mod
     if py_mod is None:
       if "TRUST_ROOT" not in os.environ:
         print("Generated module not specified and TRUST_ROOT not defined! Exiting.")
         sys.exit(-1)
       self.py_mod = os.path.join(os.environ["TRUST_ROOT"], "Outils", "trustpy", "install", "generated", "trustpy_gen.py")
+    # Regexp to replace '\input' directives in the core of the description
+    self.re_input = re.compile("\\\input{{([a-z]+)}}")
 
   def get_top_parent(self, c):
     """ Get ultimate parent class """
@@ -80,6 +83,22 @@ class TRUSTDocGenerator:
     desc = desc.replace("\n", " ")
     return typ_with_ref, desc
 
+  def process_input_clauses(self, keyw, doc):
+    """ Find and replace all '\input{{toto}} clauses to insert instead the content
+    of the file extra_rst/toto.rst
+    """
+    import os
+    for match in self.re_input.finditer(doc):
+      g0, g1 = match.group(0), match.group(1)
+      file_nam = os.path.join("extra_rst", f"{g1}.rst")
+      # Try to open file
+      if not os.path.isfile(file_nam):
+        raise ValueError(f"When parsing documentation for keyword '{keyw}', unable to find requested file '{file_nam}' !!")
+      with open(file_nam) as f:
+        s = f.read()
+        doc = doc.replace(g0, s)
+    return doc
+
   def doc_single(self, c, parent):
     """ Generate full RST string for a single keyword """
     # Main name and synonyms
@@ -96,7 +115,7 @@ class TRUSTDocGenerator:
       s += "**Inherits from:** %s \n\n" % par
 
     # Core description
-    core_doc = c.__doc__
+    core_doc = self.process_input_clauses(nam, c.__doc__)
     t = core_doc.split("\n")
     t2 = [tt.lstrip() for tt in t]
     s += "\n".join(t2)
