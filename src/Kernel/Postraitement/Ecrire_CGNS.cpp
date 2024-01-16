@@ -55,21 +55,13 @@ void Ecrire_CGNS::cgns_open_file(const Nom& nom)
   else
     {
       if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
-        fn = nom.getString() + "_" + std::to_string(Process::me()) + ".cgns"; // file name
+        fn = nom.nom_me(Process::me()).getString() + ".cgns"; // file name
 
       if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
         Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, cg_error_exit();
 
       Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
-}
-
-void Ecrire_CGNS::cgns_add_time(const double t)
-{
-  time_post_.push_back(t); // add time_post
-  flowId_elem_++, flowId_som_++; // increment
-  fieldId_elem_ = 0, fieldId_som_ = 0; // reset
-  solname_elem_written_ = false, solname_som_written_ = false; // reset
 }
 
 void Ecrire_CGNS::cgns_close_file(const Nom& nom)
@@ -89,7 +81,7 @@ void Ecrire_CGNS::cgns_close_file(const Nom& nom)
   else
     {
       if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
-        fn = nom.getString() + "_" + std::to_string(Process::me()) + ".cgns"; // file name
+        fn = nom.nom_me(Process::me()).getString() + ".cgns"; // file name
 
       cgns_write_iters_seq();
 
@@ -98,6 +90,14 @@ void Ecrire_CGNS::cgns_close_file(const Nom& nom)
 
       Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
+}
+
+void Ecrire_CGNS::cgns_add_time(const double t)
+{
+  time_post_.push_back(t); // add time_post
+  flowId_elem_++, flowId_som_++; // increment
+  fieldId_elem_ = 0, fieldId_som_ = 0; // reset
+  solname_elem_written_ = false, solname_som_written_ = false; // reset
 }
 
 void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
@@ -569,7 +569,7 @@ void Ecrire_CGNS::cgns_write_domaine_par(const Domaine * domaine,const Nom& nom_
       isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
       zoneId_.push_back(-123);
-      zonename = nom_dom.getString() + "_" + std::to_string(indZ);
+      zonename = nom_dom.nom_me(indZ).getString();
       zonename.resize(CGNS_STR_SIZE, ' ');
 
       /* 5.1 : Create zone */
