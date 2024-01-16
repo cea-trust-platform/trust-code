@@ -264,8 +264,19 @@ mode=$MODE
 echo "Info_global mode "$mode
 
 
+if [ "`basename $TRUST_CC_BASE`" = "nvc++" ]
+then
+   echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -2 | $TRUST_Awk '{print $2}'`
+elif [ "`basename $TRUST_CC_BASE`" = "icpx" ]
+then
+   echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $5}'`
+elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ]
+then
+   echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $4}'`
+else
+   echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $3}'`
+fi
 
-echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $3}'`
 #OS=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && OS=`awk '(NF>0) {gsub("Welcome to ","",$0);print $0}' /etc/issue | head -1`
 print_OS()
 {

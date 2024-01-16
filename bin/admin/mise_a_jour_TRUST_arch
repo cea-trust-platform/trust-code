@@ -716,11 +716,17 @@ do
    # Mieux pour NVidia
    echo "nvidia=`cat /proc/driver/nvidia/cards/0 2>/dev/null | awk -F: '/Model/ {print $2}'` `nvidia-smi -a 2>/dev/null | awk -F: '/Driver/ {print $2}'`" >> $PERF
    CC_PERF="CC "`basename $TRUST_CC_BASE`
-   if [ "$TRUST_VERSION_GNU" != "" ]
+   if [ "`basename $TRUST_CC_BASE`" = "nvc++" ]
    then
-      CC_PERF=$CC_PERF" "$TRUST_VERSION_GNU
+      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -2 | $TRUST_Awk '{print $2}'`
+   elif [ "`basename $TRUST_CC_BASE`" = "icpx" ]
+   then
+      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $5}'`
+   elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ]
+   then
+      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $4}'`
    else
-      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{if ($3=="Linux)") print $4;else if ($2=="clang") print $4 ; else print $3}'`
+      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $3}'`
    fi
    echo $CC_PERF >> $PERF
    # On verifie si on a obtenu un executable teste 
