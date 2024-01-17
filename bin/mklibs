@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script updates the list of external libraries to create the file 
+# This script updates the list of external libraries to create the file
 # Cmake.libs which will register the 3 following variables
 #   list_path_libs : the (non-system) paths to libraries
 #   list_path_sys: the extra system paths to libraries (never used??)
@@ -25,9 +25,9 @@ ALL_P="\$ENV{TRUST_LIB} \$ENV{TRUST_LATAFILTER}/lib \$ENV{TRUST_ICOCOAPI}/lib "
 
 # List of all lib names - will be extended
 ALL_L="mfft mfft_c skit latafilter icocoapi "
- 
+
 # Same for system libs
-SYSLIBS_P=""  
+SYSLIBS_P=""
 SYSLIBS_L=""
 
 ########
@@ -62,7 +62,7 @@ then
       LINK_CUDA=""
       #[ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$ENV{TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper -lomp" # -lomp necessaire sur portable mais echec sur petra ?
       if [ "$TRUST_USE_CUDA" = 1 ]; then
-          AMGX_ROOT="\$ENV{TRUST_ROOT}/lib/src/LIBAMGX" 
+          AMGX_ROOT="\$ENV{TRUST_ROOT}/lib/src/LIBAMGX"
           PETSC_P=$PETSC_P" $AMGX_ROOT/AmgX/lib $AMGX_ROOT/AmgXWrapper/lib64"
           PETSC_L=$PETSC_L" amgx`[ "$LINK_CUDA" != _static ] && echo sh` AmgXWrapper"
       fi
@@ -308,7 +308,7 @@ fic=$TRUST_ENV/Cmake.libs
 echo "set(list_path_libs $ALL_P)" > $fic
 echo "set(list_path_sys $SYSLIBS_P)" >> $fic
 # System libraries written last:
-echo "set(list_libs $ALL_L $SYSLIBS_L)" >> $fic  
+echo "set(list_libs $ALL_L $SYSLIBS_L)" >> $fic
 echo "
 mark_as_advanced(list_path_libs)
 mark_as_advanced(list_path_sys)
