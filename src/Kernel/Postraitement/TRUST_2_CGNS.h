@@ -38,6 +38,21 @@ public:
   void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&);
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
+  void fill_global_infos();
+
+  int get_ne_tot() const { return ne_tot_; }
+  const std::vector<int>& get_global_nb_elem() const { return global_nb_elem_; }
+  const std::vector<int>& get_global_incr_min_elem() const { return global_incr_min_elem_; }
+  const std::vector<int>& get_global_incr_max_elem() const { return global_incr_max_elem_; }
+  const std::vector<int>& get_proc_non_zero_elem() const { return proc_non_zero_elem_; }
+
+  int get_ns_tot() const { return ns_tot_; }
+  const std::vector<int>& get_global_nb_som() const { return global_nb_som_; }
+  const std::vector<int>& get_global_incr_min_som() const { return global_incr_min_som_; }
+  const std::vector<int>& get_global_incr_max_som() const { return global_incr_max_som_; }
+
+  const bool& all_procs_write() const { return all_procs_write_; }
+
 #ifdef HAS_CGNS
   int convert_connectivity(const CGNS_TYPE, std::vector<cgsize_t>&);
   int convert_connectivity_ngon(std::vector<cgsize_t>&, std::vector<cgsize_t>&, const bool);
@@ -49,6 +64,12 @@ private:
   REF(Domaine) dom_trust_;
   REF(DoubleTab) sommets_;
   REF(IntTab) elems_;
+
+  std::vector<int> global_nb_elem_, global_incr_min_elem_, global_incr_max_elem_, proc_non_zero_elem_;
+  std::vector<int> global_nb_som_, global_incr_min_som_, global_incr_max_som_;
+
+  int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
+  bool par_in_zone_ = false, all_procs_write_ = true;
 };
 
 #endif /* TRUST_2_CGNS_included */
