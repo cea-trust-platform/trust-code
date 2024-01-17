@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+12/01/24 (TRUST) Portability  : cmake 3.21.0 or newer is necessary to install petsc and so TRUST.
 12/01/24 (TRUST) New keyword  : Add "petsc LU_Strumpack { }" as direct solver from STRUMPACK library
 12/01/24 (TRUST) New keyword  : Add two ILU preconditioners based on Block Low Ranking parametrized (epsilon) compression: petsc gcp|gmres { precond ilu_mumps|ilu_strumpack { epsilon value } ... }. May be useful on problems with solver slow convergence.
 12/01/24 (TRUST) Library      : Update PETSc to 3.20.0 (dependancies like MUMPS,... not updated yet)
