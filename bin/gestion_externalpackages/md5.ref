@@ -222,7 +222,7 @@ af200b5cee080a516af4198c06882a7e  petsc/magma-2.7.1.tar.gz
 82e3b09d577580747fbcada30d9b4228  petsc/metis-5.1.0-p10.tar.gz
 5549747a1a653f1e1909d40fff52ddb9  petsc/parmetis-4.0.3-p8.tar.gz
 d7fb92173bd7df04831ba1fd8219e229  petsc/petsc-3.20.0.tar.gz
-7922e88bf861ed117efe9a334399471e  petsc/scalapack-5bad7487f4.tar.gz
+f05ecee6632d55545d341e0188541e18  petsc/scalapack-5bad7487f4.tar.gz
 5c9c702e4f40c575617702f9883e9416  petsc/scotch-7.0.3.tar.gz
 3a5123b86bd517fe28c830ae7d12cb25  petsc/superlu-5.3.0.tar.gz
 43a2915baabdf167322cdb7bdf7c8ac2  petsc/superlu_dist-8.1.2.tar.gz
