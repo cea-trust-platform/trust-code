@@ -35,6 +35,7 @@ class Motcle;
 class TRUST_2_CGNS
 {
 public:
+  TRUST_2_CGNS() { }
   void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&);
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
 

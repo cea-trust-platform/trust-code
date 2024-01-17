@@ -17,6 +17,7 @@
 #define Ecrire_CGNS_included
 
 #include <TRUSTTabs_forward.h>
+#include <TRUST_2_CGNS.h>
 #include <cgns++.h>
 #include <map>
 
@@ -43,10 +44,15 @@ private:
   void cgns_write_field_seq(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
   void cgns_write_iters_seq();
 
-  // Version parallele
-  void cgns_write_domaine_par(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
-  void cgns_write_field_par(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
-  void cgns_write_iters_par();
+  // Version parallele over zone
+  void cgns_write_domaine_par_over_zone(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
+  void cgns_write_field_par_over_zone(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void cgns_write_iters_par_over_zone();
+
+  // Version parallele in zone
+  void cgns_write_domaine_par_in_zone(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
+  void cgns_write_field_par_in_zone(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
+  void cgns_write_iters_par_in_zone();
 
   // Attributes
   bool solname_elem_written_ = false, solname_som_written_ = false;
@@ -57,6 +63,7 @@ private:
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_;
   std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
+  std::vector<TRUST_2_CGNS> T2CGNS_;
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
 #endif
 };
