@@ -463,7 +463,13 @@ if [ "$TRUST_USE_STRUMPACK" = 1 ]
 then
    add_package zfp
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
-   [ "$TRUST_USE_CUDA" = 1 ] && add_package magma && add_package slate
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      add_package magma && with_packages=$with_packages" --with-magma-gputarget=Ampere" 
+      # Encore des problemes  de build (cublas_lib not found, cmake slate pas a jour encore?) sur cluster GPU (ex topaze)
+      # ou c'est utile (multi-GPU), et meme sur A6000, cela ne fonctionne pas (MPI_multiple_thread) donc on disable:
+      # [ "$TRUST_USE_OPENMP" = 1 ] && add_package slate && with_packages=$with_packages" --with-cuda-arch=80" 
+   fi   
    add_package STRUMPACK
 fi
 
