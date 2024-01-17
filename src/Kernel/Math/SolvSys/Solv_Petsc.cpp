@@ -1921,11 +1921,11 @@ void handleSignal(True_int signum)
     }
 }
 // Function where signal handlers are set up
-void setupSignalHandlers()
+void setupSignalHandlers(bool on)
 {
   // Configure the sigaction structure for SIGFPE
   struct sigaction sa_fpe;
-  sa_fpe.sa_handler = handleSignal;
+  sa_fpe.sa_handler = on ? handleSignal : SIG_DFL;
   sigemptyset(&sa_fpe.sa_mask);
   sa_fpe.sa_flags = 0;
 
@@ -1938,7 +1938,7 @@ void setupSignalHandlers()
 
   // Configure the sigaction structure for SIGSEGV
   struct sigaction sa_segv;
-  sa_segv.sa_handler = handleSignal;
+  sa_segv.sa_handler = on ? handleSignal : SIG_DFL;
   sigemptyset(&sa_segv.sa_mask);
   sa_segv.sa_flags = 0;
 
@@ -1993,10 +1993,11 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
         KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
     }
   // Solve
-  setupSignalHandlers();
+  setupSignalHandlers(true);
   if (gpu_) statistiques().begin_count(gpu_library_counter_);
   KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   if (gpu_) statistiques().end_count(gpu_library_counter_);
+  setupSignalHandlers(false);
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);

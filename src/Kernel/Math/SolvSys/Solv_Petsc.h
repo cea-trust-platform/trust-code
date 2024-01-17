@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,15 @@ public :
     return resoudre_systeme(M,A,B);
   };
   void create_solver(Entree&);
+  // To switch between solver definitions in one Solv_Petsc instance:
+  void reset_solver(const Nom& name)
+  {
+    // ToDo: regler option_prefix_ et numero_solveur dans create_solver et initialize...
+    initialize();
+    EChaine ech(name);
+    Cout << "Setting PETSc solver: " << name << finl;
+    create_solver(ech);
+  }
   inline void reset();
   inline bool read_matrix() const
   {

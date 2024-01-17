@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,23 +34,23 @@ public :
   // Search for "x" such that "a*x = b"
   virtual int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x) = 0;
   virtual int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x, int niter_max);
-  virtual inline void fixer_schema_temps_limpr(int l) { schema_temps_limpr_=l; }
-  inline void fixer_limpr(int l) { limpr_=l; }
-  inline void set_return_on_error(int ret) { return_on_error_ = ret; }
+  virtual void fixer_schema_temps_limpr(int l) { schema_temps_limpr_=l; }
+  void fixer_limpr(int l) { limpr_=l; }
+  void set_return_on_error(int ret) { return_on_error_ = ret; }
   // Print solver convergence if impr option set in the solver AND if time scheme gives authorization
-  inline int limpr() const
+  int limpr() const
   {
     if (!schema_temps_limpr_)
       return 0;
     return  limpr_;
   }
 
-  virtual inline void reinit() { nouvelle_matrice_=1; }
-  inline int nouvelle_matrice() const { return nouvelle_matrice_; }
-  inline void fixer_nouvelle_matrice(int i) { nouvelle_matrice_ = i; }
+  virtual void reinit() { nouvelle_matrice_=1; }
+  int nouvelle_matrice() const { return nouvelle_matrice_; }
+  void fixer_nouvelle_matrice(int i) { nouvelle_matrice_ = i; }
 
   // Par defaut tous les solveurs acceptent les Matrice_Morse_Sym (surcharger sinon)
-  virtual inline int supporte_matrice_morse_sym() { return 1; };
+  virtual int supporte_matrice_morse_sym() { return 1; };
 
   // Call this to know if "b" (right hand side) must have an updated virtual space before calling resoudre(m, b, x)
   // (this flag cannot be set, it is a property of the solver)
@@ -63,6 +63,7 @@ public :
   // Methods to set/get reuse_preconditioner_
   void set_reuse_preconditioner(bool flag) { reuse_preconditioner_=flag; }
   bool reuse_preconditioner() { return reuse_preconditioner_; }
+  const Nom& get_chaine_lue() const { return chaine_lue_ ; };
 
 protected :
   int nouvelle_matrice_; // Drapeau pour savoir si un stockage ou une factorisation est a refaire
@@ -72,7 +73,6 @@ protected :
   // Pour lecture/stockage des parametres des solveurs:
   Nom chaine_lue_;
   void lecture(Entree&);
-  inline const Nom& get_chaine_lue() const { return chaine_lue_ ; };
 private:
   int limpr_;            // Drapeau pour impression ou non de la convergence du solveur
   int schema_temps_limpr_; // Authorization printing flag set by the time scheme
