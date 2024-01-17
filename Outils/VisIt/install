@@ -86,7 +86,10 @@ then
 
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
-   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
+   if [ "$TRUST_WITHOUT_HOST" = 1 ] || [ "${HOST#cea-dm2s}" != "$HOST" ]
+   then
+      [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
+   fi
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
