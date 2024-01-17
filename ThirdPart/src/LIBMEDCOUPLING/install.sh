@@ -66,7 +66,8 @@ then
    MPICH_CXX=$OMPI_CXX
    MPICH_CC=$OMPI_CC
 fi
-export CXXFLAGS=-Wno-narrowing
+# -Wno-sign-conversion for intel oneAPI 2023, otherwise medcoupling build fails
+export CXXFLAGS="-Wno-narrowing -Wno-sign-conversion"
 if [[ $USE_PYTHON == ON && $(uname -s) == "Darwin" ]]
 then
    export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"

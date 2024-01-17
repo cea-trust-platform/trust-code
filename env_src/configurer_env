@@ -628,9 +628,9 @@ case $arch in
 	TRUST_EDITOR="gedit nedit kate kedit xemacs xedit emacs"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" FCC icpc  armclang++ "$cuda"g++      g++"
-	TRUST_F77_BASE="frt ifort armflang   "$cuda"gfortran gfortran"
-	TRUST_cc_BASE=" fc  icc   armclang   "$cuda"gcc      gcc"
+	TRUST_CC_BASE=" FCC icpx icpc  armclang++ "$cuda"g++      g++"  # icpx is the CXX compiler in inteloneAPI 2023
+	TRUST_F77_BASE="frt ifx ifort armflang   "$cuda"gfortran gfortran"
+	TRUST_cc_BASE=" fc  icx icc   armclang   "$cuda"gcc      gcc"
 	# Support compilateur NVidia:
 	if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
 	then
@@ -1802,7 +1802,7 @@ case $TRUST_ARCH_CC in
         ccFLAGS="-O3 -fPIC -noswitcherror"
         ShLibFlag="\$(TRUST_CC) -shared"
     ;;
-   linux_icpc) TRUST_SUPPORTED=1
+   linux_icpc|linux_icpx) TRUST_SUPPORTED=1
 	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer

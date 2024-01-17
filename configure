@@ -100,9 +100,9 @@ case $arch in
         ;;
   OSF1) list_of_CC_compilers="cxx g++"
         ;;
- Linux) list_of_CC_compilers="g++ icpc icc ecc pgCC"
-        list_of_c_compilers="gcc icc ecc pgcc cc"
-        list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77 crayftn"
+ Linux) list_of_CC_compilers="g++ icpx icpc icc ecc pgCC"
+        list_of_c_compilers="gcc icx icc ecc pgcc cc"
+        list_of_f77_compilers="f90 f77 g77 gfortran ifx ifort ifc efc pgf90 pgf77 crayftn"
         ;;
 CYGWIN*) list_of_CC_compilers="g++ icpc icc ecc pgCC"
          list_of_f77_compilers="f90 f77 g77 gfortran ifort ifc efc pgf90 pgf77"
