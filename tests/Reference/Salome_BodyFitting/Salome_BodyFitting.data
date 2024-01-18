@@ -1,7 +1,7 @@
 # Lecture maillage 3D Hexa+Poly+Prisme cree dans Salome avec BodyFitting #
 # Cela garantit de n'avoir que des faces planes pour les hexas #
 # Ces mailles sont convertis en Polyedres a la lecture du maillage MED #
-# PARALLEL OK #
+# PARALLEL NOT #
 dimension 3
 Pb_hydraulique pb
 Domaine dom

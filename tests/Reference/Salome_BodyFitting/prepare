@@ -17,6 +17,6 @@ then
    fi
 else
    # Salome non trouve, on quitte:
-   sed -i "1,$ s?# PARALLEL OK #?fin?g" Salome_BodyFitting.data 
+   sed -i "1,$ s?# PARALLEL NOT #?fin?g" Salome_BodyFitting.data 
 fi
 exit 0

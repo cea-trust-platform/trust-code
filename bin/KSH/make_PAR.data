@@ -109,8 +109,9 @@ do
    # if there's a single .Zones file (written in HDF format), the grep above is wrong
     if [ $NB_CPUS_ZONE = 0 ]
     then
-	FILE_NAME=`find . -name "$nom_zone"_p'*'.Zones | xargs basename`
-	NB_CPUS_ZONE=`echo $FILE_NAME | cut -d '.' -f 1 | $TRUST_Awk -F '_p' '{print $2}'`
+       [ "`ls $nom_zone'_p'*.Zones 2>/dev/null`" = "" ] && echo "Error, no .Zones created!" && exit -1
+       FILE_NAME=`find . -name $nom_zone'_p'*.Zones | xargs basename`
+       NB_CPUS_ZONE=`echo $FILE_NAME | cut -d '.' -f 1 | $TRUST_Awk -F '_p' '{print $2}'`
     fi
        
    # Verification
