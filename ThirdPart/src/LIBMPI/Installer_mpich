@@ -25,7 +25,8 @@ else
 fi
 export FC=$F77
 # Si compilateur GNU calcul de la version (ToDo: remonter dans configure)
-TRUST_VERSION_GNU_NUMERIC=0 && [ "${CXX%g++}" != "$CXX" ] && TRUST_VERSION_GNU_NUMERIC=`$CXX -v 2>&1 | awk '/gcc / && /version / {split($3,a,".");print a[1]*100+a[2]*10+a[3]*1}'`
+# ND : avec clang, on peut installer mpich maintenant, mais si gfortran > 11 il faut prendre latest_version. je verifie donc la version de F77 a la place de CXX
+TRUST_VERSION_GNU_NUMERIC=0 && [ "${F77%gfortran}" != "$F77" ] && TRUST_VERSION_GNU_NUMERIC=`$F77 -v 2>&1 | awk '/gcc / && /version / {split($3,a,".");print a[1]*100+a[2]*10+a[3]*1}'`
 
 # Cas ou l'on force la version la plus recente:
 if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
