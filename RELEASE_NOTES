@@ -1,10 +1,11 @@
-XX/XX/23 (TRUST) New keyword  : Add mesh_numbering multi-scalar field to plot {node,cell,face} numerotation for visualization
-XX/XX/23 (TRUST) Fix          : Refine keywords (eg: Raffiner_simplexes, Raffiner_isotrope_parallele) were not refining sub_zones
-XX/XX/23 (TRUST) New feature  : Partition_tool Fichier_MED can read now the partition MED file from a previous partitionned domain to create a conform partitioned mesh 
-XX/XX/23 (TRUST) New option   : Add ecrire_med option to Partition tools to write partition field into a MED file
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+18/01/24 (TRUST) Change       : OpenBLAS version updated to 0.3.25, this may result into some numerical differences in tests using this library
+18/01/24 (TRUST) New keyword  : Add mesh_numbering multi-scalar field to plot {node,cell,face} numerotation for visualization
+18/01/24 (TRUST) Fix          : Refine keywords (eg: Raffiner_simplexes, Raffiner_isotrope_parallele) were not refining sub_zones
+18/01/24 (TRUST) New feature  : Partition_tool Fichier_MED can read now the partition MED file from a previous partitionned domain to create a conform partitioned mesh
+18/01/24 (TRUST) New option   : Add ecrire_med option to Partition tools to write partition field into a MED file
 12/01/24 (TRUST) Portability  : cmake 3.21.0 or newer is necessary to install petsc and so TRUST.
 12/01/24 (TRUST) New keyword  : Add "petsc LU_Strumpack { }" as direct solver from STRUMPACK library
 12/01/24 (TRUST) New keyword  : Add two ILU preconditioners based on Block Low Ranking parametrized (epsilon) compression: petsc gcp|gmres { precond ilu_mumps|ilu_strumpack { epsilon value } ... }. May be useful on problems with solver slow convergence.
