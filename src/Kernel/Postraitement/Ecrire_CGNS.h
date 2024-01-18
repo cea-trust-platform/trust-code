@@ -28,6 +28,7 @@ class Ecrire_CGNS
 {
 #ifdef HAS_CGNS
 public:
+  void cgns_init_MPI();
   void cgns_open_file(const Nom& );
   void cgns_close_file(const Nom& );
 
@@ -38,6 +39,7 @@ public:
 
 private:
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+  Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&);
 
   // Version sequentielle
   void cgns_write_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );

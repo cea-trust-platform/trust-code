@@ -30,21 +30,26 @@
 #endif
 #endif
 
+void Ecrire_CGNS::cgns_init_MPI()
+{
+  cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
+
+  /*
+   * Elie Saikali XXX NOTA BENE XXX
+   * We need sometimes to write planes, boundaries where some processors have no elements/vertices ...
+   * This wont work because the default PIO mode of CGNS is COLLECTIVE. We want it to be INDEPENDENT !
+   */
+  if (cgp_pio_mode((CGNS_ENUMT(PIOmode_t)) CGP_INDEPENDENT) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_pio_mode !" << finl, cgp_error_exit();
+}
+
 void Ecrire_CGNS::cgns_open_file(const Nom& nom)
 {
   std::string fn = nom.getString() + ".cgns"; // file name
 
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
-      cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
-
-      /*
-       * Elie Saikali XXX NOTA BENE XXX
-       * We need sometimes to write planes, boundaries where some processors have no elements/vertices ...
-       * This wont work because the default PIO mode of CGNS is COLLECTIVE. We want it to be INDEPENDENT !
-       */
-      if (cgp_pio_mode((CGNS_ENUMT(PIOmode_t)) CGP_INDEPENDENT) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_pio_mode !" << finl, cgp_error_exit();
+      cgns_init_MPI(); // XXX
 
       if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
         Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_open !" << finl, cgp_error_exit();
@@ -120,6 +125,13 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
                                    const DoubleTab& valeurs)
 {
   const std::string LOC = Motcle(localisation).getString();
+
+  if (LOC == "FACES")
+    {
+      Cerr << "THE FACE FIELD " << Motcle(id_du_champ) << " WILL NOT BE WRITTEN ... " << finl; // throw;
+      return;
+    }
+
   /* 1 : if first time called ... build different supports for mixed locations */
   if (static_cast<int>(time_post_.size()) == 1)
     {
@@ -281,35 +293,8 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
 void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-
-  if (LOC == "FACES")
-    {
-      Cerr << "FACES FIELDS ARE NOT YET TREATED ... " << finl;
-//      throw;
-      return;
-    }
-
-  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
-
-  if (LOC == "SOM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_SOM_");
-    }
-  else if (LOC == "ELEM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_ELEM_");
-    }
-
+  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
   Nom& id_champ = id_du_champ_modifie;
-
-  /* 1 : Increment fieldIds */
-  if (LOC == "SOM") fieldId_som_++;
-  else // ELEM // TODO FIXME FACES
-    fieldId_elem_++;
 
   /* 2 : Get corresponding domain index */
   const int ind = get_index_nom_vector(doms_written_, nom_dom);
@@ -704,34 +689,8 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-  if (LOC == "FACES")
-    {
-      Cerr << "FACES FIELDS ARE NOT YET TREATED ... " << finl;
-//      throw;
-      return;
-    }
-
-  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
-
-  if (LOC == "SOM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_SOM_");
-    }
-  else if (LOC == "ELEM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_ELEM_");
-    }
-
+  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
   Nom& id_champ = id_du_champ_modifie;
-
-  /* 1 : Increment fieldIds */
-  if (LOC == "SOM") fieldId_som_++;
-  else // ELEM // TODO FIXME FACES
-    fieldId_elem_++;
 
   /* 2 : Get corresponding domain index */
   const int ind = get_index_nom_vector(doms_written_, nom_dom);
@@ -1072,34 +1031,8 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
 void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-  if (LOC == "FACES")
-    {
-      Cerr << "FACES FIELDS ARE NOT YET TREATED ... " << finl;
-//      throw;
-      return;
-    }
-
-  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
-
-  if (LOC == "SOM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_SOM_");
-    }
-  else if (LOC == "ELEM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_ELEM_");
-    }
-
+  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
   Nom& id_champ = id_du_champ_modifie;
-
-  /* 1 : Increment fieldIds */
-  if (LOC == "SOM") fieldId_som_++;
-  else // ELEM // TODO FIXME FACES
-    fieldId_elem_++;
 
   /* 2 : Get corresponding domain index */
   const int ind = get_index_nom_vector(doms_written_, nom_dom);
@@ -1209,89 +1142,33 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
 
 void Ecrire_CGNS::cgns_write_iters_par_in_zone()
 {
-  const int nsteps = static_cast<int>(time_post_.size());
-  std::vector<int> ind_doms_dumped;
+  cgns_write_iters_seq();
+}
 
-  /* 1 : on iter juste sur le map fld_loc_map_; ie: pas domaine dis ... */
-  for (auto &itr : fld_loc_map_)
+Motcle Ecrire_CGNS::modify_field_name_for_post(const Nom& id_du_champ, const Nom& id_du_domaine, const std::string& LOC)
+{
+  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
+
+  if (LOC == "SOM")
     {
-      const std::string& LOC = itr.first;
-      const Nom& nom_dom = itr.second;
-      const int ind = get_index_nom_vector(doms_written_, nom_dom);
-      ind_doms_dumped.push_back(ind);
-      assert(ind > -1);
-
-      /* create BaseIterativeData */
-      if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_biter_write !" << finl, cgp_error_exit();
-
-      /* go to BaseIterativeData level and write time values */
-      if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_goto !" << finl, cgp_error_exit();
-
-      cgsize_t nuse = static_cast<cgsize_t>(nsteps);
-      if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_array_write !" << finl, cgp_error_exit();
-
-      cgsize_t idata[2];
-      idata[0] = CGNS_STR_SIZE;
-      idata[1] = nsteps;
-
-      /* create ZoneIterativeData */
-      if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_ziter_write !" << finl, cgp_error_exit();
-
-      if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_goto !" << finl, cgp_error_exit();
-
-      if (LOC == "SOM")
-        {
-          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_array_write !" << finl, cgp_error_exit();
-        }
-      else if (LOC == "ELEM")
-        {
-          if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_array_write !" << finl, cgp_error_exit();
-        }
-
-      if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_simulation_type_write !" << finl, cgp_error_exit();
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_SOM_");
+    }
+  else if (LOC == "ELEM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_ELEM_");
     }
 
-  /* 2 : on iter sur les autres domaines; ie: domaine dis */
-  for (int i = 0; i < static_cast<int>(doms_written_.size()); i++)
-    {
-      if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
-        {
-          const Nom& nom_dom = doms_written_[i];
-          const int ind = get_index_nom_vector(doms_written_, nom_dom);
-          assert(ind > -1);
+  /* 1 : Increment fieldIds */
+  if (LOC == "SOM") fieldId_som_++;
+  else
+    // ELEM // TODO FIXME FACES
+    fieldId_elem_++;
 
-          /* create BaseIterativeData */
-          if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_biter_write !" << finl, cg_error_exit();
-
-          /* go to BaseIterativeData level and write time values */
-          if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_goto !" << finl, cg_error_exit();
-
-          cgsize_t nuse = static_cast<cgsize_t>(nsteps);
-          if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_array_write !" << finl, cg_error_exit();
-
-          /* create ZoneIterativeData */
-          if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_ziter_write !" << finl, cg_error_exit();
-
-          if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_goto !" << finl, cg_error_exit();
-
-          if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_in_zone : cg_simulation_type_write !" << finl, cg_error_exit();
-        }
-      else { /* Do Nothing */ }
-    }
+  return id_du_champ_modifie;
 }
 
 #endif
