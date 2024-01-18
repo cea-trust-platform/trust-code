@@ -27,7 +27,9 @@
 #pragma GCC diagnostic ignored "-Wshadow"
 
 // Portability for mpich which do not honour -Wsuggest-override
+#if __GNUC__ > 5 || __clang__ > 10
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
 
 #include <mpi.h>
 #pragma GCC diagnostic pop
