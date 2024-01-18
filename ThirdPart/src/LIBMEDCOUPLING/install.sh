@@ -102,7 +102,11 @@ fi
 
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
-cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
+rel_type=Release
+if [ "$TRUST_DEBUG_MC" = "1" ]; then
+   rel_type=Debug
+fi
+cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=$rel_type
 
 # The current CMake of MEDCoupling is badly written: dependencies on .pyc generation do not properly capture SWIG generated Python modules.
 # So we need to do make twice ...
@@ -140,7 +144,7 @@ then
      then
         echo "medcoupling library OK"
     # Clean build folder
-    cd .. ; rm -rf configuration* medcoupling*
+    cd .. ; [ "$TRUST_DEBUG_MC" != "1" ] && rm -rf configuration* medcoupling*
      else
         echo "medcoupling library KO"
         exit -1
