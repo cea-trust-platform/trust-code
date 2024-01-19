@@ -247,29 +247,20 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-//      nfs_offset_tot_ = Process::mp_sum(nb_fs_offset);
-//      nef_offset_tot_ = Process::mp_sum(nb_ef_offset);
-
       // incr sur nb_faces tot
-      global_incr_min_face_som_offset_.assign(nb_procs, -123 /* default */);
       global_incr_max_face_som_offset_.assign(nb_procs, -123 /* default */);
       // incr sur nb_elem tot
-      global_incr_min_elem_face_offset_.assign(nb_procs, -123 /* default */);
       global_incr_max_elem_face_offset_.assign(nb_procs, -123 /* default */);
 
-      global_incr_min_face_som_offset_[0] = 0, global_incr_min_elem_face_offset_[0] = 0; // start from 0 !
       nfs_offset_tot_ = 0, nef_offset_tot_ = 0;
 
       // now we fill global incremented min/max stuff
       for (int i = 0; i < nb_procs; i++)
         {
-          // 1 : min
-          global_incr_min_face_som_offset_[i] = nfs_offset_tot_;
-          global_incr_min_elem_face_offset_[i] = nef_offset_tot_;
-          // 2 : increment
+          // 1 : increment
           nfs_offset_tot_ += global_nb_face_som_offset_[i];
           nef_offset_tot_ += global_nb_elem_face_offset_[i];
-          // 3 : max
+          // 2 : max
           global_incr_max_face_som_offset_[i] = nfs_offset_tot_;
           global_incr_max_elem_face_offset_[i] = nef_offset_tot_;
         }
@@ -363,26 +354,18 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-//      nes_offset_tot_ =  Process::mp_sum(nb_es_offset);
-
-      global_incr_min_elem_som_offset_.assign(nb_procs, -123 /* default */);
       global_incr_max_elem_som_offset_.assign(nb_procs, -123 /* default */);
 
-
-      global_incr_min_elem_som_offset_[0] = 0; // start from 0 !
       nes_offset_tot_ = 0;
 
       // now we fill global incremented min/max stuff
       for (int i = 0; i < nb_procs; i++)
         {
-          // 1 : min
-          global_incr_min_elem_som_offset_[i] = nes_offset_tot_;
-          // 2 : increment
+          // 1 : increment
           nes_offset_tot_ += global_nb_elem_som_offset_[i];
-          // 3 : max
+          // 2 : max
           global_incr_max_elem_som_offset_[i] = nes_offset_tot_;
         }
-
 
       decal = 0;
       if (all_procs_write_)

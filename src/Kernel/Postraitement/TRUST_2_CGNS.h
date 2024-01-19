@@ -102,15 +102,15 @@ private:
 
   std::vector<int> global_nb_face_som_, global_nb_face_som_offset_,
       global_incr_min_face_som_, global_incr_max_face_som_,
-      global_incr_min_face_som_offset_, global_incr_max_face_som_offset_; // pour NGON_n - face_som
+      global_incr_max_face_som_offset_; // pour NGON_n - face_som
 
   std::vector<int> global_nb_elem_face_, global_nb_elem_face_offset_,
       global_incr_min_elem_face_, global_incr_max_elem_face_,
-      global_incr_min_elem_face_offset_, global_incr_max_elem_face_offset_; // pour NFACE_n - elem_face
+      global_incr_max_elem_face_offset_; // pour NFACE_n - elem_face
 
   // pour polygon
   std::vector<int> global_nb_elem_som_, global_nb_elem_som_offset_,
-      global_incr_min_elem_som_offset_, global_incr_max_elem_som_offset_; // pour NGON_n
+      global_incr_max_elem_som_offset_; // pour NGON_n
 
   std::vector<cgsize_t> local_fs_, local_fs_offset_, local_ef_, local_ef_offset_, local_es_, local_es_offset_;
 #endif

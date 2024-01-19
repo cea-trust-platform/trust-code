@@ -948,7 +948,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
 
   TRUST2CGNS.fill_global_infos(); // XXX
 
-  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polygone / polyedre
+  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) /*cas polygone/polyedre */
     TRUST2CGNS.fill_global_infos_poly(is_polyedre);
 
   const int ns_tot = TRUST2CGNS.get_ns_tot(), ne_tot = TRUST2CGNS.get_ne_tot();
@@ -1097,17 +1097,15 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
 
 void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
+  const int proc_me = Process::me(), nb_vals = valeurs.dimension(0);
+  const int ind = get_index_nom_vector(doms_written_, nom_dom);
+  assert(ind > -1);
+
   std::string LOC = Motcle(localisation).getString();
   Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
   Nom& id_champ = id_du_champ_modifie;
 
-  /* 2 : Get corresponding domain index */
-  const int ind = get_index_nom_vector(doms_written_, nom_dom);
-  assert(ind > -1);
-
-  const int proc_me = Process::me(), nb_vals = valeurs.dimension(0);
-
-  /* 3 : CREATION OF FILE STRUCTURE
+  /* 1 : CREATION OF FILE STRUCTURE
    *
    *  - All processors write the same information.
    *  - Only field meta-data is written to the library at this stage ... So no worries ^^
@@ -1158,7 +1156,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
   /* 4 : Fill field values & dump to cgns file */
   if (nb_vals > 0) // this proc will write !
     {
-      cgsize_t min, max;
+      cgsize_t min = -123, max = -123;
       const TRUST_2_CGNS& TRUST2CGNS = T2CGNS_[ind];
 
       if (valeurs.dimension(1) == 1) /* No stride ! */
