@@ -727,8 +727,10 @@ then
    echo "# Detected $procs processors of $cores_per_proc cores means a total of $total_cores physical cores." | tee -a $env
    CACHE_SIZE=`awk '/cache size/ {print $(NF-1)}' /proc/cpuinfo | sort -u`
    echo "# Detected a size cache of $CACHE_SIZE KB." | tee -a $env
-   m="# Number of physical cores";e="TRUST_NB_PHYSICAL_CORES=$total_cores && export TRUST_NB_PHYSICAL_CORES";ecrit $m"|"$e"|"$env;eval $e
+elif [ `uname -s` = "Darwin" ]; then
+   total_cores=$(sysctl -n hw.perflevel0.logicalcpu)
 fi
+m="# Number of physical cores";e="TRUST_NB_PHYSICAL_CORES=$total_cores && export TRUST_NB_PHYSICAL_CORES";ecrit $m"|"$e"|"$env;eval $e
 m="# Number of logical cores used for build";e="TRUST_NB_PROCS=$TRUST_NB_PROCS && export TRUST_NB_PROCS";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to make command used";e="TRUST_MAKE=\"$TRUST_MAKE\" && export TRUST_MAKE";ecrit $m"|"$e"|"$env;eval $e
 
