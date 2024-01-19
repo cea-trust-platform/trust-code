@@ -918,26 +918,18 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
 void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const Nom& nom_dom, const DoubleTab& les_som, const IntTab& les_elem, const Motcle& type_elem)
 {
   doms_written_.push_back(nom_dom);
+
   /* 1 : Instance of TRUST_2_CGNS */
   T2CGNS_.push_back(TRUST_2_CGNS());
   TRUST_2_CGNS& TRUST2CGNS = T2CGNS_.back();
-
   TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
-  TRUST2CGNS.fill_global_infos(); // XXX
-
-  const std::vector<int>& incr_max_elem = TRUST2CGNS.get_global_incr_max_elem(), incr_min_elem = TRUST2CGNS.get_global_incr_min_elem(),
-                          incr_max_som = TRUST2CGNS.get_global_incr_max_som(), incr_min_som = TRUST2CGNS.get_global_incr_min_som();
-
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */
   std::vector<double> xCoords, yCoords, zCoords;
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
-  const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension, proc_me = Process::me(),
-            nb_elem = les_elem.dimension(0), ns_tot = TRUST2CGNS.get_ns_tot(), ne_tot = TRUST2CGNS.get_ne_tot();
-
-  assert (ne_tot > 0 && ns_tot > 0);
+  const int icelldim = les_som.dimension(1), nb_elem = les_elem.dimension(0), iphysdim = Objet_U::dimension, proc_me = Process::me();
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
@@ -947,42 +939,28 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   if (cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back()) != CG_OK)
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_base_write !" << finl, cgp_error_exit();
 
-
-  /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
+  /* 4 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
    *  - All processors write the same information.
    *  - XXX XXX XXX Only ONE zone meta-data is written to the library at this stage ...
    */
-  int gridId = -123, coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
-
-  /* TRAITEMENT POLYGONE / POLYEDRE */
   const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
-  int nb_fs = -123, nb_ef = -123, nb_fs_offset = -123, nb_ef_offset = -123;
+
+  TRUST2CGNS.fill_global_infos(); // XXX
 
   if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polygone / polyedre
-    {
-      TRUST2CGNS.fill_global_infos_poly(is_polyedre);
-      if (is_polyedre)
-        {
-          nb_fs = TRUST2CGNS.get_nfs_tot();
-          nb_ef = TRUST2CGNS.get_nef_tot();
-          nb_fs_offset = TRUST2CGNS.get_nfs_offset_tot();
-          nb_ef_offset = TRUST2CGNS.get_nef_offset_tot();
-        }
-      else // polygon // FIXME : separate methods ...
-        {
-          nb_fs = ne_tot;
-          nb_fs_offset = TRUST2CGNS.get_nes_offset_tot();
-        }
+    TRUST2CGNS.fill_global_infos_poly(is_polyedre);
 
-    }
+  const int ns_tot = TRUST2CGNS.get_ns_tot(), ne_tot = TRUST2CGNS.get_ne_tot();
+  assert (ne_tot > 0 && ns_tot > 0);
 
-  /* 5.1 : Create zone */
+  /* 4.1 : Create zone */
   cgsize_t isize[3][1];
   isize[0][0] = ns_tot;
   isize[1][0] = ne_tot;
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
+  int gridId = -123, coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
   zoneId_.push_back(-123);
   if (cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_zone_write !" << finl, cgp_error_exit();
@@ -990,7 +968,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   if (cg_grid_write(fileId_, baseId_.back(), zoneId_.back(), "GridCoordinates", &gridId) != CG_OK)
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_grid_write !" << finl, cgp_error_exit();
 
-  /* 5.2 : Construct the grid coordinates nodes */
+  /* 4.2 : Construct the grid coordinates nodes */
   if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", &coordsIdx) != CG_OK)
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - X !" << finl, cgp_error_exit();
 
@@ -1001,39 +979,60 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
     if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", &coordsIdz) != CG_OK)
       Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - Z !" << finl, cgp_error_exit();
 
-  cgsize_t start = 1, end = ne_tot;
-  assert (start < ne_tot);
-
-  /* 5.3 : Construct the sections to host connectivity later */
+  /* 4.3 : Construct the sections to host connectivity later */
+  cgsize_t start = -123, end = -123;
   if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
     {
-      end = start + nb_fs -1; // FIXME si polygon
-      cgsize_t maxoffset = nb_fs_offset;
-
-      if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+      cgsize_t maxoffset = -123;
 
       if (is_polyedre) // Pas pour polygone
         {
-          start = end + 1;
+          const int nb_fs = TRUST2CGNS.get_nfs_tot();
+          const int nb_fs_offset = TRUST2CGNS.get_nfs_offset_tot();
 
-          end = start + nb_ef -1;
+          start = 1, end = start + nb_fs - 1;
+          maxoffset = nb_fs_offset;
+          assert(start <= end);
+
+          if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+
+          const int nb_ef = TRUST2CGNS.get_nef_tot();
+          const int nb_ef_offset = TRUST2CGNS.get_nef_offset_tot();
+
+          start = end + 1, end = start + nb_ef - 1;
           maxoffset = nb_ef_offset;
+          assert(start <= end);
 
           if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, maxoffset, 0, &sectionId2) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+        }
+      else // polygon
+        {
+          const int nb_es = ne_tot;
+          const int nb_es_offset = TRUST2CGNS.get_nes_offset_tot();
+
+          start = 1, end = start + nb_es - 1;
+          maxoffset = nb_es_offset;
+
+          if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId) != CG_OK)
             Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
         }
     }
   else
     {
+      start = 1, end = ne_tot;
+      assert(start <= end);
+
       if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId) != CG_OK)
         Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_section_write !" << finl, cgp_error_exit();
     }
 
-//  Process::barrier();
-  /* 6 : Write grid coordinates & set connectivity */
+  /* 5 : Write grid coordinates & set connectivity */
   if (nb_elem > 0) // seulement si le proc a qlq chose a ecrire
     {
+      const std::vector<int>& incr_max_som = TRUST2CGNS.get_global_incr_max_som(), incr_min_som = TRUST2CGNS.get_global_incr_min_som();
+
       cgsize_t min = incr_min_som[proc_me], max = incr_max_som[proc_me];
       assert (min < max);
 
@@ -1053,37 +1052,32 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
         {
           if (is_polyedre)
             {
-              const std::vector<int>& incr_min_face_som = TRUST2CGNS.get_global_incr_min_face_som(), incr_max_face_som = TRUST2CGNS.get_global_incr_max_face_som(),
-                                      incr_min_elem_face = TRUST2CGNS.get_global_incr_min_elem_face(), incr_max_elem_face = TRUST2CGNS.get_global_incr_max_elem_face();
-
+              const std::vector<cgsize_t>& fs = TRUST2CGNS.get_local_fs(), fs_offset = TRUST2CGNS.get_local_fs_offset();
+              const std::vector<int>& incr_min_face_som = TRUST2CGNS.get_global_incr_min_face_som(), incr_max_face_som = TRUST2CGNS.get_global_incr_max_face_som();
               min = incr_min_face_som[proc_me], max = incr_max_face_som[proc_me];
               assert (min < max);
-
-              const std::vector<cgsize_t>& fs = TRUST2CGNS.get_local_fs(), fs_offset = TRUST2CGNS.get_local_fs_offset();
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, fs.data(), fs_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
 
-              min = incr_max_face_som.back() + incr_min_elem_face[proc_me]; // ??
-              max = incr_max_face_som.back() + incr_max_elem_face[proc_me]; // ??
-              assert (min < max);
-
               const std::vector<cgsize_t> ef = TRUST2CGNS.get_local_ef(), ef_offset = TRUST2CGNS.get_local_ef_offset();
+              const std::vector<int>& incr_min_elem_face = TRUST2CGNS.get_global_incr_min_elem_face(), incr_max_elem_face = TRUST2CGNS.get_global_incr_max_elem_face();
+              min = incr_max_face_som.back() + incr_min_elem_face[proc_me]; // BOOM
+              max = incr_max_face_som.back() + incr_max_elem_face[proc_me]; // BEEM
+              assert (min < max);
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId2, min, max, ef.data(), ef_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
-
             }
           else
             {
+              const std::vector<cgsize_t>& es = TRUST2CGNS.get_local_es(), es_offset = TRUST2CGNS.get_local_es_offset();
+              const std::vector<int>& incr_max_elem = TRUST2CGNS.get_global_incr_max_elem(), incr_min_elem = TRUST2CGNS.get_global_incr_min_elem();
               min = incr_min_elem[proc_me], max = incr_max_elem[proc_me];
               assert (min < max);
 
-              const std::vector<cgsize_t>& es = TRUST2CGNS.get_local_es(), es_offset = TRUST2CGNS.get_local_es_offset();
-
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, es.data(), es_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
-
             }
         }
       else
@@ -1091,6 +1085,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
           std::vector<cgsize_t> elems;
           TRUST2CGNS.convert_connectivity(cgns_type_elem, elems);
 
+          const std::vector<int>& incr_max_elem = TRUST2CGNS.get_global_incr_max_elem(), incr_min_elem = TRUST2CGNS.get_global_incr_min_elem();
           min = incr_min_elem[proc_me], max = incr_max_elem[proc_me];
           assert (min < max);
 

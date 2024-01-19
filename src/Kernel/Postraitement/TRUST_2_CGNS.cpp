@@ -20,6 +20,7 @@
 #include <Polyedre.h>
 #include <Domaine.h>
 
+#ifdef HAS_CGNS
 #ifdef MPI_
 #ifdef INT_is_64_
 #define MPI_ENTIER MPI_LONG
@@ -406,7 +407,6 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 
 }
 
-#ifdef HAS_CGNS
 int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize_t>& elems)
 {
   const int nb_elem = elems_->dimension(0);
