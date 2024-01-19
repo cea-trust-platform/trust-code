@@ -42,6 +42,7 @@ public:
 
   void fill_global_infos();
   void fill_global_infos_poly(const bool);
+  int compute_shift(const std::vector<int>&);
 
   const bool& all_procs_write() const { return all_procs_write_; }
   const std::vector<int>& get_proc_non_zero_elem() const { return proc_non_zero_elem_; }
@@ -70,8 +71,8 @@ public:
   int get_nes_offset_tot() const { return nes_offset_tot_; }
 
   int convert_connectivity(const CGNS_TYPE, std::vector<cgsize_t>&);
-  int convert_connectivity_ngon(std::vector<cgsize_t>&, std::vector<cgsize_t>&, const bool);
-  int convert_connectivity_nface(std::vector<cgsize_t>&, std::vector<cgsize_t>&);
+  int convert_connectivity_ngon(std::vector<cgsize_t>&, std::vector<cgsize_t>&, const bool, int decal = 0);
+  int convert_connectivity_nface(std::vector<cgsize_t>&, std::vector<cgsize_t>&, int decal = 0);
   CGNS_TYPE convert_elem_type(const Motcle&);
 
   const std::vector<cgsize_t>& get_local_fs() const { return local_fs_; }

@@ -17,7 +17,6 @@
 #include <TRUST_2_CGNS.h>
 #include <Option_CGNS.h>
 #include <Domaine_VF.h>
-#include <Polyedre.h>
 #include <Domaine.h>
 
 #ifdef HAS_CGNS
@@ -108,6 +107,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
   assert(!Option_CGNS::PARALLEL_OVER_ZONE);
   assert(dom_trust_.non_nul());
 
+  int decal = 0; // a modifier plus tard !!!
   const int nb_procs = Process::nproc();
   par_in_zone_ = true;
 
@@ -152,91 +152,14 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
         }
 
       // face_sommets : local vectors + offset
-      int decal = 0;
-
-      const int proc_me = Process::me();
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_som_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_som_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
-
-      local_fs_offset_.push_back(0); // first index = > 0 !
-      int s = 0;
-      for (int i = 0; i < fs.dimension(0); i++)
-        {
-          for (int j = 0; j < fs.dimension(1); j++)
-            {
-              if (fs(i, j) > -1)
-                {
-                  local_fs_.push_back(fs(i, j) + 1 + decal);
-                  s++;
-                }
-              else
-                break;
-            }
-          local_fs_offset_.push_back(s);
-        }
-
-      local_ef_offset_.push_back(0); // first index = > 0 !
+      decal = compute_shift(global_incr_max_som_); // shift by sommets !!
+      convert_connectivity_ngon(local_fs_, local_fs_offset_, is_polyedre, decal);
 
       // elem_faces : local vectors + offset
-      decal = 0;
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_face_som_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_face_som_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
+      decal = compute_shift(global_incr_max_face_som_); // shift by faces !!
+      convert_connectivity_nface(local_ef_, local_ef_offset_, decal);
 
-      s = 0;
-      for (int i = 0; i < ef.dimension(0); i++)
-        {
-          for (int j = 0; j < ef.dimension(1); j++)
-            {
-              if (ef(i, j) > -1)
-                {
-                  local_ef_.push_back(ef(i, j) + 1 + decal);
-                  s++;
-                }
-              else
-                break;
-            }
-          local_ef_offset_.push_back(s);
-        }
-
-      // multiply by -1 repeated faces
-      for (int i = static_cast<int>(local_ef_.size()) - 1; i > 0; i--)
-        {
-          int val = static_cast<int>(local_ef_[i]);
-          for (int j = i - 1; j > 0; j--)
-            if (local_ef_[j] == val)
-              {
-                local_ef_[i] *= -1;
-                break;
-              }
-        }
-
-      // finalement : decalage offset
+      // finalement : decalage
       const int nb_fs_offset = static_cast<int>(local_fs_.size()), nb_ef_offset = static_cast<int>(local_ef_.size());
 
       global_nb_face_som_offset_.assign(nb_procs, -123 /* default */);
@@ -265,89 +188,18 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
           global_incr_max_elem_face_offset_[i] = nef_offset_tot_;
         }
 
-      decal = 0;
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_face_som_offset_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_face_som_offset_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
+      decal = compute_shift(global_incr_max_face_som_offset_); // shift by faces offset !!
+      for (auto& itr : local_fs_offset_) itr += decal;
 
-      for (auto& itr : local_fs_offset_)
-        itr += decal;
-
-      decal = 0;
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_elem_face_offset_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_elem_face_offset_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
-      for (auto& itr : local_ef_offset_)
-        itr += decal;
-
+      decal = compute_shift(global_incr_max_elem_face_offset_); // shift by elem offset !!
+      for (auto& itr : local_ef_offset_) itr += decal;
     }
   else // polygon
     {
-      const IntTab& les_elems = dom_trust_->les_elems();
-
-      int decal = 0;
-
-      const int proc_me = Process::me();
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_som_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_som_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
-
-      local_es_offset_.push_back(0); // first index = > 0 !
-
-      int s = 0;
-      for (int i = 0; i < les_elems.dimension(0); i++)
-        {
-          for (int j = 0; j < les_elems.dimension(1); j++)
-            {
-              if (les_elems(i, j) > -1)
-                {
-                  local_es_.push_back(les_elems(i, j) + 1 + decal);
-                  s++;
-                }
-              else
-                break;
-            }
-          local_es_offset_.push_back(s);
-        }
+      decal = compute_shift(global_incr_max_som_); // shift by sommets !!
+      convert_connectivity_ngon(local_es_, local_es_offset_, is_polyedre, decal);
 
       const int nb_es_offset = static_cast<int>(local_es_.size());
-
       global_nb_elem_som_offset_.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
@@ -355,39 +207,41 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 #endif
 
       global_incr_max_elem_som_offset_.assign(nb_procs, -123 /* default */);
-
       nes_offset_tot_ = 0;
 
       // now we fill global incremented min/max stuff
       for (int i = 0; i < nb_procs; i++)
         {
-          // 1 : increment
-          nes_offset_tot_ += global_nb_elem_som_offset_[i];
-          // 2 : max
-          global_incr_max_elem_som_offset_[i] = nes_offset_tot_;
+          nes_offset_tot_ += global_nb_elem_som_offset_[i]; // 1 : increment
+          global_incr_max_elem_som_offset_[i] = nes_offset_tot_;  // 2 : max
         }
 
-      decal = 0;
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_elem_som_offset_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_elem_som_offset_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
-
-      for (auto& itr : local_es_offset_)
-        itr += decal;
+      decal = compute_shift(global_incr_max_elem_som_offset_); // shift by elem offset !!
+      for (auto& itr : local_es_offset_) itr += decal;
     }
+}
 
+int TRUST_2_CGNS::compute_shift(const std::vector<int>& vect_incr_max)
+{
+  assert(par_in_zone_);
+  const int proc_me = Process::me();
+  int decal = 0;
+  if (all_procs_write_)
+    {
+      if (proc_me > 0) // pas maitre
+        decal = vect_incr_max[proc_me - 1];
+    }
+  else
+    {
+      for (int i = 0; i < nb_procs_writing_; i++)
+        if (proc_non_zero_elem_[i] == proc_me)
+          if (i > 0) // pas premier case
+            {
+              decal = vect_incr_max[proc_non_zero_elem_[i] - 1];
+              break;
+            }
+    }
+  return decal;
 }
 
 int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize_t>& elems)
@@ -398,24 +252,7 @@ int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize
   int decal = 0;
 
   if (par_in_zone_)
-    {
-      const int proc_me = Process::me();
-      if (all_procs_write_)
-        {
-          if (proc_me > 0) // pas maitre
-            decal = global_incr_max_som_[proc_me - 1];
-        }
-      else
-        {
-          for (int i = 0; i < nb_procs_writing_; i++)
-            if (proc_non_zero_elem_[i] == proc_me)
-              if (i > 0) // pas premier case
-                {
-                  decal = global_incr_max_som_[proc_non_zero_elem_[i] - 1];
-                  break;
-                }
-        }
-    }
+    decal = compute_shift(global_incr_max_som_); // shift by sommets !!
 
   switch (type)
     {
@@ -487,7 +324,7 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
     }
 }
 
-int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff)
+int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, int decal)
 {
   assert (dom_trust_.non_nul());
   const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
@@ -503,7 +340,7 @@ int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::v
         {
           if (ef(i, j) > -1)
             {
-              econ.push_back(ef(i, j) + 1);
+              econ.push_back(ef(i, j) + 1 + decal);
               s++;
             }
           else
@@ -527,7 +364,7 @@ int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::v
   return ef.dimension(0);
 }
 
-int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, const bool is_polyedre)
+int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, const bool is_polyedre, int decal)
 {
   assert (dom_trust_.non_nul());
   if (is_polyedre)
@@ -545,7 +382,7 @@ int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::ve
             {
               if (fs(i, j) > -1)
                 {
-                  econ.push_back(fs(i, j) + 1);
+                  econ.push_back(fs(i, j) + 1 + decal);
                   s++;
                 }
               else
@@ -568,7 +405,7 @@ int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::ve
             {
               if (les_elems(i, j) > -1)
                 {
-                  econ.push_back(les_elems(i, j) + 1);
+                  econ.push_back(les_elems(i, j) + 1 + decal);
                   s++;
                 }
               else
