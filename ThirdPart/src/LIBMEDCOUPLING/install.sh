@@ -158,6 +158,6 @@ fi
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
 
 # patch MEDCouplingConfig.cmake to not have absolute paths for MED and HDF5 inside it
-sed -i "s@$TRUST_ROOT@\${PACKAGE_PREFIX_DIR}/../../..@g" $install_dir/cmake_files/MEDCouplingConfig.cmake
+sed -i "s@$TRUST_ROOT@\${PACKAGE_PREFIX_DIR}/../../../..@g" $install_dir/cmake_files/MEDCouplingConfig.cmake
 
 echo "All done!"
