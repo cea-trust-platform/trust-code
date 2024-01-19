@@ -102,6 +102,310 @@ void TRUST_2_CGNS::fill_global_infos()
     }
 }
 
+void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
+{
+  assert(!Option_CGNS::PARALLEL_OVER_ZONE);
+  assert(dom_trust_.non_nul());
+
+  const int nb_procs = Process::nproc();
+  par_in_zone_ = true;
+
+  if (is_polyedre)
+    {
+      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+      const Domaine_VF& vf = ref_cast(Domaine_VF, domaine_dis.valeur());
+      const IntTab& fs = vf.face_sommets(), &ef = vf.elem_faces();
+
+      const int nb_fs = fs.dimension(0), nb_ef = ef.dimension(0);
+
+      global_nb_face_som_.assign(nb_procs, -123 /* default */);
+      global_nb_elem_face_.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+      MPI_Allgather(&nb_fs, 1, MPI_ENTIER, global_nb_face_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_elem_face_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+      // incr sur nb_faces tot
+      global_incr_min_face_som_.assign(nb_procs, -123 /* default */);
+      global_incr_max_face_som_.assign(nb_procs, -123 /* default */);
+      // incr sur nb_elem tot
+      global_incr_min_elem_face_.assign(nb_procs, -123 /* default */);
+      global_incr_max_elem_face_.assign(nb_procs, -123 /* default */);
+
+      global_incr_min_face_som_[0] = 1, global_incr_min_elem_face_[0] = 1; // start from 1 !
+      nfs_tot_ = 0, nef_tot_ = 0;
+
+      // now we fill global incremented min/max stuff
+      for (int i = 0; i < nb_procs; i++)
+        {
+          // 1 : min
+          global_incr_min_face_som_[i] = nfs_tot_ + 1;
+          global_incr_min_elem_face_[i] = nef_tot_ + 1;
+          // 2 : increment
+          nfs_tot_ += global_nb_face_som_[i];
+          nef_tot_ += global_nb_elem_face_[i];
+          // 3 : max
+          global_incr_max_face_som_[i] = nfs_tot_;
+          global_incr_max_elem_face_[i] = nef_tot_;
+        }
+
+      // face_sommets : local vectors + offset
+      int decal = 0;
+
+      const int proc_me = Process::me();
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_som_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_som_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+
+      local_fs_offset_.push_back(0); // first index = > 0 !
+      int s = 0;
+      for (int i = 0; i < fs.dimension(0); i++)
+        {
+          for (int j = 0; j < fs.dimension(1); j++)
+            {
+              if (fs(i, j) > -1)
+                {
+                  local_fs_.push_back(fs(i, j) + 1 + decal);
+                  s++;
+                }
+              else
+                break;
+            }
+          local_fs_offset_.push_back(s);
+        }
+
+      local_ef_offset_.push_back(0); // first index = > 0 !
+
+      // elem_faces : local vectors + offset
+      decal = 0;
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_face_som_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_face_som_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+
+      s = 0;
+      for (int i = 0; i < ef.dimension(0); i++)
+        {
+          for (int j = 0; j < ef.dimension(1); j++)
+            {
+              if (ef(i, j) > -1)
+                {
+                  local_ef_.push_back(ef(i, j) + 1 + decal);
+                  s++;
+                }
+              else
+                break;
+            }
+          local_ef_offset_.push_back(s);
+        }
+
+      // multiply by -1 repeated faces
+      for (int i = static_cast<int>(local_ef_.size()) - 1; i > 0; i--)
+        {
+          int val = static_cast<int>(local_ef_[i]);
+          for (int j = i - 1; j > 0; j--)
+            if (local_ef_[j] == val)
+              {
+                local_ef_[i] *= -1;
+                break;
+              }
+        }
+
+      // finalement : decalage offset
+      const int nb_fs_offset = static_cast<int>(local_fs_.size()), nb_ef_offset = static_cast<int>(local_ef_.size());
+
+      global_nb_face_som_offset_.assign(nb_procs, -123 /* default */);
+      global_nb_elem_face_offset_.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+      MPI_Allgather(&nb_fs_offset, 1, MPI_ENTIER, global_nb_face_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+//      nfs_offset_tot_ = Process::mp_sum(nb_fs_offset);
+//      nef_offset_tot_ = Process::mp_sum(nb_ef_offset);
+
+      // incr sur nb_faces tot
+      global_incr_min_face_som_offset_.assign(nb_procs, -123 /* default */);
+      global_incr_max_face_som_offset_.assign(nb_procs, -123 /* default */);
+      // incr sur nb_elem tot
+      global_incr_min_elem_face_offset_.assign(nb_procs, -123 /* default */);
+      global_incr_max_elem_face_offset_.assign(nb_procs, -123 /* default */);
+
+      global_incr_min_face_som_offset_[0] = 0, global_incr_min_elem_face_offset_[0] = 0; // start from 0 !
+      nfs_offset_tot_ = 0, nef_offset_tot_ = 0;
+
+      // now we fill global incremented min/max stuff
+      for (int i = 0; i < nb_procs; i++)
+        {
+          // 1 : min
+          global_incr_min_face_som_offset_[i] = nfs_offset_tot_;
+          global_incr_min_elem_face_offset_[i] = nef_offset_tot_;
+          // 2 : increment
+          nfs_offset_tot_ += global_nb_face_som_offset_[i];
+          nef_offset_tot_ += global_nb_elem_face_offset_[i];
+          // 3 : max
+          global_incr_max_face_som_offset_[i] = nfs_offset_tot_;
+          global_incr_max_elem_face_offset_[i] = nef_offset_tot_;
+        }
+
+      decal = 0;
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_face_som_offset_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_face_som_offset_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+
+      for (auto& itr : local_fs_offset_)
+        itr += decal;
+
+      decal = 0;
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_elem_face_offset_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_elem_face_offset_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+      for (auto& itr : local_ef_offset_)
+        itr += decal;
+
+    }
+  else // polygon
+    {
+      const IntTab& les_elems = dom_trust_->les_elems();
+
+      int decal = 0;
+
+      const int proc_me = Process::me();
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_som_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_som_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+
+      local_es_offset_.push_back(0); // first index = > 0 !
+
+      int s = 0;
+      for (int i = 0; i < les_elems.dimension(0); i++)
+        {
+          for (int j = 0; j < les_elems.dimension(1); j++)
+            {
+              if (les_elems(i, j) > -1)
+                {
+                  local_es_.push_back(les_elems(i, j) + 1 + decal);
+                  s++;
+                }
+              else
+                break;
+            }
+          local_es_offset_.push_back(s);
+        }
+
+      const int nb_es_offset = static_cast<int>(local_es_.size());
+
+      global_nb_elem_som_offset_.assign(nb_procs, -123 /* default */);
+
+#ifdef MPI_
+      MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+#endif
+
+//      nes_offset_tot_ =  Process::mp_sum(nb_es_offset);
+
+      global_incr_min_elem_som_offset_.assign(nb_procs, -123 /* default */);
+      global_incr_max_elem_som_offset_.assign(nb_procs, -123 /* default */);
+
+
+      global_incr_min_elem_som_offset_[0] = 0; // start from 0 !
+      nes_offset_tot_ = 0;
+
+      // now we fill global incremented min/max stuff
+      for (int i = 0; i < nb_procs; i++)
+        {
+          // 1 : min
+          global_incr_min_elem_som_offset_[i] = nes_offset_tot_;
+          // 2 : increment
+          nes_offset_tot_ += global_nb_elem_som_offset_[i];
+          // 3 : max
+          global_incr_max_elem_som_offset_[i] = nes_offset_tot_;
+        }
+
+
+      decal = 0;
+      if (all_procs_write_)
+        {
+          if (proc_me > 0) // pas maitre
+            decal = global_incr_max_elem_som_offset_[proc_me - 1];
+        }
+      else
+        {
+          for (int i = 0; i < nb_procs_writing_; i++)
+            if (proc_non_zero_elem_[i] == proc_me)
+              if (i > 0) // pas premier case
+                {
+                  decal = global_incr_max_elem_som_offset_[proc_non_zero_elem_[i] - 1];
+                  break;
+                }
+        }
+
+      for (auto& itr : local_es_offset_)
+        itr += decal;
+    }
+
+}
+
 #ifdef HAS_CGNS
 int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize_t>& elems)
 {

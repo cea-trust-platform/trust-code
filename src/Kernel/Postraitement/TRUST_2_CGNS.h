@@ -40,6 +40,7 @@ public:
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
   void fill_global_infos();
+  void fill_global_infos_poly(const bool);
 
   int get_ne_tot() const { return ne_tot_; }
   const std::vector<int>& get_global_nb_elem() const { return global_nb_elem_; }
@@ -54,11 +55,32 @@ public:
 
   const bool& all_procs_write() const { return all_procs_write_; }
 
+  int get_nfs_tot() const { return nfs_tot_; }
+  int get_nef_tot() const { return nef_tot_; }
+  int get_nfs_offset_tot() const { return nfs_offset_tot_; }
+  int get_nef_offset_tot() const { return nef_offset_tot_; }
+  int get_nes_offset_tot() const { return nes_offset_tot_; }
+
+  const std::vector<int>& get_global_incr_min_face_som() const { return global_incr_min_face_som_; }
+  const std::vector<int>& get_global_incr_max_face_som() const { return global_incr_max_face_som_; }
+
+  const std::vector<int>& get_global_incr_min_elem_face() const { return global_incr_min_elem_face_; }
+  const std::vector<int>& get_global_incr_max_elem_face() const { return global_incr_max_elem_face_; }
+
 #ifdef HAS_CGNS
   int convert_connectivity(const CGNS_TYPE, std::vector<cgsize_t>&);
   int convert_connectivity_ngon(std::vector<cgsize_t>&, std::vector<cgsize_t>&, const bool);
   int convert_connectivity_nface(std::vector<cgsize_t>&, std::vector<cgsize_t>&);
   CGNS_TYPE convert_elem_type(const Motcle&);
+
+  const std::vector<cgsize_t>& get_local_fs() const { return local_fs_; }
+  const std::vector<cgsize_t>& get_local_fs_offset() const { return local_fs_offset_; }
+
+  const std::vector<cgsize_t>& get_local_ef() const { return local_ef_; }
+  const std::vector<cgsize_t>& get_local_ef_offset() const { return local_ef_offset_; }
+
+  const std::vector<cgsize_t>& get_local_es() const { return local_es_; }
+  const std::vector<cgsize_t>& get_local_es_offset() const { return local_es_offset_; }
 #endif
 
 private:
@@ -69,8 +91,19 @@ private:
   std::vector<int> global_nb_elem_, global_incr_min_elem_, global_incr_max_elem_, proc_non_zero_elem_;
   std::vector<int> global_nb_som_, global_incr_min_som_, global_incr_max_som_;
 
-  int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
+  std::vector<int> global_nb_face_som_, global_nb_face_som_offset_, global_incr_min_face_som_, global_incr_max_face_som_,
+      global_incr_min_face_som_offset_, global_incr_max_face_som_offset_; // pour NGON_n
+  std::vector<int> global_nb_elem_face_, global_nb_elem_face_offset_, global_incr_min_elem_face_, global_incr_max_elem_face_,
+      global_incr_min_elem_face_offset_, global_incr_max_elem_face_offset_; // pour NFACE_n
+  std::vector<int> global_nb_elem_som_, global_nb_elem_som_offset_, global_incr_min_elem_som_offset_, global_incr_max_elem_som_offset_; // pour NGON_n
+
   bool par_in_zone_ = false, all_procs_write_ = true;
+  int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
+  int nfs_tot_ = -123, nef_tot_ = -123, nfs_offset_tot_ = -123, nef_offset_tot_ = -123, nes_offset_tot_ = -123;
+
+#ifdef HAS_CGNS
+  std::vector<cgsize_t> local_fs_, local_fs_offset_, local_ef_, local_ef_offset_, local_es_, local_es_offset_;
+#endif
 };
 
 #endif /* TRUST_2_CGNS_included */
