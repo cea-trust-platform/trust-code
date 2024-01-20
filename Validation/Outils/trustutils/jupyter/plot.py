@@ -616,7 +616,7 @@ class Table:  # ancien tableau
         
         """
         dftmp = pd.DataFrame(ligne, columns=self.columns, index=[name])
-        self.df = self.df.append(dftmp)
+        self.df = pd.concat([self.df, dftmp])
 
     def setTitle(self,title):
         """
