@@ -81,6 +81,8 @@ public:
   const std::vector<cgsize_t>& get_local_es() const { return local_es_; }
   const std::vector<cgsize_t>& get_local_es_offset() const { return local_es_offset_; }
 
+  void clear_vectors();
+
 private:
   REF(Domaine) dom_trust_;
   REF(DoubleTab) sommets_;

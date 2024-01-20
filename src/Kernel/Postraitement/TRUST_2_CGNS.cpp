@@ -48,6 +48,26 @@ void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>
     }
 }
 
+void TRUST_2_CGNS::clear_vectors()
+{
+  if (!proc_non_zero_elem_.empty()) proc_non_zero_elem_.clear(); // XXX a voir plus tard si utile pour garder
+
+  if (!global_incr_min_face_som_.empty()) global_incr_min_face_som_.clear();
+  if (!global_incr_max_face_som_.empty()) global_incr_max_face_som_.clear();
+
+  if (!global_incr_min_elem_face_.empty()) global_incr_min_elem_face_.clear();
+  if (!global_incr_max_elem_face_.empty()) global_incr_max_elem_face_.clear();
+
+  if (!local_fs_.empty()) local_fs_.clear();
+  if (!local_fs_offset_.empty()) local_fs_offset_.clear();
+
+  if (!local_ef_.empty()) local_ef_.clear();
+  if (!local_ef_offset_.empty()) local_ef_offset_.clear();
+
+  if (!local_es_.empty()) local_es_.clear();
+  if (!local_es_offset_.empty()) local_es_offset_.clear();
+}
+
 void TRUST_2_CGNS::fill_global_infos()
 {
   assert (!Option_CGNS::PARALLEL_OVER_ZONE);
