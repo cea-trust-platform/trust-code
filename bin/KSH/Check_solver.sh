@@ -149,12 +149,7 @@ else
    # supposa traitant le plus gros maillage...
    keyword="solveur_pression"
    # Recherche du seuil (un solveur defini sur plusieurs lignes fonctionne)
-   seuil="`$TRUST_Awk -v nb_solveur_pression=$nb_solveur_pression 'BEGIN {IGNORECASE=1} \
-   		/solveur_pression/ {nb++} \
-		/solveur_pression/ && (nb==nb_solveur_pression) {\
-			while(index($0,"seuil")==0 && getline) {};\
-			while($i!="seuil" && i++<NF);print $(i+1);exit}\
-		' $ref.data`"
+    seuil=$($TRUST_Awk -v nb_solveur_pression="$nb_solveur_pression" 'BEGIN {IGNORECASE=1} /solveur_pression/ {nb++} /solveur_pression/ && (nb==nb_solveur_pression) { while(index($0, "seuil") == 0 && getline) {}; while($i != "seuil" && i++ < NF); print $(i+1); exit }' "$ref.data")
 fi
 # Seuil non trouve (Cholesky) on prend une valeur quelconque
 [ "$seuil" = "" ] && seuil=1.e-6
@@ -256,11 +251,12 @@ do
          if [ "$keyword" = solveur_pression ]
          then
             # Changement du solveur de pression dans le jeu de donnees (Fonctionne s'il est defini sur plusieurs lignes)
-            $TRUST_Awk -v nb_solveur_pression=$nb_solveur_pression -v solver="$solver" 'BEGIN {IGNORECASE=1} \
-	 	/solveur_pression/ {nb++} \
-           	/solveur_pression/ && (nb==nb_solveur_pression) {print "solveur_pression "solver; getline;while (($1=="{")+index($0,"precond")+index($0,"omega")+index($0,"impr")+index($0,"seuil")+($1=="}")) getline}
-	   	!/solveur_pression/ || (nb!=nb_solveur_pression) {print $0} 
-         	' $ref.data > $jdd.data
+            $TRUST_Awk -v nb_solveur_pression="$nb_solveur_pression" -v solver="$solver" 'BEGIN {IGNORECASE=1} \
+        /solveur_pression/ {nb++} \
+        /solveur_pression/ && (nb==nb_solveur_pression) {print "solveur_pression " solver; getline; while (($1 == "{") + index($0, "precond") + index($0, "omega") + index($0, "impr") + index($0, "seuil") + ($1 == "}")) getline} \
+        !/solveur_pression/ || (nb != nb_solveur_pression) {print $0}' \
+        "$ref.data" > "$jdd.data"
+
          else
             # Changement du solveur implicite dans le jeu de donnees (Fonctionne que si c'est sur une seule ligne)
             echo $ECHO_OPTS "1,$ s?$solveur_initial?$keyword $solver?g\nw $jdd.data" | ed $ref.data 1>/dev/null 2>&1
