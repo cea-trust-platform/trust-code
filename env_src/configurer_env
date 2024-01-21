@@ -1715,6 +1715,7 @@ Defines=""
 SYSINC=""
 SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 [ ${TRUST_ARCH} = cygwin ] && SL_EXTENSION="dll"
+[ ${TRUST_ARCH} = "darwin" ] && SL_EXTENSION="dylib"
 
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
