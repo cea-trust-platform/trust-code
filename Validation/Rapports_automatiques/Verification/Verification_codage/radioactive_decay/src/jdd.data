@@ -20,7 +20,7 @@ Mailler dom_fluide
         Bord defaut  Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
     }
 }
-__action_maillage__
+$action_maillage
 # END MESH #
 
 # BEGIN PARTITION
@@ -44,7 +44,7 @@ Schema_euler_implicite sch
 lire sch
 {
     tinit 0
-    dt_max __dt__
+    dt_max $dt
     tmax 10
     facsec 1e8
     dt_impr 1e-8
@@ -57,7 +57,7 @@ lire sch
 }
 associate  pb_fluide sch
 
-__dis__  dis
+$dis  dis
 Discretize pb_fluide dis
 
 Read pb_fluide
@@ -89,7 +89,7 @@ Read pb_fluide
         sources
         {
             source_Constituant champ_uniforme 2 0.5 0.8 ,
-            __decay__
+            $decay
         }
     }
 

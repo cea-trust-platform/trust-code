@@ -1,7 +1,6 @@
-
-VEFPreP1B/dt0.1/decay.data
-VEFPreP1B/dt0.1/source_constituant.data
-PolyMAC_P0P1NC/dt0.1/decay.data
-PolyMAC_P0P1NC/dt0.1/source_constituant.data
-PolyMAC_P0/dt0.1/decay.data
-PolyMAC_P0/dt0.1/source_constituant.data
+VEFPreP1B/decay/dt0.1/jdd.data
+VEFPreP1B/constant/dt0.1/jdd.data
+PolyMAC_P0P1NC/decay/dt0.1/jdd.data
+PolyMAC_P0P1NC/constant/dt0.1/jdd.data
+PolyMAC_P0/decay/dt0.1/jdd.data
+PolyMAC_P0/constant/dt0.1/jdd.data
