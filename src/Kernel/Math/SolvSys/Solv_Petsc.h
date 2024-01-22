@@ -61,6 +61,7 @@ public :
     return resoudre_systeme(M,A,B);
   };
   void create_solver(Entree&);
+#ifdef PETSCKSP_H
   // To switch between solver definitions in one Solv_Petsc instance:
   void reset_solver(const Nom& name)
   {
@@ -70,6 +71,7 @@ public :
     Cout << "Setting PETSc solver: " << name << finl;
     create_solver(ech);
   }
+#endif
   inline void reset();
   inline bool read_matrix() const
   {
