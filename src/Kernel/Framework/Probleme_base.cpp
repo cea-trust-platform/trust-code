@@ -765,7 +765,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
   Champ_base const * champ = NULL ;
   try
     {
-      champ = &domaine_dis()->get_champ(un_nom, *this);
+      champ = &domaine_dis()->get_champ(un_nom);
       if (champ) return true ;
     }
   catch (Champs_compris_erreur&)
@@ -811,7 +811,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
   try
     {
-      return domaine_dis()->get_champ(un_nom, *this);
+      return domaine_dis()->get_champ(un_nom);
     }
   catch (Champs_compris_erreur&)
     {
@@ -870,6 +870,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 
 void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 {
+  domaine_dis()->get_noms_champs_postraitables(noms, opt);
   milieu().get_noms_champs_postraitables(noms,opt);
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)

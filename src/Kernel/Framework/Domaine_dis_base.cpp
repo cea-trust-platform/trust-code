@@ -181,32 +181,41 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
       if (face_ok)
         typer_discretiser_ss_domaine(i);
     }
+  champs_compris_.ajoute_nom_compris("volume_maille");
+  champs_compris_.ajoute_nom_compris("mesh_numbering");
 }
 
 void Domaine_dis_base::creer_champ(const Motcle& motlu, const Probleme_base& pb)
 {
   if (motlu == "VOLUME_MAILLE" && volume_maille().est_nul())
     {
-      pb.discretisation().volume_maille(pb.schema_temps(), pb.domaine_dis(), volume_maille());
+      pb.discretisation().volume_maille(pb.schema_temps(), pb.domaine_dis(), const_cast<Champ_Fonc&>(volume_maille()));
+      champs_compris_.ajoute_champ(volume_maille().valeur());
     }
   else if (motlu == "MESH_NUMBERING" && mesh_numbering().est_nul())
     {
-      pb.discretisation().mesh_numbering(pb.schema_temps(), pb.domaine_dis(), mesh_numbering());
+      pb.discretisation().mesh_numbering(pb.schema_temps(), pb.domaine_dis(), const_cast<Champ_Fonc&>(mesh_numbering()));
+      champs_compris_.ajoute_champ(mesh_numbering().valeur());
     }
 }
-const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom, const Probleme_base& pb) const
+const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
 {
   if (un_nom=="VOLUME_MAILLE")
     {
-      Champ_Fonc_base& ch=ref_cast_non_const(Domaine_dis,pb.domaine_dis())->volume_maille().valeur();
-      if (est_different(ch.temps(),pb.schema_temps().temps_courant()))
-        ch.mettre_a_jour(pb.schema_temps().temps_courant());
-      return ch;
+      return volume_maille().valeur();
     }
   else if (un_nom=="MESH_NUMBERING")
     {
-      return ref_cast_non_const(Domaine_dis,pb.domaine_dis())->mesh_numbering().valeur();
+      return mesh_numbering().valeur();
     }
   throw Champs_compris_erreur();
+}
+
+void Domaine_dis_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  if (opt==DESCRIPTION)
+    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  else
+    nom.add(champs_compris_.liste_noms_compris());
 }
 
