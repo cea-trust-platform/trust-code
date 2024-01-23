@@ -28,7 +28,7 @@ define_modules_config()
    fi
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env   
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    [ "`echo $module | grep intelmpi`" != "" ] && echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    . $env
    # Creation wrapper qstat -> squeue

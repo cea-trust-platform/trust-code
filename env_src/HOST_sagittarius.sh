@@ -25,7 +25,7 @@ define_modules_config()
    module="slurm gcc/11.2.0 openmpi/gcc-11.2.0/4.1.4 hwloc/2.7.1 texlive/gcc/2020" # Nouvelle version qui passe en //
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    # echo "TRUST_ATELIER_CMAKE=0 && export TRUST_ATELIER_CMAKE # To speedup Baltik build on beefgs file system" >> $env  
    . $env
    # Creation wrapper qstat -> squeue

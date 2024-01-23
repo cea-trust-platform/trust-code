@@ -39,7 +39,7 @@ define_modules_config()
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
       echo "module purge 1>/dev/null" >> $env
-      echo "module load $module 1>/dev/null" >> $env
+      echo "module load $module 1>/dev/null || exit -1" >> $env
       # echo ". /scratch2/rnrna/aocc/setenv_AOCC.sh" >> $env
       echo "export TRUST_FORCE_CC=clang++; " >> $env
       echo "export TRUST_FORCE_cc=clang; " >> $env
@@ -48,7 +48,7 @@ define_modules_config()
    fi
    echo "# Module $module detected and loaded on $HOST."   
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env
+   echo "module load $module 1>/dev/null || exit -1" >> $env
    echo $source >> $env
    . $env
    # Creation wrapper qstat -> squeue
