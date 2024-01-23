@@ -66,7 +66,7 @@ public :
   void reset_solver(const Nom& name)
   {
     // ToDo: regler option_prefix_ et numero_solveur dans create_solver et initialize...
-    initialize();
+    reset();
     EChaine ech(name);
     Cout << "Setting PETSc solver: " << name << finl;
     create_solver(ech);
