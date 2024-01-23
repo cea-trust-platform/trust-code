@@ -468,7 +468,7 @@ then
       # Limitations sur certaines frontales de clusters: sur TGCC, build TRUST/src plante si pas de limite, je met TRUST_NB_PROCS a 8
       if [ -d /ccc ] || [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
       then
-        TRUST_NB_PROCS=8
+        TRUST_NB_PROCS=24
       elif [ "${HOST#aar}" != $HOST ] || [ "${HOST#grenx}" != $HOST ] || [ "${HOST#gutta}" != $HOST ]
       then
         TRUST_NB_PROCS=4
