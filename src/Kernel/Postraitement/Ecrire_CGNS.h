@@ -40,6 +40,7 @@ public:
 private:
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
   Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&);
+  std::string modify_domaine_name_for_post(const Nom& );
 
   // Version sequentielle
   void cgns_write_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );

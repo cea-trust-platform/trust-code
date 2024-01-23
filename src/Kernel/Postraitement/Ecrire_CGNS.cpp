@@ -109,15 +109,17 @@ void Ecrire_CGNS::cgns_add_time(const double t)
 
 void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
+  std::string nom_dom_modifie = modify_domaine_name_for_post(nom_dom);
+
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
       if (Option_CGNS::PARALLEL_OVER_ZONE)
-        cgns_write_domaine_par_over_zone(dom, nom_dom, som, elem, type_e);
+        cgns_write_domaine_par_over_zone(dom, Nom(nom_dom_modifie), som, elem, type_e);
       else
-        cgns_write_domaine_par_in_zone(dom, nom_dom, som, elem, type_e);
+        cgns_write_domaine_par_in_zone(dom, Nom(nom_dom_modifie), som, elem, type_e);
     }
   else
-    cgns_write_domaine_seq(dom, nom_dom, som, elem, type_e);
+    cgns_write_domaine_seq(dom, Nom(nom_dom_modifie), som, elem, type_e);
 }
 
 void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_compo, double temps,
@@ -1235,6 +1237,23 @@ Motcle Ecrire_CGNS::modify_field_name_for_post(const Nom& id_du_champ, const Nom
     fieldId_elem_++;
 
   return id_du_champ_modifie;
+}
+
+std::string Ecrire_CGNS::modify_domaine_name_for_post(const Nom& nom_dom)
+{
+  std::string nom_dom_modifie = nom_dom.getString();
+
+  if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
+    {
+      size_t found = nom_dom_modifie.find("boundaries_");
+      if (found != std::string::npos)
+        nom_dom_modifie.erase(found, 11); // 11 is the length of "boundaries_"
+
+      if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
+        nom_dom_modifie.resize(CGNS_STR_SIZE, ' ');
+    }
+
+  return nom_dom_modifie;
 }
 
 #endif
