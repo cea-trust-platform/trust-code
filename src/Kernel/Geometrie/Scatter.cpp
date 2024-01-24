@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -483,6 +483,12 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   //bool is_hdf = FichierHDF::is_hdf5(copy);
   LecFicDiffuse test;
   bool is_hdf = test.ouvrir(copy) && FichierHDF::is_hdf5(copy);
+  if (test.ouvrir(nomentree) && FichierHDF::is_hdf5(nomentree))
+    {
+      Cerr << "Error: You probably made a single_hdf partitioning and using the wrong name of .Zones files in the scatter" << finl;
+      Cerr << "You should remove '_p" << Process::nproc() << "' from the name of .Zones file (" << nomentree << ") in your datafile" << finl;
+      Process::exit();
+    }
 
   static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
