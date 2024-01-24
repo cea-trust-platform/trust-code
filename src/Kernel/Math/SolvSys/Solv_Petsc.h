@@ -104,6 +104,7 @@ public :
   }
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
+  static PetscLogStage Create_Stage_;
   void set_rtol(const double& rtol)
   {
     seuil_relatif_ = rtol;
@@ -305,6 +306,7 @@ inline void Solv_Petsc::initialize()
         Cerr << "NB: if you want to disable the wrinting of the *_petsc.TU file then specify the disable_TU flag in your datafile before reading the block of schema in time." << finl;
       else
         Cerr << "Reading of disable_TU flag => Disable the writing of the *_petsc.TU file."<< finl;
+      PetscLogStageRegister("CreateStage",&Create_Stage_);
       PetscLogStageRegister("KSPSolve",&KSPSolve_Stage_);
     }
 }

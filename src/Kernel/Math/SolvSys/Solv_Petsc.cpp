@@ -1471,7 +1471,8 @@ int Solv_Petsc::instance=-1;
 int Solv_Petsc::numero_solveur=0;
 #ifdef PETSCKSP_H
 // Attention, bug apres PETSc 3.14 le logging avec PetscLogStage est tres cher pour MatSetValues (appel MPI meme en sequentiel!). Vu sur Flica5 avec appel frequents a Update_matrix
-PetscLogStage Solv_Petsc::KSPSolve_Stage_=0;
+PetscLogStage Solv_Petsc::Create_Stage_=1;
+PetscLogStage Solv_Petsc::KSPSolve_Stage_=2;
 
 // Sortie Maple d'une matrice morse
 void sortie_maple(Sortie& s, const Matrice_Morse& M)
@@ -1772,6 +1773,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
   double start = Statistiques::get_time_now();
+  PetscLogStagePush(Create_Stage_);
   if (nouvelle_matrice())
     {
       // Changement de la taille de matrice, on detruit les objets dont la taille change:
@@ -1857,7 +1859,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
   // Save the matrix and the RHS if the matrix has changed...
   if (nouvelle_matrice() && save_matrix_) SaveObjectsToFile(secmem, solution);
-
+  PetscLogStagePop();
   //////////////////////////
   // Solve the linear system
   //////////////////////////
@@ -2660,25 +2662,28 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   ArrOfInt nnz(nb_rows_);
   ArrOfInt d_nnz(nb_rows_);
   ArrOfInt o_nnz(nb_rows_);
-  nnz = 0;
-  d_nnz = 0;
-  o_nnz = 0;
+  //nnz = 0;
+  //d_nnz = 0;
+  //o_nnz = 0;
   ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
-  int premiere_colonne_globale = decalage_local_global_;
-  int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
+  const int premiere_colonne_globale = decalage_local_global_;
+  const int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
   //const ArrOfDouble& coeff = mat_morse.get_coeff();
   int cpt = 0;
-  for (int i = 0; i < tab1.size_array() - 1; i++)
+  const int n = tab1.size_array() - 1;
+  for (int i = 0; i < n; i++)
     {
       if (items_to_keep_[i])
         {
-          nnz[cpt] = tab1[i + 1] - tab1[i]; // Nombre d'elements non nuls sur la ligne i
-          for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
+          const int k0 = tab1[i] - 1;
+          const int k1 = tab1[i + 1] - 1;
+          nnz[cpt] = k1 - k0; // Nombre d'elements non nuls sur la ligne i
+          for (int k = k0; k < k1; k++)
             {
-              int colonne_locale = tab2[k] - 1;
-              int colonne_globale = renum_array[colonne_locale];
+              const int colonne_locale = tab2[k] - 1;
+              const int colonne_globale = renum_array[colonne_locale];
               if (colonne_globale >= premiere_colonne_globale && colonne_globale < derniere_colonne_globale)
                 d_nnz[cpt]++;
               else
@@ -2839,13 +2844,16 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
   ArrOfInt tab2_(size);
   const ArrOfDouble& coeff = mat_morse.get_coeff();
   cpt = 0;
-  for(int i=0; i<tab1.size_array() - 1; i++)
+  const int n = tab1.size_array() - 1;
+  for(int i=0; i < n; i++)
     {
       if (items_to_keep_[i])
         {
           PetscInt ligne_globale = cpt + decalage_local_global_;
           int ncol = 0;
-          for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
+          const int k0 = tab1[i] - 1;
+          const int k1 = tab1[i + 1] - 1;
+          for (int k = k0; k < k1; k++)
             {
               coeff_[ncol] = coeff[k];
               tab2_[ncol] = renum_array[tab2[k] - 1];
@@ -2937,14 +2945,19 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       const ArrOfInt& renum_array = renum_;
       int RowLocal = 0;
       //Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
-      for (int i = 0; i < tab1.size_array() - 1; i++)
+      const int n = tab1.size_array() - 1;
+      for (int i = 0; i < n; i++)
         {
           if (items_to_keep_[i])
             {
               int nnz_row = 0;
-              for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
+              const int k0 = tab1[i] - 1;
+              const int k1 = tab1[i + 1] - 1;
+              for (int k = k0; k < k1; k++)
                 if (coeff[k] != 0) nnz_row++;
-              if (nnz_row != rowOffsets[RowLocal + 1] - rowOffsets[RowLocal])
+              const int kk0 = rowOffsets[RowLocal];
+              const int kk1 = rowOffsets[RowLocal + 1];
+              if (nnz_row != kk1 - kk0)
                 {
                   //Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
                   new_stencil = 1;
@@ -2952,19 +2965,17 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
                 }
               else
                 {
-                  for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
+                  for (int k = k0; k < k1; k++)
                     {
                       if (coeff[k] != 0)
                         {
                           bool found = false;
-                          int col = renum_array[tab2[k] - 1];
-                          // Boucle pour voir si le coeff est sur le GPU:
-                          int RowGlobal = decalage_local_global_+RowLocal;
-                          for (int kk = rowOffsets[RowLocal]; kk < rowOffsets[RowLocal + 1]; kk++)
+                          const int col = renum_array[tab2[k] - 1];
+                          const int RowGlobal = decalage_local_global_+RowLocal;
+                          for (int kk = kk0; kk < kk1; kk++)
                             {
                               if (colIndices[kk] == col)
                                 {
-                                  // values[kk] = coeff(k); // On met a jour le coefficient
                                   found = true;
                                   break;
                                 }
@@ -2981,6 +2992,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
               RowLocal++;
             }
         }
+      MatRestoreRowIJ(localA, 0, PETSC_FALSE, PETSC_FALSE, &nRowsLocal, &rowOffsets, &colIndices, &done);
       if (Process::is_parallel()) MatDestroy(&localA);
       new_stencil = mp_max(new_stencil);
     }
