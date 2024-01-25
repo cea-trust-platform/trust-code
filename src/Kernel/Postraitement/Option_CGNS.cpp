@@ -23,6 +23,7 @@ Implemente_instanciable(Option_CGNS, "Option_CGNS", Interprete);
 bool Option_CGNS::SINGLE_PRECISION = false; /* NOT BY DEFAULT */
 bool Option_CGNS::MULTIPLE_FILES = false; /* NOT BY DEFAULT */
 bool Option_CGNS::PARALLEL_OVER_ZONE = false; /* NOT BY DEFAULT */
+bool Option_CGNS::USE_LINKS = false; /* NOT BY DEFAULT */
 
 Sortie& Option_CGNS::printOn(Sortie& os) const { return Interprete::printOn(os); }
 Entree& Option_CGNS::readOn(Entree& is) { return Interprete::readOn(is); }
@@ -33,7 +34,17 @@ Entree& Option_CGNS::interpreter(Entree& is)
   param.ajouter_non_std("SINGLE_PRECISION", (this)); // XD_ADD_P rien If used, data will be written with a single_precision format inside the CGNS file (it concerns both mesh coordinates and field values).
   param.ajouter_non_std("MULTIPLE_FILES", (this)); // XD_ADD_P rien If used, data will be written in separate files (ie: one file per processor).
   param.ajouter_non_std("PARALLEL_OVER_ZONE", (this)); // XD_ADD_P rien If used, data will be written in separate zones (ie: one zone per processor). This is not so performant but easier to read later ...
+  param.ajouter_non_std("USE_LINKS", (this)); // XD_ADD_P rien If used, data will be written in separate files; one file for mesh, and then one file for solution time. Links will be used.
   param.lire_avec_accolades_depuis(is);
+
+  if ((MULTIPLE_FILES || PARALLEL_OVER_ZONE) && USE_LINKS)
+    {
+      Cerr << "Error in Option_CGNS :" << finl;
+      Cerr << "       - You can not activate both options 'MULTIPLE_FILES'/or/'PARALLEL_OVER_ZONE' & 'USE_LINKS' !!!" << finl;
+      Cerr << "       - If you want linked CGNS files, remove the options 'MULTIPLE_FILES'/or/'PARALLEL_OVER_ZONE'..." << finl;
+      Process::exit();
+    }
+
   return is;
 }
 
@@ -57,6 +68,11 @@ int Option_CGNS::lire_motcle_non_standard(const Motcle& mot_cle, Entree& is)
     {
       Cerr << mot_cle << " => CGNS data will be written in separate zones ..." << finl;
       PARALLEL_OVER_ZONE = true;
+    }
+  else if (mot_cle == "USE_LINKS")
+    {
+      Cerr << mot_cle << " => CGNS data will be written in separate files (mesh, solution ...)" << finl;
+      USE_LINKS = true;
     }
   else
     retval = -1;

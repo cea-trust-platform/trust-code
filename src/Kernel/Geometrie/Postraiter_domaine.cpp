@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -274,6 +274,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
   post_typer.typer_direct(type);
   Format_Post_base& post=ref_cast(Format_Post_base,post_typer.valeur());
 
+  post.set_postraiter_domain(); // XXX utile pour CGNS ... sinon ca fait rien
   if (is_single_lata) post.set_single_lata_option(is_single_lata);
 
   Nom nom_2(nom_pdb);

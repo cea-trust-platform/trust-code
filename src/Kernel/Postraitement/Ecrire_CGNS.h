@@ -29,15 +29,27 @@ class Ecrire_CGNS
 #ifdef HAS_CGNS
 public:
   void cgns_init_MPI();
-  void cgns_open_file(const Nom& );
-  void cgns_close_file(const Nom& );
+  void cgns_set_base_name(const Nom& );
 
+  void cgns_open_file();
+  void cgns_open_grid_file();
+  void cgns_open_solution_file(const double, bool is_link = false);
+
+  void cgns_close_file();
+  void cgns_close_grid_file();
+  void cgns_close_solution_file();
+
+  void cgns_open_close_files(const double );
+  void cgns_set_postraiter_domain() { postraiter_domaine_ = true; }
+
+  void cgns_write_link_file();
   void cgns_add_time(const double );
 
   void cgns_write_domaine(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   void cgns_write_field(const Domaine&, const Noms&, double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 
 private:
+  void fill_fld_loc_map(const Domaine&, const std::string&);
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
   Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&);
   std::string modify_domaine_name_for_post(const Nom& );
@@ -59,12 +71,14 @@ private:
 
   // Attributes
   bool solname_elem_written_ = false, solname_som_written_ = false;
-  std::string solname_elem_ = "", solname_som_ = "";
+  bool postraiter_domaine_ = false, grid_file_opened_ = false;
+  std::string solname_elem_ = "", solname_som_ = "", base_name_ = "";
   std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
-  std::map<std::string, std::string> solname_map_; /* { Loc , solname_ } */
   std::vector<Nom> doms_written_;
+  std::vector<std::string> basename_;
   std::vector<double> time_post_;
-  std::vector<int> baseId_, zoneId_;
+  std::vector<int> baseId_, zoneId_, celldimId_;
+  std::vector<std::vector<int>> sizeId_;
   std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
   std::vector<TRUST_2_CGNS> T2CGNS_;
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;

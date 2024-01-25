@@ -143,6 +143,9 @@ public:
   {
     Process::exit("Format_Post_base::set_single_lata_option is only available for lata post !");
   }
+
+  virtual void set_postraiter_domain() { /* Do nothing */ }
+
   //Actuellement on commente ces methodes car pas decrites dans l interface commune
   //aux differentes classes dans le CDC.
   /*

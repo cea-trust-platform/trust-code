@@ -60,6 +60,7 @@ public:
 
   void reset() override;
   void set_param(Param& param) override;
+  void set_postraiter_domain() override;
   int initialize_by_default(const Nom&) override;
   int initialize(const Nom&, const int, const Nom&) override;
 

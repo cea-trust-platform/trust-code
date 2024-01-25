@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Format_Post_CGNS.h>
+#include <Option_CGNS.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Format_Post_CGNS, "Format_Post_CGNS", Format_Post_base);
@@ -50,6 +51,7 @@ int Format_Post_CGNS::initialize_by_default(const Nom& file_basename)
 {
   verify_if_cgns(__func__);
   cgns_basename_ = file_basename;
+  cgns_writer_.cgns_set_base_name(cgns_basename_);
   return 1;
 }
 
@@ -57,6 +59,7 @@ int Format_Post_CGNS::initialize(const Nom& file_basename, const int format, con
 {
   verify_if_cgns(__func__);
   cgns_basename_ = file_basename;
+  cgns_writer_.cgns_set_base_name(cgns_basename_);
   return 1;
 }
 
@@ -83,10 +86,17 @@ int Format_Post_CGNS::ecrire_entete(const double temps_courant,const int reprise
   if (est_le_premier_post)
     {
 #ifdef HAS_CGNS
-      cgns_writer_.cgns_open_file(cgns_basename_);
+      cgns_writer_.cgns_open_file();
 #endif
     }
   return 1;
+}
+
+void Format_Post_CGNS::set_postraiter_domain()
+{
+#ifdef HAS_CGNS
+  cgns_writer_.cgns_set_postraiter_domain();
+#endif
 }
 
 int Format_Post_CGNS::ecrire_temps(const double t)
@@ -102,7 +112,7 @@ int Format_Post_CGNS::finir(const int est_le_dernier_post)
   if (est_le_dernier_post)
     {
 #ifdef HAS_CGNS
-      cgns_writer_.cgns_close_file(cgns_basename_);
+      cgns_writer_.cgns_close_file();
 #endif
     }
   return 1;
@@ -115,7 +125,7 @@ int Format_Post_CGNS::ecrire_domaine_low_level(const Domaine * dom,const Nom& no
 #endif
   return 1;
 }
-#include <TRUST_2_CGNS.h>
+
 int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
 {
   Motcle type_e = domaine.type_elem().valeur().que_suis_je();
@@ -124,7 +134,6 @@ int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_pr
   // Si on a des frontieres domaine, on les ecrit egalement
   const LIST(REF(Domaine)) &bords = domaine.domaines_frontieres();
   for (auto &itr : bords) ecrire_domaine(itr.valeur(), est_le_premier_post);
-
   return 1;
 }
 

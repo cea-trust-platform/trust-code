@@ -17,6 +17,7 @@
 #include <Ecrire_CGNS.h>
 #include <Option_CGNS.h>
 #include <Domaine.h>
+#include <unistd.h>
 
 #ifdef HAS_CGNS
 #define CGNS_STR_SIZE 32
@@ -29,6 +30,11 @@
 #define MPI_ENTIER MPI_INT
 #endif
 #endif
+
+void Ecrire_CGNS::cgns_set_base_name(const Nom& fn)
+{
+  base_name_ = fn.getString();
+}
 
 void Ecrire_CGNS::cgns_init_MPI()
 {
@@ -43,34 +49,194 @@ void Ecrire_CGNS::cgns_init_MPI()
     Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_pio_mode !" << finl, cgp_error_exit();
 }
 
-void Ecrire_CGNS::cgns_open_file(const Nom& nom)
+void Ecrire_CGNS::cgns_open_solution_file(const double t, bool is_link)
 {
-  std::string fn = nom.getString() + ".cgns"; // file name
+  assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
+  std::string fn;
 
-  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+  if (is_link)
+    fn = base_name_ + ".cgns"; // file name
+  else
+    fn = base_name_ + ".solution." + std::to_string(t) + ".cgns"; // file name
+
+  unlink(fn.c_str());
+
+  if (Process::is_parallel())
     {
-      cgns_init_MPI(); // XXX
-
       if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_open !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cgp_open !" << finl, cgp_error_exit();
+    }
+  else
+    {
+      if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_open !" << finl, cg_error_exit();
+    }
+
+  if (cg_base_write(fileId_, basename_[0].c_str(), celldimId_[0], Objet_U::dimension, &baseId_[0]) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_base_write !" << finl, cgp_error_exit();
+
+  /* 4 : Vertex, cell & boundary vertex sizes */
+  cgsize_t isize[3][1];
+  isize[0][0] = sizeId_[0][0];
+  isize[1][0] = sizeId_[0][1];
+  isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
+
+  if (cg_zone_write(fileId_, baseId_[0], basename_[0].c_str() /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_[0]) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cgns_open_solution_file !" << finl, cg_error_exit();
+
+  std::string linkfile = base_name_ + ".grid.cgns"; // file name
+  std::string linkpath = "/" + basename_[0] + "/" + basename_[0] + "/GridCoordinates/";
+  cg_goto(fileId_, baseId_[0], "Zone_t", 1, "end");
+  cg_link_write("GridCoordinates", linkfile.c_str(), linkpath.c_str());
+
+  linkpath = "/" + basename_[0] + "/" + basename_[0] + "/Elem/";
+  cg_link_write("Elem", linkfile.c_str(), linkpath.c_str());
+}
+
+void Ecrire_CGNS::cgns_write_link_file()
+{
+  cgns_open_solution_file(-123., true /* dernier fichier => link */);
+
+  const int nsteps = static_cast<int>(time_post_.size());
+
+  // link solutions
+  for (auto& itr : time_post_)
+    {
+      std::string solname = "FlowSolution" + std::to_string(itr) + "_ELEM"; // TODO : FIXME
+      std::string linkfile = base_name_ + ".solution." + std::to_string(itr) + ".cgns"; // file name
+      std::string linkpath = "/" + basename_[0] + "/" + basename_[0] + "/" + solname + "/";
+      cg_link_write(solname.c_str(), linkfile.c_str(), linkpath.c_str());
+    }
+
+  /* create BaseIterativeData */
+  if (cg_biter_write(fileId_, baseId_[0], "TimeIterValues", nsteps) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_biter_write !" << finl, cg_error_exit();
+
+  /* go to BaseIterativeData level and write time values */
+  if (cg_goto(fileId_, baseId_[0], "BaseIterativeData_t", 1, "end") != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
+
+  cgsize_t nuse = static_cast<cgsize_t>(nsteps);
+  if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_array_write !" << finl, cg_error_exit();
+
+  /* create ZoneIterativeData */
+  if (cg_ziter_write(fileId_, baseId_[0], zoneId_[0], "ZoneIterativeData") != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_ziter_write !" << finl, cg_error_exit();
+
+  if (cg_goto(fileId_, baseId_[0], "Zone_t", zoneId_[0], "ZoneIterativeData_t", 1, "end") != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
+
+  cgsize_t idata[2];
+  idata[0] = CGNS_STR_SIZE;
+  idata[1] = nsteps;
+
+  if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_array_write !" << finl, cg_error_exit();
+
+  if (cg_simulation_type_write(fileId_, baseId_[0], CGNS_ENUMV(TimeAccurate)) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, cg_error_exit();
+
+  cgns_close_solution_file();
+}
+
+void Ecrire_CGNS::cgns_open_grid_file()
+{
+  assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
+  std::string fn = base_name_ + ".grid.cgns"; // file name
+  unlink(fn.c_str());
+  if (Process::is_parallel())
+    {
+      if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cgp_open !" << finl, cgp_error_exit();
 
       Cerr << "**** Parallel CGNS file " << fn << " opened !" << finl;
     }
   else
     {
-      if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
-        fn = nom.nom_me(Process::me()).getString() + ".cgns"; // file name
-
       if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cg_open !" << finl, cg_error_exit();
 
       Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
 }
 
-void Ecrire_CGNS::cgns_close_file(const Nom& nom)
+void Ecrire_CGNS::cgns_open_file()
 {
-  std::string fn = nom.getString() + ".cgns"; // file name
+  std::string fn = base_name_ + ".cgns"; // file name
+
+  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+    {
+      cgns_init_MPI(); // XXX
+
+      if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ouvre
+        {
+          if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_open !" << finl, cgp_error_exit();
+
+          Cerr << "**** Parallel CGNS file " << fn << " opened !" << finl;
+        }
+    }
+  else
+    {
+      if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
+        fn = (Nom(base_name_)).nom_me(Process::me()).getString() + ".cgns"; // file name
+
+      if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ouvre
+        {
+          if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, cg_error_exit();
+
+          Cerr << "**** CGNS file " << fn << " opened !" << finl;
+        }
+    }
+}
+
+void Ecrire_CGNS::cgns_close_solution_file()
+{
+  assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
+  if (Process::is_parallel())
+    {
+      if (cgp_close(fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cgp_close !" << finl, cgp_error_exit();
+    }
+  else
+    {
+      if (cg_close(fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cg_close !" << finl, cg_error_exit();
+    }
+}
+
+void Ecrire_CGNS::cgns_close_grid_file()
+{
+  assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
+  std::string fn = base_name_ + ".grid.cgns"; // file name
+
+  if (Process::is_parallel())
+    {
+      if (cgp_close(fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_close_grid_file : cgp_close !" << finl, cgp_error_exit();
+
+      Cerr << "**** Parallel CGNS file " << fn << " closed !" << finl;
+    }
+  else
+    {
+      if (cg_close(fileId_) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_close_grid_file : cg_close !" << finl, cg_error_exit();
+
+      Cerr << "**** CGNS file " << fn << " closed !" << finl;
+    }
+}
+
+void Ecrire_CGNS::cgns_close_file()
+{
+  if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
+    {
+      cgns_write_link_file();
+      return;
+    }
+
+  std::string fn = base_name_ + ".cgns"; // file name
 
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
@@ -88,7 +254,7 @@ void Ecrire_CGNS::cgns_close_file(const Nom& nom)
   else
     {
       if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
-        fn = nom.nom_me(Process::me()).getString() + ".cgns"; // file name
+        fn = (Nom(base_name_)).nom_me(Process::me()).getString() + ".cgns"; // file name
 
       cgns_write_iters_seq();
 
@@ -99,8 +265,20 @@ void Ecrire_CGNS::cgns_close_file(const Nom& nom)
     }
 }
 
+void Ecrire_CGNS::cgns_open_close_files(const double t)
+{
+  if (grid_file_opened_)
+    cgns_close_grid_file(), grid_file_opened_ = false;
+
+  if (!time_post_.empty()) cgns_close_solution_file();
+
+  cgns_open_solution_file(t);
+}
+
 void Ecrire_CGNS::cgns_add_time(const double t)
 {
+  if (Option_CGNS::USE_LINKS && !postraiter_domaine_) cgns_open_close_files(t);
+
   time_post_.push_back(t); // add time_post
   flowId_elem_++, flowId_som_++; // increment
   fieldId_elem_ = 0, fieldId_som_ = 0; // reset
@@ -110,6 +288,10 @@ void Ecrire_CGNS::cgns_add_time(const double t)
 void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
   std::string nom_dom_modifie = modify_domaine_name_for_post(nom_dom);
+
+  if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
+    if (!grid_file_opened_)
+      cgns_open_grid_file(), grid_file_opened_ = true;
 
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
@@ -135,35 +317,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
     }
 
   /* 1 : if first time called ... build different supports for mixed locations */
-  if (static_cast<int>(time_post_.size()) == 1)
-    {
-      if (static_cast<int>(fld_loc_map_.size()) == 0)
-        fld_loc_map_.insert( { LOC , domaine.le_nom() } );/* ici on utilise le 1er support */
-      else
-        {
-          const bool in_map = (fld_loc_map_.count(LOC) != 0);
-          if (!in_map) // XXX here we need a new support ... sorry
-            {
-              Nom nom_dom = domaine.le_nom();
-              nom_dom += "_";
-              nom_dom += LOC;
-              Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-              Motcle type_e = domaine.type_elem().valeur().que_suis_je();
-
-              if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
-                {
-                  if (Option_CGNS::PARALLEL_OVER_ZONE)
-                    cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
-                  else
-                    cgns_write_domaine_par_in_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
-                }
-              else
-                cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
-
-              fld_loc_map_.insert( { LOC, nom_dom } );
-            }
-        }
-    }
+  fill_fld_loc_map(domaine, LOC);
 
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
@@ -173,14 +327,17 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
       for (int i = 0; i < nb_cmp; i++)
         {
           if (Option_CGNS::PARALLEL_OVER_ZONE)
-            cgns_write_field_par_over_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
+            cgns_write_field_par_over_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation,
+                                           fld_loc_map_.empty() ? domaine.le_nom() : fld_loc_map_.at(LOC), valeurs);
           else
-            cgns_write_field_par_in_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
+            cgns_write_field_par_in_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation,
+                                         fld_loc_map_.empty() ? domaine.le_nom() : fld_loc_map_.at(LOC), valeurs);
         }
     }
   else
     for (int i = 0; i < nb_cmp; i++)
-      cgns_write_field_seq(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
+      cgns_write_field_seq(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation,
+                           fld_loc_map_.empty() ? domaine.le_nom() : fld_loc_map_.at(LOC), valeurs);
 }
 
 /*
@@ -188,6 +345,40 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
  * METHODES PRIVEES CLASSE Ecrire_CGNS *
  * *********************************** *
  */
+
+void Ecrire_CGNS::fill_fld_loc_map(const Domaine& domaine, const std::string& LOC)
+{
+  if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ferme
+    if (static_cast<int>(time_post_.size()) == 1)
+      {
+        if (static_cast<int>(fld_loc_map_.size()) == 0)
+          fld_loc_map_.insert( { LOC, domaine.le_nom() });/* ici on utilise le 1er support */
+        else
+          {
+            const bool in_map = (fld_loc_map_.count(LOC) != 0);
+            if (!in_map) // XXX here we need a new support ... sorry
+              {
+                Nom nom_dom = domaine.le_nom();
+                nom_dom += "_";
+                nom_dom += LOC;
+                Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
+                Motcle type_e = domaine.type_elem().valeur().que_suis_je();
+
+                if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+                  {
+                    if (Option_CGNS::PARALLEL_OVER_ZONE)
+                      cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
+                    else
+                      cgns_write_domaine_par_in_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
+                  }
+                else
+                  cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
+
+                fld_loc_map_.insert( { LOC, nom_dom });
+              }
+          }
+      }
+}
 
 int Ecrire_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
 {
@@ -234,6 +425,13 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   isize[0][0] = nb_som;
   isize[1][0] = nb_elem;
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
+
+  if (Option_CGNS::USE_LINKS)
+    {
+      celldimId_.push_back(icelldim);
+      basename_.push_back(std::string(basename));
+      sizeId_.push_back( {nb_som, nb_elem} );
+    }
 
   /* 5 : Create zone */
   zoneId_.push_back(-123);
@@ -961,6 +1159,13 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   isize[0][0] = ns_tot;
   isize[1][0] = ne_tot;
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
+
+  if (Option_CGNS::USE_LINKS)
+    {
+      celldimId_.push_back(icelldim);
+      basename_.push_back(std::string(basename));
+      sizeId_.push_back( {ns_tot, ne_tot} );
+    }
 
   int gridId = -123, coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
   zoneId_.push_back(-123);
