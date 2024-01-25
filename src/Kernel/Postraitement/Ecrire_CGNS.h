@@ -29,30 +29,25 @@ class Ecrire_CGNS
 #ifdef HAS_CGNS
 public:
   void cgns_init_MPI();
-  void cgns_set_base_name(const Nom& );
-
-  void cgns_open_file();
-  void cgns_open_grid_file();
-  void cgns_open_solution_file(const double, bool is_link = false);
-
-  void cgns_close_file();
-  void cgns_close_grid_file();
-  void cgns_close_solution_file();
-
-  void cgns_open_close_files(const double );
   void cgns_set_postraiter_domain() { postraiter_domaine_ = true; }
-
-  void cgns_write_link_file();
+  void cgns_set_base_name(const Nom& );
+  void cgns_open_file();
+  void cgns_close_file();
   void cgns_add_time(const double );
-
   void cgns_write_domaine(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
   void cgns_write_field(const Domaine&, const Noms&, double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 
 private:
-  void fill_fld_loc_map(const Domaine&, const std::string&);
-  int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
   Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&);
   std::string modify_domaine_name_for_post(const Nom& );
+  int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+
+  void fill_fld_loc_map(const Domaine&, const std::string&);
+  void cgns_open_close_files(const double);
+  void cgns_open_grid_file();
+  void cgns_open_solution_file(const double, bool is_link = false);
+  void cgns_close_grid_solution_file(const std::string&, bool is_cerr = false);
+  void cgns_write_final_link_file();
 
   // Version sequentielle
   void cgns_write_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
