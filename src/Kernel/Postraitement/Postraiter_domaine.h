@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,34 +13,28 @@
 *
 *****************************************************************************/
 
-
-
-
-
 #ifndef Postraiter_domaine_included
 #define Postraiter_domaine_included
 
 #include <Interprete_geometrique_base.h>
 
-class Nom;
 class Domaine;
+class Nom;
 
-/*! @brief Classe Postraiter_domaine Lecture d'un fichier
+/*! @brief Classe Postraiter_domaine
  *
  * @sa Interprete
  */
-class Postraiter_domaine : public Interprete_geometrique_base
+class Postraiter_domaine: public Interprete_geometrique_base
 {
   Declare_instanciable(Postraiter_domaine);
-public :
+public:
   Entree& interpreter_(Entree&) override;
   void ecrire(Nom&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 protected:
-  int nb_domaine_ = 0;
-  Nom commande_,format_post_;
-  int joint_non_ecrit_ = 1;
-  int format_binaire_ = 1;
-  int ecrire_frontiere_ = 1;
+  Nom commande_, format_post_;
+  int nb_domaine_ = 0, joint_non_ecrit_ = 1, format_binaire_ = 1, ecrire_frontiere_ = 1;
 };
-#endif
+
+#endif /* Postraiter_domaine_included */
