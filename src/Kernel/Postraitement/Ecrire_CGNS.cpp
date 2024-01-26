@@ -133,7 +133,7 @@ void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, con
 
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
     if (!grid_file_opened_)
-      cgns_open_grid_file(), grid_file_opened_ = true;
+      cgns_open_grid_file(), grid_file_opened_ = true; // On ouvre pour .grid.cgns
 
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
@@ -159,7 +159,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
     }
 
   /* 1 : if first time called ... build different supports for mixed locations */
-  fill_fld_loc_map(domaine, LOC);
+  fill_field_loc_map(domaine, LOC);
 
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
@@ -188,38 +188,55 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
  * *********************************** *
  */
 
-void Ecrire_CGNS::fill_fld_loc_map(const Domaine& domaine, const std::string& LOC)
+void Ecrire_CGNS::fill_field_loc_map(const Domaine& domaine, const std::string& LOC)
 {
-  if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ferme
-    if (static_cast<int>(time_post_.size()) == 1)
-      {
-        if (static_cast<int>(fld_loc_map_.size()) == 0)
-          fld_loc_map_.insert( { LOC, domaine.le_nom() });/* ici on utilise le 1er support */
-        else
-          {
-            const bool in_map = (fld_loc_map_.count(LOC) != 0);
-            if (!in_map) // XXX here we need a new support ... sorry
-              {
-                Nom nom_dom = domaine.le_nom();
-                nom_dom += "_";
-                nom_dom += LOC;
-                Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
-                Motcle type_e = domaine.type_elem().valeur().que_suis_je();
+  if (static_cast<int>(time_post_.size()) == 1)
+    {
+      if (!Option_CGNS::USE_LINKS || postraiter_domaine_)
+        {
+          if (static_cast<int>(fld_loc_map_.size()) == 0)
+            fld_loc_map_.insert( { LOC, domaine.le_nom() });/* ici on utilise le 1er support */
+          else
+            {
+              const bool in_map = (fld_loc_map_.count(LOC) != 0);
+              if (!in_map) // XXX here we need a new support ... sorry
+                {
+                  Nom nom_dom = domaine.le_nom();
+                  nom_dom += "_";
+                  nom_dom += LOC;
+                  Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
+                  Motcle type_e = domaine.type_elem().valeur().que_suis_je();
 
-                if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
-                  {
-                    if (Option_CGNS::PARALLEL_OVER_ZONE)
-                      cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
-                    else
-                      cgns_write_domaine_par_in_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
-                  }
-                else
-                  cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
+                  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+                    {
+                      if (Option_CGNS::PARALLEL_OVER_ZONE)
+                        cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
+                      else
+                        cgns_write_domaine_par_in_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
+                    }
+                  else
+                    cgns_write_domaine_seq(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e); // XXX Attention
 
-                fld_loc_map_.insert( { LOC, nom_dom });
-              }
-          }
-      }
+                  fld_loc_map_.insert( { LOC, nom_dom });
+                }
+            }
+        }
+      else // Option_CGNS::USE_LINKS
+        {
+          assert (Option_CGNS::USE_LINKS);
+          if (static_cast<int>(fld_loc_map_.size()) == 0)
+            fld_loc_map_.insert( { LOC, domaine.le_nom() });
+          else
+            {
+              const bool in_map = (fld_loc_map_.count(LOC) != 0);
+              if (!in_map)
+                {
+                  Cerr << "A second CGNS file will be written to host the fields located at : " << LOC << " !" << finl;
+                  fld_loc_map_.insert( { LOC, domaine.le_nom() });
+                }
+            }
+        }
+    }
 }
 
 int Ecrire_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
@@ -268,11 +285,25 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   isize[1][0] = nb_elem;
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
+  const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
   if (Option_CGNS::USE_LINKS)
     {
       celldimId_.push_back(icelldim);
       basename_.push_back(std::string(basename));
-      sizeId_.push_back( {nb_som, nb_elem} );
+      sizeId_.push_back( { nb_som, nb_elem });
+      if (connectname_.empty())
+        {
+          if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+            {
+              if (is_polyedre)
+                {
+                  connectname_.push_back("NGON_n");
+                  connectname_.push_back("NFACE_n");
+                }
+              else connectname_.push_back("NGON_n");
+            }
+          else connectname_.push_back("Elem");
+        }
     }
 
   /* 5 : Create zone */
@@ -300,7 +331,6 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
         {
           assert (domaine != nullptr);
-          const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
           std::vector<cgsize_t> sf, sf_offset;
 
           end = start + static_cast<cgsize_t>(TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre)) -1;
@@ -1007,6 +1037,19 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
       celldimId_.push_back(icelldim);
       basename_.push_back(std::string(basename));
       sizeId_.push_back( {ns_tot, ne_tot} );
+      if (connectname_.empty())
+        {
+          if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
+            {
+              if (is_polyedre)
+                {
+                  connectname_.push_back("NGON_n");
+                  connectname_.push_back("NFACE_n");
+                }
+              else connectname_.push_back("NGON_n");
+            }
+          else connectname_.push_back("Elem");
+        }
     }
 
   int gridId = -123, coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
@@ -1383,8 +1426,11 @@ void Ecrire_CGNS::cgns_open_solution_file(const double t, bool is_link)
   cg_goto(fileId_, baseId_[0], "Zone_t", 1, "end");
   cg_link_write("GridCoordinates", linkfile.c_str(), linkpath.c_str());
 
-  linkpath = "/" + basename_[0] + "/" + basename_[0] + "/Elem/";
-  cg_link_write("Elem", linkfile.c_str(), linkpath.c_str());
+  for (auto &itr : connectname_)
+    {
+      linkpath = "/" + basename_[0] + "/" + basename_[0] + "/" + itr + "/";
+      cg_link_write(itr.c_str(), linkfile.c_str(), linkpath.c_str());
+    }
 }
 
 void Ecrire_CGNS::cgns_close_grid_solution_file(const std::string& fn, bool is_cerr)

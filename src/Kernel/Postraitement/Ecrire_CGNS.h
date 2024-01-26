@@ -42,7 +42,7 @@ private:
   std::string modify_domaine_name_for_post(const Nom& );
   int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
 
-  void fill_fld_loc_map(const Domaine&, const std::string&);
+  void fill_field_loc_map(const Domaine&, const std::string&);
   void cgns_open_close_files(const double);
   void cgns_open_grid_file();
   void cgns_open_solution_file(const double, bool is_link = false);
@@ -70,13 +70,13 @@ private:
   std::string solname_elem_ = "", solname_som_ = "", base_name_ = "";
   std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
   std::vector<Nom> doms_written_;
-  std::vector<std::string> basename_;
+  std::vector<std::string> basename_, connectname_;
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_, celldimId_;
-  std::vector<std::vector<int>> sizeId_;
-  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
+  std::vector<std::vector<int>> sizeId_, zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
   std::vector<TRUST_2_CGNS> T2CGNS_;
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
+//  int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
 #endif
 };
 
