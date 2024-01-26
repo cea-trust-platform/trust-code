@@ -67,15 +67,15 @@ private:
   // Attributes
   bool solname_elem_written_ = false, solname_som_written_ = false;
   bool postraiter_domaine_ = false, grid_file_opened_ = false;
-  std::string solname_elem_ = "", solname_som_ = "", base_name_ = "";
+  std::string solname_elem_ = "", solname_som_ = "", baseFile_name_ = "", baseZone_name_ = "";
   std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
   std::vector<Nom> doms_written_;
-  std::vector<std::string> basename_, connectname_;
+  std::vector<std::string> connectname_;
   std::vector<double> time_post_;
-  std::vector<int> baseId_, zoneId_, celldimId_;
-  std::vector<std::vector<int>> sizeId_, zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
+  std::vector<int> baseId_, zoneId_, sizeId_;
+  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
   std::vector<TRUST_2_CGNS> T2CGNS_;
-  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0;
+  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;
 //  int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
 #endif
 };
