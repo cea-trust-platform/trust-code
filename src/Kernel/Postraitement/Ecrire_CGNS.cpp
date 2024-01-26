@@ -1445,6 +1445,10 @@ void Ecrire_CGNS::cgns_close_grid_solution_file(const std::string& fn, bool is_c
 
 void Ecrire_CGNS::cgns_write_final_link_file()
 {
+  // XXX a pas oublier, dernier sol fichier ... faut le fermer
+  cgns_close_grid_solution_file(baseFile_name_);
+
+  // Fichier link maintenant
   cgns_open_solution_file(-123., true /* dernier fichier => link */);
 
   const int nsteps = static_cast<int>(time_post_.size());
