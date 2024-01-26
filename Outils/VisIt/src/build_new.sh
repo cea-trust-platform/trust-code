@@ -59,7 +59,8 @@ then
    #export PAR_INCLUDE=-I$MPI_INCLUDE
    #export PAR_LIBS=""
    options=$options" --parallel"			# Construction de VisIt parallele
-   options=$options" --osmesa --llvm"			# OsMesa3D en // pour faster rendering (LLVM prerequis de OsMesa3D)
+   # Attention: vu sur rocky 9 et portable Ub22 recent : remplacer --osmesa par --mesagl pour que VisIt s'installe et fonctionne correctement
+   options=$options" --osmesa --llvm"			# OsMesa3D en // pour faster rendering (LLVM prerequis de OsMesa3D).
    options=$options" --no-icet"				# Car icet (optimisation du rendering en //) ne compile pas
 fi
 

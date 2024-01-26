@@ -35,6 +35,11 @@ define_modules_config()
       module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # cf bt#195561
       # 02/10/2023 : Ajout module qt/5.14 pour VisIt
       module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020 qt5/gcc_9.3.0/5.14.2" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
+      if [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ]
+      then
+         echo "module use /product/rocky9-x86_64_cluster/modulefiles/all" >> $env
+         module="slurm gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6"
+      fi
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
