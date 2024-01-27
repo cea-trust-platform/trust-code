@@ -73,7 +73,7 @@ void Ecrire_CGNS::cgns_open_file()
       if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ouvre
         {
           if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_open_file : cg_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           Cerr << "**** CGNS file " << fn << " opened !" << finl;
         }
@@ -111,7 +111,7 @@ void Ecrire_CGNS::cgns_close_file()
       cgns_write_iters_seq();
 
       if (cg_close(fileId_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_close_file : cg_close !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_close_file : cg_close !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
@@ -278,7 +278,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   strcpy(basename, nom_dom.getChar()); // dom name
 
   if (cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back()) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_base_write !" << finl, cg_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4 : Vertex, cell & boundary vertex sizes */
   cgsize_t isize[3][1];
@@ -308,18 +308,18 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   if (nb_elem) // XXX cas // mais MULTIPLE_FILES
     {
       if (cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_zone_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_zone_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* 6 : Write grid coordinates */
       if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", xCoords.data(), &coordsId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - X !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - X !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateY", yCoords.data(), &coordsId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Y !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Y !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (icelldim > 2)
         if (cg_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", zCoords.data(), &coordsId) != CG_OK)
-          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Z !" << finl, cg_error_exit();
+          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_coord_write - Z !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* 7 : Set element connectivity */
       int sectionId;
@@ -354,7 +354,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
           end = start + static_cast<cgsize_t>(elems.size()) / nsom - 1;
 
           if (cg_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, elems.data(), &sectionId) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_section_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cg_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 }
@@ -394,7 +394,7 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
           solname_som_ += solname;
 
           if (cg_sol_write(fileId, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           solname_som_written_ = true;
         }
@@ -406,7 +406,7 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
           solname_elem_ += solname;
 
           if (cg_sol_write(fileId, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           solname_elem_written_ = true;
         }
@@ -417,12 +417,12 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
           if (LOC == "SOM")
             {
               if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else // ELEM // TODO FIXME FACES
             {
               if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
       else
@@ -434,12 +434,12 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
           if (LOC == "SOM")
             {
               if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else // ELEM // TODO FIXME FACES
             {
               if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
     }
@@ -462,24 +462,24 @@ void Ecrire_CGNS::cgns_write_iters_seq()
 
       /* create BaseIterativeData */
       if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_biter_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_biter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* go to BaseIterativeData level and write time values */
       if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgsize_t nuse = static_cast<cgsize_t>(nsteps);
       if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (zoneId_[ind] != -123)
         {
           /* create ZoneIterativeData */
           if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           cgsize_t idata[2];
           idata[0] = CGNS_STR_SIZE;
@@ -488,17 +488,17 @@ void Ecrire_CGNS::cgns_write_iters_seq()
           if (LOC == "SOM")
             {
               if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else if (LOC == "ELEM")
             {
               if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
 
       if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
 
   /* 2 : on iter sur les autres domaines; ie: domaine dis */
@@ -512,27 +512,27 @@ void Ecrire_CGNS::cgns_write_iters_seq()
 
           /* create BaseIterativeData */
           if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_biter_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_biter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           /* go to BaseIterativeData level and write time values */
           if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           cgsize_t nuse = static_cast<cgsize_t>(nsteps);
           if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (zoneId_[ind] != -123)
             {
               /* create ZoneIterativeData */
               if (cg_ziter_write(fileId_, baseId_[ind], zoneId_[ind], "ZoneIterativeData") != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_ziter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
               if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_[ind], "ZoneIterativeData_t", 1, "end") != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_simulation_type_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
       else { /* Do Nothing */ }
     }
@@ -566,7 +566,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
   strcpy(basename, nom_dom.getChar()); // dom name
 
   if (cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back()) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_base_write !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4 : We need global nb_elems/nb_soms => MPI_Allgather. Thats the only information required ! */
   std::vector<int> global_nb_elem, global_nb_som;
@@ -660,24 +660,24 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
       /* 5.1 : Create zone */
       if (cg_zone_write(fileId_, baseId_.back(), zonename.c_str(), isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_zone_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_zone_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_grid_write(fileId_, baseId_.back(), zoneId_.back(), "GridCoordinates", &gridId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_grid_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_grid_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* 5.2 : Construct the grid coordinates nodes */
       coordsIdx.push_back(-123), coordsIdy.push_back(-123);
       if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", &coordsIdx.back()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - X !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - X !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateY", &coordsIdy.back()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - Y !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - Y !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (icelldim > 2)
         {
           coordsIdz.push_back(-123);
           if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", &coordsIdz.back()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - Z !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write - Z !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
 
       /* 5.3 : Construct the sections to host connectivity later */
@@ -689,7 +689,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
           cgsize_t maxoffset = static_cast<cgsize_t>(global_nb_sf_offset[indZ]);
 
           if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId.back()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (is_polyedre) // Pas pour polygone
             {
@@ -700,13 +700,13 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
               maxoffset = static_cast<cgsize_t>(global_nb_ef_offset[indZ]);
 
               if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, maxoffset, 0, &sectionId2.back()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
       else
         {
           if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId.back()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_section_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 
@@ -730,14 +730,14 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
       /* 6.1 : Write grid coordinates */
       if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdx[indx], &min, &max, xCoords.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - X !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - X !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdy[indx], &min, &max, yCoords.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - Y !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (icelldim > 2)
         if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], coordsIdz[indx], &min, &max, zCoords.data()) != CG_OK)
-          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
+          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_coord_write_data - Z !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* 6.2 : Set element connectivity */
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
@@ -745,7 +745,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
           max = min + nb_sf -1;
 
           if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, sf.data(), sf_offset.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (is_polyedre) // Pas pour polygone
             {
@@ -753,7 +753,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
               max = min + nb_ef -1;
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId2[indx], min, max, ef.data(), ef_offset.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
       else
@@ -763,7 +763,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
           max = nb_elem; /* now we need local elem */
           if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, elems.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_elements_write_data !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 }
@@ -800,10 +800,10 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
       for (int ii = 0; ii != nb_zones_to_write; ii++)
         {
           if (cg_sol_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_sol_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "FlowSolution_t", flowId_som_, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_goto !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
 
       solname_som_written_ = true;
@@ -819,10 +819,10 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
       for (int ii = 0; ii != nb_zones_to_write; ii++)
         {
           if (cg_sol_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_sol_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "FlowSolution_t", flowId_elem_, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_goto !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
 
       solname_elem_written_ = true;
@@ -833,12 +833,12 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
       if (LOC == "SOM")
         {
           if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_som_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
       else if (LOC == "ELEM")
         {
           if (cgp_field_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_elem_) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 
@@ -861,13 +861,13 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
           if (LOC == "SOM")
             {
               if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_som_, fieldId_som_, &min, &max, valeurs.addr()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
             }
           else // ELEM // TODO FIXME FACES
             {
               if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_elem_, fieldId_elem_, &min, &max, valeurs.addr()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
       else
@@ -879,12 +879,12 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
           if (LOC == "SOM")
             {
               if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_som_, fieldId_som_, &min, &max, field_cgns.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else // ELEM // TODO FIXME FACES
             {
               if (cgp_field_write_data(fileId_, baseId_[ind], zoneId_par_[ind][indx], flowId_elem_, fieldId_elem_, &min, &max, field_cgns.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_over_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
     }
@@ -910,15 +910,15 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
 
       /* create BaseIterativeData */
       if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_biter_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_biter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* go to BaseIterativeData level and write time values */
       if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgsize_t nuse = static_cast<cgsize_t>(nsteps);
       if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgsize_t idata[2];
       idata[0] = CGNS_STR_SIZE;
@@ -929,25 +929,25 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
         {
           /* create ZoneIterativeData */
           if (cg_ziter_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], "ZoneIterativeData") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_ziter_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_ziter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "ZoneIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           if (LOC == "SOM")
             {
               if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else if (LOC == "ELEM")
             {
               if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
 
       if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_simulation_type_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_simulation_type_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
 
   /* 2 : on iter sur les autres domaines; ie: domaine dis */
@@ -964,29 +964,29 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
 
           /* create BaseIterativeData */
           if (cg_biter_write(fileId_, baseId_[ind], "TimeIterValues", nsteps) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_biter_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_biter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           /* go to BaseIterativeData level and write time values */
           if (cg_goto(fileId_, baseId_[ind], "BaseIterativeData_t", 1, "end") != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           cgsize_t nuse = static_cast<cgsize_t>(nsteps);
           if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
           for (int ii = 0; ii != nb_zones_to_write; ii++)
             {
               /* create ZoneIterativeData */
               if (cg_ziter_write(fileId_, baseId_[ind], zoneId_par_[ind][ii], "ZoneIterativeData") != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_ziter_write !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_ziter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
               if (cg_goto(fileId_, baseId_[ind], "Zone_t", zoneId_par_[ind][ii], "ZoneIterativeData_t", 1, "end") != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, cg_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
 
           if (cg_simulation_type_write(fileId_, baseId_[ind], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_simulation_type_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_par_over_zone : cg_simulation_type_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
       else { /* Do Nothing */ }
     }
@@ -1019,7 +1019,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   strcpy(basename, nom_dom.getChar()); // dom name
 
   if (cg_base_write(fileId_, basename, icelldim, iphysdim, &baseId_.back()) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_base_write !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
@@ -1061,21 +1061,21 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   int gridId = -123, coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
   zoneId_.push_back(-123);
   if (cg_zone_write(fileId_, baseId_.back(), basename /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_.back()) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_zone_write !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_zone_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   if (cg_grid_write(fileId_, baseId_.back(), zoneId_.back(), "GridCoordinates", &gridId) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_grid_write !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cg_grid_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4.2 : Construct the grid coordinates nodes */
   if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateX", &coordsIdx) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - X !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - X !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateY", &coordsIdy) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - Y !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - Y !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   if (icelldim > 2)
     if (cgp_coord_write(fileId_, baseId_.back(), zoneId_.back(), CGNS_DOUBLE_TYPE, "CoordinateZ", &coordsIdz) != CG_OK)
-      Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - Z !" << finl, cgp_error_exit();
+      Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write - Z !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4.3 : Construct the sections to host connectivity later */
   cgsize_t start = -123, end = -123;
@@ -1093,7 +1093,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
           assert(start <= end);
 
           if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
           const int nb_ef = TRUST2CGNS.get_nef_tot();
           const int nb_ef_offset = TRUST2CGNS.get_nef_offset_tot();
@@ -1103,7 +1103,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
           assert(start <= end);
 
           if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, maxoffset, 0, &sectionId2) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
       else // polygon
         {
@@ -1114,7 +1114,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
           maxoffset = nb_es_offset;
 
           if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
   else
@@ -1123,7 +1123,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
       assert(start <= end);
 
       if (cgp_section_write(fileId_, baseId_.back(), zoneId_.back(), "Elem", cgns_type_elem, start, end, 0, &sectionId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_section_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
 
   /* 5 : Write grid coordinates & set connectivity */
@@ -1136,14 +1136,14 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
 
       /* 6.1 : Write grid coordinates */
       if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_.back(), coordsIdx, &min, &max, xCoords.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - X !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - X !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_.back(), coordsIdy, &min, &max, yCoords.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - Y !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - Y !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (icelldim > 2)
         if (cgp_coord_write_data(fileId_, baseId_.back(), zoneId_.back(), coordsIdz, &min, &max, zCoords.data()) != CG_OK)
-          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - Z !" << finl, cgp_error_exit();
+          Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_coord_write_data - Z !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       /* 6.2 : Set element connectivity */
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
@@ -1156,7 +1156,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
               assert (min < max);
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, fs.data(), fs_offset.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
               const std::vector<cgsize_t> ef = TRUST2CGNS.get_local_ef(), ef_offset = TRUST2CGNS.get_local_ef_offset();
               const std::vector<int>& incr_min_elem_face = TRUST2CGNS.get_global_incr_min_elem_face(), incr_max_elem_face = TRUST2CGNS.get_global_incr_max_elem_face();
@@ -1165,7 +1165,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
               assert (min < max);
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId2, min, max, ef.data(), ef_offset.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else
             {
@@ -1175,7 +1175,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
               assert (min < max);
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, es.data(), es_offset.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           TRUST2CGNS.clear_vectors();
         }
@@ -1189,7 +1189,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
           assert (min < max);
 
           if (cgp_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, elems.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_elements_write_data !" << finl, cgp_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 }
@@ -1231,10 +1231,10 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
       solname_som_ += solname;
 
       if (cg_sol_write(fileId, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(Vertex), &flowId_som_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_sol_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_goto(fileId, baseId_[ind], "Zone_t", zoneId_[ind], "FlowSolution_t", flowId_som_, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_goto !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       solname_som_written_ = true;
     }
@@ -1246,10 +1246,10 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
       solname_elem_ += solname;
 
       if (cg_sol_write(fileId, baseId_[ind], zoneId_[ind], solname.c_str(), CGNS_ENUMV(CellCenter), &flowId_elem_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_sol_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_sol_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_goto(fileId, baseId_[ind], "Zone_t", zoneId_[ind], "FlowSolution_t", flowId_elem_, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_goto !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       solname_elem_written_ = true;
     }
@@ -1257,12 +1257,12 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
   if (LOC == "SOM")
     {
       if (cgp_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_som_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
   else if (LOC == "ELEM")
     {
       if (cgp_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), &fieldId_elem_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
 
   /* 4 : Fill field values & dump to cgns file */
@@ -1279,7 +1279,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
               min = incr_min_som[proc_me], max = incr_max_som[proc_me];
 
               if (cgp_field_write_data(fileId, baseId_[ind], zoneId_[ind], flowId_som_, fieldId_som_, &min, &max, valeurs.addr()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
             }
           else // ELEM // TODO FIXME FACES
@@ -1288,7 +1288,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
               min = incr_min_elem[proc_me], max = incr_max_elem[proc_me];
 
               if (cgp_field_write_data(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, fieldId_elem_, &min, &max, valeurs.addr()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
       else
@@ -1303,7 +1303,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
               min = incr_min_som[proc_me], max = incr_max_som[proc_me];
 
               if (cgp_field_write_data(fileId, baseId_[ind], zoneId_[ind], flowId_som_, fieldId_som_, &min, &max, field_cgns.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
           else // ELEM // TODO FIXME FACES
             {
@@ -1311,7 +1311,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
               min = incr_min_elem[proc_me], max = incr_max_elem[proc_me];
 
               if (cgp_field_write_data(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, fieldId_elem_, &min, &max, field_cgns.data()) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, cgp_error_exit();
+                Cerr << "Error Ecrire_CGNS::cgns_write_field_par_in_zone : cgp_field_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
     }
@@ -1393,14 +1393,14 @@ void Ecrire_CGNS::cgns_open_grid_file()
   if (Process::is_parallel())
     {
       if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cgp_open !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cgp_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       Cerr << "**** Parallel CGNS file " << fn << " opened !" << finl;
     }
   else
     {
       if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cg_open !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_grid_file : cg_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
@@ -1424,7 +1424,7 @@ void Ecrire_CGNS::cgns_open_solution_file(const int ind, const std::string& LOC,
   if (Process::is_parallel())
     {
       if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cgp_open !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cgp_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (is_link)
         Cerr << "**** Parallel CGNS file " << fn << " opened !" << finl;
@@ -1432,14 +1432,14 @@ void Ecrire_CGNS::cgns_open_solution_file(const int ind, const std::string& LOC,
   else
     {
       if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_open !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (is_link)
         Cerr << "**** CGNS file " << fn << " opened !" << finl;
     }
 
   if (cg_base_write(fileId, baseZone_name_.c_str(), cellDim_, Objet_U::dimension, &baseId_[0]) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_base_write !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   cgsize_t isize[3][1];
   isize[0][0] = sizeId_[0];
@@ -1447,17 +1447,23 @@ void Ecrire_CGNS::cgns_open_solution_file(const int ind, const std::string& LOC,
   isize[2][0] = 0;
 
   if (cg_zone_write(fileId, baseId_[0], baseZone_name_.c_str() /* Dom name */, isize[0], CGNS_ENUMV(Unstructured), &zoneId_[0]) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cgns_open_solution_file !" << finl, cg_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cgns_open_solution_file !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   std::string linkfile = baseFile_name_ + ".grid.cgns"; // file name
   std::string linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/GridCoordinates/";
-  cg_goto(fileId, baseId_[0], "Zone_t", 1, "end");
-  cg_link_write("GridCoordinates", linkfile.c_str(), linkpath.c_str());
+
+  if (cg_goto(fileId, baseId_[0], "Zone_t", 1, "end") != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
+  if (cg_link_write("GridCoordinates", linkfile.c_str(), linkpath.c_str()) != CG_OK)
+    Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_link_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   for (auto &itr : connectname_)
     {
       linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/" + itr + "/";
-      cg_link_write(itr.c_str(), linkfile.c_str(), linkpath.c_str());
+
+      if (cg_link_write(itr.c_str(), linkfile.c_str(), linkpath.c_str()) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_open_solution_file : cg_link_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
     }
 }
 
@@ -1469,14 +1475,14 @@ void Ecrire_CGNS::cgns_close_grid_solution_file(const int ind, const std::string
   if (Process::is_parallel())
     {
       if (cgp_close(fileId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cgp_close !" << finl, cgp_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cgp_close !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (is_cerr) Cerr << "**** Parallel CGNS file " << fn << " closed !" << finl;
     }
   else
     {
       if (cg_close(fileId) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cg_close !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_close_solution_file : cg_close !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (is_cerr) Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
@@ -1509,24 +1515,25 @@ void Ecrire_CGNS::cgns_write_final_link_file()
 
           std::string linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/" + solname + "/";
 
-          cg_link_write(solname.c_str(), linkfile.c_str(), linkpath.c_str());
+          if (cg_link_write(solname.c_str(), linkfile.c_str(), linkpath.c_str()) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_final_link_file : cg_link_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
 
       if (cg_biter_write(fileId, baseId_[0], "TimeIterValues", nsteps) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_biter_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_biter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_goto(fileId, baseId_[0], "BaseIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgsize_t nuse = static_cast<cgsize_t>(nsteps);
       if (cg_array_write("TimeValues", CGNS_DOUBLE_TYPE, 1, &nuse, time_post_.data()) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_array_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_ziter_write(fileId, baseId_[0], zoneId_[0], "ZoneIterativeData") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_ziter_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_ziter_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       if (cg_goto(fileId, baseId_[0], "Zone_t", zoneId_[0], "ZoneIterativeData_t", 1, "end") != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgsize_t idata[2];
       idata[0] = CGNS_STR_SIZE;
@@ -1535,16 +1542,16 @@ void Ecrire_CGNS::cgns_write_final_link_file()
       if (LOC == "SOM")
         {
           if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_som_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
       else if (LOC == "ELEM")
         {
           if (cg_array_write("FlowSolutionPointers", CGNS_ENUMV(Character), 2, idata, solname_elem_.c_str()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, cg_error_exit();
+            Cerr << "Error Ecrire_CGNS::cgns_write_iters_seq : cg_array_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
 
       if (cg_simulation_type_write(fileId_, baseId_[0], CGNS_ENUMV(TimeAccurate)) != CG_OK)
-        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_simulation_type_write !" << finl, cg_error_exit();
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_simulation_type_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
       cgns_close_grid_solution_file(ind, !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns", true); // on ferme
     }
