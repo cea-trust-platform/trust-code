@@ -1378,7 +1378,7 @@ void Ecrire_CGNS::cgns_open_close_files(const double t)
       assert ((static_cast<int>(fld_loc_map_.size()) <= 2)); // ELEM, SOM au max pour le moment
       for (auto itr = fld_loc_map_.begin(); itr != fld_loc_map_.end(); ++itr)
         {
-          const int ind = std::distance(fld_loc_map_.begin(), itr);
+          const int ind = static_cast<int>(std::distance(fld_loc_map_.begin(), itr));
           cgns_close_grid_solution_file(ind, baseFile_name_);
           cgns_open_solution_file(ind, itr->first, t);
         }
@@ -1495,7 +1495,7 @@ void Ecrire_CGNS::cgns_write_final_link_file()
 
   for (auto itr = fld_loc_map_.begin(); itr != fld_loc_map_.end(); ++itr)
     {
-      const int ind = std::distance(fld_loc_map_.begin(), itr);
+      const int ind = static_cast<int>(std::distance(fld_loc_map_.begin(), itr));
 
       // XXX a pas oublier, dernier sol fichier ... faut le fermer
       cgns_close_grid_solution_file(ind, baseFile_name_);
