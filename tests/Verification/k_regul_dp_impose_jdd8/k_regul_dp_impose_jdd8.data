@@ -1,15 +1,18 @@
 # PARALLEL OK #
 dimension 3
 
-Pb_multiphase pb
+Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Read_MED {
+Read_MED
+{
+    
     domain dom
-    file mesh_poly.med
+    file mesh.med
     mesh mesh
+    include_additional_face_groups 2 surf1 surf2
 }
-regroupebord dom wall { left right front back down up wall wall_dup }
+regroupebord dom wall { wall iwall iwall_dup }
 # END MESH #
 
 # BEGIN PARTITION
@@ -26,36 +29,18 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC_P0 dis
-option_vdf { p_imposee_aux_faces oui }
-
-domaine surf1
-domaine surf2
-Read_MED {
-    domain surf1
-    file mesh_poly.med
-    mesh surf1
-}
-Read_MED {
-    domain surf2
-    file mesh_poly.med
-    mesh surf2
-}
+VEFPreP1b dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
 	nb_pas_dt_max 3
-    dt_max 1e-2
+    facsec 1e30
+    dt_max  0.01
+    seuil_statio 1e-12
     dt_impr 1e-10
-    seuil_statio 1e-8
-    solveur ice
-    {
-        criteres_convergence { alpha 1e-5 }
-        solveur petsc cli { }
-        seuil_convergence_implicite 1e30
-    }
+    solveur implicite { solveur petsc cholesky { } }
 }
 
 Associate  pb dom
@@ -65,57 +50,22 @@ Discretize pb dis
 Read pb
 {
 
-    Milieu_composite
-    {
-        liquide_l fluide_incompressible
-        {
-            mu  Champ_Uniforme 1 2.5
-            rho Champ_Uniforme 1 1000
-            cp Champ_Uniforme 1 1000
-            lambda Champ_Uniforme 1 1
-        }
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.5
+        rho Champ_Uniforme 1 1000
     }
 
 
-    QDM_Multiphase
+    Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
         diffusion  { negligeable }
-        initial_conditions
-        {
-            vitesse Champ_Uniforme 3 0 0 0
-            pression Champ_Uniforme 1 1e5
-        }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp_regul { DP0 1e2 deb 5 eps 0.001*(t>0.1) } surface { surface surf2 orientation Champ_Uniforme 3 0 0 -1 } }
-        }
-    }
-    Masse_Multiphase
-    {
-        initial_conditions
-        {
-            alpha Champ_uniforme 1 1
-        }
-        convection { amont }
-        boundary_conditions
-        {
-            wall paroi
-        }
-    }
-    Energie_Multiphase
-    {
-        diffusion { negligeable }
-        convection { amont }
-        initial_conditions
-        {
-            temperature Champ_Uniforme 1 1
-        }
-        boundary_conditions
-        {
-            wall paroi_adiabatique
+            DP_Impose { dp_regul { DP0 1e2 deb 5 eps 0.001*(t>0.1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
         }
     }
 

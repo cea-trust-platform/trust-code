@@ -4,12 +4,15 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Read_MED {
+Read_MED
+{
+    convertalltopoly
     domain dom
-    file mesh_poly.med
+    file mesh.med
     mesh mesh
+    include_additional_face_groups 2 surf1 surf2
 }
-regroupebord dom wall { left right front back down up wall wall_dup }
+regroupebord dom wall { wall iwall iwall_dup }
 # END MESH #
 
 # BEGIN PARTITION
@@ -27,26 +30,13 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC_P0 dis
-option_vdf { p_imposee_aux_faces oui }
-
-domaine surf1
-domaine surf2
-Read_MED {
-    domain surf1
-    file mesh_poly.med
-    mesh surf1
-}
-Read_MED {
-    domain surf2
-    file mesh_poly.med
-    mesh surf2
-}
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
 	nb_pas_dt_max 3
+    facsec 1e30
     dt_max  0.01
     seuil_statio 1e-12
     dt_impr 1e-10
@@ -75,8 +65,7 @@ Read pb
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp Champ_uniforme 3 1e2 0 0 surface { surface surf2 orientation Champ_Uniforme 3 0 0 -1 } } ,
-            perte_Charge_Singuliere { dir K regul { K0 10.0 deb 5 eps 0.005*(t>0.1) } surface { Surface surf1 orientation Champ_Uniforme 3 0 0 -1 } }
+            DP_Impose { dp_regul { DP0 1e2 deb 5 eps 0.001*(t>0.1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
         }
     }
 
