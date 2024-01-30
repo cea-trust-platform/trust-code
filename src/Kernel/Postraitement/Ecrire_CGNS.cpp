@@ -442,8 +442,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
   const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension,
-            nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0),
-            nb_procs = Process::nproc(), proc_me = Process::me();
+            nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0), proc_me = Process::me();
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
@@ -458,6 +457,8 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
   TRUST2CGNS.fill_global_infos(); // XXX
 
+  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) /*cas polygone/polyedre */
+    TRUST2CGNS.fill_global_infos_poly(is_polyedre);
 
   /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
@@ -469,41 +470,6 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
   int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
   const bool all_write = TRUST2CGNS.all_procs_write(); // all procs will write !
-
-
-  /* ces vecteurs restes vide sauf si poly */
-  std::vector<cgsize_t> sf, sf_offset, ef, ef_offset;
-  std::vector<int> global_nb_sf, global_nb_ef, global_nb_sf_offset, global_nb_ef_offset;
-  int nb_sf = -123, nb_sf_offset = -123, nb_ef = -123, nb_ef_offset = -123;
-
-  if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
-    {
-      assert(domaine != nullptr);
-      nb_sf = TRUST2CGNS.convert_connectivity_ngon(sf, sf_offset, is_polyedre);
-      nb_sf_offset = static_cast<int>(sf.size());
-
-      global_nb_sf.assign(nb_procs, -123 /* default */);
-      global_nb_sf_offset.assign(nb_procs, -123 /* default */);
-
-#ifdef MPI_
-      MPI_Allgather(&nb_sf, 1, MPI_ENTIER, global_nb_sf.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-      MPI_Allgather(&nb_sf_offset, 1, MPI_ENTIER, global_nb_sf_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
-
-      if (is_polyedre) // Pas pour polygone
-        {
-          nb_ef = TRUST2CGNS.convert_connectivity_nface(ef, ef_offset);
-          nb_ef_offset = static_cast<int>(ef.size());
-
-          global_nb_ef.assign(nb_procs, -123 /* default */);
-          global_nb_ef_offset.assign(nb_procs, -123 /* default */);
-
-#ifdef MPI_
-          MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_ef.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-          MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_ef_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
-        }
-    }
 
   // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
   zoneId_.clear(); // XXX commencons par ca
@@ -540,21 +506,29 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
         {
-          end = start + static_cast<cgsize_t>(global_nb_sf[indZ]) -1;
-          cgsize_t maxoffset = static_cast<cgsize_t>(global_nb_sf_offset[indZ]);
-
-          if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId.back()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-
           if (is_polyedre) // Pas pour polygone
             {
+              end = start + static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_face_som()[indZ]) -1;
+              cgsize_t maxoffset = static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_face_som_offset()[indZ]);
+
+              if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId.back()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
               sectionId2.push_back(-123);
               start = end + 1;
 
-              end = start + static_cast<cgsize_t>(global_nb_ef[indZ]) -1;
-              maxoffset = static_cast<cgsize_t>(global_nb_ef_offset[indZ]);
+              end = start + static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_elem_face()[indZ]) -1;
+              maxoffset = static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_elem_face_offset()[indZ]);
 
               if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NFACE_n", CGNS_ENUMV(NFACE_n), start, end, maxoffset, 0, &sectionId2.back()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+            }
+          else // polygon
+            {
+              end = start + static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_elem()[indZ]) -1; /* ici pareil comme get_global_nb_elem_som ... fais moi confiance ... */
+              cgsize_t maxoffset = static_cast<cgsize_t>(TRUST2CGNS.get_global_nb_elem_som_offset()[indZ]);
+
+              if (cgp_poly_section_write(fileId_, baseId_.back(), zoneId_.back(), "NGON_n", CGNS_ENUMV(NGON_n), start, end, maxoffset, 0, &sectionId.back()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_section_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
         }
@@ -591,19 +565,29 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
       /* 6.2 : Set element connectivity */
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
         {
-          max = min + nb_sf -1;
-
-          if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, sf.data(), sf_offset.data()) != CG_OK)
-            Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-
           if (is_polyedre) // Pas pour polygone
             {
-              min = max + 1;
-              max = min + nb_ef -1;
+              const std::vector<cgsize_t>& fs = TRUST2CGNS.get_local_fs(), fs_offset = TRUST2CGNS.get_local_fs_offset();
+              max = min + TRUST2CGNS.get_nb_fs() - 1;
+
+              if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, fs.data(), fs_offset.data()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
+              const std::vector<cgsize_t> ef = TRUST2CGNS.get_local_ef(), ef_offset = TRUST2CGNS.get_local_ef_offset();
+              min = max + 1, max = min + TRUST2CGNS.get_nb_ef() - 1;
 
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId2[indx], min, max, ef.data(), ef_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
+          else
+            {
+              const std::vector<cgsize_t>& es = TRUST2CGNS.get_local_es(), es_offset = TRUST2CGNS.get_local_es_offset();
+              max = min + TRUST2CGNS.get_nb_es() -1;
+
+              if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, es.data(), es_offset.data()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+            }
+          TRUST2CGNS.clear_vectors();
         }
       else
         {

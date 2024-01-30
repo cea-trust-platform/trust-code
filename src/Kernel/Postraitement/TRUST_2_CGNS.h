@@ -45,6 +45,18 @@ public:
   void fill_global_infos_poly(const bool);
   int compute_shift(const std::vector<int>&);
 
+
+  int get_nb_fs() const { return nb_fs_; }
+  const std::vector<int>& get_global_nb_face_som() const { return global_nb_face_som_; }
+  const std::vector<int>& get_global_nb_face_som_offset() const { return global_nb_face_som_offset_; }
+
+  int get_nb_ef() const { return nb_ef_; }
+  const std::vector<int>& get_global_nb_elem_face() const { return global_nb_elem_face_; }
+  const std::vector<int>& get_global_nb_elem_face_offset() const { return global_nb_elem_face_offset_; }
+
+  int get_nb_es() const { return nb_es_; }
+  const std::vector<int>& get_global_nb_elem_som_offset() const { return global_nb_elem_som_offset_; }
+
   int get_ne_tot() const { return ne_tot_; }
   const std::vector<int>& get_global_incr_min_elem() const { return global_incr_min_elem_; }
   const std::vector<int>& get_global_incr_max_elem() const { return global_incr_max_elem_; }
@@ -93,16 +105,16 @@ private:
   bool par_in_zone_ = false, all_procs_write_ = true;
   int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
 
-  std::vector<int> proc_non_zero_elem_;
-
-  std::vector<int> global_nb_elem_, global_nb_som_;
+  std::vector<int> global_nb_elem_, global_nb_som_, proc_non_zero_elem_;
 
   std::vector<int> global_incr_min_elem_, global_incr_max_elem_; // elem
 
   std::vector<int> global_incr_min_som_, global_incr_max_som_; //som
 
   // pour polyedre
-  int nfs_tot_ = -123, nef_tot_ = -123, nfs_offset_tot_ = -123, nef_offset_tot_ = -123, nes_offset_tot_ = -123;
+  int nb_fs_ = -123, nb_ef_ = -123, nb_es_ = -123, nfs_tot_ = -123, nef_tot_ = -123, nfs_offset_tot_ = -123, nef_offset_tot_ = -123, nes_offset_tot_ = -123;
+
+  std::vector<int> global_nb_face_som_, global_nb_elem_face_, global_nb_face_som_offset_, global_nb_elem_face_offset_, global_nb_elem_som_offset_;
 
   std::vector<int> global_incr_min_face_som_, global_incr_max_face_som_; // pour NGON_n - face_som
 

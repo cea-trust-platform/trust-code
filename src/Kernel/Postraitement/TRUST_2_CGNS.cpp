@@ -101,7 +101,19 @@ void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>
 
 void TRUST_2_CGNS::clear_vectors()
 {
-  if (!proc_non_zero_elem_.empty()) proc_non_zero_elem_.clear(); // XXX a voir plus tard si utile pour garder
+  if (!Option_CGNS::PARALLEL_OVER_ZONE)
+    if (!proc_non_zero_elem_.empty()) proc_non_zero_elem_.clear(); // XXX a voir plus tard si utile pour garder
+
+  if (!global_nb_elem_.empty()) global_nb_elem_.clear();
+  if (!global_nb_som_.empty()) global_nb_som_.clear();
+
+  if (!global_nb_face_som_.empty()) global_nb_face_som_.clear();
+  if (!global_nb_face_som_offset_.empty()) global_nb_face_som_offset_.clear();
+
+  if (!global_nb_elem_face_.empty()) global_nb_elem_face_.clear();
+  if (!global_nb_elem_face_offset_.empty()) global_nb_elem_face_offset_.clear();
+
+  if (!global_nb_elem_som_offset_.empty()) global_nb_elem_som_offset_.clear();
 
   if (!global_incr_min_face_som_.empty()) global_incr_min_face_som_.clear();
   if (!global_incr_max_face_som_.empty()) global_incr_max_face_som_.clear();
@@ -178,12 +190,11 @@ void TRUST_2_CGNS::fill_global_infos()
 
 void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 {
-  assert(!Option_CGNS::PARALLEL_OVER_ZONE);
   assert(dom_trust_.non_nul());
 
   int decal = 0; // a modifier plus tard !!!
   const int nb_procs = Process::nproc();
-  par_in_zone_ = true;
+  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE) ? true : false;
 
   if (is_polyedre)
     {
@@ -193,110 +204,123 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 
       const int nb_fs = fs.dimension(0), nb_ef = ef.dimension(0);
 
-      std::vector<int> global_nb_face_som, global_nb_elem_face;
-      global_nb_face_som.assign(nb_procs, -123 /* default */);
-      global_nb_elem_face.assign(nb_procs, -123 /* default */);
+      global_nb_face_som_.assign(nb_procs, -123 /* default */);
+      global_nb_elem_face_.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-      MPI_Allgather(&nb_fs, 1, MPI_ENTIER, global_nb_face_som.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-      MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_elem_face.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_fs, 1, MPI_ENTIER, global_nb_face_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_elem_face_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      // incr sur nb_faces tot
-      global_incr_min_face_som_.assign(nb_procs, -123 /* default */);
-      global_incr_max_face_som_.assign(nb_procs, -123 /* default */);
-      // incr sur nb_elem tot
-      global_incr_min_elem_face_.assign(nb_procs, -123 /* default */);
-      global_incr_max_elem_face_.assign(nb_procs, -123 /* default */);
-
-      global_incr_min_face_som_[0] = 1, global_incr_min_elem_face_[0] = 1; // start from 1 !
-      nfs_tot_ = 0, nef_tot_ = 0;
-
-      // now we fill global incremented min/max stuff
-      for (int i = 0; i < nb_procs; i++)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
         {
-          // 1 : min
-          global_incr_min_face_som_[i] = nfs_tot_ + 1;
-          global_incr_min_elem_face_[i] = nef_tot_ + 1;
-          // 2 : increment
-          nfs_tot_ += global_nb_face_som[i];
-          nef_tot_ += global_nb_elem_face[i];
-          // 3 : max
-          global_incr_max_face_som_[i] = nfs_tot_;
-          global_incr_max_elem_face_[i] = nef_tot_;
+          // incr sur nb_faces tot
+          global_incr_min_face_som_.assign(nb_procs, -123 /* default */);
+          global_incr_max_face_som_.assign(nb_procs, -123 /* default */);
+          // incr sur nb_elem tot
+          global_incr_min_elem_face_.assign(nb_procs, -123 /* default */);
+          global_incr_max_elem_face_.assign(nb_procs, -123 /* default */);
+
+          global_incr_min_face_som_[0] = 1, global_incr_min_elem_face_[0] = 1; // start from 1 !
+          nfs_tot_ = 0, nef_tot_ = 0;
+
+          // now we fill global incremented min/max stuff
+          for (int i = 0; i < nb_procs; i++)
+            {
+              // 1 : min
+              global_incr_min_face_som_[i] = nfs_tot_ + 1;
+              global_incr_min_elem_face_[i] = nef_tot_ + 1;
+              // 2 : increment
+              nfs_tot_ += global_nb_face_som_[i];
+              nef_tot_ += global_nb_elem_face_[i];
+              // 3 : max
+              global_incr_max_face_som_[i] = nfs_tot_;
+              global_incr_max_elem_face_[i] = nef_tot_;
+            }
         }
 
       // face_sommets : local vectors + offset
-      decal = compute_shift(global_incr_max_som_); // shift by sommets !!
-      convert_connectivity_ngon(local_fs_, local_fs_offset_, is_polyedre, decal);
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+        decal = compute_shift(global_incr_max_som_); // shift by sommets !!
+
+      nb_fs_ = convert_connectivity_ngon(local_fs_, local_fs_offset_, is_polyedre, decal);
 
       // elem_faces : local vectors + offset
-      decal = compute_shift(global_incr_max_face_som_); // shift by faces !!
-      convert_connectivity_nface(local_ef_, local_ef_offset_, decal);
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+        decal = compute_shift(global_incr_max_face_som_); // shift by faces !!
+
+      nb_ef_ = convert_connectivity_nface(local_ef_, local_ef_offset_, decal);
 
       // finalement : decalage
       const int nb_fs_offset = static_cast<int>(local_fs_.size()), nb_ef_offset = static_cast<int>(local_ef_.size());
 
-      std::vector<int> global_nb_face_som_offset, global_nb_elem_face_offset;
-      global_nb_face_som_offset.assign(nb_procs, -123 /* default */);
-      global_nb_elem_face_offset.assign(nb_procs, -123 /* default */);
+      global_nb_face_som_offset_.assign(nb_procs, -123 /* default */);
+      global_nb_elem_face_offset_.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-      MPI_Allgather(&nb_fs_offset, 1, MPI_ENTIER, global_nb_face_som_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-      MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_fs_offset, 1, MPI_ENTIER, global_nb_face_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      // incr sur nb_faces et nb_elem tot offset
-      std::vector<int> global_incr_max_face_som_offset, global_incr_max_elem_face_offset;
-      global_incr_max_face_som_offset.assign(nb_procs, -123 /* default */);
-      global_incr_max_elem_face_offset.assign(nb_procs, -123 /* default */);
-
-      nfs_offset_tot_ = 0, nef_offset_tot_ = 0;
-
-      // now we fill global incremented min/max stuff
-      for (int i = 0; i < nb_procs; i++)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
         {
-          // 1 : increment
-          nfs_offset_tot_ += global_nb_face_som_offset[i];
-          nef_offset_tot_ += global_nb_elem_face_offset[i];
-          // 2 : max
-          global_incr_max_face_som_offset[i] = nfs_offset_tot_;
-          global_incr_max_elem_face_offset[i] = nef_offset_tot_;
+          // incr sur nb_faces et nb_elem tot offset
+          std::vector<int> global_incr_max_face_som_offset, global_incr_max_elem_face_offset;
+          global_incr_max_face_som_offset.assign(nb_procs, -123 /* default */);
+          global_incr_max_elem_face_offset.assign(nb_procs, -123 /* default */);
+
+          nfs_offset_tot_ = 0, nef_offset_tot_ = 0;
+
+          // now we fill global incremented min/max stuff
+          for (int i = 0; i < nb_procs; i++)
+            {
+              // 1 : increment
+              nfs_offset_tot_ += global_nb_face_som_offset_[i];
+              nef_offset_tot_ += global_nb_elem_face_offset_[i];
+              // 2 : max
+              global_incr_max_face_som_offset[i] = nfs_offset_tot_;
+              global_incr_max_elem_face_offset[i] = nef_offset_tot_;
+            }
+
+          decal = compute_shift(global_incr_max_face_som_offset); // shift by faces offset !!
+          for (auto &itr : local_fs_offset_) itr += decal;
+
+          decal = compute_shift(global_incr_max_elem_face_offset); // shift by elem offset !!
+          for (auto &itr : local_ef_offset_) itr += decal;
         }
-
-      decal = compute_shift(global_incr_max_face_som_offset); // shift by faces offset !!
-      for (auto& itr : local_fs_offset_) itr += decal;
-
-      decal = compute_shift(global_incr_max_elem_face_offset); // shift by elem offset !!
-      for (auto& itr : local_ef_offset_) itr += decal;
     }
   else // polygon
     {
-      decal = compute_shift(global_incr_max_som_); // shift by sommets !!
-      convert_connectivity_ngon(local_es_, local_es_offset_, is_polyedre, decal);
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+        decal = compute_shift(global_incr_max_som_); // shift by sommets !!
+
+      nb_es_ = convert_connectivity_ngon(local_es_, local_es_offset_, is_polyedre, decal);
 
       const int nb_es_offset = static_cast<int>(local_es_.size());
 
       // incr sur nb_elem tot offset
-      std::vector<int> global_nb_elem_som_offset, global_incr_max_elem_som_offset;
-      global_nb_elem_som_offset.assign(nb_procs, -123 /* default */);
+      global_nb_elem_som_offset_.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-      MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+      MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      global_incr_max_elem_som_offset.assign(nb_procs, -123 /* default */);
-      nes_offset_tot_ = 0;
-
-      // now we fill global incremented min/max stuff
-      for (int i = 0; i < nb_procs; i++)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE)
         {
-          nes_offset_tot_ += global_nb_elem_som_offset[i]; // 1 : increment
-          global_incr_max_elem_som_offset[i] = nes_offset_tot_;  // 2 : max
-        }
+          std::vector<int> global_incr_max_elem_som_offset;
+          global_incr_max_elem_som_offset.assign(nb_procs, -123 /* default */);
+          nes_offset_tot_ = 0;
 
-      decal = compute_shift(global_incr_max_elem_som_offset); // shift by elem offset !!
-      for (auto& itr : local_es_offset_) itr += decal;
+          // now we fill global incremented min/max stuff
+          for (int i = 0; i < nb_procs; i++)
+            {
+              nes_offset_tot_ += global_nb_elem_som_offset_[i]; // 1 : increment
+              global_incr_max_elem_som_offset[i] = nes_offset_tot_;  // 2 : max
+            }
+
+          decal = compute_shift(global_incr_max_elem_som_offset); // shift by elem offset !!
+          for (auto &itr : local_es_offset_) itr += decal;
+        }
     }
 }
 
