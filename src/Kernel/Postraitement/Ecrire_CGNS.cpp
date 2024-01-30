@@ -547,7 +547,8 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
       /* 5.1 : Create zone & Construct the grid coordinates nodes */
       cgns_helper_.cgns_write_zone_grid_coord<TYPE_ECRITURE::PAR_OVER>(icelldim, fileId_, baseId_, zonename.c_str(), isize[0],
-                                                                       zoneId_, xCoords, yCoords, zCoords, coordsIdx.back(), coordsIdy.back(), coordsIdz.back());
+                                                                       zoneId_, xCoords, yCoords, zCoords,
+                                                                       coordsIdx.back(), coordsIdy.back(), coordsIdz.empty() ? coordsIdy.back() /* inutile */ : coordsIdz.back());
 
       /* 5.2 : Construct the sections to host connectivity later */
       sectionId.push_back(-123);
@@ -599,7 +600,8 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
       /* 6.1 : Write grid coordinates */
       cgns_helper_.cgns_write_grid_coord_data<TYPE_ECRITURE::PAR_OVER>(icelldim, fileId_, baseId_, zoneId_par_.back()[indx],
-                                                                       coordsIdx[indx], coordsIdy[indx], coordsIdz[indx], min, max, xCoords, yCoords, zCoords);
+                                                                       coordsIdx[indx], coordsIdy[indx], coordsIdz.empty() ? -123 : coordsIdz[indx],
+                                                                       min, max, xCoords, yCoords, zCoords);
 
       /* 6.2 : Set element connectivity */
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
