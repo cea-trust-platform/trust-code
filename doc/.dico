@@ -313,6 +313,7 @@
  Domaine_VF Domaine_VF Domaine_VF.h
  Domaine_VF_inst Domaine_VF_inst Domaine_VF_inst.h
  DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0P1NC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
+ DP_Impose_VEF_P1NC DP_Impose_VEF_Face DP_Impose_VEF_Face.h
  Echange_couplage_thermique Echange_couplage_thermique Echange_couplage_thermique.h
  Echange_global_impose_turbulent Echange_global_impose_turbulent Echange_global_impose_turbulent.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
@@ -667,6 +668,7 @@
  Operateur_Grad_base Operateur_Grad_base Operateur_Grad_base.h
  Operateur_Statistique_tps Operateur_Statistique_tps Operateur_Statistique_tps.h
  Operateur_Statistique_tps_base Operateur_Statistique_tps_base Operateur_Statistique_tps_base.h
+ Option_Interpolation Option_Interpolation Option_Interpolation.h
  Option_PolyMAC Option_PolyMAC Option_PolyMAC.h
  Option_PolyMAC_P0 Option_PolyMAC_P0 Option_PolyMAC_P0.h
  Option_VDF Option_VDF Option_VDF.h
