@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -308,12 +308,12 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
     }
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
 #else
-  CIntTabView face_voisins_v = face_voisins.view_ro();
-  CDoubleArrView porosite_face_v = porosite_face.view_ro();
-  CDoubleTabView face_normales_v = face_normales.view_ro();
-  CIntTabView elem_faces_v = elem_faces.view_ro();
+  const IntTabView face_voisins_v = face_voisins.view_ro();
+  const DoubleVectView porosite_face_v = porosite_face.view_ro();
+  const DoubleTabView face_normales_v = face_normales.view_ro();
+  const IntTabView elem_faces_v = elem_faces.view_ro();
   pre.modified_on_host();  // TODO should not be necessary
-  CDoubleTabView pre_v = pre.view_ro();
+  const DoubleTabView pre_v = pre.view_ro();
   grad.modified_on_host();  // TODO should not be necessary
   DoubleTabView grad_v = grad.view_rw();
   int dim = Objet_U::dimension;
@@ -722,11 +722,11 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
     }
   end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 #else
-  CIntTabView face_voisins_v = face_voisins.view_ro();
-  CIntTabView sommets_v = sommets.view_ro();
-  CDoubleTabView face_normales_v = face_normales.view_ro();
+  const IntTabView face_voisins_v = face_voisins.view_ro();
+  const IntTabView sommets_v = sommets.view_ro();
+  const DoubleTabView face_normales_v = face_normales.view_ro();
   pression_P1B.modified_on_host();  // TODO should not be necessary
-  CDoubleArrView pression_P1B_v = pression_P1B.view_ro();
+  const DoubleVectView pression_P1B_v = pression_P1B.view_ro();
 //  DoubleTab flux_bords2 = flux_bords_;
   DoubleTabView flux_bords_v = flux_bords_.view_wo();
   int dim = Objet_U::dimension;

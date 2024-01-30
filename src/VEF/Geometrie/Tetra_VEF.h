@@ -165,7 +165,7 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
 
 #ifdef KOKKOS_
 KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, const double * vs, const double * vsom,
-                                                  CDoubleTabView vitesse_v,True_int type_cl, CDoubleArrView porosite_face_v)
+                                                  const DoubleTabView vitesse_v,True_int type_cl, const DoubleVectView porosite_face_v)
 {
   // Passage (justifie vue la taille) en True_int de type_cl et comp car bug nvc++ sinon
   True_int comp;

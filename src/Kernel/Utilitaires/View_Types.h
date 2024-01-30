@@ -57,10 +57,6 @@ using host_mirror_space = DualViewArr<double>::host_mirror_space;
 template<typename T>
 using ViewArr = Kokkos::View<T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
-// Its const version:
-template<typename T>
-using ConstViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-
 // Same thing for tabs:
 template<typename T>
 using ViewTab = Kokkos::View<T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
@@ -69,30 +65,14 @@ using ViewTab3 = Kokkos::View<T ***, typename DualViewArr<T>::array_layout, memo
 template<typename T>
 using ViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
-template<typename T>
-using ConstViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-
-
 // Handy aliases:
-using IntArrView = ViewArr<int>;
-using DoubleArrView = ViewArr<double>;
-
-using CIntArrView = ConstViewArr<int>;
-using CDoubleArrView = ConstViewArr<double>;
+using IntVectView = ViewArr<int>;
+using DoubleVectView = ViewArr<double>;
 
 using IntTabView = ViewTab<int>;
 using DoubleTabView = ViewTab<double>;
 using DoubleTabView3 = ViewTab3<double>;
 using DoubleTabView4 = ViewTab4<double>;
-
-using CIntTabView = ConstViewTab<int>;
-using CDoubleTabView = ConstViewTab<double>;
-using CDoubleTabView3 = ConstViewTab3<double>;
-using CDoubleTabView4 = ConstViewTab4<double>;
 
 #endif // KOKKOS_
 

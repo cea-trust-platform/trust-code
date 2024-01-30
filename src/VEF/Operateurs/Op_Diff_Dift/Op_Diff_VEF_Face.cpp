@@ -299,10 +299,10 @@ struct MyFunc
 
   const int nb_comp;
   const int nb_faces_bord;
-  CIntTabView face_voisins_v;
-  CDoubleTabView face_normales_v;
-  CDoubleTabView nu_v;
-  CDoubleTabView grad_v;
+  const IntTabView face_voisins_v;
+  const DoubleTabView face_normales_v;
+  const DoubleTabView nu_v;
+  const DoubleTabView grad_v;
   DoubleTabView resu_v;
   DoubleTabView tab_flux_bords_v;
 
@@ -415,13 +415,13 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
     } // Fin de la boucle sur les faces
   end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
 #else
-  CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
-  CDoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
-  CDoubleTabView nu_v = nu.view_ro();
+  const IntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
+  const DoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
+  const DoubleTabView nu_v = nu.view_ro();
   grad_.modified_on_host3();   // TODO : to be removed later
-  CDoubleTabView3 grad_v = grad_.view3_ro();
+  const DoubleTabView3 grad_v = grad_.view3_ro();
 //  grad_.modified_on_host();   // TODO : to be removed later
-//  CDoubleTabView grad_v = grad_.view_ro();
+//  const DoubleTabView grad_v = grad_.view_ro();
   resu.modified_on_host();   // TODO : to be removed later
   DoubleTabView resu_v = resu.view_rw();
   tab_flux_bords.modified_on_host();   // TODO : to be removed later

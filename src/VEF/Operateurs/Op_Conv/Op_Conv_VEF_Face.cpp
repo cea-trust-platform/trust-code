@@ -808,30 +808,30 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           }
           end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::ajouter");
 #else
-          CIntArrView rang_elem_non_std_v = rang_elem_non_std.view_ro();
-          CIntTabView elem_faces_v = elem_faces.view_ro();
-          CDoubleArrView porosite_face_v = porosite_face.view_ro();
-          CDoubleArrView porosite_elem_v = porosite_elem.view_ro();
-          CDoubleTabView coord_sommets_v = coord_sommets.view_ro();
-          CIntTabView les_elems_v = les_elems.view_ro();
-          CDoubleTabView3 facette_normales_v = facette_normales.view3_ro();
-          CIntArrView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
-          CDoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
-          CDoubleTabView xv_v = xv.view_ro();
-          CIntArrView type_elem_Cl_v = type_elem_Cl_.view_ro();
-          CIntArrView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
-          CIntTabView KEL_v = type_elemvef.KEL().view_ro();
-          CDoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
-          CDoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
+          const IntVectView rang_elem_non_std_v = rang_elem_non_std.view_ro();
+          const IntTabView elem_faces_v = elem_faces.view_ro();
+          const DoubleVectView porosite_face_v = porosite_face.view_ro();
+          const DoubleVectView porosite_elem_v = porosite_elem.view_ro();
+          const DoubleTabView coord_sommets_v = coord_sommets.view_ro();
+          const IntTabView les_elems_v = les_elems.view_ro();
+          const DoubleTabView3 facette_normales_v = facette_normales.view3_ro();
+          const IntVectView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
+          const DoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
+          const DoubleTabView xv_v = xv.view_ro();
+          const IntVectView type_elem_Cl_v = type_elem_Cl_.view_ro();
+          const IntVectView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
+          const IntTabView KEL_v = type_elemvef.KEL().view_ro();
+          const DoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
+          const DoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
 
           la_vitesse.valeurs().modified_on_host();
-          CDoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
+          const DoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
           vitesse_face_absolue.modified_on_host();
-          CDoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
+          const DoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
           transporte_face.modified_on_host();
-          CDoubleTabView transporte_face_v = transporte_face.view_ro();
+          const DoubleTabView transporte_face_v = transporte_face.view_ro();
           gradient.modified_on_host();
-          CDoubleTabView3 gradient_v = gradient.view3_ro();
+          const DoubleTabView3 gradient_v = gradient.view3_ro();
 
           resu.modified_on_host();
           DoubleTabView resu_v = resu.view_rw();
