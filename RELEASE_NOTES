@@ -1,6 +1,15 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+30/01/24 (TRUST) Fix          : Fixed handling of empty domains in VEF, PolyMAC_P0, and other related areas.
+30/01/24 (TRUST) Fix          : Bug fix in pb_couple on the same domain with missing APPEND for fields.
+30/01/24 (TRUST) Fix          : Resolved the issue in Perte_Charge_VEF with non-uniform, non-xyz viscosity.
+30/01/24 (TRUST) Fix	      : Replaced deprecated Pandas append with concat in Jupyter notebooks.
+30/01/24 (TRUST) New feature  : himp and Text in Terme_Puissance_Thermique_Echange_Impose can now be champ_fonc fields.
+30/01/24 (TRUST) New feature  : Addition of new methods for face/element interpolation with DoubleTab in Discretization Tools.
+30/01/24 (TRUST) New feature  : DP_Impose and regulated pressure loses compatible with VEF discretizations
+30/01/24 (TRUST) New feature  : Champ_Fonc_Interp can be used now with OverlapDEC (for parallel cases)
+30/01/24 (TRUST) Portability  : Lots of portability stuff for mac: extension .so => dylib, linker, NB_PHYSICAL_CORES, awk ...
 18/01/24 (TRUST) Change       : OpenBLAS version updated to 0.3.25, this may result into some numerical differences in tests using this library
 18/01/24 (TRUST) New keyword  : Add mesh_numbering multi-scalar field to plot {node,cell,face} numerotation for visualization
 18/01/24 (TRUST) Fix          : Refine keywords (eg: Raffiner_simplexes, Raffiner_isotrope_parallele) were not refining sub_zones
