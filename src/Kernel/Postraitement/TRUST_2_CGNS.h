@@ -35,8 +35,11 @@ public:
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
   CGNS_TYPE convert_elem_type(const Motcle&);
 
+  int nb_procs_writing() const { return nb_procs_writing_; }
   const bool& all_procs_write() const { return all_procs_write_; }
   const std::vector<int>& get_proc_non_zero_elem() const { return proc_non_zero_elem_; }
+  const std::vector<int>& get_global_nb_elem() const { return global_nb_elem_; }
+  const std::vector<int>& get_global_nb_som() const { return global_nb_som_; }
 
   void fill_global_infos();
   void fill_global_infos_poly(const bool);
@@ -91,6 +94,8 @@ private:
   int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
 
   std::vector<int> proc_non_zero_elem_;
+
+  std::vector<int> global_nb_elem_, global_nb_som_;
 
   std::vector<int> global_incr_min_elem_, global_incr_max_elem_; // elem
 

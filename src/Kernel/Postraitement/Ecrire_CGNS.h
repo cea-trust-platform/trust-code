@@ -45,7 +45,7 @@ private:
   std::vector<std::string> connectname_;
   std::vector<double> time_post_;
   std::vector<int> baseId_, zoneId_, sizeId_;
-  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
+  std::vector<std::vector<int>> zoneId_par_; /* par ordre d'ecriture du domaine */
   std::vector<TRUST_2_CGNS> T2CGNS_;
   Ecrire_CGNS_helper cgns_helper_;
   int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;

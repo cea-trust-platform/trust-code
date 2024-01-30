@@ -429,20 +429,21 @@ void Ecrire_CGNS::cgns_write_iters_seq()
  */
 void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const Nom& nom_dom, const DoubleTab& les_som, const IntTab& les_elem, const Motcle& type_elem)
 {
-  /* 1 : Instance of TRUST_2_CGNS */
-  TRUST_2_CGNS TRUST2CGNS;
-  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
   doms_written_.push_back(nom_dom);
 
+  /* 1 : Instance of TRUST_2_CGNS */
+  T2CGNS_.push_back(TRUST_2_CGNS());
+  TRUST_2_CGNS& TRUST2CGNS = T2CGNS_.back();
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */
   std::vector<double> xCoords, yCoords, zCoords;
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
-  const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension;
-  const int nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0);
-  const int nb_procs = Process::nproc(), proc_me = Process::me();
+  const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension,
+            nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0),
+            nb_procs = Process::nproc(), proc_me = Process::me();
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
@@ -453,41 +454,22 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   /* 4 : We need global nb_elems/nb_soms => MPI_Allgather. Thats the only information required ! */
-  std::vector<int> global_nb_elem, global_nb_som;
-  global_nb_elem.assign(nb_procs, -123 /* default */);
-  global_nb_som.assign(nb_procs, -123 /* default */);
+  const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
 
-#ifdef MPI_
-//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
-  MPI_Allgather(&nb_elem, 1, MPI_ENTIER, global_nb_elem.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-  MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
+  TRUST2CGNS.fill_global_infos(); // XXX
 
-  global_nb_elem_.push_back(global_nb_elem); // XXX
 
   /* 5 : CREATION OF FILE STRUCTURE : zones, coords & sections
    *
    *  - All processors THAT HAVE nb_elem > 0 write the same information.
    *  - Only zone meta-data is written to the library at this stage ... So no worries ^^
    */
-  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, sectionId2, proc_non_zero_elem;
+  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, sectionId2;
   std::string zonename;
 
-  const auto min_nb_elem = std::min_element(global_nb_elem.begin(), global_nb_elem.end());
-  int nb_zones_to_write = nb_procs;
+  int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
+  const bool all_write = TRUST2CGNS.all_procs_write(); // all procs will write !
 
-  if (*min_nb_elem <= 0) // not all procs will write !
-    {
-      // remplir proc_non_zero_elem avec le numero de proc si nb_elem > 0 !!
-      for (int i = 0; i < static_cast<int>(global_nb_elem.size()); i++)
-        if (global_nb_elem[i] > 0) proc_non_zero_elem.push_back(i);
-
-      nb_zones_to_write = static_cast<int>(proc_non_zero_elem.size());
-    }
-
-  proc_non_zero_write_.push_back(proc_non_zero_elem); // XXX
-  const bool all_write = proc_non_zero_elem.empty(); // all procs will write !
-  const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
 
   /* ces vecteurs restes vide sauf si poly */
   std::vector<cgsize_t> sf, sf_offset, ef, ef_offset;
@@ -525,6 +507,9 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 
   // on boucle seulement sur les procs qui n'ont pas des nb_elem 0
   zoneId_.clear(); // XXX commencons par ca
+  const std::vector<int>& global_nb_elem = TRUST2CGNS.get_global_nb_elem(), global_nb_som = TRUST2CGNS.get_global_nb_som();
+  const std::vector<int>& proc_non_zero_elem = TRUST2CGNS.get_proc_non_zero_elem();
+
   for (int i = 0; i != nb_zones_to_write; i++)
     {
       const int indZ = all_write ? i : proc_non_zero_elem[i]; // procID
@@ -639,10 +624,9 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
   Nom& id_champ = id_du_champ_modifie;
 
   /* 2 : Get corresponding domain index */
+  const int proc_me = Process::me(), nb_vals = valeurs.dimension(0);
   const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
   assert(ind > -1);
-
-  const int nb_procs = Process::nproc(), proc_me = Process::me(), nb_vals = valeurs.dimension(0);
 
   /* 3 : CREATION OF FILE STRUCTURE
    *
@@ -650,9 +634,10 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
    *  - Only field meta-data is written to the library at this stage ... So no worries ^^
    *  - And just once per dt !
    */
-  const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
-  int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
-  const bool all_write = proc_non_zero_write_[ind].empty(); // all procs will write !
+  const TRUST_2_CGNS& TRUST2CGNS = T2CGNS_[ind];
+
+  const int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
+  const bool all_write = TRUST2CGNS.all_procs_write(); // all procs will write !
 
   cgns_helper_.cgns_sol_write<TYPE_ECRITURE::PAR_OVER>(nb_zones_to_write, fileId_, baseId_[ind], ind, temps, zoneId_par_[ind], LOC, solname_som_, solname_elem_,
                                                        solname_som_written_, solname_elem_written_, flowId_som_, flowId_elem_);
@@ -665,10 +650,11 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
     {
       cgsize_t min = 1, max = nb_vals;
       int indx = -123;
+      const std::vector<int>& proc_non_zero_write= TRUST2CGNS.get_proc_non_zero_elem();
       if (all_write) indx = proc_me;
       else
         for (int i = 0; i < nb_zones_to_write; i++)
-          if (proc_non_zero_write_[ind][i] == proc_me)
+          if (proc_non_zero_write[i] == proc_me)
             {
               indx = i;
               break;
@@ -682,7 +668,6 @@ void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double te
 void Ecrire_CGNS::cgns_write_iters_par_over_zone()
 {
 //  assert(static_cast<int>(baseId_.size()) == static_cast<int>(zoneId_.size())); // XXX No not for // !!!
-  const int nb_procs = Process::nproc();
   std::vector<int> ind_doms_dumped;
 
   /* 1 : on iter juste sur le map fld_loc_map_; ie: pas domaine dis ... */
@@ -694,8 +679,8 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
       ind_doms_dumped.push_back(ind);
       assert(ind > -1);
 
-      const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
-      int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
+      const TRUST_2_CGNS& TRUST2CGNS = T2CGNS_[ind];
+      const int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
 
       cgns_helper_.cgns_write_iters<TYPE_ECRITURE::PAR_OVER>(true /* has_field */, nb_zones_to_write, fileId_, baseId_[ind], ind, zoneId_par_[ind], LOC, solname_som_, solname_elem_, time_post_);
     }
@@ -709,8 +694,8 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
           const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
           assert(ind > -1);
 
-          const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
-          int nb_zones_to_write = (*min_nb_elem <= 0) ? static_cast<int>(proc_non_zero_write_[ind].size()) : nb_procs;
+          const TRUST_2_CGNS& TRUST2CGNS = T2CGNS_[ind];
+          const int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
 
           cgns_helper_.cgns_write_iters<TYPE_ECRITURE::PAR_OVER>(false /* has_field */, nb_zones_to_write, fileId_, baseId_[ind], ind, zoneId_par_[ind], "rien", solname_som_, solname_elem_, time_post_);
         }

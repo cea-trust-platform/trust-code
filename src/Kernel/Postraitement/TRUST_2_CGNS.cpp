@@ -121,54 +121,55 @@ void TRUST_2_CGNS::clear_vectors()
 
 void TRUST_2_CGNS::fill_global_infos()
 {
-  assert (!Option_CGNS::PARALLEL_OVER_ZONE);
   assert (sommets_.non_nul() && elems_.non_nul());
 
   const int nb_som = sommets_->dimension(0), nb_elem = elems_->dimension(0);
   const int nb_procs = Process::nproc();
 
-  par_in_zone_ = true;
+  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE) ? true : false;
 
-  std::vector<int> global_nb_elem, global_nb_som;
-  global_nb_elem.assign(nb_procs, -123 /* default */);
-  global_nb_som.assign(nb_procs, -123 /* default */);
+  global_nb_elem_.assign(nb_procs, -123 /* default */);
+  global_nb_som_.assign(nb_procs, -123 /* default */);
 
 #ifdef MPI_
-//  grp.all_gather(&nb_elem, global_nb_elem.data(), 1); // Elie : pas MPI_CHAR desole
-  MPI_Allgather(&nb_elem, 1, MPI_ENTIER, global_nb_elem.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-  MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+//  grp.all_gather(&nb_elem, global_nb_elem_.data(), 1); // Elie : pas MPI_CHAR desole
+  MPI_Allgather(&nb_elem, 1, MPI_ENTIER, global_nb_elem_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
+  MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-  global_incr_min_elem_.assign(nb_procs, -123 /* default */);
-  global_incr_max_elem_.assign(nb_procs, -123 /* default */);
-  global_incr_min_som_.assign(nb_procs, -123 /* default */);
-  global_incr_max_som_.assign(nb_procs, -123 /* default */);
-
-  global_incr_min_elem_[0] = 1, global_incr_min_som_[0] = 1; // start from 1 !
-  ns_tot_ = 0, ne_tot_ = 0;
-
-  // now we fill global incremented min/max stuff
-  for (int i = 0; i < nb_procs; i++)
+  if (!Option_CGNS::PARALLEL_OVER_ZONE)
     {
-      // 1 : min
-      global_incr_min_elem_[i] = ne_tot_ + 1;
-      global_incr_min_som_[i] = ns_tot_ + 1;
-      // 2 : increment
-      ne_tot_ += global_nb_elem[i];
-      ns_tot_ += global_nb_som[i];
-      // 3 : max
-      global_incr_max_elem_[i] = ne_tot_;
-      global_incr_max_som_[i] = ns_tot_;
+      global_incr_min_elem_.assign(nb_procs, -123 /* default */);
+      global_incr_max_elem_.assign(nb_procs, -123 /* default */);
+      global_incr_min_som_.assign(nb_procs, -123 /* default */);
+      global_incr_max_som_.assign(nb_procs, -123 /* default */);
+
+      global_incr_min_elem_[0] = 1, global_incr_min_som_[0] = 1; // start from 1 !
+      ns_tot_ = 0, ne_tot_ = 0;
+
+      // now we fill global incremented min/max stuff
+      for (int i = 0; i < nb_procs; i++)
+        {
+          // 1 : min
+          global_incr_min_elem_[i] = ne_tot_ + 1;
+          global_incr_min_som_[i] = ns_tot_ + 1;
+          // 2 : increment
+          ne_tot_ += global_nb_elem_[i];
+          ns_tot_ += global_nb_som_[i];
+          // 3 : max
+          global_incr_max_elem_[i] = ne_tot_;
+          global_incr_max_som_[i] = ns_tot_;
+        }
     }
 
-  const auto min_nb_elem = std::min_element(global_nb_elem.begin(), global_nb_elem.end());
+  const auto min_nb_elem = std::min_element(global_nb_elem_.begin(), global_nb_elem_.end());
   nb_procs_writing_ = nb_procs; // pour le moment
 
   if (*min_nb_elem <= 0) // not all procs will write !
     {
       // remplir proc_non_zero_elem avec le numero de proc si nb_elem > 0 !!
-      for (int i = 0; i < static_cast<int>(global_nb_elem.size()); i++)
-        if (global_nb_elem[i] > 0) proc_non_zero_elem_.push_back(i);
+      for (int i = 0; i < static_cast<int>(global_nb_elem_.size()); i++)
+        if (global_nb_elem_[i] > 0) proc_non_zero_elem_.push_back(i);
 
       nb_procs_writing_ = static_cast<int>(proc_non_zero_elem_.size());
       all_procs_write_ = false;
