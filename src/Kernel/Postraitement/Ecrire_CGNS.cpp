@@ -116,7 +116,7 @@ void Ecrire_CGNS::cgns_close_file()
 
 void Ecrire_CGNS::cgns_add_time(const double t)
 {
-  if (Option_CGNS::USE_LINKS && !postraiter_domaine_) cgns_open_close_files(t);
+  if (Option_CGNS::USE_LINKS && !postraiter_domaine_) cgns_open_close_link_files(t);
 
   time_post_.push_back(t); // add time_post
   flowId_elem_++, flowId_som_++; // increment
@@ -126,11 +126,11 @@ void Ecrire_CGNS::cgns_add_time(const double t)
 
 void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, const DoubleTab& som, const IntTab& elem, const Motcle& type_e)
 {
-  std::string nom_dom_modifie = modify_domaine_name_for_post(nom_dom);
+  std::string nom_dom_modifie = TRUST_2_CGNS::modify_domaine_name_for_post(nom_dom);
 
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
     if (!grid_file_opened_)
-      cgns_open_grid_file(), grid_file_opened_ = true; // On ouvre pour .grid.cgns
+      cgns_open_grid_base_link_file(), grid_file_opened_ = true; // On ouvre pour .grid.cgns
 
   if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
     {
@@ -156,7 +156,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
     }
 
   /* 1 : if first time called ... build different supports for mixed locations */
-  fill_field_loc_map(domaine, LOC);
+  cgns_fill_field_loc_map(domaine, LOC);
 
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
@@ -182,7 +182,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
  * *********************************** *
  */
 
-void Ecrire_CGNS::fill_field_loc_map(const Domaine& domaine, const std::string& LOC)
+void Ecrire_CGNS::cgns_fill_field_loc_map(const Domaine& domaine, const std::string& LOC)
 {
   if (static_cast<int>(time_post_.size()) == 1)
     {
@@ -221,7 +221,7 @@ void Ecrire_CGNS::fill_field_loc_map(const Domaine& domaine, const std::string& 
           if (static_cast<int>(fld_loc_map_.size()) == 0)
             {
               fld_loc_map_.insert( { LOC, domaine.le_nom() });
-              cgns_open_solution_file(0, LOC, time_post_.back()); // 1st sol file to open here !!
+              cgns_open_solution_link_file(0, LOC, time_post_.back()); // 1st sol file to open here !!
             }
           else
             {
@@ -230,22 +230,11 @@ void Ecrire_CGNS::fill_field_loc_map(const Domaine& domaine, const std::string& 
                 {
                   Cerr << "A second CGNS file will be written to host the fields located at : " << LOC << " !" << finl;
                   fld_loc_map_.insert( { LOC, domaine.le_nom() });
-                  cgns_open_solution_file(1, LOC, time_post_.back());  // 2nd sol file to open here !!
+                  cgns_open_solution_link_file(1, LOC, time_post_.back());  // 2nd sol file to open here !!
                 }
             }
         }
     }
-}
-
-int Ecrire_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
-{
-  int ind = -1;
-  auto it = find(vect.begin(), vect.end(), nom);
-
-  if (it != vect.end()) // element found
-    ind = static_cast<int>(it - vect.begin()); // XXX sinon utilse std::distance ...
-
-  return ind;
 }
 
 /*
@@ -286,7 +275,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   const bool is_polyedre = (type_elem == "POLYEDRE" || type_elem == "PRISME" || type_elem == "PRISME_HEXAG");
 
   if (Option_CGNS::USE_LINKS)
-    fill_info_grid_link(basename, cgns_type_elem, icelldim, nb_som, nb_elem, is_polyedre);
+    cgns_fill_info_grid_link_file(basename, cgns_type_elem, icelldim, nb_som, nb_elem, is_polyedre);
 
   zoneId_.push_back(-123);
 
@@ -338,11 +327,11 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
 void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
+  Motcle id_du_champ_modifie = TRUST_2_CGNS::modify_field_name_for_post(id_du_champ, id_du_domaine, LOC, fieldId_som_, fieldId_elem_);
   Nom& id_champ = id_du_champ_modifie;
 
   /* 2 : Get corresponding domain index */
-  const int ind = get_index_nom_vector(doms_written_, nom_dom);
+  const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
   assert(ind > -1);
 
   const int nb_vals = valeurs.dimension(0);
@@ -411,7 +400,7 @@ void Ecrire_CGNS::cgns_write_iters_seq()
     {
       const std::string& LOC = itr.first;
       const Nom& nom_dom = itr.second;
-      const int ind = get_index_nom_vector(doms_written_, nom_dom);
+      const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
       ind_doms_dumped.push_back(ind);
       assert(ind > -1);
 
@@ -424,7 +413,7 @@ void Ecrire_CGNS::cgns_write_iters_seq()
       if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
         {
           const Nom& nom_dom = doms_written_[i];
-          const int ind = get_index_nom_vector(doms_written_, nom_dom);
+          const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
           assert(ind > -1);
 
           cgns_helper_.cgns_write_iters<TYPE_ECRITURE::SEQ>(false /* has_field */, 1 /* nb_zones_to_write */, fileId_, baseId_[ind], ind, zoneId_, "rien", solname_som_, solname_elem_, time_post_);
@@ -644,11 +633,11 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
 void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   std::string LOC = Motcle(localisation).getString();
-  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
+  Motcle id_du_champ_modifie = TRUST_2_CGNS::modify_field_name_for_post(id_du_champ, id_du_domaine, LOC, fieldId_som_, fieldId_elem_);
   Nom& id_champ = id_du_champ_modifie;
 
   /* 2 : Get corresponding domain index */
-  const int ind = get_index_nom_vector(doms_written_, nom_dom);
+  const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
   assert(ind > -1);
 
   const int nb_procs = Process::nproc(), proc_me = Process::me(), nb_vals = valeurs.dimension(0);
@@ -699,7 +688,7 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
     {
       const std::string& LOC = itr.first;
       const Nom& nom_dom = itr.second;
-      const int ind = get_index_nom_vector(doms_written_, nom_dom);
+      const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
       ind_doms_dumped.push_back(ind);
       assert(ind > -1);
 
@@ -715,7 +704,7 @@ void Ecrire_CGNS::cgns_write_iters_par_over_zone()
       if (std::find(ind_doms_dumped.begin(), ind_doms_dumped.end(), i) == ind_doms_dumped.end()) // indice pas dans ind_doms_dumped
         {
           const Nom& nom_dom = doms_written_[i];
-          const int ind = get_index_nom_vector(doms_written_, nom_dom);
+          const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
           assert(ind > -1);
 
           const auto min_nb_elem = std::min_element(global_nb_elem_[ind].begin(), global_nb_elem_[ind].end());
@@ -778,7 +767,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   isize[2][0] = 0; /* boundary vertex size (zero if elements not sorted) */
 
   if (Option_CGNS::USE_LINKS)
-    fill_info_grid_link(basename, cgns_type_elem, icelldim, ns_tot, ne_tot, is_polyedre);
+    cgns_fill_info_grid_link_file(basename, cgns_type_elem, icelldim, ns_tot, ne_tot, is_polyedre);
 
   int coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
   zoneId_.push_back(-123);
@@ -899,11 +888,11 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
 void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
   const int proc_me = Process::me(), nb_vals = valeurs.dimension(0);
-  const int ind = get_index_nom_vector(doms_written_, nom_dom);
+  const int ind = TRUST_2_CGNS::get_index_nom_vector(doms_written_, nom_dom);
   assert(ind > -1);
 
   std::string LOC = Motcle(localisation).getString();
-  Motcle id_du_champ_modifie = modify_field_name_for_post(id_du_champ, id_du_domaine, LOC);
+  Motcle id_du_champ_modifie = TRUST_2_CGNS::modify_field_name_for_post(id_du_champ, id_du_domaine, LOC, fieldId_som_, fieldId_elem_);
   Nom& id_champ = id_du_champ_modifie;
 
   /* quel fileID ?? */
@@ -958,34 +947,12 @@ void Ecrire_CGNS::cgns_write_iters_par_in_zone()
   cgns_write_iters_seq();
 }
 
-Motcle Ecrire_CGNS::modify_field_name_for_post(const Nom& id_du_champ, const Nom& id_du_domaine, const std::string& LOC)
-{
-  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
-
-  if (LOC == "SOM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_SOM_");
-    }
-  else if (LOC == "ELEM")
-    {
-      id_du_champ_modifie.prefix(id_du_domaine);
-      id_du_champ_modifie.prefix(iddomaine);
-      id_du_champ_modifie.prefix("_ELEM_");
-    }
-
-  /* 1 : Increment fieldIds */
-  if (LOC == "SOM") fieldId_som_++;
-  else
-    // ELEM // TODO FIXME FACES
-    fieldId_elem_++;
-
-  return id_du_champ_modifie;
-}
-
-
-void Ecrire_CGNS::fill_info_grid_link(const char* basename, const CGNS_TYPE& cgns_type_elem, const int icelldim, const int nb_som, const int nb_elem, const bool is_polyedre)
+/*
+ * ***************** *
+ * METHODS POUR LINK *
+ * ***************** *
+ */
+void Ecrire_CGNS::cgns_fill_info_grid_link_file(const char* basename, const CGNS_TYPE& cgns_type_elem, const int icelldim, const int nb_som, const int nb_elem, const bool is_polyedre)
 {
   if (connectname_.empty())
     {
@@ -1004,28 +971,11 @@ void Ecrire_CGNS::fill_info_grid_link(const char* basename, const CGNS_TYPE& cgn
     }
 }
 
-std::string Ecrire_CGNS::modify_domaine_name_for_post(const Nom& nom_dom)
-{
-  std::string nom_dom_modifie = nom_dom.getString();
-
-  if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
-    {
-      size_t found = nom_dom_modifie.find("boundaries_");
-      if (found != std::string::npos)
-        nom_dom_modifie.erase(found, 11); // 11 is the length of "boundaries_"
-
-      if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
-        nom_dom_modifie.resize(CGNS_STR_SIZE, ' ');
-    }
-
-  return nom_dom_modifie;
-}
-
-void Ecrire_CGNS::cgns_open_close_files(const double t)
+void Ecrire_CGNS::cgns_open_close_link_files(const double t)
 {
   if (grid_file_opened_)
     {
-      cgns_close_grid_solution_file(0 /* only one index here */, baseFile_name_ + ".grid.cgns", true);
+      cgns_close_grid_solution_link_file(0 /* only one index here */, baseFile_name_ + ".grid.cgns", true);
       grid_file_opened_ = false;
     }
 
@@ -1035,13 +985,13 @@ void Ecrire_CGNS::cgns_open_close_files(const double t)
       for (auto itr = fld_loc_map_.begin(); itr != fld_loc_map_.end(); ++itr)
         {
           const int ind = static_cast<int>(std::distance(fld_loc_map_.begin(), itr));
-          cgns_close_grid_solution_file(ind, baseFile_name_);
-          cgns_open_solution_file(ind, itr->first, t);
+          cgns_close_grid_solution_link_file(ind, baseFile_name_);
+          cgns_open_solution_link_file(ind, itr->first, t);
         }
     }
 }
 
-void Ecrire_CGNS::cgns_open_grid_file()
+void Ecrire_CGNS::cgns_open_grid_base_link_file()
 {
   assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
   std::string fn = baseFile_name_ + ".grid.cgns"; // file name
@@ -1062,7 +1012,7 @@ void Ecrire_CGNS::cgns_open_grid_file()
     }
 }
 
-void Ecrire_CGNS::cgns_open_solution_file(const int ind, const std::string& LOC, const double t, bool is_link)
+void Ecrire_CGNS::cgns_open_solution_link_file(const int ind, const std::string& LOC, const double t, bool is_link)
 {
   assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
   const bool mult_loc = (static_cast<int>(fld_loc_map_.size()) > 1);
@@ -1123,7 +1073,7 @@ void Ecrire_CGNS::cgns_open_solution_file(const int ind, const std::string& LOC,
     }
 }
 
-void Ecrire_CGNS::cgns_close_grid_solution_file(const int ind, const std::string& fn, bool is_cerr)
+void Ecrire_CGNS::cgns_close_grid_solution_link_file(const int ind, const std::string& fn, bool is_cerr)
 {
   assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
   const int fileId = (ind == 0 ? fileId_ : fileId2_);
@@ -1153,11 +1103,11 @@ void Ecrire_CGNS::cgns_write_final_link_file()
       const int ind = static_cast<int>(std::distance(fld_loc_map_.begin(), itr));
 
       // XXX a pas oublier, dernier sol fichier ... faut le fermer
-      cgns_close_grid_solution_file(ind, baseFile_name_);
+      cgns_close_grid_solution_link_file(ind, baseFile_name_);
 
       // Fichier link maintenant
       const std::string& LOC = itr->first;
-      cgns_open_solution_file(ind, LOC, -123., true /* dernier fichier => link */);
+      cgns_open_solution_link_file(ind, LOC, -123., true /* dernier fichier => link */);
 
       const int fileId = (ind == 0 ? fileId_ : fileId2_);
 
@@ -1176,8 +1126,8 @@ void Ecrire_CGNS::cgns_write_final_link_file()
 
       cgns_helper_.cgns_write_iters<TYPE_ECRITURE::SEQ>(true /* has_field */, 1 /* nb_zones_to_write */, fileId, baseId_[0], 0 /* 1st Zone */, zoneId_, LOC, solname_som_, solname_elem_, time_post_);
 
-      cgns_close_grid_solution_file(ind, !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns", true); // on ferme
+      cgns_close_grid_solution_link_file(ind, !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns", true); // on ferme
     }
 }
 
-#endif
+#endif /* HAS_CGNS */

@@ -16,8 +16,6 @@
 #ifndef Ecrire_CGNS_included
 #define Ecrire_CGNS_included
 
-#include <Ecrire_CGNS_helper.h>
-#include <TRUSTTabs_forward.h>
 #include <TRUST_2_CGNS.h>
 #include <map>
 
@@ -38,17 +36,30 @@ public:
   void cgns_write_field(const Domaine&, const Noms&, double, const Nom&, const Nom&, const Nom&, const DoubleTab&);
 
 private:
-  Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&);
-  std::string modify_domaine_name_for_post(const Nom& );
-  int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+  // Attributes
+  bool solname_elem_written_ = false, solname_som_written_ = false;
+  bool postraiter_domaine_ = false, grid_file_opened_ = false;
+  std::string solname_elem_ = "", solname_som_ = "", baseFile_name_ = "", baseZone_name_ = "";
+  std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
+  std::vector<Nom> doms_written_;
+  std::vector<std::string> connectname_;
+  std::vector<double> time_post_;
+  std::vector<int> baseId_, zoneId_, sizeId_;
+  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
+  std::vector<TRUST_2_CGNS> T2CGNS_;
+  Ecrire_CGNS_helper cgns_helper_;
+  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;
+  int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
 
-  void fill_field_loc_map(const Domaine&, const std::string&);
-  void fill_info_grid_link(const char*, const CGNS_TYPE&, const int, const int, const int, const bool);
-  void cgns_open_close_files(const double);
-  void cgns_open_grid_file();
-  void cgns_open_solution_file(const int, const std::string&, const double, bool is_link = false);
-  void cgns_close_grid_solution_file(const int, const std::string&, bool is_cerr = false);
+  void cgns_fill_field_loc_map(const Domaine&, const std::string&);
+
+  // Methodes pour LINK
+  void cgns_fill_info_grid_link_file(const char*, const CGNS_TYPE&, const int, const int, const int, const bool);
+  void cgns_open_close_link_files(const double);
+  void cgns_open_grid_base_link_file();
+  void cgns_open_solution_link_file(const int, const std::string&, const double, bool is_link = false);
   void cgns_write_final_link_file();
+  void cgns_close_grid_solution_link_file(const int, const std::string&, bool is_cerr = false);
 
   // Version sequentielle
   void cgns_write_domaine_seq(const Domaine * ,const Nom& , const DoubleTab& , const IntTab& , const Motcle& );
@@ -65,21 +76,7 @@ private:
   void cgns_write_field_par_in_zone(const int, const double, const Nom&, const Nom&, const Nom&, const Nom&, const DoubleTab&);
   void cgns_write_iters_par_in_zone();
 
-  // Attributes
-  bool solname_elem_written_ = false, solname_som_written_ = false;
-  bool postraiter_domaine_ = false, grid_file_opened_ = false;
-  std::string solname_elem_ = "", solname_som_ = "", baseFile_name_ = "", baseZone_name_ = "";
-  std::map<std::string, Nom> fld_loc_map_; /* { Loc , Nom_dom } */
-  std::vector<Nom> doms_written_;
-  std::vector<std::string> connectname_;
-  std::vector<double> time_post_;
-  std::vector<int> baseId_, zoneId_, sizeId_;
-  std::vector<std::vector<int>> zoneId_par_, global_nb_elem_, proc_non_zero_write_; /* par ordre d'ecriture du domaine */
-  std::vector<TRUST_2_CGNS> T2CGNS_;
-  Ecrire_CGNS_helper cgns_helper_;
-  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;
-  int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
-#endif
+#endif /* HAS_CGNS */
 };
 
 inline void verify_if_cgns(const char * nom_funct)
@@ -89,7 +86,7 @@ inline void verify_if_cgns(const char * nom_funct)
 #else
   Cerr << "Format_Post_CGNS::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
   Process::exit();
-#endif
+#endif /* HAS_CGNS */
 }
 
 #endif /* Ecrire_CGNS_included */

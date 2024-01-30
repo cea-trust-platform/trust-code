@@ -15,18 +15,69 @@
 
 #include <Domaine_dis_cache.h>
 #include <TRUST_2_CGNS.h>
-#include <Option_CGNS.h>
 #include <Domaine_VF.h>
 #include <Domaine.h>
 
 #ifdef HAS_CGNS
+
 #ifdef MPI_
 #ifdef INT_is_64_
 #define MPI_ENTIER MPI_LONG
 #else
 #define MPI_ENTIER MPI_INT
-#endif
-#endif
+#endif /* INT_is_64_ */
+#endif /* MPI_ */
+
+Motcle TRUST_2_CGNS::modify_field_name_for_post(const Nom& id_du_champ, const Nom& id_du_domaine, const std::string& LOC, int& fieldId_som, int& fieldId_elem)
+{
+  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
+
+  if (LOC == "SOM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_SOM_");
+    }
+  else if (LOC == "ELEM")
+    {
+      id_du_champ_modifie.prefix(id_du_domaine);
+      id_du_champ_modifie.prefix(iddomaine);
+      id_du_champ_modifie.prefix("_ELEM_");
+    }
+
+  (LOC == "SOM") ? fieldId_som++ : fieldId_elem++; // TODO FIXME FACES
+
+  return id_du_champ_modifie;
+}
+
+// pour retirer boundaries_ du nom dom (ajoute par TRUST pour les bords ...)
+std::string TRUST_2_CGNS::modify_domaine_name_for_post(const Nom& nom_dom)
+{
+  std::string nom_dom_modifie = nom_dom.getString();
+
+  if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
+    {
+      size_t found = nom_dom_modifie.find("boundaries_");
+      if (found != std::string::npos)
+        nom_dom_modifie.erase(found, 11); // 11 is the length of "boundaries_"
+
+      if (static_cast<int>(nom_dom_modifie.size()) >= CGNS_STR_SIZE)
+        nom_dom_modifie.resize(CGNS_STR_SIZE, ' ');
+    }
+
+  return nom_dom_modifie;
+}
+
+int TRUST_2_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
+{
+  int ind = -1;
+  auto it = find(vect.begin(), vect.end(), nom);
+
+  if (it != vect.end()) // element found
+    ind = static_cast<int>(it - vect.begin()); // XXX sinon utilse std::distance ...
+
+  return ind;
+}
 
 void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine * dom, const DoubleTab& som, const IntTab& elem)
 {
@@ -445,4 +496,4 @@ int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::ve
     }
 }
 
-#endif
+#endif /* HAS_CGNS */

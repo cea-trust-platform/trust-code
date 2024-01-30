@@ -23,6 +23,11 @@
 
 #ifdef HAS_CGNS
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#include <pcgnslib.h>
+#pragma GCC diagnostic pop
+
 #define CGNS_STR_SIZE 32
 #define CGNS_DOUBLE_TYPE Option_CGNS::SINGLE_PRECISION>0?CGNS_ENUMV(RealSingle):CGNS_ENUMV(RealDouble)
 

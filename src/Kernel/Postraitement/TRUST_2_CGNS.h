@@ -16,25 +16,19 @@
 #ifndef TRUST_2_CGNS_included
 #define TRUST_2_CGNS_included
 
-#include <TRUSTTabs_forward.h>
+#include <Ecrire_CGNS_helper.h>
 #include <TRUST_Ref.h>
-#include <cgns++.h>
 #include <vector>
 
 #ifdef HAS_CGNS
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#include <pcgnslib.h>
-#pragma GCC diagnostic pop
+
 using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
-#endif
 
 class Domaine;
 class Motcle;
 
 class TRUST_2_CGNS
 {
-#ifdef HAS_CGNS
 public:
   TRUST_2_CGNS() { }
   void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&);
@@ -83,6 +77,11 @@ public:
 
   void clear_vectors();
 
+  /* methods statiques utiles */
+  static Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&, int&, int&);
+  static std::string modify_domaine_name_for_post(const Nom& );
+  static int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+
 private:
   REF(Domaine) dom_trust_;
   REF(DoubleTab) sommets_;
@@ -105,7 +104,8 @@ private:
   std::vector<int> global_incr_min_elem_face_, global_incr_max_elem_face_; // pour NFACE_n - elem_face
 
   std::vector<cgsize_t> local_fs_, local_fs_offset_, local_ef_, local_ef_offset_, local_es_, local_es_offset_;
-#endif
 };
+
+#endif /* HAS_CGNS */
 
 #endif /* TRUST_2_CGNS_included */
