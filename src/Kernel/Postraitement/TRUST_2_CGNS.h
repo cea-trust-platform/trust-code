@@ -45,7 +45,6 @@ public:
   void fill_global_infos_poly(const bool);
   int compute_shift(const std::vector<int>&);
 
-
   int get_nb_fs() const { return nb_fs_; }
   const std::vector<int>& get_global_nb_face_som() const { return global_nb_face_som_; }
   const std::vector<int>& get_global_nb_face_som_offset() const { return global_nb_face_som_offset_; }
@@ -95,6 +94,7 @@ public:
   /* methods statiques utiles */
   static Motcle modify_field_name_for_post(const Nom&, const Nom&, const std::string&, int&, int&);
   static std::string modify_domaine_name_for_post(const Nom& );
+  static void modify_fileId_for_post(const std::map<std::string, Nom>&, const std::string&, const int, int&);
   static int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
 
 private:

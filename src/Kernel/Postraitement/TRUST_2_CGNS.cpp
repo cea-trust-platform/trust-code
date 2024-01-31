@@ -68,6 +68,18 @@ std::string TRUST_2_CGNS::modify_domaine_name_for_post(const Nom& nom_dom)
   return nom_dom_modifie;
 }
 
+void TRUST_2_CGNS::modify_fileId_for_post(const std::map<std::string, Nom>& fld_loc_map, const std::string& LOC, const int fileId2, int& fileId)
+{
+  const bool mult_loc = (static_cast<int>(fld_loc_map.size()) > 1);
+  if (mult_loc)
+    {
+      auto start = fld_loc_map.begin();
+      const std::string& first_map_loc = start->first;
+      if (LOC != first_map_loc)
+        fileId = fileId2;
+    }
+}
+
 int TRUST_2_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& nom)
 {
   int ind = -1;

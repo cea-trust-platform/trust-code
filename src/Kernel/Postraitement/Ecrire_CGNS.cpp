@@ -339,15 +339,7 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
   /* quel fileID ?? */
   int fileId = fileId_;
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
-    {
-      const bool mult_loc = (static_cast<int>(fld_loc_map_.size()) > 1);
-      if (mult_loc)
-        {
-          auto start = fld_loc_map_.begin();
-          const std::string& first_map_loc = start->first;
-          if (LOC != first_map_loc) fileId = fileId2_;
-        }
-    }
+    TRUST_2_CGNS::modify_fileId_for_post(fld_loc_map_, LOC, fileId2_, fileId);
 
   if (nb_vals)
     {
@@ -429,6 +421,7 @@ void Ecrire_CGNS::cgns_write_iters_seq()
  */
 void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const Nom& nom_dom, const DoubleTab& les_som, const IntTab& les_elem, const Motcle& type_elem)
 {
+  assert (!Option_CGNS::USE_LINKS);
   doms_written_.push_back(nom_dom);
 
   /* 1 : Instance of TRUST_2_CGNS */
@@ -587,7 +580,6 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_par_.back()[indx], sectionId[indx], min, max, es.data(), es_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
-          TRUST2CGNS.clear_vectors();
         }
       else
         {
@@ -599,10 +591,12 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
             Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_over_zone : cgp_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
+  TRUST2CGNS.clear_vectors();
 }
 
 void Ecrire_CGNS::cgns_write_field_par_over_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
 {
+  assert (!Option_CGNS::USE_LINKS);
   std::string LOC = Motcle(localisation).getString();
   Motcle id_du_champ_modifie = TRUST_2_CGNS::modify_field_name_for_post(id_du_champ, id_du_domaine, LOC, fieldId_som_, fieldId_elem_);
   Nom& id_champ = id_du_champ_modifie;
@@ -839,7 +833,6 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
               if (cgp_poly_elements_write_data(fileId_, baseId_.back(), zoneId_.back(), sectionId, min, max, es.data(), es_offset.data()) != CG_OK)
                 Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_poly_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
             }
-          TRUST2CGNS.clear_vectors();
         }
       else
         {
@@ -854,6 +847,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
             Cerr << "Error Ecrire_CGNS::cgns_write_domaine_par_in_zone : cgp_elements_write_data !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
+  TRUST2CGNS.clear_vectors();
 }
 
 void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temps, const Nom& id_du_champ, const Nom& id_du_domaine, const Nom& localisation, const Nom& nom_dom, const DoubleTab& valeurs)
@@ -869,15 +863,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
   /* quel fileID ?? */
   int fileId = fileId_;
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
-    {
-      const bool mult_loc = (static_cast<int>(fld_loc_map_.size()) > 1);
-      if (mult_loc)
-        {
-          auto start = fld_loc_map_.begin();
-          const std::string& first_map_loc = start->first;
-          if (LOC != first_map_loc) fileId = fileId2_;
-        }
-    }
+    TRUST_2_CGNS::modify_fileId_for_post(fld_loc_map_, LOC, fileId2_, fileId);
 
   /* 1 : CREATION OF FILE STRUCTURE
    *
@@ -888,7 +874,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
   cgns_helper_.cgns_sol_write<TYPE_ECRITURE::PAR_IN>(1 /* nb_zones_to_write */, fileId, baseId_[ind], ind, temps, zoneId_, LOC, solname_som_, solname_elem_,
                                                      solname_som_written_, solname_elem_written_, flowId_som_, flowId_elem_);
 
-  cgns_helper_.cgns_field_write<TYPE_ECRITURE::PAR_IN>(1 /* nb_zones_to_write */, fileId_, baseId_[ind], ind, zoneId_, LOC,
+  cgns_helper_.cgns_field_write<TYPE_ECRITURE::PAR_IN>(1 /* nb_zones_to_write */, fileId, baseId_[ind], ind, zoneId_, LOC,
                                                        flowId_som_, flowId_elem_, id_champ.getChar(), fieldId_som_, fieldId_elem_);
 
   /* 2 : Fill field values & dump to cgns file */
