@@ -17,7 +17,6 @@
 #include <PolyMAC_P0_discretisation.h>
 #include <Op_Diff_PolyMAC_P0_Face.h>
 #include <Pb_Multiphase.h>
-#include <Pb_Multiphase.h>
 #include <vector>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Face, "Op_Diff_Turbulent_PolyMAC_P0_Face|Op_Diff_Turbulente_PolyMAC_P0_Face", Op_Diff_PolyMAC_P0_Face );
@@ -28,7 +27,7 @@ Entree& Op_Diff_Turbulent_PolyMAC_P0_Face::readOn(Entree& is)
 {
   //lecture de la correlation de viscosite turbulente
   corr_.typer_lire(equation().probleme(), "viscosite_turbulente", is);
-  associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
+  associer_proto(equation().probleme(), champs_compris_);
   ajout_champs_proto_face();
   return is;
 }
@@ -48,6 +47,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
 void Op_Diff_Turbulent_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_Face::completer();
+  nu_constant_ = 0; // if pb_hydraulique with mu champ_uniforme : fgrad is not the same!
   completer_proto_face(*this);
 }
 
@@ -69,23 +69,23 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
 void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_mu(DoubleTab& mu) const
 {
   if (corr_.est_nul()) return; //rien a faire
-  const DoubleTab& rho = equation().milieu().masse_volumique().passe(), *alpha =
-                           sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const DoubleTab& rho = equation().milieu().masse_volumique().passe(),
+                   *alpha = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   int i, nl = mu.dimension(0), n, N = equation().inconnue().valeurs().line_size(), cR = rho.dimension(0) == 1, d, D = dimension;
   if (mu.nb_dim() == 2) //nu scalaire
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
-        mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
+        mu(i, n) += (alpha ? (*alpha)(i, n) * rho(!cR * i, n) : 1.0) * nu_ou_lambda_turb_(i, n);
   else if (mu.nb_dim() == 3) //nu anisotrope diagonal
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++)
-          mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
+          mu(i, n, d) += (alpha ? (*alpha)(i, n) * rho(!cR * i, n) : 1.0) * nu_ou_lambda_turb_(i, n);
   else if (mu.nb_dim() == 4) //nu anisotrope complet
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++)
-          mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
+          mu(i, n, d, d) += (alpha ? (*alpha)(i, n) * rho(!cR * i, n) : 1.0) * nu_ou_lambda_turb_(i, n);
   else
     abort();
 

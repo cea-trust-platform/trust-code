@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ void Transport_turbulent_SGDH::modifier_mu(const Convection_Diffusion_std& eq, c
   const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(),
                    &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
                     *alp = (sub_type(Pb_Multiphase, pb_.valeur()) && !no_alpha_) ? &pb_->get_champ("alpha").passe() : nullptr; //produit par alpha si Pb_Multiphase
+  const int cnu = nu0.dimension(0) == 1, cmu = mu0.dimension(0) == 1;
   int i, nl = nu.dimension(0), n, N = nu.dimension(1), d, D = dimension;
   //viscosite cinematique turbulente
   DoubleTrav nu_t(nl, N);
@@ -57,18 +58,18 @@ void Transport_turbulent_SGDH::modifier_mu(const Convection_Diffusion_std& eq, c
     for (i = 0; i < nl; i++)
       {
         for (n = 0; n < 1; n++) //isotrope
-          nu(i, n) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) * sigma_ * nu_t(i, n) / nu0(i, n);
+          nu(i, n) += (alp ? (*alp)(i, n) : 1) * mu0(!cmu * i, n) * sigma_ * nu_t(i, n) / nu0(!cnu * i, n);
         if (gas_turb_)
           for (n = 1; n < N; n++) //isotrope
-            nu(i, n) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) * sigma_ / nu0(i, n) * nu_t(i, 0.)  * std::min((*alp)(i,n)*10, 1.) ;
+            nu(i, n) += (alp ? (*alp)(i, n) : 1) * mu0(!cmu * i, n) * sigma_ / nu0(!cnu * i, n) * nu_t(i, 0.)  * std::min((*alp)(i,n)*10, 1.) ;
       }
   else if (nu.nb_dim() == 3)
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++) //anisotrope diagonal
-          nu(i, n, d) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) * sigma_ * nu_t(i, n) / nu0(i, n);
+          nu(i, n, d) += (alp ? (*alp)(i, n) : 1) * mu0(!cmu * i, n) * sigma_ * nu_t(i, n) / nu0(!cnu * i, n);
   else for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++) //anisotrope complet
-          nu(i, n, d, d) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) * sigma_ * nu_t(i, n) / nu0(i, n);
+          nu(i, n, d, d) += (alp ? (*alp)(i, n) : 1) * mu0(!cmu * i, n) * sigma_ * nu_t(i, n) / nu0(!cnu * i, n);
 }

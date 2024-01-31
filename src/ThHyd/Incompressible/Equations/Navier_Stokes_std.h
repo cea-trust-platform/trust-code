@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,6 +156,7 @@ public :
   virtual void renewing_jacobians( DoubleTab& derivee );
   virtual void div_ale_derivative( DoubleTrav& derivee_ale, double timestep, DoubleTab& derivee, DoubleTrav& secmemP );
   virtual void update_pressure_matrix( void );
+  void update_y_plus(const DoubleTab& tab) ;
 
 protected:
   virtual void discretiser_assembleur_pression();

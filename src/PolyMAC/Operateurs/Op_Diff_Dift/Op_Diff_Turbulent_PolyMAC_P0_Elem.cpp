@@ -25,7 +25,7 @@ Entree& Op_Diff_Turbulent_PolyMAC_P0_Elem::readOn(Entree& is)
 {
   //lecture de la correlation de diffusivite turbulente
   corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
-  associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
+  associer_proto(equation().probleme(), champs_compris_);
   ajout_champs_proto_elem();
   return is;
 }
@@ -52,6 +52,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
 {
   Op_Diff_PolyMAC_P0_Elem::completer();
   completer_proto_elem(*this);
+  nu_constant_ = 0; // if pb_hydraulique with mu champ_uniforme : fgrad is not the same!
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const

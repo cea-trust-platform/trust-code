@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ void Viscosite_turbulente_base::modifier_mu(DoubleTab& mu) const
   eddy_viscosity(nu_t); //remplissage par la correlation
   if (mu.nb_dim() == 2) //nu scalaire
     for (i = 0; i < nl; i++)
-      for (n = 0; n < N; n++) mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+      for (n = 0; n < N; n++) mu(i, n) += (alpha ? (*alpha)(i, n) * rho(!cR * i, n) : 1) * nu_t(i, n);
   else if (mu.nb_dim() == 3) //nu anisotrope diagonal
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
