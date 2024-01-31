@@ -238,18 +238,24 @@ void Probleme_base::typer_lire_milieu(Entree& is)
 /*! @brief Lecture des equations du probleme.
  *
  */
-Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
+Entree& Probleme_base::lire_equations(Entree& is, Motcle& mot)
 {
   Nom un_nom;
-  int nb_eq = nombre_d_equations();
+  const int nb_eq = nombre_d_equations();
+  is >> un_nom;
+  mot = un_nom;
+  if (nb_eq == 0) return is;
   Cerr << "Reading of the equations" << finl;
+  bool already_read;
+  if (un_nom == "correlations") lire_correlations(is), already_read = false;
+  else already_read = true;
 
-  for (int i = 0; i < nb_eq; i++)
+  for(int i = 0; i < nb_eq; i++, already_read = false)
     {
-      is >> un_nom;
+      if (!already_read) is >> un_nom;
       is >> getset_equation_by_name(un_nom);
     }
-  is >> dernier_mot;
+  read_optional_equations(is, mot);
   return is;
 }
 
@@ -337,6 +343,11 @@ void Probleme_base::completer()
     }
 
   les_postraitements_.completer();
+
+  for (auto &&corr : correlations_)
+    {
+      corr.second->completer();
+    }
 }
 
 /*! @brief Verifie que l'objet est complet, coherent, .
@@ -787,6 +798,17 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
   Champ_base const * champ = nullptr ;
+
+  for (auto &&corr : correlations_)
+    {
+      try
+        {
+          champ = &corr.second->get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur&)  {        }
+    }
+  if (champ) return true ;
+
   try
     {
       champ = &domaine_dis()->get_champ(un_nom);
@@ -833,6 +855,14 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
+  for (auto &&corr : correlations_)
+    {
+      try
+        {
+          return corr.second->get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur&) { }
+    }
   try
     {
       return domaine_dis()->get_champ(un_nom);
@@ -982,6 +1012,10 @@ void Probleme_base::mettre_a_jour(double temps)
       Loi_Fermeture_base& loi=itr.valeur();
       loi.mettre_a_jour(temps);
     }
+  for (auto &&corr : correlations_)
+    {
+      corr.second->mettre_a_jour(temps);
+    }
 }
 
 /*! @brief Prepare le calcul: initialise les parametres du milieu et prepare le calcul de chacune des equations.
@@ -1010,6 +1044,8 @@ void Probleme_base::preparer_calcul()
       Loi_Fermeture_base& loi = itr.valeur();
       loi.preparer_calcul();
     }
+
+  if (correlations_.size() > 0) mettre_a_jour(temps);
 }
 
 
@@ -1673,7 +1709,6 @@ void Probleme_base::finir()
     sauver_xyz(1);
 }
 
-
 void Probleme_base::resetTime(double time)
 {
   static const std::string param_name = "SORTIE_ROOT_DIRECTORY";
@@ -1735,5 +1770,42 @@ std::string Probleme_base::newCompute()
   return dirname;
 }
 
+Entree& Probleme_base::read_optional_equations(Entree& is, Motcle& mot)
+{
+  /* lecture d'equations optionnelles */
+  Noms noms_eq, noms_eq_maj; //noms de toutes les equations possibles!
+  Type_info::les_sous_types(Nom("Equation_base"), noms_eq);
+  for (auto& itr : noms_eq) noms_eq_maj.add(Motcle(itr)); //ha ha ha
+  for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
+    {
+      eq_opt_.add(OWN_PTR(Equation_base)()); //une autre equation optionelle
+      eq_opt_.dernier().typer(mot); //on lui donne le bon type
+      Equation_base& eq = eq_opt_.dernier().valeur();
+      //memes associations que pour les autres equations : probleme, milieu, schema en temps
+      eq.associer_pb_base(*this);
+      eq.associer_milieu_base(milieu());
+      eq.associer_sch_tps_base(le_schema_en_temps_);
+      eq.associer_domaine_dis(domaine_dis());
+      eq.discretiser(); //a faire avant de lire l'equation
+      is >> eq; //et c'est parti!
+      eq.associer_milieu_equation(); //remontee vers le milieu
+    }
+  return is;
+}
 
+Entree& Probleme_base::lire_correlations(Entree& is)
+{
+  Motcle mot;
+  is >> mot;
+  if (mot != "{")
+    {
+      Cerr << "correlations : { expected instead of " << mot << finl;
+      Process::exit();
+    }
+  for (is >> mot; mot != "}"; is >> mot)
+    if (correlations_.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
+    else
+      Correlation_base::typer_lire_correlation(correlations_[mot.getString()], *this, mot, is);
 
+  return is;
+}

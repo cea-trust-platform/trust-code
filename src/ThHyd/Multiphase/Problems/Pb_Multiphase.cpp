@@ -116,23 +116,6 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
   return is;
 }
 
-Entree& Pb_Multiphase::lire_correlations(Entree& is)
-{
-  Motcle mot;
-  is >> mot;
-  if (mot != "{")
-    {
-      Cerr << "correlations : { expected instead of " << mot << finl;
-      Process::exit();
-    }
-  for (is >> mot; mot != "}"; is >> mot)
-    if (correlations_.count(mot.getString()))
-      Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-    else
-      Correlation_base::typer_lire_correlation(correlations_[mot.getString()], *this, mot, is);
-  return is;
-}
-
 void Pb_Multiphase::typer_lire_milieu(Entree& is)
 {
   le_milieu_.resize(1); /* Un milieu .. mais composite !! */
@@ -248,71 +231,11 @@ int Pb_Multiphase::verifier()
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr, domaine_Cl_th);
 }
 
-void Pb_Multiphase::mettre_a_jour(double temps)
-{
-  Probleme_base::mettre_a_jour(temps);
-  for (auto &&corr : correlations_)
-    {
-      corr.second->mettre_a_jour(temps);
-    }
-}
-
 void Pb_Multiphase::preparer_calcul()
 {
   Pb_Fluide_base::preparer_calcul();
   const double temps = schema_temps().temps_courant();
   mettre_a_jour(temps);
-}
-
-bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
-{
-  Champ_base const *champ = nullptr;
-
-  for (auto &&corr : correlations_)
-    {
-      try
-        {
-          champ = &corr.second->get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&)
-        {
-        }
-    }
-  if (champ)
-    return true;
-  return Probleme_base::has_champ(un_nom);
-}
-
-const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
-{
-  for (auto &&corr : correlations_)
-    {
-      try
-        {
-          return corr.second->get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&)
-        {
-        }
-    }
-  try
-    {
-      return Pb_Fluide_base::get_champ(un_nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-  throw Champs_compris_erreur();
-}
-
-void Pb_Multiphase::completer()
-{
-  Pb_Fluide_base::completer();
-
-  for (auto &&corr : correlations_)
-    {
-      corr.second->completer();
-    }
 }
 
 double Pb_Multiphase::calculer_pas_de_temps() const

@@ -71,7 +71,6 @@ public :
   void creer_champ(const Motcle& motlu) override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
-  void update_y_plus(const DoubleTab& tab) ;
   double alpha_res() const ;
 
 protected:

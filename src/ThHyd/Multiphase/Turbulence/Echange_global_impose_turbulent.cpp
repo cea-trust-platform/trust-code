@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Echange_global_impose_turbulent.h>
-#include <Pb_Multiphase.h>
+#include <Probleme_base.h>
 #include <Domaine_VF.h>
 #include <Frontiere.h>
 #include <Motcle.h>
@@ -68,7 +68,7 @@ int Echange_global_impose_turbulent::initialiser(double temps)
   T_.resize(0,domaine_Cl_dis().equation().inconnue()->valeurs().line_size());
   la_frontiere_dis->frontiere().creer_tableau_faces(T_);
 
-  correlation_loi_paroi_ = ref_cast(Pb_Multiphase, domaine_Cl_dis().equation().probleme()).get_correlation("Loi_paroi");
+  correlation_loi_paroi_ = domaine_Cl_dis().equation().probleme().get_correlation("Loi_paroi");
 
   return 1;
 }

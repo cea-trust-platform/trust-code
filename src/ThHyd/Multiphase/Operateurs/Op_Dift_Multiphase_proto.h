@@ -25,7 +25,7 @@
 
 class Operateur_Diff_base;
 class Champs_compris;
-class Pb_Multiphase;
+class Probleme_base;
 class Equation_base;
 
 class Op_Dift_Multiphase_proto
@@ -37,7 +37,7 @@ private:
   void mettre_a_jour_(const double, const bool /* is_face */);
 
 public:
-  void associer_proto(const Pb_Multiphase&, Champs_compris& );
+  void associer_proto(const Probleme_base&, Champs_compris& );
 
   inline const Correlation& correlation() const { return corr_ ; }
 
@@ -71,11 +71,12 @@ public:
   }
 
 protected:
+  bool is_pbm_ = true;
   DoubleTab nu_ou_lambda_turb_; // comme le nom dit
   Correlation corr_; // correlation de viscosite/transport turbulente
   std::vector<Champ_Fonc> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
   Motcles noms_nu_ou_lambda_turb_post_, noms_mu_ou_alpha_turb_post_; //leurs noms
-  REF(Pb_Multiphase) pbm_;
+  REF(Probleme_base) pbm_;
   REF(Champs_compris) le_chmp_compris_;
 };
 
