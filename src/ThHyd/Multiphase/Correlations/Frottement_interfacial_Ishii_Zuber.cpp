@@ -67,7 +67,7 @@ void Frottement_interfacial_Ishii_Zuber::coefficient(const DoubleTab& alpha, con
 
         double Re = rho(n_l) * std::max(ndv(n_l,k), 1.e-6)  * d_bulles(k)/mu(n_l);
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(ind_trav);
-        double Cd = beta_ * std::max( 24./Re*(1.+.1*std::pow(Re, .75))  , 2.3*std::sqrt(Eo));
+        double Cd = beta_ * std::max( 24./Re*(1.+.1*std::pow(Re, .75))  , 2./3*std::sqrt(Eo));
 
         coeff(k, n_l, 1) = (alpha(n_l) < 1.e-6) ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
                            : 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l);
