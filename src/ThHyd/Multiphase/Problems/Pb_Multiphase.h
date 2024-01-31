@@ -53,12 +53,7 @@ public:
   void associer_milieu_base(const Milieu_base& ) override;
   Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
   int verifier() override;
-  void mettre_a_jour(double temps) override;
-  void completer() override;
-  virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
-  const Champ_base& get_champ(const Motcle& nom) const override;
-  bool has_champ(const Motcle& nom) const override;
 
   /* nombre de phases du probleme */
   int nb_phases() const { return noms_phases_.size(); }

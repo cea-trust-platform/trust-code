@@ -25,7 +25,7 @@ Entree& Op_Dift_Multiphase_VDF_Face::readOn(Entree& is)
   //lecture de la correlation de viscosite turbulente
   Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "viscosite_turbulente", is);
   associer_corr_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(corr_);
-  associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
+  associer_proto(equation().probleme(), champs_compris_);
   ajout_champs_proto_face();
   return is;
 }
@@ -74,7 +74,7 @@ double Op_Dift_Multiphase_VDF_Face::calculer_dt_stab() const
   const Domaine_VDF& domaine_VDF = iter_->domaine();
   const Champ_base& champ_diffu = diffusivite_pour_pas_de_temps();
   const DoubleTab& diffu = diffusivite().valeurs() /* mu */, &rho = equation().milieu().masse_volumique()->passe(), &diffu_dt = champ_diffu.valeurs() /* nu */;
-  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe();
+  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
   const int cN = (diffu_dt.dimension(0) == 1), cM = (diffu.dimension(0) == 1), cR = (rho.dimension(0) == 1);
 
   for (int elem = 0; elem < domaine_VDF.nb_elem(); elem++)
@@ -87,17 +87,17 @@ double Op_Dift_Multiphase_VDF_Face::calculer_dt_stab() const
         }
 
       // TODO : FIXME : pt etre alp > 1 e-3 pour eviter dt <<<< ??
-      double mu_physique = diffu(!cM * elem, 0), alpha_mu_physique = alp(elem, 0) * diffu(!cM * elem, 0),
-             alpha_mu_turbulent = alp(elem, 0) * rho(!cR * elem, 0) * nu_ou_lambda_turb_(elem, 0), nu_physique = diffu_dt(!cN * elem, 0);
+      double mu_physique = diffu(!cM * elem, 0), alpha_mu_physique = (alp ? (*alp)(elem, 0) : 1.0) * diffu(!cM * elem, 0),
+             alpha_mu_turbulent = (alp ? (*alp)(elem, 0) : 1.0) * rho(!cR * elem, 0) * nu_ou_lambda_turb_(elem, 0), nu_physique = diffu_dt(!cN * elem, 0);
 
       for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++)
         {
           mu_physique = std::max(mu_physique, diffu(!cM * elem, ncomp));
-          alpha_mu_physique = std::max(alpha_mu_physique, alp(elem, ncomp) * diffu(!cM * elem, ncomp));
+          alpha_mu_physique = std::max(alpha_mu_physique, (alp ? (*alp)(elem, ncomp) : 1.0) * diffu(!cM * elem, ncomp));
         }
 
       for (int ncomp = 1; ncomp < nu_ou_lambda_turb_.line_size(); ncomp++)
-        alpha_mu_turbulent = std::max(alpha_mu_turbulent, alp(elem, 0) * rho(!cR * elem, ncomp) * nu_ou_lambda_turb_(elem, ncomp));
+        alpha_mu_turbulent = std::max(alpha_mu_turbulent, (alp ? (*alp)(elem, 0) : 1.0) * rho(!cR * elem, ncomp) * nu_ou_lambda_turb_(elem, ncomp));
 
       for (int ncomp = 1; ncomp < diffu_dt.line_size(); ncomp++)
         nu_physique = std::max(nu_physique, diffu_dt(!cN * elem, ncomp));

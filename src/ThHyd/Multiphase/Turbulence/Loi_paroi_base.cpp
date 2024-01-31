@@ -68,7 +68,7 @@ void Loi_paroi_base::completer()
   for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i ++)
     for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = ( (i<nf_tot) && (Faces_a_calculer_(i,0)) ) ? 1 : -1.;
 
-  if (sub_type(QDM_Multiphase, pb_->equation(0)) && pb_->has_champ("y_plus")) valeurs_loi_paroi_["y_plus_elem"] = DoubleTab(nf_tot,1);
+  if (sub_type(Navier_Stokes_std, pb_->equation(0)) && pb_->has_champ("y_plus")) valeurs_loi_paroi_["y_plus_elem"] = DoubleTab(nf_tot,1);
 }
 
 void Loi_paroi_base::mettre_a_jour(double temps)
@@ -76,10 +76,10 @@ void Loi_paroi_base::mettre_a_jour(double temps)
   if (temps > tps_loc)
     {
       const DoubleTab& vit = pb_->get_champ("vitesse").passe();
-      const DoubleTab& nu  = ref_cast(Navier_Stokes_std, pb_->equation(0)).diffusivite_pour_pas_de_temps().passe();
+      const DoubleTab& nu  = ref_cast(Fluide_base, pb_->milieu()).viscosite_cinematique()->valeurs();
       calc_y_plus(vit, nu);
 
-      if (sub_type(QDM_Multiphase, pb_->equation(0)) && pb_->has_champ("y_plus"))
+      if (sub_type(Navier_Stokes_std, pb_->equation(0)) && pb_->has_champ("y_plus"))
         {
           Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
           const IntTab& f_e = domaine.face_voisins();
@@ -93,7 +93,7 @@ void Loi_paroi_base::mettre_a_jour(double temps)
                 int e = f_e(f,c);
                 y_p_e(e,0) = y_p(f,0);
               }
-          ref_cast(QDM_Multiphase, pb_->equation(0)).update_y_plus(y_p_e);
+          ref_cast(Navier_Stokes_std, pb_->equation(0)).update_y_plus(y_p_e);
         }
       tps_loc = temps;
     }
