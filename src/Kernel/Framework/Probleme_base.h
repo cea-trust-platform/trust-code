@@ -24,9 +24,11 @@
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
 #include <Domaine_dis.h>
+#include <Correlation.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <TRUST_Ref.h>
+#include <Equation.h>
 #include <Milieu.h>
 #include <Champ_front_Parametrique.h>
 #include <Champ_Parametrique.h>
@@ -193,6 +195,18 @@ public:
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
+  const Correlation& get_correlation(std::string nom_correlation) const
+  {
+    Motcle mot(nom_correlation);
+    return correlations_.at(mot.getString());
+  }
+
+  int has_correlation(std::string nom_correlation) const
+  {
+    Motcle mot(nom_correlation);
+    return (int)correlations_.count(mot.getString());
+  }
+
 protected :
   std::vector<Milieu> le_milieu_;
   REF(Domaine_dis) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
@@ -207,6 +221,8 @@ protected :
 
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_ = nullptr;
+  Entree& read_optional_equations(Entree& is, Motcle& mot);
+  virtual Entree& lire_correlations(Entree& is);
 
   bool milieu_via_associer_ = false;
 
@@ -225,6 +241,8 @@ protected :
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
   LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
+  LIST(Equation) eq_opt_; //autres equations (turbulence, aire interfaciale...)
+  std::map<std::string, Correlation> correlations_;
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

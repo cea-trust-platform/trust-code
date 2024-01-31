@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,9 @@ Entree& Pb_Hydraulique::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); 
  */
 const Equation_base& Pb_Hydraulique::equation(int i) const
 {
-  if (i!=0)
+  if (i == 0) return eq_hydraulique;
+  else if (i < 1 + eq_opt_.size() && i > 0) return eq_opt_[i - 1].valeur();
+  else
     {
       Cerr << "Pb_Hydraulique::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();
@@ -48,7 +50,9 @@ const Equation_base& Pb_Hydraulique::equation(int i) const
  */
 Equation_base& Pb_Hydraulique::equation(int i)
 {
-  if (i!=0)
+  if (i == 0) return eq_hydraulique;
+  else if (i < 1 + eq_opt_.size() && i > 0) return eq_opt_[i - 1].valeur();
+  else
     {
       Cerr << "Pb_Hydraulique::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();

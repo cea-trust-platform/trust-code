@@ -1397,6 +1397,9 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->creer_champ(motlu);
+
+  if (Taux_cisaillement.non_nul())
+    if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
 }
 
 void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
@@ -1886,4 +1889,16 @@ void Navier_Stokes_std::div_ale_derivative( DoubleTrav& deriveeALE, double times
 void Navier_Stokes_std::update_pressure_matrix( void )
 {
   // nothing to do
+}
+
+void Navier_Stokes_std::update_y_plus(const DoubleTab& tab)
+{
+  if (y_plus.est_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
+  DoubleTab& tab_y_p = y_plus->valeurs();
+  if (tab.nb_dim()==2)
+    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,n);
+  if (tab.nb_dim()==3)
+    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
 }

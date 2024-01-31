@@ -19,10 +19,12 @@
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
 
-void Op_Dift_Multiphase_proto::associer_proto(const Pb_Multiphase& pb, Champs_compris& ch)
+void Op_Dift_Multiphase_proto::associer_proto(const Probleme_base& pb, Champs_compris& ch)
 {
   pbm_ = pb;
   le_chmp_compris_ = ch;
+
+  if (!sub_type(Pb_Multiphase, pbm_.valeur())) is_pbm_ = false;
 }
 
 void Op_Dift_Multiphase_proto::ajout_champs_(const bool is_face)
@@ -30,26 +32,30 @@ void Op_Dift_Multiphase_proto::ajout_champs_(const bool is_face)
   /*
    * Les correlations donnent nu_turb et lambda_turb
    */
-  noms_nu_ou_lambda_turb_post_.dimensionner(pbm_->nb_phases());
-  nu_ou_lambda_turb_post_.resize(pbm_->nb_phases());
+  const int nb_phases = is_pbm_ ? ref_cast(Pb_Multiphase, pbm_.valeur()).nb_phases() : 1;
+  noms_nu_ou_lambda_turb_post_.dimensionner(nb_phases);
+  nu_ou_lambda_turb_post_.resize(nb_phases);
 
-  for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_nu_ou_lambda_turb_post_[i] = is_face ? Nom("nu_turbulente_") + pbm_->nom_phase(i) : Nom("conductivite_turbulente_") + pbm_->nom_phase(i);
+  for (int i = 0; i < nb_phases; i++)
+    noms_nu_ou_lambda_turb_post_[i] = is_face ? (is_pbm_ ? Nom("nu_turbulente_") + ref_cast(Pb_Multiphase, pbm_.valeur()).nom_phase(i) : Nom("nu_turbulente")) :
+                                        (is_pbm_ ? Nom("conductivite_turbulente_") + ref_cast(Pb_Multiphase, pbm_.valeur()).nom_phase(i) : Nom("conductivite_turbulente"));
 
   /*
    * On recalcule mu_turb et alpha_turb
    */
-  noms_mu_ou_alpha_turb_post_.dimensionner(pbm_->nb_phases());
-  mu_ou_alpha_turb_post_.resize(pbm_->nb_phases());
+  noms_mu_ou_alpha_turb_post_.dimensionner(nb_phases);
+  mu_ou_alpha_turb_post_.resize(nb_phases);
 
-  for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_mu_ou_alpha_turb_post_[i] = is_face ? Nom("mu_turbulente_") + pbm_->nom_phase(i) : Nom("diffusivite_turbulente_") + pbm_->nom_phase(i);
+  for (int i = 0; i < nb_phases; i++)
+    noms_mu_ou_alpha_turb_post_[i] = is_face ? (is_pbm_ ? Nom("mu_turbulente_") + ref_cast(Pb_Multiphase, pbm_.valeur()).nom_phase(i) : Nom("mu_turbulente")) :
+                                       (is_pbm_ ? Nom("diffusivite_turbulente_") + ref_cast(Pb_Multiphase, pbm_.valeur()).nom_phase(i) : Nom("diffusivite_turbulente"));
 }
 
 void Op_Dift_Multiphase_proto::get_noms_champs_postraitables_proto(const Nom& classe, Noms& nom, Option opt) const
 {
   Noms noms_compris;
-  for (int i = 0; i < pbm_->nb_phases(); i++)
+  const int nb_phases = is_pbm_ ? ref_cast(Pb_Multiphase, pbm_.valeur()).nb_phases() : 1;
+  for (int i = 0; i < nb_phases; i++)
     {
       noms_compris.add(noms_nu_ou_lambda_turb_post_[i]);
       noms_compris.add(noms_mu_ou_alpha_turb_post_[i]);
@@ -116,7 +122,7 @@ void Op_Dift_Multiphase_proto::completer_(const Operateur_Diff_base& op,const bo
 
 void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_face)
 {
-  const int N = pbm_->nb_phases();
+  const int N = is_pbm_ ? ref_cast(Pb_Multiphase, pbm_.valeur()).nb_phases() : 1;
   for (int n = 0; n < N; n++)
     {
       /*

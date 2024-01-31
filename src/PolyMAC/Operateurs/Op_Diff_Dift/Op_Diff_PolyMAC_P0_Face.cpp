@@ -64,10 +64,11 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
 {
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
-  const DoubleTab& nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(), *alp =
-                                                          sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, *a_r =
-                                                            sub_type(Pb_Multiphase, equation().probleme()) ?
-                                                            &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
+  const DoubleTab& nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
+                    *a_r = sub_type(Pb_Multiphase, equation().probleme())
+                           ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe()
+                           : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
