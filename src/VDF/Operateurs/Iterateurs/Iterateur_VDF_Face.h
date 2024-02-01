@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,19 +66,19 @@ private:
 
   /* ====== BORDS ===== */
   template<typename Type_Double>
-  void ajouter_blocs_aretes_bords(const int, matrices_t, DoubleTab&, const tabs_t&) const;
+  void ajouter_blocs_aretes_bords(const int, const matrices_t&, DoubleTab&, const tabs_t&) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
   std::enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI, void>
-  ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  ajouter_blocs_aretes_bords_(const int , const int , const matrices_t& , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
   std::enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE, void>
-  ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  ajouter_blocs_aretes_bords_(const int , const int , const matrices_t& , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
   std::enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-  ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
+  ajouter_blocs_aretes_bords_(const int , const int , const matrices_t& , DoubleTab& , const tabs_t& ) const;
 
   /* ====== COINS ===== */
   template<typename Type_Double>
