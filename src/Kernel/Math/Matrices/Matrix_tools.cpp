@@ -131,6 +131,7 @@ void Matrix_tools::allocate_morse_matrix( const int nb_lines,
                                           Matrice_Morse& matrix ,
                                           const bool& attach_stencil_to_matrix )
 {
+
   assert( is_normalized_stencil( stencil ) );
 
   const int nb_coefficients = stencil.dimension( 0 );
@@ -171,7 +172,8 @@ void Matrix_tools::build_morse_matrix( const int     nb_lines,
                                        const ArrOfDouble& coefficients,
                                        Matrice_Morse&     matrix )
 {
-  assert( is_normalized_stencil( stencil ) );
+  // No : stencil do not rely on sorted columns
+  //assert( is_normalized_stencil( stencil ) );
 
   const int nb_coefficients = stencil.dimension( 0 );
   assert( nb_coefficients == coefficients.size_array( ) );
@@ -246,7 +248,8 @@ void Matrix_tools::build_symmetric_morse_matrix( const int     order,
                                                  const ArrOfDouble& coefficients,
                                                  Matrice_Morse_Sym& matrix )
 {
-  assert( is_normalized_symmetric_stencil( stencil ) );
+  // No : stencil do not rely on sorted columns
+  // assert( is_normalized_symmetric_stencil( stencil ) );
 
   const int nb_coefficients = stencil.dimension( 0 );
   assert( nb_coefficients == coefficients.size_array( ) );

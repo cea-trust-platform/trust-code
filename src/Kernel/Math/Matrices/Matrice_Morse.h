@@ -183,6 +183,7 @@ public :
   void assert_check_morse_matrix_structure( void ) const;
   void assert_check_sorted_morse_matrix_structure( void ) const;
   void sort_stencil();
+  bool is_sorted_stencil() const;
   bool is_diagonal();
 
   mutable int morse_matrix_structure_has_changed_; // Flag if matrix structure changes

@@ -1799,10 +1799,7 @@ template<> inline void _fill_slot<const double *>(const double*& dest, const dou
 template<typename _TAB_T_, typename _VALUE_T_>
 inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeffs_span) const
 {
-  coeffs_span.resize( 0 );
   coeffs_span.resize(tab2_.size_array());
-
-  stencil.resize( 0, 2 );
   stencil.resize(tab2_.size_array(), 2);
 
 
@@ -1814,33 +1811,17 @@ inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& co
   ArrOfInt index;
 
   int compteur = 0;
-
   const int nb_lines = nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
     {
-      int k0   = tab1_( i ) - 1;
-      int k1   = tab1_( i + 1 ) - 1;
-      int size = k1 - k0;
-
-      tmp1.resize( size );
-      tmp2.resize( size );
-
-      index.resize_array( 0 );
-
+      const int k0 = tab1_( i ) - 1;
+      const int k1 = tab1_( i + 1 ) - 1;
+      const int size = k1 - k0;
       for ( int k=0; k<size; ++k )
         {
-          tmp1( k ) = tab2_( k + k0 ) - 1;
-          ::_fill_slot<_VALUE_T_>(tmp2[k], coeff_(k+k0));
-        }
-
-      tri_lexicographique_tableau_indirect( tmp1, index );
-
-      for ( int k=0; k<size; ++k )
-        {
-          int l = index[ k ];
           stencil( compteur + k , 0 ) = i;
-          stencil( compteur + k , 1 ) = tmp1[ l ];
-          coeffs_span[ compteur + k ] = tmp2[ l ];
+          stencil( compteur + k , 1 ) = tab2_( k + k0 ) - 1;
+          ::_fill_slot<_VALUE_T_>(coeffs_span[ compteur + k ], coeff_(k+k0));
         }
       compteur += size;
     }
@@ -2313,6 +2294,25 @@ void Matrice_Morse::sort_stencil()
   for (int i = 0; i + 1 < tab1_.size(); i++) //indice de ligne
     std::sort(tab2_.addr() + tab1_(i) - 1, tab2_.addr() + tab1_(i + 1) - 1);
   morse_matrix_structure_has_changed_ = sorted_ = 1;
+}
+
+// Check if the matrix is sorted based on a stencil condition
+bool Matrice_Morse::is_sorted_stencil() const
+{
+  if (!sorted_)
+    {
+      const int n = nb_lignes();
+      for (int i = 0; i < n; i++)
+        {
+          const int k0 = tab1_( i ) - 1;
+          const int k1 = tab1_( i + 1 ) - 1;
+          for (int k=k0; k<k1-1; k++)
+            if (tab2_(k)>tab2_(k+1))
+              return sorted_; // not sorted
+        }
+      sorted_ = true;
+    }
+  return sorted_;
 }
 
 // Check the matrix is diagonal:
