@@ -53,6 +53,11 @@ struct Ecrire_CGNS_helper
   cgns_field_write(const int, const int, const int, const int, const std::vector<int>&, const std::string&, const int, const int, const char*, int&, int&);
 
   template<TYPE_ECRITURE _TYPE_>
+  inline std::enable_if_t<_TYPE_ == TYPE_ECRITURE::SEQ, void>
+  cgns_field_write_data(const int, const int, const int, const std::vector<int>&, const std::string&, const int, const int, const int,
+                        const char * , const DoubleTab& , int& , int& );
+
+  template<TYPE_ECRITURE _TYPE_>
   inline std::enable_if_t<_TYPE_ != TYPE_ECRITURE::SEQ, void>
   cgns_field_write_data(const int, const int, const int, const std::vector<int>&, const std::string&, const int, const int, const int, const int, const int,
                         const cgsize_t, const cgsize_t, const DoubleTab&);
@@ -184,6 +189,43 @@ Ecrire_CGNS_helper::cgns_field_write(const int nb_zones_to_write, const int file
         {
           if (cgp_field_write(fileId, baseId, zoneId[is_PAR_OVER ? ii : ind], flowId_elem, CGNS_DOUBLE_TYPE, id_champ, &fieldId_elem) != CG_OK)
             Cerr << "Error Ecrire_CGNS_helper::cgns_field_write : cgp_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+        }
+    }
+}
+
+template<TYPE_ECRITURE _TYPE_>
+inline std::enable_if_t<_TYPE_ == TYPE_ECRITURE::SEQ, void>
+Ecrire_CGNS_helper::cgns_field_write_data(const int fileId, const int baseId, const int ind, const std::vector<int>& zoneId,
+                                          const std::string& LOC, const int flowId_som, const int flowId_elem, const int comp,
+                                          const char * id_champ, const DoubleTab& valeurs, int& fieldId_som, int& fieldId_elem)
+{
+  if (valeurs.dimension(1) == 1) /* No stride ! */
+    {
+      if (LOC == "SOM")
+        {
+          if (cg_field_write(fileId, baseId, zoneId[ind], flowId_som, CGNS_DOUBLE_TYPE, id_champ, valeurs.addr(), &fieldId_som) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+        }
+      else // ELEM // TODO FIXME FACES
+        {
+          if (cg_field_write(fileId, baseId, zoneId[ind], flowId_elem, CGNS_DOUBLE_TYPE, id_champ, valeurs.addr(), &fieldId_elem) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+        }
+    }
+  else
+    {
+      std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
+      for (int i = 0; i < valeurs.dimension(0); i++) field_cgns.push_back(valeurs(i, comp));
+
+      if (LOC == "SOM")
+        {
+          if (cg_field_write(fileId, baseId, zoneId[ind], flowId_som, CGNS_DOUBLE_TYPE, id_champ, field_cgns.data(), &fieldId_som) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+        }
+      else // ELEM // TODO FIXME FACES
+        {
+          if (cg_field_write(fileId, baseId, zoneId[ind], flowId_elem, CGNS_DOUBLE_TYPE, id_champ, field_cgns.data(), &fieldId_elem) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
         }
     }
 }

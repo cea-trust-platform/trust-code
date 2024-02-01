@@ -344,41 +344,12 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
   if (nb_vals)
     {
       /* 3 : Write solution names for iterative data later */
-
       cgns_helper_.cgns_sol_write<TYPE_ECRITURE::SEQ>(1 /* nb_zones_to_write */, fileId, baseId_[ind], ind, temps, zoneId_, LOC, solname_som_, solname_elem_,
                                                       solname_som_written_, solname_elem_written_, flowId_som_, flowId_elem_);
 
       /* 4 : Fill field values & dump to cgns file */
-      if (valeurs.dimension(1) == 1) /* No stride ! */
-        {
-          if (LOC == "SOM")
-            {
-              if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_som_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-            }
-          else // ELEM // TODO FIXME FACES
-            {
-              if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), valeurs.addr(), &fieldId_elem_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-            }
-        }
-      else
-        {
-          std::vector<double> field_cgns; /* XXX TODO Elie Saikali : try DoubleTrav with addr() later ... mais je pense pas :p */
-          for (int i = 0; i < valeurs.dimension(0); i++)
-            field_cgns.push_back(valeurs(i, comp));
-
-          if (LOC == "SOM")
-            {
-              if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_som_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_som_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-            }
-          else // ELEM // TODO FIXME FACES
-            {
-              if (cg_field_write(fileId, baseId_[ind], zoneId_[ind], flowId_elem_, CGNS_DOUBLE_TYPE, id_champ.getChar(), field_cgns.data(), &fieldId_elem_) != CG_OK)
-                Cerr << "Error Ecrire_CGNS::cgns_write_field_seq : cg_field_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
-            }
-        }
+      cgns_helper_.cgns_field_write_data<TYPE_ECRITURE::SEQ>(fileId, baseId_[ind], ind, zoneId_, LOC, flowId_som_, flowId_elem_, comp,
+                                                             id_champ, valeurs, fieldId_som_, fieldId_elem_);
     }
 }
 
