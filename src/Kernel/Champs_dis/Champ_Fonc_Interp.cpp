@@ -38,7 +38,7 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   using namespace MEDCoupling;
 
   Param param(que_suis_je());
-  Nom nom_pb_loc, nom_pb_dist, nom_dom_loc, nom_dom_dist, nat, loc_trgt;
+  Nom nom_pb_loc, nom_pb_dist, nom_dom_loc, nom_dom_dist, nat;
   param.ajouter("nom_champ", &nom_, Param::REQUIRED); // XD_ADD_P chaine Name of the field (for example: temperature).
   param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED); // XD_ADD_P chaine Name of the local problem.
   param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED); // XD_ADD_P chaine Name of the distant problem.
@@ -196,8 +196,8 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
 
   if (Process::nproc() > 1 && use_dec_)
     {
-      std::set<int> pcs;
-      for (int i=0; i<Process::nproc(); i++) pcs.insert(i);
+      std::set<True_int> pcs;
+      for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
 
       if (! is_dec_initialized_)
         dec_ = std::make_shared<MEDCoupling::OverlapDEC>(pcs, ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_trio_u_world());
