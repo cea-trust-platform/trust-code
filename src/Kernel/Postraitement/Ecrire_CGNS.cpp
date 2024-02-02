@@ -46,6 +46,25 @@ void Ecrire_CGNS::cgns_init_MPI()
     Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_pio_mode !" << finl, cgp_error_exit();
 }
 
+/*
+ * XXX : Elie Saikali - Attention pour le moment on a plusieurs options CGNS et du coup plusieurs cas :
+ *
+ * - SEQUENTIEL => facile => un seul chemin
+ *
+ * - PARALLEL => plusieurs cas => plusieurs chemins
+ *
+ *      *** Par default, on ecrit dans un seul fichier, sans lien et avec parallelisme dans la zone.
+ *
+ *      Cependant, on peut changer ca avec les OPTION_CGNS
+ *
+ *        - MULTIPLE_FILES : ici sort un fichier par proc et un fichier link a la fin (sauf si postraiter_domaine).
+ *
+ *        - PARALLEL_OVER_ZONES : on sort un fichier avec parallelisme sur les zones. utile pour voir le decoupage d'un maillage par example
+ *
+ *        - USE_LINKS : utile pour un vrai calcul et si le calcul ne se termine pas correctement. Sauf pour l'interpret postraiter_domaine,
+ *                  on sort un fichier // par dt_post et on sort un fichier link a la fin.
+ */
+
 void Ecrire_CGNS::cgns_open_file()
 {
   std::string fn = baseFile_name_ + ".cgns"; // file name
@@ -114,7 +133,7 @@ void Ecrire_CGNS::cgns_close_file()
     }
 
   /* dernier truc a faire ! */
-  if (Option_CGNS::MULTIPLE_FILES && Process::is_parallel())
+  if (Option_CGNS::MULTIPLE_FILES && Process::is_parallel() && !postraiter_domaine_)
     cgns_write_link_file_for_multiple_files();
 }
 
