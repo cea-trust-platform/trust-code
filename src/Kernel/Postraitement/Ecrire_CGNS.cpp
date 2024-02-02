@@ -62,6 +62,7 @@ void Ecrire_CGNS::cgns_init_MPI()
  * - PARALLEL => plusieurs cas => plusieurs chemins
  *
  *      *** Par default, on ecrit dans un seul fichier, sans lien et avec parallelisme dans la zone.
+ *      *** Par default, pour postraiter_domaine, on fait PARALLEL_OVER_ZONES pour visualizer le decoupage
  *
  *      Cependant, on peut changer ca avec les OPTION_CGNS
  *
@@ -117,7 +118,7 @@ void Ecrire_CGNS::cgns_close_file()
 
   if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
-      if (Option_CGNS::PARALLEL_OVER_ZONE)
+      if (Option_CGNS::PARALLEL_OVER_ZONE || postraiter_domaine_)
         cgns_write_iters_par_over_zone();
       else
         cgns_write_iters_par_in_zone();
@@ -166,7 +167,7 @@ void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, con
 
   if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
-      if (Option_CGNS::PARALLEL_OVER_ZONE)
+      if (Option_CGNS::PARALLEL_OVER_ZONE || postraiter_domaine_)
         cgns_write_domaine_par_over_zone(dom, Nom(nom_dom_modifie), som, elem, type_e);
       else
         cgns_write_domaine_par_in_zone(dom, Nom(nom_dom_modifie), som, elem, type_e);
@@ -197,7 +198,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
     {
       for (int i = 0; i < nb_cmp; i++)
         {
-          if (Option_CGNS::PARALLEL_OVER_ZONE)
+          if (Option_CGNS::PARALLEL_OVER_ZONE || postraiter_domaine_)
             cgns_write_field_par_over_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
           else
             cgns_write_field_par_in_zone(i /* compo */, temps, nb_cmp > 1 ? Motcle(noms_compo[i]) : id_du_champ, id_du_domaine, localisation, fld_loc_map_.at(LOC), valeurs);
@@ -235,7 +236,7 @@ void Ecrire_CGNS::cgns_fill_field_loc_map(const Domaine& domaine, const std::str
 
                   if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
                     {
-                      if (Option_CGNS::PARALLEL_OVER_ZONE)
+                      if (Option_CGNS::PARALLEL_OVER_ZONE || postraiter_domaine_)
                         cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
                       else
                         cgns_write_domaine_par_in_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
@@ -278,7 +279,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
 {
   /* 1 : Instance of TRUST_2_CGNS */
   TRUST_2_CGNS TRUST2CGNS;
-  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem, postraiter_domaine_);
   doms_written_.push_back(nom_dom);
 
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
@@ -430,7 +431,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
   /* 1 : Instance of TRUST_2_CGNS */
   T2CGNS_.push_back(TRUST_2_CGNS());
   TRUST_2_CGNS& TRUST2CGNS = T2CGNS_.back();
-  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem, postraiter_domaine_);
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */
@@ -696,7 +697,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   /* 1 : Instance of TRUST_2_CGNS */
   T2CGNS_.push_back(TRUST_2_CGNS());
   TRUST_2_CGNS& TRUST2CGNS = T2CGNS_.back();
-  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem);
+  TRUST2CGNS.associer_domaine_TRUST(domaine, les_som, les_elem, postraiter_domaine_);
   CGNS_TYPE cgns_type_elem = TRUST2CGNS.convert_elem_type(type_elem);
 
   /* 2 : Fill coords */

@@ -91,11 +91,12 @@ int TRUST_2_CGNS::get_index_nom_vector(const std::vector<Nom>& vect, const Nom& 
   return ind;
 }
 
-void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine * dom, const DoubleTab& som, const IntTab& elem)
+void TRUST_2_CGNS::associer_domaine_TRUST(const Domaine * dom, const DoubleTab& som, const IntTab& elem, const bool post_dom)
 {
   if (dom) dom_trust_ = *dom;
   sommets_ = som;
   elems_ = elem;
+  postraiter_domaine_ = post_dom;
 }
 
 void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>& yCoords, std::vector<double>& zCoords)
@@ -111,9 +112,12 @@ void TRUST_2_CGNS::fill_coords(std::vector<double>& xCoords, std::vector<double>
     }
 }
 
+/*
+ * NOTA BENE : postraiter_domaine_ toujours comme PARALLEL_OVER_ZONE, meme si c'est pas active
+ */
 void TRUST_2_CGNS::clear_vectors()
 {
-  if (!Option_CGNS::PARALLEL_OVER_ZONE)
+  if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
     if (!proc_non_zero_elem_.empty()) proc_non_zero_elem_.clear(); // XXX a voir plus tard si utile pour garder
 
   if (!global_nb_elem_.empty()) global_nb_elem_.clear();
@@ -150,7 +154,7 @@ void TRUST_2_CGNS::fill_global_infos()
   const int nb_som = sommets_->dimension(0), nb_elem = elems_->dimension(0);
   const int nb_procs = Process::nproc();
 
-  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE) ? true : false;
+  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_) ? true : false;
 
   global_nb_elem_.assign(nb_procs, -123 /* default */);
   global_nb_som_.assign(nb_procs, -123 /* default */);
@@ -161,7 +165,7 @@ void TRUST_2_CGNS::fill_global_infos()
   MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-  if (!Option_CGNS::PARALLEL_OVER_ZONE)
+  if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
     {
       global_incr_min_elem_.assign(nb_procs, -123 /* default */);
       global_incr_max_elem_.assign(nb_procs, -123 /* default */);
@@ -206,7 +210,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 
   int decal = 0; // a modifier plus tard !!!
   const int nb_procs = Process::nproc();
-  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE) ? true : false;
+  par_in_zone_ = (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_) ? true : false;
 
   if (is_polyedre)
     {
@@ -224,7 +228,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_elem_face_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
           // incr sur nb_faces tot
           global_incr_min_face_som_.assign(nb_procs, -123 /* default */);
@@ -252,13 +256,13 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
         }
 
       // face_sommets : local vectors + offset
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         decal = compute_shift(global_incr_max_som_); // shift by sommets !!
 
       nb_fs_ = convert_connectivity_ngon(local_fs_, local_fs_offset_, is_polyedre, decal);
 
       // elem_faces : local vectors + offset
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         decal = compute_shift(global_incr_max_face_som_); // shift by faces !!
 
       nb_ef_ = convert_connectivity_nface(local_ef_, local_ef_offset_, decal);
@@ -274,7 +278,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
           // incr sur nb_faces et nb_elem tot offset
           std::vector<int> global_incr_max_face_som_offset, global_incr_max_elem_face_offset;
@@ -303,7 +307,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
     }
   else // polygon
     {
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         decal = compute_shift(global_incr_max_som_); // shift by sommets !!
 
       nb_es_ = convert_connectivity_ngon(local_es_, local_es_offset_, is_polyedre, decal);
@@ -317,7 +321,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
 #endif
 
-      if (!Option_CGNS::PARALLEL_OVER_ZONE)
+      if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
           std::vector<int> global_incr_max_elem_som_offset;
           global_incr_max_elem_som_offset.assign(nb_procs, -123 /* default */);

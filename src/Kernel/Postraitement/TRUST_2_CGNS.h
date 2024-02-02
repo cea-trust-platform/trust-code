@@ -32,7 +32,7 @@ class TRUST_2_CGNS
 {
 public:
   TRUST_2_CGNS() { }
-  void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&);
+  void associer_domaine_TRUST(const Domaine *, const DoubleTab&, const IntTab&, const bool);
   void fill_coords(std::vector<double>&, std::vector<double>&, std::vector<double>&);
   CGNS_TYPE convert_elem_type(const Motcle&);
 
@@ -103,7 +103,7 @@ private:
   REF(DoubleTab) sommets_;
   REF(IntTab) elems_;
 
-  bool par_in_zone_ = false, all_procs_write_ = true;
+  bool par_in_zone_ = false, all_procs_write_ = true, postraiter_domaine_ = false;
   int ns_tot_ = -123, ne_tot_ = -123, nb_procs_writing_ = -123;
 
   std::vector<int> global_nb_elem_, global_nb_som_, proc_non_zero_elem_;
