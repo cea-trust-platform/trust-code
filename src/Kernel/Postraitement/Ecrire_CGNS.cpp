@@ -35,15 +35,23 @@ void Ecrire_CGNS::cgns_set_base_name(const Nom& fn)
 
 void Ecrire_CGNS::cgns_init_MPI()
 {
-  cgp_mpi_comm(Comm_Group_MPI::get_trio_u_world()); // initialise MPI_COMM_WORLD
+  if (Option_CGNS::MULTIPLE_FILES && !postraiter_domaine_)
+    {
+      if (cgp_mpi_comm(/* XXX */ MPI_COMM_SELF) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_init_MPI : cgp_pio_mode !" << finl, cgp_error_exit();
+    }
+  else
+    {
+      if (cgp_mpi_comm(/* XXX MPI_COMM_WORLD */ Comm_Group_MPI::get_trio_u_world()) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_init_MPI : cgp_pio_mode !" << finl, cgp_error_exit();
+    }
 
   /*
-   * Elie Saikali XXX NOTA BENE XXX
-   * We need sometimes to write planes, boundaries where some processors have no elements/vertices ...
+   * Elie Saikali XXX NOTA BENE XXX : We need sometimes to write planes, boundaries where some processors have no elements/vertices ...
    * This wont work because the default PIO mode of CGNS is COLLECTIVE. We want it to be INDEPENDENT !
    */
   if (cgp_pio_mode((CGNS_ENUMT(PIOmode_t)) CGP_INDEPENDENT) != CG_OK)
-    Cerr << "Error Ecrire_CGNS::cgns_open_file : cgp_pio_mode !" << finl, cgp_error_exit();
+    Cerr << "Error Ecrire_CGNS::cgns_init_MPI : cgp_pio_mode !" << finl, cgp_error_exit();
 }
 
 /*
@@ -57,7 +65,8 @@ void Ecrire_CGNS::cgns_init_MPI()
  *
  *      Cependant, on peut changer ca avec les OPTION_CGNS
  *
- *        - MULTIPLE_FILES : ici sort un fichier par proc et un fichier link a la fin (sauf si postraiter_domaine).
+ *        - MULTIPLE_FILES : sauf si postraiter_domaine, on sort dans ce cas un fichier par proc et un fichier link a la fin.
+ *                  Si postraiter_domaine, on fait le default !
  *
  *        - PARALLEL_OVER_ZONES : on sort un fichier avec parallelisme sur les zones. utile pour voir le decoupage d'un maillage par example
  *
@@ -67,12 +76,12 @@ void Ecrire_CGNS::cgns_init_MPI()
 
 void Ecrire_CGNS::cgns_open_file()
 {
+  if (Process::is_parallel()) cgns_init_MPI(); // 1er truc a faire
+
   std::string fn = baseFile_name_ + ".cgns"; // file name
 
-  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+  if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
-      cgns_init_MPI(); // XXX
-
       if (!Option_CGNS::USE_LINKS || postraiter_domaine_) // si sans link, on ouvre
         {
           if (cgp_open(fn.c_str(), CG_MODE_WRITE, &fileId_) != CG_OK)
@@ -106,7 +115,7 @@ void Ecrire_CGNS::cgns_close_file()
 
   std::string fn = baseFile_name_ + ".cgns"; // file name
 
-  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+  if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
       if (Option_CGNS::PARALLEL_OVER_ZONE)
         cgns_write_iters_par_over_zone();
@@ -133,7 +142,7 @@ void Ecrire_CGNS::cgns_close_file()
     }
 
   /* dernier truc a faire ! */
-  if (Option_CGNS::MULTIPLE_FILES && Process::is_parallel() && !postraiter_domaine_)
+  if (Process::is_parallel() && Option_CGNS::MULTIPLE_FILES)
     cgns_write_link_file_for_multiple_files();
 }
 
@@ -155,7 +164,7 @@ void Ecrire_CGNS::cgns_write_domaine(const Domaine * dom,const Nom& nom_dom, con
     if (!grid_file_opened_)
       cgns_open_grid_base_link_file(), grid_file_opened_ = true; // On ouvre pour .grid.cgns
 
-  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+  if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
       if (Option_CGNS::PARALLEL_OVER_ZONE)
         cgns_write_domaine_par_over_zone(dom, Nom(nom_dom_modifie), som, elem, type_e);
@@ -184,7 +193,7 @@ void Ecrire_CGNS::cgns_write_field(const Domaine& domaine, const Noms& noms_comp
   /* 2 : on ecrit */
   const int nb_cmp = valeurs.dimension(1);
 
-  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+  if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
     {
       for (int i = 0; i < nb_cmp; i++)
         {
@@ -224,7 +233,7 @@ void Ecrire_CGNS::cgns_fill_field_loc_map(const Domaine& domaine, const std::str
                   Cerr << "Building new CGNS zone to host the field located at : " << LOC << " !" << finl;
                   Motcle type_e = domaine.type_elem().valeur().que_suis_je();
 
-                  if (Process::is_parallel() && !Option_CGNS::MULTIPLE_FILES)
+                  if (Process::is_parallel() && (!Option_CGNS::MULTIPLE_FILES || (Option_CGNS::MULTIPLE_FILES && postraiter_domaine_) ))
                     {
                       if (Option_CGNS::PARALLEL_OVER_ZONE)
                         cgns_write_domaine_par_over_zone(&domaine, nom_dom, domaine.les_sommets(), domaine.les_elems(), type_e);
@@ -1083,6 +1092,8 @@ void Ecrire_CGNS::cgns_write_final_link_file()
 
 void Ecrire_CGNS::cgns_write_link_file_for_multiple_files()
 {
+  if (postraiter_domaine_) return; /* Do nothing */
+
   Process::barrier();
   if (Process::je_suis_maitre()) // Only master proc writes !
     {
