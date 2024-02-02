@@ -312,9 +312,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   const DoubleVectView porosite_face_v = porosite_face.view_ro();
   const DoubleTabView face_normales_v = face_normales.view_ro();
   const IntTabView elem_faces_v = elem_faces.view_ro();
-  pre.modified_on_host();  // TODO should not be necessary
   const DoubleTabView pre_v = pre.view_ro();
-  grad.modified_on_host();  // TODO should not be necessary
   DoubleTabView grad_v = grad.view_rw();
   int dim = Objet_U::dimension;
 
@@ -338,8 +336,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
   Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-
-  grad.sync_to_host();
 #endif
   return grad;
 }
@@ -725,9 +721,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   const IntTabView face_voisins_v = face_voisins.view_ro();
   const IntTabView sommets_v = sommets.view_ro();
   const DoubleTabView face_normales_v = face_normales.view_ro();
-  pression_P1B.modified_on_host();  // TODO should not be necessary
   const DoubleVectView pression_P1B_v = pression_P1B.view_ro();
-//  DoubleTab flux_bords2 = flux_bords_;
   DoubleTabView flux_bords_v = flux_bords_.view_wo();
   int dim = Objet_U::dimension;
 
@@ -755,7 +749,6 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 
-  flux_bords_.sync_to_host();
 #endif
 }
 

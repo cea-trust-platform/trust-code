@@ -74,6 +74,7 @@ using DoubleTabView = ViewTab<double>;
 using DoubleTabView3 = ViewTab3<double>;
 using DoubleTabView4 = ViewTab4<double>;
 
+extern void kokkos_self_test();
 #endif // KOKKOS_
 
 #endif

@@ -418,13 +418,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   const IntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
   const DoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
   const DoubleTabView nu_v = nu.view_ro();
-  grad_.modified_on_host3();   // TODO : to be removed later
   const DoubleTabView3 grad_v = grad_.view3_ro();
-//  grad_.modified_on_host();   // TODO : to be removed later
-//  const DoubleTabView grad_v = grad_.view_ro();
-  resu.modified_on_host();   // TODO : to be removed later
   DoubleTabView resu_v = resu.view_rw();
-  tab_flux_bords.modified_on_host();   // TODO : to be removed later
   DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
 
   auto kern_ajouter = KOKKOS_LAMBDA(int num_face)
@@ -473,9 +468,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //                       Kokkos::RangePolicy<>(nb_faces_bord, nb_faces), kern_ajouter2);
   Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
-  resu.sync_to_host();
-  tab_flux_bords.sync_to_host();
-
 
 //  // Tentative with a proper functor instead of a lambda - does not change perf ... snif.
 //  {
@@ -483,19 +475,14 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //    ze_func.face_voisins_v = domaine_VEF.face_voisins().view_ro();
 //    ze_func.face_normales_v = domaine_VEF.face_normales().view_ro();
 //    ze_func.nu_v = nu.view_ro();
-//    grad_.modified_on_host();   // TODO : to be removed later
 //    ze_func.grad_v = grad_.view_ro();
-//    resu.modified_on_host();   // TODO : to be removed later
 //    ze_func.resu_v = resu.view_rw();
-//    tab_flux_bords.modified_on_host();   // TODO : to be removed later
 //    ze_func.tab_flux_bords_v = tab_flux_bords.view_rw();
 //
 //    start_timer();
 //    Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, ze_func);
 //    Kokkos::fence();
 //    end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
-//    resu.sync_to_host();
-//    tab_flux_bords.sync_to_host();
 //
 //  }
 #endif

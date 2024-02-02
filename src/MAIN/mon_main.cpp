@@ -33,7 +33,6 @@
 #endif
 
 #include <kokkos++.h>
-#include <kokkos_test.h>
 #ifdef KOKKOS_
 #include <Kokkos_Core.hpp>
 #endif
@@ -152,7 +151,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   int argc2 = argc;
   Kokkos::initialize( argc2, argv );
   Cerr << "Kokkos initialized!" << finl;
-  kokkos_self_test();
 #endif
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP

@@ -824,18 +824,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const DoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
           const DoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
 
-          la_vitesse.valeurs().modified_on_host();
           const DoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
-          vitesse_face_absolue.modified_on_host();
           const DoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
-          transporte_face.modified_on_host();
           const DoubleTabView transporte_face_v = transporte_face.view_ro();
-          gradient.modified_on_host();
           const DoubleTabView3 gradient_v = gradient.view3_ro();
 
-          resu.modified_on_host();
           DoubleTabView resu_v = resu.view_rw();
-          flux_b.modified_on_host();
           DoubleTabView flux_b_v = flux_b.view_rw();
 
           const int dim = Objet_U::dimension;
@@ -1064,8 +1058,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           Kokkos::fence();
           end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
 
-          resu.sync_to_host();
-          flux_b.sync_to_host();
 #endif
         }
       else
