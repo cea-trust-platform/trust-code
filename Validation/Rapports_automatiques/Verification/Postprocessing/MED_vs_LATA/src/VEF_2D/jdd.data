@@ -1,0 +1,100 @@
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+Read_MED { domain dom file shape.med }
+
+
+VEFPreP1b dis
+
+
+Scheme_euler_explicit sch
+Read sch
+{
+
+    tinit 0.0
+    tmax  10
+    dt_min 1.e-20
+    dt_max 1.e-1
+    dt_impr 1.e-2
+    dt_sauv 5.0
+    seuil_statio -1.e-8
+    facsec 1
+    diffusion_implicite 0
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+
+Read pb
+{
+    Fluide_Incompressible
+    {
+        beta_th champ_uniforme  1 0.0002
+        mu champ_uniforme  1 1.
+        rho champ_uniforme  1 987.
+        cp champ_uniforme  1 4185.0
+        lambda champ_uniforme  1 76
+        gravite champ_uniforme 2 0 -9.81
+    }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1e-10
+            impr
+        }
+        convection { amont }
+        diffusion  { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 1. 0.
+        }
+        boundary_conditions {
+            INLET Frontiere_ouverte_vitesse_imposee champ_Front_Uniforme 2 2 0.
+            OUTLET		Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 800
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Circle paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions {
+            INLET 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1  10
+            OUTLET frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 10
+            Haut paroi_temperature_imposee Champ_front_Uniforme 1 5	Circle paroi_temperature_imposee Champ_front_Uniforme 1 20
+            Bas paroi_temperature_imposee Champ_front_Uniforme 1 5
+        }
+        initial_conditions { temperature Champ_Uniforme 1 5 }
+    }
+
+    Post_processing
+    {
+        format med
+        fields dt_post 1e6
+        {
+            temperature elem
+            temperature som
+            vitesse elem
+            vitesse som
+            vitesse faces
+        }
+    }
+    Post_processing
+    {
+        format lata
+        fields dt_post 1e6
+        {
+            temperature elem
+            temperature som
+            vitesse som
+            vitesse elem
+            vitesse faces
+        }
+    }
+}
+Solve pb
+End
