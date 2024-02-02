@@ -27,7 +27,9 @@ Implemente_instanciable_sans_destructeur(Champ_Fonc_Interp, "Champ_Fonc_Interp",
 
 Champ_Fonc_Interp::~Champ_Fonc_Interp()
 {
+#ifdef MPI_
   if (dec_) dec_->release();
+#endif
 }
 
 Sortie& Champ_Fonc_Interp::printOn(Sortie& os) const { return Champ_Fonc_P0_base::printOn(os); }
@@ -196,6 +198,7 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
 
   if (Process::nproc() > 1 && use_dec_)
     {
+#ifdef MPI_
       std::set<True_int> pcs;
       for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
 
@@ -215,6 +218,7 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
           is_dec_initialized_ = true;
         }
       dec_->sendRecvData(true);
+#endif
     }
   else
     {
