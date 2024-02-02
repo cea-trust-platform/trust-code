@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+02/02/24 (TRUST) Fix          : Fixed bug in post-processing fields on nodes (SOM) in MED Format (internal MEDCouplingUMesh was not always in sync with Domaine)
 31/01/24 (TRUST) Fix          : Fixed handling of empty domains in VEF, PolyMAC_P0, and other related areas.
 31/01/24 (TRUST) Fix          : Bug fix in pb_couple on the same domain with missing APPEND for fields.
 31/01/24 (TRUST) Fix          : Resolved the issue in Perte_Charge_VEF with non-uniform, non-xyz viscosity.
