@@ -112,6 +112,10 @@ void Ecrire_CGNS::cgns_close_file()
 
       Cerr << "**** CGNS file " << fn << " closed !" << finl;
     }
+
+  /* dernier truc a faire ! */
+  if (Option_CGNS::MULTIPLE_FILES && Process::is_parallel())
+    cgns_write_link_file_for_multiple_files();
 }
 
 void Ecrire_CGNS::cgns_add_time(const double t)
@@ -1055,6 +1059,152 @@ void Ecrire_CGNS::cgns_write_final_link_file()
       cgns_helper_.cgns_write_iters<TYPE_ECRITURE::SEQ>(true /* has_field */, 1 /* nb_zones_to_write */, fileId, baseId_[0], 0 /* 1st Zone */, zoneId_, LOC, solname_som_, solname_elem_, time_post_);
 
       cgns_close_grid_solution_link_file(ind, !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns", true); // on ferme
+    }
+}
+
+void Ecrire_CGNS::cgns_write_link_file_for_multiple_files()
+{
+  Process::barrier();
+  if (Process::je_suis_maitre()) // Only master proc writes !
+    {
+      std::string fn = baseFile_name_ + ".cgns"; // file name
+      Cerr << "Option_CGNS::MULTIPLE_FILES is used ... so we write a unique link file " << fn << " ..." << finl;
+
+      int fileId_l = -123, baseId_l = -123, zoneId_l = -123;
+      int fileId = -123, baseId = 1, zoneId = 1, cell_dim = -123, phys_dim = -123;
+      int nbndry = -123, iparent_flag = -123, nsols = -123, nsections = -123;
+      char basename[CGNS_STR_SIZE], zonename[CGNS_STR_SIZE], sectionname[CGNS_STR_SIZE], solname[CGNS_STR_SIZE];
+
+      cgsize_t isize[3][1], istart, iend;
+      std::vector<std::string> connectname, sols;
+      CGNS_TYPE itype;
+      CGNS_LOC loc;
+
+      /* Step 1 : on ouvre baseFile_name_0000.cgns et on lit */
+      fn = (Nom(baseFile_name_)).nom_me(0).getString() + ".cgns"; // file name
+
+      if (cg_open(fn.c_str(), CG_MODE_READ, &fileId) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_open !" << finl, cg_error_exit();
+
+      if (cg_base_read(fileId, baseId, basename, &cell_dim, &phys_dim) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_base_read !" << finl, cg_error_exit();
+
+      if (cg_zone_read(fileId, baseId, zoneId, zonename, isize[0]) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_zone_read !" << finl, cg_error_exit();
+
+      if (cg_nsections(fileId, baseId, zoneId, &nsections) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_nsections !" << finl, cg_error_exit();
+
+      for (int index_sect = 1; index_sect <= nsections; index_sect++)
+        {
+          if (cg_section_read(fileId, baseId, zoneId, index_sect, sectionname, &itype, &istart, &iend, &nbndry, &iparent_flag) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_section_read !" << finl, cg_error_exit();
+
+          connectname.push_back(std::string(sectionname));
+        }
+
+      if (cg_nsols(fileId, baseId, zoneId, &nsols) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_nsols !" << finl, cg_error_exit();
+
+      for (int i = 1; i <= nsols; i++)
+        {
+          if (cg_sol_info(fileId, baseId, zoneId, i, solname, &loc) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_sol_info !" << finl, cg_error_exit();
+
+          sols.push_back(std::string(solname));
+        }
+
+      if (cg_close(fileId) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_close !" << finl, cg_error_exit();
+
+      /* Step 2 : on ouvre le link file, on laisse ouvert et on ecrit dans la premiere noeud ... */
+      fn = baseFile_name_ + ".cgns"; // file name
+      unlink(fn.c_str());
+
+      if (cg_open(fn.c_str(), CG_MODE_WRITE, &fileId_l) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_open !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
+      Cerr << "**** CGNS file " << fn << " opened !" << finl;
+
+      if (cg_base_write(fileId_l, basename, cell_dim, phys_dim, &baseId_l) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_base_write !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
+      if (cg_biter_write(fileId_l, baseId_l, "TimeIterValues", static_cast<int>(sols.size())) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_biter_write !" << finl, cg_error_exit();
+
+      if (cg_goto(fileId_l, baseId_l, "BaseIterativeData_t", 1, "end") != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
+
+      std::string linkfile = (Nom(baseFile_name_)).nom_me(0).getString() + ".cgns"; // file name
+      std::string linkpath = "/" + std::string(basename) + "/TimeIterValues/TimeValues/";
+
+      if (cg_link_write("TimeValues", linkfile.c_str(), linkpath.c_str()) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_link_write !" << finl, cg_error_exit();
+
+      if (cg_simulation_type_write(fileId_l, baseId_l, CGNS_ENUMV(TimeAccurate)) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_simulation_type_write !" << finl, cg_error_exit();
+
+      /* Step 3 : On lit tous les fichiers pour recuperer sizes, et on ecrit les links */
+      for (int proc = 0; proc < Process::nproc(); proc++)
+        {
+          /* on lit les cgns files */
+          fn = (Nom(baseFile_name_)).nom_me(proc).getString() + ".cgns"; // file name
+
+          if (cg_open(fn.c_str(), CG_MODE_READ, &fileId) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_open !" << finl, cg_error_exit();
+
+          if (cg_zone_read(fileId, baseId, zoneId, zonename, isize[0]) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_zone_read !" << finl, cg_error_exit();
+
+          if (cg_close(fileId) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_close !" << finl, cg_error_exit();
+
+          /* on ecrit dans le link file : 2eme noeud sous domaine */
+          Nom new_zonename = Nom(zonename).nom_me(proc);
+          linkfile = fn; // file name
+
+          if (cg_zone_write(fileId_l, baseId_l, new_zonename.getChar(), isize[0], CGNS_ENUMV(Unstructured), &zoneId_l) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_base_write !" << finl, cg_error_exit();
+
+          linkpath = "/" + std::string(basename) + "/" + std::string(zonename) + "/GridCoordinates/";
+
+          if (cg_goto(fileId_l, baseId_l, "Zone_t", proc + 1, "end") != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_goto !" << finl, cg_error_exit();
+
+          if (cg_link_write("GridCoordinates", linkfile.c_str(), linkpath.c_str()) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_link_write !" << finl, cg_error_exit();
+
+          for (auto &itr : connectname)
+            {
+              linkpath = "/" + std::string(basename) + "/" + std::string(zonename) + "/" + itr + "/";
+              if (cg_link_write(itr.c_str(), linkfile.c_str(), linkpath.c_str()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_link_write !" << finl, cg_error_exit();
+            }
+
+          // link solutions
+          for (auto &itr : sols)
+            {
+              linkpath = "/" + std::string(basename) + "/" + std::string(zonename) + "/" + itr + "/";
+              if (cg_link_write(itr.c_str(), linkfile.c_str(), linkpath.c_str()) != CG_OK)
+                Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_link_write !" << finl, cg_error_exit();
+            }
+
+          if (cg_ziter_write(fileId_l, baseId_l, zoneId_l, "ZoneIterativeData") != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_ziter_write !" << finl, cg_error_exit();
+
+          if (cg_goto(fileId_l, baseId_l, "Zone_t", zoneId_l, "ZoneIterativeData_t", 1, "end") != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_goto !" << finl, cg_error_exit();
+
+          linkpath = "/" + std::string(basename) + "/" + std::string(zonename) + "/ZoneIterativeData/FlowSolutionPointers/";
+          if (cg_link_write("FlowSolutionPointers", linkfile.c_str(), linkpath.c_str()) != CG_OK)
+            Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_link_write !" << finl, cg_error_exit();
+        }
+
+      /* Step 4 : on ferme le link file, on laisse ouvert et on ecrit la base */
+      if (cg_close(fileId_l) != CG_OK)
+        Cerr << "Error Ecrire_CGNS::cgns_write_link_file_for_multiple_files : cg_close !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
+
+      Cerr << "**** CGNS file " << baseFile_name_ + ".cgns" << " closed !" << finl;
     }
 }
 

@@ -23,6 +23,7 @@
 #ifdef HAS_CGNS
 
 using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
+using CGNS_LOC = CGNS_ENUMT(GridLocation_t);
 
 class Domaine;
 class Motcle;
