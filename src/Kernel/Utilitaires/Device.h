@@ -73,6 +73,14 @@ inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Ret
     }
 #endif
 }
+template <typename _TYPE_>
+extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab);
+
+template <typename _TYPE_>
+inline const _TYPE_* addrOnDevice(const TRUSTArray<_TYPE_>& tab)
+{
+  return addrOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab));
+}
 
 template <typename _TYPE_>
 extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");

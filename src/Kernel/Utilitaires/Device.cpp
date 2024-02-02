@@ -178,6 +178,21 @@ std::string toString(const void* adr)
   return ss.str();
 }
 
+// Adress on device:
+template <typename _TYPE_>
+_TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
+{
+#ifdef _OPENMP
+  _TYPE_* ptr = tab.addrForDevice();
+  #pragma omp target data use_device_ptr(ptr)
+  {
+    return ptr;
+  }
+#else
+  return nullptr;
+#endif
+}
+
 // Allocate on device:
 template <typename _TYPE_>
 _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
@@ -437,6 +452,10 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
     }
 #endif
 }
+
+template double* addrOnDevice<double>(TRUSTArray<double>& tab);
+template int* addrOnDevice<int>(TRUSTArray<int>& tab);
+template float* addrOnDevice<float>(TRUSTArray<float>& tab);
 
 template double* allocateOnDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
 template int* allocateOnDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
