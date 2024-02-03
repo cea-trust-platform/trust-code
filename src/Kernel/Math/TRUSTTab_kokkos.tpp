@@ -444,22 +444,22 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
   int size = max_size;
-  if (size==-1) size = view_tab.extent(0);
-  int nb_compo = view_tab.extent(1);
+  if (size==-1) size = (int)view_tab.extent(0);
+  int nb_compo = (int)view_tab.extent(1);
   Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
   {
     for (int j=0; j<nb_compo; j++)
-      printf("[Kokkos]: %p [%d,%d]=%e\n", view_tab.data(), i, j, view_tab(i,j));
+      Kokkos::printf("[Kokkos]: %p [%d,%d]=%e\n", (void*)view_tab.data(), i, j, view_tab(i,j));
   });
   Cout << "Tab size=" << tab.size_array() << finl;
-  assert(view_tab.size()==tab.size_array());
+  assert((int)view_tab.size()==tab.size_array());
   nb_compo = tab.dimension(1);
   _TYPE_* ptr = tab.addrForDevice();
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     {
       for (int j=0; j<nb_compo; j++)
-        printf("[OpenMP]: %p [%d,%d]=%e\n", ptr,  i, j, ptr[i*nb_compo+j]);
+        printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
     }
 }
 #endif // KOKKOS_

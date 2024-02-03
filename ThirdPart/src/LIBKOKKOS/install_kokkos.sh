@@ -22,7 +22,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-        CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
+        CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_CXX_FLAGS=-fPIC"
         # We try to use nvc++ for Cuda to mix Kokkos with OpenMP:
         [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         [ "$TRUST_USE_CUDA" = 1 ]                                && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
@@ -41,11 +41,22 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         cmake ../kokkos $CMAKE_OPT 1>>$log_file 2>&1 
         [ $? != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1
 
-        make -j$TRUST_NB_PHYSICAL_PROCS install  1>>$log_file 2>&1
+        make -j$TRUST_NB_PHYSICAL_PROCS install 1>>$log_file 2>&1
         [ $? != 0 ] && echo "Error when compiling Kokkos - look at $log_file" && exit -1
         echo "Kokkos $CMAKE_BUILD_TYPE installed under $CMAKE_INSTALL_PREFIX"
         cd ..
       done
+      # Cree liens pour autres builds
+      (cd $KOKKOS_ROOT_DIR;
+      for build in _opt_gcov _opt_pg
+      do
+         ln -s -f $TRUST_ARCH"_opt" $TRUST_ARCH$build
+      done
+      for build in _semi_opt _pg _gcov
+      do
+         ln -s -f $TRUST_ARCH $TRUST_ARCH$build
+      done
+      )
       # Clean build:
       rm -rf $build_dir
     )   

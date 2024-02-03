@@ -25,6 +25,7 @@ bool kokkos_self_tested_ = false;
 void kokkos_self_test()
 {
 #ifndef NDEBUG
+#ifdef _OPENMP
   if (kokkos_self_tested_) return;
   kokkos_self_tested_=true;
 
@@ -125,6 +126,7 @@ void kokkos_self_test()
   bool check = std::is_same<decltype(a_v)::memory_space, Kokkos::CudaSpace>::value;
   assert(check);
    */
+#endif
 #endif
 }
 
