@@ -13,30 +13,26 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
-#include <Synonyme_info.h>
-#include <Milieu_base.h>
+#ifndef Champ_Elem_PolyVEF_P0P1NC_included
+#define Champ_Elem_PolyVEF_P0P1NC_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1NC");
+#include <Champ_Elem_PolyMAC_P0P1NC.h>
+#include <Operateur.h>
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
+class Domaine_PolyVEF;
 
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+/*! @brief : class Champ_Elem_PolyVEF_P0P1NC
+ *
+ *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
+ *  Degres de libertes : valeur aux elements + flux aux faces
+ *
+ */
+class Champ_Elem_PolyVEF_P0P1NC: public Champ_Elem_PolyMAC_P0P1NC
 {
-  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
-}
+  Declare_instanciable(Champ_Elem_PolyVEF_P0P1NC);
+public:
+  const Domaine_PolyVEF& domaine_PolyVEF() const;
+  void init_auxiliary_variables() override;
+};
 
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_champs(la_puissance);
-}
+#endif /* Champ_Elem_PolyVEF_P0P1NC_included */

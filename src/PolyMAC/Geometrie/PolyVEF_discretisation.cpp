@@ -35,14 +35,17 @@
 Implemente_base(PolyVEF_discretisation, "PolyVEF", PolyMAC_P0_discretisation);
 Implemente_instanciable(PolyVEF_P0_discretisation, "PolyVEF_P0", PolyVEF_discretisation);
 Implemente_instanciable(PolyVEF_P0P1_discretisation, "PolyVEF_P0P1", PolyVEF_discretisation);
+Implemente_instanciable(PolyVEF_P0P1NC_discretisation, "PolyVEF_P0P1NC", PolyVEF_discretisation);
 
 Entree& PolyVEF_discretisation::readOn(Entree& s) { return s; }
 Entree& PolyVEF_P0_discretisation::readOn(Entree& s) { return s; }
 Entree& PolyVEF_P0P1_discretisation::readOn(Entree& s) { return s; }
+Entree& PolyVEF_P0P1NC_discretisation::readOn(Entree& s) { return s; }
 
 Sortie& PolyVEF_discretisation::printOn(Sortie& s) const { return s; }
 Sortie& PolyVEF_P0_discretisation::printOn(Sortie& s) const { return s; }
 Sortie& PolyVEF_P0P1_discretisation::printOn(Sortie& s) const { return s; }
+Sortie& PolyVEF_P0P1NC_discretisation::printOn(Sortie& s) const { return s; }
 
 void PolyVEF_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {

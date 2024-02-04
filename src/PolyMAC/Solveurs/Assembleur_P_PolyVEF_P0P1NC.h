@@ -13,30 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
-#include <Synonyme_info.h>
-#include <Milieu_base.h>
+#ifndef Assembleur_P_PolyVEF_P0P1NC_included
+#define Assembleur_P_PolyVEF_P0P1NC_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1NC");
+#include <Assembleur_P_PolyMAC.h>
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+class Assembleur_P_PolyVEF_P0P1NC : public Assembleur_P_PolyMAC
 {
-  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
-}
+  Declare_instanciable(Assembleur_P_PolyVEF_P0P1NC);
+public:
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
 
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_champs(la_puissance);
-}
+  int modifier_secmem(DoubleTab&) override { return 1; }
+  int modifier_solution(DoubleTab&) override;
+
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  DoubleTab norme_continuite() const override;
+
+  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
+   fac est le coefficient tel que p_final - press = fac * sol */
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+
+  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
+  {
+    Process::exit("Assembleur_P_PolyVEF_P0P1NC::corriger_vitesses() should not be used ... ");
+  }
+};
+
+#endif /* Assembleur_P_PolyVEF_P0P1NC_included */

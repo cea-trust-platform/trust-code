@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,8 @@
 extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyMAC_P0P1NC_Elem|Op_Diff_PolyMAC_P0P1NC_var_Elem", Op_Diff_PolyMAC_P0P1NC_base);
+Add_synonym(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyVEF_P0P1NC_Elem");
+Add_synonym(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyVEF_P0P1NC_var_Elem");
 
 Op_Diff_PolyMAC_P0P1NC_Elem::Op_Diff_PolyMAC_P0P1NC_Elem()
 {

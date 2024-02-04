@@ -13,30 +13,29 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Discretisation_base.h>
-#include <Probleme_base.h>
-#include <Synonyme_info.h>
-#include <Milieu_base.h>
+#ifndef Op_Grad_PolyVEF_P0P1NC_Face_included
+#define Op_Grad_PolyVEF_P0P1NC_Face_included
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1");
-Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyVEF_P0P1NC");
+#include <Op_Grad_PolyMAC_Face.h>
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+/*! @brief class Op_Grad_PolyVEF_P0P1NC_Face
+ *
+ *   Cette classe represente l'operateur de gradient La discretisation est PolyVEF_P0P1NC
+ *   On calcule le gradient d'un champ_Elem_PolyVEF_P0P1NC (la pression)
+ *
+ * @sa Operateur_Grad_base
+ */
+class Op_Grad_PolyVEF_P0P1NC_Face: public Op_Grad_PolyMAC_Face
 {
-  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
-}
+  Declare_instanciable(Op_Grad_PolyVEF_P0P1NC_Face);
+public:
+  void completer() override;
 
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
-{
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
-  eval_puis.associer_champs(la_puissance);
-}
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  void check_multiphase_compatibility() const override { } //ok
+};
+
+#endif /* Op_Grad_PolyVEF_P0P1NC_Face_included */

@@ -29,8 +29,10 @@
 #include <Equation_base.h>
 #include <Sous_Domaine.h>
 #include <Param.h>
+#include <Synonyme_info.h>
 
 Implemente_base(Perte_Charge_PolyVEF, "Perte_Charge_PolyVEF_P0|Perte_Charge_PolyVEF_P0P1", Perte_Charge_PolyMAC_P0P1NC);
+Add_synonym(Perte_Charge_PolyVEF, "Perte_Charge_PolyVEF_P0P1NC");
 
 Sortie& Perte_Charge_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << endl; }
 
