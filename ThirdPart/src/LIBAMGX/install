@@ -53,7 +53,8 @@ then
    $TRUST_MAKE install || exit -1 # Important de faire en 1 fois car sur cluster make install recompile a nouveau apres make !!!
    cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    # Install cuSPARSE 11.2 to fix multi-gpu bug for C-AMG if cuda>11.2
-   cusparse=$TRUST_ROOT/externalpackages/AmgX/libcusparse.so.11 && [ -f $cusparse.gz ] && gunzip -c $cusparse.gz > $AMGX_DIR/$LIB/lib/`basename $cusparse`
+   NB_GPUS=`nvidia-smi 2>/dev/null | grep -e Off -e On | wc -l`
+   [ $NB_GPUS != 1 ] && cusparse=$TRUST_ROOT/externalpackages/AmgX/libcusparse.so.11 && [ -f $cusparse.gz ] && gunzip -c $cusparse.gz > $AMGX_DIR/$LIB/lib/`basename $cusparse`
    # Clean:
    cd $ROOT && rm -r -f $LIB
 fi
