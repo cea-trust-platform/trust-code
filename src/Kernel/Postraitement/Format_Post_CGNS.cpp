@@ -51,7 +51,9 @@ int Format_Post_CGNS::initialize_by_default(const Nom& file_basename)
 {
   verify_if_cgns(__func__);
   cgns_basename_ = file_basename;
+#ifdef HAS_CGNS
   cgns_writer_.cgns_set_base_name(cgns_basename_);
+#endif
   return 1;
 }
 
@@ -59,7 +61,9 @@ int Format_Post_CGNS::initialize(const Nom& file_basename, const int format, con
 {
   verify_if_cgns(__func__);
   cgns_basename_ = file_basename;
+#ifdef HAS_CGNS
   cgns_writer_.cgns_set_base_name(cgns_basename_);
+#endif
   return 1;
 }
 

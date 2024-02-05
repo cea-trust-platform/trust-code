@@ -291,7 +291,7 @@ Entree& Link_CGNS_Files::interpreter(Entree& is)
   Cerr << finl;
 
 #else
-  Cerr << "Link_CGNS_Files::" <<  nom_funct << " should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
+  Cerr << "Link_CGNS_Files::interpreter should not be called since TRUST is not compiled with the CGNS library !!! " << finl;
   Process::exit();
 #endif
   return is;
