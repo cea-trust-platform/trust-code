@@ -18,6 +18,7 @@
 #include <petscis.h>
 #include <petscdmshell.h>
 #include <petscsection.h>
+#include <HYPRE_config.h>
 #include <tuple>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
@@ -1145,6 +1146,10 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 7:
               {
+#ifdef HYPRE_USING_GPU
+                // GPU build of Hypre provides only gpu preconditionner now. No runtime switch to CPU or GPU versions yet...
+                gpu_ = 1;
+#endif
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg"); // Classical C-AMG
                 pc_supported_on_gpu_by_petsc=1;

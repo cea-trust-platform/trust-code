@@ -1,4 +1,5 @@
 # Hydraulique 3D VEF P1NCP1P0Pa #
+# OPENMP NOT # # SPAI not supported on GPU #
 # PARALLEL OK #
 dimension 3
 Domaine dom
