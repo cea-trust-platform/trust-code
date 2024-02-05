@@ -106,55 +106,59 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   int nfe = domaine.nb_faces_elem();
   int nb_elem = domaine.nb_elem();
 
-#ifndef KOKKOS_
-  const int *face_voisins_addr = mapToDevice(face_voisins);
-  const double *face_normales_addr = mapToDevice(face_normales);
-  const int *elem_faces_addr = mapToDevice(elem_faces);
-  const double *vit_addr = mapToDevice(vit, "vit");
-  double *div_addr = computeOnTheDevice(div, "div");
-  start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int elem = 0; elem < nb_elem; elem++)
+  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
     {
-      double pscf = 0;
-      for (int indice = 0; indice < nfe; indice++)
+      const int *face_voisins_addr = mapToDevice(face_voisins);
+      const double *face_normales_addr = mapToDevice(face_normales);
+      const int *elem_faces_addr = mapToDevice(elem_faces);
+      const double *vit_addr = mapToDevice(vit, "vit");
+      double *div_addr = computeOnTheDevice(div, "div");
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice)
+      for (int elem = 0; elem < nb_elem; elem++)
         {
-          int face = elem_faces_addr[elem * nfe + indice];
-          int signe = (elem == face_voisins_addr[face * 2]) ? 1 : -1;
-          for (int comp = 0; comp < dimension; comp++)
-            pscf += signe * vit_addr[face * dimension + comp] * face_normales_addr[face * dimension + comp];
+          double pscf = 0;
+          for (int indice = 0; indice < nfe; indice++)
+            {
+              int face = elem_faces_addr[elem * nfe + indice];
+              int signe = (elem == face_voisins_addr[face * 2]) ? 1 : -1;
+              for (int comp = 0; comp < dimension; comp++)
+                pscf += signe * vit_addr[face * dimension + comp] * face_normales_addr[face * dimension + comp];
+            }
+          div_addr[elem] += pscf;
         }
-      div_addr[elem] += pscf;
+      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
     }
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
-#else
-  const IntTabView face_voisins_v = face_voisins.view_ro();
-  const DoubleTabView face_normales_v = face_normales.view_ro();
-  const IntTabView elem_faces_v = elem_faces.view_ro();
-  const DoubleTabView  vit_v = vit.view_ro();
-  DoubleTabView div_v = div.view_rw(); // read-write
-  int dim = Objet_U::dimension;  // Objet_U::dimension can not be read from Kernel.
+  else
+    {
+      const IntTabView face_voisins_v = face_voisins.view_ro();
+      const DoubleTabView face_normales_v = face_normales.view_ro();
+      const IntTabView elem_faces_v = elem_faces.view_ro();
+      const DoubleTabView vit_v = vit.view_ro();
+      DoubleTabView div_v = div.view_rw(); // read-write
+      int dim = Objet_U::dimension;  // Objet_U::dimension can not be read from Kernel.
 
-  // Full kernel
-  auto kern_ajouter = KOKKOS_LAMBDA(int elem)
-  {
-    double pscf = 0;
-    for (int indice = 0; indice < nfe; indice++)
+      // Full kernel
+      auto kern_ajouter = KOKKOS_LAMBDA(int
+                                        elem)
       {
-        int face = elem_faces_v(elem, indice);
-        int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
-        for (int comp = 0; comp < dim; comp++)
-          pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
-      }
-    div_v(elem, 0) += pscf;
-  };
+        double pscf = 0;
+        for (int indice = 0; indice < nfe; indice++)
+          {
+            int face = elem_faces_v(elem, indice);
+            int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
+            for (int comp = 0; comp < dim; comp++)
+              pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
+          }
+        div_v(elem, 0) += pscf;
+      };
 
-  start_timer();
-  Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
-  Kokkos::fence();
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+      start_timer();
+      Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
+      Kokkos::fence();
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
 
-#endif
+    }
   assert_invalide_items_non_calcules(div);
   return div;
 }

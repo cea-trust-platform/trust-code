@@ -281,62 +281,67 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       end_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
-#ifndef KOKKOS_
-  const int *face_voisins_addr = mapToDevice(face_voisins);
-  const double *porosite_face_addr = mapToDevice(porosite_face);
-  const double *face_normales_addr = mapToDevice(face_normales);
-  const int *elem_faces_addr = mapToDevice(elem_faces);
-  const double *pre_addr = mapToDevice(pre, "pre");
-  double *grad_addr = computeOnTheDevice(grad, "grad");
-  start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int elem = 0; elem < nb_elem_tot; elem++)
+  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
     {
-      for (int indice = 0; indice < nfe; indice++)
+      const int *face_voisins_addr = mapToDevice(face_voisins);
+      const double *porosite_face_addr = mapToDevice(porosite_face);
+      const double *face_normales_addr = mapToDevice(face_normales);
+      const int *elem_faces_addr = mapToDevice(elem_faces);
+      const double *pre_addr = mapToDevice(pre, "pre");
+      double *grad_addr = computeOnTheDevice(grad, "grad");
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice)
+      for (int elem = 0; elem < nb_elem_tot; elem++)
         {
-          double pe = pre_addr[elem];
-          int face = elem_faces_addr[nfe * elem + indice];
-          double signe = 1;
-          if (elem != face_voisins_addr[2 * face])
-            signe = -1;
-          for (int comp = 0; comp < dimension; comp++)
+          for (int indice = 0; indice < nfe; indice++)
             {
-              #pragma omp atomic
-              grad_addr[dimension * face + comp] -= pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];
+              double pe = pre_addr[elem];
+              int face = elem_faces_addr[nfe * elem + indice];
+              double signe = 1;
+              if (elem != face_voisins_addr[2 * face])
+                signe = -1;
+              for (int comp = 0; comp < dimension; comp++)
+                {
+                  #pragma omp atomic
+                  grad_addr[dimension * face + comp] -=
+                    pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];
+                }
             }
         }
+      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-#else
-  const IntTabView face_voisins_v = face_voisins.view_ro();
-  const DoubleVectView porosite_face_v = porosite_face.view_ro();
-  const DoubleTabView face_normales_v = face_normales.view_ro();
-  const IntTabView elem_faces_v = elem_faces.view_ro();
-  const DoubleTabView pre_v = pre.view_ro();
-  DoubleTabView grad_v = grad.view_rw();
-  int dim = Objet_U::dimension;
+  else
+    {
+      const IntTabView face_voisins_v = face_voisins.view_ro();
+      const DoubleVectView porosite_face_v = porosite_face.view_ro();
+      const DoubleTabView face_normales_v = face_normales.view_ro();
+      const IntTabView elem_faces_v = elem_faces.view_ro();
+      const DoubleTabView pre_v = pre.view_ro();
+      DoubleTabView grad_v = grad.view_rw();
+      int dim = Objet_U::dimension;
 
-  auto kern_elem = KOKKOS_LAMBDA(int elem)
-  {
-    for(int indice=0; indice<nfe; indice++)
+      auto kern_elem = KOKKOS_LAMBDA(int
+                                     elem)
       {
-        double pe=pre_v(elem, 0);
-        int face = elem_faces_v(elem, indice);
-        double signe = 1;
-        if (elem != face_voisins_v(face,0)) signe = -1;
-        for(int comp=0; comp<dim; comp++)
+        for (int indice = 0; indice < nfe; indice++)
           {
-            double val = pe*signe*face_normales_v(face, comp)*porosite_face_v(face);
-            Kokkos::atomic_sub(&grad_v(face, comp), val);
+            double pe = pre_v(elem, 0);
+            int face = elem_faces_v(elem, indice);
+            double signe = 1;
+            if (elem != face_voisins_v(face, 0)) signe = -1;
+            for (int comp = 0; comp < dim; comp++)
+              {
+                double val = pe * signe * face_normales_v(face, comp) * porosite_face_v(face);
+                Kokkos::atomic_sub(&grad_v(face, comp), val);
+              }
           }
-      }
-  };
+      };
 
-  start_timer();
-  Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
-  Kokkos::fence();
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-#endif
+      start_timer();
+      Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
+      Kokkos::fence();
+      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+    }
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& grad) const
@@ -689,67 +694,73 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   bool alphaS = domaine_VEF.get_alphaS();
   int nb_som_par_face = sommets.dimension(1);
 
-#ifndef KOKKOS_
-  const int *face_voisins_addr = mapToDevice(face_voisins);
-  const int *sommets_addr = mapToDevice(sommets);
-  const double *face_normales_addr = mapToDevice(face_normales);
-  const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
-  double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
-  start_timer();
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int face = 0; face < nb_faces_bord; face++)
+  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
     {
-      int elem = face_voisins_addr[face * 2];
-      double pres_tot = 0.;
-      // Contribution de la pression P0
-      if (alphaE)
-        pres_tot += pression_P1B_addr[elem];
-      // Contribution de la pression P1
-      if (alphaS)
+      const int *face_voisins_addr = mapToDevice(face_voisins);
+      const int *sommets_addr = mapToDevice(sommets);
+      const double *face_normales_addr = mapToDevice(face_normales);
+      const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
+      double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
+      start_timer();
+      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+      for (int face = 0; face < nb_faces_bord; face++)
         {
-          double pres_som = 0.;
-          for (int som = 0; som < nb_som_par_face; som++)
-            pres_som += pression_P1B_addr[nps + sommets_addr[face * nb_som_par_face + som]];
-          pres_tot += coeff_P1 * pres_som;
+          int elem = face_voisins_addr[face * 2];
+          double pres_tot = 0.;
+          // Contribution de la pression P0
+          if (alphaE)
+            pres_tot += pression_P1B_addr[elem];
+          // Contribution de la pression P1
+          if (alphaS)
+            {
+              double pres_som = 0.;
+              for (int som = 0; som < nb_som_par_face; som++)
+                pres_som += pression_P1B_addr[nps + sommets_addr[face * nb_som_par_face + som]];
+              pres_tot += coeff_P1 * pres_som;
+            }
+          // Calcul de la resultante et du couple de pression
+          for (int i = 0; i < dimension; i++)
+            flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
         }
-      // Calcul de la resultante et du couple de pression
-      for (int i = 0; i < dimension; i++)
-        flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
+      end_timer(Objet_U::computeOnDevice,
+                "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
     }
-  end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
-#else
-  const IntTabView face_voisins_v = face_voisins.view_ro();
-  const IntTabView sommets_v = sommets.view_ro();
-  const DoubleTabView face_normales_v = face_normales.view_ro();
-  const DoubleVectView pression_P1B_v = pression_P1B.view_ro();
-  DoubleTabView flux_bords_v = flux_bords_.view_wo();
-  int dim = Objet_U::dimension;
+  else
+    {
+      const IntTabView face_voisins_v = face_voisins.view_ro();
+      const IntTabView sommets_v = sommets.view_ro();
+      const DoubleTabView face_normales_v = face_normales.view_ro();
+      const DoubleVectView pression_P1B_v = pression_P1B.view_ro();
+      DoubleTabView flux_bords_v = flux_bords_.view_wo();
+      int dim = Objet_U::dimension;
 
-  auto kern_flux_bords = KOKKOS_LAMBDA(int face)
-  {
-    int elem = face_voisins_v(face, 0);
-    double pres_tot = 0.;
-    // Contribution de la pression P0
-    if (alphaE) pres_tot = pression_P1B_v(elem);
-    // Contribution de la pression P1
-    if (alphaS)
+      auto kern_flux_bords = KOKKOS_LAMBDA(int
+                                           face)
       {
-        double pres_som = 0.;
-        for (int som=0; som<nb_som_par_face; som++)
-          pres_som += pression_P1B_v(nps+sommets_v(face, som));
-        pres_tot += coeff_P1 * pres_som;
-      }
-    // Calcul de la resultante et du couple de pression
-    for (int i=0; i<dim; i++)
-      flux_bords_v(face,i) = pres_tot * face_normales_v(face, i);
-  };
+        int elem = face_voisins_v(face, 0);
+        double pres_tot = 0.;
+        // Contribution de la pression P0
+        if (alphaE) pres_tot = pression_P1B_v(elem);
+        // Contribution de la pression P1
+        if (alphaS)
+          {
+            double pres_som = 0.;
+            for (int som = 0; som < nb_som_par_face; som++)
+              pres_som += pression_P1B_v(nps + sommets_v(face, som));
+            pres_tot += coeff_P1 * pres_som;
+          }
+        // Calcul de la resultante et du couple de pression
+        for (int i = 0; i < dim; i++)
+          flux_bords_v(face, i) = pres_tot * face_normales_v(face, i);
+      };
 
-  start_timer();
-  Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
-  Kokkos::fence();
-  end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+      start_timer();
+      Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
+      Kokkos::fence();
+      end_timer(Objet_U::computeOnDevice,
+                "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 
-#endif
+    }
 }
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const

@@ -380,68 +380,73 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   int nb_faces = domaine_VEF.nb_faces();
   int nb_faces_bord = domaine_VEF.premiere_face_int();
 
-#ifndef KOKKOS_
-  const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
-  const double * face_normales_addr = mapToDevice(domaine_VEF.face_normales());
-  const double * nu_addr = mapToDevice(nu, "nu");
-  const double * grad_addr = mapToDevice(grad_, "grad");
-  DoubleTab resu_cop = resu;
-  DoubleTab flux_cop = tab_flux_bords;
-  double * resu_addr = computeOnTheDevice(resu, "resu");
-  double * tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
-  start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int num_face=0; num_face<nb_faces; num_face++)
+  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
     {
-      for (int k=0; k<2; k++)
+      const int *face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
+      const double *face_normales_addr = mapToDevice(domaine_VEF.face_normales());
+      const double *nu_addr = mapToDevice(nu, "nu");
+      const double *grad_addr = mapToDevice(grad_, "grad");
+      DoubleTab resu_cop = resu;
+      DoubleTab flux_cop = tab_flux_bords;
+      double *resu_addr = computeOnTheDevice(resu, "resu");
+      double *tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice)
+      for (int num_face = 0; num_face < nb_faces; num_face++)
         {
-          int elem = face_voisins_addr[2*num_face+k];
-          if (elem>=0)
+          for (int k = 0; k < 2; k++)
             {
-              int ori = 1 - 2 * k;
-              for (int i = 0; i < nb_comp; i++)
-                for (int j = 0; j < nb_comp; j++)
-                  {
-                    double flux = ori * face_normales_addr[num_face * nb_comp + j]
-                                  * (nu_addr[elem] * grad_addr[elem * nb_comp * nb_comp + i * nb_comp + j] /* + Re(elem, i, j) */ );
-                    #pragma omp atomic
-                    resu_addr[num_face * nb_comp + i] -= flux;
-                    if (num_face < nb_faces_bord)
-                      #pragma omp atomic
-                      tab_flux_bords_addr[num_face * nb_comp + i] -= flux;
-                  }
-            }
-        } // Fin de la boucle sur les 2 elements comnuns a la face
-    } // Fin de la boucle sur les faces
-  end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
-#else
-  const IntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
-  const DoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
-  const DoubleTabView nu_v = nu.view_ro();
-  const DoubleTabView3 grad_v = grad_.view3_ro();
-  DoubleTabView resu_v = resu.view_rw();
-  DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
-
-  auto kern_ajouter = KOKKOS_LAMBDA(int num_face)
-  {
-    for (int k=0; k<2; k++)
-      {
-        int elem = face_voisins_v(num_face, k);
-        if (elem>=0)
-          {
-            int ori = 1 - 2 * k;
-            for (int i = 0; i < nb_comp; i++)
-              for (int j = 0; j < nb_comp; j++)
+              int elem = face_voisins_addr[2 * num_face + k];
+              if (elem >= 0)
                 {
-                  double flux = ori * face_normales_v(num_face,j)
-                                * (nu_v(elem, 0) * grad_v(elem, i,j)  /* + Re(elem, i, j) */ );
-                  Kokkos::atomic_sub(&resu_v(num_face, i), flux);
-                  if (num_face < nb_faces_bord)
-                    Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
+                  int ori = 1 - 2 * k;
+                  for (int i = 0; i < nb_comp; i++)
+                    for (int j = 0; j < nb_comp; j++)
+                      {
+                        double flux = ori * face_normales_addr[num_face * nb_comp + j]
+                                      * (nu_addr[elem] * grad_addr[elem * nb_comp * nb_comp + i * nb_comp +
+                                                                   j] /* + Re(elem, i, j) */ );
+                        #pragma omp atomic
+                        resu_addr[num_face * nb_comp + i] -= flux;
+                        if (num_face < nb_faces_bord)
+                          #pragma omp atomic
+                          tab_flux_bords_addr[num_face * nb_comp + i] -= flux;
+                      }
                 }
+            } // Fin de la boucle sur les 2 elements comnuns a la face
+        } // Fin de la boucle sur les faces
+      end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
+    }
+  else
+    {
+      const IntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
+      const DoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
+      const DoubleTabView nu_v = nu.view_ro();
+      const DoubleTabView3 grad_v = grad_.view3_ro();
+      DoubleTabView resu_v = resu.view_rw();
+      DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
+
+      auto kern_ajouter = KOKKOS_LAMBDA(int
+                                        num_face)
+      {
+        for (int k = 0; k < 2; k++)
+          {
+            int elem = face_voisins_v(num_face, k);
+            if (elem >= 0)
+              {
+                int ori = 1 - 2 * k;
+                for (int i = 0; i < nb_comp; i++)
+                  for (int j = 0; j < nb_comp; j++)
+                    {
+                      double flux = ori * face_normales_v(num_face, j)
+                                    * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
+                      Kokkos::atomic_sub(&resu_v(num_face, i), flux);
+                      if (num_face < nb_faces_bord)
+                        Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
+                    }
+              }
           }
-      }
-  };
+      };
 
 //  auto kern_ajouter2 = KOKKOS_LAMBDA(int num_face)
 //  {
@@ -462,12 +467,12 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //      }
 //  };
 
-  start_timer();
-  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, kern_ajouter);
+      start_timer();
+      Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, kern_ajouter);
 //  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter 2",
 //                       Kokkos::RangePolicy<>(nb_faces_bord, nb_faces), kern_ajouter2);
-  Kokkos::fence();
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
+      Kokkos::fence();
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
 
 //  // Tentative with a proper functor instead of a lambda - does not change perf ... snif.
 //  {
@@ -485,7 +490,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //    end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
 //
 //  }
-#endif
+    }
 
   // Update flux_bords on symmetry:
   const int nb_bords=domaine_VEF.nb_front_Cl();

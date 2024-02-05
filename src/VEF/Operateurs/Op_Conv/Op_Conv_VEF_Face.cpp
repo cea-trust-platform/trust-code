@@ -491,574 +491,597 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-#ifndef KOKKOS_
-          const int * rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
-          const int * elem_faces_addr = mapToDevice(elem_faces);
-          const double * porosite_face_addr = mapToDevice(porosite_face);
-          const double * porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem");
-          const double * coord_sommets_addr = mapToDevice(coord_sommets);
-          const int * les_elems_addr = mapToDevice(les_elems);
-          const double * facette_normales_addr = mapToDevice(facette_normales);
-          const int * est_une_face_de_dirichlet_addr = mapToDevice(est_une_face_de_dirichlet_);
-          const double * vecteur_face_facette_addr = mapToDevice(vecteur_face_facette);
-          const double * xv_addr = mapToDevice(xv);
-          const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
-          const int * traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
-          const int * KEL_addr = mapToDevice(type_elemvef.KEL());
-          const double * normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
-          const double * vecteur_face_facette_Cl_addr = mapToDevice(vecteur_face_facette_Cl);
+          if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
+            {
+              const int *rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
+              const int *elem_faces_addr = mapToDevice(elem_faces);
+              const double *porosite_face_addr = mapToDevice(porosite_face);
+              const double *porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem");
+              const double *coord_sommets_addr = mapToDevice(coord_sommets);
+              const int *les_elems_addr = mapToDevice(les_elems);
+              const double *facette_normales_addr = mapToDevice(facette_normales);
+              const int *est_une_face_de_dirichlet_addr = mapToDevice(est_une_face_de_dirichlet_);
+              const double *vecteur_face_facette_addr = mapToDevice(vecteur_face_facette);
+              const double *xv_addr = mapToDevice(xv);
+              const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
+              const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
+              const int *KEL_addr = mapToDevice(type_elemvef.KEL());
+              const double *normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
+              const double *vecteur_face_facette_Cl_addr = mapToDevice(vecteur_face_facette_Cl);
 
-          const double * vitesse_addr = mapToDevice(la_vitesse.valeurs(), "la_vitesse");
-          const double * vitesse_face_absolue_addr = mapToDevice(vitesse_face_absolue, "vitesse_face_absolue");
-          const double * transporte_face_addr = mapToDevice(transporte_face, "transporte_face");
-          const double * gradient_addr = mapToDevice(gradient, "gradient");
+              const double *vitesse_addr = mapToDevice(la_vitesse.valeurs(), "la_vitesse");
+              const double *vitesse_face_absolue_addr = mapToDevice(vitesse_face_absolue, "vitesse_face_absolue");
+              const double *transporte_face_addr = mapToDevice(transporte_face, "transporte_face");
+              const double *gradient_addr = mapToDevice(gradient, "gradient");
 
-          double * resu_addr = computeOnTheDevice(resu, "resu");
-          double * flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
-#if ( ( defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__) ) || ( !defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__) ) )
-          // Provisoire crash sur compilateur offload clang++ non Cray:
-          Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
+              double *resu_addr = computeOnTheDevice(resu, "resu");
+              double *flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
+#if ((defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__)) || (!defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__)))
+              // Provisoire crash sur compilateur offload clang++ non Cray:
+              Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
 #else
-          start_timer();
-          #pragma omp target teams if (computeOnDevice)
+              start_timer();
+              #pragma omp target teams if (computeOnDevice)
 #endif
-          {
-            int face[4] {};
-            double vs[3] {};
-            double vc[3] {};
-            double xc[3] {};
-            double cc[3] {};
-            double vsom[12] {};
-            double xsom[12] {};
-            #pragma omp distribute parallel for private(face, vs, vc, xc, cc, vsom, xsom) firstprivate(alpha)
-            for (int poly = 0; poly < nb_elem_tot; poly++)
               {
-                int rang = rang_elem_non_std_addr[poly];
-                int contrib = 0;
-                // calcul des numeros des faces du polyedre
-                for (int face_adj = 0; face_adj < nfac; face_adj++)
+                int face[4] {};
+                double vs[3] {};
+                double vc[3] {};
+                double xc[3] {};
+                double cc[3] {};
+                double vsom[12] {};
+                double xsom[12] {};
+                #pragma omp distribute parallel for private(face, vs, vc, xc, cc, vsom, xsom) firstprivate(alpha)
+                for (int poly = 0; poly < nb_elem_tot; poly++)
                   {
-                    int face_ = elem_faces_addr[poly * nfac + face_adj];
-                    face[face_adj] = face_;
-                    if (face_ < nb_faces_) contrib = 1; // Une face reelle sur l'element virtuel
-                  }
-                //
-                if (contrib)
-                  {
-                    int calcul_flux_en_un_point = (ordre != 3) && (ordre == 1 || traitement_pres_bord_addr[poly]);
-                    for (int j = 0; j < dimension; j++)
+                    int rang = rang_elem_non_std_addr[poly];
+                    int contrib = 0;
+                    // calcul des numeros des faces du polyedre
+                    for (int face_adj = 0; face_adj < nfac; face_adj++)
                       {
-                        vs[j] = vitesse_face_absolue_addr[face[0] * dimension + j] * porosite_face_addr[face[0]];
-                        for (int i = 1; i < nfac; i++)
-                          vs[j] += vitesse_face_absolue_addr[face[i] * dimension + j] *
-                                   porosite_face_addr[face[i]];
+                        int face_ = elem_faces_addr[poly * nfac + face_adj];
+                        face[face_adj] = face_;
+                        if (face_ < nb_faces_) contrib = 1; // Une face reelle sur l'element virtuel
                       }
-                    // calcul de la vitesse aux sommets des tetraedres
-                    // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
-                    for (int i = 0; i < 4; i++)
-                      for (int j = 0; j < 3; j++)
-                        vsom[i * 3 + j] = (vs[j] - 3 * vitesse_face_absolue_addr[face[i] * 3 + j] * porosite_face_addr[face[i]]);
-                    /* PL pour trace: crash du compilateur Cray en -O3 ou au link quand on utilise nsom et dimension qui valent 4 et 3 !!!
-                    for (int i = 0; i < nsom; i++)
-                        for (int j = 0; j < dimension; j++
-                            vsom[i * dimension + j] = (vs[j] - dimension * vitesse_face_absolue_addr[face[i] * dimension + j] * porosite_face_addr[face[i]]);
-                    */
-
-                    // Determination du type de CL selon le rang
-                    rang = rang_elem_non_std_addr[poly];
-                    True_int itypcl = type_elem_Cl_addr[poly];
-
-                    calcul_vc_tetra(face, vc, vs, vsom, vitesse_addr, itypcl, porosite_face_addr);
-                    // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                    if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
+                    //
+                    if (contrib)
                       {
-                        int idirichlet;
-                        int n1, n2, n3;
+                        int calcul_flux_en_un_point =
+                          (ordre != 3) && (ordre == 1 || traitement_pres_bord_addr[poly]);
+                        for (int j = 0; j < dimension; j++)
+                          {
+                            vs[j] = vitesse_face_absolue_addr[face[0] * dimension + j] *
+                                    porosite_face_addr[face[0]];
+                            for (int i = 1; i < nfac; i++)
+                              vs[j] += vitesse_face_absolue_addr[face[i] * dimension + j] *
+                                       porosite_face_addr[face[i]];
+                          }
+                        // calcul de la vitesse aux sommets des tetraedres
+                        // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
                         for (int i = 0; i < 4; i++)
                           for (int j = 0; j < 3; j++)
-                            xsom[i * 3 + j] = coord_sommets_addr[les_elems_addr[poly * 4 + i] * 3 + j];
-                        calcul_xg_tetra(xc, xsom, itypcl, idirichlet, n1, n2, n3);
-                      }
+                            vsom[i * 3 + j] = (vs[j] - 3 * vitesse_face_absolue_addr[face[i] * 3 + j] *
+                                               porosite_face_addr[face[i]]);
+                        /* PL pour trace: crash du compilateur Cray en -O3 ou au link quand on utilise nsom et dimension qui valent 4 et 3 !!!
+                        for (int i = 0; i < nsom; i++)
+                            for (int j = 0; j < dimension; j++
+                                vsom[i * dimension + j] = (vs[j] - dimension * vitesse_face_absolue_addr[face[i] * dimension + j] * porosite_face_addr[face[i]]);
+                        */
 
-                    // Gestion de la porosite
-                    if (marq == 0)
-                      {
-                        double coeff = 1. / porosite_elem_addr[poly];
-                        for (int l = 0; l < nsom * dimension; l++)
+                        // Determination du type de CL selon le rang
+                        rang = rang_elem_non_std_addr[poly];
+                        True_int itypcl = type_elem_Cl_addr[poly];
+
+                        calcul_vc_tetra(face, vc, vs, vsom, vitesse_addr, itypcl, porosite_face_addr);
+                        // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
+                        if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                           {
-                            vsom[l] *= coeff;
+                            int idirichlet;
+                            int n1, n2, n3;
+                            for (int i = 0; i < 4; i++)
+                              for (int j = 0; j < 3; j++)
+                                xsom[i * 3 + j] = coord_sommets_addr[les_elems_addr[poly * 4 + i] * 3 + j];
+                            calcul_xg_tetra(xc, xsom, itypcl, idirichlet, n1, n2, n3);
                           }
-                        for (int l = 0; l < dimension; l++)
-                          vc[l] *= coeff;
-                      }
-                    // Boucle sur les facettes du polyedre non standard:
-                    for (int fa7 = 0; fa7 < nfa7; fa7++)
-                      {
-                        int num10 = face[KEL_addr[fa7]];
-                        int num20 = face[KEL_addr[nfa7 + fa7]];
-                        // normales aux facettes
-                        if (rang == -1)
-                          for (int i = 0; i < dimension; i++)
-                            cc[i] = facette_normales_addr[(poly * nfa7 + fa7) * dimension + i];
-                        else
-                          for (int i = 0; i < dimension; i++)
-                            cc[i] = normales_facettes_Cl_addr[(rang * nfa7 + fa7) * dimension + i];
 
-                        // Calcul des vitesses en C,S,S2 les 3 extremites de la fa7 et M le centre de la fa7
-                        double psc_c = 0, psc_s = 0, psc_m, psc_s2 = 0;
-                        if (dimension == 2)
+                        // Gestion de la porosite
+                        if (marq == 0)
                           {
-                            for (int i = 0; i < 2; i++)
+                            double coeff = 1. / porosite_elem_addr[poly];
+                            for (int l = 0; l < nsom * dimension; l++)
                               {
-                                psc_c += vc[i] * cc[i];
-                                psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * 2 + i] * cc[i];
+                                vsom[l] *= coeff;
                               }
-                            psc_m = (psc_c + psc_s) / 2.;
+                            for (int l = 0; l < dimension; l++)
+                              vc[l] *= coeff;
                           }
-                        else
+                        // Boucle sur les facettes du polyedre non standard:
+                        for (int fa7 = 0; fa7 < nfa7; fa7++)
                           {
-                            for (int i = 0; i < 3; i++)
+                            int num10 = face[KEL_addr[fa7]];
+                            int num20 = face[KEL_addr[nfa7 + fa7]];
+                            // normales aux facettes
+                            if (rang == -1)
+                              for (int i = 0; i < dimension; i++)
+                                cc[i] = facette_normales_addr[(poly * nfa7 + fa7) * dimension + i];
+                            else
+                              for (int i = 0; i < dimension; i++)
+                                cc[i] = normales_facettes_Cl_addr[(rang * nfa7 + fa7) * dimension + i];
+
+                            // Calcul des vitesses en C,S,S2 les 3 extremites de la fa7 et M le centre de la fa7
+                            double psc_c = 0, psc_s = 0, psc_m, psc_s2 = 0;
+                            if (dimension == 2)
                               {
-                                psc_c += vc[i] * cc[i];
-                                psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * 3 + i] * cc[i];
-                                psc_s2 += vsom[KEL_addr[3 * nfa7 + fa7] * 3 + i] * cc[i];
-                              }
-                            psc_m = (psc_c + psc_s + psc_s2) / 3.;
-                          }
-                        // On applique les CL de Dirichlet si num1 ou num2 est une face avec CL de Dirichlet
-                        // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
-                        int appliquer_cl_dirichlet = 0;
-                        if (option_appliquer_cl_dirichlet)
-                          if (est_une_face_de_dirichlet_addr[num10] || est_une_face_de_dirichlet_addr[num20])
-                            {
-                              appliquer_cl_dirichlet = 1;
-                              psc_m = psc_c;
-                            }
-
-                        // Determination de la face amont pour M
-                        int face_amont_m, dir;
-                        if (psc_m >= 0)
-                          {
-                            face_amont_m = num10;
-                            dir = 0;
-                          }
-                        else
-                          {
-                            face_amont_m = num20;
-                            dir = 1;
-                          }
-                        // Determination des faces amont pour les points C,S,S2
-                        int face_amont_c = face_amont_m;
-                        int face_amont_s = face_amont_m;
-                        int face_amont_s2 = face_amont_m;
-                        if (type_op_boucle == muscl && ordre == 3)
-                          {
-                            face_amont_c = (psc_c >= 0) ? num10 : num20;
-                            face_amont_s = (psc_s >= 0) ? num10 : num20;
-                            face_amont_s2 = (psc_s2 >= 0) ? num10 : num20;
-                          }
-                        // gradient aux items element (schema centre) ou aux items face (schemas muscl)
-                        int item_m = poly;
-                        int item_c = poly;
-                        int item_s = poly;
-                        int item_s2 = poly;
-                        if (type_op_boucle == muscl)
-                          {
-                            item_m = face_amont_m;
-                            item_c = face_amont_c;
-                            item_s = face_amont_s;
-                            item_s2 = face_amont_s2;
-                          }
-
-                        for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                          {
-                            double flux;
-                            double inco_m = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_m]
-                                             : transporte_face_addr[
-                                               face_amont_m * ncomp_ch_transporte + comp0]);
-                            if (type_op_boucle == amont || appliquer_cl_dirichlet)
-                              {
-                                flux = inco_m * psc_m;
-                              }
-                            else   // muscl ou centre
-                              {
-                                // Calcul de l'inconnue au centre M de la fa7
-                                if (rang == -1)
-                                  for (int j = 0; j < dimension; j++)
-                                    {
-                                      inco_m += gradient_addr[(item_m * ncomp_ch_transporte + comp0) * dimension +
-                                                              j] * vecteur_face_facette_addr[
-                                                  ((poly * nfa7 + fa7) * dimension + j) * 2 + dir];
-                                    }
-
-                                else
-                                  for (int j = 0; j < dimension; j++)
-                                    {
-                                      inco_m += gradient_addr[(item_m * ncomp_ch_transporte + comp0) * dimension +
-                                                              j] * vecteur_face_facette_Cl_addr[
-                                                  ((rang * nfa7 + fa7) * dimension + j) * 2 + dir];
-                                    }
-                                // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
-                                double inco_s = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_s]
-                                                 : transporte_face_addr[
-                                                   face_amont_s * ncomp_ch_transporte + comp0]);
-                                //                          int sommet_s = sommet_elem(poly,KEL(2,fa7));
-                                int sommet_s = les_elems_addr[poly * nsom + KEL_addr[2 * nfa7 + fa7]];
-                                for (int j = 0; j < dimension; j++)
+                                for (int i = 0; i < 2; i++)
                                   {
-                                    inco_s +=
-                                      gradient_addr[(item_s * ncomp_ch_transporte + comp0) * dimension + j] *
-                                      (-xv_addr[face_amont_s * dimension + j] +
-                                       coord_sommets_addr[sommet_s * dimension + j]);
+                                    psc_c += vc[i] * cc[i];
+                                    psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * 2 + i] * cc[i];
                                   }
-
-                                // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
-                                double inco_s2 = 0;
-                                if (dimension == 3)
-                                  {
-                                    inco_s2 = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_s2]
-                                               : transporte_face_addr[
-                                                 face_amont_s2 * ncomp_ch_transporte + comp0]);
-                                    int sommet_s2 = les_elems_addr[poly * nsom + KEL_addr[3 * nfa7 + fa7]];
-                                    for (int j = 0; j < dimension; j++)
-                                      {
-                                        inco_s2 +=
-                                          gradient_addr[(item_s2 * ncomp_ch_transporte + comp0) * dimension +
-                                                        j] * (-xv_addr[face_amont_s2 * dimension + j] +
-                                                              coord_sommets_addr[sommet_s2 * dimension + j]);
-                                      }
-                                  }
-
-                                // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
-                                // du polyedre. C=G centre du polyedre si volume non etendu
-                                // xc donne par elemvef.calcul_xg()
-                                double inco_c;
-                                if (ordre == 3)
-                                  {
-                                    inco_c = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_c]
-                                              : transporte_face_addr[
-                                                face_amont_c * ncomp_ch_transporte + comp0]);
-                                    for (int j = 0; j < dimension; j++)
-                                      inco_c += gradient_addr[(item_c * ncomp_ch_transporte + comp0) * dimension +
-                                                              j] *
-                                                (-xv_addr[face_amont_c * dimension + j] + xc[j]);
-                                  }
-                                else
-                                  {
-                                    inco_c = dimension * inco_m - inco_s - inco_s2;
-                                  }
-
-                                // Calcul du flux sur 1 point
-                                if (calcul_flux_en_un_point || option_calcul_flux_en_un_point)
-                                  {
-                                    flux = inco_m * psc_m;
-                                  }
-                                else
-                                  {
-                                    // Calcul du flux sur 3 points
-                                    flux = (dimension == 2) ?
-                                           (inco_c * psc_c + inco_s * psc_s + 4 * inco_m * psc_m) / 6
-                                           : (inco_c * psc_c + inco_s * psc_s + inco_s2 * psc_s2 +
-                                              9 * inco_m * psc_m) / 12;
-                                  }
-                              }
-
-                            // Ponderation par coefficient alpha
-                            flux *= alpha;
-
-                            if (ncomp_ch_transporte == 1)
-                              {
-                                #pragma omp atomic
-                                resu_addr[num10] -= flux;
-                                #pragma omp atomic
-                                resu_addr[num20] += flux;
-                                if (num10 < nb_faces_bord)
-                                  {
-                                    #pragma omp atomic
-                                    flux_b_addr[num10 * ncomp_ch_transporte] += flux;
-                                  }
-                                if (num20 < nb_faces_bord)
-                                  {
-                                    #pragma omp atomic
-                                    flux_b_addr[num20 * ncomp_ch_transporte] -= flux;
-                                  }
+                                psc_m = (psc_c + psc_s) / 2.;
                               }
                             else
                               {
-                                #pragma omp atomic
-                                resu_addr[num10 * ncomp_ch_transporte + comp0] -= flux;
-                                #pragma omp atomic
-                                resu_addr[num20 * ncomp_ch_transporte + comp0] += flux;
-                                if (num10 < nb_faces_bord)
+                                for (int i = 0; i < 3; i++)
                                   {
-                                    #pragma omp atomic
-                                    flux_b_addr[num10 * ncomp_ch_transporte + comp0] += flux;
+                                    psc_c += vc[i] * cc[i];
+                                    psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * 3 + i] * cc[i];
+                                    psc_s2 += vsom[KEL_addr[3 * nfa7 + fa7] * 3 + i] * cc[i];
                                   }
-                                if (num20 < nb_faces_bord)
-                                  {
-                                    #pragma omp atomic
-                                    flux_b_addr[num20 * ncomp_ch_transporte + comp0] -= flux;
-                                  }
+                                psc_m = (psc_c + psc_s + psc_s2) / 3.;
+                              }
+                            // On applique les CL de Dirichlet si num1 ou num2 est une face avec CL de Dirichlet
+                            // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
+                            int appliquer_cl_dirichlet = 0;
+                            if (option_appliquer_cl_dirichlet)
+                              if (est_une_face_de_dirichlet_addr[num10] ||
+                                  est_une_face_de_dirichlet_addr[num20])
+                                {
+                                  appliquer_cl_dirichlet = 1;
+                                  psc_m = psc_c;
+                                }
+
+                            // Determination de la face amont pour M
+                            int face_amont_m, dir;
+                            if (psc_m >= 0)
+                              {
+                                face_amont_m = num10;
+                                dir = 0;
+                              }
+                            else
+                              {
+                                face_amont_m = num20;
+                                dir = 1;
+                              }
+                            // Determination des faces amont pour les points C,S,S2
+                            int face_amont_c = face_amont_m;
+                            int face_amont_s = face_amont_m;
+                            int face_amont_s2 = face_amont_m;
+                            if (type_op_boucle == muscl && ordre == 3)
+                              {
+                                face_amont_c = (psc_c >= 0) ? num10 : num20;
+                                face_amont_s = (psc_s >= 0) ? num10 : num20;
+                                face_amont_s2 = (psc_s2 >= 0) ? num10 : num20;
+                              }
+                            // gradient aux items element (schema centre) ou aux items face (schemas muscl)
+                            int item_m = poly;
+                            int item_c = poly;
+                            int item_s = poly;
+                            int item_s2 = poly;
+                            if (type_op_boucle == muscl)
+                              {
+                                item_m = face_amont_m;
+                                item_c = face_amont_c;
+                                item_s = face_amont_s;
+                                item_s2 = face_amont_s2;
                               }
 
-                          }// boucle sur comp
-                      } // fin de la boucle sur les facettes
-                  }
-              } // fin de la boucle
-          }
-          end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::ajouter");
-#else
-          const IntVectView rang_elem_non_std_v = rang_elem_non_std.view_ro();
-          const IntTabView elem_faces_v = elem_faces.view_ro();
-          const DoubleVectView porosite_face_v = porosite_face.view_ro();
-          const DoubleVectView porosite_elem_v = porosite_elem.view_ro();
-          const DoubleTabView coord_sommets_v = coord_sommets.view_ro();
-          const IntTabView les_elems_v = les_elems.view_ro();
-          const DoubleTabView3 facette_normales_v = facette_normales.view3_ro();
-          const IntVectView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
-          const DoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
-          const DoubleTabView xv_v = xv.view_ro();
-          const IntVectView type_elem_Cl_v = type_elem_Cl_.view_ro();
-          const IntVectView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
-          const IntTabView KEL_v = type_elemvef.KEL().view_ro();
-          const DoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
-          const DoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
+                            for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                              {
+                                double flux;
+                                double inco_m = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_m]
+                                                 : transporte_face_addr[
+                                                   face_amont_m * ncomp_ch_transporte + comp0]);
+                                if (type_op_boucle == amont || appliquer_cl_dirichlet)
+                                  {
+                                    flux = inco_m * psc_m;
+                                  }
+                                else     // muscl ou centre
+                                  {
+                                    // Calcul de l'inconnue au centre M de la fa7
+                                    if (rang == -1)
+                                      for (int j = 0; j < dimension; j++)
+                                        {
+                                          inco_m += gradient_addr[
+                                                      (item_m * ncomp_ch_transporte + comp0) * dimension +
+                                                      j] * vecteur_face_facette_addr[
+                                                      ((poly * nfa7 + fa7) * dimension + j) * 2 + dir];
+                                        }
 
-          const DoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
-          const DoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
-          const DoubleTabView transporte_face_v = transporte_face.view_ro();
-          const DoubleTabView3 gradient_v = gradient.view3_ro();
+                                    else
+                                      for (int j = 0; j < dimension; j++)
+                                        {
+                                          inco_m += gradient_addr[
+                                                      (item_m * ncomp_ch_transporte + comp0) * dimension +
+                                                      j] * vecteur_face_facette_Cl_addr[
+                                                      ((rang * nfa7 + fa7) * dimension + j) * 2 + dir];
+                                        }
+                                    // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
+                                    double inco_s = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_s]
+                                                     : transporte_face_addr[
+                                                       face_amont_s * ncomp_ch_transporte + comp0]);
+                                    //                          int sommet_s = sommet_elem(poly,KEL(2,fa7));
+                                    int sommet_s = les_elems_addr[poly * nsom + KEL_addr[2 * nfa7 + fa7]];
+                                    for (int j = 0; j < dimension; j++)
+                                      {
+                                        inco_s +=
+                                          gradient_addr[(item_s * ncomp_ch_transporte + comp0) * dimension +
+                                                        j] *
+                                          (-xv_addr[face_amont_s * dimension + j] +
+                                           coord_sommets_addr[sommet_s * dimension + j]);
+                                      }
 
-          DoubleTabView resu_v = resu.view_rw();
-          DoubleTabView flux_b_v = flux_b.view_rw();
+                                    // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
+                                    double inco_s2 = 0;
+                                    if (dimension == 3)
+                                      {
+                                        inco_s2 = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_s2]
+                                                   : transporte_face_addr[
+                                                     face_amont_s2 * ncomp_ch_transporte + comp0]);
+                                        int sommet_s2 = les_elems_addr[poly * nsom + KEL_addr[3 * nfa7 + fa7]];
+                                        for (int j = 0; j < dimension; j++)
+                                          {
+                                            inco_s2 +=
+                                              gradient_addr[
+                                                (item_s2 * ncomp_ch_transporte + comp0) * dimension +
+                                                j] * (-xv_addr[face_amont_s2 * dimension + j] +
+                                                      coord_sommets_addr[sommet_s2 * dimension + j]);
+                                          }
+                                      }
 
-          const int dim = Objet_U::dimension;
-          const bool isMuscl = type_op_boucle == muscl;
-          const bool isAmont = type_op_boucle == amont;
-          const int ordr = ordre;
+                                    // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
+                                    // du polyedre. C=G centre du polyedre si volume non etendu
+                                    // xc donne par elemvef.calcul_xg()
+                                    double inco_c;
+                                    if (ordre == 3)
+                                      {
+                                        inco_c = (ncomp_ch_transporte == 1 ? transporte_face_addr[face_amont_c]
+                                                  : transporte_face_addr[
+                                                    face_amont_c * ncomp_ch_transporte + comp0]);
+                                        for (int j = 0; j < dimension; j++)
+                                          inco_c += gradient_addr[
+                                                      (item_c * ncomp_ch_transporte + comp0) * dimension +
+                                                      j] *
+                                                    (-xv_addr[face_amont_c * dimension + j] + xc[j]);
+                                      }
+                                    else
+                                      {
+                                        inco_c = dimension * inco_m - inco_s - inco_s2;
+                                      }
 
-          auto kern_conv_aj = KOKKOS_LAMBDA(int poly)
-          {
-            // ABN TODO: check whether outside or inside loop:
-            int face[4] {};
-            double vs[3] {};
-            double vc[3] {};
-            double xc[3] {};
-            double cc[3] {};
-            double vsom[12] {};
-            double xsom[12] {};
+                                    // Calcul du flux sur 1 point
+                                    if (calcul_flux_en_un_point || option_calcul_flux_en_un_point)
+                                      {
+                                        flux = inco_m * psc_m;
+                                      }
+                                    else
+                                      {
+                                        // Calcul du flux sur 3 points
+                                        flux = (dimension == 2) ?
+                                               (inco_c * psc_c + inco_s * psc_s + 4 * inco_m * psc_m) / 6
+                                               :
+                                               (inco_c * psc_c + inco_s * psc_s + inco_s2 * psc_s2 +
+                                                9 * inco_m * psc_m) / 12;
+                                      }
+                                  }
+
+                                // Ponderation par coefficient alpha
+                                flux *= alpha;
+
+                                if (ncomp_ch_transporte == 1)
+                                  {
+                                    #pragma omp atomic
+                                    resu_addr[num10] -= flux;
+                                    #pragma omp atomic
+                                    resu_addr[num20] += flux;
+                                    if (num10 < nb_faces_bord)
+                                      {
+                                        #pragma omp atomic
+                                        flux_b_addr[num10 * ncomp_ch_transporte] += flux;
+                                      }
+                                    if (num20 < nb_faces_bord)
+                                      {
+                                        #pragma omp atomic
+                                        flux_b_addr[num20 * ncomp_ch_transporte] -= flux;
+                                      }
+                                  }
+                                else
+                                  {
+                                    #pragma omp atomic
+                                    resu_addr[num10 * ncomp_ch_transporte + comp0] -= flux;
+                                    #pragma omp atomic
+                                    resu_addr[num20 * ncomp_ch_transporte + comp0] += flux;
+                                    if (num10 < nb_faces_bord)
+                                      {
+                                        #pragma omp atomic
+                                        flux_b_addr[num10 * ncomp_ch_transporte + comp0] += flux;
+                                      }
+                                    if (num20 < nb_faces_bord)
+                                      {
+                                        #pragma omp atomic
+                                        flux_b_addr[num20 * ncomp_ch_transporte + comp0] -= flux;
+                                      }
+                                  }
+
+                              }// boucle sur comp
+                          } // fin de la boucle sur les facettes
+                      }
+                  } // fin de la boucle
+              }
+              end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::ajouter");
+            }
+          else
             {
-              int rang = rang_elem_non_std_v(poly);
-              int contrib = 0;
-              // calcul des numeros des faces du polyedre
-              for (int face_adj = 0; face_adj < nfac; face_adj++)
+              const IntVectView rang_elem_non_std_v = rang_elem_non_std.view_ro();
+              const IntTabView elem_faces_v = elem_faces.view_ro();
+              const DoubleVectView porosite_face_v = porosite_face.view_ro();
+              const DoubleVectView porosite_elem_v = porosite_elem.view_ro();
+              const DoubleTabView coord_sommets_v = coord_sommets.view_ro();
+              const IntTabView les_elems_v = les_elems.view_ro();
+              const DoubleTabView3 facette_normales_v = facette_normales.view3_ro();
+              const IntVectView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
+              const DoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
+              const DoubleTabView xv_v = xv.view_ro();
+              const IntVectView type_elem_Cl_v = type_elem_Cl_.view_ro();
+              const IntVectView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
+              const IntTabView KEL_v = type_elemvef.KEL().view_ro();
+              const DoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
+              const DoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
+
+              const DoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
+              const DoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
+              const DoubleTabView transporte_face_v = transporte_face.view_ro();
+              const DoubleTabView3 gradient_v = gradient.view3_ro();
+
+              DoubleTabView resu_v = resu.view_rw();
+              DoubleTabView flux_b_v = flux_b.view_rw();
+
+              const int dim = Objet_U::dimension;
+              const bool isMuscl = type_op_boucle == muscl;
+              const bool isAmont = type_op_boucle == amont;
+              const int ordr = ordre;
+
+              auto kern_conv_aj = KOKKOS_LAMBDA(int
+                                                poly)
+              {
+                // ABN TODO: check whether outside or inside loop:
+                int face[4] {};
+                double vs[3] {};
+                double vc[3] {};
+                double xc[3] {};
+                double cc[3] {};
+                double vsom[12] {};
+                double xsom[12] {};
                 {
-                  int face_ = elem_faces_v(poly, face_adj);
-                  face[face_adj] = face_;
-                  if (face_ < nb_faces_) contrib = 1; // Une face reelle sur l'element virtuel
-                }
-              //
-              if (contrib)
-                {
-                  int calcul_flux_en_un_point = (ordr != 3) && (ordr == 1 || traitement_pres_bord_v(poly));
-                  for (int j = 0; j < dim; j++)
+                  int rang = rang_elem_non_std_v(poly);
+                  int contrib = 0;
+                  // calcul des numeros des faces du polyedre
+                  for (int face_adj = 0; face_adj < nfac; face_adj++)
                     {
-                      vs[j] = vitesse_face_absolue_v(face[0], j) * porosite_face_v(face[0]);
-                      for (int i = 1; i < nfac; i++)
-                        vs[j] += vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
+                      int face_ = elem_faces_v(poly, face_adj);
+                      face[face_adj] = face_;
+                      if (face_ < nb_faces_) contrib = 1; // Une face reelle sur l'element virtuel
                     }
-                  // calcul de la vitesse aux sommets des tetraedres
-                  // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
-                  for (int i = 0; i < nsom; i++)
-                    for (int j = 0; j < dim; j++)
-                      vsom[i * 3 + j] = vs[j] - dim*vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
-
-                  // Determination du type de CL selon le rang
-                  rang = rang_elem_non_std_v(poly);
-                  True_int itypcl = type_elem_Cl_v(poly);
-
-                  calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_v, itypcl, porosite_face_v);
-                  // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                  if (ordr == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
+                  //
+                  if (contrib)
                     {
-                      int idirichlet;
-                      int n1, n2, n3;
+                      int calcul_flux_en_un_point = (ordr != 3) && (ordr == 1 || traitement_pres_bord_v(poly));
+                      for (int j = 0; j < dim; j++)
+                        {
+                          vs[j] = vitesse_face_absolue_v(face[0], j) * porosite_face_v(face[0]);
+                          for (int i = 1; i < nfac; i++)
+                            vs[j] += vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
+                        }
+                      // calcul de la vitesse aux sommets des tetraedres
+                      // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
                       for (int i = 0; i < nsom; i++)
                         for (int j = 0; j < dim; j++)
-                          xsom[i * 3 + j] = coord_sommets_v(les_elems_v(poly, i), j);
-                      calcul_xg_tetra(xc, xsom, itypcl, idirichlet, n1, n2, n3);
-                    }
+                          vsom[i * 3 + j] =
+                            vs[j] - dim * vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
 
-                  // Gestion de la porosite
-                  if (marq == 0)
-                    {
-                      double coeff = 1. / porosite_elem_v(poly);
-                      for (int l = 0; l < nsom * dim; l++) vsom[l] *= coeff;
-                      for (int l = 0; l < dim; l++)        vc[l] *= coeff;
-                    }
-                  // Boucle sur les facettes du polyedre non standard:
-                  for (int fa7 = 0; fa7 < nfa7; fa7++)
-                    {
-                      int num10 = face[KEL_v(0, fa7)];
-                      int num20 = face[KEL_v(1, fa7)];
-                      // normales aux facettes
-                      if (rang == -1)
-                        for (int i = 0; i < dim; i++)
-                          cc[i] = facette_normales_v(poly, fa7, i);
-                      else
-                        for (int i = 0; i < dim; i++)
-                          cc[i] = normales_facettes_Cl_v(rang, fa7, i);
+                      // Determination du type de CL selon le rang
+                      rang = rang_elem_non_std_v(poly);
+                      True_int itypcl = type_elem_Cl_v(poly);
 
-                      // Calcul des vitesses en C,S,S2 les 3 extremites de la fa7 et M le centre de la fa7
-                      double psc_c = 0, psc_s = 0, psc_m, psc_s2 = 0;
-                      if (dim == 2)
+                      calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_v, itypcl, porosite_face_v);
+                      // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
+                      if (ordr == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                         {
-                          for (int i = 0; i < 2; i++)
+                          int idirichlet;
+                          int n1, n2, n3;
+                          for (int i = 0; i < nsom; i++)
+                            for (int j = 0; j < dim; j++)
+                              xsom[i * 3 + j] = coord_sommets_v(les_elems_v(poly, i), j);
+                          calcul_xg_tetra(xc, xsom, itypcl, idirichlet, n1, n2, n3);
+                        }
+
+                      // Gestion de la porosite
+                      if (marq == 0)
+                        {
+                          double coeff = 1. / porosite_elem_v(poly);
+                          for (int l = 0; l < nsom * dim; l++) vsom[l] *= coeff;
+                          for (int l = 0; l < dim; l++) vc[l] *= coeff;
+                        }
+                      // Boucle sur les facettes du polyedre non standard:
+                      for (int fa7 = 0; fa7 < nfa7; fa7++)
+                        {
+                          int num10 = face[KEL_v(0, fa7)];
+                          int num20 = face[KEL_v(1, fa7)];
+                          // normales aux facettes
+                          if (rang == -1)
+                            for (int i = 0; i < dim; i++)
+                              cc[i] = facette_normales_v(poly, fa7, i);
+                          else
+                            for (int i = 0; i < dim; i++)
+                              cc[i] = normales_facettes_Cl_v(rang, fa7, i);
+
+                          // Calcul des vitesses en C,S,S2 les 3 extremites de la fa7 et M le centre de la fa7
+                          double psc_c = 0, psc_s = 0, psc_m, psc_s2 = 0;
+                          if (dim == 2)
                             {
-                              psc_c += vc[i] * cc[i];
-                              psc_s += vsom[KEL_v(2, fa7)*2 + i] * cc[i];
-                            }
-                          psc_m = (psc_c + psc_s) / 2.;
-                        }
-                      else
-                        {
-                          for (int i = 0; i < 3; i++)
-                            {
-                              psc_c += vc[i] * cc[i];
-                              psc_s += vsom[KEL_v(2,fa7)*3 + i]*cc[i];
-                              psc_s2 += vsom[KEL_v(3,fa7)*3 + i]*cc[i];
-                            }
-                          psc_m = (psc_c + psc_s + psc_s2) / 3.;
-                        }
-                      // On applique les CL de Dirichlet si num1 ou num2 est une face avec CL de Dirichlet
-                      // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
-                      int appliquer_cl_dirichlet = 0;
-                      if (option_appliquer_cl_dirichlet)
-                        if (est_une_face_de_dirichlet_v(num10) || est_une_face_de_dirichlet_v(num20))
-                          {
-                            appliquer_cl_dirichlet = 1;
-                            psc_m = psc_c;
-                          }
-
-                      // Determination de la face amont pour M
-                      int face_amont_m, dir;
-                      if (psc_m >= 0)
-                        {
-                          face_amont_m = num10;
-                          dir = 0;
-                        }
-                      else
-                        {
-                          face_amont_m = num20;
-                          dir = 1;
-                        }
-                      // Determination des faces amont pour les points C,S,S2
-                      int face_amont_c = face_amont_m;
-                      int face_amont_s = face_amont_m;
-                      int face_amont_s2 = face_amont_m;
-                      if (isMuscl && ordr == 3)
-                        {
-                          face_amont_c = (psc_c >= 0) ? num10 : num20;
-                          face_amont_s = (psc_s >= 0) ? num10 : num20;
-                          face_amont_s2 = (psc_s2 >= 0) ? num10 : num20;
-                        }
-                      // gradient aux items element (schema centre) ou aux items face (schemas muscl)
-                      int item_m = poly;
-                      int item_c = poly;
-                      int item_s = poly;
-                      int item_s2 = poly;
-                      if (isMuscl)
-                        {
-                          item_m = face_amont_m;
-                          item_c = face_amont_c;
-                          item_s = face_amont_s;
-                          item_s2 = face_amont_s2;
-                        }
-
-                      for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                        {
-                          double flux;
-                          double inco_m = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_m, 0)
-                                           : transporte_face_v(face_amont_m, comp0));
-                          if (isAmont || appliquer_cl_dirichlet)
-                            flux = inco_m * psc_m;
-                          else   // muscl ou centre
-                            {
-                              // Calcul de l'inconnue au centre M de la fa7
-                              if (rang == -1)
-                                for (int j = 0; j < dim; j++)
-                                  inco_m += gradient_v(item_m,comp0,j)*vecteur_face_facette_v(poly,fa7,j,dir);
-                              else
-                                for (int j = 0; j < dim; j++)
-                                  inco_m += gradient_v(item_m,comp0,j)*vecteur_face_facette_Cl_v(rang,fa7,j,dir);
-                              // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
-                              double inco_s = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s,0)
-                                               : transporte_face_v(face_amont_s, comp0));
-                              int sommet_s = les_elems_v(poly, KEL_v(2, fa7));
-                              for (int j = 0; j < dim; j++)
-                                inco_s += gradient_v(item_s,comp0,j) * (-xv_v(face_amont_s,j) + coord_sommets_v(sommet_s,j));
-
-                              // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
-                              double inco_s2 = 0;
-                              if (dim == 3)
+                              for (int i = 0; i < 2; i++)
                                 {
-                                  inco_s2 = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s2,0)
-                                             : transporte_face_v(face_amont_s2, comp0));
-                                  int sommet_s2 = les_elems_v(poly, KEL_v(3, fa7));
-                                  for (int j = 0; j < dim; j++)
-                                    inco_s2+= gradient_v(item_s2,comp0,j) * (-xv_v(face_amont_s2,j) + coord_sommets_v(sommet_s2,j));
+                                  psc_c += vc[i] * cc[i];
+                                  psc_s += vsom[KEL_v(2, fa7) * 2 + i] * cc[i];
                                 }
-
-                              // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
-                              // du polyedre. C=G centre du polyedre si volume non etendu
-                              // xc donne par elemvef.calcul_xg()
-                              double inco_c;
-                              if (ordr == 3)
+                              psc_m = (psc_c + psc_s) / 2.;
+                            }
+                          else
+                            {
+                              for (int i = 0; i < 3; i++)
                                 {
-                                  inco_c = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_c,0)
-                                            : transporte_face_v(face_amont_c, comp0));
-                                  for (int j = 0; j < dim; j++)
-                                    inco_c += gradient_v(item_c,comp0,j) * (-xv_v(face_amont_c,j)+xc[j]);
+                                  psc_c += vc[i] * cc[i];
+                                  psc_s += vsom[KEL_v(2, fa7) * 3 + i] * cc[i];
+                                  psc_s2 += vsom[KEL_v(3, fa7) * 3 + i] * cc[i];
                                 }
-                              else
-                                inco_c = dim * inco_m - inco_s - inco_s2;
+                              psc_m = (psc_c + psc_s + psc_s2) / 3.;
+                            }
+                          // On applique les CL de Dirichlet si num1 ou num2 est une face avec CL de Dirichlet
+                          // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
+                          int appliquer_cl_dirichlet = 0;
+                          if (option_appliquer_cl_dirichlet)
+                            if (est_une_face_de_dirichlet_v(num10) || est_une_face_de_dirichlet_v(num20))
+                              {
+                                appliquer_cl_dirichlet = 1;
+                                psc_m = psc_c;
+                              }
 
-                              // Calcul du flux sur 1 point
-                              if (calcul_flux_en_un_point || option_calcul_flux_en_un_point)
+                          // Determination de la face amont pour M
+                          int face_amont_m, dir;
+                          if (psc_m >= 0)
+                            {
+                              face_amont_m = num10;
+                              dir = 0;
+                            }
+                          else
+                            {
+                              face_amont_m = num20;
+                              dir = 1;
+                            }
+                          // Determination des faces amont pour les points C,S,S2
+                          int face_amont_c = face_amont_m;
+                          int face_amont_s = face_amont_m;
+                          int face_amont_s2 = face_amont_m;
+                          if (isMuscl && ordr == 3)
+                            {
+                              face_amont_c = (psc_c >= 0) ? num10 : num20;
+                              face_amont_s = (psc_s >= 0) ? num10 : num20;
+                              face_amont_s2 = (psc_s2 >= 0) ? num10 : num20;
+                            }
+                          // gradient aux items element (schema centre) ou aux items face (schemas muscl)
+                          int item_m = poly;
+                          int item_c = poly;
+                          int item_s = poly;
+                          int item_s2 = poly;
+                          if (isMuscl)
+                            {
+                              item_m = face_amont_m;
+                              item_c = face_amont_c;
+                              item_s = face_amont_s;
+                              item_s2 = face_amont_s2;
+                            }
+
+                          for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                            {
+                              double flux;
+                              double inco_m = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_m, 0)
+                                               : transporte_face_v(face_amont_m, comp0));
+                              if (isAmont || appliquer_cl_dirichlet)
                                 flux = inco_m * psc_m;
-                              else
+                              else   // muscl ou centre
                                 {
-                                  // Calcul du flux sur 3 points
-                                  flux = (dim == 2) ?
-                                         (inco_c * psc_c + inco_s * psc_s + 4 * inco_m * psc_m) / 6
-                                         : (inco_c * psc_c + inco_s * psc_s + inco_s2 * psc_s2 +
-                                            9 * inco_m * psc_m) / 12;
+                                  // Calcul de l'inconnue au centre M de la fa7
+                                  if (rang == -1)
+                                    for (int j = 0; j < dim; j++)
+                                      inco_m += gradient_v(item_m, comp0, j) *
+                                                vecteur_face_facette_v(poly, fa7, j, dir);
+                                  else
+                                    for (int j = 0; j < dim; j++)
+                                      inco_m += gradient_v(item_m, comp0, j) *
+                                                vecteur_face_facette_Cl_v(rang, fa7, j, dir);
+                                  // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
+                                  double inco_s = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s, 0)
+                                                   : transporte_face_v(face_amont_s,
+                                                                       comp0));
+                                  int sommet_s = les_elems_v(poly, KEL_v(2, fa7));
+                                  for (int j = 0; j < dim; j++)
+                                    inco_s += gradient_v(item_s, comp0, j) *
+                                              (-xv_v(face_amont_s, j) + coord_sommets_v(sommet_s, j));
+
+                                  // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
+                                  double inco_s2 = 0;
+                                  if (dim == 3)
+                                    {
+                                      inco_s2 = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s2, 0)
+                                                 : transporte_face_v(face_amont_s2,
+                                                                     comp0));
+                                      int sommet_s2 = les_elems_v(poly, KEL_v(3, fa7));
+                                      for (int j = 0; j < dim; j++)
+                                        inco_s2 += gradient_v(item_s2, comp0, j) *
+                                                   (-xv_v(face_amont_s2, j) + coord_sommets_v(sommet_s2, j));
+                                    }
+
+                                  // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
+                                  // du polyedre. C=G centre du polyedre si volume non etendu
+                                  // xc donne par elemvef.calcul_xg()
+                                  double inco_c;
+                                  if (ordr == 3)
+                                    {
+                                      inco_c = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_c, 0)
+                                                : transporte_face_v(face_amont_c,
+                                                                    comp0));
+                                      for (int j = 0; j < dim; j++)
+                                        inco_c +=
+                                          gradient_v(item_c, comp0, j) * (-xv_v(face_amont_c, j) + xc[j]);
+                                    }
+                                  else
+                                    inco_c = dim * inco_m - inco_s - inco_s2;
+
+                                  // Calcul du flux sur 1 point
+                                  if (calcul_flux_en_un_point || option_calcul_flux_en_un_point)
+                                    flux = inco_m * psc_m;
+                                  else
+                                    {
+                                      // Calcul du flux sur 3 points
+                                      flux = (dim == 2) ?
+                                             (inco_c * psc_c + inco_s * psc_s + 4 * inco_m * psc_m) / 6
+                                             : (inco_c * psc_c + inco_s * psc_s + inco_s2 * psc_s2 +
+                                                9 * inco_m * psc_m) / 12;
+                                    }
                                 }
-                            }
 
-                          // Ponderation par coefficient alpha
-                          flux *= alpha;
+                              // Ponderation par coefficient alpha
+                              flux *= alpha;
 
-                          int compo = ncomp_ch_transporte == 1 ? 0 : comp0;
-                          Kokkos::atomic_sub(&resu_v(num10,compo), flux);
-                          Kokkos::atomic_add(&resu_v(num20,compo), flux);
-                          if (num10 < nb_faces_bord)
-                            Kokkos::atomic_add(&flux_b_v(num10,compo), flux);
-                          if (num20 < nb_faces_bord)
-                            Kokkos::atomic_sub(&flux_b_v(num20,compo), flux);
+                              int compo = ncomp_ch_transporte == 1 ? 0 : comp0;
+                              Kokkos::atomic_sub(&resu_v(num10, compo), flux);
+                              Kokkos::atomic_add(&resu_v(num20, compo), flux);
+                              if (num10 < nb_faces_bord)
+                                Kokkos::atomic_add(&flux_b_v(num10, compo), flux);
+                              if (num20 < nb_faces_bord)
+                                Kokkos::atomic_sub(&flux_b_v(num20, compo), flux);
 
-                        }// boucle sur comp
-                    } // fin de la boucle sur les facettes
-                }
-            } // fin de la boucle
-          };
+                            }// boucle sur comp
+                        } // fin de la boucle sur les facettes
+                    }
+                } // fin de la boucle
+              };
 
-          start_timer();
-          Kokkos::parallel_for("[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter", nb_elem_tot, kern_conv_aj);
-          Kokkos::fence();
-          end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
+              start_timer();
+              Kokkos::parallel_for("[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter", nb_elem_tot, kern_conv_aj);
+              Kokkos::fence();
+              end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
 
-#endif
+            }
         }
       else
         {
