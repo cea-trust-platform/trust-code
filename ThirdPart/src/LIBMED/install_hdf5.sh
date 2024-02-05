@@ -72,7 +72,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   fi
   options="$options -DHDF5_BUILD_TOOLS=$TOOLS -DHDF5_ENABLE_USING_MEMCHECKER=ON -DHDF5_ENABLE_DIRECT_VFD=OFF"
   options="$options -DHDF5_ENABLE_Z_LIB_SUPPORT=OFF -DHDF5_ENABLE_SZIP_SUPPORT=OFF -DHDF5_ENABLE_SZIP_ENCODING=OFF"
-  [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON -DHDF5_ENABLE_SUBFILING_VFD=ON"
+  [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
   cmake $options -DCMAKE_INSTALL_PREFIX=$actual_install_dir -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
   # Hack cause get_time multiple defined with OpenMPI sometimes:
   files="./src/H5private.h ./src/H5system.c ./tools/lib/io_timer.c ./tools/lib/io_timer.h ./tools/test/perform/sio_perf.c ./tools/test/perform/pio_perf.c"
