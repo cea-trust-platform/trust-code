@@ -62,6 +62,7 @@ petsc,magma-2.7.1.tar.gz,,PL,,,https://bitbucket.org/icl/magma/get/16ae283407366
 petsc,STRUMPACK_7.1.4.tar.gz,,PL,,,https://github.com/pghysels/STRUMPACK/archive/v7.1.4.tar.gz,
 petsc,zfp-1.0.0.tar.gz,,PL,"BSD 3",,https://github.com/LLNL/zfp/releases/download/1.0.0/zfp-1.0.0.tar.gz,
 petsc,slate-v2023.06.00.tgz,,PL,,,https://github.com/icl-utk-edu/slate/releases/download/v2023.06.00/slate-2023.06.00.tar.gz,
+CGNS,CGNS.tar.gz,,ES,"zlib/libpng type",http://cgns.github.io/,https://github.com/CGNS/CGNS/archive/fc42728500afbc6a16dbf9020e89190e1aa65f98.tar.gz,
 AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https://github.com/barbagroup/AmgXWrapper
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 AmgX,AmgX_4d1bda0016.tar.gz,,PL,,,https://github.com/NVIDIA/AMGX/archive/4d1bda0016.tar.gz,

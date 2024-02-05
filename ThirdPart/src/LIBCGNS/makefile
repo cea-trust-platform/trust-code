@@ -3,7 +3,7 @@ lib=$(TRUST_ROOT)/lib/src/LIBCGNS/lib/libcgns.a
 
 all : $(lib)
 
-$(lib) : makefile $(pkg)
+$(lib) : makefile $(pkg) install
 	make clean
 	@./install
 
