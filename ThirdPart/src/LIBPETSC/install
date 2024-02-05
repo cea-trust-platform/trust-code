@@ -328,6 +328,7 @@ fi
 # OpenMP support ? #
 ####################
 PETSC_HAVE_OPENMP=$TRUST_USE_OPENMP
+PETSC_HAVE_OPENMP=0 # Desactive car inutile et pb de STRUMPACK sur GPU
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
    with_openmp="--with-openmp"

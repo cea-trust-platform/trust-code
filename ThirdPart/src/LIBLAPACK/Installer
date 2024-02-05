@@ -9,7 +9,10 @@ install_OpenBlas()
 
    # Installation
    rm -r -f *-OpenBLAS-*
-   echo "Installation of $package (USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP)..."
+   OPENBLAS_USE_OPENMP=$TRUST_USE_OPENMP
+   # Disable OpenMP for PETSc (Probleme avec STRUMPACK sur GPU)
+   OPENBLAS_USE_OPENMP=0 
+   echo "Installation of $package (USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP)..."
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
@@ -24,7 +27,7 @@ install_OpenBlas()
    # On ne construit que les libs (tests plantent parfois):
    targets="libs netlib"
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
-   options="CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1"
+   options="CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1"
    if [ `uname -s` = Darwin ]
    then
       $TRUST_MAKE $targets $options
@@ -45,7 +48,7 @@ install_OpenBlas()
       cd benchmark
       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
       then
-         CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
+         CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1 || exit -1
          OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
       else
          make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || exit -1
