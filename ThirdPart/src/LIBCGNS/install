@@ -1,5 +1,6 @@
 #!/bin/bash
 package=$TRUST_ROOT/externalpackages/CGNS/CGNS.tar.gz
+commit="fc42728500afbc6a16dbf9020e89190e1aa65f98"
 [ ! -f $package ] && echo "$package not found! Update your makefile." && exit -1
 
 echo ""
@@ -22,17 +23,27 @@ mkdir -p $build_dir
 cd $build_dir
 
 tar -xzf $package
-cd CGNS
+cd CGNS-$commit
 
 mkdir -p build
 cd build
 
+options="-DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCGNS_BUILD_SHARED=OFF"
+[ "$TRUST_DISABLE_MPI" = 0 ] && options=$options" -DHDF5_NEED_MPI=ON -DCGNS_ENABLE_PARALLEL=ON"
+
 # We use the hdf5 of TRUST
-cmake .. -DCMAKE_PREFIX_PATH=$TRUST_ROOT/lib/src/LIBMED/hdf5_install -DHDF5_NEED_MPI=ON -DCGNS_BUILD_SHARED=OFF -DCGNS_ENABLE_PARALLEL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+env CC=$TRUST_cc FC=$TRUST_F77 cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
 
 # make & install
 $TRUST_MAKE
 make install
+status=$?
+
+if ! [ $status -eq 0 ]; then
+  echo "@@@@@@@@@@@@@@@@@@@@@"
+  echo "Error at compilation/install."
+  exit -1
+fi
 
 rm -rf $build_dir
 
