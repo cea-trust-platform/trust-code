@@ -318,7 +318,7 @@ then
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
    export MPICH_FC=$OMPI_FC
-   CUDAFLAGS="-O3 -ccbin $OMPI_CC"
+   CUDAFLAGS="-O3 -ccbin $OMPI_CC --compiler-options -fPIC"
    COPTFLAGS="-O3 -fPIC"
    FOPTFLAGS="-O3 -fPIC"
    unset CPATH # Necessaire sur JeanZay
@@ -642,7 +642,11 @@ do
    $with_openmp \
    $with_mpi \
    $with_64bit_indices \
-   $options || exit -1
+   $options
+   err=$?
+   cp configure.log $DIR/configure.log
+   echo "Created $DIR/configure.log"
+   [ $err != 0 ] && exit $?
    #############
    # Compilation
    #############
@@ -727,7 +731,6 @@ fi
 #fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
-cp $package/configure.log .
 [ "$liste_debug" = "0" ] && echo "Deleting `pwd`/$package..." && rm -r -f $package
 echo "Leaving install PETSc, it seems OK."
 
