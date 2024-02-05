@@ -5,7 +5,6 @@ Domaine dom
 # BEGIN MESH #
 Read_file mesh.geo ;
 
-trianguler_h dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
@@ -21,7 +20,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFprep1b dis
+VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
@@ -42,8 +41,8 @@ extraire_surface
 {
     domaine surface
     probleme pb
-    condition_elements (y<2)
-    condition_faces (x<1e-6)
+    condition_elements (x<2)
+    condition_faces (y<1e-6)
     avec_les_bords
 }
 # postraiter_domaine { domaine surface format lml fichier surface } #
@@ -65,7 +64,7 @@ Read pb
             vitesse Champ_Uniforme 2 0. 0.
         }
         boundary_conditions {
-            inlet      frontiere_ouverte_vitesse_imposee  champ_front_fonc_t   2 2.*t+1. 0.
+            inlet      frontiere_ouverte_vitesse_imposee  champ_front_fonc_t   2 0. 2.*t*t+0.1
             outlet     frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
             bottomwall symetrie
             topwall    symetrie
