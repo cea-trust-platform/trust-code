@@ -12,7 +12,7 @@ Read_MED { domain dom_init file mesh_simple_tri.med }
 VerifierCoin dom_init { }
 
 # This output was not containing the splited corner: #
-ecrire_MED dom_init dom.med
+write_MED dom_init dom.med
 
 Domaine dom
 Read_MED { domain dom file dom.med }

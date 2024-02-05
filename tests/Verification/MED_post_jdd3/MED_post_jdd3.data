@@ -10,7 +10,7 @@ Read_MED { domain dom_init file mesh_simple_tri.med }
 # Here the geometric interprete was breaking internal MC representation: #
 raffiner_isotrope dom_init
 
-ecrire_MED dom_init dom.med
+write_MED dom_init dom.med
 
 Domaine dom
 Read_MED { domain dom file dom.med }
