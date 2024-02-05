@@ -908,6 +908,13 @@ then
 	   liste_skipped=$liste_skipped" $i"
 	   i=""
 	fi
+	# Discard sensitive test case with OpenMP #
+	if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i " ecarts #" $file 2>/dev/null`" != "" ]
+	then
+	   echo "Sensitive test $i is skipped (Not supported with OpenMP)"
+	   liste_skipped=$liste_skipped" $i"
+	   i=""
+	fi	
 	# Discard test case from Valgrind #
 	if [ "$VALGRIND" = 1 ]
 	then
