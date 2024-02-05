@@ -32,8 +32,7 @@ Read sch
     dt_max  10
     facsec 1e30
     seuil_statio 1e-8
-    # solveur implicite { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } } #
-    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } }
+    solveur $solv
 }
 
 Associate  pb dom
@@ -74,9 +73,10 @@ Read pb
                 methode formule expression 1 p-pmoy
                 sources
                 {
-                    refChamp { Pb_champ pb pression_pa nom_source p } ,
-                    reduction_0d { methode moyenne_ponderee source refChamp { Pb_champ pb pression_pa } nom_source pmoy }
+                    refChamp { Pb_champ pb pression nom_source p } ,
+                    reduction_0d { methode moyenne_ponderee source interpolation { source refChamp { Pb_champ pb pression } localisation elem } nom_source pmoy }
                 }
+                localisation elem
             }
             erreur_P transformation
             {
@@ -88,9 +88,10 @@ Read pb
                         methode formule expression 1 p-pmoy
                         sources
                         {
-                            refChamp { Pb_champ pb pression_pa nom_source p } ,
-                            reduction_0d { methode moyenne_ponderee source refChamp { Pb_champ pb pression_pa } nom_source pmoy }
+                            refChamp { Pb_champ pb pression nom_source p } ,
+                            reduction_0d { methode moyenne_ponderee source interpolation { source refChamp { Pb_champ pb pression } localisation elem } nom_source pmoy }
                         }
+                        localisation elem
                         nom_source pmp
                     } ,
                     transformation { methode formule expression 1 x^2+y^2+z^2-x*y-x*z-y*z-1/4 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
@@ -105,8 +106,9 @@ Read pb
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
-                    transformation { methode vecteur expression 3 y-z z-x x-y nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode vecteur expression 3 y-z z-x x-y nom_source sol source refChamp { Pb_champ pb viscosite_dynamique } }
                 }
+                localisation elem 
             }
             erreur_V_max reduction_0D { methode l2_norm source transformation { methode norme sources_reference { erreur_V } } }
         }
