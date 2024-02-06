@@ -85,8 +85,8 @@ class Write_notebook:
             minifigure=1
             pass
         title = ""
-        if (figure.titre!="Undefined"):
-            title = "### " + chaine2Tex(figure.titre) + "\n \n "
+        #if (figure.titre!="Undefined"):
+        #    title = "### " + chaine2Tex(figure.titre) + "\n \n "
     
         # TODO voir pour minifigure et markers avec style + options linewidth...
 
@@ -96,9 +96,9 @@ class Write_notebook:
         if len(figure.listeCourbes)>0:  
             code = "from trustutils import plot \n \n"
             titre = ""
-            if (figure.titre_figure!='Undefined'):
+            if (figure.titre_figure!='Undefined' and len(figure.titre_figure)>0):
                 titre=figure.titre_figure
-            elif (figure.titre!='Undefined'):
+            elif (figure.titre!='Undefined' and len(figure.titre)>0):
                 titre=figure.titre
             if len(titre) == 0 :
                 code += "fig = plot.Graph() \n"
@@ -176,7 +176,8 @@ class Write_notebook:
                     code += "\nfig.scale('log','log')\n"
                 pass
 
-            self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
+            if len(title)>0 :
+                self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
             self.nb['cells'] += [nbf.v4.new_code_cell(code)]
         else:
             #motcle picture/image
