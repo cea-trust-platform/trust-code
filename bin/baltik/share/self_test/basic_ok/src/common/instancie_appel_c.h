@@ -6,6 +6,7 @@
 instancie_src_Kernel_Champs();
 instancie_src_Kernel_Champs_dis();
 instancie_src_Kernel_Cond_Lim();
+instancie_src_Kernel_Postraitement();
 instancie_src_Kernel_Framework();
 instancie_src_Kernel_Geometrie();
 instancie_src_Kernel_Geometrie_Decoupeur();
