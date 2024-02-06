@@ -95,12 +95,16 @@ class Write_notebook:
         #figure.printFichierParametres()
         if len(figure.listeCourbes)>0:  
             code = "from trustutils import plot \n \n"
-            titre=""
+            titre = ""
             if (figure.titre_figure!='Undefined'):
                 titre=figure.titre_figure
             elif (figure.titre!='Undefined'):
                 titre=figure.titre
-            code += "fig = plot.Graph(r\"" + chaine2Tex(titre) + "\") \n"
+            if len(titre) == 0 :
+                code += "fig = plot.Graph() \n"
+            else:
+                code += "fig = plot.Graph(r\"" + chaine2Tex(titre) + "\") \n"
+
             for courbe in figure.listeCourbes:
                 style = ""
                 if courbe.style!="Undefined":
@@ -120,6 +124,7 @@ class Write_notebook:
                 else:
                     if (courbe.fichier!="Undefined"):
                         code += "data = plot.loadText(\"%s\")\n"%(courbe.fichier)
+                        if len(style) == 0 : style = ",marker='x'"
                         if (courbe.colonnes != 'Undefined'):
                             indices= [int(s) for s in re.findall(r'\$(\d+)',courbe.colonnes)]
                             
@@ -133,9 +138,9 @@ class Write_notebook:
                             colonnes = formule.split()
                             xdata = colonnes[0]
                             ydata = colonnes[1]
-                            code += "fig.add(%s,%s,marker=\"x\",label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                            code += "fig.add(%s,%s,label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
                         else:
-                            code += "fig.add(data[0],data[1],marker=\"x\",label=r\"%s\""%(chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                            code += "fig.add(data[0],data[1],label=r\"%s\""%(chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
                         
                     else:
                         code += "\nimport numpy as np \n"
@@ -532,8 +537,6 @@ class Write_notebook:
     def include_data(self,maitre):
         if maitre.inclureData>0:
             first=1
-            title = "## Data Files"
-            self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
             
             for cas in maitre.casTest:
                 from lib import get_detail_cas
@@ -544,11 +547,13 @@ class Write_notebook:
                 if ((maitre.inclureData==1) or ((maitre.inclureData==2) and (comment!="") )) :
                     if (first):
                         first=0
-                        subtitle = "### %s" % (chaine2Tex(nomcas))
-                        self.nb['cells'] += [nbf.v4.new_markdown_cell(subtitle)]
-                        code = "run.dumpDataset(\"%s\")"%ficData
-                        self.nb['cells'] += [nbf.v4.new_code_cell(code)]
+                        title = "## Data Files"
+                        self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
                         pass
+                    subtitle = "### %s" % (chaine2Tex(nomcas))
+                    self.nb['cells'] += [nbf.v4.new_markdown_cell(subtitle)]
+                    code = "run.dumpDatasetMD(\"%s\")"%ficData
+                    self.nb['cells'] += [nbf.v4.new_code_cell(code)]
                     pass
                 pass
             pass
