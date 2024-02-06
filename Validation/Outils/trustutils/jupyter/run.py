@@ -89,7 +89,8 @@ def _runCommand(cmd, verbose):
     if it fails.
     """
     # Run by redirecting stderr to stdout
-    complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
+    # add universal_newlines as in https://stackoverflow.com/questions/41171791/how-to-suppress-or-capture-the-output-of-subprocess-run
+    complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines = True)
     if verbose:
         print(cmd)
         print(complProc.stdout)
