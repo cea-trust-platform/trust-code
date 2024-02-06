@@ -283,7 +283,10 @@ class Graph:
         if not yIndice is None:
             self.yIndice = yIndice
 
-        self.addPlot(self.coordonee(), title)
+        if self.title is None:
+            self.addPlot(self.coordonee(), title)
+        else:
+            self.addPlot(self.coordonee())
 
         ### On plot les données ###
         self.subplot.plot(x, y, marker, label=label, **kwargs)
@@ -294,7 +297,7 @@ class Graph:
         ## On ajoute des titres
         self.subplot.set(xlabel=self.x_label, ylabel=self.y_label)
 
-    def addPlot(self, coordonee, title=""):
+    def addPlot(self, coordonee, title=None):
         """
         
         Method to add a plot/subplot.
@@ -324,7 +327,8 @@ class Graph:
 
         self.subplot.axis("on")
         self.subplot.grid(visible=True)
-        self.subplot.set_title(self.subtitle)
+        if not self.subtitle is None:
+            self.subplot.set_title(self.subtitle)
 
     def addPoint(self, data, marker="-", compo=0, label="", func=None, **kwargs):
         """
