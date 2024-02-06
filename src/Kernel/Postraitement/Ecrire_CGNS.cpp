@@ -289,7 +289,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
   TRUST2CGNS.fill_coords(xCoords, yCoords, zCoords);
 
   const int icelldim = les_som.dimension(1), iphysdim = Objet_U::dimension, nb_som = les_som.dimension(0), nb_elem = les_elem.dimension(0);
-  int coordsId;
+  True_int coordsId;
 
   /* 3 : Base write */
   baseId_.push_back(-123); // pour chaque dom, on a une baseId
@@ -320,7 +320,7 @@ void Ecrire_CGNS::cgns_write_domaine_seq(const Domaine * domaine,const Nom& nom_
                                                                   zoneId_, xCoords, yCoords, zCoords, coordsId, coordsId, coordsId);
 
       /* 5.2 : Set element connectivity */
-      int sectionId;
+      True_int sectionId;
       cgsize_t start = 1, end;
 
       if (cgns_type_elem == CGNS_ENUMV(NGON_n)) // cas polyedre
@@ -370,7 +370,7 @@ void Ecrire_CGNS::cgns_write_field_seq(const int comp, const double temps, const
   const int nb_vals = valeurs.dimension(0);
 
   /* quel fileID ?? */
-  int fileId = fileId_;
+  True_int fileId = fileId_;
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
     TRUST_2_CGNS::modify_fileId_for_post(fld_loc_map_, LOC, fileId2_, fileId);
 
@@ -462,7 +462,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_over_zone(const Domaine * domaine,const
    *  - All processors THAT HAVE nb_elem > 0 write the same information.
    *  - Only zone meta-data is written to the library at this stage ... So no worries ^^
    */
-  std::vector<int> coordsIdx, coordsIdy, coordsIdz, sectionId, sectionId2;
+  std::vector<True_int> coordsIdx, coordsIdy, coordsIdz, sectionId, sectionId2;
   std::string zonename;
 
   int nb_zones_to_write = TRUST2CGNS.nb_procs_writing();
@@ -738,7 +738,7 @@ void Ecrire_CGNS::cgns_write_domaine_par_in_zone(const Domaine * domaine,const N
   if (Option_CGNS::USE_LINKS)
     cgns_fill_info_grid_link_file(basename, cgns_type_elem, icelldim, ns_tot, ne_tot, is_polyedre);
 
-  int coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
+  True_int coordsIdx = -123, coordsIdy = -123, coordsIdz = -123, sectionId = -123, sectionId2 = -123;
   zoneId_.push_back(-123);
 
   cgns_helper_.cgns_write_zone_grid_coord<TYPE_ECRITURE::PAR_IN>(icelldim, fileId_, baseId_, basename /* Dom name */, isize[0],
@@ -865,7 +865,7 @@ void Ecrire_CGNS::cgns_write_field_par_in_zone(const int comp, const double temp
   Nom& id_champ = id_du_champ_modifie;
 
   /* quel fileID ?? */
-  int fileId = fileId_;
+  True_int fileId = fileId_;
   if (Option_CGNS::USE_LINKS && !postraiter_domaine_)
     TRUST_2_CGNS::modify_fileId_for_post(fld_loc_map_, LOC, fileId2_, fileId);
 
@@ -979,7 +979,7 @@ void Ecrire_CGNS::cgns_open_solution_link_file(const int ind, const std::string&
   const bool mult_loc = (static_cast<int>(fld_loc_map_.size()) > 1);
 
   std::string fn;
-  int& fileId = (ind == 0 ? fileId_ : fileId2_); // XXX : ref
+  True_int& fileId = (ind == 0 ? fileId_ : fileId2_); // XXX : ref
 
   if (is_link)
     fn = !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns"; // file name
@@ -1037,7 +1037,7 @@ void Ecrire_CGNS::cgns_open_solution_link_file(const int ind, const std::string&
 void Ecrire_CGNS::cgns_close_grid_solution_link_file(const int ind, const std::string& fn, bool is_cerr)
 {
   assert(Option_CGNS::USE_LINKS && !postraiter_domaine_);
-  const int fileId = (ind == 0 ? fileId_ : fileId2_);
+  const True_int fileId = (ind == 0 ? fileId_ : fileId2_);
 
   if (Process::is_parallel())
     {
@@ -1070,7 +1070,7 @@ void Ecrire_CGNS::cgns_write_final_link_file()
       const std::string& LOC = itr->first;
       cgns_open_solution_link_file(ind, LOC, -123., true /* dernier fichier => link */);
 
-      const int fileId = (ind == 0 ? fileId_ : fileId2_);
+      const True_int fileId = (ind == 0 ? fileId_ : fileId2_);
 
       // link solutions
       for (auto& itr_t : time_post_)
@@ -1101,9 +1101,9 @@ void Ecrire_CGNS::cgns_write_link_file_for_multiple_files()
       std::string fn = baseFile_name_ + ".cgns"; // file name
       Cerr << "Option_CGNS::MULTIPLE_FILES is used ... so we write a unique link file " << fn << " ..." << finl;
 
-      int fileId_l = -123, baseId_l = -123, zoneId_l = -123;
-      int fileId = -123, baseId = 1, zoneId = 1, cell_dim = -123, phys_dim = -123;
-      int nbndry = -123, iparent_flag = -123, nsols = -123, nsections = -123;
+      True_int fileId_l = -123, baseId_l = -123, zoneId_l = -123;
+      True_int fileId = -123, baseId = 1, zoneId = 1, cell_dim = -123, phys_dim = -123;
+      True_int nbndry = -123, iparent_flag = -123, nsols = -123, nsections = -123;
       char basename[CGNS_STR_SIZE], zonename[CGNS_STR_SIZE], sectionname[CGNS_STR_SIZE], solname[CGNS_STR_SIZE];
 
       cgsize_t isize[3][1], istart, iend;

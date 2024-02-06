@@ -44,12 +44,13 @@ private:
   std::vector<Nom> doms_written_;
   std::vector<std::string> connectname_;
   std::vector<double> time_post_;
-  std::vector<int> baseId_, zoneId_, sizeId_;
-  std::vector<std::vector<int>> zoneId_par_; /* par ordre d'ecriture du domaine */
+  std::vector<True_int> baseId_, zoneId_;
+  std::vector<cgsize_t> sizeId_;
+  std::vector<std::vector<True_int>> zoneId_par_; /* par ordre d'ecriture du domaine */
   std::vector<TRUST_2_CGNS> T2CGNS_;
   Ecrire_CGNS_helper cgns_helper_;
-  int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;
-  int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
+  True_int fileId_ = -123, flowId_elem_ = 0, fieldId_elem_ = 0, flowId_som_ = 0, fieldId_som_ = 0, cellDim_ = -123;
+  True_int fileId2_ = -123; /* cas ou on a 2 fichiers ouvert en meme temps : utiliser seulement pour Option_CGNS::USE_LINKS */
 
   void cgns_fill_field_loc_map(const Domaine&, const std::string&);
 

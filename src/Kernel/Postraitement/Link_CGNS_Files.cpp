@@ -152,7 +152,7 @@ Entree& Link_CGNS_Files::interpreter(Entree& is)
     Cerr << "     - " << itr << finl;
 
   /* Step 4 : Open grid file and read some information */
-  int fileId, baseId = 1, zoneId = 1, cell_dim, phys_dim;
+  True_int fileId, baseId = 1, zoneId = 1, cell_dim, phys_dim;
   tmp_file = base_name_modif.getString() + ".grid.cgns";
   cgsize_t isize[3][1];
   char basename[33], zonename[33], sectionname[33]; /* Elem or NGON_n*/
@@ -170,13 +170,13 @@ Entree& Link_CGNS_Files::interpreter(Entree& is)
   if (cg_zone_read(fileId, baseId, zoneId, zonename, isize[0]) != CG_OK)
     Cerr << "Error Link_CGNS_Files::interpreter : cg_zone_read !" << finl, cg_error_exit();
 
-  int nsections;
+  True_int nsections;
   if (cg_nsections(fileId, baseId, zoneId, &nsections) != CG_OK)
     Cerr << "Error Link_CGNS_Files::interpreter : cg_nsections !" << finl, cg_error_exit();
 
   CGNS_ENUMT(ElementType_t) itype;
   cgsize_t istart, iend;
-  int nbndry, iparent_flag;
+  True_int nbndry, iparent_flag;
 
   for (int index_sect = 1; index_sect <= nsections; index_sect++)
     {
