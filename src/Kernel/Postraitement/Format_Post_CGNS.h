@@ -78,7 +78,9 @@ public:
 
 private:
   Nom cgns_basename_;
+#ifdef HAS_CGNS
   Ecrire_CGNS cgns_writer_;
+#endif
 };
 
 #endif /* Format_Post_CGNS_included */

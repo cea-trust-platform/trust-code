@@ -273,15 +273,18 @@ echo>>$COMPILE
 ######
 if [ "$TRUST_DISABLE_CGNS" = 1 ]
 then
-   if [ -d "$TRUST_ROOT/include/CGNS" ]
+   if [ -d "$TRUST_CGNS_ROOT/include" ]
    then
       echo "#undef HAS_CGNS" > $TRUST_TMP/cgns++.h.tmp
-      [ "`diff $TRUST_ROOT/include/CGNS/cgns++.h $TRUST_TMP/cgns++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf $TRUST_ROOT/include/CGNS/* && cp $TRUST_TMP/cgns++.h.tmp $TRUST_ROOT/include/CGNS/cgns++.h
+      [ "`diff $TRUST_CGNS_ROOT/include/cgns++.h $TRUST_TMP/cgns++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf $TRUST_CGNS_ROOT/* && mkdir -p $TRUST_CGNS_ROOT/include && cp $TRUST_TMP/cgns++.h.tmp $TRUST_CGNS_ROOT/include/cgns++.h
       rm $TRUST_TMP/cgns++.h.tmp
    else
-     mkdir -p $TRUST_ROOT/include/CGNS
-     echo "#undef HAS_CGNS" > $TRUST_ROOT/include/CGNS/cgns++.h
+     mkdir -p $TRUST_CGNS_ROOT/include
+     echo "#undef HAS_CGNS" > $TRUST_CGNS_ROOT/include/cgns++.h
    fi
+
+   # if execs ..
+   rm -rf $TRUST_ROOT/exec/cgns*
 fi
 
 #####
