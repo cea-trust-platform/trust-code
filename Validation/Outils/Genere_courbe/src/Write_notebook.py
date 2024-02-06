@@ -590,6 +590,7 @@ class Write_notebook:
 
         date = time.strftime('%d/%m/%Y')
         
+        self.nb.metadata = { "title": maitre.titre[1:-1] }
         intro = "## Introduction\n \n Validation made by: " + chaine2Tex(maitre.auteur) + "\n \n"
         intro += " Report generated " + chaine2Tex(date)
         
