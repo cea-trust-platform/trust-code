@@ -319,7 +319,7 @@ class TRUSTCase(object):
         """
 
         f = open(self._fullPath(), "r").read()
-        displayMD( "```" + f + "```" )
+        displayMD( "```\n" + f + "\n```" )
 
     def _runScript(self, scriptName, verbose=False):
         """ Internal. Run a shell script if it exists.
