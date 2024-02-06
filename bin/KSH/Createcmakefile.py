@@ -273,6 +273,7 @@ SET (METIS_ROOT $ENV{METIS_ROOT} )
 SET (TRUST_LATAFILTER $ENV{TRUST_LATAFILTER})
 SET (TRUST_ICOCOAPI $ENV{TRUST_ICOCOAPI})
 SET (TRUST_MED_ROOT $ENV{TRUST_MED_ROOT})
+SET (TRUST_CGNS_ROOT $ENV{TRUST_CGNS_ROOT})
 SET (TRUST_MEDCOUPLING_ROOT $ENV{TRUST_MEDCOUPLING_ROOT})
 
 
@@ -342,7 +343,7 @@ ENDIF(NOT VISUAL)
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
     out.write('# PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:\n')
-    out.write('include_directories(SYSTEM ${METIS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_ROOT}/lib/src/LIBROCALUTION/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include )\n')
+    out.write('include_directories(SYSTEM ${METIS_ROOT}/include ${TRUST_CGNS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_ROOT}/lib/src/LIBROCALUTION/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''

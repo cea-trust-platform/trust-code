@@ -48,14 +48,11 @@ fi
 rm -rf $build_dir
 
 # Headers for TRUST include
-include_trust=$TRUST_ROOT/include/CGNS
-rm -rf $include_trust
-mkdir -p $include_trust
+include_trust=$TRUST_ROOT/include
 
 echo ""
 echo "Adding CGNS header files to $include_trust !"
-ln -nsf $install_dir/include/* $include_trust/.
-echo "#define HAS_CGNS" > $include_trust/cgns++.h
+echo "#define HAS_CGNS" > $install_dir/include/cgns++.h
 
 # some tools to exec
 echo "Adding CGNS tools to $TRUST_ROOT/exec !"
