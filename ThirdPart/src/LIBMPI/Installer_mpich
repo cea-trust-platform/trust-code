@@ -75,7 +75,7 @@ fi
 [ ! -f $package ] && package=$TRUST_TMP/$package
 if [ ! -f $package ]
 then
-   wget_ $http/`basename $package` -P $TRUST_TMP || exit-1
+   wget_ $http/`basename $package` -P $TRUST_TMP || exit -1
 fi
 
 install=`pwd`/mpich
