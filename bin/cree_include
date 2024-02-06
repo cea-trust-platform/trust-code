@@ -33,6 +33,10 @@ file="Create_domain_from_sous_zone.h"
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Create_domain_from_sub_domain.h" > backward/$file
 file="Faces_Interne.h"
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Bord_Interne.h" > backward/$file
+file="trust_med_utils.h"
+echo "#error File $file deprecated in TRUST 1.9.4. You SHOULD change the include to TRUST_2_MED.h" > backward/$file
+file="EcrMED.h"
+echo "#error File $file deprecated in TRUST 1.9.4. You SHOULD change the include to Ecrire_MED.h" > backward/$file
 
 # EOS includes in EOS if 
 if [ "$TRUST_EOS_HOME_DIR" != "" ]
