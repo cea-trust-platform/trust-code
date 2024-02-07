@@ -93,7 +93,7 @@ class Write_notebook:
         if len(figure.description)!=0: title += self.write_description(figure.description)
         
         #figure.printFichierParametres()
-        if len(figure.listeCourbes)>0:  
+        if len(figure.listeCourbes)>0:
             code = "from trustutils import plot \n \n"
             titre = ""
             if (figure.titre_figure!='Undefined' and len(figure.titre_figure)>0):
@@ -107,11 +107,14 @@ class Write_notebook:
 
             for courbe in figure.listeCourbes:
                 style = ""
-                if courbe.style!="Undefined":
-                    if courbe.style=="points":
-                        style = ",marker='+'"
-                    if courbe.style =="linespoints":
-                        style = ",marker='-x'"
+                if courbe.style=="Undefined":
+                    style = ",marker='+'"
+                elif courbe.style=="points":
+                    style = ",marker='+'"
+                elif courbe.style =="linespoints":
+                    style = ",marker='-x'"
+                elif courbe.style =="lines":
+                    style = ",marker='-'"
                 if (courbe.points!='Undefined'):
                     param = courbe.segment.split()
                     ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
@@ -124,7 +127,6 @@ class Write_notebook:
                 else:
                     if (courbe.fichier!="Undefined"):
                         code += "data = plot.loadText(\"%s\")\n"%(courbe.fichier)
-                        if len(style) == 0 : style = ",marker='x'"
                         if (courbe.colonnes != 'Undefined'):
                             indices= [int(s) for s in re.findall(r'\$(\d+)',courbe.colonnes)]
                             
