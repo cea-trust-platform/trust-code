@@ -24,7 +24,9 @@
 #ifdef HAS_CGNS
 
 #pragma GCC diagnostic push
+#if __GNUC__ > 5 || __clang_major__ > 10
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
 #include <pcgnslib.h>
 #pragma GCC diagnostic pop
 
