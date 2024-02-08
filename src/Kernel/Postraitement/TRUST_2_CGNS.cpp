@@ -214,7 +214,8 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 
   if (is_polyedre)
     {
-      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+      const Nom dom_poly("Domaine_PolyMAC");
+      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post(dom_poly, dom_trust_.valeur());
       const Domaine_VF& vf = ref_cast(Domaine_VF, domaine_dis.valeur());
       const IntTab& fs = vf.face_sommets(), &ef = vf.elem_faces();
 
@@ -446,7 +447,8 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
 int TRUST_2_CGNS::convert_connectivity_nface(std::vector<cgsize_t>& econ, std::vector<cgsize_t>& eoff, int decal)
 {
   assert (dom_trust_.non_nul());
-  const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+  const Nom dom_poly("Domaine_PolyMAC");
+  const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post(dom_poly, dom_trust_.valeur());
   const Domaine_VF& vf = ref_cast (Domaine_VF, domaine_dis.valeur());
   const IntTab& ef = vf.elem_faces();
 
@@ -488,7 +490,8 @@ int TRUST_2_CGNS::convert_connectivity_ngon(std::vector<cgsize_t>& econ, std::ve
   assert (dom_trust_.non_nul());
   if (is_polyedre)
     {
-      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post("Domaine_PolyMAC", dom_trust_.valeur());
+      const Nom dom_poly("Domaine_PolyMAC");
+      const Domaine_dis& domaine_dis = Domaine_dis_cache::Build_or_get_poly_post(dom_poly, dom_trust_.valeur());
       const Domaine_VF& vf = ref_cast(Domaine_VF, domaine_dis.valeur());
       const IntTab& fs = vf.face_sommets();
 
