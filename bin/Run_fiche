@@ -125,7 +125,13 @@ do
           exit -1
        fi
        $TRUST_ROOT/Validation/Outils/Genere_courbe/Transcript $prm 2>&1
-     exit $?
+       err=$?
+       if [ -f src/prepare ] && [ "`grep 'bin/KSH/preprocessor.py' src/prepare 1>/dev/null 2>&1 ; echo $?`" = 0 ]
+       then
+          echo "Warning: preprocessor.py called in your prepare script, if it is used to generate .prm from .prm.P. Here is the line:"
+          grep 'bin/KSH/preprocessor.py' src/prepare
+       fi
+     exit $err
    elif [ "$1" = -dest ]
    then
       options=$options" "$1
