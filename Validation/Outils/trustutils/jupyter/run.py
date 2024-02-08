@@ -636,6 +636,8 @@ class TRUSTSuite(object):
                     if not allOK:
                         print(err_msg % (case.dir_, case.name_))
                         print(case.last_run_err_)
+                        raise ValueError ("at least one case has failed ! open notebook to get more information ")
+
                 except Exception as e:
                     os.chdir(ORIGIN_DIRECTORY)  # Restore initial directory
                     raise e
