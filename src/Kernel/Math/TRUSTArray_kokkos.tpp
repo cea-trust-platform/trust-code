@@ -18,7 +18,6 @@
 
 // TODO: this file should ultimately be moved / merged with TRUSTArr.tpp?
 
-#ifdef KOKKOS_
 #include <View_Types.h>
 
 // Create internal DualView member, and populate it with current host data
@@ -167,6 +166,5 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   for (int i=0; i<size; i++)
     printf("[OpenMP]: %p [%d]=%e\n", ptr, i, ptr[i]);
 }
-#endif // KOKKOS_
 
 #endif

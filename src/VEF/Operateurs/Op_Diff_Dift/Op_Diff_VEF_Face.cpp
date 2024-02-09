@@ -291,7 +291,6 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   copyPartialToDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
 
-#ifdef KOKKOS_
 struct MyFunc
 {
   MyFunc(int nbc, int nbfb) : nb_comp(nbc), nb_faces_bord(nbfb) {}
@@ -327,7 +326,7 @@ struct MyFunc
       }
   }
 };
-#endif
+
 void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                              DoubleTab& resu, DoubleTab& tab_flux_bords,
                                              DoubleTab& nu,

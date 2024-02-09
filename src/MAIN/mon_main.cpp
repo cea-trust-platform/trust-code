@@ -33,9 +33,6 @@
 #endif
 
 #include <kokkos++.h>
-#ifdef KOKKOS_
-#include <Kokkos_Core.hpp>
-#endif
 
 
 // Initialisation des compteurs, dans stat_counters.cpp
@@ -146,12 +143,10 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
-#ifdef KOKKOS_
   // Kokkos initialisation
   int argc2 = argc;
   Kokkos::initialize( argc2, argv );
   Cerr << "Kokkos initialized!" << finl;
-#endif
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
@@ -251,9 +246,7 @@ void mon_main::finalize()
         }
     }
 #endif
-#ifdef KOKKOS_
   Kokkos::finalize();
-#endif
 }
 
 void mon_main::dowork(const Nom& nom_du_cas)

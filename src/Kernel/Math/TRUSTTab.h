@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -251,7 +251,6 @@ public:
   inline void reset() override;
   inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
 
-#ifdef KOKKOS_
 protected:
   inline void init_view_tab2() const;
   inline void init_view_tab3() const;
@@ -282,7 +281,6 @@ public:
   inline void sync_to_host4() const;             // Synchronize back to host
   inline void modified_on_host4() const;         // Mark data as being modified on host side
 
-#endif
 
 private:
   static constexpr int MAXDIM_TAB = 4;
@@ -297,11 +295,9 @@ private:
   int dimension_tot_0_;
 
   // Kokkos members
-#ifdef KOKKOS_
   mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
   mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
   mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
-#endif
 
   inline void verifie_MAXDIM_TAB() const
   {

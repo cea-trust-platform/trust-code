@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,4 +13,14 @@
 *
 *****************************************************************************/
 
-#define KOKKOS_
+#pragma diag_suppress 177
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wconversion"
+
+#include <Kokkos_Core.hpp>
+#include <Kokkos_DualView.hpp>
+
+#pragma GCC diagnostic pop
+

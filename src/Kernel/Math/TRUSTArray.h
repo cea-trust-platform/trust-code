@@ -215,7 +215,6 @@ public:
   inline virtual const Span_ get_span_tot() const { return Span_((_TYPE_*)data_, size_array_); }
 
   // Kokkos accessors
-#ifdef KOKKOS_
 protected:
   inline void init_view_arr() const;
 
@@ -228,14 +227,11 @@ public:
   inline void sync_to_host() const;              // Synchronize back to host
 
   inline void modified_on_host() const;         // Mark data as being modified on host side
-#endif
 
 protected:
   // Kokkos members
-#ifdef KOKKOS_
   mutable bool dual_view_init_ = false;
   mutable DualViewArr<_TYPE_> dual_view_arr_;
-#endif
 
 
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);

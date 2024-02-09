@@ -19,7 +19,7 @@
 #include <Array_base.h>
 #include <Nom.h>
 #include <stat_counters.h>
-#include <View_Types.h>
+#include <kokkos++.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

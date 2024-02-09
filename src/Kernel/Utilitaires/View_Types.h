@@ -18,16 +18,6 @@
 
 #include <kokkos++.h>
 
-#ifdef KOKKOS_
-#pragma diag_suppress 177
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#pragma GCC diagnostic ignored "-Wconversion"
-#include <Kokkos_Core.hpp>
-#include <Kokkos_DualView.hpp>
-#pragma GCC diagnostic pop
-
 // The DualView type allowing semi-automatic sync between host and device.
 // By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
 // We keep Kokkos::LayoutRight for OpenMP now
@@ -102,6 +92,5 @@ using CDoubleTabView3 = ConstViewTab3<double>;
 using CDoubleTabView4 = ConstViewTab4<double>;
 
 extern void kokkos_self_test();
-#endif // KOKKOS_
 
 #endif

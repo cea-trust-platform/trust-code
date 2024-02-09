@@ -18,7 +18,6 @@
 
 // TODO: this file should ultimately be moved / merged with TRUSTTab.tpp?
 
-#ifdef KOKKOS_
 #include <View_Types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -473,6 +472,5 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
         printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
     }
 }
-#endif // KOKKOS_
 
 #endif

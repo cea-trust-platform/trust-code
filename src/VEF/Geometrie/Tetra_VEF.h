@@ -163,7 +163,6 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
 }
 #pragma omp end declare target
 
-#ifdef KOKKOS_
 KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, const double * vs, const double * vsom,
                                                   CDoubleTabView vitesse_v,True_int type_cl, CDoubleArrView porosite_face_v)
 {
@@ -280,19 +279,13 @@ KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, c
     } // fin du switch
 
 }
-#endif // KOKKOS_
 
 
 
 /*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
  *
  */
-#ifdef KOKKOS_
 KOKKOS_INLINE_FUNCTION
-#else
-#pragma omp declare target
-inline
-#endif
 void calcul_xg_tetra(double * xg, const double *x, const True_int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
 {
   // Passage (justifie vue la taille) en True_int de type_elem_cl et comp car bug nvc++ sinon
@@ -510,9 +503,6 @@ void calcul_xg_tetra(double * xg, const double *x, const True_int type_elem_Cl, 
       }
     }
 }
-#ifndef KOKKOS_
-#pragma omp end declare target
-#endif
 #endif
 
 
