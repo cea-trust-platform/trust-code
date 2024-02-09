@@ -178,19 +178,21 @@ std::string toString(const void* adr)
   return ss.str();
 }
 
-// Adress on device:
+// Adress on device (return host adress if no device):
 template <typename _TYPE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
 {
-  _TYPE_ *device_ptr = nullptr;
 #ifdef _OPENMP
+  _TYPE_ *device_ptr = nullptr;
   _TYPE_ *ptr = tab.data();
   #pragma omp target data use_device_ptr(ptr)
   {
     device_ptr = ptr;
   }
+    return device_ptr;
+#else
+    return tab.data();
 #endif
-  return device_ptr;
 }
 
 // Allocate on device:

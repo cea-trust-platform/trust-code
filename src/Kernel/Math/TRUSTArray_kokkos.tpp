@@ -30,7 +30,8 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   bool is_init = dual_view_init_;
   if(is_init && dual_view_arr_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_arr_.h_view.data() != this->data() || (long) dual_view_arr_.extent(0) != ze_dim)
+      if (dual_view_arr_.h_view.data() != this->data() || dual_view_arr_.view_device().data() != addrOnDevice(*this) ||
+          (long) dual_view_arr_.extent(0) != ze_dim)
       is_init = false;
 
   if (is_init) return;
@@ -69,18 +70,12 @@ inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
   init_view_arr();
 #ifdef _OPENMP
   mapToDevice(*this, "Kokkos TRUSTArray::view_ro()");
-  if (dual_view_arr_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_arr();
-    }
-  assert(dual_view_arr_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_arr_.template sync<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_arr_.template view<memory_space>();
+    return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>
@@ -90,17 +85,11 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
   init_view_arr();
 #ifdef _OPENMP
   computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_>::view_wo()"); // ToDo allouer sans copie ?
-  if (init_view_arr.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_arr();
-    }
-  assert(init_view_arr.view_device().data()==addrOnDevice(*this));
 #endif
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_arr_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_arr_.template view<memory_space>();
+    return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>
@@ -110,12 +99,6 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
   init_view_arr();
 #ifdef _OPENMP
   computeOnTheDevice(*this, "Kokkos TRUSTArray::view_rw()");
-  if (dual_view_arr_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_arr();
-    }
-  assert(dual_view_arr_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device (if needed) ...
   dual_view_arr_.template sync<memory_space>();
@@ -123,7 +106,7 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
   dual_view_arr_.template modify<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_arr_.template view<memory_space>();
+    return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>

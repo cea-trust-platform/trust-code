@@ -40,7 +40,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab2_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab2_.h_view.data() != this->data() || (long) dual_view_tab2_.extent(0) != dims[0] ||
+      if (dual_view_tab2_.h_view.data() != this->data() ||
+          dual_view_tab2_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab2_.extent(0) != dims[0] ||
         (long) dual_view_tab2_.extent(1) != dims[1])
       is_init = false;
 
@@ -105,18 +106,12 @@ inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
   init_view_tab2();
 #ifdef _OPENMP
   mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
-  if (dual_view_tab2_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_tab2();
-    }
-  assert(dual_view_tab2_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab2_.template sync<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_tab2_.template view<memory_space>();
+    return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -126,18 +121,12 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_wo()
   init_view_tab2();
 #ifdef _OPENMP
   computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_>::view_wo()"); // ToDo allouer sans copie ?
-  if (dual_view_tab2_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_tab2();
-    }
-  assert(dual_view_tab2_.view_device().data()==addrOnDevice(*this));
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab2_.template modify<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_tab2_.template view<memory_space>();
+    return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -147,12 +136,6 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
   init_view_tab2();
 #ifdef _OPENMP
   computeOnTheDevice(*this, "Kokkos view_rw()");
-  if (dual_view_tab2_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_tab2();
-    }
-  assert(dual_view_tab2_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device (if needed) ...
   dual_view_tab2_.template sync<memory_space>();
@@ -160,7 +143,7 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
   dual_view_tab2_.template modify<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_tab2_.template view<memory_space>();
+    return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -200,7 +183,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab3_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab3_.h_view.data() != this->data() || (long) dual_view_tab3_.extent(0) != dims[0] ||
+      if (dual_view_tab3_.h_view.data() != this->data() ||
+          dual_view_tab3_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab3_.extent(0) != dims[0] ||
         (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
       is_init = false;
 
@@ -248,19 +232,13 @@ inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
   init_view_tab3();
 #ifdef _OPENMP
   mapToDevice(*this, "Kokkos TRUSTTab::view3_ro()");
-  if (dual_view_tab3_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_tab3();
-    }
-  assert(dual_view_tab3_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab3_.template sync<memory_space>();
 #endif
 
   // return *device* view:
-  return dual_view_tab3_.template view<memory_space>();
+    return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -275,7 +253,7 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_wo()
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab3_.template view<memory_space>();
+    return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -292,7 +270,7 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_rw()
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab3_.template view<memory_space>();
+    return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -333,7 +311,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab4_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab4_.h_view.data() != this->data() || (long) dual_view_tab4_.extent(0) != dims[0] ||
+      if (dual_view_tab4_.h_view.data() != this->data() ||
+          dual_view_tab4_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab4_.extent(0) != dims[0] ||
         (long) dual_view_tab4_.extent(1) != dims[1]
         || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
       is_init = false;
@@ -382,18 +361,12 @@ inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
   init_view_tab4();
 #ifdef _OPENMP
   mapToDevice(*this, "Kokkos TRUSTTab::view4_ro()");
-  if (dual_view_tab4_.view_device().data()!=addrOnDevice(*this))
-    {
-      this->dual_view_init_ = false;
-      init_view_tab4();
-    }
-  assert(dual_view_tab4_.view_device().data()==addrOnDevice(*this));
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab4_.template sync<memory_space>();
 #endif
   // return *device* view:
-  return dual_view_tab4_.template view<memory_space>();
+    return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
@@ -407,7 +380,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab4_.template view<memory_space>();
+    return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
@@ -423,7 +396,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab4_.template view<memory_space>();
+    return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
