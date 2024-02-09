@@ -96,7 +96,9 @@ void kokkos_self_test()
   // Verification des adresses memoire:
   {
     DoubleTab tab(nb_elem,2);
-    tab = 1.0;
+    for (int i=0; i<nb_elem; i++)
+      for (int j=0; j<2; j++)
+        tab(i,j) = i + 0.1*j;
     const DoubleTabView tab_v = tab.view_ro();
     // La creation de la vue fait une copie de u sur le device:
     printf("Provisoire OpenMP adresse host: [%p] device: [%p]\n",(void*)tab.addrForDevice(), (void*)addrOnDevice(tab));
@@ -110,7 +112,9 @@ void kokkos_self_test()
   // Changement de la zone memoire sur le device avec OpenMP:
   {
     DoubleTab tab(nb_elem,2);
-    tab = 1.0;
+    for (int i=0; i<nb_elem; i++)
+      for (int j=0; j<2; j++)
+        tab(i,j) = i + 0.1*j;
     const DoubleTabView tab_v = tab.view_ro();
     assert(tab_v.data()==addrOnDevice(tab)); // Meme adresse
     printf("Provisoire OpenMP device before: [%p]\n", (void*)addrOnDevice(tab));
