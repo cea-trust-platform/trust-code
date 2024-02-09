@@ -29,10 +29,14 @@ class TestCase(unittest.TestCase, UnittestCustomMethodsTrust):
     def get_all_data_names(self):
         """ Retrieve all .data file names from the places where we find a .lml.gz file """
         import glob
-        trust_root = os.environ.get("TRUST_ROOT", None)
-        if trust_root is None:
+        tr = os.environ.get("TRUST_ROOT", None)
+        pd = os.environ.get("project_directory", None)
+        if tr is None:
           raise Exception("TRUST_ROOT not defined! Have you sourced TRUST?")
-        tst_dir = os.path.join(trust_root, "tests")
+        if not pd is None: # Baltik!
+          tst_dir = os.path.join(pd, "build", "tests", "all")
+        else:
+          tst_dir = os.path.join(tr, "tests")
         # Find all datasets:
         pattern = os.path.abspath(os.path.join(tst_dir, "**/*.lml.gz"))
         g = glob.glob(pattern, recursive=True)

@@ -202,17 +202,18 @@ class TRAD2Content:
     return res
 
   @classmethod
-  def BuildFromOrgAndSources(cls, trad2_org, src_dir):
-    """ Build content from TRAD2.org file and from a set of C++ sources
+  def BuildFromOrgAndSources(cls, trad2_org, src_dirs):
+    """ Build content from TRAD2.org file and from a set of C++ source directories
     """
     if not os.path.exists(trad2_org):
         raise Exception(f"File '{trad2_org}' not found!")
-    if not os.path.exists(src_dir):
-        raise Exception(f"Directory '{src_dir}' not found!")
+    for d in src_dirs:
+        if not os.path.exists(d):
+            raise Exception(f"Directory '{d}' not found!")
     ret = TRAD2Content()
     ret.data = []   # A list of TRAD2Blocks
     ret.synos = {}  # Synonyms, what a pain ...
-    ret.scanSourceFiles(src_dir)
+    ret.scanSourceFiles(src_dirs)
     ret.assemble(trad2_org)
     return ret
 
@@ -381,13 +382,21 @@ class TRAD2Content:
           last_attr.typ = typ.replace(']', f'"{nam1}",]')
     return res
 
-  def scanSourceFiles(self, src_dir):
-    """ Scan all C++ source files from a root directory (typically $TRUST_ROOT/src) """
+  def scanSourceFiles(self, src_dirs):
+    """ Scan all C++ source files from a list of root directory (typically $TRUST_ROOT/src) 
+    If several directories are provided, the last ones have priority if the same file is found
+    twice (for BALTIKs overrides!)
+    """
     import glob
-    pattern = os.path.join(src_dir, "**", "*.cpp")
-    g = glob.glob(pattern, recursive=True)
+    g_all = {}
+    for d in src_dirs:
+      pattern = os.path.join(d, "**", "*.cpp")
+      g = glob.glob(pattern, recursive=True)
+      fnames = [os.path.split(nam)[-1] for nam in g]
+      gd = dict(zip(fnames, g))
+      g_all.update(gd)  # this will override full path for any existing source C++ name
     self.synos = {}
-    for f_nam in g:
+    for f_nam in g_all.values():
       res = self.scanOneCppFile(f_nam)
       for d in res:
         TRUU.log_debug(d.toTRAD2()[0])
@@ -434,9 +443,15 @@ if __name__ == "__main__":
   else:
     outfile = "trustpy/test/myTRAD2"
   tr = os.environ.get("TRUST_ROOT", None)
+  pd = os.environ.get("project_directory", None)
   if tr is None:
     raise Exception("TRUST_ROOT environment variable is not defined!")
-  trad2org = os.path.join(tr, "Outils", "TRIOXDATA", "XTriou", "TRAD_2.org")
-  src = os.path.join(tr, "src")
-  tg = TRAD2Content.BuildFromOrgAndSources(trad2org, src)
+  srcs = [os.path.join(tr, "src")]
+  if not pd is None:  # called from a BALTIK
+    trad2org = os.path.join(pd, "build", "trustpy", "generated", "agg_TRAD_2.org")
+    # Append baltik sources:
+    srcs.append(os.path.join(pd, "src"))
+  else:   # called from TRUST
+    trad2org = os.path.join(tr, "Outils", "TRIOXDATA", "XTriou", "TRAD_2.org")
+  tg = TRAD2Content.BuildFromOrgAndSources(trad2org, srcs)
   tg.toTRAD2(outfile)

@@ -613,6 +613,7 @@ printf "\t@echo \"# building gui         #\"\n"                 >> $project_make
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@source $env_file; env TRUST_ROOT_ORG=$TRUST_ROOT project_name=$project_name $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
 printf "\n"                                                     >> $project_makefile
+
 printf "# help check_gui \t: Checking gui (XDATA validation)\n" >> $project_makefile
 printf "check_gui : gui\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
@@ -620,6 +621,32 @@ printf "\t@echo \"# Checking gui         #\"\n"                 >> $project_make
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@source $env_file; check_jdd \$(OPTIONS_GUI)\n"                       >> $project_makefile
 printf "\n"                                                     >> $project_makefile
+
+
+printf "# help trustpy \t: Build trustpy Python module for the baltik\n" >> $project_makefile
+printf "trustpy :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Building trustpy module#\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; $TRUST_ROOT/Outils/trustpy/install.sh \n"  >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help trustpy_check \t: Check dataset validity using trustpy generated module\n" >> $project_makefile
+printf "trustpy_check : trustpy\n"                               >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Checking datasets with trustpy module#\"\n"  >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; $TRUST_ROOT/Outils/trustpy/check_all.sh \n" >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help trustpy_doc \t: Build baltik keyword documentation using trustpy\n" >> $project_makefile
+printf "trustpy_doc : trustpy\n"                               >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Building keyword doc with trustpy#\"\n"  >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; $TRUST_ROOT/Outils/trustpy/gen_doc.sh \n" >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
 
 printf "# help doxygen \t: Building doxygen documentation \n" >> $project_makefile
 printf "doxygen :\n"                                              >> $project_makefile

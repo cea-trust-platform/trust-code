@@ -32,7 +32,7 @@ class TRUSTDocGenerator:
   def __init__(self, py_mod=None):
     """ @param py_mod (str): path to the automatically generated Python module
     """
-    import re
+    import re, os
     self.py_mod = py_mod
     if py_mod is None:
       if "TRUST_ROOT" not in os.environ:
@@ -41,6 +41,7 @@ class TRUSTDocGenerator:
       self.py_mod = os.path.join(os.environ["TRUST_ROOT"], "Outils", "trustpy", "install", "generated", "trustpy_gen.py")
     # Regexp to replace '\input' directives in the core of the description
     self.re_input = re.compile("\\\input{{([a-z]+)}}")
+    self.script_dir = os.path.dirname(os.path.realpath(__file__))
 
   def get_top_parent(self, c):
     """ Get ultimate parent class """
@@ -90,7 +91,7 @@ class TRUSTDocGenerator:
     import os
     for match in self.re_input.finditer(doc):
       g0, g1 = match.group(0), match.group(1)
-      file_nam = os.path.join("extra_rst", f"{g1}.rst")
+      file_nam = os.path.join(self.script_dir, "extra_rst", f"{g1}.rst")
       # Try to open file
       if not os.path.isfile(file_nam):
         raise ValueError(f"When parsing documentation for keyword '{keyw}', unable to find requested file '{file_nam}' !!")

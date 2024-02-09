@@ -30,6 +30,9 @@ class SingleTest(UnittestCustomMethodsTrust):
         else:
             data_nam = lml_or_data_nam
 
+        # Resolve sym links (useful in Baltiks to have real test location):
+        data_nam = os.path.realpath(data_nam)
+
         with open(data_nam) as f:
             data_ex = f.read()
         try:

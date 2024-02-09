@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-# Check a single dataset with the trustpy tool
-
-echo 'Usage: check_single.sh </the/dataset/path/jdd.data>'
+# Check all datasets trustpy tool
 
 org=$TRUST_ROOT/Outils/trustpy
 
@@ -19,15 +17,11 @@ if [ ! -f "$generated_py" ]; then
   exit -1
 fi
 
-# Checking dataset existence
-jdd=$1
-if [ ! -f $jdd ]; then
-  echo "Could not find $jdd!!"
-  exit -1
-fi
-
 # Sourcing
 source $org/env.sh
 
 # Executing!
-env GEN_MOD=$generated_py python $org/src/tst_rw_one_dataset.py $1
+echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+echo "@@@ Testing all TRUST datasets for read/write with the generated Python module"
+echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+env GEN_MOD=$generated_py python $org/src/tst_rw_all_datasets.py

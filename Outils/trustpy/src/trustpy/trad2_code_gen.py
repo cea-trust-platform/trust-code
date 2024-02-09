@@ -535,7 +535,12 @@ class Trad2Handler:
       if data.name_base in self._inherit_attr:
         return self._inherit_attr[data.name_base]
       else:
-        return _is_mother_inh(resd[data.name_base])
+        try:
+          return _is_mother_inh(resd[data.name_base])
+        except KeyError as e:
+          log_error(f"Could not get inheritance for class '{data.nam}'!")
+          log_error(f"XD tags say it inherits from '{data.name_base}' but I can't find this one!")
+          sys.exit(-1)
 
     for data in res:
       nam = data.nam
