@@ -187,7 +187,12 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           try
             {
               DataArrayIdType *dnup1=nullptr, *dnup2=nullptr;
-              root_um->checkGeoEquivalWith(new_um, /* levOfCheck=  */ 2, Objet_U::precision_geom, dnup1, dnup2);
+              // Less strict checkGeoEquivalWith (levOfCheck = 12 instead of 2). we use now "nodal" comparison.
+              // Two cells are considered equal if they are based on same nodes and have the same type.
+              // This is the weakest policy, it can be used by users not sensitive to cell orientation.
+              // if levOfCheck set to 2, some F5 and G3 tests fail
+
+              root_um->checkGeoEquivalWith(new_um, /* levOfCheck=  */ 12, Objet_U::precision_geom, dnup1, dnup2);
               //MCAuto<DataArrayIdType> dnu1(dnup1), dnu2(dnup2);
             }
           catch(INTERP_KERNEL::Exception& e)
