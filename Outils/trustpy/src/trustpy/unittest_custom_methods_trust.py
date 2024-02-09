@@ -255,6 +255,7 @@ class UnittestCustomMethodsTrust():
       res = '\n  ' + '\n  '.join(res[2:])  # avoid firsts lines
       why = "Diff between the two strings:\n%s" % res
       if print_on_diff:
+        print("")
         TRUU.log_error(why)
       return CheckBaseXyz(False, why)
     return CheckBaseXyz(True, "Strings are equal")
