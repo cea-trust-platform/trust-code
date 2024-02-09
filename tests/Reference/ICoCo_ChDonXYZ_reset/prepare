@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cas_base=ICoCo_ChDonXYZ_reset.data
+cas_lata=ICoCo_ChDonXYZ_reset_LATA.data
+cas_reset=ICoCo_ChDonXYZ_reset_DO_IT.data
+
+sed -e 's/# PILOTE BEGIN/# PILOTE BEGIN #/' -e 's/PILOTE END #/# PILOTE END #/' -e 's/format lml/format lata/' $cas_base > $cas_reset
+sed -e 's/format lml/format lata/' $cas_base > $cas_lata
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   trust $cas_lata || exit -1
+   trust $cas_reset || exit -1
+   make_PAR.data $cas_lata
+   make_PAR.data $cas_reset
+   trust PAR_$cas_lata 2
+   trust PAR_$cas_reset 2
+else
+   trust $cas_lata || exit -1
+   trust $cas_reset || exit -1
+fi
+

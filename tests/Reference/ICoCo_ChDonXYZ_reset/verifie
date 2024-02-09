@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cas=ICoCo_ChDonXYZ_reset
+
+# We check that the last time step after the resetTime() invocation gives the same
+# result as the last time step of the full run:
+
+if [ ! -f PAR_$cas.lml ]
+then
+   compare_lata $cas"_DO_IT_AFTER_RESET".lata $cas"_LATA".lata --dernier 1>compare_lata.log 2>&1
+else
+   compare_lata PAR_$cas"_DO_IT_AFTER_RESET".lata PAR_$cas"_LATA".lata --dernier 1>>compare_lata.log 2>&1
+fi
