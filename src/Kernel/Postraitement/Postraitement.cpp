@@ -351,7 +351,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Sondes_Int",(this));
   param.ajouter_non_std("Tableaux_Int",(this));
   param.ajouter_non_std("Statistiques_en_serie",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
-  param.ajouter("suffix_for_reset", &suffix_for_reset_);
+  param.ajouter("suffix_for_reset", &suffix_for_reset_); // XD_ADD_P chaine Suffix used to modify the postprocessing file name if the ICoCo resetTime() method is invoked.
 }
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
@@ -620,7 +620,15 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
  */
 void Postraitement::resetTime(double time)
 {
-// TODO
+  // Modify output file name
+  Nom name=nom_fich().prefix(format);
+  name.prefix(".");
+  nom_fich_ = name + suffix_for_reset_;
+
+  // And reset all time related members:
+  format_post->resetTime(time);
+  temps_ = -1.;
+  dernier_temps = -1.;
 }
 
 

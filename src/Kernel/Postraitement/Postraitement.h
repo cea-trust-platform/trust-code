@@ -107,8 +107,8 @@ public:
   inline int ind_post(int nb_pas_dt) { return (nb_pas_dt%nb_pas_dt_post_==0) ? 1 : 0; }
 
   inline double dt_post_ch() const { return dt_post_ch_; }
-  inline Nom nom_fich() const { return nom_fich_; };
-  // int contient_champ_fonc(const Motcle& );
+  inline Nom nom_fich() const { return nom_fich_; }
+  // int contient_champ_fonc(const Motcle& )
   inline int lpost_tab(double) const;
   static inline LIST(Nom)& noms_fichiers_sondes() { return noms_fichiers_sondes_; }
   inline int& est_le_premier_postraitement_pour_nom_fich() { return est_le_premier_postraitement_pour_nom_fich_; }

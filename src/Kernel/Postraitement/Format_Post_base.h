@@ -105,6 +105,7 @@ class Format_Post_base : public Objet_U
 public:
   // Remet l'objet dans l'etat initial obtenu apres constructeur par defaut
   virtual void reset() = 0;
+  virtual void resetTime(double t);
   virtual void set_param(Param& param)=0;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int initialize_by_default(const Nom& file_basename);
@@ -145,23 +146,6 @@ public:
   }
 
   virtual void set_postraiter_domain() { /* Do nothing */ }
-
-  //Actuellement on commente ces methodes car pas decrites dans l interface commune
-  //aux differentes classes dans le CDC.
-  /*
-    virtual int ecrire_bords(const Nom    & id_du_domaine,
-    const Motcle & type_faces,
-    const DoubleTab & sommets,
-    const IntTab & faces_sommets,
-    const IntTab & faces_num_bord,
-    const Noms   & bords_nom);
-
-    virtual int ecrire_noms(const Nom  & id_de_la_liste,
-    const Nom  & id_du_domaine,
-    const Nom  & localisation,
-    const Noms & liste_noms);
-
-  */
-
 };
+
 #endif

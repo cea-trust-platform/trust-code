@@ -37,6 +37,13 @@ Entree& Format_Post_base::readOn(Entree& is)
   return is;
 }
 
+void Format_Post_base::resetTime(double t)
+{
+  Cerr << "Format '" << que_suis_je() << " does not support resetTime()!!" << std::endl;
+  Process::exit(-1);
+  // but LATA does :-)
+}
+
 int Format_Post_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   return -1;

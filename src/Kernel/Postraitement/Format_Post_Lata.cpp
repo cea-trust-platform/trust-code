@@ -44,9 +44,14 @@ void Format_Post_Lata::reset()
   format_ = ASCII;
   options_para_ = SINGLE_FILE;
   status = RESET;
-  temps_courant_ = -1.;
   restart_already_moved_ = false;
   tinit_ = -1.;
+  temps_courant_ = -1.;
+}
+
+void Format_Post_Lata::resetTime(double t)
+{
+  temps_courant_ = -1; // not using t - this will come from outside when calling 'ecrire_temps'
 }
 
 Sortie& Format_Post_Lata::printOn(Sortie& os) const
