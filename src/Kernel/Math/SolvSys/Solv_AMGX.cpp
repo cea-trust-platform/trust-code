@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -261,23 +261,20 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  const double* rhs_amgx_addr = computeOnDevice ? mapToDevice(rhs_amgx_) : rhs_amgx_.addr();
-  double* lhs_amgx_addr = computeOnDevice ? computeOnTheDevice(lhs_amgx_) : lhs_amgx_.addr();
-  statistiques().begin_count(gpu_library_counter_);
   if (computeOnDevice)
     {
-      #pragma omp target data use_device_ptr(lhs_amgx_addr, rhs_amgx_addr)
-      {
-        // Offer device pointers to AmgX if OpenMP:
-        SolveurAmgX_.solve(lhs_amgx_addr, rhs_amgx_addr, nRowsLocal, seuil_);
-      }
+      mapToDevice(rhs_amgx_);
+      computeOnTheDevice(lhs_amgx_);
+      statistiques().begin_count(gpu_library_counter_);
+      // Offer device pointers to AmgX:
+      SolveurAmgX_.solve(addrOnDevice(lhs_amgx_), addrOnDevice(rhs_amgx_), nRowsLocal, seuil_);
+      statistiques().end_count(gpu_library_counter_);
     }
   else
     {
       // Offer host pointers to AmgX:
-      SolveurAmgX_.solve(lhs_amgx_addr, rhs_amgx_addr, nRowsLocal, seuil_);
+      SolveurAmgX_.solve(lhs_amgx_.addr(), rhs_amgx_.addr(), nRowsLocal, seuil_);
     }
-  statistiques().end_count(gpu_library_counter_);
   Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);
 }

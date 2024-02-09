@@ -41,8 +41,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab2_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab2_.h_view.data() != this->data() || (long) dual_view_tab2_.extent(0) != dims[0] ||
-          (long) dual_view_tab2_.extent(1) != dims[1])
+    if (dual_view_tab2_.h_view.data() != this->data() || (long) dual_view_tab2_.extent(0) != dims[0] ||
+        (long) dual_view_tab2_.extent(1) != dims[1])
       is_init = false;
 
   if (is_init) return;
@@ -63,34 +63,31 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1]);
   t_dev device_view;
 #ifdef _OPENMP
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
-  const _TYPE_* ptr = mapToDevice(*this, "Kokkos init_view_tab2()");
-  #pragma omp target data use_device_ptr(ptr)
+  mapToDevice(*this, "Kokkos init_view_tab2()");
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1]);
+  // Example of transpose which will be used to connect Cuda (AmgX) to Kokkos:
+  /*
+  device_view = t_dev("", dims[0], dims[1]);
+  Kokkos::View<const _TYPE_ **, Kokkos::LayoutRight, memory_space, Kokkos::MemoryUnmanaged> device_view_LayoutRight(
+    const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1]);
+  start_timer();
+  Nom name("[KOKKOS] Deep_copy items= ");
+  name += (Nom) (int) dims[0];
+  // Kokkos::deep_copy(device_view, device_view_LayoutRight); Slower 100-200% ?
+  Kokkos::parallel_for("[KOKKOS] Manual transpose ", Kokkos::RangePolicy<>(0, dims[0]), KOKKOS_LAMBDA(
+                         const int i)
   {
-    device_view = t_dev(const_cast<_TYPE_ *>(ptr), dims[0], dims[1]);
-    // Example of transpose which will be used to connect Cuda (AmgX) to Kokkos:
-    /*
-    device_view = t_dev("", dims[0], dims[1]);
-    Kokkos::View<const _TYPE_ **, Kokkos::LayoutRight, memory_space, Kokkos::MemoryUnmanaged> device_view_LayoutRight(
-      const_cast<_TYPE_ *>(ptr), dims[0], dims[1]);
-    start_timer();
-    Nom name("[KOKKOS] Deep_copy items= ");
-    name += (Nom) (int) dims[0];
-    // Kokkos::deep_copy(device_view, device_view_LayoutRight); Slower 100-200% ?
-    Kokkos::parallel_for("[KOKKOS] Manual transpose ", Kokkos::RangePolicy<>(0, dims[0]), KOKKOS_LAMBDA(
-                           const int i)
-    {
-      for (int j = 0; j < dims[1]; j++)
-        device_view(i, j) = device_view_LayoutRight(j, i);
-    });
-    end_timer(Objet_U::computeOnDevice, name.getString());
-     */
-  }
+    for (int j = 0; j < dims[1]; j++)
+      device_view(i, j) = device_view_LayoutRight(j, i);
+  });
+  end_timer(Objet_U::computeOnDevice, name.getString());
+   */
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 #endif
@@ -204,8 +201,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab3_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab3_.h_view.data() != this->data() || (long) dual_view_tab3_.extent(0) != dims[0] ||
-          (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
+    if (dual_view_tab3_.h_view.data() != this->data() || (long) dual_view_tab3_.extent(0) != dims[0] ||
+        (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
       is_init = false;
 
   if (is_init) return;
@@ -226,17 +223,14 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
   t_dev device_view;
 #ifdef _OPENMP
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
-  const _TYPE_* ptr = mapToDevice(*this, "Kokkos init_view_tab3()");
-  #pragma omp target data use_device_ptr(ptr)
-  {
-    device_view = t_dev(const_cast<_TYPE_ *>(ptr), dims[0], dims[1], dims[2]);
-  }
+  mapToDevice(*this, "Kokkos init_view_tab3()");
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1], dims[2]);
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 #endif
@@ -340,8 +334,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab4_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab4_.h_view.data() != this->data() || (long) dual_view_tab4_.extent(0) != dims[0] ||
-          (long) dual_view_tab4_.extent(1) != dims[1]
+    if (dual_view_tab4_.h_view.data() != this->data() || (long) dual_view_tab4_.extent(0) != dims[0] ||
+        (long) dual_view_tab4_.extent(1) != dims[1]
         || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
       is_init = false;
 
@@ -363,17 +357,14 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2], dims[3]);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2], dims[3]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
   t_dev device_view;
 #ifdef _OPENMP
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
-  const _TYPE_* ptr = mapToDevice(*this, "Kokkos init_view_tab4()");
-  #pragma omp target data use_device_ptr(ptr)
-  {
-    device_view = t_dev(const_cast<_TYPE_ *>(ptr), dims[0], dims[1], dims[2], dims[3]);
-  }
+  mapToDevice(*this, "Kokkos init_view_tab4()");
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1], dims[2], dims[3]);
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 #endif
@@ -474,7 +465,7 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   Cout << "Tab size=" << tab.size_array() << finl;
   assert((int)view_tab.size()==tab.size_array());
   nb_compo = tab.dimension(1);
-    _TYPE_ *ptr = tab.data();
+  _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     {

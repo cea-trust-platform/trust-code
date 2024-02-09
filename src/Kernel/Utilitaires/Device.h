@@ -19,7 +19,7 @@
 #include <Array_base.h>
 #include <Nom.h>
 #include <stat_counters.h>
-#include <Kokkos_Core.hpp>
+#include <View_Types.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -46,7 +46,7 @@ inline void start_timer(int bytes=-1)
 }
 inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
-    Kokkos::fence();
+  Kokkos::fence();
 #ifdef _OPENMP
   if (init_openmp_)
     {
@@ -117,7 +117,7 @@ bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
 {
 #ifdef _OPENMP
   if (omp_get_default_device()==0)
-      return isAllocatedOnDevice(tab.data());
+    return isAllocatedOnDevice(tab.data());
   else
 #endif
     return tab.get_dataLocation()!=HostOnly;

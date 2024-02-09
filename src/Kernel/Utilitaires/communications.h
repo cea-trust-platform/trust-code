@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,15 +161,15 @@ inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>&
   const Comm_Group& grp = PE_Groups::current_group();
   assert(src.size_array() == grp.nproc());
   assert(dest.size_array() == grp.nproc());
-    if (src.data() == dest.data())
+  if (src.data() == dest.data())
     {
       TRUSTArray<_TYPE_> tmp;
       tmp.resize_array(grp.nproc(), Array_base::NOCOPY_NOINIT);
-        grp.all_to_all(src.data(), tmp.data(), sizeof(_TYPE_));
+      grp.all_to_all(src.data(), tmp.data(), sizeof(_TYPE_));
       dest.inject_array(tmp);
     }
   else
-        grp.all_to_all(src.data(), dest.data(), sizeof(_TYPE_));
+    grp.all_to_all(src.data(), dest.data(), sizeof(_TYPE_));
   return 1;
 }
 

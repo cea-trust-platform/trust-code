@@ -628,11 +628,8 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       rhs.MoveToAccelerator();
       e.MoveToAccelerator();
       if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
-      #pragma omp target data use_device_ptr(sol_host_addr, rhs_host_addr)
-      {
-        sol.GetInterior().CopyFromData(sol_host_addr);
-        rhs.GetInterior().CopyFromData(rhs_host_addr);
-      }
+      sol.GetInterior().CopyFromData(addrOnDevice(sol_host));
+      rhs.GetInterior().CopyFromData(addrOnDevice(rhs_host));
     }
   else
     {
@@ -712,10 +709,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   if (keepDataOnDevice)
     {
       // Les vecteurs sont mis a jour entre eux sur le device (optimal)
-      #pragma omp target data use_device_ptr(sol_host_addr)
-      {
-        sol.GetInterior().CopyToData(sol_host_addr);
-      }
+      sol.GetInterior().CopyToData(addrOnDevice(sol_host));
     }
   else
     {

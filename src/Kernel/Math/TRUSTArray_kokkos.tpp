@@ -31,7 +31,7 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   bool is_init = dual_view_init_;
   if(is_init && dual_view_arr_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_arr_.h_view.data() != this->data() || (long) dual_view_arr_.extent(0) != ze_dim)
+    if (dual_view_arr_.h_view.data() != this->data() || (long) dual_view_arr_.extent(0) != ze_dim)
       is_init = false;
 
   if (is_init) return;
@@ -44,17 +44,14 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   //const std::string& nom = this->le_nom().getString();
 
   // Re-use already TRUST allocated data:
-    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), ze_dim);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), ze_dim);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, ze_dim);
   t_dev device_view;
 #ifdef _OPENMP
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
-  const _TYPE_* ptr = mapToDevice(*this, "Kokkos init_view_arr()");
-  #pragma omp target data use_device_ptr(ptr)
-  {
-    device_view = t_dev(const_cast<_TYPE_ *>(ptr), ze_dim);
-  }
+  mapToDevice(*this, "Kokkos init_view_arr()");
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), ze_dim);
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 #endif
@@ -165,7 +162,7 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert(view_tab.size()==tab.size_array());
-    _TYPE_ *ptr = tab.data();
+  _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     printf("[OpenMP]: %p [%d]=%e\n", ptr, i, ptr[i]);

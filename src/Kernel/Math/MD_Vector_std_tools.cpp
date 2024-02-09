@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
-            _TYPE_ *buffer_addr = buffer.data();
+          _TYPE_ *buffer_addr = buffer.data();
           assert(idx_end_of_list <= list.get_data().size_array());
           const int * items_to_process_addr;
           _TYPE_ *vect_addr;
@@ -132,7 +132,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
-            _TYPE_ *buffer_addr = buffer.data();
+          _TYPE_ *buffer_addr = buffer.data();
           assert(idx_end_of_list <= list.get_data().size_array());
           const int * items_to_process_addr;
           _TYPE_ *vect_addr;

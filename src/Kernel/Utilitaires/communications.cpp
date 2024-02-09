@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -330,7 +330,7 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
   assert(dest.dimension(0) == grp.nproc());
   assert(src.size_array() == dest.size_array());
 
-    if (dest.data() == src.data())
+  if (dest.data() == src.data())
     {
       DoubleTab tmp(src);
       envoyer_all_to_all(src, tmp);
@@ -339,7 +339,7 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
   else
     {
       const int sz = src.size() / grp.nproc() * (int)sizeof(double);
-        grp.all_to_all(src.data(), dest.data(), sz);
+      grp.all_to_all(src.data(), dest.data(), sz);
     }
 }
 template <typename T>
