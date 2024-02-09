@@ -339,7 +339,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
 
       start_timer();
       Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
-      Kokkos::fence();
       end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
   return grad;
@@ -756,7 +755,6 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 
       start_timer();
       Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
-      Kokkos::fence();
       end_timer(Objet_U::computeOnDevice,
                 "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 

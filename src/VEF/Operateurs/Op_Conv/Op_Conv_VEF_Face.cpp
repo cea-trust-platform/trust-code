@@ -1078,7 +1078,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
               start_timer();
               Kokkos::parallel_for("[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter", nb_elem_tot, kern_conv_aj);
-              Kokkos::fence();
               end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
 
             }

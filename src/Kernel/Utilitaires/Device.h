@@ -19,6 +19,7 @@
 #include <Array_base.h>
 #include <Nom.h>
 #include <stat_counters.h>
+#include <Kokkos_Core.hpp>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -45,6 +46,7 @@ inline void start_timer(int bytes=-1)
 }
 inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
+    Kokkos::fence();
 #ifdef _OPENMP
   if (init_openmp_)
     {

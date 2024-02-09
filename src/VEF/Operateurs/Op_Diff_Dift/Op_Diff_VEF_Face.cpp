@@ -471,7 +471,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
       Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, kern_ajouter);
 //  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter 2",
 //                       Kokkos::RangePolicy<>(nb_faces_bord, nb_faces), kern_ajouter2);
-      Kokkos::fence();
       end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
 
 //  // Tentative with a proper functor instead of a lambda - does not change perf ... snif.
@@ -486,7 +485,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 //
 //    start_timer();
 //    Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, ze_func);
-//    Kokkos::fence();
 //    end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
 //
 //  }

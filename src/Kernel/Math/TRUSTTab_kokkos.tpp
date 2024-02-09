@@ -87,7 +87,6 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
       for (int j = 0; j < dims[1]; j++)
         device_view(i, j) = device_view_LayoutRight(j, i);
     });
-    Kokkos::fence();
     end_timer(Objet_U::computeOnDevice, name.getString());
      */
   }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -155,7 +155,6 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
 
       start_timer();
       Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
-      Kokkos::fence();
       end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
 
     }
