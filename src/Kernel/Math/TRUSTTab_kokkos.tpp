@@ -41,7 +41,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab2_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab2_.h_view.data() != this->addrForDevice() || (long)dual_view_tab2_.extent(0) != dims[0] || (long)dual_view_tab2_.extent(1) != dims[1])
+      if (dual_view_tab2_.h_view.data() != this->data() || (long) dual_view_tab2_.extent(0) != dims[0] ||
+          (long) dual_view_tab2_.extent(1) != dims[1])
       is_init = false;
 
   if (is_init) return;
@@ -62,7 +63,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addrForDevice()), dims[0], dims[1]);
+    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1]);
   t_dev device_view;
@@ -203,7 +204,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab3_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab3_.h_view.data() != this->addrForDevice() || (long)dual_view_tab3_.extent(0) != dims[0] || (long)dual_view_tab3_.extent(1) != dims[1] || (long)dual_view_tab3_.extent(2) != dims[2])
+      if (dual_view_tab3_.h_view.data() != this->data() || (long) dual_view_tab3_.extent(0) != dims[0] ||
+          (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
       is_init = false;
 
   if (is_init) return;
@@ -224,7 +226,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addrForDevice()), dims[0], dims[1], dims[2]);
+    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
   t_dev device_view;
@@ -338,7 +340,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab4_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab4_.h_view.data() != this->addrForDevice() || (long)dual_view_tab4_.extent(0) != dims[0] || (long)dual_view_tab4_.extent(1) != dims[1]
+      if (dual_view_tab4_.h_view.data() != this->data() || (long) dual_view_tab4_.extent(0) != dims[0] ||
+          (long) dual_view_tab4_.extent(1) != dims[1]
         || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
       is_init = false;
 
@@ -360,7 +363,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
   //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host(const_cast<_TYPE_ *>(this->addrForDevice()), dims[0], dims[1], dims[2], dims[3]);
+    t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0], dims[1], dims[2], dims[3]);
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
   t_dev device_view;
@@ -471,7 +474,7 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   Cout << "Tab size=" << tab.size_array() << finl;
   assert((int)view_tab.size()==tab.size_array());
   nb_compo = tab.dimension(1);
-  _TYPE_* ptr = tab.addrForDevice();
+    _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     {

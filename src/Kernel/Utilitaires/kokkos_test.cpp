@@ -101,11 +101,11 @@ void kokkos_self_test()
         tab(i,j) = i + 0.1*j;
     const DoubleTabView tab_v = tab.view_ro();
     // La creation de la vue fait une copie de u sur le device:
-    printf("Provisoire OpenMP adresse host: [%p] device: [%p]\n",(void*)tab.addrForDevice(), (void*)addrOnDevice(tab));
-    assert(a.addrForDevice() != addrOnDevice(a));
+    printf("Provisoire OpenMP adresse host: [%p] device: [%p]\n",(void*)tab.data(), (void*)addrOnDevice(tab));
+    assert(a.data() != addrOnDevice(a));
     // On verifie les adresses memoires de la vue:
     printf("Provisoire Kokkos adresse            device: [%p]\n",(void*)tab_v.data());
-    //assert(tab_v.h_view.view_host()==tab.addrForDevice());
+    //assert(tab_v.h_view.view_host()==tab.data());
     assert(tab_v.data()==addrOnDevice(tab));
     debug_device_view(tab_v, tab);
   }

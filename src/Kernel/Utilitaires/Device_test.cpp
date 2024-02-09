@@ -95,7 +95,7 @@ void self_test()
         const double *a_addr = mapToDevice(a, "a"); // up-to-date
 
         DoubleTab b(N);
-        double *b_addr = b.addrForDevice();
+        double *b_addr = b.data();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -123,7 +123,7 @@ void self_test()
         const double *a_addr = mapToDevice(a, "a"); // update
 
         DoubleTab b(N);
-        double *b_addr = b.addrForDevice();
+        double *b_addr = b.data();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -149,7 +149,7 @@ void self_test()
         const double *a_addr = mapToDevice(a, "a"); // up-to-date
 
         DoubleTab b(N);
-        double *b_addr = b.addrForDevice();
+        double *b_addr = b.data();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -310,9 +310,9 @@ void self_test()
         a(2)=-10;
         mapToDevice(a);
         // Change sur le host pour test:
-        a.addrForDevice()[0]=0;
-        a.addrForDevice()[1]=0;
-        a.addrForDevice()[2]=0;
+        a.data()[0]=0;
+        a.data()[1]=0;
+        a.data()[2]=0;
         a.set_dataLocation(Device);
         assert(local_max_vect(a)==3);
         assert(local_min_vect(a)==-10);
@@ -345,12 +345,12 @@ void self_test()
           DoubleTab b;
           b.ref_array(a);
           mapToDevice(b, "b"); // Sur le device
-          assert(a.addrForDevice()==b.addrForDevice());
+          assert(a.data()==b.data());
           assert(b.get_dataLocation() == HostDevice);
           assert(a.get_dataLocation() == HostDevice); // a est considere sur le device egalement
         }
         assert(a.get_dataLocation() == HostDevice);
-        ptr_host = a.addrForDevice();
+        ptr_host = a.data();
         assert(isAllocatedOnDevice(ptr_host)); // Verifie que le tableau possede une zone memoire sur le device
         a.resize(2*N);
         a=2;

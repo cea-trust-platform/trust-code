@@ -207,13 +207,13 @@ inline const _TYPE_* TRUSTArray<_TYPE_>::addr() const
 }
 
 template <typename _TYPE_>
-inline _TYPE_* TRUSTArray<_TYPE_>::addrForDevice()
+inline _TYPE_ *TRUSTArray<_TYPE_>::data()
 {
   return data_;
 }
 
 template <typename _TYPE_>
-inline const _TYPE_* TRUSTArray<_TYPE_>::addrForDevice() const
+inline const _TYPE_ *TRUSTArray<_TYPE_>::data() const
 {
   return data_;
 }

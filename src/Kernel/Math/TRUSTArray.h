@@ -143,8 +143,9 @@ public:
   inline _TYPE_ * addr();
   inline const _TYPE_ * addr() const;
   // Les memes methodes pour une utilisation sur le device
-  inline _TYPE_ * addrForDevice();
-  inline const _TYPE_ * addrForDevice() const;
+  inline _TYPE_ *data();
+
+    inline const _TYPE_ *data() const;
 
   // Renvoie le nombre d'elements du tableau (et non la taille allouee)
   inline int size_array() const;
@@ -306,7 +307,7 @@ private:
       {
         std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
         std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
-                  << " with a loop on array [" << toString(tab.addrForDevice()).c_str() << "] of " << tab.size_array()
+                << " with a loop on array [" << toString(tab.data()).c_str() << "] of " << tab.size_array()
                   << " elements" << std::endl ;
       }
   }

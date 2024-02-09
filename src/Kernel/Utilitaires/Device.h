@@ -117,7 +117,7 @@ bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
 {
 #ifdef _OPENMP
   if (omp_get_default_device()==0)
-    return isAllocatedOnDevice(tab.addrForDevice());
+      return isAllocatedOnDevice(tab.data());
   else
 #endif
     return tab.get_dataLocation()!=HostOnly;
