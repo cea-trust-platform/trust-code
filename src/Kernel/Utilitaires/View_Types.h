@@ -29,8 +29,8 @@
 #pragma GCC diagnostic pop
 
 // The DualView type allowing semi-automatic sync between host and device.
-//  !WARNING! --> I choose 'LayoutRight' to stick to default data layout in TRUST
-//   but this is not good for GPU ... hopefully second dimension is never too big in most cases ...
+// By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
+// So, once OpenMP is removed, suppress Kokkos::LayoutRight and retrieve const RandomAccess DualView
 template<typename T>
 using DualViewArr = Kokkos::DualView<T *, Kokkos::LayoutRight>;
 

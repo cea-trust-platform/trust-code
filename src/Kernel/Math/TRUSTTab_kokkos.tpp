@@ -72,6 +72,24 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   #pragma omp target data use_device_ptr(ptr)
   {
     device_view = t_dev(const_cast<_TYPE_ *>(ptr), dims[0], dims[1]);
+    // Example of transpose which will be used to connect Cuda (AmgX) to Kokkos:
+    /*
+    device_view = t_dev("", dims[0], dims[1]);
+    Kokkos::View<const _TYPE_ **, Kokkos::LayoutRight, memory_space, Kokkos::MemoryUnmanaged> device_view_LayoutRight(
+      const_cast<_TYPE_ *>(ptr), dims[0], dims[1]);
+    start_timer();
+    Nom name("[KOKKOS] Deep_copy items= ");
+    name += (Nom) (int) dims[0];
+    // Kokkos::deep_copy(device_view, device_view_LayoutRight); Slower 100-200% ?
+    Kokkos::parallel_for("[KOKKOS] Manual transpose ", Kokkos::RangePolicy<>(0, dims[0]), KOKKOS_LAMBDA(
+                           const int i)
+    {
+      for (int j = 0; j < dims[1]; j++)
+        device_view(i, j) = device_view_LayoutRight(j, i);
+    });
+    Kokkos::fence();
+    end_timer(Objet_U::computeOnDevice, name.getString());
+     */
   }
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
