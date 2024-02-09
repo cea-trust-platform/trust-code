@@ -299,10 +299,10 @@ struct MyFunc
 
   const int nb_comp;
   const int nb_faces_bord;
-  const IntTabView face_voisins_v;
-  const DoubleTabView face_normales_v;
-  const DoubleTabView nu_v;
-  const DoubleTabView grad_v;
+  CIntTabView face_voisins_v;
+  CDoubleTabView face_normales_v;
+  CDoubleTabView nu_v;
+  CDoubleTabView grad_v;
   DoubleTabView resu_v;
   DoubleTabView tab_flux_bords_v;
 
@@ -419,10 +419,10 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
     }
   else
     {
-      const IntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
-      const DoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
-      const DoubleTabView nu_v = nu.view_ro();
-      const DoubleTabView3 grad_v = grad_.view3_ro();
+      CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
+      CDoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
+      CDoubleTabView nu_v = nu.view_ro();
+      CDoubleTabView3 grad_v = grad_.view3_ro();
       DoubleTabView resu_v = resu.view_rw();
       DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
 

@@ -312,11 +312,11 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
     }
   else
     {
-      const IntTabView face_voisins_v = face_voisins.view_ro();
-      const DoubleVectView porosite_face_v = porosite_face.view_ro();
-      const DoubleTabView face_normales_v = face_normales.view_ro();
-      const IntTabView elem_faces_v = elem_faces.view_ro();
-      const DoubleTabView pre_v = pre.view_ro();
+      CIntTabView face_voisins_v = face_voisins.view_ro();
+      CDoubleArrView porosite_face_v = porosite_face.view_ro();
+      CDoubleTabView face_normales_v = face_normales.view_ro();
+      CIntTabView elem_faces_v = elem_faces.view_ro();
+      CDoubleTabView pre_v = pre.view_ro();
       DoubleTabView grad_v = grad.view_rw();
       int dim = Objet_U::dimension;
 
@@ -727,10 +727,10 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
     }
   else
     {
-      const IntTabView face_voisins_v = face_voisins.view_ro();
-      const IntTabView sommets_v = sommets.view_ro();
-      const DoubleTabView face_normales_v = face_normales.view_ro();
-      const DoubleVectView pression_P1B_v = pression_P1B.view_ro();
+      CIntTabView face_voisins_v = face_voisins.view_ro();
+      CIntTabView sommets_v = sommets.view_ro();
+      CDoubleTabView face_normales_v = face_normales.view_ro();
+      CDoubleArrView pression_P1B_v = pression_P1B.view_ro();
       DoubleTabView flux_bords_v = flux_bords_.view_wo();
       int dim = Objet_U::dimension;
 

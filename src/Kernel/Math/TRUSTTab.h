@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -259,7 +259,7 @@ protected:
 
 public:
   // Kokkos view accessors:
-  inline const ViewTab<_TYPE_> view_ro() const;  // Read-only
+  inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
   inline ViewTab<_TYPE_> view_wo();             // Write-only
   inline ViewTab<_TYPE_> view_rw();             // Read-write
 
@@ -267,7 +267,7 @@ public:
   inline void modified_on_host() const;         // Mark data as being modified on host side
 
   // For 3D arrays:
-  inline const ViewTab3<_TYPE_> view3_ro() const;  // Read-only
+  inline ConstViewTab3<_TYPE_> view3_ro() const;  // Read-only
   inline ViewTab3<_TYPE_> view3_wo();             // Write-only
   inline ViewTab3<_TYPE_> view3_rw();             // Read-write
 
@@ -275,7 +275,7 @@ public:
   inline void modified_on_host3() const;         // Mark data as being modified on host side
 
   // For 4D arrays:
-  inline const ViewTab4<_TYPE_> view4_ro() const;  // Read-only
+  inline ConstViewTab4<_TYPE_> view4_ro() const;  // Read-only
   inline ViewTab4<_TYPE_> view4_wo();             // Write-only
   inline ViewTab4<_TYPE_> view4_rw();             // Read-write
 

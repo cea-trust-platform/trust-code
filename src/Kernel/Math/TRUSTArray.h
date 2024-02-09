@@ -220,7 +220,7 @@ protected:
 
 public:
   // Kokkos view accessors:
-  inline const ViewArr<_TYPE_> view_ro() const;  // Read-only
+  inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
   inline ViewArr<_TYPE_> view_wo();             // Write-only
   inline ViewArr<_TYPE_> view_rw();             // Read-write
 

@@ -30,7 +30,7 @@
 
 // The DualView type allowing semi-automatic sync between host and device.
 // By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
-// So, once OpenMP is removed, suppress Kokkos::LayoutRight and retrieve const RandomAccess DualView
+// We keep Kokkos::LayoutRight for OpenMP now
 template<typename T>
 using DualViewArr = Kokkos::DualView<T *, Kokkos::LayoutRight>;
 
@@ -56,8 +56,6 @@ using host_mirror_space = DualViewArr<double>::host_mirror_space;
 // The actual view type that will be manipulated everywhere in the kernels (a *device* view)
 template<typename T>
 using ViewArr = Kokkos::View<T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-
-// Same thing for tabs:
 template<typename T>
 using ViewTab = Kokkos::View<T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 template<typename T>
@@ -65,14 +63,43 @@ using ViewTab3 = Kokkos::View<T ***, typename DualViewArr<T>::array_layout, memo
 template<typename T>
 using ViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
+// Its const version (const disabled for OpenMP, weird bug)
+#ifdef _OPENMP
+template<typename T>
+using ConstViewArr = Kokkos::View</* const */T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab = Kokkos::View</* const */T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab3 = Kokkos::View</* const */T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab4 = Kokkos::View</* const */T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+#else
+template<typename T>
+using ConstViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+#endif
+
 // Handy aliases:
-using IntVectView = ViewArr<int>;
-using DoubleVectView = ViewArr<double>;
+using IntArrView = ViewArr<int>;
+using DoubleArrView = ViewArr<double>;
+
+using CIntArrView = ConstViewArr<int>;
+using CDoubleArrView = ConstViewArr<double>;
 
 using IntTabView = ViewTab<int>;
 using DoubleTabView = ViewTab<double>;
 using DoubleTabView3 = ViewTab3<double>;
 using DoubleTabView4 = ViewTab4<double>;
+
+using CIntTabView = ConstViewTab<int>;
+using CDoubleTabView = ConstViewTab<double>;
+using CDoubleTabView3 = ConstViewTab3<double>;
+using CDoubleTabView4 = ConstViewTab4<double>;
 
 extern void kokkos_self_test();
 #endif // KOKKOS_

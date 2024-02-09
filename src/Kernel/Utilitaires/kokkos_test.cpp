@@ -84,8 +84,8 @@ void kokkos_self_test()
     u = 1.0;
     ArrOfDouble v(nb_elem);
     v = 2.0;
-    const DoubleVectView a_v = u.view_ro();
-    DoubleVectView b_v = v.view_rw();
+    CDoubleArrView a_v = u.view_ro();
+    DoubleArrView b_v = v.view_rw();
     Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
     {
       b_v(i) = 2 * b_v(i) + a_v(i);

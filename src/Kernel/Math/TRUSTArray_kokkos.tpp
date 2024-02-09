@@ -67,7 +67,7 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
 }
 
 template<typename _TYPE_>
-inline const ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
+inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
 {
   // Init if necessary
   init_view_arr();

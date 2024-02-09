@@ -103,7 +103,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
 }
 
 template<typename _TYPE_>
-inline const ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
+inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
 {
   // Init if necessary
   init_view_tab2();
@@ -248,7 +248,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
 }
 
 template<typename _TYPE_>
-inline const ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
+inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
 {
   // Init if necessary
   init_view_tab3();
@@ -384,7 +384,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
 }
 
 template<typename _TYPE_>
-inline const ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
+inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
 {
   // Init if necessary
   init_view_tab4();
