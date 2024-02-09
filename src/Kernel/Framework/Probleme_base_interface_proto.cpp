@@ -196,7 +196,7 @@ void Probleme_base_interface_proto::resetTime_impl(Probleme_base& pb, double tim
   for (int i = 0; i < pb.nombre_d_equations(); i++)
     pb.equation(i).resetTime(time);  // will also reset fields there
 
-  // Trigger the change of basename for the output files:
+  // Trigger the change of basename for the output files, and the reinit of the post:
   pb.postraitements().resetTime(time);
 
   // We postreat after reset:

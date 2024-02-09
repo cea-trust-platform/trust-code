@@ -45,9 +45,8 @@ void Format_Post_Lata::reset()
   options_para_ = SINGLE_FILE;
   status = RESET;
   temps_courant_ = -1.;
-  deja_fait_ = 0;
+  restart_already_moved_ = false;
   tinit_ = -1.;
-  file_existe_ = 0;
 }
 
 Sortie& Format_Post_Lata::printOn(Sortie& os) const
@@ -391,17 +390,14 @@ int Format_Post_Lata::initialize_lata(const Nom& file_basename, const Format for
   return 1;
 }
 
-/*! @brief Modification du nom du fichier de postraitement.
- *
+/*! @brief Modifying name of the post file, plus some clever management of previously saved data in case of restart.
  */
-int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_faire, const double tinit)
+int Format_Post_Lata::modify_file_basename(const Nom file_basename, bool for_restart, const double tinit)
 {
-  assert(a_faire == 0 || a_faire == 1 || a_faire == 2);
-
   Nom post_file;
   post_file = file_basename + extension_lata();
   // On verifie que le fichier maitre existe et a une entete correcte
-  file_existe_ = 0;
+  bool master_file_exists = false;
   if (Process::je_suis_maitre())
     {
       struct stat f;
@@ -413,7 +409,7 @@ int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_
           if (cle.debute_par("LATA"))
             {
               if (tinit == -1)
-                file_existe_ = 1;
+                master_file_exists = true;
               else
                 {
                   tmp >> cle;
@@ -425,16 +421,17 @@ int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_
                       tmp >> temps;
                       // On verifie le temps du fichier de reprise
                       if (temps < tinit)
-                        file_existe_ = 1;
+                        master_file_exists = true;
                     }
                 }
             }
           tmp.close();
         }
     }
-  // Point de synchronisation necessaire:
-  file_existe_ = (int) Process::mp_max(file_existe_);
-  if (Process::je_suis_maitre() && file_existe_ && deja_fait_ == 0 && a_faire)
+
+  // Saving what was there before:
+  master_file_exists = (bool) Process::mp_max((int)master_file_exists);
+  if (Process::je_suis_maitre() && master_file_exists && !restart_already_moved_ && for_restart)
     {
       Nom before_restart;
       before_restart = file_basename + ".before_restart" + extension_lata();
@@ -442,19 +439,18 @@ int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_
       Cerr << "File " << post_file << " is moved to " << before_restart << " with times<=tinit=" << tinit << finl;
       reconstruct(post_file, before_restart, tinit);
     }
-  deja_fait_ = 1;
-  // On attend tous les processeurs (prudence excessive?)
-  Process::barrier();
-  if (file_existe_)
+  if (for_restart)
+    restart_already_moved_ = true;
+
+  Process::barrier();  // really necessary?
+
+  lata_basename_ = file_basename;
+
+  if (master_file_exists && for_restart)
     {
-      if (a_faire == 0)
-        lata_basename_ = file_basename;
-      else
-        {
-          lata_basename_ = file_basename + ".after_restart";
-          if (tinit == -1)
-            finir_sans_reprise(post_file);
-        }
+      lata_basename_ += ".after_restart";
+      if (tinit == -1)
+        finir_sans_reprise(post_file);
     }
   return 1;
 }
@@ -507,7 +503,7 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
   if (Process::je_suis_maitre())
     {
       struct stat f;
-      if (stat(post_file, &f) == 0)
+      if (stat(post_file, &f) == 0)  // if file exists
         {
           EFichier Lata(file_basename);
           SFichier LataRep(post_file, ios::app);

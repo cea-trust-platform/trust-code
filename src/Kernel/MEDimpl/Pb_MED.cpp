@@ -112,7 +112,7 @@ Entree& Pbc_MED::readOn(Entree& is )
 Entree& Pb_MED::readOn(Entree& is )
 {
   dis_bidon.typer("VF_inst");
-  la_discretisation=dis_bidon.valeur();
+  la_discretisation_=dis_bidon.valeur();
   is >> nom_fic;
   Nom nom_dom;
   is >> nom_dom;
@@ -130,7 +130,7 @@ Entree& Pb_MED::readOn(Entree& is )
   dom.reordonner();
 
   Nom typ = "NO_FACE_Domaine_VF_inst";
-  le_domaine_dis = Domaine_dis_cache::Build_or_get(typ, dom);
+  le_domaine_dis_ = Domaine_dis_cache::Build_or_get(typ, dom);
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
   read_med_field_names(nom_fic, nomschampmed, temps_sauv_);

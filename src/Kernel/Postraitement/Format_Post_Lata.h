@@ -52,14 +52,16 @@ class Format_Post_Lata : public Format_Post_base
 {
   Declare_instanciable_sans_constructeur(Format_Post_Lata);
 public:
+  //
   // Methodes declarees dans la classe de base (interface commune a tous
   // les formats de postraitment de champs):
+  //
   void reset() override;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int initialize_by_default(const Nom& file_basename) override;
   int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
-  int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit) override;
+  int modify_file_basename(const Nom file_basename, bool for_restart, const double tinit) override;
   virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
   virtual int finir_sans_reprise(const Nom file_basename);
   int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post) override;
@@ -78,27 +80,9 @@ public:
   int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size) override;
 
 
-  //Actuellement on commente ces methodes car pas decrites dans l interface commune
-  //aux differentes classes dans le CDC.
-  //Ces methodes sont declarees dans Format_Post_base
-
-  //Methode ecrire_bords() on utilise nb_sommets alors que sommets dans Format_Post_base
-  /*
-    virtual int ecrire_bords(const Nom    & id_du_domaine,
-    const Motcle & type_faces,
-    const int   nb_sommets,
-    const IntTab & faces_sommets,
-    const IntTab & faces_num_bord,
-    const Noms   & bords_nom);
-
-    virtual int ecrire_noms(const Nom  & id_de_la_liste,
-    const Nom  & id_du_domaine,
-    const Nom  & localisation,
-    const Noms & liste_noms);
-  */
-
-  //Methodes statiques appelees par les methodes communes de l interface
+  //
   // Methodes specifiques a ce format:
+  //
   enum Format { ASCII, BINAIRE };
   enum Options_Para { SINGLE_FILE, SINGLE_FILE_MPIIO, MULTIPLE_FILES };
   enum Status { RESET, INITIALIZED, WRITING_TIME };
@@ -118,17 +102,17 @@ protected:
   static int write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option);
   static int write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option);
 
-  int deja_fait_, file_existe_;
-  double tinit_;
   Nom lata_basename_;
   Format format_;
   Options_Para options_para_;
   Status status;
 
-  // Le temps en cours d'ecriture
-  double temps_courant_;
+  bool restart_already_moved_;  // Whether the postprocess file was already renamed/move after a restart
+
+  double temps_courant_;  // The time being written
+  double tinit_;
   bool un_seul_fichier_lata_ = false;
-  long int offset_elem_ = -1, offset_som_ = -1; // offset utilise si single_lata
+  long int offset_elem_ = -1, offset_som_ = -1; // offset used if single_lata
 };
 
 #endif /* Format_Post_Lata_included */

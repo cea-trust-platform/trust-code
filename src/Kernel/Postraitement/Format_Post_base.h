@@ -109,7 +109,7 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int initialize_by_default(const Nom& file_basename);
   virtual int initialize(const Nom& file_basename, const int format, const Nom& option_para);
-  virtual int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit);
+  virtual int modify_file_basename(const Nom file_basename, bool for_restart, const double tinit);
   virtual int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post);
   virtual int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post);
 

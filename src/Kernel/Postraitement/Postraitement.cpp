@@ -620,17 +620,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
  */
 void Postraitement::resetTime(double time)
 {
-  const bool reprise = false, is_first_post = true;
-
-  const Domaine& dom=le_domaine.valeur();
-  const Nom& nom_du_domaine = dom.le_nom();
-  Nom name=nom_fich().prefix(format);
-  name.prefix(".");
-  Nom new_name = name + suffix_for_reset_;
-
-  format_post->modify_file_basename(new_name, reprise, time);
-  format_post->ecrire_entete(time, reprise, is_first_post);
-  format_post->preparer_post(nom_du_domaine, is_first_post, reprise, time);
+// TODO
 }
 
 
@@ -1361,7 +1351,7 @@ void Postraitement::init()
     }
 
   dernier_temps=mon_probleme->schema_temps().temps_init();
-  format_post->modify_file_basename(name,0,tinit);
+  format_post->modify_file_basename(name,/*for_restart=*/false ,tinit);
 }
 
 

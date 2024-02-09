@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,14 +58,14 @@ Entree& Pb_Multiphase::readOn(Entree& is)
 Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
 {
   // Verify that user choosed adapted time scheme/solver
-  if (!sub_type(Schema_Euler_Implicite,le_schema_en_temps.valeur()))
+  if (!sub_type(Schema_Euler_Implicite,le_schema_en_temps_.valeur()))
     {
       Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
       Process::exit();
     }
-  else if (sub_type(Schema_Euler_Implicite,le_schema_en_temps.valeur()))
+  else if (sub_type(Schema_Euler_Implicite,le_schema_en_temps_.valeur()))
     {
-      Schema_Euler_Implicite& schm_imp = ref_cast(Schema_Euler_Implicite,le_schema_en_temps.valeur());
+      Schema_Euler_Implicite& schm_imp = ref_cast(Schema_Euler_Implicite,le_schema_en_temps_.valeur());
       if (!sub_type(SETS,schm_imp.solveur().valeur()))
         {
           Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
@@ -100,7 +100,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
       //memes associations que pour les autres equations : probleme, milieu, schema en temps
       eq.associer_pb_base(*this);
       eq.associer_milieu_base(milieu());
-      eq.associer_sch_tps_base(le_schema_en_temps);
+      eq.associer_sch_tps_base(le_schema_en_temps_);
       eq.associer_domaine_dis(domaine_dis());
       eq.discretiser(); //a faire avant de lire l'equation
       is >> eq; //et c'est parti!
@@ -142,7 +142,7 @@ void Pb_Multiphase::typer_lire_milieu(Entree& is)
   // remontee de l'inconnue vers le milieu
   for (int i = 0; i < nombre_d_equations(); i++) equation(i).associer_milieu_equation();
   // On discretise le milieu composite
-  equation(0).milieu().discretiser((*this), la_discretisation.valeur());
+  equation(0).milieu().discretiser((*this), la_discretisation_.valeur());
 }
 
 /*! @brief Renvoie le nombre d'equation, Renvoie 2 car il y a 2 equations a un probleme de
@@ -294,8 +294,8 @@ void Pb_Multiphase::completer()
 
 double Pb_Multiphase::calculer_pas_de_temps() const
 {
-  if sub_type(ICE, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()) return Pb_Fluide_base::calculer_pas_de_temps() ;
-  else if (ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()).facsec_diffusion_for_sets()<0.) return Pb_Fluide_base::calculer_pas_de_temps() ;
+  if sub_type(ICE, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()) return Pb_Fluide_base::calculer_pas_de_temps() ;
+  else if (ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()).facsec_diffusion_for_sets()<0.) return Pb_Fluide_base::calculer_pas_de_temps() ;
 
   // Case where we calculate the time step with higher facsec for diffusion
 
@@ -311,7 +311,7 @@ double Pb_Multiphase::calculer_pas_de_temps() const
 
           const Operateur_base& op=equation(i).operateur(j).l_op_base();
 
-          if (le_schema_en_temps->limpr())
+          if (le_schema_en_temps_->limpr())
             {
               if (j == 0)
                 {
@@ -326,7 +326,7 @@ double Pb_Multiphase::calculer_pas_de_temps() const
                 Cout << "   operator ";
               Cout<<" time step : "<< dt_op << finl;
             }
-          if (sub_type(Operateur_Diff_base,op)) dt_op *= ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()).facsec_diffusion_for_sets();
+          if (sub_type(Operateur_Diff_base,op)) dt_op *= ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()).facsec_diffusion_for_sets();
           dt=std::min(dt,dt_op);
         }
     }

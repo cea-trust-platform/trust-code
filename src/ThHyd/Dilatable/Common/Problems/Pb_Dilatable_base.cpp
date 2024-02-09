@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,7 @@ void Pb_Dilatable_base::mettre_a_jour(double temps)
   for(int i=2; i<nombre_d_equations(); i++) // if species ...
     equation(i).mettre_a_jour(temps);
 
-  les_postraitements.mettre_a_jour(temps);
+  les_postraitements_.mettre_a_jour(temps);
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
   for (auto& itr : liste_loi_fermeture_)
     {

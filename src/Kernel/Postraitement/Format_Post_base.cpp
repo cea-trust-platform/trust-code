@@ -63,7 +63,10 @@ int Format_Post_base::initialize(const Nom& file_basename, const int format, con
   return 0;
 }
 
-int Format_Post_base::modify_file_basename(const Nom file_basename, const int a_faire, const double tinit)
+/*! @brief Modification of the post processing file name.
+ * For save/restart this might also move and rename files around to avoid overriding existing files.
+ */
+int Format_Post_base::modify_file_basename(const Nom file_basename, bool for_restart, const double tinit)
 {
   return 0;
 }

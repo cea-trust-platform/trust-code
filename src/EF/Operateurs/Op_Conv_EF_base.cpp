@@ -70,11 +70,6 @@ Champ_Inc_base& Op_Conv_EF_base::vitesse()
   return vitesse_.valeur();
 }
 
-void Op_Conv_EF_base::abortTimeStep()
-{
-  Operateur_Conv_base::abortTimeStep();
-}
-
 double Op_Conv_EF_base::calculer_dt_stab() const
 {
   Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;

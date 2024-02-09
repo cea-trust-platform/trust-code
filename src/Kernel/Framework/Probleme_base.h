@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,9 +55,8 @@ class Champ_Fonc;
  */
 class Probleme_base : public Champs_compris_interface, public Probleme_U, public Probleme_base_interface_proto
 {
-  Declare_base_sans_constructeur_ni_destructeur(Probleme_base);
+  Declare_base_sans_destructeur(Probleme_base);
 public:
-  Probleme_base();
   ~Probleme_base();
   virtual void associer();
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot);
@@ -108,13 +107,13 @@ public:
   inline void nommer(const Nom&) override;
   inline const Nom& le_nom() const override;
   inline const Discretisation_base& discretisation() const;
-  inline Postraitements& postraitements() { return les_postraitements; }
-  inline const Postraitements& postraitements() const { return les_postraitements; }
+  inline Postraitements& postraitements() { return les_postraitements_; }
+  inline const Postraitements& postraitements() const { return les_postraitements_; }
   void init_postraitements();
   virtual int expression_predefini(const Motcle& motlu, Nom& expression);
   inline const char* reprise_format_temps() const;
-  inline int& reprise_effectuee() { return reprise_effectuee_; }
-  inline int reprise_effectuee() const { return reprise_effectuee_; }
+  inline bool& reprise_effectuee() { return restart_done_; }
+  inline bool reprise_effectuee() const { return restart_done_; }
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
@@ -190,28 +189,33 @@ public:
 
 protected :
   std::vector<Milieu> le_milieu_;
-  REF(Domaine_dis) le_domaine_dis;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
-  Postraitements les_postraitements;
+  REF(Domaine_dis) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
+  Postraitements les_postraitements_;
   REF(Domaine) le_domaine_;
-  REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Discretisation_base) la_discretisation;
+  REF(Schema_Temps_base) le_schema_en_temps_;
+  REF(Discretisation_base) la_discretisation_;
   REF(Probleme_Couple) pbc_;
-  bool milieu_via_associer_ = false;
   void warn_old_syntax();
   virtual void typer_lire_milieu(Entree& is) ;
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
+
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
-  mutable Sortie_Brute* osauv_hdf_;
+  mutable Sortie_Brute* osauv_hdf_ = nullptr;
 
-  int reprise_effectuee_, reprise_version_, restart_file;
-  int resuming_in_progress_; //true variable only during the time step during which a resumption of computation is carried out
-  Nom nom_fich, format_sauv;
+  bool milieu_via_associer_ = false;
 
-  static long int file_size;        // Espace disque pris par les sauvegarde XYZ
-  static int bad_allocate;        // 1 si allocation reussi, 0 sinon
-  static int nb_pb_total;        // Nombre total de probleme
-  static int num_pb;                // numero du probleme
-  mutable Nom error;                // Erreur d'allocation
+  Nom restart_file_name_;  // Name of the file for save/restart
+  Nom restart_format_;     // Format for the save restart
+  bool restart_done_ = false;         // Has a restart been done?
+  bool simple_restart_ = false;       // Restart file name
+  int restart_version_ = 155;         // Version number, for example 155 (1.5.5) -> used to manage old restart files
+  bool restart_in_progress_ = false;  //true variable only during the time step during which a resumption of computation is carried out
+
+  static long int File_size_;        // Espace disque pris par les sauvegarde XYZ
+  static int Bad_allocate_;        // 1 si allocation reussi, 0 sinon
+  static int Nb_pb_total_;        // Nombre total de probleme
+  static int Num_pb_;                // numero du probleme
+  mutable Nom error_;                // Erreur d'allocation
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
 };
@@ -235,12 +239,12 @@ inline const Nom& Probleme_base::le_nom() const { return nom; }
  */
 inline const Discretisation_base& Probleme_base::discretisation() const
 {
-  if(!la_discretisation.non_nul())
+  if(!la_discretisation_.non_nul())
     {
       Cerr << que_suis_je() << " has not been discretized!" << finl;
       exit();
     }
-  return la_discretisation.valeur();
+  return la_discretisation_.valeur();
 }
 
 // Method which may be called from anywhere:
@@ -256,7 +260,7 @@ inline const char* time_format_from(const int reprise_version)
 
 inline const char* Probleme_base::reprise_format_temps() const
 {
-  return time_format_from(reprise_version_);
+  return time_format_from(restart_version_);
 }
 
 #endif /* Probleme_base_included */
