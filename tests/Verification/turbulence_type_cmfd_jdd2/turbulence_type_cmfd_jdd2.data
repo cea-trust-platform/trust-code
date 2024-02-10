@@ -1,0 +1,130 @@
+# PARALLEL OK #
+
+Dimension 2
+Pb_hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+    pave bloc1
+    {
+        origine 0 0
+        longueurs 100 0.2
+        nombre_de_noeuds 51 3
+    }
+    {
+        bord entree	 X = 0.            0. <= Y <= 0.2
+        bord sortie	 X = 100	    0. <= Y <= 0.2
+        bord bas	 Y = 0. 	    0. <= X <= 100
+    } ,
+    pave bloc2
+    {
+        origine 0 0.2
+        longueurs 100 0.2
+        nombre_de_noeuds 51 3
+    }
+    {
+        bord entree	 X = 0	            0.2 <= Y <= 0.4
+        bord sortie	 X = 100	    0.2 <= Y <= 0.4
+    } ,
+    pave bloc3
+    {
+        origine 0 0.4
+        longueurs 100 0.6
+        nombre_de_noeuds 51 7
+    }
+    {
+        bord entree	 X = 0	            0.4 <= Y <= 1.0
+        bord sortie	 X = 100	    0.4 <= Y <= 1.0
+        bord haut	 Y = 1.0 	    0 <= X <= 100
+    }
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC_P0 dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_impr 1e-10
+    facsec 1e8
+    dt_max 0.5
+    solveur implicite { solveur petsc cli { } }
+    seuil_statio 1e-8
+}
+
+Associer pb dom
+Associer pb sch
+
+Discretiser pb dis
+
+Lire pb
+{
+
+    fluide_incompressible
+	{
+        mu champ_uniforme 1 2e-2
+        rho champ_uniforme 1 1000.0
+    }
+    Navier_Stokes_standard
+    {
+        Solveur_pression	PETSC Cholesky { }
+        Convection		{ amont }
+        diffusion  {  turbulente l_melange { l_melange 1.e-3 } }
+        Conditions_initiales	{ vitesse champ_uniforme 2 1 0 }
+        Conditions_limites
+        {
+            bas Paroi_fixe
+            haut symetrie
+            entree frontiere_ouverte_vitesse_imposee_sortie Champ_front_uniforme 2 1 0
+            sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+        }
+    }
+
+    Postraitement
+    {
+        sondes
+		{
+            vitesse	grav	vitesse		periode 1e8 segment 10    95 0.05    95 0.95
+            u		VitesseX		periode 1e8 position_like vitesse
+            y_plus		y_plus			periode 1e8 segment 40    1.25 0.05    98.75 0.05
+            pression	pression_pa		periode 1e8 segment 10	0 0.8	100 0.8
+            pression_io	pression		periode 1e8 segment 2    0.75 0    0.75 100
+            pression_i	pression		periode 1e8 segment 100     50 0	50 1
+            pression_o	pression		periode 1e8 segment 100     100 0	100 1
+            nut nu_turb periode 1e8 position_like vitesse
+            mut mu_turb periode 1e8 position_like vitesse
+        }
+        format lml
+        champs dt_post 1e8
+        {
+            vitesse elem
+            pression_pa elem
+        }
+    }
+}
+
+
+Resoudre pb
+
+Fin
+
