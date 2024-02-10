@@ -1,0 +1,171 @@
+# PARALLEL OK #
+
+Dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    pave bloc1
+    {
+        origine 0 0
+        longueurs 100 0.2
+        nombre_de_noeuds 51 3
+    }
+    {
+        bord entree	 X = 0.            0. <= Y <= 0.2
+        bord sortie	 X = 100	    0. <= Y <= 0.2
+        bord bas	 Y = 0. 	    0. <= X <= 100
+    } ,
+    pave bloc2
+    {
+        origine 0 0.2
+        longueurs 100 0.2
+        nombre_de_noeuds 51 3
+    }
+    {
+        bord entree	 X = 0	            0.2 <= Y <= 0.4
+        bord sortie	 X = 100	    0.2 <= Y <= 0.4
+    } ,
+    pave bloc3
+    {
+        origine 0 0.4
+        longueurs 100 0.6
+        nombre_de_noeuds 51 7
+    }
+    {
+        bord entree	 X = 0	            0.4 <= Y <= 1.0
+        bord sortie	 X = 100	    0.4 <= Y <= 1.0
+        bord haut	 Y = 1.0 	    0 <= X <= 100
+    }
+}
+
+# END MESH #
+
+
+# BEGIN PARTITION
+Partition dom
+{
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_impr 1e-10
+    facsec 1
+    facsec_max 1
+    seuil_statio 1e-8
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 pression 1. vitesse 1e-5 temperature 1e8 k 1e-5  omega 1.  }
+        iter_min 2
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+    dt_max 0.5
+}
+
+Pb_Multiphase pb
+
+
+associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    Milieu_composite
+    {
+        liquide_eau Fluide_Incompressible
+        {
+            mu champ_uniforme      1 2e-2
+            rho champ_uniforme     1 1000.0
+            lambda Champ_Uniforme  1 1
+            Cp Champ_Uniforme      1 1
+            beta_th Champ_Uniforme 1 0
+        }
+    }
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg -ksp_type fgmres }
+        convection { amont }
+        diffusion  { turbulente l_melange { l_melange 1.e-3 } }
+        initial_conditions
+        {
+            vitesse champ_fonc_xyz dom 2 1 0
+            pression Champ_Fonc_xyz dom 1 100000.0
+        }
+        conditions_limites
+        {
+            bas paroi_fixe
+            haut symetrie
+            entree frontiere_ouverte_vitesse_imposee_sortie Champ_front_uniforme 2 1 0
+            sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        conditions_limites
+        {
+            bas paroi
+            haut symetrie
+            entree	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            sortie	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            bas paroi_adiabatique
+            haut symetrie
+            entree	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            sortie	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+    }
+    Postraitement
+    {
+        sondes
+		{
+            vitesse	grav	vitesse		periode 1e8 segment 10    95 0.05    95 0.95
+            u		VitesseX		periode 1e8 position_like vitesse
+            y_plus		y_plus			periode 1e8 segment 40    1.25 0.05    98.75 0.05
+            pression	pression_pa		periode 1e8 segment 10	0 0.8	100 0.8
+            pression_io	pression		periode 1e8 segment 2    0.75 0    0.75 100
+            pression_i	pression		periode 1e8 segment 100     50 0	50 1
+            pression_o	pression		periode 1e8 segment 100     100 0	100 1
+            nut NU_TURB_LIQUIDE_EAU periode 1e8 position_like vitesse
+            mut MU_TURB_LIQUIDE_EAU periode 1e8 position_like vitesse
+
+        }
+        format lml
+        champs dt_post 1e8
+        {
+            vitesse_liquide_eau	elem
+            pression elem
+        }
+
+    }
+}
+
+Resoudre pb
+
+Fin
