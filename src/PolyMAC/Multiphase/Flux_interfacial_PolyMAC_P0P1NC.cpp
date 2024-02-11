@@ -18,6 +18,8 @@
 
 Implemente_instanciable(Flux_interfacial_PolyMAC_P0P1NC,"Flux_interfacial_Elem_PolyMAC_P0P1NC|Flux_interfacial_Elem_PolyMAC_P0", Source_Flux_interfacial_base);
 Add_synonym(Flux_interfacial_PolyMAC_P0P1NC, "Flux_interfacial_Elem_PolyVEF_P0");
+Add_synonym(Flux_interfacial_PolyMAC_P0P1NC, "Flux_interfacial_Elem_PolyVEF_P0P1");
+Add_synonym(Flux_interfacial_PolyMAC_P0P1NC, "Flux_interfacial_Elem_PolyVEF_P0P1NC");
 
 Sortie& Flux_interfacial_PolyMAC_P0P1NC::printOn(Sortie& os) const { return os; }
 Entree& Flux_interfacial_PolyMAC_P0P1NC::readOn(Entree& is) { return Source_Flux_interfacial_base::readOn(is); }

@@ -47,7 +47,7 @@ void Perte_Charge_Singuliere_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
   IntTrav sten(0, 2);
 
   for (i = 0; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
+    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
       for (d = 0; d < D; d++)
         for (db = 0; db < D; db++)
           for (n = 0; n < N; n++)
@@ -71,7 +71,7 @@ void Perte_Charge_Singuliere_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
   int i, j, e, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
   DoubleTrav aar_f(N), vn(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
+    if ((f = num_faces(i)) < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
       {
         double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K() / D;
         if (pbm)
