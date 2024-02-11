@@ -76,28 +76,45 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
 {
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
-  const DoubleTab& nf = dom.face_normales(), &vfd = dom.volumes_entrelaces_dir(),
+  const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                     *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
   update_nu();
 
-  int i, e, f, n, N = equation().inconnue().valeurs().line_size() / dimension;
+  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size() / dimension, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom), skip;
   double dt = 1e10;
-  DoubleTrav flux(N), vol(N);
-  for (e = 0; e < dom.nb_elem(); e++)
+  DoubleTrav flux(dom.nb_faces(), N), vol(N), a_f(N), w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
+
+  for (e = 0; e < dom.nb_elem_tot(); e++)
     {
-      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (!Option_PolyVEF_P0::traitement_axi || (Option_PolyVEF_P0::traitement_axi && fcl(f,0) != 2) )
+      //si e n'a aucune face reelle, rien a faire
+      for (skip = (e >= dom.nb_elem()), i = 0; skip && i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) skip &= f >= dom.nb_faces();
+      if (skip) continue;
+
+      /* matrice w2, sommes de ses lignes et somme totale */
+      for (dom.W2(&nu_, e, w2), lw2.resize(w2.dimension(0), N), lw2 = 0, tw2 = 0, i = 0; i < w2.dimension(0); i++)
+        for (j = 0; j < w2.dimension(0); j++)
           for (n = 0; n < N; n++)
-            {
-              flux(n) += dom.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
-              if (fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //cf. Op_Conv_EF_Stab_PolyVEF_Face.cpp
-            }
-      for (n = 0; n < N; n++)
-        if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
-          dt = std::min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));
+            lw2(i, n) += w2(i, j, n), tw2(n) += w2(i, j, n);
+
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        if (f < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            if (fcl(fb, 0) != 2)
+              for (n = 0; n < N; n++)
+                flux(f, n) += std::abs(w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n));
     }
+  for (f = 0; f < dom.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
+      {
+        for (vol = 0, a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          for (n = 0; n < N; n++)
+            vol(n) += pf(f) * vfd(f, i) * (a_r ? (*a_r)(e, n) : 1), a_f(n) += vfd(f, i) / vf(f) * (alp ? (*alp)(e, n) : 1);
+        for (n = 0; n < N; n++)
+          if (a_f(n) > 0.25 && flux(f, n)) /* sous 0.25, on suppose que les forces stabilisent */
+            dt = std::min(dt, vol(n) / flux(f, n));
+      }
   return Process::mp_min(dt);
 }
 
@@ -116,10 +133,10 @@ void Op_Diff_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
   /* stencil : tous les voisins de la face par un element, sans melanger les dimensions ou les composantes */
   for (f = 0; f < dom.nb_faces(); f++)
-    if (!p0p1 || fcl(f, 0) < 3)
+    if (!p0p1 || fcl(f, 0) < 2)
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          if (!p0p1 || fcl(fb, 0) < 3)
+          if (!p0p1 || fcl(fb, 0) < 2)
             for (nd = 0; nd < ND; nd++)
               stencil.append_line(ND * f + nd, ND * fb + nd);
 
@@ -137,7 +154,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
-  int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, skip, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom), skip;
 
   DoubleTrav w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
 
@@ -154,16 +171,17 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             lw2(i, n) += w2(i, j, n), tw2(n) += w2(i, j, n);
 
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (f < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
+        if (f < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
           for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-            for (d = 0, nd = 0; d < D; d++)
-              for (n = 0; n < N; n++, nd++)
-                {
-                  double fac = w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n);
-                  secmem(f, nd) -= fac * inco(fb, nd);
-                  if (mat && (!p0p1 || fcl(fb, 0) < 3))
-                    (*mat)(ND * f + nd, ND * fb + nd) += fac;
-                }
+            if (fcl(fb, 0) != 2)
+              for (d = 0, nd = 0; d < D; d++)
+                for (n = 0; n < N; n++, nd++)
+                  {
+                    double fac = w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n);
+                    secmem(f, nd) -= fac * inco(fb, nd);
+                    if (mat && (!p0p1 || fcl(fb, 0) < 2))
+                      (*mat)(ND * f + nd, ND * fb + nd) += fac;
+                  }
 
     }
 }

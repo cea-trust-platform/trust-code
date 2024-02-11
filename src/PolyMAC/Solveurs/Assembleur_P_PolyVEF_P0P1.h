@@ -24,14 +24,15 @@ class Assembleur_P_PolyVEF_P0P1 : public Assembleur_P_PolyMAC_P0
 
 public:
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  // void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
-  // void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  int modifier_solution(DoubleTab&) override;
   void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
 
-  const IntVect& ps_used() const;
+  const IntTab& ps_ref() const;
 
 private:
-  mutable IntVect ps_used_; //ps_used(s) = 1 si le sommet s est bien utilise, 0 sinon
+  mutable IntTab ps_ref_; //ps_used(s) = -1 si la pression au sommet s est utilisee, sinon elle est mise egale a celle du sommmet ps_ref_(s)
   IntTab div_v_tab1, div_v_tab2, div_p_tab1, div_p_tab2, grad_tab1, grad_tab2; //stencils des matrices "div" (lignes reelles seulement) et "grad" (toutes les lignes)
 };
 
