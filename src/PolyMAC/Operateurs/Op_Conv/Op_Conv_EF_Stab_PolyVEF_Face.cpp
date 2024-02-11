@@ -142,7 +142,7 @@ double Op_Conv_EF_Stab_PolyVEF_Face::calculer_dt_stab() const
       }
   /* dt sur ce proc */
   for (f = 0; f < dom.nb_faces(); f++)
-    if (fcl(f, 0) < 3)
+    if (fcl(f, 0) < 2)
       {
         for (a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           for (n = 0; n < N; n++)
@@ -173,7 +173,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
     for (j = 0; j < 2; j++)
       if ((f = e_fa_f(i, j)) < dom.nb_faces())
         for (fb = e_fa_f(i, !j), d = 0; d < D; d++)
-          if (!p0p1 || (fcl(f, 0) < 3 && fcl(fb, 0) < 3))
+          if (!p0p1 || (fcl(f, 0) < 2 && fcl(fb, 0) < 2))
             for (n = 0; n < N; n++)
               for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                 stencil.append_line(N * (D * f + d) + n, N * (D * fb + d) + m);
@@ -237,7 +237,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (n = 0; n < N; n++)
               F_fa(n) += e_fa_c(j) * F_f(f, n);
           for (k = 0; k < 2; k++)
-            if ((f = e_fa_f(i, k)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 3)) /* face d'arrivee */
+            if ((f = e_fa_f(i, k)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2)) /* face d'arrivee */
               for (l = 0; l < 2; l++)
                 for (fb = e_fa_f(i, l), d = 0; d < D; d++)
                   for (n = 0; n < N; n++)
@@ -245,7 +245,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                       {
                         double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * ((1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2 - (fb == f));
                         secmem(f, N * d + n) -= fac * inco(fb, N * d + m);
-                        if (mat && (!p0p1 || fcl(fb, 0) < 3))
+                        if (mat && (!p0p1 || fcl(fb, 0) < 2))
                           (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
                       }
         }
