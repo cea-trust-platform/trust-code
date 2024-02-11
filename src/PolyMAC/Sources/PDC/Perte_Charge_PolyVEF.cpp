@@ -98,7 +98,7 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
       /* contributions aux faces de e */
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        if (f < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
+        if (f < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
           {
             /* vecteur vitesse en e */
             double dh_e = C_dh ? dh.valeurs()(0, 0) : dh.valeur_a_compo(pos, 0);

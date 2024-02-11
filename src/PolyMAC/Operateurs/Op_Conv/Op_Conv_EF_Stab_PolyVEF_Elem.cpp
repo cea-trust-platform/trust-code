@@ -36,10 +36,17 @@
 #include <cfloat>
 #include <vector>
 #include <cmath>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
+Add_synonym(Op_Conv_EF_Stab_PolyVEF_Elem, "Op_Conv_EF_Stab_PolyVEF_P0P1_Elem");
+Add_synonym(Op_Conv_EF_Stab_PolyVEF_Elem, "Op_Conv_EF_Stab_PolyVEF_P0P1NC_Elem");
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_Elem, "Op_Conv_Amont_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_Elem);
+Add_synonym(Op_Conv_Amont_PolyVEF_Elem, "Op_Conv_Amont_PolyVEF_P0P1_Elem");
+Add_synonym(Op_Conv_Amont_PolyVEF_Elem, "Op_Conv_Amont_PolyVEF_P0P1NC_Elem");
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_Elem, "Op_Conv_Centre_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_Elem);
+Add_synonym(Op_Conv_Centre_PolyVEF_Elem, "Op_Conv_Centre_PolyVEF_P0P1_Elem");
+Add_synonym(Op_Conv_Centre_PolyVEF_Elem, "Op_Conv_Centre_PolyVEF_P0P1NC_Elem");
 
 Op_Conv_Amont_PolyVEF_Elem::Op_Conv_Amont_PolyVEF_Elem() { alpha_ = 1.0; }
 Op_Conv_Centre_PolyVEF_Elem::Op_Conv_Centre_PolyVEF_Elem() { alpha_ = 0.0; }
