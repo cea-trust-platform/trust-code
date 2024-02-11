@@ -43,20 +43,35 @@ Sortie& Assembleur_P_PolyVEF_P0P1::printOn(Sortie& s) const { return s << que_su
 
 Entree& Assembleur_P_PolyVEF_P0P1::readOn(Entree& s) { return Assembleur_P_PolyMAC_P0::readOn(s); }
 
-const IntVect& Assembleur_P_PolyVEF_P0P1::ps_used() const
+const IntTab& Assembleur_P_PolyVEF_P0P1::ps_ref() const
 {
-  if (ps_used_.get_md_vector().non_nul()) return ps_used_;
+  if (ps_ref_.get_md_vector().non_nul()) return ps_ref_;
   const Domaine_PolyVEF& dom = ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
-  const IntTab& f_s = dom.face_sommets(), &fcl = ch.fcl();
+  const IntTab& f_s = dom.face_sommets(), &fcl = ch.fcl(), &e_s = dom.domaine().les_elems();
+  const DoubleTab& xs = dom.domaine().coord_sommets();
+  const Static_Int_Lists& s_e = dom.som_elem();
 
-  dom.domaine().creer_tableau_sommets(ps_used_);
+  dom.domaine().creer_tableau_sommets(ps_ref_);
   for (int f = 0; f < dom.nb_faces_tot(); f++)
-    if (fcl(f, 0) < 3)
+    if (fcl(f, 0) < 2)
       for (int i = 0, s; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-        ps_used_(s) = 1;
-  ps_used_.echange_espace_virtuel();
-  return ps_used_;
+        ps_ref_(s) = -1;
+  ps_ref_.echange_espace_virtuel();
+  /* pour les pressions non utilisees, de quel sommet doit-on prendre la pression ? */
+  for (int s = 0; s < dom.nb_som(); s++)
+    if (ps_ref_(s) == 0)
+      {
+        std::array<double, 3> xs_min = { 1e8, 1e8, 1e8 };
+        for (int i = 0; i < s_e.get_list_size(s); i++)
+          for (int e = s_e(s, i), j = 0, sb; j < e_s.dimension(1) && (sb = e_s(e, j)) >= 0; j++)
+            if (ps_ref_(sb) < 0)
+              {
+                std::array<double, 3> xsb = { xs(sb, 0), xs(sb, 1), dimension < 3 ? 0 : xs(sb, 2) };
+                if (xsb < xs_min) ps_ref_(s) = sb, xs_min = xsb;
+              }
+      }
+  return ps_ref_;
 }
 
 int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
@@ -113,6 +128,157 @@ int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVe
     if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
+  return 1;
+}
+
+void Assembleur_P_PolyVEF_P0P1::dimensionner_continuite(matrices_t matrices, int aux_only) const
+{
+  const Domaine_PolyVEF_P0P1& dom = ref_cast(Domaine_PolyVEF_P0P1, le_dom_PolyMAC.valeur());
+  int i, j, e, f, s, sb, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, m, M = equation().get_champ("pression").valeurs().line_size(),
+                            ne_tot = dom.nb_elem_tot(), ns_tot = dom.domaine().nb_som_tot();
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue());
+  const IntTab& fcl = ch.fcl(), &scl_d = ch.scl_d(1), &f_e = dom.face_voisins(), &e_s = dom.domaine().les_elems(), &ps_r = ps_ref();
+  IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
+  DoubleTrav w2;
+  /* equations sum alpha_k = 1 */
+  if (!aux_only)
+    for (e = 0; e < dom.nb_elem(); e++)
+      for (n = 0; n < N; n++) sten_a.append_line(e, N * e + n);
+  /* equations aux sommets */
+  for (f = 0; f < dom.nb_faces_tot(); f++)
+    if (fcl(f, 0) < 2) /* sten_v : divergence "classique" */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
+          for (d = 0; s < dom.domaine().nb_som() && scl_d(s) == scl_d(s + 1) && d < D; d++) //sommets a pression non imposee
+            for (n = 0; n < N; n++)
+              sten_v.append_line(!aux_only * ne_tot + s, N * (D * f + d) + n);
+
+  /* sten_p : diagonale du vide + egalites p_s = p_e pour les pressions inutilisees */
+  for (e = 0; e < dom.nb_elem(); e++)
+    for (m = 0; m < M; m++)
+      sten_p.append_line(M * e, M * e);
+  for (s = 0; s < dom.nb_som() ; s++)
+    for (n = 0, m = 0; n < N; n++, m += (M > 1))
+      {
+        sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + s) + m);
+        if ((sb = ps_r(s)) >= 0)
+          sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + sb) + m), sten_p.append_line(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s) + m);
+      }
+
+  tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
+  if (!aux_only) Matrix_tools::allocate_morse_matrix(ne_tot + ns_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + ns_tot), M * (ne_tot + ns_tot), sten_p, *matrices.at("pression"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + ns_tot), equation().inconnue().valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
+}
+
+void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
+{
+  const Domaine_PolyVEF_P0P1& dom = ref_cast(Domaine_PolyVEF_P0P1, le_dom_PolyMAC.valeur());
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue());
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
+  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr,
+                    ar_bord = pbm ? pbm->equation_masse().champ_conserve().valeur_aux_bords() : DoubleTab(), &xp = dom.xp(), &xv = dom.xv(), &xs = dom.domaine().coord_sommets(),
+                    &nf = dom.face_normales(), &a_es = ref_cast(Op_Grad_PolyVEF_P0P1_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).alpha_es();
+  const IntTab& fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1), &f_e = dom.face_voisins(), &e_s = dom.domaine().les_elems(), &f_s = dom.face_sommets(), &ps_r = ps_ref();
+  const DoubleVect& ve = dom.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
+  int i, j, e, f, s, sb, sc, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = dom.nb_elem_tot();
+  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  DoubleTrav w2, a_r(N), v(2, D);
+  double ar_tot = 1, acc, dt = equation().schema_temps().pas_de_temps(), fac, xa[3], vz[3] = { 0, 0, 1 };
+  secmem = 0, a_r = 1;
+
+  /* equations sum alpha_k = 1 : on multiplie par porosite * volume * rho_m / dt pour que l'equation ressemble a delta p = 0 */
+  if (!aux_only)
+    for (e = 0; e < dom.nb_elem(); e++)
+      {
+        if (alpha_rho)
+          for (ar_tot = 0, n = 0; n < N; n++)
+            ar_tot += (*alpha_rho)(e, n);
+        for (fac = ve(e) * pe(e) * ar_tot / dt, secmem(e) = -fac, n = 0; n < N; n++) secmem(e) += fac * (*alpha)(e, n);
+        for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -fac;
+      }
+
+  /* equations aux sommets : comme dans Op_Div_PolyVEF_P0P1, mais avec produit par alpha * rho */
+  for (f = 0; f < dom.nb_faces_tot(); f++)
+    {
+      //alpha * rho amont
+      if (alpha_rho)
+        for (n = 0; n < N; n++)
+          {
+            for (acc = 0, d = 0; d < D; d++)
+              acc += nf(f, d) * vit(f, N * d + n);
+            for (a_r(n) = 0, i = 0; i < 2; i++)
+              a_r(n) += (acc * (i ? -1 : 1) > 0 ? 1 : acc ? 0 : 0.5) * (f_e(f, i) >= 0 ? (*alpha_rho)(f_e(f, i), n) : ar_bord(f, n));
+          }
+
+      //partie aux sommets de la div elem amont/aval
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++) //si P0 + P1 : sommets de ces elements
+          if (s < dom.nb_som() && ps_r(s) < 0 && scl_d(s) == scl_d(s + 1))
+            for (d = 0; d < D; d++)
+              for (n = 0, m = 0; n < N; n++, m += (M > 1))
+                {
+                  secmem(!aux_only * ne_tot + s, m) -= (i ? 1 : -1) * (D - 1) * nf(f, d) * pf(f) * a_es(e, j) * vit(f, N * d + n) * a_r(n) / D;
+                  if (fcl(f, 0) < 2)
+                    mat_v(M * (!aux_only * ne_tot + s) + m, N * (D * f + d) + n) += (i ? 1 : -1) * (D - 1) * nf(f, d) * pf(f) * a_es(e, j) * a_r(n) / D;
+                }
+      //divergence directe aux sommets
+      for (i = 0; i < (D < 3 ? 1 : f_s.dimension(1)) && (s = f_s(f, i)) >= 0; i++)
+        {
+          sb = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0);
+          for (d = 0; d < D; d++) xa[d] = (xs(s, d) + xs(sb, d)) / 2;
+          for (v = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) // surface * normale de s vers sb
+            {
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xp(e, 0), D < 3 ? nullptr : &xp(e, 0));
+              for (fac = (dom.dot(&xs(sb, 0), &vb[0], &xs(s, 0)) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
+                v(0, d) += fac * vb[d], v(1, d) -= fac * vb[d];
+            }
+          //bord
+          if (f_e(f, 1) < 0)
+            {
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xs(s, 0), D < 3 ? nullptr : &xs(s, 0));
+              for (fac = (dom.dot(&nf(f, 0), &vb[0]) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
+                v(0, d) += fac * vb[d], v(1, d) += fac * vb[d];
+            }
+          //contributions
+          for (j = 0; j < 2; j++)
+            if ((sc = j ? sb : s) < dom.nb_som() && ps_r(sc) < 0 && scl_d(sc) == scl_d(sc + 1))
+              for (d = 0; d < D; d++)
+                for (n = 0, m = 0; n < N; n++, m += (M > 1))
+                  {
+                    secmem(!aux_only * ne_tot + sc, m) -= (D - 1) * v(j, d) * pf(f) * vit(f, N * d + n) * a_r(n) / D;
+                    if (fcl(f, 0) < 2) mat_v(M * (!aux_only * ne_tot + sc) + m, N * (D * f + d) + n) += (D - 1) * v(j, d) * pf(f) * a_r(n) / D;
+                  }
+        }
+    }
+
+  //equations restantes aux sommets : pressions imposees et inutiles
+  for (s = 0; s < dom.nb_som(); s++)
+    if (scl_d(s) < scl_d(s + 1)) /* lignes "pression aux sommets imposee" */
+      for (m = 0; m < M; m++)
+        {
+          secmem(!aux_only * ne_tot + s, m) -= press(!aux_only * ne_tot + s, m) - ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), m);
+          mat_p(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + s) + m)++;
+        }
+    else if ((sb = ps_r(s)) >= 0) /* force de rappel avec les sommets voisins pour les pressions inutilisees */
+      for (m = 0; m < M; m++)
+        {
+          secmem(!aux_only * ne_tot + s , m) += press(!aux_only * ne_tot + sb, m) - press(!aux_only * ne_tot + s , m);
+          secmem(!aux_only * ne_tot + sb, m) += press(!aux_only * ne_tot + s , m) - press(!aux_only * ne_tot + sb, m);
+          mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + s ) + m)++;
+          mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + sb) + m)--;
+          mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + sb) + m)++;
+          mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s ) + m)--;
+        }
+}
+
+int Assembleur_P_PolyVEF_P0P1::modifier_solution(DoubleTab& pression)
+{
+  if(has_P_ref) return 1;
+  DoubleTab_parts ppart(pression);
+  ppart[0] -= mp_min_vect(ppart[0]), ppart[1] -= mp_min_vect(ppart[1]);
   return 1;
 }
 
