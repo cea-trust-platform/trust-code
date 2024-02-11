@@ -124,7 +124,7 @@ int  Assembleur_P_PolyVEF_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
 void Assembleur_P_PolyVEF_P0P1NC::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
   const Domaine_PolyVEF_P0P1NC& domaine = ref_cast(Domaine_PolyVEF_P0P1NC, le_dom_PolyMAC.valeur());
-  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
+  int i, j, e, f, fb, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, m, M = equation().get_champ("pression").valeurs().line_size(),
                          ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const IntTab& fcl = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue()).fcl(), &e_f = domaine.elem_faces();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
@@ -146,7 +146,9 @@ void Assembleur_P_PolyVEF_P0P1NC::dimensionner_continuite(matrices_t matrices, i
           }
       else if (fcl(f, 0) == 1)
         for (m = 0; m < M; m++) sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m); //Neumann
-      else for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten_v.append_line(M * (!aux_only * ne_tot + f) + m, N * f + n); //Dirichlet
+      else for (d = 0; d < D; d++)
+          for (n = 0, m = 0; n < N; n++, m += (M > 1))
+            sten_v.append_line(M * (!aux_only * ne_tot + f) + m, N * (D * f + d) + n); //Dirichlet
 
   tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
   if (!aux_only) Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
@@ -163,21 +165,22 @@ void Assembleur_P_PolyVEF_P0P1NC::assembler_continuite(matrices_t matrices, Doub
                    &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue()).fcl(), &e_f = domaine.elem_faces();
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
-  int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = domaine.nb_elem_tot(), d, D = dimension;
+  int i, j, e, f, fb, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = domaine.nb_elem_tot();
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
-  double ar_tot, acc;
+  double ar_tot, acc, dt = equation().schema_temps().pas_de_temps(), fac2;
   secmem = 0, fac = 1;
 
   /* equations sum alpha_k = 1 */
-  /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   if (!aux_only)
     for (e = 0; e < domaine.nb_elem(); e++)
-      for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * (*alpha)(e, n);
-  /* matrice */
-  if (!aux_only)
-    for (e = 0; e < domaine.nb_elem(); e++)
-      for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -pe(e) * ve(e);
+      {
+        if (alpha_rho)
+          for (ar_tot = 0, n = 0; n < N; n++)
+            ar_tot += (*alpha_rho)(e, n);
+        for (fac2 = ve(e) * pe(e) * ar_tot / dt, secmem(e) = -fac2, n = 0; n < N; n++) secmem(e) += fac2 * (*alpha)(e, n);
+        for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -fac2;
+      }
 
   /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
   for (mat_p.get_set_coeff() = 0, mat_v.get_set_coeff() = 0, e = 0; e < ne_tot; e++)
@@ -201,19 +204,16 @@ void Assembleur_P_PolyVEF_P0P1NC::assembler_continuite(matrices_t matrices, Doub
         }
       else  //Dirichlet -> egalite flux_tot_imp - flux_tot = 0
         {
-          if (M == 1 && N > 1) //une pression, plusieurs vitesses -> on ne peut imposer qu'une ponderation : on choisit celle ocrrespondant aux flux de masse total
-            {
-              for (ar_tot = 0, n = 0; n < N; n++) ar_tot += (*alpha_rho)(e, n);
-              for (n = 0; n < N; n++) fac(n) = (*alpha_rho)(e, n) / ar_tot;
-            }
-          else if (M != N) abort(); //sinon, il faut autant de pressions que de vitesses
-
-          for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(!aux_only * ne_tot + f, m) += vf(f) * fac(n) * vit(f, n);
+          for (d = 0; d < D; d++)
+            for (n = 0, m = 0; n < N; n++, m += (M > 1))
+              secmem(!aux_only * ne_tot + f, m) += (alpha_rho ? (*alpha_rho)(e, n) : 1) * nf(f, d) * vit(f, N * d + n);
           if (fcl(f, 0) == 3)
             for (d = 0; d < D; d++)
               for (n = 0, m = 0; n < N; n++, m += (M > 1)) //contrib de la valeur imposee: Dirichlet non homogene seulement
-                secmem(!aux_only * ne_tot + f, m) -= vf(f) * fac(n) * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
-          for (n = 0, m = 0; n < N; n++, m += (M > 1)) mat_v(M * (!aux_only * ne_tot + f) + m, N * f + n) -= vf(f) * fac(n);
+                secmem(!aux_only * ne_tot + f, m) -= (alpha_rho ? (*alpha_rho)(e, n) : 1) * nf(f, d) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          for (d = 0; d < D; d++)
+            for (n = 0, m = 0; n < N; n++, m += (M > 1))
+              mat_v(M * (!aux_only * ne_tot + f) + m, N * (D * f + d) + n) -= (alpha_rho ? (*alpha_rho)(e, n) : 1) * nf(f, d);
         }
 }
 
