@@ -85,7 +85,7 @@ void DP_Impose_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
       DP_.valeur().valeur_aux(xvf, DP);
 
       for (a_f = 1, i = 0; i < num_faces.size(); i++)
-        if ((f = num_faces(i)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 3))
+        if ((f = num_faces(i)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
           {
             if (alp)
               for (a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
