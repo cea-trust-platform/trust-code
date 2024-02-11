@@ -17,7 +17,7 @@ then
    then
       PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib -lpetsc"
       # -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
-      SYSLIBS=$SYSLIBS" -ldl"
+      [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -ldl"
       superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC=$PETSC" -l${superlu%.a}"
       [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
       [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
@@ -190,7 +190,8 @@ fi
 # Si TRUST_CC_BAXE_EXTP GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
 [ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS=" -L/usr/lib/x86_64-linux-gnu "$SYSLIBS
 #SYSLIBS=$SYSLIBS" $lz-lm -ldl"
-SYSLIBS=$SYSLIBS" $lz -ldl"
+SYSLIBS=$SYSLIBS" $lz"
+[ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -ldl"
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?
