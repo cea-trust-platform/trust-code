@@ -80,7 +80,7 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   for (f = 0, i = 0; f < dom.nb_faces(); f++)
     for (d = 0; d < D; d++)
       for (n = 0; n < N; n++, i++)
-        if (p0p1 && fcl(f, 0) > 2) //Dirichlet en P0P1 : diagonal
+        if (p0p1 && fcl(f, 0) > 1) //Dirichlet/Navier en P0P1 : diagonal
           sten.append_line(i, i);
         else if (corr && fcl(f, 0) > 2) //Dirichlet + masse ajoutee : melange tout
           for (j = N * D * f; j < N * D * (f + 1); j++) sten.append_line(i, j);
@@ -113,7 +113,7 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
   double force = 1e12; //forcage des CLs de Dirichlet
   for (f = 0; f < dom.nb_faces(); f++) //faces reelles
-    if (p0p1 && fcl(f, 0) > 2) //Dirichlet en P0P1 -> trivial
+    if (p0p1 && fcl(f, 0) > 1) //Dirichlet/Navier en P0P1 -> trivial
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           {

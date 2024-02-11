@@ -38,10 +38,9 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
   const Domaine_PolyMAC& dom = le_dom_PolyMAC.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const DoubleTab& inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
-  const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &e_s = dom.domaine().les_elems();
-  const IntVect& ps_used = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_used();
-  const Static_Int_Lists& s_e = dom.som_elem();
-  int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
+  const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &e_s = dom.domaine().les_elems(),
+                &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();
+  int i, j, e, f, s, sb, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
 
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   IntTrav sten_v(0,2), sten_p(0, 2); //stencil des deux matrices
@@ -64,8 +63,8 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
   for (s = 0; s < dom.nb_som() ; s++)
     {
       sten_p.append_line(ne_tot + s, ne_tot + s);
-      if (!ps_used(s))
-        for (i = 0; i < s_e.get_list_size(s); i++) sten_p.append_line(ne_tot + s, s_e(s, i)), sten_p.append_line(s_e(s, i), ne_tot + s);
+      if ((sb = ps_ref(s)) >= 0)
+        sten_p.append_line(ne_tot + s, ne_tot + sb), sten_p.append_line(ne_tot + sb, ne_tot + s);
     }
 
   if (matv) tableau_trier_retirer_doublons(sten_v), Matrix_tools::allocate_morse_matrix(press.size_totale(), inco.size_totale(), sten_v, matv2);
@@ -81,10 +80,9 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
   const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
   const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = dom.face_normales(), &xs = dom.domaine().coord_sommets(), &xp = dom.xp(), &xv = dom.xv(),
                    &a_es = ref_cast(Op_Grad_PolyVEF_P0P1_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).alpha_es();
-  const IntTab& f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &e_s = dom.domaine().les_elems(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1);
-  const IntVect& ps_used = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression()).ps_used();
+  const IntTab& f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &e_s = dom.domaine().les_elems(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1),
+                &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();
   const DoubleVect& pf = equation().milieu().porosite_face();
-  const Static_Int_Lists& s_e = dom.som_elem();
   int i, j, e, f, s = 0, sb, sc, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = vit.line_size() / D, has_P_ref = 0, has_s = secmem.dimension_tot(0) > ne_tot, ok;
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   double vz[3] = { 0, 0, 1 }, xa[3], fac;
@@ -99,7 +97,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
       const ArrOfInt& items_blocs = xs.get_md_vector().valeur().get_items_to_compute(); /* 1er proc possedant un sommet reel : plus dur... */
       for (ok = 0, i = 0; !ok && i < items_blocs.size_array(); i += 2)
         for (s = items_blocs[i]; !ok && s < items_blocs[i + 1]; s++)
-          ok |= ps_used(s);
+          ok |= ps_ref(s) < 0;
       if (Process::me() == Process::mp_min(ok ? Process::me() : 1e8))
         (*matp)(ne_tot + s, ne_tot + s) += 1;
     }
@@ -123,7 +121,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
                 }
           if (has_s) //partie P0+P1
             for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++) //si P0 + P1 : sommets de ces elements
-              if (s < dom.nb_som() && ps_used(s) && scl_d(s) == scl_d(s + 1))
+              if (s < dom.nb_som() && ps_ref(s) < 0 && scl_d(s) == scl_d(s + 1))
                 for (d = 0; d < D; d++)
                   for (n = 0; n < N; n++)
                     {
@@ -152,7 +150,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
             }
           //contributions
           for (j = 0; j < 2; j++)
-            if ((sc = j ? sb : s) < dom.nb_som() && ps_used(sc) && scl_d(sc) == scl_d(sc + 1))
+            if ((sc = j ? sb : s) < dom.nb_som() && ps_ref(sc) < 0 && scl_d(sc) == scl_d(sc + 1))
               for (d = 0; d < D; d++)
                 for (n = 0; n < N; n++)
                   {
@@ -170,17 +168,17 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
           secmem(ne_tot + s, n) -= press(ne_tot + s, n) - ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), n);
           if (matp) (*matp)(N * (ne_tot + s) + n, N * (ne_tot + s) + n)++;
         }
-    else if (!ps_used(s)) /* egalites "p_s = p_e" pour les pressions inutilisees */
-      for (i = 0, j = s_e.get_list_size(s); i < j; i++)
-        for (n = 0; n < N; n++)
-          {
-            secmem(ne_tot + s, n) += (press(s_e(s, i), n) - press(ne_tot + s, n)) / j, secmem(s_e(s, i), n) -= (press(s_e(s, i), n) - press(ne_tot + s, n)) / j;
-            if (matp)
-              {
-                (*matp)(N * (ne_tot + s) + n, N * s_e(s, i) + n) -= 1. / j;
-                (*matp)(N * (ne_tot + s) + n, N * (ne_tot + s) + n) += 1. / j;
-                (*matp)(N * s_e(s, i) + n, N * (ne_tot + s) + n) -= 1. / j;
-                (*matp)(N * s_e(s, i) + n, N * s_e(s, i) + n) += 1. / j;
-              }
-          }
+    else if ((sb = ps_ref(s)) >= 0) /* forces "p_s = p_sb" pour les pressions inutilisees */
+      for (n = 0; n < N; n++)
+        {
+          secmem(ne_tot + s, n)  += press(ne_tot + sb, n) - press(ne_tot + s , n);
+          secmem(ne_tot + sb, n) += press(ne_tot + s , n) - press(ne_tot + sb, n);
+          if (matp)
+            {
+              (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + s ) + n)++;
+              (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + sb) + n)--;
+              (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + sb) + n)++;
+              (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + s ) + n)--;
+            }
+        }
 }

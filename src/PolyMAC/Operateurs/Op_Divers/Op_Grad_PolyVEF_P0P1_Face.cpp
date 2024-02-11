@@ -58,8 +58,7 @@ const DoubleTab& Op_Grad_PolyVEF_P0P1_Face::alpha_es() const
   if (alpha_es_.nb_dim() > 1) return alpha_es_;
   const Domaine_PolyMAC& dom = ref_domaine.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
-  const IntVect& ps_used = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression()).ps_used();
-  const IntTab& e_s = dom.domaine().les_elems(), &scl_d = ch.scl_d(1);
+  const IntTab& e_s = dom.domaine().les_elems(), &scl_d = ch.scl_d(1), &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();;
   const DoubleTab& xp = dom.xp(), &xs = dom.domaine().coord_sommets();
   int e, s, i, j, D = dimension, nl = D + 1, nc, nm, un = 1, infoo = 0, rank, nw;
   double eps = 1e-8;
@@ -71,9 +70,20 @@ const DoubleTab& Op_Grad_PolyVEF_P0P1_Face::alpha_es() const
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {
       for (v_s.clear(), i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-        if (ps_used(s) || scl_d(s) < scl_d(s + 1))
+        if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
           v_s.push_back(s);
       nc = (int) v_s.size(), nm = std::max(nc, nl), A.resize(nc, nl), B.resize(nm), pvt.resize(nm);
+      if (nc < D + 1) //pas assez de points pour une interpolation lineaire -> on fait comme on peut...
+        {
+          for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+            if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
+              j++;
+          for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+            if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
+              alpha_es_(e, i) = 1. / j;
+          continue;
+        }
+
       /* systeme lineaire : interpolation exacte sur les fonctions affines */
       for (A = 0, B = 0, B(D) = 1, i = 0; i < nc; i++)
         for (s = v_s[i], j = 0; j < nl; j++)
@@ -83,7 +93,7 @@ const DoubleTab& Op_Grad_PolyVEF_P0P1_Face::alpha_es() const
       W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
       /* stockage */
       for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-        if (ps_used(s) || scl_d(s) < scl_d(s + 1))
+        if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
           alpha_es_(e, j) = B(j), j++;
     }
   return alpha_es_;
@@ -102,7 +112,7 @@ void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int 
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
   for (f = 0; f < (virt ? dom.nb_faces_tot() : dom.nb_faces()); f++)
-    if (fcl(f, 0) < 3 && f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0)) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
+    if (fcl(f, 0) < 2 && f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0)) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
       {
         /* elements amont/aval */
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
@@ -141,7 +151,7 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
 
   /* aux faces */
   for (f = 0; f < (virt ? dom.nb_faces_tot() : dom.nb_faces()); f++)
-    if (fcl(f, 0) < 3 && (f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0))) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
+    if (fcl(f, 0) < 2 && (f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0))) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
       {
         for (p_a_v = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           for (n = 0; n < N; n++) p_a_v(n) += vfd(f, i) * pf(f) * (alp ? (*alp)(e, n) : 1);
