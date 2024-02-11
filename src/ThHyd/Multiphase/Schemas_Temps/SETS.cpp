@@ -521,7 +521,8 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       incr_var_convergence_.clear(); // clear if new time-step or Newton incr !
       for (auto &&n_v : incr)
         {
-          double vm = mp_min_vect(*n_v.second), vM = mp_max_vect(*n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
+          ConstDoubleTab_parts vp(*n_v.second);
+          double vm = mp_min_vect(vp[0]), vM = mp_max_vect(vp[0]), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
           if (!Process::me())
             {
               tp << x;
@@ -531,9 +532,12 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
 
       /* convergence? */
       cv = corriger_incr_alpha(inco["alpha"]->valeurs(), *incr["alpha"], err_a_sum) < crit_conv_["alpha"];
-      for (auto &&n_v : incr)
+      for (auto && n_v : incr)
         if (crit_conv_.count(n_v.first))
-          cv &= mp_max_abs_vect(*n_v.second) < crit_conv_.at(n_v.first);
+          {
+            ConstDoubleTab_parts vp(*n_v.second);
+            cv &= mp_max_abs_vect(vp[0]) < crit_conv_.at(n_v.first);
+          }
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto &&n_i : inco)

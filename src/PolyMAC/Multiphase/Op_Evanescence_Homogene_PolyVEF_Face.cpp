@@ -30,8 +30,10 @@
 #include <Pb_Multiphase.h>
 #include <Dirichlet.h>
 #include <SETS.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Op_Evanescence_Homogene_PolyVEF_Face, "Op_Evanescence_HOMOGENE_PolyVEF_P0_Face|Op_Evanescence_HOMOGENE_PolyVEF_P0P1_Face", Op_Evanescence_Homogene_Face_base);
+Add_synonym(Op_Evanescence_Homogene_PolyVEF_Face, "Op_Evanescence_HOMOGENE_PolyVEF_P0P1NC_Face");
 
 Sortie& Op_Evanescence_Homogene_PolyVEF_Face::printOn(Sortie& os) const { return os; }
 Entree& Op_Evanescence_Homogene_PolyVEF_Face::readOn(Entree& is) { return Op_Evanescence_Homogene_Face_base::readOn(is); }
@@ -55,7 +57,7 @@ void Op_Evanescence_Homogene_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
         for (f = 0; f < domaine.nb_faces(); f++, idx.clear())
-          if (!p0p1 || fcl(f, 0) < 3)
+          if (!p0p1 || fcl(f, 0) < 2)
             for (d = 0; d < D; d++)
               {
                 for (i = N * (D * f + d), n = 0; n < N; n++, i++)
@@ -64,6 +66,10 @@ void Op_Evanescence_Homogene_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
                 for (i = N * (D * f + d), n = 0; n < N; n++, i++)
                   for (auto &&c : idx) sten.append_line(i, c);
               }
+          else for (d = 0; d < D; d++)
+              for (n = 0; n < N; n++)
+                for (i = N * (D * f + d) + n, j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+                  sten.append_line(i, mat.get_tab2()(j) - 1);
 
         Matrix_tools::allocate_morse_matrix(mat.nb_lignes(), mat.nb_colonnes(), sten, mat2);
         mat = mat2; //pour forcer l'ordre des coefficients dans la matrice (accelere les operations ligne a ligne)
@@ -132,7 +138,7 @@ void Op_Evanescence_Homogene_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
     }
 
   for (f = 0; f < domaine.nb_faces(); f++)
-    if (!p0p1 || fcl(f, 0) < 3)
+    if (!p0p1 || fcl(f, 0) < 2)
       {
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
         for (a_max = 0, k = -1, n = 0; n < N; n++)
