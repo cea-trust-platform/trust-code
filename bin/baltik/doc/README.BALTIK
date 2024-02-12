@@ -225,7 +225,32 @@ if two or more of theses files share the same name.
 11. '[prerequisiteNN]' optionnal section
 ==================================================
 
-This section will be discussed in a future version of this document.
+If you need to add a prerequisite to your baltik project, you should add
+these lines into your project.cfg :
+[prerequisiteN]
+name : name_of_your_prerequesite
+prog_test : name_of_sample_code_to_test_linking_of_prerequisite_with_TRUST.cpp
+
+Then inside the directory $project_directory/share/archive you should add:
+  1- The prerequisite itself : archive name_of_your_prerequesite.tgz
+     - Once uncompressed, this archive should contain an executable script "configure"
+
+     - the prerequisite installation is done automatically by TRUST, this latter calls :
+       ./configure $OPTIONS && make && make install
+       $OPTIONS contains configure_flag and cpp_flags if specified in the project.cfg file of the baltik
+
+  2- A test program (C++):
+     - will be compiled by TRUST as a baltik to check that it can include the prerequisite
+
+Then, in the baltik sources (src directory) you may include the installed prerequisite headers.
+
+A common example is fftw in TrioCFD - the project.cfg of TrioCFD contains this section:
+    # prerequisite section
+    [prerequisite1]
+    name : fftw-3.3.8
+    prog_test : test_fftw3.cpp
+    librairies_flag : -lfftw3_mpi -lfftw3
+    configure_flag : --enable-mpi --enable-shared --with-pic
 
 ==================================================
 12. Available environment variables
