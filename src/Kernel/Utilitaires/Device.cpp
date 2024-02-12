@@ -166,8 +166,8 @@ void init_cuda()
 #endif /* LATATOOLS */
 
 // Adress on device (return host adress if no device):
-template <typename _TYPE_>
-_TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
 #ifdef _OPENMP
   if (tab.get_data_location()==DataLocation::HostOnly) return tab.data();
@@ -184,8 +184,8 @@ _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
 }
 
 // Allocate on device:
-template <typename _TYPE_>
-_TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
 #ifdef _OPENMP
@@ -199,8 +199,8 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
   return tab_addr;
 }
 
-template <typename _TYPE_>
-_TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
@@ -234,8 +234,8 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
 }
 
 // Delete on device:
-template <typename _TYPE_>
-void deleteOnDevice(TRUSTArray<_TYPE_>& tab)
+template <typename _TYPE_, typename _SIZE_>
+void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
@@ -250,8 +250,8 @@ void deleteOnDevice(TRUSTArray<_TYPE_>& tab)
 #endif
 }
 
-template <typename _TYPE_>
-void deleteOnDevice(_TYPE_* ptr, int size)
+template <typename _TYPE_, typename _SIZE_>
+void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
@@ -260,7 +260,7 @@ void deleteOnDevice(_TYPE_* ptr, int size)
       if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
       else
         clock = "[clock]  ";
-      int bytes = sizeof(_TYPE_) * size;
+      _SIZE_ bytes = sizeof(_TYPE_) * size;
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
@@ -275,8 +275,8 @@ void deleteOnDevice(_TYPE_* ptr, int size)
 // Host		    HostDevice	Yes
 // HostDevice	HostDevice	No
 // Device		Device		No
-template <typename _TYPE_>
-const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName, const bool enabled)
+template <typename _TYPE_, typename _SIZE_>
+const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName, const bool enabled)
 {
   if (!enabled)
     return tab.data();
@@ -284,14 +284,14 @@ const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName, 
     {
       // Update data on device if necessary
       DataLocation loc = tab.isDataOnDevice() ? tab.get_data_location() : DataLocation::HostDevice;
-      const _TYPE_ *tab_addr = mapToDevice_(const_cast<TRUSTArray<_TYPE_> &>(tab),
+      const _TYPE_ *tab_addr = mapToDevice_(const_cast<TRUSTArray<_TYPE_,_SIZE_> &>(tab),
                                             loc, arrayName);
       return tab_addr;
     }
 }
 
-template <typename _TYPE_>
-_TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
 #ifdef _OPENMP
@@ -324,14 +324,14 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
   return tab_addr;
 }
 
-template <typename _TYPE_>
-void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
       assert(isAllocatedOnDevice(ptr) || size==0);
-      int bytes = sizeof(_TYPE_) * size;
+      _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyToDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copytodevice_counter_);
       #pragma omp target update to(ptr[0:size])
@@ -344,8 +344,8 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
 }
 
 // Copy non-const array on device if necessary for computation on device
-template <typename _TYPE_>
-_TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName, const bool enabled)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName, const bool enabled)
 {
   if (!enabled)
     return tab.data();
@@ -359,8 +359,8 @@ _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName, const
 
 // ToDo OpenMP: rename copy -> update or map ?
 // Copy non-const array to host from device
-template <typename _TYPE_>
-void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice && tab.get_data_location() == DataLocation::Device)
@@ -370,14 +370,14 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
     }
 #endif
 }
-template <typename _TYPE_>
-void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
       assert(isAllocatedOnDevice(ptr) || size==0);
-      int bytes = sizeof(_TYPE_) * size;
+      _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyFromDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
       #pragma omp target update from(ptr[0:size])
@@ -393,10 +393,10 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
 }
 
 // Copy const array to host from device
-template <typename _TYPE_>
-void copyFromDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
+template <typename _TYPE_, typename _SIZE_>
+void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
-  copyFromDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
+  copyFromDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab), arrayName);
 }
 
 // Partial copy of an array (from deb to fin element) from host to device
@@ -459,8 +459,8 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
 #endif
 }
 
-template <typename _TYPE_>
-inline void printKernel(bool flag, const TRUSTArray<_TYPE_>& tab, std::string kernel_name)
+template <typename _TYPE_, typename _SIZE_>
+inline void printKernel(bool flag, const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string kernel_name)
 {
   if (kernel_name!="??" && tab.size_array()>100 && clock_on)
     {
@@ -533,3 +533,47 @@ template void copyPartialToDevice<float>(const TRUSTArray<float>& tab, int deb, 
 template void printKernel<double>(bool flag, const TRUSTArray<double>& tab, std::string kernel_name);
 template void printKernel<int>(bool flag, const TRUSTArray<int>& tab, std::string kernel_name);
 template void printKernel<float>(bool flag, const TRUSTArray<float>& tab, std::string kernel_name);
+
+#if INT_is_64_ == 2
+
+// The ones needed for 64 bits:
+template double* addrOnDevice<double>(TRUSTArray<double,trustIdType>& tab);
+template int* addrOnDevice<int>(TRUSTArray<int,trustIdType>& tab);
+template trustIdType* addrOnDevice<trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab);
+template trustIdType* addrOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab);
+template float* addrOnDevice<float>(TRUSTArray<float,trustIdType>& tab);
+
+template double* allocateOnDevice<double>(TRUSTArray<double,trustIdType>& tab, std::string arrayName);
+template int* allocateOnDevice<int>(TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template trustIdType* allocateOnDevice<trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template trustIdType* allocateOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab, std::string arrayName);
+template float* allocateOnDevice<float>(TRUSTArray<float,trustIdType>& tab, std::string arrayName);
+
+template const double* allocateOnDevice<double>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName);
+template const int* allocateOnDevice<int>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template const trustIdType* allocateOnDevice<trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template const trustIdType* allocateOnDevice<trustIdType>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName);
+template const float* allocateOnDevice<float>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName);
+
+template void deleteOnDevice<double>(TRUSTArray<double,trustIdType>& tab);
+template void deleteOnDevice<int>(TRUSTArray<int,trustIdType>& tab);
+template void deleteOnDevice<trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab);
+template void deleteOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab);
+template void deleteOnDevice<float>(TRUSTArray<float,trustIdType>& tab);
+
+template void deleteOnDevice<int>(int* ptr, long size);
+template void deleteOnDevice<trustIdType>(trustIdType* ptr, long size);
+template void deleteOnDevice<trustIdType>(trustIdType* ptr, int size);
+template void deleteOnDevice<float>(float* ptr, long size);
+template void deleteOnDevice<double>(double* ptr, long size);
+
+template const double* mapToDevice<double>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
+template const int* mapToDevice<int>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName, bool enabled);
+template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName, bool enabled);
+template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName, bool enabled);
+template const float* mapToDevice<float>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
+
+template double* computeOnTheDevice<double>(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
+
+#endif
+

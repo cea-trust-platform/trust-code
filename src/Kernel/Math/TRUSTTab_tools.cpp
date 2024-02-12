@@ -18,22 +18,22 @@
 #include <limits>
 
 // ToDo OpenMP: porter boucle mais mp_norme_tab semble pas utilise
-template <typename _T_>
-void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
+template <typename _T_, typename _SIZE_>
+void local_carre_norme_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& norme_colonne)
 {
   norme_colonne = 0.;
-  const TRUSTArray<int>& blocs = tableau.get_md_vector()->get_items_to_sum();
-  const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<_T_>& vect = tableau;
-  const int lsize = vect.line_size();
+  const TRUSTArray<int,_SIZE_>& blocs = tableau.get_md_vector()->get_items_to_sum();
+  const _SIZE_ nblocs = blocs.size_array() >> 1;
+  const TRUSTVect<_T_,_SIZE_>& vect = tableau;
+  const _SIZE_ lsize = vect.line_size();
   assert(lsize == norme_colonne.size_array());
-  for (int ibloc = 0; ibloc < nblocs; ibloc++)
+  for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
     {
-      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-      for (int i = begin_bloc; i < end_bloc; i++)
+      const _SIZE_ begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
+      for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
         {
-          int k = i * lsize;
-          for (int j = 0; j < lsize; j++)
+          _SIZE_ k = i * lsize;
+          for (_SIZE_ j = 0; j < lsize; j++)
             {
               const _T_ x = vect[k++];
               norme_colonne[j] += x*x;
@@ -42,33 +42,33 @@ void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_
     }
 }
 
-template <typename _T_>
-void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
+template <typename _T_, typename _SIZE_>
+void local_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& max_colonne)
 {
   max_colonne = std::numeric_limits<_T_>::min();
-  const TRUSTArray<int>& blocs = tableau.get_md_vector()->get_items_to_compute();
-  const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<_T_>& vect = tableau;
-  const int lsize = vect.line_size();
-  for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
+  const TRUSTArray<int,_SIZE_>& blocs = tableau.get_md_vector()->get_items_to_compute();
+  const _SIZE_ nblocs = blocs.size_array() >> 1;
+  const TRUSTVect<_T_,_SIZE_>& vect = tableau;
+  const _SIZE_ lsize = vect.line_size();
+  for (_SIZE_ j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
   bool kernelOnDevice = vect.checkDataOnDevice();
   const _T_* vect_addr = mapToDevice(vect, "", kernelOnDevice);
   _T_* max_colonne_addr = computeOnTheDevice(max_colonne, "", kernelOnDevice);
   start_gpu_timer();
-  for (int ibloc = 0; ibloc < nblocs; ibloc++)
+  for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
     {
-      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
+      const _SIZE_ begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
       // Necessaire de faire un test sur lsize le compilateur crayCC OpenMP ne supporte pas la reduction sur tableau avec taille dynamique...
       if (lsize==1)
         {
           if (kernelOnDevice)
             {
               #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:1])
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -77,10 +77,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
             }
           else
             {
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -93,10 +93,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
           if (kernelOnDevice)
             {
               #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:2])
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -105,10 +105,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
             }
           else
             {
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -121,10 +121,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
           if (kernelOnDevice)
             {
               #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:3])
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -133,10 +133,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
             }
           else
             {
-              for (int i = begin_bloc; i < end_bloc; i++)
+              for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
                 {
-                  int k = i * lsize;
-                  for (int j = 0; j < lsize; j++)
+                  _SIZE_ k = i * lsize;
+                  for (_SIZE_ j = 0; j < lsize; j++)
                     {
                       const _T_ x = std::fabs(vect_addr[k++]);
                       max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -145,10 +145,10 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
             }
         }
       else
-        for (int i = begin_bloc; i < end_bloc; i++)
+        for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
           {
-            int k = i * lsize;
-            for (int j = 0; j < lsize; j++)
+            _SIZE_ k = i * lsize;
+            for (_SIZE_ j = 0; j < lsize; j++)
               {
                 const _T_ x = std::fabs(vect_addr[k++]);
                 max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
@@ -159,7 +159,7 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
   end_gpu_timer(kernelOnDevice, "local_max_abs_tab(x)");
 }
 
-template void local_carre_norme_tab<double>(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne);
-template void local_carre_norme_tab<float>(const TRUSTTab<float>& tableau, TRUSTArray<float>& norme_colonne);
-template void local_max_abs_tab<double>(const TRUSTTab<double>& tableau, TRUSTArray<double>& max_colonne);
-template void local_max_abs_tab<float>(const TRUSTTab<float>& tableau, TRUSTArray<float>& max_colonne);
+template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
+template void local_carre_norme_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
+template void local_max_abs_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& max_colonne);
+template void local_max_abs_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& max_colonne);

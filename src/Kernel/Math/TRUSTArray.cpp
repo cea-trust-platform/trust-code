@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <arch.h>
 #include <TRUSTArray.h>
 #include <string.h>
 #include <DeviceMemory.h>
@@ -25,12 +26,12 @@ static bool timer=false;
 #endif
 
 // TRUSTArray kernels for device moved in .cpp file to avoid multiple definition during link
-template <typename _TYPE_>
-Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
+template <typename _TYPE_, typename _SIZE_>
+Sortie& TRUSTArray<_TYPE_, _SIZE_>::printOn(Sortie& os) const
 {
 #ifndef LATATOOLS
   this->checkDataOnHost();
-  int sz = size_array();
+  _SIZE_ sz = size_array();
   os << sz << finl;
   if (sz > 0)
     {
@@ -41,11 +42,11 @@ Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
   return os;
 }
 
-template <typename _TYPE_>
-Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
+template <typename _TYPE_, typename _SIZE_>
+Entree&  TRUSTArray<_TYPE_, _SIZE_>::readOn(Entree& is)
 {
 #ifndef LATATOOLS
-  int sz;
+  _SIZE_ sz;
   is >> sz;
   if (sz >= 0)
     {
@@ -71,10 +72,12 @@ Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
  * Same as resize_array() with less checks.
  *
  * This is also where we deal with the STORAGE::TEMP_STORAGE capability, i.e. the Trav arrays.
- * There memory is taken from a shared pool (TRUSTTravPool)
+ * There memory is taken from a shared pool (TRUSTTravPool). This kind of array should never be
+ * used in 64bits, since Trav are meaningful when inside the timestepping (so the 32bit world after the
+ * Scatter isntruction).
  */
-template <typename _TYPE_>
-void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
+template <typename _TYPE_, typename _SIZE_>
+void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS opt)
 {
   assert(new_size >= 0);
 
@@ -91,7 +94,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 
       // First allocation - memory space should really be malloc'd:
       if(storage_type_ == STORAGE::TEMP_STORAGE)
-        mem_ = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_size);
+        mem_ = TRUSTTravPool<_TYPE_>::GetFreeBlock((int)new_size);
       else
         mem_ = std::make_shared<Vector_>(Vector_(new_size));
 
@@ -118,16 +121,19 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
       // array must not be shared! (also checked in resize_array()) ... but, still, we allow passing here (i.e. no assert)
       // only if we keep the same size_array(). This is for example invoked by TRUSTTab when just changing the overall shape of
       // the array without modifying the total number of elems ...
-      int sz_arr = size_array();
+      _SIZE_ sz_arr = size_array();
       if(new_size != sz_arr) // Yes, we compare to the span's size
         {
           assert(ref_count() == 1);  // from here on, we *really* should not be shared
 
           if (storage_type_ == STORAGE::TEMP_STORAGE)
             {
+              // No 64b Trav:
+              assert( (std::is_same<trustIdType, int>::value || !std::is_same<_SIZE_, trustIdType>::value) );
+
               // Resize of a Trav: if the underlying mem_ is already big enough, just update the span, and possibly fill with 0
               // else, really increase memory allocation using the TRUSTTravPool.
-              int mem_sz = (int)mem_->size();
+              _SIZE_ mem_sz = (_SIZE_)mem_->size();
               if (new_size <= mem_sz)
                 {
                   // Cheat, simply update the span (up or down)
@@ -142,7 +148,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               else  // Real size increase of the underlying std::vector
                 {
                   // ResizeBlock
-                  mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
+                  mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, (int)new_size);
                   span_ = Span_(*mem_);
                   if (opt == RESIZE_OPTIONS::COPY_INIT)
                     {
@@ -176,7 +182,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
                           // Allocate new (bigger) block on device:
                           allocateOnDevice(*this);
                           // Copy data (use a dummy TRUSTArray just because of inject_array API)
-                          TRUSTArray<_TYPE_> dummy_src;
+                          TRUSTArray dummy_src;
                           dummy_src.span_ = prev_span;
                           inject_array(dummy_src, sz_arr);
                         }
@@ -191,14 +197,14 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 *    Les autres elements de (*this) sont inchanges.
 
 * @param  const ArrOfDouble& m: le tableau a utiliser, doit etre different de *this !
-* @param int nb_elements: nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m. Valeurs par defaut: -1
-* @param int first_element_dest. Valeurs par defaut: 0
-* @param int first_element_source. Valeurs par defaut: 0
+* @param _SIZE_ nb_elements: nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m. Valeurs par defaut: -1
+* @param _SIZE_ first_element_dest. Valeurs par defaut: 0
+* @param _SIZE_ first_element_source. Valeurs par defaut: 0
 * @return ArrOfDouble& : *this
 * @throw Sort en erreur si la taille du tableau m est plus grande que la taille de tableau this.
 */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, int nb_elements, int first_element_dest, int first_element_source)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::inject_array(const TRUSTArray& source, _SIZE_ nb_elements, _SIZE_ first_element_dest, _SIZE_ first_element_source)
 {
   assert(&source != this && nb_elements >= -1);
   assert(first_element_dest >= 0 && first_element_source >= 0);
@@ -217,7 +223,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
 #ifndef LATATOOLS
           const auto addr_source = source.view_ro();
           auto addr_dest = view_rw();
-          Kokkos::parallel_for(__KERNEL_NAME__, nb_elements, KOKKOS_LAMBDA(const int i) { addr_dest[first_element_dest+i] = addr_source[first_element_source+i]; });
+          Kokkos::parallel_for(__KERNEL_NAME__, nb_elements, KOKKOS_LAMBDA(const _SIZE_ i) { addr_dest[first_element_dest+i] = addr_source[first_element_source+i]; });
 #endif
         }
       else
@@ -238,10 +244,10 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
 
 /** Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator=(_TYPE_ x)
 {
-  const int size = size_array();
+  const _SIZE_ size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
   if (timer) start_gpu_timer(size>100 ? __KERNEL_NAME__ : "");
   if (kernelOnDevice)
@@ -254,7 +260,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
   else
     {
       _TYPE_ *data = span_.data();
-      for (int i = 0; i < size; i++) data[i] = x;
+      for (_SIZE_ i = 0; i < size; i++) data[i] = x;
     }
   if (timer) end_gpu_timer(kernelOnDevice, size>100 ? __KERNEL_NAME__ : "");
   return *this;
@@ -262,11 +268,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 
 /** Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const TRUSTArray& y)
 {
   assert(size_array()==y.size_array());
-  int size = size_array();
+  _SIZE_ size = size_array();
   bool kernelOnDevice = checkDataOnDevice(y);
   if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
@@ -274,14 +280,14 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
 #ifndef LATATOOLS
       const auto dy = y.view_ro();
       auto dx = view_rw();
-      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { dx[i] += dy[i]; });
+      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { dx[i] += dy[i]; });
 #endif
     }
   else
     {
       const _TYPE_* dy = y.span_.data();
       _TYPE_* dx = span_.data();
-      for (int i = 0; i < size; i++) dx[i] += dy[i];
+      for (_SIZE_ i = 0; i < size; i++) dx[i] += dy[i];
     }
   if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return *this;
@@ -289,23 +295,23 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
 
 /** Ajoute la meme valeur a toutes les cases du tableau
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const _TYPE_ dy)
 {
-  int size = size_array();
+  _SIZE_ size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
   if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
       auto data = view_rw();
-      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { data[i] += dy; });
+      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] += dy; });
 #endif
     }
   else
     {
       _TYPE_ *data = span_.data();
-      for(int i = 0; i < size; i++) data[i] += dy;
+      for(_SIZE_ i = 0; i < size; i++) data[i] += dy;
     }
   if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return *this;
@@ -313,11 +319,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 
 /** Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator-=(const TRUSTArray& y)
 {
   assert(size_array() == y.size_array());
-  int size = size_array();
+  _SIZE_ size = size_array();
   bool kernelOnDevice = checkDataOnDevice(y);
   if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
@@ -325,14 +331,14 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
 #ifndef LATATOOLS
       auto data = view_rw();
       const auto data_y = y.view_ro();
-      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { data[i] -= data_y[i]; });
+      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] -= data_y[i]; });
 #endif
     }
   else
     {
       _TYPE_ * data = span_.data();
       const _TYPE_ * data_y = y.span_.data();
-      for (int i = 0; i < size; i++) data[i] -= data_y[i];
+      for (_SIZE_ i = 0; i < size; i++) data[i] -= data_y[i];
     }
   if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return *this;
@@ -340,8 +346,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
 
 /** soustrait la meme valeur a toutes les cases
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator-=(const _TYPE_ dy)
 {
   operator+=(-dy);
   return *this;
@@ -349,23 +355,23 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 
 /** muliplie toutes les cases par dy
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator*= (const _TYPE_ dy)
 {
-  int size = size_array();
+  _SIZE_ size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
   if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
       auto data = view_rw();
-      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { data[i] *= dy; });
+      Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] *= dy; });
 #endif
     }
   else
     {
       _TYPE_ *data = span_.data();
-      for(int i=0; i < size; i++) data[i] *= dy;
+      for(_SIZE_ i=0; i < size; i++) data[i] *= dy;
     }
   if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return *this;
@@ -373,15 +379,23 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 
 /** divise toutes les cases par dy (pas pour TRUSTArray<int>)
  */
-template <typename _TYPE_>
-TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
+template <typename _TYPE_, typename _SIZE_>
+TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator/= (const _TYPE_ dy)
 {
-  if (std::is_same<_TYPE_,int>::value) throw;
+  if (std::is_integral<_TYPE_>::value) throw;  // division should not be called on integral types.
   operator*=(1/dy);
   return *this;
 }
 
 // Pour instancier les methodes templates dans un .cpp
-template class TRUSTArray<double>;
-template class TRUSTArray<int>;
-template class TRUSTArray<float>;
+template class TRUSTArray<double, int>;
+template class TRUSTArray<int, int>;
+template class TRUSTArray<float, int>;
+
+#if INT_is_64_ == 2
+template class TRUSTArray<double, trustIdType>;
+template class TRUSTArray<int, trustIdType>;
+template class TRUSTArray<trustIdType, trustIdType>;
+template class TRUSTArray<trustIdType, int>;
+template class TRUSTArray<float, trustIdType>;
+#endif

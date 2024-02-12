@@ -119,28 +119,22 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
 #endif
 }
 
-template <typename _TYPE_>
-extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab);
+template <typename _TYPE_, typename _SIZE_=int>
+extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
-template <typename _TYPE_>
-inline const _TYPE_* addrOnDevice(const TRUSTArray<_TYPE_>& tab)
+template <typename _TYPE_, typename _SIZE_=int>
+inline const _TYPE_* addrOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-  return addrOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab));
+  return addrOnDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab));
 }
 
-template <typename _TYPE_>
-extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
-template <typename _TYPE_>
-inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
+template <typename _TYPE_, typename _SIZE_=int>
+inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??")
 {
-  return allocateOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
-}
-
-template <typename _TYPE_>
-void allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
-{
-  allocateOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
+  return allocateOnDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab), arrayName);
 }
 
 template <typename _TYPE_>
@@ -155,8 +149,8 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
 #endif
 }
 
-template <typename _TYPE_>
-bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
+template <typename _TYPE_, typename _SIZE_=int>
+bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
 #ifdef _OPENMP
   bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
@@ -168,24 +162,25 @@ bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
 #endif
 }
 
-template <typename _TYPE_>
-extern void deleteOnDevice(TRUSTArray<_TYPE_>& tab);
+template <typename _TYPE_, typename _SIZE_=int>
+extern void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
-template <typename _TYPE_>
-extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??", const bool enabled=true);
+template <typename _TYPE_, typename _SIZE_=int>
+extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??", const bool enabled=true);
 
-template <typename _TYPE_>
-extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName);
+template <typename _TYPE_, typename _SIZE_=int>
+extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName);
 
-template <typename _TYPE_>
-extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??", const bool enabled=true);
+template <typename _TYPE_, typename _SIZE_=int>
+extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??", const bool enabled=true);
 
-template <typename _TYPE_>
-extern void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
-template <typename _TYPE_>
-extern void copyFromDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
+// Partial copies are only used on the 32bits side:
 template <typename _TYPE_>
 extern void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
@@ -202,16 +197,16 @@ template <typename _TYPE_>
 extern void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
 // ToDo OpenMP implemente methods for pointer (used only for the moment in Schema_Comm_Vecteurs for buffer communication with _TYPE_=char):
-template <typename _TYPE_>
-extern _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
 
-template <typename _TYPE_>
-extern void deleteOnDevice(_TYPE_* ptr, int size);
+template <typename _TYPE_, typename _SIZE_=int>
+extern void deleteOnDevice(_TYPE_* ptr, _SIZE_ size);
 
-template <typename _TYPE_>
-extern void copyToDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
 
-template <typename _TYPE_>
-extern void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+template <typename _TYPE_, typename _SIZE_=int>
+extern void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,46 +21,36 @@
  * Le test est !(v[i]!=a[i])
  *
  */
-template <typename _TYPE_>
-int operator==(const TRUSTArray<_TYPE_>& v, const TRUSTArray<_TYPE_>& a)
+template <typename _TYPE_, typename _SIZE_>
+bool operator==(const TRUSTArray<_TYPE_,_SIZE_>& v, const TRUSTArray<_TYPE_,_SIZE_>& a)
 {
-  const int n = v.size_array();
-  const int na = a.size_array();
-  int resu = 1;
-  if (n != na)
-    {
-      resu = 0;
-    }
-  else
-    {
-      v.checkDataOnHost();
-      a.checkDataOnHost();
-      const _TYPE_ * vv = v.addr();
-      const _TYPE_ * av = a.addr();
-      for (int i = 0; i < n; i++)
-        {
-          if (av[i] != vv[i])
-            {
-              resu = 0;
-              break;
-            }
-        }
-    }
-  return resu;
+  const _SIZE_ n = v.size_array();
+  const _SIZE_ na = a.size_array();
+
+  if (n != na) return false;
+
+  v.checkDataOnHost();
+  a.checkDataOnHost();
+  const _TYPE_ * vv = v.addr();
+  const _TYPE_ * av = a.addr();
+  for (_SIZE_ i = 0; i < n; i++)
+    if (av[i] != vv[i])
+      return false;
+  return true;
 }
 
 /*! @brief Retourne l'indice du min ou -1 si le tableau est vide
  *
  */
-template <typename _TYPE_> int imin_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_> _SIZE_ imin_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  int indice_min = -1;
-  const int size = dx.size_array();
+  _SIZE_ indice_min = -1;
+  const _SIZE_ size = dx.size_array();
   if (size > 0)
     {
       indice_min = 0;
       _TYPE_ valeur_min = dx[0];
-      for (int i = 1; i < size; i++)
+      for (_SIZE_ i = 1; i < size; i++)
         {
           const _TYPE_ val = dx[i];
           if(val < valeur_min)
@@ -76,15 +66,15 @@ template <typename _TYPE_> int imin_array(const TRUSTArray<_TYPE_>& dx)
 /*! @brief Retourne l'indice du max ou -1 si le tableau est vide
  *
  */
-template <typename _TYPE_> int imax_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_> _SIZE_ imax_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  int indice_max = -1;
-  const int size = dx.size_array();
+  _SIZE_ indice_max = -1;
+  const _SIZE_ size = dx.size_array();
   if (size > 0)
     {
       indice_max = 0;
       _TYPE_ valeur_max = dx[0];
-      for (int i = 1; i < size; i++)
+      for (_SIZE_ i = 1; i < size; i++)
         {
           const _TYPE_ val = dx[i];
           if(val > valeur_max)
@@ -100,13 +90,13 @@ template <typename _TYPE_> int imax_array(const TRUSTArray<_TYPE_>& dx)
 /*! @brief Retourne la valeur minimale
  *
  */
-template <typename _TYPE_>
-_TYPE_ min_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ min_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  const int size = dx.size_array();
+  const _SIZE_ size = dx.size_array();
   assert(size > 0);
   _TYPE_ valeur_min = dx[0];
-  for (int i = 1; i < size; i++)
+  for (_SIZE_ i = 1; i < size; i++)
     {
       const _TYPE_ val = dx[i];
       if (val < valeur_min) valeur_min = val;
@@ -117,13 +107,13 @@ _TYPE_ min_array(const TRUSTArray<_TYPE_>& dx)
 /*! @brief Retourne la valeur maximale
  *
  */
-template <typename _TYPE_>
-_TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ max_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  const int size = dx.size_array();
+  const _SIZE_ size = dx.size_array();
   assert(size > 0);
   _TYPE_ valeur_max = dx[0];
-  for (int i = 1; i < size; i++)
+  for (_SIZE_ i = 1; i < size; i++)
     {
       const _TYPE_ val = dx[i];
       if (val > valeur_max) valeur_max = val;
@@ -131,24 +121,28 @@ _TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
   return valeur_max;
 }
 
-// blablabla ....
+// Absolute value for a scalar ....
+namespace
+{
 template <typename _TYPE_>
-static inline _TYPE_ scalar_abs(_TYPE_ x) { return std::fabs(x); }
-
-static inline int scalar_abs(int x) { return std::abs(x); }
+inline _TYPE_ scalar_abs(_TYPE_ x)
+{
+  constexpr bool IS_INT = std::is_integral<_TYPE_>::value;
+  return IS_INT ? std::abs(x) : std::fabs(x);
+}
+}
 
 /*! @brief Retourne le max des abs(i)
- *
  */
-template <typename _TYPE_>
-_TYPE_ max_abs_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ max_abs_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  const int size = dx.size_array();
+  const _SIZE_ size = dx.size_array();
   assert(size > 0);
-  _TYPE_ valeur_max = scalar_abs(dx[0]);
-  for(int i = 1; i < size; i++)
+  _TYPE_ valeur_max = ::scalar_abs(dx[0]);
+  for(_SIZE_ i = 1; i < size; i++)
     {
-      const _TYPE_ val = scalar_abs(dx[i]);
+      const _TYPE_ val = ::scalar_abs(dx[i]);
       if (val > valeur_max) valeur_max = val;
     }
   return valeur_max;
@@ -157,15 +151,15 @@ _TYPE_ max_abs_array(const TRUSTArray<_TYPE_>& dx)
 /*! @brief Retourne le min des abs(i)
  *
  */
-template <typename _TYPE_>
-_TYPE_ min_abs_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ min_abs_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
-  const int size = dx.size_array();
+  const _SIZE_ size = dx.size_array();
   assert(size > 0);
-  _TYPE_ v = scalar_abs(dx[0]);
-  for(int i = 1; i < size; i++)
+  _TYPE_ v = ::scalar_abs(dx[0]);
+  for(_SIZE_ i = 1; i < size; i++)
     {
-      const _TYPE_ val = scalar_abs(dx[i]);
+      const _TYPE_ val = ::scalar_abs(dx[i]);
       if (val < v) v = val;
     }
   return v;
@@ -174,10 +168,10 @@ _TYPE_ min_abs_array(const TRUSTArray<_TYPE_>& dx)
 /*! @brief Produit scalaire de deux "array"  (dotproduct_array remplace operator* car le nom indique clairement  que l'on fait un produit scalaire non distribue)
  *
  */
-template <typename _TYPE_>
-_TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& dy)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ dotproduct_array(const TRUSTArray<_TYPE_,_SIZE_>& dx, const TRUSTArray<_TYPE_,_SIZE_>& dy)
 {
-  const int size = dx.size_array();
+  const _SIZE_ size = dx.size_array();
   assert(size == dy.size_array());
   _TYPE_ resultat = 0.;
   if (size > 0)
@@ -195,8 +189,8 @@ _TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& 
 /*! @brief Calcul de la norme du vecteur dx (fonction blas DNRM2, soit racine carree(somme des dx[i]*dx[i]).
  *
  */
-template <typename _TYPE_>
-_TYPE_ norme_array(const TRUSTArray<_TYPE_>& dx)
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_ norme_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
 {
   integer n = dx.size_array();
   _TYPE_ resultat = 0.;

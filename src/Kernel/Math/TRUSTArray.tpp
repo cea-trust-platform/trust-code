@@ -23,8 +23,8 @@
 
 /*! Destroy array, potentially making block available again if this was a Trav
  */
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>::~TRUSTArray()
+template <typename _TYPE_, typename _SIZE_>
+inline TRUSTArray<_TYPE_, _SIZE_>::~TRUSTArray()
 {
   detach_array(); // release all resources properly (esp. Trav!!)
 }
@@ -39,8 +39,8 @@ inline TRUSTArray<_TYPE_>::~TRUSTArray()
  *  - the array can not be resized if data is shared (ref_array)
  *  - the array can not be resized if it is a 'ref_data'.
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_array(int new_size, RESIZE_OPTIONS opt)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::resize_array(_SIZE_ new_size, RESIZE_OPTIONS opt)
 {
   // Si le tableau change de taille, il doit etre du type TRUSTArray
   assert(  ( mem_ == nullptr || (int)mem_->size() == new_size ) ||
@@ -58,8 +58,8 @@ inline void TRUSTArray<_TYPE_>::resize_array(int new_size, RESIZE_OPTIONS opt)
  *   Prerequis: le tableau doit etre "resizable" (voir resize_array()). S'il est d'un type derive (Vect ou Tab),
  *    il ne doit pas avoir de descripteur parallele si la taille est effectivement modifiee.
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_tab(int n, RESIZE_OPTIONS opt)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::resize_tab(_SIZE_ n, RESIZE_OPTIONS opt)
 {
   resize_array(n, opt);
 }
@@ -69,8 +69,8 @@ inline void TRUSTArray<_TYPE_>::resize_tab(int n, RESIZE_OPTIONS opt)
 //    DoubleTab tab; // Creation d'un tableau vide
 //    tab.set_mem_storage(TEMP_STORAGE); // Changement de mode d'allocation
 //    tab.resize(n); // Allocation memoire
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::set_mem_storage(const STORAGE storage)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::set_mem_storage(const STORAGE storage)
 {
   storage_type_ = storage;
 }
@@ -82,8 +82,8 @@ inline void TRUSTArray<_TYPE_>::set_mem_storage(const STORAGE storage)
  * Warning: virtual method. In derived classes this method initializes the structures to create a sequential array.
  * To create a ref on a parallel array, see DoubleVect::ref()
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::ref_data(_TYPE_* ptr, _SIZE_ size)
 {
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
@@ -97,8 +97,8 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
  * The current array is first detached (see detach_array()), and then attached to the provided data (see attach_array())
  * Wanring: virtual -> in derived classes this method initializes structures to create a sequential array.
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::ref_array(TRUSTArray& m, int start, int size)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::ref_array(TRUSTArray& m, _SIZE_ start, _SIZE_ size)
 {
   assert(&m != this);
   assert(storage_type_ != STORAGE::TEMP_STORAGE);  // Not a Trav!
@@ -109,12 +109,12 @@ inline void TRUSTArray<_TYPE_>::ref_array(TRUSTArray& m, int start, int size)
 /** Copy the data from another array, potentially resizing.
  * The storage type is not copied.
  */
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
+template <typename _TYPE_, typename _SIZE_>
+inline TRUSTArray<_TYPE_,_SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator=(const TRUSTArray& m)
 {
   if (&m != this)
     {
-      const int new_size = m.size_array();
+      const _SIZE_ new_size = m.size_array();
       // On utilise la methode resize_array() qui teste le type derive de l'objet (resize interdit sur un type derive)
       resize_array(new_size, RESIZE_OPTIONS::NOCOPY_NOINIT);
       inject_array(m);
@@ -123,12 +123,12 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
 }
 
 /**  operateur [] retourne le ieme element du tableau
-* Parametre: int i
+* Parametre: _SIZE_ i
 *    Signification: indice dans l'intervalle 0 <= i < size_array()
 * Exception: assert si i n'est pas dans l'intervalle
 */
-template<typename _TYPE_>
-inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
+template<typename _TYPE_, typename _SIZE_>
+inline _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i)
 {
 #ifdef _OPENMP
   this->checkDataOnHost();
@@ -137,16 +137,8 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
   return span_[i];
 }
 
-/**  operateur [] pour TRUSTArray<double> : retourne le ieme element du tableau
-* Exception:
-*    assert si la valeur sort de l'intervalle : [ -DMAXFLOAT,DMAXFLOAT ]
-*    assert si i n'est pas dans l'intervalle
-*/
-/// \cond DO_NOT_DOCUMENT
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
-template<>
-inline double& TRUSTArray<double>::operator[](int i)
+template<typename _TYPE_, typename _SIZE_>
+inline const _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i) const
 {
 #ifdef _OPENMP
   this->checkDataOnHost();
@@ -157,74 +149,49 @@ inline double& TRUSTArray<double>::operator[](int i)
   //  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
   return span_[i];
 }
-/// \endcond
-
-template<typename _TYPE_>
-inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
-{
-#ifdef _OPENMP
-  this->checkDataOnHost();
-#endif
-  assert(i >= 0 && i < size_array());
-  return span_[i];
-}
-
-/// \cond DO_NOT_DOCUMENT
-template<>
-inline const double& TRUSTArray<double>::operator[](int i) const
-{
-#ifdef _OPENMP
-  this->checkDataOnHost();
-#endif
-  assert(i >= 0 && i < size_array());
-  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
-  return span_[i];
-}
-#pragma GCC diagnostic pop
-/// \endcond
 
 /** Returns a pointer on the first element of the array. nullptr will be returned if array is detached.
  * Careful, address might change after a resize_array(), ref_data(), etc.
  */
-template <typename _TYPE_>
-inline _TYPE_* TRUSTArray<_TYPE_>::addr()
+template <typename _TYPE_, typename _SIZE_>
+inline _TYPE_* TRUSTArray<_TYPE_, _SIZE_>::addr()
 {
   checkDataOnHost();
   return span_.data();
 }
 
-template <typename _TYPE_>
-inline const _TYPE_* TRUSTArray<_TYPE_>::addr() const
+template <typename _TYPE_, typename _SIZE_>
+inline const _TYPE_* TRUSTArray<_TYPE_, _SIZE_>::addr() const
 {
   checkDataOnHost();
   return span_.data();
 }
 
-template <typename _TYPE_>
-inline _TYPE_ *TRUSTArray<_TYPE_>::data()
+template <typename _TYPE_, typename _SIZE_>
+inline _TYPE_ *TRUSTArray<_TYPE_, _SIZE_>::data()
 {
   return span_.data();
 }
 
-template <typename _TYPE_>
-inline const _TYPE_ *TRUSTArray<_TYPE_>::data() const
+template <typename _TYPE_, typename _SIZE_>
+inline const _TYPE_ *TRUSTArray<_TYPE_, _SIZE_>::data() const
 {
   return span_.data();
 }
 
 /** Returns the size of the array.
  */
-template <typename _TYPE_>
-inline int TRUSTArray<_TYPE_>::size_array() const
+template <typename _TYPE_, typename _SIZE_>
+inline _SIZE_ TRUSTArray<_TYPE_, _SIZE_>::size_array() const
 {
-  return (int)span_.size();
+  return (_SIZE_)span_.size();
 }
 
 /** Returns the number of shared owners of the data underlying the array. If -1 detached array.
   * This is simply the ref count of the shared pointer 'mem_'
   */
-template <typename _TYPE_>
-inline int TRUSTArray<_TYPE_>::ref_count() const
+template <typename _TYPE_, typename _SIZE_>
+inline int TRUSTArray<_TYPE_, _SIZE_>::ref_count() const
 {
   return mem_ ? (int)mem_.use_count() : -1;
 }
@@ -235,8 +202,8 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
  *  et il ne doit pas y avoir plus d'une reference a la zone de memoire pointee (meme precondition que resize_array())
  *  Le tableau doit etre de type TRUSTArray (pas un type derive)
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::append_array(_TYPE_ valeur)
 {
   this->checkDataOnHost();
   // Call the official resize, with all its checks and management of Trav:
@@ -245,11 +212,10 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
   operator[](sz) = valeur;
 }
 
-
 /**  Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
  */
-template <typename _TYPE_ >
-inline void TRUSTArray<_TYPE_>::ordonne_array()
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_,_SIZE_>::ordonne_array()
 {
   checkDataOnHost();
   std::sort(span_.begin(), span_.end());
@@ -257,11 +223,11 @@ inline void TRUSTArray<_TYPE_>::ordonne_array()
 
 /**  Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::array_trier_retirer_doublons()
 {
   checkDataOnHost();
-  const int size_ = size_array();
+  const _SIZE_ size_ = size_array();
   if (size_ <= 0) return;
 
   // Sort ascending
@@ -269,7 +235,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 
   auto new_end = std::unique(span_.begin(), span_.end());
 
-  int new_size_ = (int)std::distance(span_.begin(), new_end);
+  _SIZE_ new_size_ = (_SIZE_)std::distance(span_.begin(), new_end);
   resize_array(new_size_);
 }
 
@@ -280,8 +246,8 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
  * Array must be detached first before invoking this method.
  * It is forbidden to attach to a ref_data.
  */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int size)
+template <typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_, _SIZE_>::attach_array(const TRUSTArray& m, _SIZE_ start, _SIZE_ size)
 {
   // Array must be detached
   assert(span_.empty() && mem_ == nullptr);
@@ -315,8 +281,8 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 
 /** Bring the current array in a detached state, i.e. both 'mem_' and 'span_' are cleared, whatever the current state.
 */
-template <typename _TYPE_>
-inline bool TRUSTArray<_TYPE_>::detach_array()
+template <typename _TYPE_, typename _SIZE_>
+inline bool TRUSTArray<_TYPE_, _SIZE_>::detach_array()
 {
   if (mem_ != nullptr && ref_count() == 1)
     {

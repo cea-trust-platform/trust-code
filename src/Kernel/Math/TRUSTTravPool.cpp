@@ -33,7 +33,7 @@
 template<typename _TYPE_>
 struct PoolImpl_
 {
-  using ptr_t = std::shared_ptr<typename TRUSTArray<_TYPE_>::Vector_>;
+  using ptr_t = std::shared_ptr<typename TRUSTArray<_TYPE_,int>::Vector_>;
   using list_t = std::list<ptr_t>;
   using pool_t = std::unordered_map<size_t, list_t>;
 
@@ -59,6 +59,9 @@ struct PoolImpl_
 template<> PoolImpl_<int>::pool_t    PoolImpl_<int>::Free_blocks_    = PoolImpl_<int>::pool_t();
 template<> PoolImpl_<float>::pool_t  PoolImpl_<float>::Free_blocks_  = PoolImpl_<float>::pool_t();
 template<> PoolImpl_<double>::pool_t PoolImpl_<double>::Free_blocks_ = PoolImpl_<double>::pool_t();
+#if INT_is_64_ == 2
+template<> PoolImpl_<trustIdType>::pool_t PoolImpl_<trustIdType>::Free_blocks_ = PoolImpl_<trustIdType>::pool_t();
+#endif
 
 #ifndef NDEBUG
 // Need C++17 to have this inline in the class def directly ...
@@ -73,6 +76,13 @@ template<> size_t PoolImpl_<double>::actual_sz_ = 0;
 template<> int PoolImpl_<int>::num_items_ = 0;
 template<> int PoolImpl_<float>::num_items_ = 0;
 template<> int PoolImpl_<double>::num_items_ = 0;
+
+#if INT_is_64_ == 2
+template<> size_t PoolImpl_<trustIdType>::req_sz_ = 0;
+template<> size_t PoolImpl_<trustIdType>::actual_sz_ = 0;
+template<> int PoolImpl_<trustIdType>::num_items_ = 0;
+#endif
+
 #endif
 
 /*! Handy method to get the proper list corresponding to a given size.
@@ -104,7 +114,7 @@ typename PoolImpl_<_TYPE_>::list_t& GetOrCreateList(size_t sz)
 template<typename _TYPE_>
 typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::GetFreeBlock(int sz)
 {
-  using vec_t = typename TRUSTArray<_TYPE_>::Vector_;
+  using vec_t = typename TRUSTArray<_TYPE_,int>::Vector_;
   using ptr_t = typename PoolImpl_<_TYPE_>::ptr_t;
   using lst_t = typename PoolImpl_<_TYPE_>::list_t;
 
@@ -273,3 +283,7 @@ void TRUSTTravPool<_TYPE_>::PrintStats()
 template class TRUSTTravPool<double>;
 template class TRUSTTravPool<int>;
 template class TRUSTTravPool<float>;
+
+#if INT_is_64_ == 2
+template class TRUSTTravPool<trustIdType>;
+#endif

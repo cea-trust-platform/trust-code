@@ -132,6 +132,7 @@ private :
 
 // typedefs !!!
 using IntList = TRUSTList<int>;
+using TIDList = TRUSTList<trustIdType>;
 using DoubleList = TRUSTList<double>;
 using IntList_Curseur = TRUSTList_Curseur<int>;
 using DoubleList_Curseur = TRUSTList_Curseur<double>;

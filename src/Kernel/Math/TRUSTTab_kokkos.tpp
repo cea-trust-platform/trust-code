@@ -25,8 +25,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Create internal DualView member, and populate it with current host data
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::init_view_tab2() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab2() const
 {
   kokkos_self_test();
   long trail_dim = 1;
@@ -93,8 +93,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   dual_view_tab2_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
+template<typename _TYPE_, typename _SIZE_>
+inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
   init_view_tab2();
@@ -108,13 +108,13 @@ inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
   return dual_view_tab2_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_wo()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_tab2();
 #ifdef _OPENMP
-  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_>::view_wo()"); // ToDo allouer sans copie ?
+  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab2_.template modify<memory_space>();
@@ -123,8 +123,8 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_wo()
   return dual_view_tab2_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
   init_view_tab2();
@@ -140,8 +140,8 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
   return dual_view_tab2_.view_device();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::sync_to_host() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -150,8 +150,8 @@ inline void TRUSTTab<_TYPE_>::sync_to_host() const
   dual_view_tab2_.template sync<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::modified_on_host() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -169,8 +169,8 @@ inline void TRUSTTab<_TYPE_>::modified_on_host() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Create internal DualView member, and populate it with current host data
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::init_view_tab3() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab3() const
 {
   long dims[3] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0};
 
@@ -217,8 +217,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   dual_view_tab3_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
+template<typename _TYPE_, typename _SIZE_>
+inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
 {
   // Init if necessary
   init_view_tab3();
@@ -233,8 +233,8 @@ inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
   return dual_view_tab3_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_wo()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
 {
   // Init if necessary
   init_view_tab3();
@@ -248,8 +248,8 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_wo()
   return dual_view_tab3_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_rw()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
 {
   // Init if necessary
   init_view_tab3();
@@ -265,8 +265,8 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_rw()
   return dual_view_tab3_.view_device();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::sync_to_host3() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host3() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -275,8 +275,8 @@ inline void TRUSTTab<_TYPE_>::sync_to_host3() const
   dual_view_tab3_.template sync<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::modified_on_host3() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host3() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -295,8 +295,8 @@ inline void TRUSTTab<_TYPE_>::modified_on_host3() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Create internal DualView member, and populate it with current host data
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::init_view_tab4() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab4() const
 {
   long dims[4] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0 , nb_dim_>3 ? this->dimension_tot(3) : 0};
 
@@ -344,8 +344,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   dual_view_tab4_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
+template<typename _TYPE_, typename _SIZE_>
+inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
 {
   // Init if necessary
   init_view_tab4();
@@ -359,8 +359,8 @@ inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
   return dual_view_tab4_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
 {
   // Init if necessary
   init_view_tab4();
@@ -374,8 +374,8 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
   return dual_view_tab4_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
 {
   // Init if necessary
   init_view_tab4();
@@ -391,8 +391,8 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
   return dual_view_tab4_.view_device();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::sync_to_host4() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host4() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -401,8 +401,8 @@ inline void TRUSTTab<_TYPE_>::sync_to_host4() const
   dual_view_tab4_.template sync<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::modified_on_host4() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host4() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -413,17 +413,17 @@ inline void TRUSTTab<_TYPE_>::modified_on_host4() const
 }
 
 // Methode de debug:
-template<typename _TYPE_>
-void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, int max_size=-1)
+template<typename _TYPE_, typename _SIZE_>
+void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_,_SIZE_>& tab, _SIZE_ max_size=-1)
 {
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
-  int size = max_size;
+  _SIZE_ size = max_size;
   if (size==-1) size = (int)view_tab.extent(0);
   int nb_compo = (int)view_tab.extent(1);
-  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const True_int i)
+  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
   {
-    for (True_int j=0; j<nb_compo; j++)
+    for (int j=0; j<nb_compo; j++)
       printf("[Kokkos]: %p [%2d,%2d]=%e\n", (void*)view_tab.data(), i, j, view_tab(i,j));
   });
   Cout << "Tab size=" << tab.size_array() << finl;
@@ -431,9 +431,9 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   nb_compo = tab.dimension(1);
   _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
-  for (True_int i=0; i<size; i++)
+  for (int i=0; i<size; i++)
     {
-      for (True_int j=0; j<nb_compo; j++)
+      for (int j=0; j<nb_compo; j++)
         printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
     }
 }

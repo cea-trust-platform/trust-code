@@ -23,9 +23,11 @@
 #include <memory>
 #include <climits>
 #include <vector>
+#include <TRUSTTabs_forward.h>
 
 #include <Device.h>
 #include <View_Types.h>  // Kokkos stuff
+
 
 /*! @brief Represents a an array of int/int64/double/... values.
  *
@@ -52,30 +54,27 @@
  *  to perform the allocation again.
  *  - a Trav may not be ref_data or ref_array.
  *  - see implementation details of this mechanism in the TRUSTTravPool class.
+ *
+ *  In the template parameters below, _TYPE_ is the value type (what it contains), _SIZE_ is the extent type (how many items).
  */
-template <typename _TYPE_>
+template <typename _TYPE_, typename _SIZE_>
 class TRUSTArray : public Array_base
 {
 protected:
-  unsigned taille_memoire() const override { return sizeof(TRUSTArray<_TYPE_>); }
+  unsigned taille_memoire() const override { return sizeof(TRUSTArray<_TYPE_, _SIZE_>); }
 
   int duplique() const override
   {
     TRUSTArray* xxx = new  TRUSTArray(*this);
-    if(!xxx)
-      {
-        Cerr << "Not enough memory " << finl;
-        Process::exit();
-      }
+    if(!xxx) Process::exit("Not enough memory ");
     return xxx->numero();
   }
-
   Sortie& printOn(Sortie& os) const override;
   Entree& readOn(Entree& is) override;
 
 public:
   using Value_type_ = _TYPE_;
-  using Iterator = typename tcb::span<_TYPE_>::iterator;
+  using Iterator_ = typename tcb::span<_TYPE_>::iterator;
   using Vector_ = std::vector<_TYPE_, TVAlloc<_TYPE_> >;
   using Span_ = tcb::span<_TYPE_>;
 
@@ -83,14 +82,14 @@ public:
   friend class TestTRUSTArray;
 
   // Iterators
-  inline Iterator begin() { return span_.begin(); }
-  inline Iterator end() { return span_.end(); }
+  inline Iterator_ begin() { return span_.begin(); }
+  inline Iterator_ end() { return span_.end(); }
 
   inline virtual ~TRUSTArray();
 
   TRUSTArray() : TRUSTArray(0) { }
 
-  TRUSTArray(int n) : storage_type_(STORAGE::STANDARD)
+  TRUSTArray(_SIZE_ n) : storage_type_(STORAGE::STANDARD)
   {
     if (n)
       {
@@ -110,7 +109,7 @@ public:
     Array_base(), storage_type_(A.storage_type_)
   {
     assert(A.mem_ != nullptr || A.span_.empty());
-    const int size = A.size_array();
+    const _SIZE_ size = A.size_array();
     if (size > 0)
       {
         // storage_type_ must be set properly before invoking this! So that Trav mechanism works:
@@ -126,8 +125,8 @@ public:
   }
 
   // Resizing methods
-  inline void resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
-  inline void resize_array(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(_SIZE_ new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
+  inline void resize_array(_SIZE_ new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   /*! Memory allocation type - TEMP arrays (i.e. Trav) have a different allocation mechanism - see TRUSTTravPool.h) */
   inline void set_mem_storage(const STORAGE storage);
@@ -135,11 +134,11 @@ public:
 
   inline TRUSTArray& operator=(const TRUSTArray&);
 
-  inline _TYPE_& operator[](int i);
-  inline const _TYPE_& operator[](int i) const;
+  inline _TYPE_& operator[](_SIZE_ i);
+  inline const _TYPE_& operator[](_SIZE_ i) const;
 
-  inline _TYPE_& operator()(int i) { return operator[](i); }
-  inline const _TYPE_& operator()(int i) const { return operator[](i); }
+  inline _TYPE_& operator()(_SIZE_ i) { return operator[](i); }
+  inline const _TYPE_& operator()(_SIZE_ i) const { return operator[](i); }
 
   // Ces methodes renvoient un pointeur vers le premier element du tableau pour une utilisation sur le host
   inline _TYPE_ * addr();
@@ -150,7 +149,7 @@ public:
   inline const _TYPE_ *data() const;
 
   /*! Return the size of the span on the data (not the full underlying allocated size)   */
-  inline int size_array() const;
+  inline _SIZE_ size_array() const;
 
   /*! Returns the number of owners of the data, i.e. the number of Arrays pointing to the same underlying data */
   inline int ref_count() const;
@@ -179,7 +178,7 @@ public:
   /*! divise toutes les cases par dy (pas pour TRUSTArray<int>) */
   TRUSTArray& operator/= (const _TYPE_ dy);
 
-  TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements=-1,  int first_element_dest=0, int first_element_source=0);
+  TRUSTArray& inject_array(const TRUSTArray& source, _SIZE_ nb_elements=-1,  _SIZE_ first_element_dest=0, _SIZE_ first_element_source=0);
 
   inline TRUSTArray& copy_array(const TRUSTArray& a)
   {
@@ -193,11 +192,11 @@ public:
   // methodes virtuelles
 
   /*! Construction de tableaux qui pointent vers des donnees existantes !!! Utiliser ref_data avec precaution */
-  inline virtual void ref_data(_TYPE_* ptr, int size);
+  inline virtual void ref_data(_TYPE_* ptr, _SIZE_ size);
   /*! Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel) */
   inline virtual void reset() { detach_array(); }
-  inline virtual void ref_array(TRUSTArray&, int start=0, int sz=-1);
-  inline virtual void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline virtual void ref_array(TRUSTArray&, _SIZE_ start=0, _SIZE_ sz=-1);
+  inline virtual void resize_tab(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Host/Device methods:
   inline DataLocation get_data_location() {  return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_;   }
@@ -229,10 +228,10 @@ public:
   inline void modified_on_host() const;         // Mark data as being modified on host side
 
 protected:
-  inline void attach_array(const TRUSTArray& a, int start=0, int size=-1);
+  inline void attach_array(const TRUSTArray& a, _SIZE_ start=0, _SIZE_ size=-1);
   inline bool detach_array();
 
-  void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  void resize_array_(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Kokkos members
   inline void init_view_arr() const;
@@ -270,9 +269,15 @@ private:
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
 };
 
-using ArrOfDouble = TRUSTArray<double>;
-using ArrOfFloat = TRUSTArray<float>;
-using ArrOfInt = TRUSTArray<int>;
+using ArrOfDouble = TRUSTArray<double, int>;
+using ArrOfFloat = TRUSTArray<float, int>;
+using ArrOfInt = TRUSTArray<int, int>;
+using ArrOfTID = TRUSTArray<trustIdType, int>;
+
+using BigArrOfDouble = TRUSTArray<double, trustIdType>;
+using BigArrOfInt = TRUSTArray<int, trustIdType>;
+using BigArrOfTID = TRUSTArray<trustIdType, trustIdType>;
+
 
 /* *********************************** *
  * FONCTIONS NON MEMBRES DE TRUSTArray *

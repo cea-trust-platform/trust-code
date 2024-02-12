@@ -59,8 +59,8 @@ void tableau_trier_retirer_doublons(IntTab& tab);
 void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& items_a_garder);
 
 
-template<typename _TYPE_>
-inline void append_array_to_array(TRUSTArray<_TYPE_>& dest, const TRUSTArray<_TYPE_>& src)
+template<typename _TYPE_, typename _SIZE_>
+inline void append_array_to_array(TRUSTArray<_TYPE_,_SIZE_>& dest, const TRUSTArray<_TYPE_,_SIZE_>& src)
 {
   const int n1 = dest.size_array(), n2 = src.size_array();
   dest.resize_array(n1+n2);

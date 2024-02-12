@@ -19,8 +19,8 @@
 #include <TRUSTArray.h>
 #ifdef KOKKOS
 // Create internal DualView member, and populate it with current host data
-template<typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::init_view_arr() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_,_SIZE_>::init_view_arr() const
 {
   long ze_dim = this->size_array();
 
@@ -57,8 +57,8 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   dual_view_arr_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
+template<typename _TYPE_, typename _SIZE_>
+inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
   init_view_arr();
@@ -72,13 +72,13 @@ inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
   return dual_view_arr_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewArr<_TYPE_> TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_arr();
 #ifdef _OPENMP
-  computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_>::view_wo()"); // ToDo allouer sans copie ?
+  computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_arr_.template modify<memory_space>();
@@ -87,8 +87,8 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
   return dual_view_arr_.view_device();
 }
 
-template<typename _TYPE_>
-inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
+template<typename _TYPE_, typename _SIZE_>
+inline ViewArr<_TYPE_> TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
   init_view_arr();
@@ -104,8 +104,8 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
   return dual_view_arr_.view_device();
 }
 
-template<typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::sync_to_host() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_,_SIZE_>::sync_to_host() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -114,8 +114,8 @@ inline void TRUSTArray<_TYPE_>::sync_to_host() const
   dual_view_arr_.template sync<host_mirror_space>();
 }
 
-template<typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::modified_on_host() const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTArray<_TYPE_,_SIZE_>::modified_on_host() const
 {
 #ifdef _OPENMP
   Process::exit("ToDo");
@@ -126,14 +126,14 @@ inline void TRUSTArray<_TYPE_>::modified_on_host() const
 }
 
 // Methode de debug
-template<typename _TYPE_>
-void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, int max_size=-1)
+template<typename _TYPE_, typename _SIZE_>
+void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_,_SIZE_>& tab, _SIZE_ max_size=-1)
 {
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
-  int size = max_size;
+  _SIZE_ size = max_size;
   if (size==-1) size = view_tab.extent(0);
-  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
+  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const _SIZE_ i)
   {
     printf("[Kokkos]: %p [%2ld]=%e\n", view_tab.data(), i, view_tab(i));
   });
@@ -141,7 +141,7 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   assert(view_tab.size()==tab.size_array());
   _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
-  for (int i=0; i<size; i++)
+  for (_SIZE_ i=0; i<size; i++)
     printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
 }
 #endif
