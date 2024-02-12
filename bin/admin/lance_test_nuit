@@ -387,7 +387,7 @@ check_components()
                            WORKBETA=""
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.3
-                           [ "$Composant" == "module3D" ] && trustversion=1.9.2
+                           [ "$Composant" == "module3D" ] && trustversion=1.9.3
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
 		              WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -4484,7 +4484,8 @@ cp -f $REP_NUIT/CR $REP_HIST/CR.$DATE
 
 # On copie sur ftp NUIT
 . connect_ftp 1>/dev/null 2>&1
-cp_ftp $REP_NUIT/CR $SECRET/NUIT/.
+# Ne plus copier CR...
+#cp_ftp $REP_NUIT/CR $SECRET/NUIT/.
 cp_ftp $MESSAGES_NUIT $SECRET/NUIT/.
 
 # On sauvegarde l'historique de la nuit

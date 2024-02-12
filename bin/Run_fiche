@@ -17,6 +17,7 @@ help()
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
    echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
    echo "-xpdf                          : Open the PDF report file at the end of the build."
+   echo "-compare_pdf pdf_path          : Compare the produced rapport.pdf with a pdf file. Run_fiche should be run using -export_pdf or -parallel_run mode in addition to this option."
    echo
    echo "For .prm validation forms:"
    echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
@@ -347,11 +348,10 @@ then
           if [ "$error" != 0 ]
           then
              echo "Error, see Run.log"
+             exit $error
           else
              rm -f Run.log
-             [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
           fi
-          exit $error
       elif $export_tex; then
           opt_jy="--execute"
           tmp_env=""
@@ -378,10 +378,13 @@ then
           pdf=$(basename $pdf)
           pdf=$curr_dir/build/$pdf
           env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" --execute $prm 2>& 1| tee -a Run.log
-          err=$?
-          [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
+          error=${PIPESTATUS[0]}
+          if [ "$error" != 0 ]
+             then
+             echo "Error, see Run.log"
+             exit $error
+          fi
           #killall Sserver 
-          exit $err
       else
           echo "----------------------------------------------------------------------"
           echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
@@ -390,16 +393,17 @@ then
           jupyter-notebook $prm
           exit 0
       fi
-   fi
-   # Verifie la syntaxe des visu
-   KO=`grep _magnitude $prm | grep -i pseudocolor`
-   [ "$KO" != "" ] && echo "Warning, mauvaise syntaxe dans la prm ? $KO" && echo "Ne pas mettre _magnitude au domaine mais norme_ devant le champ vectoriel! Regardez la doc." #&& exit -1
-   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee -a Run.log
-   error=${PIPESTATUS[0]}
-   if [ "$error" != 0 ]
-   then
-      echo "Error, see Run.log"
-      exit -1
+   else # case of prm
+      # Verifie la syntaxe des visu
+      KO=`grep _magnitude $prm | grep -i pseudocolor`
+      [ "$KO" != "" ] && echo "Warning, mauvaise syntaxe dans la prm ? $KO" && echo "Ne pas mettre _magnitude au domaine mais norme_ devant le champ vectoriel! Regardez la doc." #&& exit -1
+      $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee -a Run.log
+      error=${PIPESTATUS[0]}
+      if [ "$error" != 0 ]
+      then
+         echo "Error, see Run.log"
+         exit -1
+      fi
    fi
 else
    # Lancement en remote command de la fiche
