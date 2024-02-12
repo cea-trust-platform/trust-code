@@ -278,13 +278,6 @@ vdf discretisation_base vdf -1 Finite difference volume discretization.
 polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
 polymac_P0P1NC discretisation_base polymac_P0P1NC -1 polymac_P0P1NC discretization (previously polymac discretization compatible with pb_multi).
 polymac_p0 discretisation_base polymac_p0 -1 polymac_p0 discretization (previously covimac discretization compatible with pb_multi).
-vef discretisation_base vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
-  attr p0 rien p0 1 Pressure nodes are added on element centres
-  attr p1 rien p1 1 Pressure nodes are added on vertices
-  attr pa rien pa 1 Only available in 3D, pressure nodes are added on bones
-  attr changement_de_base_p1bulle entier(into=[0,1]) changement_de_base_p1bulle 1 This option may be used to have the P1NC/P0P1 formulation (value set to 0) or the P1NC/P1Bulle formulation (value set to 1, the default).
-  attr cl_pression_sommet_faible entier(into=[0,1]) cl_pression_sommet_faible 1 This option is used to specify a strong formulation (value set to 0, the default) or a weak formulation (value set to 1) for an imposed pressure boundary condition. The first formulation converges quicker and is stable in general cases. The second formulation should be used if there are several outlet boundaries with Neumann condition (see Ecoulement_Neumann test case for example).
-  attr modif_div_face_dirichlet entier(into=[0,1]) modif_div_face_dirichlet 1 This option (by default 0) is used to extend control volumes for the momentum equation.
 solve interprete resoudre -2 Interpretor to start calculation with TRUST.
   attr pb ref_pb_gen_base pb 0 Name of problem to be solved.
 execute_parallel interprete execute_parallel 1 This keyword allows to run several computations in parallel on processors allocated to TRUST. The set of processors is split in N subsets and each subset will read and execute a different data file. Error messages usualy written to stderr and stdout are redirected to .log files (journaling must be activated).
@@ -1247,11 +1240,6 @@ testeur_medcoupling interprete testeur_medcoupling 0 not_set
 champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
   attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
-loi_fermeture_test loi_fermeture_base loi_fermeture_test -1 Loi for test only 
-  attr coef floattant coef 1 coefficient
-loi_fermeture_base objet_u loi_fermeture_base -3 Class for appends fermeture to problem 
-scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge). 
-  attr ch front_field_base ch 0 Boundary field type.
 bloc_pdf_model objet_lecture nul 1 not_set
   attr eta floattant eta 0 penalization coefficient
   attr temps_relaxation_coefficient_PDF floattant temps_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help   

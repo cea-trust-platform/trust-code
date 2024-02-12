@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <Milieu_MUSIG.h>
 
 Implemente_instanciable( Milieu_MUSIG, "Milieu_MUSIG", Milieu_composite ) ;
-// XD liste_mil listobj liste_mil -1 milieu_base 0 MUSIG medium made of several sub mediums.
+// XD Milieu_MUSIG listobj Milieu_MUSIG -1 milieu_base 0 MUSIG medium made of several sub mediums.
 
 Sortie& Milieu_MUSIG::printOn(Sortie& os) const { return Objet_U::printOn(os); }
 

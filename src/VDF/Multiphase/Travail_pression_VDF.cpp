@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Operateur.h>
 
 Implemente_instanciable(Travail_pression_VDF, "travail_pression_VDF_P0_VDF", Source_Travail_pression_Elem_base);
-// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+
 
 Sortie& Travail_pression_VDF::printOn(Sortie& os) const { return Source_Travail_pression_Elem_base::printOn(os); }
 Entree& Travail_pression_VDF::readOn(Entree& is) { return Source_Travail_pression_Elem_base::readOn(is); }

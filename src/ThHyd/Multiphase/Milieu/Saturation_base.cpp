@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,13 +20,13 @@
 #include <TPPI_tools.h>
 
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
-// XD saturation_base objet_u saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
+// XD saturation_base Interface_base saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
 
 void Saturation_base::set_param(Param& param)
 {
   Interface_base::set_param(param);
-  param.ajouter("P_ref", &P_ref_);
-  param.ajouter("T_ref", &T_ref_);
+  param.ajouter("P_ref", &P_ref_); // XD_ADD_P floattant not_set
+  param.ajouter("T_ref", &T_ref_); // XD_ADD_P floattant not_set
 }
 
 Sortie& Saturation_base::printOn(Sortie& os) const { return os; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,11 +22,14 @@
 #include <TRUSTTrav.h>
 
 Implemente_base(Interface_base, "Interface_base", Objet_U);
-// XD saturation_base objet_u saturation_base -1 Basic class for a liquid-gas interface (used in pb_multiphase)
+// XD Interface_base objet_u Interface_base -1 Basic class for a liquid-gas interface (used in pb_multiphase)
 
 Sortie& Interface_base::printOn(Sortie& os) const { return os; }
 
-void Interface_base::set_param(Param& param) { param.ajouter("tension_superficielle|surface_tension", &sigma__); }
+void Interface_base::set_param(Param& param)
+{
+  param.ajouter("tension_superficielle|surface_tension", &sigma__); // XD_ADD_P floattant surface tension
+}
 
 Entree& Interface_base::readOn(Entree& is)
 {

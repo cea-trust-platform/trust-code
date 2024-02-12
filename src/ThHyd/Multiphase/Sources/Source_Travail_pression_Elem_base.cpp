@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #include <cfloat>
 
 Implemente_base(Source_Travail_pression_Elem_base, "Source_Travail_pression_Elem_base", Sources_Multiphase_base);
-// XD Source_Travail_pression_Elem_base source_base Source_Travail_pression_Elem_base 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
 Sortie& Source_Travail_pression_Elem_base::printOn(Sortie& os) const { return os; }
 Entree& Source_Travail_pression_Elem_base::readOn(Entree& is) { return is; }

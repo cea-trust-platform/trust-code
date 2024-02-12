@@ -324,6 +324,7 @@ echo "   -disable-gnuplot                  Disable gnuplot installation and buil
 echo "   -disable-doxygen                  Disable doxygen installation and build. HTML documentation cannot be build if doxygen disabled."
 echo "   -disable-tcl_tk                   Disable Tcl/Tk detection/installation."
 echo "   -disable-gmsh                     Disable Gmsh installation and build."
+echo "   -disable-trustpy                  Do not build the trustpy documentation."
 echo "   -disable-plot2d                   Disable PLOT2D installation and build."
 echo "   -disable-checks                   Disable checks for external packages, sources, disk space and speed."
 echo "   -disable-check_sources            Disable check sources before compiling."

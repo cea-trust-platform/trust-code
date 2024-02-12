@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #include <Domaine_VF.h>
 
 Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
-// XD liste_mil listobj liste_mil -1 milieu_base 0 Composite medium made of several sub mediums.
+// XD Milieu_composite listobj Milieu_composite -1 milieu_base 0 Composite medium made of several sub mediums.
 
 Sortie& Milieu_composite::printOn(Sortie& os) const { return os; }
 

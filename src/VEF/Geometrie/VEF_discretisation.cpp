@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,13 +48,13 @@ Entree& VEF_discretisation::readOn(Entree& is)
   modif_div_face_dirichlet_ = 0;
 
   Param param(que_suis_je());
-  param.ajouter("changement_de_base_P1bulle", &P1Bulle_); // XD_ADD_P int (into=[0,1]) changement_de_base_p1bulle 1 This option may be used to have the P1NC/P0P1 formulation (value set to 0) or the P1NC/P1Bulle formulation (value set to 1, the default).
+  param.ajouter("changement_de_base_P1bulle", &P1Bulle_); // XD_ADD_P entier(into=[0,1]) changement_de_base_p1bulle 1 This option may be used to have the P1NC/P0P1 formulation (value set to 0) or the P1NC/P1Bulle formulation (value set to 1, the default).
   param.ajouter_flag("P0", &alphaE_); // XD_ADD_P rien Pressure nodes are added on element centres
   param.ajouter_flag("P1", &alphaS_); // XD_ADD_P rien Pressure nodes are added on vertices
   param.ajouter_flag("Pa", &alphaA_); // XD_ADD_P rien Only available in 3D, pressure nodes are added on bones
-  param.ajouter_flag("RT", &alphaRT_); // XD_ADD_P rien For P1NCP1B
-  param.ajouter("modif_div_face_dirichlet", &modif_div_face_dirichlet_); // XD_ADD_P  int (into=[0,1]) This option (by default 0) is used to extend control volumes for the momentum equation.
-  param.ajouter("CL_pression_sommet_faible", &cl_pression_sommet_faible_); // XD_ADD_P  int (into=[0,1]) This option is used to specify a strong formulation (value set to 0, the default) or a weak formulation (value set to 1) for an imposed pressure boundary condition. The first formulation converges quicker and is stable in general cases. The second formulation should be used if there are several outlet boundaries with Neumann condition (see Ecoulement_Neumann test case for example).
+  param.ajouter_flag("RT", &alphaRT_); // XD_ADD_P rien For P1NCP1B (in TrioCFD)
+  param.ajouter("modif_div_face_dirichlet", &modif_div_face_dirichlet_); // XD_ADD_P entier(into=[0,1]) This option (by default 0) is used to extend control volumes for the momentum equation.
+  param.ajouter("CL_pression_sommet_faible", &cl_pression_sommet_faible_); // XD_ADD_P entier(into=[0,1]) This option is used to specify a strong formulation (value set to 0, the default) or a weak formulation (value set to 1) for an imposed pressure boundary condition. The first formulation converges quicker and is stable in general cases. The second formulation should be used if there are several outlet boundaries with Neumann condition (see Ecoulement_Neumann test case for example).
   param.lire_avec_accolades(is);
 
   // Quelques verifications

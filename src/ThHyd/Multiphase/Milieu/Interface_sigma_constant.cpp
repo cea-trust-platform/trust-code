@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <Interface_sigma_constant.h>
 
 Implemente_instanciable(Interface_sigma_constant, "Interface_sigma_constant", Interface_base);
-// XD saturation_base objet_u saturation_base -1 Liquid-gas interface with a constant surface tension sigma
+// XD Interface_sigma_constant Interface_base Interface_sigma_constant -1 Liquid-gas interface with a constant surface tension sigma
 
 Sortie& Interface_sigma_constant::printOn(Sortie& os) const { return os; }
 Entree& Interface_sigma_constant::readOn(Entree& is) { return Interface_base::readOn(is); }
