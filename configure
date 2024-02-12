@@ -276,6 +276,7 @@ echo " "
 echo "   -linker=<prog>                    Force the use of a specified linker (if -linker=default, standard linking will be used)."
 echo " "
 echo "   -with-64-bit-indices              Build with 64 bits integer indices."
+echo "   -64-bit-new                       Cleaner way to build with 64 bits integer indices (EXPERIMENTAL)"
 echo " "
 echo "   -add_search=<dir>                 Add a directory to the defaults path to search a tool."
 echo "   -native                           Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
@@ -401,6 +402,7 @@ export TRUST_DISABLE_CGNS=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
+export TRUST_INT64_NEW=0
 export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
 export TRUST_USE_EOS=0
@@ -606,7 +608,10 @@ do
       # PL: We NEED int64 support !
       #echo "Disabling rocALUTION library (no integer 64 bits support yet)..."
       #export TRUST_ROCALUTION=0
-
+   elif [ "${1#-64-bit-new}" != "$1" ]
+   then
+      export TRUST_INT64=1
+      export TRUST_INT64_NEW=1
    elif [ "${1#-disable-mpi4py}" != "$1" ]
    then
       export TRUST_DISABLE_MPI4PY=1
@@ -815,6 +820,7 @@ echo "TRUST_ENABLE_MC_DEBUG=$TRUST_ENABLE_MC_DEBUG && export TRUST_ENABLE_MC_DEB
 echo "TRUST_ENABLE_KOKKOS_DEBUG=$TRUST_ENABLE_KOKKOS_DEBUG && export TRUST_ENABLE_KOKKOS_DEBUG # Disable/enable Kokkos debug" >> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
+echo "TRUST_INT64_NEW=$TRUST_INT64_NEW && export TRUST_INT64_NEW  # Build in 64 bits integer indices. New method." >> $var
 echo "TRUST_DISABLE_MPI4PY=$TRUST_DISABLE_MPI4PY && export TRUST_DISABLE_MPI4PY  # disable mpi4py build." >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDFLATEX		# Disable/enable pdf Documentation build only"	>> $var

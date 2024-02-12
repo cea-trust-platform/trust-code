@@ -73,8 +73,25 @@ double atanh(const double&);
 typedef int entier;
 typedef int integer;
 typedef int True_int;
-//#define INT_is_64_
+
 extern char* pwd();
 
-#endif // _ARCH_H_
+// Definition of the trustIdType storing all entity indices (element index, node index, ...)
+// that might be in 32 or 64bits
+// This is configured at the end of 'configurer_env' script.
+#include <cstdint>
+// We will often rely on std::numeric_limits<int>::max(), so need this:
+#include <limits>
 
+#if @TRUST_INT64@ 
+using trustIdType = std::int64_t;
+#  if  @TRUST_INT64_NEW@
+#    define INT_is_64_ 2
+#  else
+#    define INT_is_64_ 1
+#  endif
+#else
+using trustIdType = int ;
+#endif
+
+#endif // _ARCH_H_

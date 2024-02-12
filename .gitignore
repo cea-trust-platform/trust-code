@@ -1,3 +1,6 @@
+# Files configured by CMake
+src/Kernel/Utilitaires/arch.h
+
 # Build stuff
 build/
 /MonoDir*/
