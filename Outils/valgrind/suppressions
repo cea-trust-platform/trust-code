@@ -5,6 +5,25 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ######
+###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair
+######
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:_dlerror_run
+   fun:dlsym
+   fun:PetscInitialize_Common.constprop.3
+   fun:PetscInitialize.part.2
+   fun:_ZN8mon_main13init_parallelEiPPciii
+   fun:_Z10main_TRUSTiPPcRP8mon_maini
+   ...
+   fun:main
+}
+
+######
 ###### Cas test PETSC_SA-AMG en parallele utilisant PETSc 3.20
 ######
 {
