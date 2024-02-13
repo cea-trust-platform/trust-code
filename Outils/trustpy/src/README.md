@@ -20,6 +20,8 @@ cd $TRUST_ROOT/
 
 You can also go to [Launch Python unit-tests](#py-unittest) if you want to see it in action quickly.
 
+If you want to know how to properly document your code, checkout the `README_user.md` file in the `doc` subfolder.
+
 If you want more detailed explanations on the process, check out [Detailed explanations](#details)
 
 More specific documentation (notably developper's doc) can be found in the `doc` subfolder. The file `TODO.md` lists what remains to be corrected/done.

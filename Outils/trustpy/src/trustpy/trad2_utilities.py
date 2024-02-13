@@ -35,16 +35,17 @@ def convertTyp(typ):
 class TRAD2Attr:
   """ An attribute of a block in the TRAD2 logic """
   def __init__(self):
-    self.nam = ""
-    self.typ = ""
-    self.synos = []
-    self.is_opt = True
-    self.desc = ""
-    self.info = ["", -1]  # Filename / Lineno
+    self.nam = ""    # Name of the attribute
+    self.typ = ""    # Type of the attribute
+    self.synos = []  # List of synonyms for the attribute
+    self.is_opt = True  # Is the attribute optional
+    self.desc = ""      # Description
+    self.info = ["", -1]  # Filename / Lineno where the attribute was declared
 
   @classmethod
   def BuildFromTab(cls, tab, fname, lineno, convert=False):
-    """ Build from a single array representing a (splitted) line of the TRAD2 or a C++ XD comment
+    """ Build a TRAD2Attr from a single array representing a (splitted) line of the TRAD2, or a C++ XD comment
+    @param convert: whether to convert types because we come from C++
     """
     if len(tab) < 4:
       raise Exception(genErr(fname, lineno, "incomplete 'XD attr' (attribute line) instruction!!")) from None
@@ -89,13 +90,13 @@ class TRAD2Attr:
 class TRAD2Block:
   """ A block describing a keyword in the TRAD2 file. """
   def __init__(self):
-    self.nam = ""
-    self.name_base = ""
-    self.synos = []
-    self.mode = -123
-    self.desc = ""
-    self.info = ["", -1]  # Filename / Lineno
-    self.attrs = []  # A list of TRAD2Attr
+    self.nam = ""        # Keyword main name
+    self.name_base = ""  # Parent class for the keyword
+    self.synos = []      # List of synonyms
+    self.mode = -123     # Mode of the keyword (with braces, etc... see doc/README.md
+    self.desc = ""       # Description
+    self.info = ["", -1]  # Filename / Lineno where the keyword was defined
+    self.attrs = []  # A list of TRAD2Attr = the attributes expected for the keyword
 
   @classmethod
   def BuildFromTab(cls, tab, fname, lineno):
@@ -134,7 +135,7 @@ class TRAD2Block:
     return s, nfo
 
 class TRAD2BlockList(TRAD2Block):
-  """ Specific class for 'listobj' entries describing a list.
+  """ Specific class for 'listobj' entries in the TRAD2 (describing a list of objects)
   """
   def _finishBuild(self, tab):
     """ Override to extract list-relevant data """
@@ -146,7 +147,7 @@ class TRAD2BlockList(TRAD2Block):
     self.desc = ' '.join(tab[2:])
 
   def toTRAD2(self):
-    """ Output the data in the 'TRAD2' format - note there is no attribute """
+    """ Output the data in the 'TRAD2' format - note there is no attribute for a 'listobj' """
     if len(self.attrs):
       raise Exception(genErr(self.info[0], self.info[1], f"list object description should not have any attribute!!")) from None
     synos = "|".join(self.synos)
@@ -164,6 +165,8 @@ class TRAD2Content:
   @classmethod
   def BuildContentFromTRAD2(cls, trad2, trad2_nfo=None):
     """ Build content from a full TRAD2 file
+    @param trad2: path to the TRAD2 file
+    @param trad2_nfo: path to the auxiliary file containing debug info (declaration locations in the C++ code)
     """
     res = TRAD2Content()
     with open(trad2) as f:
@@ -218,7 +221,7 @@ class TRAD2Content:
     return ret
 
   def toTRAD2(self, f_nam_out):
-    """ Write everything out in the 'TRAD2' format (and the corresponding .nfo file giving the origin of each line. """
+    """ Write everything out in the 'TRAD2' format (and the corresponding .nfo file giving the origin of each line). """
     tot_s, tot_nfo = [], []
     for d in self.data:
       s, nfo = d.toTRAD2()
@@ -246,7 +249,10 @@ class TRAD2Content:
 
   @classmethod
   def _ParseXD(cls, f_nam, lin_n, tab, convert=False):
-
+    """ Parse a TRAD2 line, or a '// XD' line in the C++ file 
+    @param tab The line is already split on whitespace and stored in 'tab'
+    @param f_nam, lin_n: the origin of the declaration
+    """
     if len(tab) < 5:
       print(tab)
       raise Exception(genErr(f_nam, lin_n, "incomplete 'XD' instruction (header line)!!"))
@@ -262,9 +268,11 @@ class TRAD2Content:
 
   def _parseXD_ADD_something(self, tag="XD_ADD_P", expected_num_args=2, f_nam="", cpp_meth="ajouter",
                              lin_n=-1, tab=[]):
-    """ Parse a line with XD_ADD_P or XD_ADD_DICO -> this implies extracing some 
+    """ Parse a line with XD_ADD_P or XD_ADD_DICO -> this implies extracting some 
         information from the C++ call: param.ajouter(...).
         Only used when parsing C++ stuff.
+        @param tag: XD tag that is expected on this line
+        @param expected_num_args: number of args expected after the XD tag (not by tha 'ajouter..' method!!)
     """
     #  Example
     #   "param.ajouter_flag("P0", &alphaE_); // XD_ADD_P rien Pressure nodes"
@@ -284,7 +292,7 @@ class TRAD2Content:
     ob, cb = lin_start.find('('), lin_start.find(')')
     params = lin_start[ob+1:cb]
     tb = params.split(',')
-    if len(tb) not in [2,3]:
+    if len(tb) not in [1, 2,3]:
       raise Exception(genErr(f_nam, lin_n, f"wrong number of arguments to Param::ajouter*() method??"))
     # Param name
     param_nam = tb[0].lower().strip().replace('"', '')
@@ -293,20 +301,78 @@ class TRAD2Content:
     if len(tb) == 3 and "required" in tb[2].lower(): opt = "0"
     return param_nam, typ, opt, desc
 
-  def _parseXD_ADD_P(self, f_nam, lin_n, tab):
-    return self._parseXD_ADD_something(tag="XD_ADD_P", expected_num_args=2, cpp_meth="ajouter",
+  def _parseXD_ADD_P(self, lvl_s, f_nam, lin_n, tab):
+    """ Parse a line containing a "XD_ADD_P" tag 
+    """
+    tag = f"{lvl_s}XD_ADD_P"
+    return self._parseXD_ADD_something(tag=tag, expected_num_args=2, cpp_meth="ajouter",
                                        f_nam=f_nam, lin_n=lin_n, tab=tab)
 
-  def _parseXD_ADD_DICO(self, f_nam, lin_n, tab):
-    return self._parseXD_ADD_something(tag="XD_ADD_DICO", expected_num_args=1, cpp_meth="dictionnaire",
+  def _parseXD_ADD_DICO(self, lvl_s, f_nam, lin_n, tab):
+    """ Parse a line containing a "XD_ADD_DICO" tag 
+    """
+    tag = f"{lvl_s}XD_ADD_DICO"
+    return self._parseXD_ADD_something(tag=tag, expected_num_args=1, cpp_meth="dictionnaire",
                                        f_nam=f_nam, lin_n=lin_n, tab=tab)
+
+  def scanOneCppLine(self, lvl, lin, curr_obj, res, f_name, lin_n):
+    """ Scan a single line of a C++ file
+    """
+    lvl_s = ["","2", "3"][lvl]
+    XD = f"{lvl_s}XD"   # "XD", or "2XD", or "3XD"
+
+    # Make sure this is a valid XD comment
+    tab0 = lin.split(" ")
+    tab = [t for t in tab0 if t.strip() != '']
+    if f"//{XD}" in tab or f"//{XD}_ADD_P" in tab:
+      raise Exception(genErr(f_name, lin_n, f"misformatted {XD} comment (should have space before {XD} ...)"))
+
+    #
+    # This part of the treatment is exactly the same as what we do with raw TRAD_2 data:
+    #
+    if XD in tab:
+      pos = tab.index(XD)
+      # Skip "XD ref ..." for now
+      if len(tab[pos:]) >= 3 and tab[pos+1].lower() == "ref":
+        return
+      obj = self._ParseXD(f_name, lin_n, tab[pos+1:], convert=True)
+      if isinstance(obj, TRAD2Block):
+        res.append(obj)
+        curr_obj[lvl] = obj
+      else:  # attribute
+        if curr_obj[lvl] is None:
+          raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
+        curr_obj[lvl].attrs.append(obj)
+    #
+    # Those last two are only found in C++ files: XD_ADD_P and XD_ADD_DICO
+    #
+    if f"{XD}_ADD_P" in tab:
+      if curr_obj[lvl] is None:
+        raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
+      nam1, typ, opt, desc = self._parseXD_ADD_P(lvl_s, f_name, lin_n, tab)
+      a = TRAD2Attr.BuildFromTab([nam1, typ, nam1, opt, desc], f_name, lin_n, convert=True)
+      curr_obj[lvl].attrs.append(a)
+    if f"{XD}_ADD_DICO" in tab:
+      if curr_obj[lvl] is None:
+        raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
+      nam1, _, _, _ = self._parseXD_ADD_DICO(lvl_s, f_name, lin_n, tab)
+      # Ensure the last attr added in the block is a 'dico':
+      last_attr = curr_obj[lvl].attrs[-1]
+      typ = last_attr.typ
+      if not typ.startswith("chaine(into=["):  # bof bof ...
+        raise Exception(genErr(f_name, lin_n, "'XD_ADD_DICO' read, but no preceding 'XD_ADD_P dico ...' instruction found!!"))
+      last_attr.typ = typ.replace(']', f'"{nam1}",]')
+
 
   def scanOneCppFile(self, f_name):
     """ Scan one cpp file for the XD tags. Also extract the synonyms given by the 
-    'add_synonym' macro.
+    'add_synonym' macro, and extend 'self.synos'
     """
-    # f_n_sh = os.path.split(f_name)[-1]  # Short name of the C++ file
-    impl, res, curr_obj = {}, [], None
+    impl = {}
+    # C++ file may contain XD, but also 2XD, 3XD tags. Syntax is exactly the same.
+    # See doc/README_user.md for details. Max 3 levels.
+    curr_obj_per_level = [None, None, None]
+    res_per_level = [[], [], []]
     #
     # Frist part, scan the file to extract XD stuff
     #
@@ -340,52 +406,24 @@ class TRAD2Content:
         self.synos.setdefault(kw, []).append(s)
 
       #
-      # Now handle XD tags
+      # Now handle XD tags - we accumulate attributes separately per level:
       #
-      if "XD" in lin:
-        # Make sure this is a valid XD comment
-        tab0 = lin.split(" ")
-        tab = [t for t in tab0 if t.strip() != '']
-        if "//XD" in tab or "//XD_ADD_P" in tab:
-          raise Exception(genErr(f_name, lin_n, f"misformatted XD comment (should have space before XD ...)"))
-        if "XD" in tab:
-          pos = tab.index("XD")
-          # Skip "XD ref ..." for now
-          if len(tab[pos:]) >= 3 and tab[pos+1].lower() == "ref":
-            continue
-          obj = self._ParseXD(f_name, lin_n, tab[pos+1:], convert=True)
-          if isinstance(obj, TRAD2Block):
-            res.append(obj)
-            curr_obj = obj
-          else:  # attribute
-            if curr_obj is None:
-              raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
-            curr_obj.attrs.append(obj)
-        #
-        # Those last two are only found in C++ file:
-        #
-        if "XD_ADD_P" in tab:
-          if curr_obj is None:
-            raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
-          nam1, typ, opt, desc = self._parseXD_ADD_P(f_name, lin_n, tab)
-          a = TRAD2Attr.BuildFromTab([nam1, typ, nam1, opt, desc], f_name, lin_n, convert=True)
-          curr_obj.attrs.append(a)
-        if "XD_ADD_DICO" in tab:
-          if curr_obj is None:
-            raise Exception(genErr(f_name, lin_n, f"'XD attr' read before main 'XD' line!"))
-          nam1, _, _, _ = self._parseXD_ADD_DICO(f_name, lin_n, tab)
-          # Ensure the last attr added in the block is a 'dico':
-          last_attr = curr_obj.attrs[-1]
-          typ = last_attr.typ
-          if not typ.startswith("chaine(into=["):  # bof bof ...
-            raise Exception(genErr(f_name, lin_n, "'XD_ADD_DICO' read, but no preceding 'XD_ADD_P dico ...' instruction found!!"))
-          last_attr.typ = typ.replace(']', f'"{nam1}",]')
+      for lvl, lvl_s in enumerate(["","2","3"]):
+        if f"{lvl_s}XD" in lin:
+          self.scanOneCppLine(lvl, lin, curr_obj_per_level, res_per_level[lvl], f_name, lin_n)
+
+    #
+    # Aggregate final result, by puting levels in order:
+    #
+    res = []
+    for r in res_per_level:  res.extend(r)
+
     return res
 
   def scanSourceFiles(self, src_dirs):
-    """ Scan all C++ source files from a list of root directory (typically $TRUST_ROOT/src) 
+    """ Scan all C++ source files from a list of root directories (typically $TRUST_ROOT/src) 
     If several directories are provided, the last ones have priority if the same file is found
-    twice (for BALTIKs overrides!)
+    twice (for BALTIKs overrides, this makes sure the BALTIK source file has precedence)
     """
     import glob
     g_all = {}
