@@ -184,9 +184,13 @@ IF(NOT VISUAL)
  set (CMAKE_Fortran_COMPILER $ENV{TRUST_F77})
 ENDIF(NOT VISUAL)
 
+set(TRUST_LINKER "$ENV{TRUST_LINKER}")
+if(NOT TRUST_LINKER STREQUAL "")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=${TRUST_LINKER}")
+endif()
+
+
 project(TRUST)
-
-
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
    include(cmake.deps)
