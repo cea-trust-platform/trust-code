@@ -144,7 +144,7 @@ public:
 
 protected:
   // Par defaut on initialise les valeurs a zero
-  virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
+  virtual void creer_tableau_distribue(const MD_Vector&, RESIZE_OPTIONS = RESIZE_OPTIONS::COPY_INIT);
 
   Roue_ptr les_valeurs;
   REF(Domaine_Cl_dis) mon_dom_cl_dis;

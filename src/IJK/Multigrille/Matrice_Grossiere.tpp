@@ -28,12 +28,12 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
   const int nj = splitting.get_nb_elem_local(DIRECTION_J);
   const int nk = splitting.get_nb_elem_local(DIRECTION_K);
   {
-    renum_.resize(nk+2, nj+2, ni+2, Array_base::NOCOPY_NOINIT);
+    renum_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
     renum_ = -1; // init a -1
     // plusieur vecteur renum pour le cas shear periodic ou une case peut renvoyer vers plusieurs
     // + 4 autres vecteur contenant les ponderation associee pour interpolation 4th order
-    renum_m1_.resize(nk+2, nj+2, ni+2, Array_base::NOCOPY_NOINIT);
-    renum_p1_.resize(nk+2, nj+2, ni+2, Array_base::NOCOPY_NOINIT);
+    renum_m1_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
+    renum_p1_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
     renum_m1_ = -1; // init a -1
     renum_p1_ = -1; // init a -1
     ponderation_shear_m1_scal_ = 0.;

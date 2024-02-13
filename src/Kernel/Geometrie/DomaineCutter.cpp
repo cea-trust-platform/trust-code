@@ -138,7 +138,7 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
   liste_sommets.resize_array(nb_sommets_part);
 
   liste_inverse_sommets.resize_array(0); // On oublie les valeurs precedentes
-  liste_inverse_sommets.resize_array(nb_sommets,Array_base::NOCOPY_NOINIT);
+  liste_inverse_sommets.resize_array(nb_sommets,RESIZE_OPTIONS::NOCOPY_NOINIT);
   liste_inverse_sommets = -1;
 
   int n = 0;
@@ -199,7 +199,7 @@ void construire_elems_sous_domaine(const IntTab&    elems_domaine_globale,
   const int nb_elem_tot                = elems_domaine_globale.dimension_tot(0);
   const int nb_sommets_par_element = elems_domaine_globale.dimension(1);
 
-  liste_inverse_elements.resize(nb_elem_tot,Array_base::NOCOPY_NOINIT);
+  liste_inverse_elements.resize(nb_elem_tot,RESIZE_OPTIONS::NOCOPY_NOINIT);
   liste_inverse_elements = -1;
 
   // Premier passage: comptage du nombre d'elements de la partie

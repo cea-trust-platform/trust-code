@@ -177,7 +177,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
 void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input)
 {
   val.resize(0, nb_comp);
-  dom.creer_tableau_sommets(val, Array_base::NOCOPY_NOINIT);
+  dom.creer_tableau_sommets(val, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   // Construction d'un octree avec les sommets du domaine:
   const DoubleTab& coord = dom.coord_sommets();

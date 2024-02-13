@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -237,7 +237,7 @@ double EDO_Pression_th_VEF::masse_totale(double P,const DoubleTab& T)
   const Loi_Etat_base& loi_ = ref_cast(Loi_Etat_base,le_fluide_->loi_etat().valeur());
 
   DoubleVect tmp;
-  tmp.copy(T, ArrOfDouble::NOCOPY_NOINIT); // just copy the structure
+  tmp.copy(T, RESIZE_OPTIONS::NOCOPY_NOINIT); // just copy the structure
   if (!sub_type(Loi_Etat_Multi_GP_QC,loi_))
     {
       for (int i = 0; i < nb_faces; i++)

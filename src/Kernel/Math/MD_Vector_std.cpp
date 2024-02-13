@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,8 +84,8 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
 
   // Calcul de nb_items_to_items_
   {
-    nb_items_to_items_.resize_array(nb_voisins2, Array_base::NOCOPY_NOINIT);
-    tmp.resize_array(nproc(), Array_base::NOCOPY_NOINIT);
+    nb_items_to_items_.resize_array(nb_voisins2, RESIZE_OPTIONS::NOCOPY_NOINIT);
+    tmp.resize_array(nproc(), RESIZE_OPTIONS::NOCOPY_NOINIT);
     tmp = 0;
     for (i = 0; i < nb_voisins2; i++)
       tmp[pe_voisins_[i]] = items_to_recv[selection[i]].size_array();
@@ -100,7 +100,7 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
   }
   // Calcul de blocs_items_count_
   {
-    blocs_items_count_.resize_array(nb_voisins2, Array_base::NOCOPY_NOINIT);
+    blocs_items_count_.resize_array(nb_voisins2, RESIZE_OPTIONS::NOCOPY_NOINIT);
     for (i = 0; i < nb_voisins2; i++)
       {
         const int nblocs = blocs_to_recv_.get_list_size(i) / 2;
@@ -116,7 +116,7 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
       }
   }
   // Calcul des blocs d'items sequentiels (items non recus d'un autre proc)
-  tmp.resize_array(nb_items_tot, Array_base::NOCOPY_NOINIT);
+  tmp.resize_array(nb_items_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
   {
     // Marquage des items recus a zero
     tmp = 1;
@@ -170,14 +170,14 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
   if (nb_items_reels_ >= 0)
     {
       // Les operateurs sur les tableaux calculent tous les items reels
-      blocs_items_to_compute_.resize(2, Array_base::NOCOPY_NOINIT);
+      blocs_items_to_compute_.resize(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
       blocs_items_to_compute_[0] = 0;
       blocs_items_to_compute_[1] = nb_items_reels_;
     }
   else
     {
       // Les operateurs sur les tableaux calculent tout
-      blocs_items_to_compute_.resize(2, Array_base::NOCOPY_NOINIT);
+      blocs_items_to_compute_.resize(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
       blocs_items_to_compute_[0] = 0;
       blocs_items_to_compute_[1] = nb_items_tot_;
     }

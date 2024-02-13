@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,13 +34,13 @@ Implemente_instanciable_sans_constructeur(Champ_front_recyclage,"Champ_front_rec
 Champ_front_recyclage::Champ_front_recyclage()
 {
   int dim = Objet_U::dimension;
-  delt_dist.resize(dim,Array_base::NOCOPY_NOINIT);
+  delt_dist.resize(dim,RESIZE_OPTIONS::NOCOPY_NOINIT);
   delt_dist=0;
-  ampli_fluct_.resize(1,Array_base::NOCOPY_NOINIT);
+  ampli_fluct_.resize(1,RESIZE_OPTIONS::NOCOPY_NOINIT);
   ampli_fluct_ = 1.;
-  ampli_moy_imposee_.resize(1,Array_base::NOCOPY_NOINIT);
+  ampli_moy_imposee_.resize(1,RESIZE_OPTIONS::NOCOPY_NOINIT);
   ampli_moy_imposee_ = 1.;
-  ampli_moy_recyclee_.resize(1,Array_base::NOCOPY_NOINIT);
+  ampli_moy_recyclee_.resize(1,RESIZE_OPTIONS::NOCOPY_NOINIT);
   ampli_moy_recyclee_ = 1.;
 
   methode_moy_impos_ = -1;
@@ -89,9 +89,9 @@ int Champ_front_recyclage::lire_motcle_non_standard(const Motcle& mot, Entree& i
     {
       int nbcomp;
       is >> nom_pb1 >> nom_inco1 >> nbcomp;
-      ampli_fluct_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
-      ampli_moy_imposee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
-      ampli_moy_recyclee_.resize(nbcomp,Array_base::NOCOPY_NOINIT);
+      ampli_fluct_.resize(nbcomp,RESIZE_OPTIONS::NOCOPY_NOINIT);
+      ampli_moy_imposee_.resize(nbcomp,RESIZE_OPTIONS::NOCOPY_NOINIT);
+      ampli_moy_recyclee_.resize(nbcomp,RESIZE_OPTIONS::NOCOPY_NOINIT);
       ampli_fluct_ = 1.;
       ampli_moy_imposee_ = 1.;
       ampli_moy_recyclee_ = 1.;
@@ -433,8 +433,8 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   int nb_faces_bord2 = fr_vf2.nb_faces();
   associer_champ_evaluateur(nom_pb1,nom_inco1);
 
-  moyenne_imposee_.resize(nb_faces_bord2,nb_compo_,Array_base::COPY_INIT);
-  moyenne_recyclee_.resize(nb_faces_bord2,nb_compo_,Array_base::COPY_INIT);
+  moyenne_imposee_.resize(nb_faces_bord2,nb_compo_,RESIZE_OPTIONS::COPY_INIT);
+  moyenne_recyclee_.resize(nb_faces_bord2,nb_compo_,RESIZE_OPTIONS::COPY_INIT);
 
   if (ampli_fluct_.size()!=nb_compo_)
     {
@@ -511,7 +511,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
       // Remote coordinates of the local faces:
       const DoubleTab& remote_coords_on_pe = remote_coords[pe];
       int nb_faces_on_pe = remote_coords_on_pe.dimension(0);
-      elem_list.resize_tab(nb_faces_on_pe,ArrOfInt::NOCOPY_NOINIT);
+      elem_list.resize_tab(nb_faces_on_pe,RESIZE_OPTIONS::NOCOPY_NOINIT);
 
       ArrOfInt elem_list_par_pos;
       // Loop on local faces on the process pe:

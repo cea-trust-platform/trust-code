@@ -181,7 +181,7 @@ void Frontiere::add(const Frontiere& front)
 /*! @brief Cree un tableau ayant une "ligne" par face de cette frontiere Voir MD_Vector_tools::creer_tableau_distribue()
  *
  */
-void Frontiere::creer_tableau_faces(Array_base& v, Array_base::Resize_Options opt) const
+void Frontiere::creer_tableau_faces(Array_base& v, RESIZE_OPTIONS opt) const
 {
   const MD_Vector& md = les_faces.les_sommets().get_md_vector();
   MD_Vector_tools::creer_tableau_distribue(md, v, opt);

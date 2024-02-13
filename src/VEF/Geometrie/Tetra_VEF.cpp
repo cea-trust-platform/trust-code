@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,7 +146,7 @@ void Tetra_VEF::creer_facette_normales(const Domaine& domaine_geom,
   //Original:
   // facette_normales.resize(0,6,3);
   // // valgrind with MPICH says a unitialised here so we initialize:
-  // // domaine_geom.creer_tableau_elements(facette_normales, Array_base::NOCOPY_NOINIT);
+  // // domaine_geom.creer_tableau_elements(facette_normales, RESIZE_OPTIONS::NOCOPY_NOINIT);
   // domaine_geom.creer_tableau_elements(facette_normales);
 
   //New similar as in Tri_VEF.cpp

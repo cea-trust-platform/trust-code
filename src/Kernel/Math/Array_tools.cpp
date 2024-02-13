@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -352,7 +352,7 @@ int tri_lexicographique_tableau_indirect(const IntTab& tab, ArrOfInt& index)
   const int dimtab = tab.dimension_tot(0);
   if (index.size_array() == 0 && dimtab > 0)
     {
-      index.resize_array(dimtab, Array_base::NOCOPY_NOINIT);
+      index.resize_array(dimtab, RESIZE_OPTIONS::NOCOPY_NOINIT);
       for (int i = 0; i < dimtab; i++)
         index[i] = i;
     }
@@ -472,8 +472,8 @@ void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& 
   const int n = index.size_array();
 
   // on redimensionne renum et renum_index
-  renum.resize_array(n, Array_base::NOCOPY_NOINIT);
-  renum_inverse.resize_array(n, Array_base::NOCOPY_NOINIT);
+  renum.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  renum_inverse.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   int count  = -1; // compteur de lignes dans le tableau reduit
   int latest = -1; // indice dans le tableau initial de la derniere ligne ajoutee dans le tableau reduit

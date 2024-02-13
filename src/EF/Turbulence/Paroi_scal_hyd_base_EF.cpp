@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ int Paroi_scal_hyd_base_EF::init_lois_paroi()
           //  et une fois par Modele_turbulence_scal_base::preparer_calcul())
           // donc tester si pas deja fait:
           if (!dist_equiv.get_md_vector().non_nul())
-            le_bord.frontiere().creer_tableau_faces(dist_equiv, Array_base::NOCOPY_NOINIT);
+            le_bord.frontiere().creer_tableau_faces(dist_equiv, RESIZE_OPTIONS::NOCOPY_NOINIT);
           //assert(dist_equiv.get_md_vector() == le_bord.frontiere().md_vector_faces());
 
           for (int ind_face = 0; ind_face < size; ind_face++)

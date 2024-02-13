@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,7 +134,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
         const int sztot_source = secmem.size_array();
         const int sz = secmem.size();
         renum_.reset();
-        renum_.resize(sztot_source, Array_base::NOCOPY_NOINIT);
+        renum_.resize(sztot_source, RESIZE_OPTIONS::NOCOPY_NOINIT);
         renum_ = 0;
         // Retirer les items virtuels
         int i;
@@ -204,7 +204,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       //  sinon il faut ajouter du padding pour aligner si on remet des double apres de int)
       //
       Journal() << "Solv_GCP::prepare allocating data chunk : " << mem_size << " bytes" << finl;
-      tmp_data_block_.resize_array(mem_size/8, Array_base::NOCOPY_NOINIT);
+      tmp_data_block_.resize_array(mem_size/8, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
       double *ptr = tmp_data_block_.addr();
       resu_.ref_data(ptr, sz);
@@ -421,9 +421,9 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
       resu_.reset();
       residu_.reset();
       tmp_p_avec_items_virt_.reset();
-      resu_.copy(solution, Array_base::NOCOPY_NOINIT);
-      residu_.copy(solution, Array_base::NOCOPY_NOINIT);
-      tmp_p_avec_items_virt_.copy(solution, Array_base::NOCOPY_NOINIT);
+      resu_.copy(solution, RESIZE_OPTIONS::NOCOPY_NOINIT);
+      residu_.copy(solution, RESIZE_OPTIONS::NOCOPY_NOINIT);
+      tmp_p_avec_items_virt_.copy(solution, RESIZE_OPTIONS::NOCOPY_NOINIT);
       tmp_p_.ref(tmp_p_avec_items_virt_);
       tmp_solution_.ref(solution);
       resu_.inject_array(secmem);

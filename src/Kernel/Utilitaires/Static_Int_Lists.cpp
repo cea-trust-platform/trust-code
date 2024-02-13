@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,7 +116,7 @@ void Static_Int_Lists::trier_liste(int num_liste)
 void Static_Int_Lists::copy_list_to_array(int i, ArrOfInt& array) const
 {
   const int n = get_list_size(i);
-  array.resize_array(n, Array_base::NOCOPY_NOINIT);
+  array.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
   const int index = index_[i];
   array.inject_array(valeurs_, n, 0 /* destination index */, index /* source index */);
 }
@@ -162,7 +162,7 @@ Sortie& Static_Int_Lists::ecrire(Sortie& os) const
 void Static_Int_Lists::set(const ArrsOfInt& src)
 {
   const int nb_lists = src.size();
-  index_.resize_array(nb_lists + 1, Array_base::NOCOPY_NOINIT);
+  index_.resize_array(nb_lists + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
   int idx = 0;
   int i;
   index_[0] = 0;
@@ -172,7 +172,7 @@ void Static_Int_Lists::set(const ArrsOfInt& src)
       index_[i+1] = idx;
     }
 
-  valeurs_.resize_array(idx, Array_base::NOCOPY_NOINIT);
+  valeurs_.resize_array(idx, RESIZE_OPTIONS::NOCOPY_NOINIT);
   idx = 0;
   for (i = 0; i < nb_lists; i++)
     {

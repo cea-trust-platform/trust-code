@@ -1421,7 +1421,7 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
         ArrOfInt& dest = blocs_to_recv[i_joint];
         if (nitems_virt > 0)
           {
-            dest.resize_array(2, Array_base::NOCOPY_NOINIT);
+            dest.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
             // Definition du bloc d'items virtuels pour le processeur voisin
             dest[0] = nitems_tot;
             dest[1] = nitems_tot + nitems_virt;
@@ -1433,7 +1433,7 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
         const int n = items_distants.size_array();
         ArrOfInt& dest = items_to_send[i_joint];
         const int index = dest.size_array();
-        dest.resize_array(index + n, Array_base::COPY_NOINIT); // copier les anciennes valeurs !
+        dest.resize_array(index + n, RESIZE_OPTIONS::COPY_NOINIT); // copier les anciennes valeurs !
         dest.inject_array(items_distants, n, index /* dest index */, 0 /* src index */);
       }
     }
@@ -1676,7 +1676,7 @@ int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) co
   // On cree une copie du tableau, dans laquelle on met les indices globaux:
   IntVect indices_globaux;
   // Ne copier que la structure
-  indices_globaux.copy(tableau, ArrOfInt::NOCOPY_NOINIT);
+  indices_globaux.copy(tableau, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   const int nb_items_reels    = tableau.size_reelle();
   const int nb_items_tot      = tableau.size_totale();
@@ -1729,7 +1729,7 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
 
   // Construit la structure d'espaces virtuels du "tableau"
   if (!(tableau.get_md_vector() == md_indice))
-    MD_Vector_tools::creer_tableau_distribue(md_indice, tableau, Array_base::COPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md_indice, tableau, RESIZE_OPTIONS::COPY_NOINIT);
 
   // Remplissage des valeurs vituelles du "tableau"
   const int nb_erreurs =
@@ -2797,10 +2797,10 @@ static void init_simple_md_vector(MD_Vector_std& md, const int n)
   md.nb_items_reels_ = n;
   md.nb_items_seq_tot_ = n;
   md.nb_items_seq_local_ = n;
-  md.blocs_items_to_sum_.resize_array(2, Array_base::NOCOPY_NOINIT);
+  md.blocs_items_to_sum_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
   md.blocs_items_to_sum_[0] = 0;
   md.blocs_items_to_sum_[1] = n;
-  md.blocs_items_to_compute_.resize_array(2, Array_base::NOCOPY_NOINIT);
+  md.blocs_items_to_compute_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
   md.blocs_items_to_compute_[0] = 0;
   md.blocs_items_to_compute_[1] = n;
 }

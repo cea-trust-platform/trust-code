@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -168,7 +168,7 @@ void Octree_Double::build_nodes(const DoubleTab& coords, const int include_virtu
     }
   int have_epsilon = (epsilon == 0.) ? 0 : 1;
   IntTab elements_boxes;
-  elements_boxes.resize(nb_som, have_epsilon ? (dim*2) : dim, ArrOfInt::NOCOPY_NOINIT);
+  elements_boxes.resize(nb_som, have_epsilon ? (dim*2) : dim, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -217,7 +217,7 @@ void Octree_Double::build_elements(const DoubleTab& coords, const IntTab& elemen
   const int nb_som_elem = elements.dimension(1);
   const int dim = coords.dimension(1);
   IntTab elements_boxes;
-  elements_boxes.resize(nb_elems, dim * 2, ArrOfInt::NOCOPY_NOINIT);
+  elements_boxes.resize(nb_elems, dim * 2, RESIZE_OPTIONS::NOCOPY_NOINIT);
   for (int i = 0; i < nb_elems; i++)
     {
       for (int j = 0; j < dim; j++)

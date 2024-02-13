@@ -85,7 +85,7 @@ public:
   DoubleTab getBoundingBox() const;
   void ajouter(const DoubleTab&);
   void ajouter(const DoubleTab&, IntVect&);
-  virtual void creer_tableau_sommets(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
+  virtual void creer_tableau_sommets(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
   virtual const MD_Vector& md_vector_sommets() const { return sommets_.get_md_vector(); }
   int nb_som() const ;
   int nb_som_tot() const ;
@@ -331,7 +331,7 @@ public:
   void construire_elem_virt_pe_num();
   void construire_elem_virt_pe_num(IntTab& elem_virt_pe_num_cpy) const;
   const IntTab& elem_virt_pe_num() const;
-  virtual void creer_tableau_elements(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
+  virtual void creer_tableau_elements(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
   virtual const MD_Vector& md_vector_elements() const;
   static int identifie_item_unique(IntList& item_possible, DoubleTab& coord_possible, const DoubleVect& coord_ref);
 

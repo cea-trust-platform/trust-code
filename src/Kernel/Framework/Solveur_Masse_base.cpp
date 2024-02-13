@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -183,7 +183,7 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
 
   int sz=y.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag); // M-1
   if (penalisation)
@@ -249,7 +249,7 @@ DoubleTab& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, Dou
 {
   int sz=y.size();
   DoubleTrav diag;
-  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)
@@ -278,7 +278,7 @@ void Solveur_Masse_base::get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect&
 {
   int sz=dt_locaux.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)
@@ -306,7 +306,7 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 {
   int sz=dt_locaux.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)

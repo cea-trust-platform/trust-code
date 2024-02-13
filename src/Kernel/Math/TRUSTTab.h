@@ -194,13 +194,13 @@ public:
     TRUSTVect<_TYPE_>::set_line_size_(n2*n3*n4);
   }
 
-  inline void resize_dim0(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void resize(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void resize(int n1, int n2, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void resize(int n1, int n2, int n3, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void resize(int n1, int n2, int n3, int n4, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void resize(const TRUSTArray<int>& tailles, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void copy(const TRUSTTab&, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+  inline void resize_dim0(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(int n1, int n2, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(int n1, int n2, int n3, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(int n1, int n2, int n3, int n4, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void resize(const TRUSTArray<int>& tailles, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  inline void copy(const TRUSTTab&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
   inline void append_line(_TYPE_);
   inline void append_line(_TYPE_, _TYPE_);
   inline void append_line(_TYPE_, _TYPE_, _TYPE_);
@@ -249,7 +249,7 @@ public:
   inline void ref_data(_TYPE_* ptr, int size) override;
   inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
   inline void reset() override;
-  inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
+  inline void resize_tab(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) override;
 
 protected:
   inline void init_view_tab2() const;

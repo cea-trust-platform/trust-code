@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Periodique::completer()
   // Creation d'un tableau d'indices parallele sur toutes les faces frontieres
   IntTab tab_face_associee;
   const Domaine_VF& domainevf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
-  domainevf.creer_tableau_faces_bord(tab_face_associee, Array_base::NOCOPY_NOINIT);
+  domainevf.creer_tableau_faces_bord(tab_face_associee, RESIZE_OPTIONS::NOCOPY_NOINIT);
   tab_face_associee = -1;
 
   // Nombre de faces virtuelles de cette frontiere:

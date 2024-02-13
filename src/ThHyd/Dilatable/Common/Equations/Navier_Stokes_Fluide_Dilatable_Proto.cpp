@@ -53,7 +53,7 @@ int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn
   rho_vitesse_impl(rho,vit,mass_flux);
 
   DoubleTab array;
-  array.copy(eqn.div().valeurs(), Array_base::NOCOPY_NOINIT); // init structure uniquement
+  array.copy(eqn.div().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT); // init structure uniquement
   if (tab_W.get_md_vector().non_nul())
     {
       operator_egal(array, tab_W ); //, VECT_REAL_ITEMS); // initialise
@@ -117,13 +117,13 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
 
   if (!tab_W.get_md_vector().non_nul())
     {
-      tab_W.copy(secmem, Array_base::NOCOPY_NOINIT); // copie la structure
+      tab_W.copy(secmem, RESIZE_OPTIONS::NOCOPY_NOINIT); // copie la structure
       // initialisation sinon plantage assert lors du remplissage dans EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B
       tab_W = 0.;
     }
 
   DoubleTab rhoU;
-  rhoU.copy(vit, Array_base::NOCOPY_NOINIT); // copie la structure
+  rhoU.copy(vit, RESIZE_OPTIONS::NOCOPY_NOINIT); // copie la structure
 
   // Get champ gradP
   REF(Champ_base) gradient_pression;

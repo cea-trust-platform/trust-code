@@ -222,7 +222,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
   const MD_Vector& md = ref_cast(Domaine_VF, zdb_.valeur()).md_vector_faces();
   if (!porosite_face_.get_md_vector().non_nul())
     {
-      MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, Array_base::NOCOPY_NOINIT);
+      MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, RESIZE_OPTIONS::NOCOPY_NOINIT);
       assert (ref_cast(Domaine_VF, zdb_.valeur()).nb_faces_tot() == porosite_face_.size_totale());
     }
   porosite_face_ = 1.;
@@ -322,7 +322,7 @@ void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Disc
   const MD_Vector& md = ref_cast(Domaine_VF, zdb_.valeur()).md_vector_faces();
   if (!diametre_hydraulique_face_.get_md_vector().non_nul())
     {
-      MD_Vector_tools::creer_tableau_distribue(md, diametre_hydraulique_face_, Array_base::NOCOPY_NOINIT);
+      MD_Vector_tools::creer_tableau_distribue(md, diametre_hydraulique_face_, RESIZE_OPTIONS::NOCOPY_NOINIT);
       assert (ref_cast(Domaine_VF, zdb_.valeur()).nb_faces_tot() == diametre_hydraulique_face_.size_totale());
     }
   diametre_hydraulique_face_ = 0.; /* les diametres hydrauliques valent 0 */

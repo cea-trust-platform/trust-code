@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ protected:
 inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
 {
   const int nb_faces_tot = ref_cast(Domaine_VDF,le_dom.valeur()).nb_faces_tot();
-  db_diffusivite.resize(nb_faces_tot,Array_base::NOCOPY_NOINIT);
+  db_diffusivite.resize(nb_faces_tot,RESIZE_OPTIONS::NOCOPY_NOINIT);
   diffusivite_ = diffu.valeur();
   mettre_a_jour();
 }

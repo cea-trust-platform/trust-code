@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
       DoubleVect rho_bord;
       // B.M. je cree une copie sinon il faut truander les tests sur les tailles dans multiply_any_shape
       // ou creer un DoubleTab qui pointe sur rho...
-      zvf.creer_tableau_faces_bord(rho_bord, Array_base::NOCOPY_NOINIT);
+      zvf.creer_tableau_faces_bord(rho_bord, RESIZE_OPTIONS::NOCOPY_NOINIT);
       rho_bord.inject_array(rho, rho_bord.size());
       multiplier_ou_diviser(tab, rho_bord, diviser);
       return;
@@ -72,7 +72,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
       // Il faut calculer rho aux elements
       const DoubleTab& tab_rho = le_fluide.masse_volumique().valeurs();
       DoubleVect rho_elem;
-      domaine.creer_tableau_elements(rho_elem, Array_base::NOCOPY_NOINIT);
+      domaine.creer_tableau_elements(rho_elem, RESIZE_OPTIONS::NOCOPY_NOINIT);
       const int nb_elem_tot = domaine.nb_elem_tot();
       const IntTab& elem_faces = zvf.elem_faces();
       const int nfe = elem_faces.dimension(1);

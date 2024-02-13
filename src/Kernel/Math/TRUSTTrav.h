@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,37 +43,37 @@ protected:
   }
 
 public:
-  inline TRUSTTrav() { TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE); }
+  inline TRUSTTrav() { TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE); }
 
   inline TRUSTTrav(int n)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::resize(n);
   }
 
   inline TRUSTTrav(int n1, int n2)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::resize(n1, n2);
   }
 
   inline TRUSTTrav(int n1, int n2, int n3)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::resize(n1, n2, n3);
   }
 
   inline TRUSTTrav(int n1, int n2, int n3, int n4)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::resize(n1, n2, n3, n4);
   }
 
   //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTTab<_TYPE_>& tab)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
-    TRUSTTab<_TYPE_>::copy(tab, Array_base::NOCOPY_NOINIT);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::copy(tab, RESIZE_OPTIONS::NOCOPY_NOINIT);
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
@@ -81,9 +81,9 @@ public:
   //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTVect<_TYPE_>& tab)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::set_line_size_(tab.line_size());
-    TRUSTTab<_TYPE_>::resize(tab.size_array(), Array_base::NOCOPY_NOINIT);
+    TRUSTTab<_TYPE_>::resize(tab.size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
     TRUSTTab<_TYPE_>::set_md_vector(tab.get_md_vector());
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
@@ -92,8 +92,8 @@ public:
   //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTTrav& tab) : TRUSTTab<_TYPE_>(tab)
   {
-    TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
-    TRUSTTab<_TYPE_>::copy(tab, Array_base::NOCOPY_NOINIT);
+    TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
+    TRUSTTab<_TYPE_>::copy(tab, RESIZE_OPTIONS::NOCOPY_NOINIT);
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 

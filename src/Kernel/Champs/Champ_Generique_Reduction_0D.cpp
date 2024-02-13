@@ -255,11 +255,11 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
               Entity loc;
               loc = get_localisation();
               if (loc==Entity::ELEMENT)
-                zvf.domaine().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine().creer_tableau_elements(vect_source,RESIZE_OPTIONS::NOCOPY_NOINIT);
               else if (loc==Entity::NODE)
-                zvf.domaine().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine().creer_tableau_sommets(vect_source,RESIZE_OPTIONS::NOCOPY_NOINIT);
               else if (loc==Entity::FACE)
-                zvf.creer_tableau_faces(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.creer_tableau_faces(vect_source,RESIZE_OPTIONS::NOCOPY_NOINIT);
               vect_source = 0.;
             }
           else
@@ -665,11 +665,11 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       Entity loc;
       loc = get_localisation();
       if (loc==Entity::ELEMENT)
-        zvf.domaine().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine().creer_tableau_elements(un,RESIZE_OPTIONS::NOCOPY_NOINIT);
       else if (loc==Entity::NODE)
-        zvf.domaine().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine().creer_tableau_sommets(un,RESIZE_OPTIONS::NOCOPY_NOINIT);
       else if (loc==Entity::FACE)
-        zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
+        zvf.creer_tableau_faces(un,RESIZE_OPTIONS::NOCOPY_NOINIT);
       un = 1.;
       if (methode_=="somme" || methode_=="sum")
         {

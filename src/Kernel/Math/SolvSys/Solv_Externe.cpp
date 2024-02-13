@@ -53,7 +53,7 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
     const MD_Vector& md = b.get_md_vector();
     renum_.reset();
     renum_.resize(0, b.line_size());
-    MD_Vector_tools::creer_tableau_distribue(md, renum_, Array_base::NOCOPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md, renum_, RESIZE_OPTIONS::NOCOPY_NOINIT);
   }
   int cpt=0;
   int size=items_to_keep_.size_array();

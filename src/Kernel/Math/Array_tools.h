@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ template<typename _TYPE_>
 inline void array_smart_allocate(TRUSTArray<_TYPE_>& array, const int n)
 {
   array.set_smart_resize(1);
-  array.resize_array(n, Array_base::NOCOPY_NOINIT); // get memory for the requested size
+  array.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT); // get memory for the requested size
   array.resize_array(0); // and set actual size to zero
 }
 

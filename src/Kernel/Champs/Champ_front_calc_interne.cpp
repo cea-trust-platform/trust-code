@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ void Champ_front_calc_interne::completer()
       Cerr << "ERROR : Champ_front_calc_interne::completer() - number of faces of the internal boundary is not even!"<< finl;
       Process::exit(1);
     }
-  face_map_.resize(nbfaces,Array_base::NOCOPY_NOINIT);
+  face_map_.resize(nbfaces,RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   if (nbfaces>0)
     {

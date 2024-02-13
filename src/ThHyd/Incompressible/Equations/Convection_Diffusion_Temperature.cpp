@@ -369,7 +369,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
       secmem -= secmem_conv_vr;
 
       DoubleTab derivee_conv;
-      derivee_conv.copy(secmem, Array_base::COPY_INIT);
+      derivee_conv.copy(secmem, RESIZE_OPTIONS::COPY_INIT);
 
       les_sources.ajouter(secmem);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,7 +108,7 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
 
       // Calcul de masse_n et masse_np1
       DoubleVect tmp;
-      tmp.copy(tempn, ArrOfDouble::NOCOPY_NOINIT); // copier uniquement la structure
+      tmp.copy(tempn, RESIZE_OPTIONS::NOCOPY_NOINIT); // copier uniquement la structure
       for (int i = 0; i < nb_faces; i++)
         tmp[i] = 1. / tempn[i];
       const double masse_n = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);

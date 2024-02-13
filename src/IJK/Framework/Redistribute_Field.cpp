@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -218,7 +218,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
 
   ArrOfDouble buffer_for_me;
   ArrOfDouble tmp;
-  buffer_for_me.resize_array(size_buffer_for_me_, Array_base::NOCOPY_NOINIT);
+  buffer_for_me.resize_array(size_buffer_for_me_, RESIZE_OPTIONS::NOCOPY_NOINIT);
   int index_buffer_for_me = 0;
   // Prepare data to send:
   Int3 ibloc;

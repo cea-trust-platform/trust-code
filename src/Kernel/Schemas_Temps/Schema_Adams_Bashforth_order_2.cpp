@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ void Schema_Adams_Bashforth_order_2::compute_adams_bashforth_coefficients(double
 
   if (coefficients().size_array() != 2)
     {
-      coefficients().resize(2,Array_base::NOCOPY_NOINIT);
+      coefficients().resize(2,RESIZE_OPTIONS::NOCOPY_NOINIT);
     }
 
   double past_time          = times[0];

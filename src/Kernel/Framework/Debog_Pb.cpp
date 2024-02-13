@@ -221,7 +221,7 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
   // Add a new renum array:
   renum_array_.add(IntVect());
   IntVect& renum = renum_array_[renum_array_.size()-1];
-  MD_Vector_tools::creer_tableau_distribue(md, renum, Array_base::NOCOPY_NOINIT);
+  MD_Vector_tools::creer_tableau_distribue(md, renum, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   if (renum.size_totale() != coord_par.dimension_tot(0))
     {

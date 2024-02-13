@@ -104,9 +104,9 @@ void Schema_Comm_Vecteurs::begin_init()
   assert(status_ == END_INIT || status_ == RESET);
   // Reset des tableaux sizes_
   const int np = Process::nproc();
-  send_buf_sizes_.resize_array(np, ArrOfInt::NOCOPY_NOINIT);
+  send_buf_sizes_.resize_array(np, RESIZE_OPTIONS::NOCOPY_NOINIT);
   send_buf_sizes_ = 0;
-  recv_buf_sizes_.resize_array(np, ArrOfInt::NOCOPY_NOINIT);
+  recv_buf_sizes_.resize_array(np, RESIZE_OPTIONS::NOCOPY_NOINIT);
   recv_buf_sizes_ = 0;
   send_procs_.resize_array(0);
   recv_procs_.resize_array(0);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ Extruder_en3::Extruder_en3():
   nom_dvt_("devant"),
   nom_derriere_("derriere")
 {
-  direction_.resize(3,Array_base::NOCOPY_NOINIT);
+  direction_.resize(3,RESIZE_OPTIONS::NOCOPY_NOINIT);
 }
 
 Sortie& Extruder_en3::printOn(Sortie& os) const { return Interprete::printOn(os); }

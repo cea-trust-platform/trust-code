@@ -88,7 +88,7 @@ int Champ_Inc_base::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Resize_Options opt)
+void Champ_Inc_base::creer_tableau_distribue(const MD_Vector& md, RESIZE_OPTIONS opt)
 {
   const int n = nb_valeurs_temporelles();
   for (int i = 0; i < n; i++)
@@ -489,7 +489,7 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab
 {
   const Domaine& domaine = domaine_dis_base().domaine();
   IntVect les_polys;
-  les_polys.resize(tab_valeurs.dimension_tot(0), Array_base::NOCOPY_NOINIT);
+  les_polys.resize(tab_valeurs.dimension_tot(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   domaine.chercher_elements(positions, les_polys);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -371,7 +371,7 @@ void corriger(const Domaine_VEF& domaine_VEF, DoubleTab& champ_filtre_, Matrice&
 
       // Calcul de la correction
       DoubleVect solution;
-      solution.copy(secmem, ArrOfDouble::NOCOPY_NOINIT); // Copie de la structure
+      solution.copy(secmem, RESIZE_OPTIONS::NOCOPY_NOINIT); // Copie de la structure
       solution = 0.;
 
       SolveurSys solveur;

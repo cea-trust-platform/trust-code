@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ void SSOR::prepare_(const Matrice_Base& la_matrice, const DoubleVect& secmem)
           // Nombre d'items sequentiels sur ce proc
           const int sz_tot = secmem.size_totale();
           items_a_traiter_.reset();
-          items_a_traiter_.resize(sz_tot / line_size_, line_size_, Array_base::NOCOPY_NOINIT);
+          items_a_traiter_.resize(sz_tot / line_size_, line_size_, RESIZE_OPTIONS::NOCOPY_NOINIT);
           items_a_traiter_.set_md_vector(md_secmem_);
           int n = MD_Vector_tools::get_sequential_items_flags(md_secmem_, items_a_traiter_, line_size_);
           int sz = md_secmem_.valeur().get_nb_items_reels();

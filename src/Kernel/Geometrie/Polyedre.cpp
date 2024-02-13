@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -501,7 +501,7 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   int nb_som_new_elem=new_elems.dimension(1);
   nb_som_elem_max_ = std::max(nb_som_old_elem,nb_som_new_elem);
   les_elems.set_smart_resize(1);
-  les_elems.resize(nb_old_elem+nb_new_elem,nb_som_elem_max_, ArrOfInt::COPY_NOINIT);
+  les_elems.resize(nb_old_elem+nb_new_elem,nb_som_elem_max_, RESIZE_OPTIONS::COPY_NOINIT);
   for (int el=0; el<nb_new_elem; el++)
     {
       for (int s=0; s<nb_som_new_elem; s++)

@@ -58,7 +58,7 @@ int Champ_Fonc_base::fixer_nb_valeurs_nodales(int nb_noeuds)
   return nb_noeuds;
 }
 
-void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, Array_base::Resize_Options opt)
+void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, RESIZE_OPTIONS opt)
 {
   // Note B.M.: pour etre symetrique avec Champ_Inc_base, il faudrait tester si le
   // champ est scalaire ou multi-scalaire (voir Champ_Inc_base::creer_tableau_distribue())

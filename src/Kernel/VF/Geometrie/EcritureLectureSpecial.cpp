@@ -370,7 +370,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
       int nb_items_proches = octree.search_elements(x, y, z, index);
       if (nb_items_proches > 0)
         {
-          items.resize_array(nb_items_proches, ArrOfInt::NOCOPY_NOINIT);
+          items.resize_array(nb_items_proches, RESIZE_OPTIONS::NOCOPY_NOINIT);
           // Voir doc de Octree_Double::search_elements: on copie les indices des items proches dans items:
           for (int j = 0; j < nb_items_proches; j++)
             items[j] = floor_elements[index++];

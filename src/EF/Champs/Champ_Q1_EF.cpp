@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,7 +109,7 @@ void Champ_Q1_EF::cal_rot_ordre1(DoubleTab& vorticite)
 
   DoubleTab gradient_elem(0, dimension, dimension);
   // le tableau est initialise dans la methode gradient():
-  domaine_EF_.domaine().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
+  domaine_EF_.domaine().creer_tableau_elements(gradient_elem, RESIZE_OPTIONS::NOCOPY_NOINIT);
   gradient(gradient_elem);
   Debog::verifier("apres calcul gradient", gradient_elem);
   int num_elem;

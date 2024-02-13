@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -556,7 +556,7 @@ void Domaine_VF::construire_face_virt_pe_num()
   const int nb_faces_virt = nf_tot - nf;
 
   IntTab tmp(0, 2);
-  creer_tableau_faces(tmp, Array_base::NOCOPY_NOINIT);
+  creer_tableau_faces(tmp, RESIZE_OPTIONS::NOCOPY_NOINIT);
   const int moi = me();
   for (i = 0; i < nf; i++)
     {
@@ -744,18 +744,18 @@ void Domaine_VF::info_elem_som()
   set_exit_on_copy_condition(internal_item);
 }
 
-void Domaine_VF::creer_tableau_faces(Array_base& t, Array_base::Resize_Options opt) const
+void Domaine_VF::creer_tableau_faces(Array_base& t, RESIZE_OPTIONS opt) const
 {
   MD_Vector_tools::creer_tableau_distribue(md_vector_faces_, t, opt);
 }
 
-void Domaine_VF::creer_tableau_aretes(Array_base& t, Array_base::Resize_Options opt) const
+void Domaine_VF::creer_tableau_aretes(Array_base& t, RESIZE_OPTIONS opt) const
 {
   const MD_Vector& md = md_vector_aretes();
   MD_Vector_tools::creer_tableau_distribue(md, t, opt);
 }
 
-void Domaine_VF::creer_tableau_faces_bord(Array_base& t, Array_base::Resize_Options opt) const
+void Domaine_VF::creer_tableau_faces_bord(Array_base& t, RESIZE_OPTIONS opt) const
 {
   const MD_Vector& md = md_vector_faces_bord();
   MD_Vector_tools::creer_tableau_distribue(md, t, opt);

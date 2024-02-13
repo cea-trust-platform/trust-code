@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ public:
   void verifie_ok_arete(int) const;
   void construire_renum_arete_perio(const Conds_lim&);
 
-  virtual void creer_tableau_p1bulle(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
+  virtual void creer_tableau_p1bulle(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
 
   void swap(int, int, int);
   void reordonner(Faces&) override;

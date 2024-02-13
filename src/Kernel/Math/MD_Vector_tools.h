@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ public:
   // EV_MIN_COLONNE1: pour chaque ligne partagee du tableau, prend le processeur qui a la plus petite valeur
   //   dans la colonne1, envoie toute la ligne au processeur qui possede la ligne.
   enum Operations_echange { ECHANGE_EV, EV_SOMME, EV_SOMME_ECHANGE, EV_MAX, EV_MINCOL1 };
-  static void creer_tableau_distribue(const MD_Vector&, Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+  static void creer_tableau_distribue(const MD_Vector&, Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
 
   static void echange_espace_virtuel(IntVect&, Operations_echange opt = ECHANGE_EV);
   static void echange_espace_virtuel(DoubleVect&, Operations_echange opt = ECHANGE_EV);

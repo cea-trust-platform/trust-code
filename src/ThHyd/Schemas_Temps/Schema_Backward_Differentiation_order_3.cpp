@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ void Schema_Backward_Differentiation_order_3::compute_backward_differentiation_c
 
   if (backward_differentiation_coefficients_.size_array() != 4)
     {
-      backward_differentiation_coefficients_.resize(4,Array_base::NOCOPY_NOINIT);
+      backward_differentiation_coefficients_.resize(4,RESIZE_OPTIONS::NOCOPY_NOINIT);
     }
 
   double alpha_1 = 1.;                            // for times[2] which means present time

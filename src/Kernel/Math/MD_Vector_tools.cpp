@@ -46,7 +46,7 @@ public:
 
 
 template <class VECT, class TAB>
-static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, Array_base::Resize_Options opt)
+static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTIONS opt)
 {
   if (v.get_md_vector().non_nul())
     {
@@ -102,7 +102,7 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, Array_base::R
  *   Les cases virtuelles ne sont pas initialisees...
  *
  */
-void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v, Array_base::Resize_Options opt)
+void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v, RESIZE_OPTIONS opt)
 {
   if (!md.non_nul())
     {
@@ -255,7 +255,7 @@ int MD_Vector_tools::get_sequential_items_flags(const MD_Vector& md, ArrOfInt& f
 {
   const MD_Vector_base& mdv = md.valeur();
   const int sz = mdv.get_nb_items_tot() * line_size;
-  flags.resize_array(sz, Array_base::NOCOPY_NOINIT);
+  flags.resize_array(sz, RESIZE_OPTIONS::NOCOPY_NOINIT);
   return get_seq_flags(mdv, flags, 0, line_size);
 }
 
@@ -361,14 +361,14 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   ArrOfInt tmp;
   tmp.set_smart_resize(1);
   {
-    dest_items_recv_index.resize_array(nb_pe_voisins + 1, Array_base::NOCOPY_NOINIT);
+    dest_items_recv_index.resize_array(nb_pe_voisins + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
     dest_items_recv_index[0] = 0;
-    dest_blocs_recv_index.resize_array(nb_pe_voisins + 1, Array_base::NOCOPY_NOINIT);
+    dest_blocs_recv_index.resize_array(nb_pe_voisins + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
     dest_blocs_recv_index[0] = 0;
-    dest.blocs_items_count_.resize_array(nb_pe_voisins, Array_base::NOCOPY_NOINIT);
-    dest.nb_items_to_items_.resize_array(nb_pe_voisins, Array_base::NOCOPY_NOINIT);
+    dest.blocs_items_count_.resize_array(nb_pe_voisins, RESIZE_OPTIONS::NOCOPY_NOINIT);
+    dest.nb_items_to_items_.resize_array(nb_pe_voisins, RESIZE_OPTIONS::NOCOPY_NOINIT);
     // Preallocation de la taille maxi
-    dest_items_recv_data.resize_array(src.items_to_recv_.get_data().size_array(), Array_base::NOCOPY_NOINIT);
+    dest_items_recv_data.resize_array(src.items_to_recv_.get_data().size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
     dest_items_recv_data.set_smart_resize(1);
     dest_items_recv_data.resize_array(0);
     // On ne peut pas prevoir le nombre de blocs, il peut y en avoir plus que dans la source
@@ -456,12 +456,12 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   // Construction de dest.items_to_send avec les infos recues
   //
   ArrOfInt dest_items_send_index;
-  dest_items_send_index.resize_array(nb_pe_voisins + 1, Array_base::NOCOPY_NOINIT);
+  dest_items_send_index.resize_array(nb_pe_voisins + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
   ArrOfInt dest_items_send_data;
   ArrOfInt nb_items_to_items(nb_pe_voisins); // Initialise a zero
 
   // Allocation d'une taille par borne superieure:
-  dest_items_send_data.resize_array(src.items_to_send_.get_data().size_array(), Array_base::NOCOPY_NOINIT);
+  dest_items_send_data.resize_array(src.items_to_send_.get_data().size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   dest_items_send_index[0] = 0;
   {
     int count = 0;
@@ -516,7 +516,7 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   //  processeurs supprimes.
   {
     int pe_count = 0;
-    dest.pe_voisins_.resize_array(nb_pe_voisins, Array_base::NOCOPY_NOINIT);
+    dest.pe_voisins_.resize_array(nb_pe_voisins, RESIZE_OPTIONS::NOCOPY_NOINIT);
     for (int i_pe = 0; i_pe < nb_pe_voisins; i_pe++)
       {
         int flag = 0;
@@ -672,7 +672,7 @@ void MD_Vector_tools::restore_vector_with_md(DoubleVect& v, Entree& is)
 
   // Astuce pour restaurer le line_size:
   DoubleTab toto;
-  toto.resize(md_ptr.valeur().get_nb_items_tot(), line_size, Array_base::NOCOPY_NOINIT);
+  toto.resize(md_ptr.valeur().get_nb_items_tot(), line_size, RESIZE_OPTIONS::NOCOPY_NOINIT);
   int size_tot;
   is >> size_tot;
   is.get(toto.addr(), size_tot);

@@ -433,7 +433,7 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
     const int ncoord = boundary_nodes_index.size_array();
     // Fill nodes coordinates and bounding boxes
     DoubleTab coord;
-    coord.resize(ncoord, dim, Array_base::NOCOPY_NOINIT);
+    coord.resize(ncoord, dim, RESIZE_OPTIONS::NOCOPY_NOINIT);
     for (i = 0; i < ncoord; i++)
       {
         const int som = boundary_nodes_index[i];
@@ -456,7 +456,7 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
             joint.affecte_PEvoisin(pe);
             joint.faces().typer(domaine.type_elem().valeur().type_face());
             ArrOfInt& sommets_joint = joint.set_joint_item(Joint::SOMMET).set_items_communs();
-            sommets_joint.resize_array(n, Array_base::NOCOPY_NOINIT);
+            sommets_joint.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
             for (i = 0; i < n; i++)
               sommets_joint[i] = boundary_nodes_index[list[i]];
             sommets_joint.ordonne_array();

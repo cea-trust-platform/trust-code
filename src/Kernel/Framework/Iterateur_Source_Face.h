@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
   DoubleVect& bilan = so_base->bilan();
   bilan = 0;
   const int nb_faces_tot = ref_cast(Domaine_VF,le_dom.valeur()).nb_faces_tot();
-  coef.resize(nb_faces_tot, Array_base::NOCOPY_NOINIT);
+  coef.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
   coef = 1;
   if (equation_divisee_par_rho())
     {

@@ -164,7 +164,7 @@ inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>&
   if (src.data() == dest.data())
     {
       TRUSTArray<_TYPE_> tmp;
-      tmp.resize_array(grp.nproc(), Array_base::NOCOPY_NOINIT);
+      tmp.resize_array(grp.nproc(), RESIZE_OPTIONS::NOCOPY_NOINIT);
       grp.all_to_all(src.data(), tmp.data(), sizeof(_TYPE_));
       dest.inject_array(tmp);
     }

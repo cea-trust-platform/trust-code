@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 
 Implemente_instanciable_sans_constructeur(Extruder, "Extruder", Interprete_geometrique_base);
 
-Extruder::Extruder() { direction.resize(3, Array_base::NOCOPY_NOINIT); }
+Extruder::Extruder() { direction.resize(3, RESIZE_OPTIONS::NOCOPY_NOINIT); }
 
 Sortie& Extruder::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

@@ -144,7 +144,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a)
   assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_;
   dimensions_[0] = ++dimension_tot_0_;
-  TRUSTVect<_TYPE_>::resize_vect_(n+1, Array_base::COPY_NOINIT);
+  TRUSTVect<_TYPE_>::resize_vect_(n+1, RESIZE_OPTIONS::COPY_NOINIT);
   _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
 }
@@ -159,7 +159,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b)
   assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 2;
   dimensions_[0] = ++dimension_tot_0_;
-  TRUSTVect<_TYPE_>::resize_vect_(n+2, Array_base::COPY_NOINIT);
+  TRUSTVect<_TYPE_>::resize_vect_(n+2, RESIZE_OPTIONS::COPY_NOINIT);
   _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
@@ -174,7 +174,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
   assert(dimension_tot_0_  * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 3;
   dimensions_[0] = ++dimension_tot_0_;
-  TRUSTVect<_TYPE_>::resize_vect_(n+3, Array_base::COPY_NOINIT);
+  TRUSTVect<_TYPE_>::resize_vect_(n+3, RESIZE_OPTIONS::COPY_NOINIT);
   _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
@@ -190,7 +190,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c, _TYPE_ d
   assert(dimension_tot_0_  * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 4;
   dimensions_[0] = ++dimension_tot_0_;
-  TRUSTVect<_TYPE_>::resize_vect_(n+4, Array_base::COPY_NOINIT);
+  TRUSTVect<_TYPE_>::resize_vect_(n+4, RESIZE_OPTIONS::COPY_NOINIT);
   _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
@@ -297,7 +297,7 @@ inline void TRUSTTab<_TYPE_>::reset()
 
 //  methode virtuelle qui force le tableau a changer de taille. Change aussi nb_dim_ a 1. Equivalent a TRUSTTab::resize(n, opt)
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize_tab(int n, RESIZE_OPTIONS opt)
 {
   resize(n, opt);
   assert(verifie_LINE_SIZE());
@@ -306,7 +306,7 @@ inline void TRUSTTab<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
 //  change la dimension[0] du tableau en conservant les autres.
 // Precondition: le tableau ne doit pas avoir de structure parallele
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize_dim0(int n, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize_dim0(int n, RESIZE_OPTIONS opt)
 {
   assert(n >= 0);
   assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
@@ -316,7 +316,7 @@ inline void TRUSTTab<_TYPE_>::resize_dim0(int n, Array_base::Resize_Options opt)
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize(int n, RESIZE_OPTIONS opt)
 {
   assert(n >= 0);
   TRUSTVect<_TYPE_>::set_line_size_(1);
@@ -327,7 +327,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize(int n, int n2, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize(int n, int n2, RESIZE_OPTIONS opt)
 {
   assert(n >= 0 && n2 >= 0);
   TRUSTVect<_TYPE_>::set_line_size_(n2);
@@ -347,7 +347,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, Array_base::Resize_Options o
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, RESIZE_OPTIONS opt)
 {
   assert(n >= 0 && n2 >= 0 && n3 >= 0);
   TRUSTVect<_TYPE_>::set_line_size_(n2 * n3);
@@ -368,7 +368,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, Array_base::Resize_O
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, RESIZE_OPTIONS opt)
 {
   assert(n >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
   TRUSTVect<_TYPE_>::set_line_size_(n2 * n3 * n4);
@@ -392,7 +392,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, Array_base::
 //  redimensionne le tableau (nb_dim_ sera egal a tailles.size_array() et dimension(i) a tailles[i].
 // Precondition: identiques a TRUSTVect::resize_vect_()
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, RESIZE_OPTIONS opt)
 {
   nb_dim_ = tailles.size_array();
   if (nb_dim_ <= 0 || nb_dim_ > MAXDIM_TAB)
@@ -466,7 +466,7 @@ inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(_TYPE_ d)
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::copy(const TRUSTTab<_TYPE_>& src, Array_base::Resize_Options opt)
+inline void TRUSTTab<_TYPE_>::copy(const TRUSTTab<_TYPE_>& src, RESIZE_OPTIONS opt)
 {
   if (&src != this)
     {
@@ -576,7 +576,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 
   if (resize_and_read)
     {
-      if (TRUSTVect<_TYPE_>::size_array() == 0 && (!TRUSTVect<_TYPE_>::get_md_vector().non_nul())) resize(tmp, Array_base::NOCOPY_NOINIT);
+      if (TRUSTVect<_TYPE_>::size_array() == 0 && (!TRUSTVect<_TYPE_>::get_md_vector().non_nul())) resize(tmp, RESIZE_OPTIONS::NOCOPY_NOINIT);
       else if (!ok)
         {
           // Si on cherche a relire un tableau de taille inconnue, le tableau doit etre reset() a l'entree. On n'aura pas la structure parallele du tableau !

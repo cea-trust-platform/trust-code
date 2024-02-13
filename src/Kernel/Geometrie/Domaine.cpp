@@ -404,16 +404,16 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
         for (int i = 0; i < cached_positions_.size(); i++)
           if (sameDoubleTab(positions, cached_positions_[i]))
             {
-              elements.resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+              elements.resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
               elements = cached_elements_[i];
               /*
                //Cerr << "Reuse " << i << "th array cached in memory for Domaine::chercher_elements(...): " << finl;
                if (i!=0)
                {
                // Permute pour avoir le tableau en premier
-               cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+               cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
                cached_elements_[i] = cached_elements_[0];
-               cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+               cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
                cached_elements_[0] = elements;
                DoubleTab tmp(cached_positions_[i]);
                cached_positions_[i] = cached_positions_[0];
@@ -428,7 +428,7 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
   const int dim = positions.dimension(1);
   // resize_tab est virtuelle, si c'est un Vect ou un Tab elle appelle le
   // resize de la classe derivee:
-  elements.resize_tab(sz, ArrOfInt::NOCOPY_NOINIT);
+  elements.resize_tab(sz, RESIZE_OPTIONS::NOCOPY_NOINIT);
   double y = 0, z = 0;
   for (int i = 0; i < sz; i++)
     {
@@ -1309,11 +1309,11 @@ void Domaine::calculer_mon_centre_de_gravite(ArrOfDouble& c)
 void Domaine::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) const
 {
   if (!volumes.get_md_vector().non_nul())
-    creer_tableau_elements(volumes, Array_base::NOCOPY_NOINIT);
+    creer_tableau_elements(volumes, RESIZE_OPTIONS::NOCOPY_NOINIT);
   elem_.calculer_volumes(volumes); // Dimensionne et calcule le DoubleVect volumes
   // Check and fill inverse_volumes
   if (!inverse_volumes.get_md_vector().non_nul())
-    creer_tableau_elements(inverse_volumes, Array_base::NOCOPY_NOINIT);
+    creer_tableau_elements(inverse_volumes, RESIZE_OPTIONS::NOCOPY_NOINIT);
   int size = volumes.size_totale();
   for (int i = 0; i < size; i++)
     {
@@ -1389,7 +1389,7 @@ const OctreeRoot& Domaine::construit_octree(int& reel) const
  * Voir MD_Vector_tools::creer_tableau_distribue()
  *
  */
-void Domaine::creer_tableau_elements(Array_base& x, Array_base::Resize_Options opt) const
+void Domaine::creer_tableau_elements(Array_base& x, RESIZE_OPTIONS opt) const
 {
   const MD_Vector& md = md_vector_elements();
   MD_Vector_tools::creer_tableau_distribue(md, x, opt);
@@ -1475,7 +1475,7 @@ int Domaine::identifie_item_unique(IntList& item_possible, DoubleTab& coord_poss
               for (int ind = ind_it_suppr; ind < size_actuelle; ind++)
                 for (int dir = 0; dir < dimension; dir++)
                   coord_possible(ind, dir) = coord_possible(ind + 1, dir);
-              coord_possible.resize(size_actuelle, dimension, Array_base::COPY_NOINIT);
+              coord_possible.resize(size_actuelle, dimension, RESIZE_OPTIONS::COPY_NOINIT);
               nb_it_suppr++;
             }
           ind_it++;
@@ -1512,7 +1512,7 @@ void Domaine::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md
   const int nb_faces_fr = nb_faces_frontiere();
   //  Marquage des faces de bord (-1=>pas une face de bord, 0=>face de bord)
   IntVect vect_renum;
-  MD_Vector_tools::creer_tableau_distribue(md_vect_faces, vect_renum, Array_base::NOCOPY_NOINIT);
+  MD_Vector_tools::creer_tableau_distribue(md_vect_faces, vect_renum, RESIZE_OPTIONS::NOCOPY_NOINIT);
   vect_renum = -1;
   for (int i = 0; i < nb_faces_fr; i++)
     vect_renum[i] = 0;
@@ -1527,7 +1527,7 @@ void Domaine::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md
   const int nb_faces = vect_renum.size();
   const int nb_faces_tot = vect_renum.size_totale();
   const int nb_faces_virt = nb_faces_tot - nb_faces;
-  ind_faces_virt_bord_.resize_array(nb_faces_virt, Array_base::NOCOPY_NOINIT);
+  ind_faces_virt_bord_.resize_array(nb_faces_virt, RESIZE_OPTIONS::NOCOPY_NOINIT);
   for (int i = 0; i < nb_faces_virt; i++)
     ind_faces_virt_bord_[i] = vect_renum[nb_faces + i];
 
@@ -1657,7 +1657,7 @@ void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_reelles, A
   // Dans ce cas, pe_arete est maintenant correctement rempli pour les aretes reelles.
 
   IntTab tmp;
-  tmp.copy(elem_aretes, Array_base::NOCOPY_NOINIT); // copier uniquement la structure
+  tmp.copy(elem_aretes, RESIZE_OPTIONS::NOCOPY_NOINIT); // copier uniquement la structure
 
   // Copier tab_aretes dans la structure tmp (on sait echanger tmp, pas tab_aretes)
   for (i = 0; i < nb_elem; i++)
@@ -1782,7 +1782,7 @@ void Domaine::creer_aretes()
     nb_aretes_elem = std::max(nb_aretes_elem, (int) v_e_a[i].size());
   nb_aretes_elem = mp_max(nb_aretes_elem);
   elem_aretes_.resize(0, nb_aretes_elem);
-  creer_tableau_elements(elem_aretes_, Array_base::NOCOPY_NOINIT);
+  creer_tableau_elements(elem_aretes_, RESIZE_OPTIONS::NOCOPY_NOINIT);
   for (i = 0, elem_aretes_ = -1; i < nbelem_tot; i++)
     for (j = 0; j < (int) v_e_a[i].size(); j++)
       elem_aretes_(i, j) = v_e_a[i][j];
@@ -1805,7 +1805,7 @@ void Domaine::creer_aretes()
 
     // Pour chaque arete, indice de l'arete sur le processeur proprietaire
     ArrOfInt indice_aretes_owner;
-    indice_aretes_owner.resize_array(n_aretes_tot, Array_base::NOCOPY_NOINIT);
+    indice_aretes_owner.resize_array(n_aretes_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
     for (i = 0; i < nb_aretes_reelles; i++)
       indice_aretes_owner[i] = i;
     echanger_tableau_aretes(elem_aretes_, nb_aretes_reelles, indice_aretes_owner);
@@ -2113,7 +2113,7 @@ void Domaine::construire_renum_som_perio(const Conds_lim& les_cl,
  *
  * Voir MD_Vector_tools::creer_tableau_distribue()
  */
-void Domaine::creer_tableau_sommets(Array_base& v, Array_base::Resize_Options opt) const
+void Domaine::creer_tableau_sommets(Array_base& v, RESIZE_OPTIONS opt) const
 {
   const MD_Vector& md = md_vector_sommets();
   MD_Vector_tools::creer_tableau_distribue(md, v, opt);

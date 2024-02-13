@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -258,7 +258,7 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
   if (!nu.get_md_vector().non_nul())
     {
       nu.resize(0, diffu.line_size());
-      domaine_VEF.domaine().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
+      domaine_VEF.domaine().creer_tableau_elements(nu, RESIZE_OPTIONS::NOCOPY_NOINIT);
     }
   if (!diffu.get_md_vector().non_nul())
     {

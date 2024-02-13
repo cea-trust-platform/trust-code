@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ void Schema_Adams_Moulton_order_2::compute_adams_moulton_coefficients(double tim
 
   if ( adams_moulton_coefficients_.size_array() != 2)
     {
-      adams_moulton_coefficients_.resize(2,Array_base::NOCOPY_NOINIT);
+      adams_moulton_coefficients_.resize(2,RESIZE_OPTIONS::NOCOPY_NOINIT);
     }
 
   adams_moulton_coefficients_[0] = 0.5;

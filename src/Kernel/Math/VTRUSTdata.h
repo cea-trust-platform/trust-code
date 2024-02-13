@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ class VTRUSTdata
 public:
   typedef _TYPE_ value_type;
 
-  VTRUSTdata(int size, Array_base::Storage storage);
+  VTRUSTdata(int size, STORAGE storage);
 
   // Detruit la zone de memoire allouee.
   // Precondition : ref_count == 0 (la zone de memoire ne doit etre referencee nulle part)
@@ -111,7 +111,7 @@ using VIntdata = VTRUSTdata<int>;
  * @param (Storage storage) indique si la memoire doit etre allouee avec "new" ou avec "memoire.add_trav_double()"
  */
 template<typename _TYPE_>
-VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
+VTRUSTdata<_TYPE_>::VTRUSTdata(int size, STORAGE storage)
 {
   //const int size_warning = 100000000;
   if (size<0)
@@ -120,11 +120,11 @@ VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
       Process::exit();
     }
   assert(size >= 0);
-  if (size == 0) storage = Array_base::STANDARD;
+  if (size == 0) storage = STORAGE::STANDARD;
 
   switch (storage)
     {
-    case Array_base::STANDARD:
+    case STORAGE::STANDARD:
       {
         d_ptr_trav_ = 0;
         //if (size>size_warning) Cerr << "Warning: Allocating an array of " << size << " " << typeid(_TYPE_).name() << finl;
@@ -150,7 +150,7 @@ VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
         //if (size>size_warning) Cerr << " OK" << finl;
         break;
       }
-    case Array_base::TEMP_STORAGE:
+    case STORAGE::TEMP_STORAGE:
       {
         // Allocation de la memoire sur un tas special. La memoire ne sera pas rendue au systeme mais conservee pour une reutilisation ulterieure.
         Memoire& memoire = Memoire::Instance();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,7 +84,7 @@ public:
   /*! @brief construction d'un vecteur de taille n.
    *
    * Les elements du vecteur sont initialises a zero par defaut. Pour ne pas initialiser les valeurs, utiliser ceci: DoubleVect toto;
-   *    toto.resize(n, NOCOPY_NOINIT);
+   *    toto.resize(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
    *
    */
   TRUSTVect(int n) :   TRUSTArray<_TYPE_>(n), size_reelle_(n), line_size_(1) { }
@@ -106,9 +106,9 @@ public:
   inline int size_reelle() const;
   inline int size_reelle_ok() const;
   inline int line_size() const;
-  inline void resize(int, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void copy(const TRUSTArray<_TYPE_>&, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void copy(const TRUSTVect&, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+  inline void resize(int, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline void copy(const TRUSTArray<_TYPE_>&, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline void copy(const TRUSTVect&, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
   inline void operator+=(const TRUSTVect& v) { operator_add(*this, v); }
   inline void operator+=(const _TYPE_ x) { operator_add(*this, x); }
   inline void operator-=(const TRUSTVect& v) { operator_sub(*this, v); }
@@ -166,7 +166,7 @@ public:
   inline virtual void ecrit(Sortie&) const;
   inline virtual void detach_vect() { md_vector_.detach(); }
   inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
-  inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
+  inline void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
   inline void ref_data(_TYPE_* ptr, int new_size) override;
   inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
 
@@ -188,8 +188,8 @@ public:
 
 protected:
   inline void set_line_size_(int n);
-  inline void resize_vect_(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT);
-  inline void copy_(const TRUSTVect& v, Array_base::Resize_Options opt = Array_base::COPY_INIT);
+  inline void resize_vect_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline void copy_(const TRUSTVect& v, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
 private:
   // Un DoubleVect est un ArrOfDouble qui possede eventuellement une structure de tableau distribue. Ce pointeur peut etre nul.

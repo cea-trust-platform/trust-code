@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
 
   {
     IntVect renum;
-    le_dom_VEF.creer_tableau_faces(renum, ArrOfInt::NOCOPY_NOINIT);
+    le_dom_VEF.creer_tableau_faces(renum, RESIZE_OPTIONS::NOCOPY_NOINIT);
     renum = -1;
     // Marquer les faces non standard reelles (premieres faces dans le domaine)
     for (int i = 0; i < nb_faces_non_std; i++)
@@ -85,7 +85,7 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
     renum.echange_espace_virtuel();
     MD_Vector md_vect;
     MD_Vector_tools::creer_md_vect_renum_auto(renum, md_vect);
-    MD_Vector_tools::creer_tableau_distribue(md_vect, volumes_entrelaces_Cl_, Array_base::NOCOPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md_vect, volumes_entrelaces_Cl_, RESIZE_OPTIONS::NOCOPY_NOINIT);
   }
   {
     // Construction du descripteur pour le tableau des elements "Cl":
@@ -94,12 +94,12 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
 
     // Creation de tableaux aux elements "Cl":
     normales_facettes_Cl_.resize(0, nb_fa7_elem, dimension);
-    MD_Vector_tools::creer_tableau_distribue(md_vect, normales_facettes_Cl_, Array_base::NOCOPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md_vect, normales_facettes_Cl_, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
     vecteur_face_facette_Cl_.resize(0, nb_fa7_elem, dimension, 2);
-    MD_Vector_tools::creer_tableau_distribue(md_vect, vecteur_face_facette_Cl_, Array_base::NOCOPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md_vect, vecteur_face_facette_Cl_, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
-    MD_Vector_tools::creer_tableau_distribue(md_vect, type_elem_Cl_, Array_base::NOCOPY_NOINIT);
+    MD_Vector_tools::creer_tableau_distribue(md_vect, type_elem_Cl_, RESIZE_OPTIONS::NOCOPY_NOINIT);
   }
 }
 

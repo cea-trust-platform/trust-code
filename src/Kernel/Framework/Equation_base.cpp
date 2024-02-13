@@ -1530,7 +1530,7 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
       secmem = 0;
       DoubleTab solution_loc(solution) ;
       DoubleTab derivee;
-      derivee.copy(secmem, Array_base::NOCOPY_NOINIT);
+      derivee.copy(secmem, RESIZE_OPTIONS::NOCOPY_NOINIT);
       for (int i=0; i<nstep; i++)
         {
           derivee = 0. ;

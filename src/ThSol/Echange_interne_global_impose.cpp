@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ void Echange_interne_global_impose::completer()
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
   const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
 
-  frontiere_dis().frontiere().creer_tableau_faces(surface_gap_, Array_base::NOCOPY_NOINIT);
+  frontiere_dis().frontiere().creer_tableau_faces(surface_gap_, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
 
   if (zvf.domaine().axi1d())

@@ -797,7 +797,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
     }
   // on verifie que l'on a bien cree une bijection
   ArrOfInt inv_connect_bords;
-  inv_connect_bords.resize_array(nb_faces, Array_base::NOCOPY_NOINIT);
+  inv_connect_bords.resize_array(nb_faces, RESIZE_OPTIONS::NOCOPY_NOINIT);
   inv_connect_bords=-1;
   for (i=0; i<nb_faces; i++)
     {

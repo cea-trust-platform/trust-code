@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,21 +19,24 @@
 #include <Objet_U.h>
 class MD_Vector;
 
+// Options de resize:
+//  RESIZE_OPTIONS::NOCOPY_NOINIT: ne pas copier les anciennes valeurs, ne pas initialiser les nouvelles
+//  RESIZE_OPTIONS::COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
+//  RESIZE_OPTIONS::COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
+enum class RESIZE_OPTIONS { NOCOPY_NOINIT, COPY_NOINIT, COPY_INIT };
+
+// Options de stockage
+enum class STORAGE { STANDARD, TEMP_STORAGE };
+
 /*! @brief : classe vide servant de base a tous les tableaux.
  *
- * (permet de passer un type generique quel que soit le sous-type du tableau par exemple Domaine::creer_tableau_sommets())
+ * (permet de passer un type generique sans template quel que soit le sous-type du tableau,
+ * par exemple Domaine::creer_tableau_sommets())
  *
  */
 class Array_base : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(Array_base);
-public:
-  // Options de resize:
-  //  NOCOPY_NOINIT: ne pas copier les anciennes valeurs, ne pas initialiser les nouvelles
-  //  COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
-  //  COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
-  enum Resize_Options { NOCOPY_NOINIT = 0, COPY_NOINIT = 1, COPY_INIT = 2 };
-  enum Storage { STANDARD, TEMP_STORAGE };
 };
 
 #endif /* Array_base_included */
