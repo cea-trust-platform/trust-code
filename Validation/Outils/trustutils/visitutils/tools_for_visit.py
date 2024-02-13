@@ -661,7 +661,7 @@ class Show(object):
             f.write("DrawPlots() \n")
         f.close()
 
-    def pas(self, iteration=0):
+    def iteration(self, iteration=0):
         """
 
         Increase the time step.
@@ -742,7 +742,7 @@ class Show(object):
             f.write("DeleteWindow() \n")
         f.close()
 
-    def pasSuivant(self):
+    def nextIteration(self):
         """
 
         Advance one time step or iteration.

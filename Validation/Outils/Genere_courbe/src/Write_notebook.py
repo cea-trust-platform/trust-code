@@ -192,10 +192,15 @@ class Write_notebook:
     def inclureVisuNotebook(self,maitre,visu):
         '''Inclusion de la visu dans le fichier latex du rapport de validation.'''
         code = "from trustutils import visit\n \n"
-        title = "### " + chaine2Tex(visu.titre) + "\n \n "
+        title = ""
+        if visu.titre != "Undefined":
+            title = "### " + chaine2Tex(visu.titre) + "\n \n "
         minifigure=self.minifigure_avt
         #TODO minifigure
-        if len(visu.description)!=0: title += self.write_description(visu.description)
+        if len(visu.description) != 0:
+            title += self.write_description(visu.description)
+        if len(title) != 0:
+            self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
         #visu.printFichierParametres()
         show = 0
         code0 = ""
@@ -230,10 +235,11 @@ class Write_notebook:
                     code1 += "visu.visuOptions([\"%s\"])\n"%plot[1]
             if (plot[0].lower()=='instruction_visit'):
                 code1 += "visu.executeVisitCmds(%s)\n"%plot[1]
+        if len(visu.cycles) != 0:
+            code1 += "visu.iteration(%s )\n"%(visu.cycles)
         code += code0 + code1 + "visu.plot()"
                 
-        self.nb['cells'] += [nbf.v4.new_markdown_cell(title),
-                nbf.v4.new_code_cell(code)]
+        self.nb['cells'] += [nbf.v4.new_code_cell(code)]
         pass
     def inclureTableauNotebook(self,maitre,tableau):
         '''Inclusion du tableau dans le fichier latex du rapport de validation.'''
@@ -242,9 +248,10 @@ class Write_notebook:
         title = ""
         if (tableau.titre!="Undefined"):
             title += "### "+ chaine2Tex(tableau.titre) + "\n \n "
-        if (len(tableau.description)!=0): title += self.write_description(tableau.description)
-
-        self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
+        if (len(tableau.description)!=0):
+            title += self.write_description(tableau.description)
+        if (len(title) != 0):
+            self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 
         if len(tableau.listeLignes)==0: return
 
@@ -350,10 +357,14 @@ class Write_notebook:
 #
     def inclureChapitre(self,maitre,chapitre):
         '''Inclusion du chapitre dans le notebook.'''
-        title = "## " + chaine2Tex(chapitre.titre) + "\n \n"
-        if len(chapitre.description)!=0: title += self.write_description(chapitre.description)
+        title = ""
+        if chapitre.titre != "Undefined":
+            title = "## " + chaine2Tex(chapitre.titre) + "\n \n"
+        if len(chapitre.description)!=0 :
+            title += self.write_description(chapitre.description)
         iter = 0
-        self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
+        if len(title) != 0:
+            self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 
         #ajout des figures
         for figure in chapitre.listeFigures:
@@ -366,7 +377,7 @@ class Write_notebook:
         from SousChapitre import SousChapitre
         fin = False
 
-        if sousChapitre.titre!='Undefined':
+        if sousChapitre.titre != 'Undefined':
             title = "### %s \n" % chaine2Tex(sousChapitre.titre)
             self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 #
