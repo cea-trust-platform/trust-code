@@ -547,7 +547,7 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
   bool fast = meshName == domaine().le_nom() && domaine().is_mc_mesh_ready();
   Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName << " on the " << meshName << " mesh into " << fileName << " file";
   MCAuto<MEDCouplingField> ffield;
-  Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int)(domaine().get_mc_mesh() != nullptr) << finl;
+  Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int) domaine().is_mc_mesh_ready() << finl;
 
   if (fast) // Lecture plus rapide du field sans lecture du mesh associe
     {
