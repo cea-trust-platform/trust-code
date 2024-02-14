@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ int Champ_Elem_PolyMAC_P0P1NC::reprendre(Entree& fich)
 Champ_base& Champ_Elem_PolyMAC_P0P1NC::affecter_(const Champ_base& ch)
 {
   const Domaine_PolyMAC_P0P1NC& domaine = domaine_PolyMAC_P0P1NC();
-  if (ch.valeurs().dimension_tot(0) > domaine.nb_elem_tot())
+  if (domaine.nb_elem_tot() > 0 && ch.valeurs().dimension_tot(0) > domaine.nb_elem_tot())
     init_auxiliary_variables(), valeurs() = ch.valeurs();
   else
     {
