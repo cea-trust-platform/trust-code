@@ -28,6 +28,7 @@
 #include <Probleme_U.h>
 #include <TRUST_Ref.h>
 #include <Milieu.h>
+#include <Champ_front_Parametrique.h>
 
 class Loi_Fermeture_base;
 class Schema_Temps_base;
@@ -163,6 +164,7 @@ public:
   bool solveTimeStep() override { return solveTimeStep_impl(*this); }
   bool solveTimeStep_pbU() { return Probleme_U::solveTimeStep(); }
   bool isStationary() const override { return isStationary_impl(*this); }
+  int newParameter() override;
   void validateTimeStep() override { validateTimeStep_impl(*this); }
   void setStationary(bool flag) override { schema_temps().set_stationnaires_atteints(flag); }
   void abortTimeStep() override { abortTimeStep_impl(*this); }
@@ -189,6 +191,12 @@ public:
   void associer_pb_couple(const Probleme_Couple& pbc) { pbc_ = pbc; }
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
+
+  // Champs parametriques:
+  const LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() const { return Champs_front_Parametriques_; }
+  LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() { return Champs_front_Parametriques_; }
+  void reinit(int) override;
+  //
 
 protected :
   std::vector<Milieu> le_milieu_;
@@ -221,6 +229,8 @@ protected :
   mutable Nom error_;                // Erreur d'allocation
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+  LIST(REF(Champ_front_Parametrique)) Champs_front_Parametriques_; //Champs a mettre a jour lorsque le calcul est fini
+
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

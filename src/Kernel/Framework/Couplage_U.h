@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,8 @@ public:
   //  virtual bool solveTimeStep();
   void validateTimeStep() override;
   bool isStationary() const override;
+  int newParameter() override;
+  void reinit(int) override;
   void setStationary(bool) override;
   void abortTimeStep() override;
   void resetTime(double t) override;

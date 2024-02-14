@@ -1451,6 +1451,9 @@ void Postraitement::finir()
       name.prefix(".");
       format_post->modify_file_basename(name,mon_probleme->reprise_effectuee(),-1);
     }
+  les_sondes_.fermer_fichiers();
+  les_sondes_int_.fermer_fichiers();
+  liste_dom_ecrit.clear();
 }
 
 /*! @brief Effectue le postraitement des Champs de facon imperative.

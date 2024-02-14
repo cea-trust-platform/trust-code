@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -323,6 +323,17 @@ bool Probleme_U::run()
         }
       // Post process task (Force the post processing/prints at the end of the run (stop=1))
       postraiter(stop);
+
+      // Keep on the resolution if parametric variation:
+      if (stop)
+        {
+          int calcul = newParameter();
+          if (calcul>0)
+            {
+              stop = false;
+              reinit(calcul);
+            }
+        }
 
       // Stop the CPU measure of the time step and print:
       statistiques().end_count(timestep_counter_);

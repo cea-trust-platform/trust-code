@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,6 +78,21 @@ bool Couplage_U::isStationary() const
   for(int i=0; i<nb_problemes(); i++)
     stat = stat && probleme(i).isStationary();
   return stat;
+}
+
+int Couplage_U::newParameter()
+{
+  int index=0;
+  for(int i=0; i<nb_problemes(); i++)
+    index = std::max(index, ref_cast(Probleme_base, probleme(i)).newParameter());
+  if (index && !isStationary()) Process::exit("Cas non prevu. Permanent non atteint et Champ_parametrique.");
+  return index;
+}
+
+void Couplage_U::reinit(int calcul)
+{
+  for(int i=0; i<nb_problemes(); i++)
+    ref_cast(Probleme_base, probleme(i)).reinit(calcul);
 }
 
 void Couplage_U::setStationary(bool flag)

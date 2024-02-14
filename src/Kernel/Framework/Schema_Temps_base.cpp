@@ -522,6 +522,13 @@ Schema_Temps_base::Schema_Temps_base()
   dt_gf_ = DMAXFLOAT;
 }
 
+void Schema_Temps_base::reinit()
+{
+  nb_impr_= 0;
+  //temps_courant_ =0;
+  nb_pas_dt_ = 0;
+}
+
 
 /*! @brief Impression du numero du pas de temps, la valeur du pas de temps.
  *

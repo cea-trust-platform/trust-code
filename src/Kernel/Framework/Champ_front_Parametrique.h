@@ -14,35 +14,25 @@
 *****************************************************************************/
 
 
-#ifndef Champ_front_Tabule_included
-#define Champ_front_Tabule_included
+#ifndef Champ_front_Parametrique_included
+#define Champ_front_Parametrique_included
 
 #include <Champ_front_instationnaire_base.h>
-#include <Table.h>
+#include <Champ_front_Tabule.h>
 
-
-
-/*! @brief classe Champ_front_Tabule Classe derivee de Champ_front_instationnaire_base qui
- *
- *      represente les champs aux frontieres uniformes en espace,
- *      calcules par tabulation en fonction du temps.
- *
- * @sa Champ_front_base
- */
-class Champ_front_Tabule : public Champ_front_instationnaire_base
+class Champ_front_Parametrique : public Champ_front_Tabule
 {
-  Declare_instanciable(Champ_front_Tabule);
+  Declare_instanciable(Champ_front_Parametrique);
 
 public:
+  // Methodes specifiques:
+  int size() { return parametres_.size(); }
+  int index() { return index_; }
+  int newParameter();
 
-  Champ_front_base& affecter_(const Champ_front_base& ch) override;
-  int initialiser(double temps, const Champ_Inc_base& inco) override;
-  void mettre_a_jour(double temps) override;
-  Table& getTable() { return la_table; };
-protected:
-
-  Table la_table;
-
+private:
+  int index_=0;
+  Noms parametres_;
 };
 
 #endif

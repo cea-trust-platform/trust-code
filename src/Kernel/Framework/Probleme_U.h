@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,6 +57,8 @@ public :
   virtual bool solveTimeStep();
   virtual void validateTimeStep();
   virtual bool isStationary() const;
+  virtual int newParameter() { return 0; };
+  virtual void reinit(int) {};
   virtual void setStationary(bool);
   virtual void abortTimeStep();
   virtual void resetTime(double time);

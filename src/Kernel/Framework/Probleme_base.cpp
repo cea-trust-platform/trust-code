@@ -411,7 +411,8 @@ void Probleme_base::init_postraitements()
 
           Postraitement& post = ref_cast(Postraitement, der_post.valeur());
 
-          Nom nom_fichier = post.nom_fich();
+          Nom nom_fichier = Sortie_Fichier_base::root;
+          nom_fichier+=post.nom_fich();
           int rg = glob_noms_fichiers.rang(nom_fichier);
           if (rg == -1)   // C'est la premiere fois qu'on rencontre ce nom
             {
@@ -431,7 +432,7 @@ void Probleme_base::init_postraitements()
               // fichier  .
               if (post.champs_demande() && autre_post.dt_post_ch() != post.dt_post_ch())
                 {
-                  Cerr << "Error, the values of dt_post (" << autre_post.dt_post_ch() << " and " << post.dt_post_ch() << ") of two postprocessing blocks writing in the same file" << post.nom_fich()
+                  Cerr << "Error, the values of dt_post (" << autre_post.dt_post_ch() << " and " << post.dt_post_ch() << ") of two postprocessing blocks writing in the same file" << nom_fichier
                        << " are different!" << finl;
                   Cerr << "Specify the same dt_post, or use two different files for postprocessing." << finl;
                   exit();
@@ -1641,4 +1642,32 @@ void Probleme_base::finir()
   // alors on effectue la sauvegarde finale xyz
   if (Motcle(restart_format_) != "xyz" && (EcritureLectureSpecial::Active))
     sauver_xyz(1);
+}
+
+int Probleme_base::newParameter()
+{
+  int index = 0;
+  LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques = this->Champs_front_Parametriques();
+  int size = Champs_front_Parametriques.size();
+  if (size)
+    {
+      // Passe au parametre suivant:
+      for (int i=0; i<size; i++)
+        index = std::max(index, Champs_front_Parametriques(i)->newParameter());
+    }
+  return index;
+}
+
+void Probleme_base::reinit(int calcul)
+{
+  terminate(); // Ferme les fichiers de postraitement dans le repertoire courant
+  terminated = false;
+  Sortie_Fichier_base::newDirectory(calcul); // Cree un nouveau repertoire pour le prochain calcul
+  schema_temps().reinit();
+  // See Probleme_base_interface_proto::initialize_impl:
+  // ToDo: resetTime(0)
+  //preparer_calcul(); // ToDo change
+  schema_temps().initialize();
+  init_postraitements();
+  initialized = true;
 }
