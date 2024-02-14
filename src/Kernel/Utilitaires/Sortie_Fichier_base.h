@@ -41,6 +41,8 @@ public:
   virtual int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out);
 
   Sortie& flush() override;
+  static void newDirectory(int, std::string dirname="calcul");
+  static std::string root;
 
 protected:
   /*! This pointer is just a (typed) view on the smart ptr hold by the base class (Sortie).

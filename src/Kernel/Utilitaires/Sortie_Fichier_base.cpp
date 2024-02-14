@@ -18,6 +18,8 @@
 #include <Process.h>
 #include <Nom.h>
 #include <map>
+#include <string>
+#include <stdlib.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fichier_base",Objet_U);
 
@@ -126,48 +128,19 @@ void Sortie_Fichier_base::setf(IOS_FORMAT code)
     ofstream_->setf(code);
 }
 
+std::string Sortie_Fichier_base::root = "";
 static std::map<std::string, int> counters;
 int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
-#ifdef ver_file
-  if (Process::me()!=0)
+  std::string pathname = root;
+  if (!root.empty() && Process::je_suis_maitre())
     {
-
-      char* marq=strrchr(name,'_');
-      int error=0;
-      if (!marq)
-        error=1;
-      else
-        {
-          Nom test(name);
-          test.prefix(marq);
-          Nom suf(name);
-          marq=strrchr(name,'.');
-          if (!marq)
-            error=1;
-          else
-            {
-              int l=strlen(name);
-              int deb=l-strlen(marq)+1;
-              suf=suf.substr(deb,l);
-              test+=suf;
-              test=test.nom_me(Process::me());
-              if (test!=name) error=1;
-            }
-
-
-        }
-      if (error)
-        {
-          Cerr<<Process::me()<<name<<" strange :"<<__FILE__<<(int)__LINE__<<finl;
-          Cerr<<name<<finl;
-          ::abort();
-        }
-
-
+      std::string cmd="mkdir -p ";
+      cmd+=pathname;
+      system(cmd.c_str());
     }
-#endif
-  if (++counters[name]%100==0) Cerr << "Warning, file " << name << " has been opened/closed " << counters[name] << " times..." << finl;
+  pathname += name;
+  if (++counters[pathname]%100==0) Cerr << "Warning, file " << pathname << " has been opened/closed " << counters[pathname] << " times..." << finl;
   IOS_OPEN_MODE ios_mod=mode;
   int new_bin=0;
   if (bin_)
@@ -179,13 +152,13 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
         assert((ios_mod==ios::app)||(ios_mod==(ios::app|ios::out)));
       ios_mod=ios_mod|ios::binary;
     }
-  ostream_ = std::make_unique<ofstream>(name,ios_mod); // will delete any existing ostream_ member
+  ostream_ = std::make_unique<ofstream>(pathname,ios_mod); // will delete any existing ostream_ member
   ofstream_ = static_cast<ofstream *>(ostream_.get()); // the typed version of the pointer for this class.
   set_toFlush();
   set_buffer();
   if (!ofstream_->good())
     {
-      Cerr << "Error when opening the file " << name << ". File was opened " << counters[name] << " time(s) ..." << finl;
+      Cerr << "Error when opening the file " << pathname << ". File was opened " << counters[pathname] << " time(s) ..." << finl;
       Cerr << "Either:\n you don't have write rights,\n or your filesystem is very slow and multiple file open/close." << finl;
       Cerr << "Contact TRUST support team." << finl;
       Process::exception_sur_exit=2;
@@ -217,4 +190,12 @@ bool Sortie_Fichier_base::is_open()
   return (ofstream_&&get_ofstream().is_open()) ;
 }
 
-
+void Sortie_Fichier_base::newDirectory(int calcul, std::string dirname)
+{
+  root=dirname;
+  root+=std::to_string(calcul);
+  root+="/";
+  Cerr << "[IO] Create a new directory " << root << finl;
+  //Objet_U::get_set_nom_du_cas() = root; // Mais stocker le nom etude
+  //Sortie_Fichier_base::root=root; // ToDo voir si modifier nom_du_cas() pas mieux (mais risque)
+}
