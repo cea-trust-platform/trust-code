@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,19 +50,19 @@ class Pave : public Domaine
 public :
 
 protected:
-  DoubleVect Origine, Longueurs, Facteurs, Pas;
-  IntVect Nb_Noeuds, Les_Nums, Symetrique;
-  DoubleTab Les_Noeuds;
+  DoubleVect origine_, longueurs_, facteurs_, pas_;
+  IntVect nb_noeuds_, les_nums_, symetrique_;
+  DoubleTab les_noeuds_;
 
   int Nx = -1, Ny = -1, Nz = -1, Mx = -1, My = -1, Mz = -1;
   double a_tanh= 10.;  // a pour le maillage en tanh dans la diry!!
-  int tanh_dilatation=0;
+  int tanh_dilatation=0;  // can be -1,0 or 1
   double xa_tanh= 10.;  // xa pour le maillage en tanh dans la dirx!!
-  int xtanh_dilatation=0;
+  int xtanh_dilatation=0; // can be -1,0 or 1
   double za_tanh= 10.;  // za pour le maillage en tanh dans la dirz!!
-  int ztanh_dilatation=0;
-  int rep_VEF=0;
-  int tour_complet = 0;
+  int ztanh_dilatation=0; // can be -1,0 or 1
+  bool rep_VEF=false;
+  bool tour_complet = false;
 
   inline int numero_maille(int );
   inline int numero_maille(int, int );
@@ -155,7 +155,6 @@ inline int Pave::numero_sommet(int i, int j)
 {
   assert(dimension == 2);
   assert(i < Mx);
-  assert(tour_complet!=-123);
   if((tour_complet) && (j==My))
     j=0;
   return j*Mx+i;
@@ -172,7 +171,6 @@ inline int Pave::numero_sommet(int i, int j, int k  )
 {
   assert(dimension == 3);
   assert(i < Mx);
-  assert(tour_complet!=-123);
   if((tour_complet) && (j==My))
     j=0;
   assert(j < My);

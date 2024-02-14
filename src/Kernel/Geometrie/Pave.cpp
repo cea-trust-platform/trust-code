@@ -91,13 +91,13 @@ Entree& Pave::readOn(Entree& is)
       Cerr << " The syntax is \"Dimension dim\" " << finl ;
       exit();
     }
-  Facteurs.resize(dimension);
-  Facteurs = 1.;
-  Symetrique.resize(dimension);
-  Symetrique=0;
-  Origine.resize(dimension);
-  Longueurs.resize(dimension);
-  Nb_Noeuds.resize(dimension);
+  facteurs_.resize(dimension);
+  facteurs_ = 1.;
+  symetrique_.resize(dimension);
+  symetrique_=0;
+  origine_.resize(dimension);
+  longueurs_.resize(dimension);
+  nb_noeuds_.resize(dimension);
   Motcle motlu;
   int rang;
 
@@ -141,7 +141,7 @@ Entree& Pave::readOn(Entree& is)
           {
           case 0:
             for(int i=0; i< dimension; i++)
-              is >> Origine(i);
+              is >> origine_(i);
             break;
           case 1:
             lire_longueurs(is);
@@ -151,10 +151,10 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 3:
             for(int i=0; i< dimension; i++)
-              is >> Facteurs(i);
+              is >> facteurs_(i);
             break;
           case 4:      // Symx
-            Symetrique(0)=1;
+            symetrique_(0)=1;
             break;
           case 5:      // Symy
             if(dimension<2)
@@ -162,7 +162,7 @@ Entree& Pave::readOn(Entree& is)
                 Cerr << "Symy has meaning only in dimension >= 2" << finl;
                 exit();
               }
-            Symetrique(1)=1;
+            symetrique_(1)=1;
             break;
           case 6:      // Symz
             if(dimension<3)
@@ -170,7 +170,7 @@ Entree& Pave::readOn(Entree& is)
                 Cerr << "Symz has meaning only in dimension >= 3" << finl;
                 exit();
               }
-            Symetrique(2)=1;
+            symetrique_(2)=1;
             break;
           case 7:
             {
@@ -196,7 +196,7 @@ Entree& Pave::readOn(Entree& is)
               assert(!est_egal(xa_tanh,-123.));
               for(int decimale=1; decimale<7; decimale++)
                 {
-                  x_tmp=Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                  x_tmp=longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                   while ( x_tmp > x1 )
                     {
                       xa_tanh+=pow(10.,-decimale);
@@ -209,7 +209,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "or the nombre_de_noeuds Nx node number in the X direction." << finl;
                           exit();
                         }
-                      x_tmp=Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                      x_tmp=longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                     }
                   xa_tanh-=pow(10.,-decimale);
                   xa_tanh = std::min(xa_tanh,1-Objet_U::precision_geom);
@@ -249,7 +249,7 @@ Entree& Pave::readOn(Entree& is)
               assert(!est_egal(a_tanh,-123.));
               for(int decimale=1; decimale<7; decimale++)
                 {
-                  y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                  y_tmp=longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
                   while ( y_tmp > y1 )
                     {
                       a_tanh+=pow(10.,-decimale);
@@ -262,7 +262,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
                           exit();
                         }
-                      y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                      y_tmp=longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
                     }
                   a_tanh-=pow(10.,-decimale);
                   a_tanh = std::min(a_tanh,1-Objet_U::precision_geom);
@@ -302,7 +302,7 @@ Entree& Pave::readOn(Entree& is)
               assert(!est_egal(za_tanh,-123.));
               for(int decimale=1; decimale<7; decimale++)
                 {
-                  z_tmp=Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                  z_tmp=longueurs_(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
                   while ( z_tmp > z1 )
                     {
                       za_tanh+=pow(10.,-decimale);
@@ -315,7 +315,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "or the nombre_de_noeuds Nz node number in the Z direction." << finl;
                           exit();
                         }
-                      z_tmp=Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                      z_tmp=longueurs_(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
                     }
                   za_tanh-=pow(10.,-decimale);
                   za_tanh = std::min(za_tanh,1-Objet_U::precision_geom);
@@ -333,7 +333,7 @@ Entree& Pave::readOn(Entree& is)
             }
           case 16:
             {
-              rep_VEF=1;
+              rep_VEF=true;
               break;
             }
           case 17: // Fin
@@ -351,8 +351,8 @@ Entree& Pave::readOn(Entree& is)
             exit();
           }
       }
-    Pas.resize(dimension);
-    if(min_array(Facteurs)<=0.)
+    pas_.resize(dimension);
+    if(min_array(facteurs_)<=0.)
       {
         Cerr << "The progression factors must be positives" << finl;
         exit();
@@ -380,16 +380,16 @@ Entree& Pave::readOn(Entree& is)
       // Les coordonnees sont modulo 2 pi
       double deux_pi=M_PI*2.0 ;
       {
-        int Les_Noeuds_dimension0_opt=sommets_.dimension(0);
-        for(int i=0; i<Les_Noeuds_dimension0_opt; i++)
+        int les_noeuds__dimension0_opt=sommets_.dimension(0);
+        for(int i=0; i<les_noeuds__dimension0_opt; i++)
           {
             sommets_(i, 1)-=(int) sommets_(i, 1);
             sommets_(i, 1)*=deux_pi;
           }
       }
 
-      Longueurs(1)*=deux_pi;
-      Origine(1)*=deux_pi;
+      longueurs_(1)*=deux_pi;
+      origine_(1)*=deux_pi;
     }
   {
     is >> motlu;
@@ -479,55 +479,55 @@ void Pave::maille1D()
   Cerr << "Step of 1D mesh in progress... " << finl;
   double epsilon_geom=Objet_U::precision_geom;
   int i;
-  if(Longueurs(0)<0)
+  if(longueurs_(0)<0)
     {
-      Origine(0)+=Longueurs(0);
-      Longueurs(0)=-Longueurs(0);
-      Facteurs(0)=1./Facteurs(0);
+      origine_(0)+=longueurs_(0);
+      longueurs_(0)=-longueurs_(0);
+      facteurs_(0)=1./facteurs_(0);
     }
-  if( (!Symetrique(0)) || (std::fabs(Facteurs(0)-1.)<epsilon_geom)   )
+  if( (!symetrique_(0)) || (std::fabs(facteurs_(0)-1.)<epsilon_geom)   )
     {
-      if(std::fabs(Facteurs(0)-1.)>epsilon_geom)
-        Pas(0)=Longueurs(0)*(Facteurs(0)-1)/(pow(Facteurs(0),Nx)-1);
+      if(std::fabs(facteurs_(0)-1.)>epsilon_geom)
+        pas_(0)=longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Nx)-1);
       else
-        Pas(0)=Longueurs(0)/Nx;
-      double dx=Pas(0);
-      double x=Origine(0);
+        pas_(0)=longueurs_(0)/Nx;
+      double dx=pas_(0);
+      double x=origine_(0);
       for (i=0; i<Nx; i++)
         {
           coord_noeud(i)=x;
           x+=dx;
-          dx*=Facteurs(0);
+          dx*=facteurs_(0);
         }
-      coord_noeud(Nx)=Origine(0)+Longueurs(0);
+      coord_noeud(Nx)=origine_(0)+longueurs_(0);
     }
   else
     {
       int Ix=Nx/2;
       if( (Ix*2)==Nx )
-        Pas(0)=0.5*Longueurs(0)*(Facteurs(0)-1)/(pow(Facteurs(0),Ix)-1);
+        pas_(0)=0.5*longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Ix)-1);
       else
         {
           if(Ix)
             {
               Ix+=1;
-              Pas(0)=0.5*Longueurs(0)/( (pow(Facteurs(0),Ix-1)-1)/(Facteurs(0)-1)
-                                        +0.5*pow(Facteurs(0),Ix) );
+              pas_(0)=0.5*longueurs_(0)/( (pow(facteurs_(0),Ix-1)-1)/(facteurs_(0)-1)
+                                          +0.5*pow(facteurs_(0),Ix) );
             }
           else
             {
               Ix+=1;
-              Pas(0)=0;
+              pas_(0)=0;
             }
         }
-      double dx=Pas(0);
+      double dx=pas_(0);
       double x=0;
       for (i=0; i<Ix; i++)
         {
-          coord_noeud(i)=Origine(0)+x;
-          coord_noeud(Nx-i)=Origine(0)+Longueurs(0)-x;
+          coord_noeud(i)=origine_(0)+x;
+          coord_noeud(Nx-i)=origine_(0)+longueurs_(0)-x;
           x+=dx;
-          dx*=Facteurs(0);
+          dx*=facteurs_(0);
         }
       if( (Ix*2)==Nx )
         coord_noeud(Ix)=0.5*(coord_noeud(Ix+1)+coord_noeud(Ix-1));
@@ -547,19 +547,19 @@ void Pave::maille2D()
   int i, j;
   int pourcent=0;
   int tmp;
-  if(Longueurs(0)<0)
+  if(longueurs_(0)<0)
     {
-      Origine(0)+=Longueurs(0);
-      Longueurs(0)=-Longueurs(0);
-      Facteurs(0)=1./Facteurs(0);
+      origine_(0)+=longueurs_(0);
+      longueurs_(0)=-longueurs_(0);
+      facteurs_(0)=1./facteurs_(0);
     }
-  if(Longueurs(1)<0)
+  if(longueurs_(1)<0)
     {
-      Origine(1)+=Longueurs(1);
-      Longueurs(1)=-Longueurs(1);
-      Facteurs(1)=1./Facteurs(1);
+      origine_(1)+=longueurs_(1);
+      longueurs_(1)=-longueurs_(1);
+      facteurs_(1)=1./facteurs_(1);
     }
-  if( (!Symetrique(0)) || (std::fabs(Facteurs(0)-1.)<epsilon_geom) )
+  if( (!symetrique_(0)) || (std::fabs(facteurs_(0)-1.)<epsilon_geom) )
     {
       assert(!est_egal(xa_tanh,-123.));
       if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
@@ -587,7 +587,7 @@ void Pave::maille2D()
                     }
                   assert(!est_egal(xa_tanh,-123.));
                   for (j=0; j<My; j++)
-                    coord_noeud(i,j,0)=Origine(0)+Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                    coord_noeud(i,j,0)=origine_(0)+longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                   Cerr << "coord_noeud(0,j,1)=" << coord_noeud(0,j,0) << finl;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
@@ -605,14 +605,14 @@ void Pave::maille2D()
                     }
                   assert(!est_egal(xa_tanh,-123.));
                   for (j=0; j<My; j++)
-                    coord_noeud(i,j,0)=Origine(0)+Longueurs(0)-Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                    coord_noeud(i,j,0)=origine_(0)+longueurs_(0)-longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                   Cerr << "coord_noeud(0,j,0)=" << coord_noeud(0,j,0) << finl;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
             }
           ///////////////////////////////
           for (j=0; j<My; j++)
-            coord_noeud(0,j,0)=Origine(0);
+            coord_noeud(0,j,0)=origine_(0);
         }
       else
         {
@@ -625,37 +625,37 @@ void Pave::maille2D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
-              if (std::fabs(Facteurs(0)-1.)>epsilon_geom)
-                x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+              if (std::fabs(facteurs_(0)-1.)>epsilon_geom)
+                x=origine_(0)+longueurs_(0)*(pow(facteurs_(0),i)-1)/(pow(facteurs_(0),Nx)-1);
               else
-                x=Origine(0)+Longueurs(0)*i/Nx;
+                x=origine_(0)+longueurs_(0)*i/Nx;
               for (j=0; j<My; j++)
                 coord_noeud(i,j,0)=x;
             }
           for (j=0; j<My; j++)
-            coord_noeud(Nx,j,0)=Origine(0)+Longueurs(0);
+            coord_noeud(Nx,j,0)=origine_(0)+longueurs_(0);
         }
     }
   else
     {
       int Ix=Nx/2;
       if( (Ix*2)==Nx )
-        Pas(0)=0.5*Longueurs(0)*(Facteurs(0)-1)/(pow(Facteurs(0),Ix)-1);
+        pas_(0)=0.5*longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Ix)-1);
       else
         {
           if(Ix)
             {
               Ix+=1;
-              Pas(0)=0.5*Longueurs(0)/( (pow(Facteurs(0),Ix-1)-1)/(Facteurs(0)-1)
-                                        +0.5*pow(Facteurs(0),Ix) );
+              pas_(0)=0.5*longueurs_(0)/( (pow(facteurs_(0),Ix-1)-1)/(facteurs_(0)-1)
+                                          +0.5*pow(facteurs_(0),Ix) );
             }
           else
             {
               Ix+=1;
-              Pas(0)=Longueurs(0);
+              pas_(0)=longueurs_(0);
             }
         }
-      double dx=Pas(0);
+      double dx=pas_(0);
       double x=0;
       for (i=0; i<Ix; i++)
         {
@@ -667,11 +667,11 @@ void Pave::maille2D()
             }
           for (j=0; j<My; j++)
             {
-              coord_noeud(i,j,0)=Origine(0)+x;
-              coord_noeud(Nx-i,j,0)=Origine(0)+Longueurs(0)-x;
+              coord_noeud(i,j,0)=origine_(0)+x;
+              coord_noeud(Nx-i,j,0)=origine_(0)+longueurs_(0)-x;
             }
           x+=dx;
-          dx*=Facteurs(0);
+          dx*=facteurs_(0);
         }
       if( (Ix*2)==Nx )
         for (j=0; j<My; j++)
@@ -680,7 +680,7 @@ void Pave::maille2D()
     }
   pourcent=0;
   //
-  if( (!Symetrique(1)) || (std::fabs(Facteurs(1)-1.)<epsilon_geom) )
+  if( (!symetrique_(1)) || (std::fabs(facteurs_(1)-1.)<epsilon_geom) )
     {
       assert(!est_egal(a_tanh,-123.));
       if ((a_tanh>epsilon_geom)&&(a_tanh<1.) )
@@ -708,7 +708,7 @@ void Pave::maille2D()
                     }
                   assert(!est_egal(a_tanh,-123.));
                   for (i=0; i<Mx; i++)
-                    coord_noeud(i,j,1)=Origine(1)+Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*j/((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                    coord_noeud(i,j,1)=origine_(1)+longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*j/((My-1)*1.))*atanh(a_tanh))/a_tanh);
                   Cerr << "coord_noeud(0,j,1)=" << coord_noeud(0,j,1) << finl;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
@@ -726,14 +726,14 @@ void Pave::maille2D()
                     }
                   assert(!est_egal(a_tanh,-123.));
                   for (i=0; i<Mx; i++)
-                    coord_noeud(i,j,1)=Origine(1)+Longueurs(1)-Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*(My-1-j)/((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                    coord_noeud(i,j,1)=origine_(1)+longueurs_(1)-longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*(My-1-j)/((My-1)*1.))*atanh(a_tanh))/a_tanh);
                   Cerr << "coord_noeud(0,j,1)=" << coord_noeud(0,j,1) << finl;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
             }
           ///////////////////////////////
           for (i=0; i<Mx; i++)
-            coord_noeud(i,0,1)=Origine(1);
+            coord_noeud(i,0,1)=origine_(1);
         }
       else
         {
@@ -746,37 +746,37 @@ void Pave::maille2D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
-              if (std::fabs(Facteurs(1)-1.)>epsilon_geom)
-                y=Origine(1)+Longueurs(1)*(pow(Facteurs(1),j)-1)/(pow(Facteurs(1),Ny)-1);
+              if (std::fabs(facteurs_(1)-1.)>epsilon_geom)
+                y=origine_(1)+longueurs_(1)*(pow(facteurs_(1),j)-1)/(pow(facteurs_(1),Ny)-1);
               else
-                y=Origine(1)+Longueurs(1)*j/Ny;
+                y=origine_(1)+longueurs_(1)*j/Ny;
               for (i=0; i<Mx; i++)
                 coord_noeud(i,j,1)=y;
             }
           for (i=0; i<Mx; i++)
-            coord_noeud(i,j,1)=Origine(1)+Longueurs(1);
+            coord_noeud(i,j,1)=origine_(1)+longueurs_(1);
         }
     }
   else
     {
       int Iy=Ny/2;
       if( (Iy*2)==Ny )
-        Pas(1)=0.5*Longueurs(1)*(Facteurs(1)-1)/(pow(Facteurs(1),Iy)-1);
+        pas_(1)=0.5*longueurs_(1)*(facteurs_(1)-1)/(pow(facteurs_(1),Iy)-1);
       else
         {
           if(Iy)
             {
               Iy+=1;
-              Pas(1)=0.5*Longueurs(1)/( (pow(Facteurs(1),Iy-1)-1)/(Facteurs(1)-1)
-                                        +0.5*pow(Facteurs(1),Iy) );
+              pas_(1)=0.5*longueurs_(1)/( (pow(facteurs_(1),Iy-1)-1)/(facteurs_(1)-1)
+                                          +0.5*pow(facteurs_(1),Iy) );
             }
           else
             {
               Iy+=1;
-              Pas(1)=Longueurs(1);
+              pas_(1)=longueurs_(1);
             }
         }
-      double dy=Pas(1);
+      double dy=pas_(1);
       double y=0;
       for (j=0; j<Iy; j++)
         {
@@ -788,11 +788,11 @@ void Pave::maille2D()
             }
           for (i=0; i<Mx; i++)
             {
-              coord_noeud(i,j,1)=Origine(1)+y;
-              coord_noeud(i,Ny-j,1)=Origine(1)+Longueurs(1)-y;
+              coord_noeud(i,j,1)=origine_(1)+y;
+              coord_noeud(i,Ny-j,1)=origine_(1)+longueurs_(1)-y;
             }
           y+=dy;
-          dy*=Facteurs(1);
+          dy*=facteurs_(1);
         }
       if( (Iy*2)==Ny )
         for (i=0; i<Mx; i++)
@@ -813,25 +813,25 @@ void Pave::maille3D()
   int i, j, k;
   int pourcent=0;
   int tmp;
-  if(Longueurs(0)<0)
+  if(longueurs_(0)<0)
     {
-      Origine(0)+=Longueurs(0);
-      Longueurs(0)=-Longueurs(0);
-      Facteurs(0)=1./Facteurs(0);
+      origine_(0)+=longueurs_(0);
+      longueurs_(0)=-longueurs_(0);
+      facteurs_(0)=1./facteurs_(0);
     }
-  if(Longueurs(1)<0)
+  if(longueurs_(1)<0)
     {
-      Origine(1)+=Longueurs(1);
-      Longueurs(1)=-Longueurs(1);
-      Facteurs(1)=1./Facteurs(1);
+      origine_(1)+=longueurs_(1);
+      longueurs_(1)=-longueurs_(1);
+      facteurs_(1)=1./facteurs_(1);
     }
-  if(Longueurs(2)<0)
+  if(longueurs_(2)<0)
     {
-      Origine(2)+=Longueurs(2);
-      Longueurs(2)=-Longueurs(2);
-      Facteurs(2)=1./Facteurs(2);
+      origine_(2)+=longueurs_(2);
+      longueurs_(2)=-longueurs_(2);
+      facteurs_(2)=1./facteurs_(2);
     }
-  if( (!Symetrique(0)) || (std::fabs(Facteurs(0)-1.)<epsilon_geom) )
+  if( (!symetrique_(0)) || (std::fabs(facteurs_(0)-1.)<epsilon_geom) )
     {
       assert(!est_egal(xa_tanh,-123.));
       if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
@@ -860,7 +860,7 @@ void Pave::maille3D()
                   assert(!est_egal(xa_tanh,-123.));
                   for (j=0; j<My; j++)
                     for (k=0; k<Mz; k++)
-                      coord_noeud(i,j,k,0)=Origine(0)+Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                      coord_noeud(i,j,k,0)=origine_(0)+longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*i/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                   Cerr << "coord_noeud(i,0,0,0)=" << coord_noeud(i,0,0,0) << finl;
                 }
             }
@@ -878,14 +878,14 @@ void Pave::maille3D()
                   assert(!est_egal(xa_tanh,-123.));
                   for (j=0; j<My; j++)
                     for (k=0; k<Mz; k++)
-                      coord_noeud(i,j,k,0)=Origine(0)+Longueurs(0)-Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
+                      coord_noeud(i,j,k,0)=origine_(0)+longueurs_(0)-longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*(Mx-1-i)/((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
 
                   Cerr << "coord_noeud(i,0,0,0)=" << coord_noeud(i,0,0,0) << finl;
                 }
             }
           for (j=0; j<My; j++)
             for (k=0; k<Mz; k++)
-              coord_noeud(0,j,k,0)=Origine(0);
+              coord_noeud(0,j,k,0)=origine_(0);
         }
       ///////////////////////////////
       else
@@ -900,39 +900,39 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
-              if(std::fabs(Facteurs(0)-1.)>epsilon_geom)
-                x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
+              if(std::fabs(facteurs_(0)-1.)>epsilon_geom)
+                x=origine_(0)+longueurs_(0)*(pow(facteurs_(0),i)-1)/(pow(facteurs_(0),Nx)-1);
               else
-                x=Origine(0)+Longueurs(0)*i/Nx;
+                x=origine_(0)+longueurs_(0)*i/Nx;
               for (j=0; j<My; j++)
                 for (k=0; k<Mz; k++)
                   coord_noeud(i,j,k,0)=x;
             }
           for (j=0; j<My; j++)
             for (k=0; k<Mz; k++)
-              coord_noeud(Nx,j,k,0)=Origine(0)+Longueurs(0);
+              coord_noeud(Nx,j,k,0)=origine_(0)+longueurs_(0);
         }
     }
   else
     {
       int Ix=Nx/2;
       if( (Ix*2)==Nx )
-        Pas(0)=0.5*Longueurs(0)*(Facteurs(0)-1)/(pow(Facteurs(0),Ix)-1);
+        pas_(0)=0.5*longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Ix)-1);
       else
         {
           if(Ix)
             {
               Ix+=1;
-              Pas(0)=0.5*Longueurs(0)/( (pow(Facteurs(0),Ix-1)-1)/(Facteurs(0)-1)
-                                        +0.5*pow(Facteurs(0),Ix) );
+              pas_(0)=0.5*longueurs_(0)/( (pow(facteurs_(0),Ix-1)-1)/(facteurs_(0)-1)
+                                          +0.5*pow(facteurs_(0),Ix) );
             }
           else
             {
               Ix+=1;
-              Pas(0)=Longueurs(0);
+              pas_(0)=longueurs_(0);
             }
         }
-      double dx=Pas(0);
+      double dx=pas_(0);
       double x=0;
       for (i=0; i<Ix; i++)
         {
@@ -945,11 +945,11 @@ void Pave::maille3D()
           for (j=0; j<My; j++)
             for (k=0; k<Mz; k++)
               {
-                coord_noeud(i,j,k,0)=Origine(0)+x;
-                coord_noeud(Nx-i,j,k,0)=Origine(0)+Longueurs(0)-x;
+                coord_noeud(i,j,k,0)=origine_(0)+x;
+                coord_noeud(Nx-i,j,k,0)=origine_(0)+longueurs_(0)-x;
               }
           x+=dx;
-          dx*=Facteurs(0);
+          dx*=facteurs_(0);
         }
       if( (Ix*2)==Nx )
         for (j=0; j<My; j++)
@@ -960,7 +960,7 @@ void Pave::maille3D()
   //
   pourcent=0;
   Cerr << finl;
-  if( (!Symetrique(1)) || (std::fabs(Facteurs(1)-1.)<epsilon_geom) )
+  if( (!symetrique_(1)) || (std::fabs(facteurs_(1)-1.)<epsilon_geom) )
     {
       assert(!est_egal(a_tanh,-123.));
       if ((a_tanh>epsilon_geom)&&(a_tanh<1.) )
@@ -989,7 +989,7 @@ void Pave::maille3D()
                   assert(!est_egal(a_tanh,-123.));
                   for (i=0; i<Mx; i++)
                     for (k=0; k<Mz; k++)
-                      coord_noeud(i,j,k,1)=Origine(1)+Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*j/((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                      coord_noeud(i,j,k,1)=origine_(1)+longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*j/((My-1)*1.))*atanh(a_tanh))/a_tanh);
                   Cerr << "coord_noeud(0,j,0,1)=" << coord_noeud(0,j,0,1) << finl;
                 }
             }
@@ -1007,14 +1007,14 @@ void Pave::maille3D()
                   assert(!est_egal(a_tanh,-123.));
                   for (i=0; i<Mx; i++)
                     for (k=0; k<Mz; k++)
-                      coord_noeud(i,j,k,1)=Origine(1)+Longueurs(1)-Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*(My-1-j)/((My-1)*1.))*atanh(a_tanh))/a_tanh);
+                      coord_noeud(i,j,k,1)=origine_(1)+longueurs_(1)-longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*(My-1-j)/((My-1)*1.))*atanh(a_tanh))/a_tanh);
 
                   Cerr << "coord_noeud(0,j,0,1)=" << coord_noeud(0,j,0,1) << finl;
                 }
             }
           for (i=0; i<Mx; i++)
             for (k=0; k<Mz; k++)
-              coord_noeud(i,0,k,1)=Origine(1);
+              coord_noeud(i,0,k,1)=origine_(1);
         }
       ///////////////////////////////
       else
@@ -1028,10 +1028,10 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
-              if(std::fabs(Facteurs(1)-1.)>epsilon_geom)
-                y=Origine(1)+Longueurs(1)*(pow(Facteurs(1),j)-1)/(pow(Facteurs(1),Ny)-1);
+              if(std::fabs(facteurs_(1)-1.)>epsilon_geom)
+                y=origine_(1)+longueurs_(1)*(pow(facteurs_(1),j)-1)/(pow(facteurs_(1),Ny)-1);
               else
-                y=Origine(1)+Longueurs(1)*j/Ny;
+                y=origine_(1)+longueurs_(1)*j/Ny;
 
               for (i=0; i<Mx; i++)
                 for (k=0; k<Mz; k++)
@@ -1039,29 +1039,29 @@ void Pave::maille3D()
             }
           for (i=0; i<Mx; i++)
             for (k=0; k<Mz; k++)
-              coord_noeud(i,j,k,1)=Origine(1)+Longueurs(1);
+              coord_noeud(i,j,k,1)=origine_(1)+longueurs_(1);
         }
     }
   else
     {
       int Iy=Ny/2;
       if( (Iy*2)==Ny )
-        Pas(1)=0.5*Longueurs(1)*(Facteurs(1)-1)/(pow(Facteurs(1),Iy)-1);
+        pas_(1)=0.5*longueurs_(1)*(facteurs_(1)-1)/(pow(facteurs_(1),Iy)-1);
       else
         {
           if(Iy)
             {
               Iy+=1;
-              Pas(1)=0.5*Longueurs(1)/( (pow(Facteurs(1),Iy-1)-1)/(Facteurs(1)-1)
-                                        +0.5*pow(Facteurs(1),Iy) );
+              pas_(1)=0.5*longueurs_(1)/( (pow(facteurs_(1),Iy-1)-1)/(facteurs_(1)-1)
+                                          +0.5*pow(facteurs_(1),Iy) );
             }
           else
             {
               Iy+=1;
-              Pas(1)=Longueurs(1);
+              pas_(1)=longueurs_(1);
             }
         }
-      double dy=Pas(1);
+      double dy=pas_(1);
       double y=0;
       for (j=0; j<Iy; j++)
         {
@@ -1074,11 +1074,11 @@ void Pave::maille3D()
           for (i=0; i<Mx; i++)
             for (k=0; k<Mz; k++)
               {
-                coord_noeud(i,j,k,1)=Origine(1)+y;
-                coord_noeud(i,Ny-j,k,1)=Origine(1)+Longueurs(1)-y;
+                coord_noeud(i,j,k,1)=origine_(1)+y;
+                coord_noeud(i,Ny-j,k,1)=origine_(1)+longueurs_(1)-y;
               }
           y+=dy;
-          dy*=Facteurs(1);
+          dy*=facteurs_(1);
         }
       if( (Iy*2)==Ny )
         for (i=0; i<Mx; i++)
@@ -1089,7 +1089,7 @@ void Pave::maille3D()
   //
   pourcent=0;
   Cerr << finl;
-  if( (!Symetrique(2)) ||( std::fabs(Facteurs(2)-1.)<epsilon_geom)    )
+  if( (!symetrique_(2)) ||( std::fabs(facteurs_(2)-1.)<epsilon_geom)    )
     {
       assert(!est_egal(za_tanh,-123.));
       if ((za_tanh>epsilon_geom)&&(za_tanh<1.) )
@@ -1118,7 +1118,7 @@ void Pave::maille3D()
                   assert(!est_egal(za_tanh,-123.));
                   for (i=0; i<Mx; i++)
                     for (j=0; j<My; j++)
-                      coord_noeud(i,j,k,2)=Origine(2)+Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*k/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                      coord_noeud(i,j,k,2)=origine_(2)+longueurs_(2)/fac_sym*(1.+tanh((-1.+fac_sym*k/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
                   Cerr << "coord_noeud(0,0,k,2)=" << coord_noeud(0,0,k,2) << finl;
                 }
             }
@@ -1136,14 +1136,14 @@ void Pave::maille3D()
                   assert(!est_egal(za_tanh,-123.));
                   for (i=0; i<Mx; i++)
                     for (j=0; j<My; j++)
-                      coord_noeud(i,j,k,2)=Origine(2)+Longueurs(2)-Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*(Mz-1-k)/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
+                      coord_noeud(i,j,k,2)=origine_(2)+longueurs_(2)-longueurs_(2)/fac_sym*(1.+tanh((-1.+fac_sym*(Mz-1-k)/((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
 
                   Cerr << "coord_noeud(0,0,k,2)=" << coord_noeud(0,0,k,2) << finl;
                 }
             }
           for (i=0; i<Mx; i++)
             for (j=0; j<My; j++)
-              coord_noeud(i,j,0,2)=Origine(2);
+              coord_noeud(i,j,0,2)=origine_(2);
         }
       ///////////////////////////////
       else
@@ -1157,39 +1157,39 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordz" << flush;
                 }
-              if(std::fabs(Facteurs(2)-1.)>epsilon_geom)
-                z=Origine(2)+Longueurs(2)*(pow(Facteurs(2),k)-1)/(pow(Facteurs(2),Nz)-1);
+              if(std::fabs(facteurs_(2)-1.)>epsilon_geom)
+                z=origine_(2)+longueurs_(2)*(pow(facteurs_(2),k)-1)/(pow(facteurs_(2),Nz)-1);
               else
-                z=Origine(2)+Longueurs(2)*k/Nz;
+                z=origine_(2)+longueurs_(2)*k/Nz;
               for (i=0; i<Mx; i++)
                 for (j=0; j<My; j++)
                   coord_noeud(i,j,k,2)=z;
             }
           for (i=0; i<Mx; i++)
             for (j=0; j<My; j++)
-              coord_noeud(i,j,Nz,2)=Origine(2)+Longueurs(2);
+              coord_noeud(i,j,Nz,2)=origine_(2)+longueurs_(2);
         }
     }
   else
     {
       int Iz=Nz/2;
       if( (Iz*2)==Nz )
-        Pas(2)=0.5*Longueurs(2)*(Facteurs(2)-1)/(pow(Facteurs(2),Iz)-1);
+        pas_(2)=0.5*longueurs_(2)*(facteurs_(2)-1)/(pow(facteurs_(2),Iz)-1);
       else
         {
           if(Iz)
             {
               Iz+=1;
-              Pas(2)=0.5*Longueurs(2)/( (pow(Facteurs(2),Iz-1)-1)/(Facteurs(2)-1)
-                                        +0.5*pow(Facteurs(2),Iz) );
+              pas_(2)=0.5*longueurs_(2)/( (pow(facteurs_(2),Iz-1)-1)/(facteurs_(2)-1)
+                                          +0.5*pow(facteurs_(2),Iz) );
             }
           else
             {
               Iz+=1;
-              Pas(2)=Longueurs(2);
+              pas_(2)=longueurs_(2);
             }
         }
-      double dz=Pas(2);
+      double dz=pas_(2);
       double z=0;
       for (k=0; k<Iz; k++)
         {
@@ -1202,11 +1202,11 @@ void Pave::maille3D()
           for (i=0; i<Mx; i++)
             for (j=0; j<My; j++)
               {
-                coord_noeud(i,j,k,2)=Origine(2)+z;
-                coord_noeud(i,j,Nz-k,2)=Origine(2)+Longueurs(2)-z;
+                coord_noeud(i,j,k,2)=origine_(2)+z;
+                coord_noeud(i,j,Nz-k,2)=origine_(2)+longueurs_(2)-z;
               }
           z+=dz;
-          dz*=Facteurs(2);
+          dz*=facteurs_(2);
         }
       if( (Iz*2)==Nz )
         for (i=0; i<Mx; i++)
@@ -1277,17 +1277,17 @@ void Pave::lire_longueurs(Entree& is)
 {
   int i;
   for(i=0; i< dimension; i++)
-    is >> Longueurs(i);
+    is >> longueurs_(i);
   if(axi)
     {
-      if(Longueurs(1) >1.+epsilon())
+      if(longueurs_(1) >1.+epsilon())
         {
           Cerr << "The length \"Longueurs\" is in number of turns in axisymmetric" << finl;
           Cerr << "It must be between 0 and 1" << finl;
           exit();
         }
-      else if(Longueurs(1)==1.)
-        tour_complet=1;
+      else if(longueurs_(1)==1.)
+        tour_complet=true;
     }
 }
 
@@ -1302,14 +1302,14 @@ void Pave::lire_longueurs(Entree& is)
 void Pave::lire_noeuds(Entree& is)
 {
   int i, j, k;
-  if( (axi) && (Longueurs(0)==0.))
+  if( (axi) && (longueurs_(0)==0.))
     {
       Cerr<< "You must first read the length in axisymmetric!" << finl;
       exit();
     }
   for(i=0; i< dimension; i++)
-    is >> Nb_Noeuds(i);
-  if (min_array(Nb_Noeuds)<2)
+    is >> nb_noeuds_(i);
+  if (min_array(nb_noeuds_)<2)
     {
       Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << nom_ << "' must be greater than 1." << finl;
       Cerr << "If you want to define a unique cell in a given direction, set the number of nodes to 2 in that direction." << finl;
@@ -1317,8 +1317,8 @@ void Pave::lire_noeuds(Entree& is)
     }
   if(dimension==1)
     {
-      Mx=Nb_Noeuds(0);
-      Nx=Nb_Noeuds(0)-1;
+      Mx=nb_noeuds_(0);
+      Nx=nb_noeuds_(0)-1;
       mes_elems_.resize(Nx,2);
       sommets_.resize(Mx);
       for (i=0; i<Nx; i++)
@@ -1329,11 +1329,10 @@ void Pave::lire_noeuds(Entree& is)
     }
   else if(dimension==2)
     {
-      Mx=Nb_Noeuds(0);
-      My=Nb_Noeuds(1);
-      Nx=Nb_Noeuds(0)-1;
-      Ny=Nb_Noeuds(1)-1;
-      assert(tour_complet!=-123);
+      Mx=nb_noeuds_(0);
+      My=nb_noeuds_(1);
+      Nx=nb_noeuds_(0)-1;
+      Ny=nb_noeuds_(1)-1;
       if(tour_complet) Ny++;
       mes_elems_.resize(Nx*Ny,4);
       sommets_.resize(Mx*My,2);
@@ -1348,13 +1347,12 @@ void Pave::lire_noeuds(Entree& is)
     }
   else if(dimension==3)
     {
-      Mx=Nb_Noeuds(0);
-      My=Nb_Noeuds(1);
-      Mz=Nb_Noeuds(2);
-      Nx=Nb_Noeuds(0)-1;
-      Ny=Nb_Noeuds(1)-1;
-      Nz=Nb_Noeuds(2)-1;
-      assert(tour_complet!=-123);
+      Mx=nb_noeuds_(0);
+      My=nb_noeuds_(1);
+      Mz=nb_noeuds_(2);
+      Nx=nb_noeuds_(0)-1;
+      Ny=nb_noeuds_(1)-1;
+      Nz=nb_noeuds_(2)-1;
       if(tour_complet) Ny++;
       mes_elems_.resize(Nx*Ny*Nz,8);
       sommets_.resize(Mx*My*Mz,3);
