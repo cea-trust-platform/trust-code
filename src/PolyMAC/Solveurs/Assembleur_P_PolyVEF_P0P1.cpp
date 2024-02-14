@@ -59,7 +59,7 @@ const IntTab& Assembleur_P_PolyVEF_P0P1::ps_ref() const
         ps_ref_(s) = -1;
   ps_ref_.echange_espace_virtuel();
   /* pour les pressions non utilisees, de quel sommet doit-on prendre la pression ? */
-  for (int s = 0; s < dom.nb_som(); s++)
+  for (int s = 0; s < dom.nb_som_tot(); s++)
     if (ps_ref_(s) == 0)
       {
         std::array<double, 3> xs_min = { 1e8, 1e8, 1e8 };
@@ -157,12 +157,15 @@ void Assembleur_P_PolyVEF_P0P1::dimensionner_continuite(matrices_t matrices, int
   for (e = 0; e < dom.nb_elem(); e++)
     for (m = 0; m < M; m++)
       sten_p.append_line(M * e, M * e);
-  for (s = 0; s < dom.nb_som() ; s++)
+  for (s = 0; s < dom.nb_som_tot() ; s++)
     for (n = 0, m = 0; n < N; n++, m += (M > 1))
       {
-        sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + s) + m);
+        if (s < dom.nb_som()) sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + s) + m);
         if ((sb = ps_r(s)) >= 0)
-          sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + sb) + m), sten_p.append_line(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s) + m);
+          {
+            if (s  < dom.nb_som()) sten_p.append_line(M * (!aux_only * ne_tot + s) + m, M * (!aux_only * ne_tot + sb) + m);
+            if (sb < dom.nb_som()) sten_p.append_line(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s) + m);
+          }
       }
 
   tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
@@ -255,8 +258,8 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
     }
 
   //equations restantes aux sommets : pressions imposees et inutiles
-  for (s = 0; s < dom.nb_som(); s++)
-    if (scl_d(s) < scl_d(s + 1)) /* lignes "pression aux sommets imposee" */
+  for (s = 0; s < dom.nb_som_tot(); s++)
+    if (s < dom.nb_som() && scl_d(s) < scl_d(s + 1)) /* lignes "pression aux sommets imposee" */
       for (m = 0; m < M; m++)
         {
           secmem(!aux_only * ne_tot + s, m) -= press(!aux_only * ne_tot + s, m) - ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), m);
@@ -265,12 +268,12 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
     else if ((sb = ps_r(s)) >= 0) /* force de rappel avec les sommets voisins pour les pressions inutilisees */
       for (m = 0; m < M; m++)
         {
-          secmem(!aux_only * ne_tot + s , m) += press(!aux_only * ne_tot + sb, m) - press(!aux_only * ne_tot + s , m);
-          secmem(!aux_only * ne_tot + sb, m) += press(!aux_only * ne_tot + s , m) - press(!aux_only * ne_tot + sb, m);
-          mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + s ) + m)++;
-          mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + sb) + m)--;
-          mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + sb) + m)++;
-          mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s ) + m)--;
+          if (s  < dom.nb_som()) secmem(!aux_only * ne_tot + s , m) += press(!aux_only * ne_tot + sb, m) - press(!aux_only * ne_tot + s , m);
+          if (sb < dom.nb_som()) secmem(!aux_only * ne_tot + sb, m) += press(!aux_only * ne_tot + s , m) - press(!aux_only * ne_tot + sb, m);
+          if (s  < dom.nb_som()) mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + s ) + m)++;
+          if (s  < dom.nb_som()) mat_p(M * (!aux_only * ne_tot + s ) + m, M * (!aux_only * ne_tot + sb) + m)--;
+          if (sb < dom.nb_som()) mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + sb) + m)++;
+          if (sb < dom.nb_som()) mat_p(M * (!aux_only * ne_tot + sb) + m, M * (!aux_only * ne_tot + s ) + m)--;
         }
 }
 
