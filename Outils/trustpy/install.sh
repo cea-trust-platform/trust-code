@@ -7,7 +7,7 @@ org=$TRUST_ROOT/Outils/trustpy
 install_dir=$org/install
 
 # Are we invoked from a baltik, or from TRUST?
-if [ "$project_directory" = "" ]; then  # from TRUST
+if [ "$project_directory" = "" ] || [ "$TRUSTPY_FROM_TRUST" = 1 ]; then  # from TRUST
     generated_TRAD2=$install_dir/generated/TRAD2_truspy
     generated_py=$install_dir/generated/trustpy_gen.py
 
@@ -17,6 +17,8 @@ if [ "$project_directory" = "" ]; then  # from TRUST
     cd $install_dir
 
     [ ! -f $archive ] && echo $archive no such file && exit 1
+    
+    from_TRUST=1
 else   # From a baltik
     build_dir=$project_directory/build/trustpy
     rm -rf $build_dir
@@ -24,6 +26,7 @@ else   # From a baltik
     generated_TRAD2=$build_dir/generated/TRAD2_truspy
     generated_py=$build_dir/generated/trustpy_gen.py
     agg_trad2=$build_dir/generated/agg_TRAD_2.org
+    from_TRUST=0
 fi
 
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -33,7 +36,7 @@ source $org/env.sh
 echo $PACKAGESPY_ROOT_DIR
 echo "OK"
 
-if [ "$project_directory" = "" ]; then
+if [ "$from_TRUST" = "1" ]; then
     echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     echo "@@@ Extracting packagespy"
     echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"

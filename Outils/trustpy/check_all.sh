@@ -5,7 +5,7 @@ set -e
 
 org=$TRUST_ROOT/Outils/trustpy
 
-if [ "$project_directory" = "" ]; then  # from TRUST
+if [ "$project_directory" = "" ] || [ "$TRUSTPY_FROM_TRUST" = 1 ]; then  # from TRUST
     generated_py=$org/install/generated/trustpy_gen.py
 else
     generated_py=$project_directory/build/trustpy/generated/trustpy_gen.py

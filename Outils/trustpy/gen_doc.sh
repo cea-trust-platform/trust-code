@@ -4,7 +4,7 @@ set -e
 
 org=$TRUST_ROOT/Outils/trustpy
 
-if [ "$project_directory" = "" ]; then  # from TRUST
+if [ "$project_directory" = "" ] || [ "$TRUSTPY_FROM_TRUST" = 1 ]; then  # from TRUST
     install_dir=$org/install
 else  # from a BALTIK
     install_dir=$project_directory/build/trustpy

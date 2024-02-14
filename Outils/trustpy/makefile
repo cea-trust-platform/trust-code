@@ -6,15 +6,16 @@ SHELL=/bin/bash -o pipefail   # make sure failures are spotted before tee below:
 all : makefile install check
 
 install: $(archive) install.sh clean
-	./install.sh $(archive) 2>&1 | tee $(log_file)
+	env TRUSTPY_FROM_TRUST=1 ./install.sh $(archive) 2>&1 | tee $(log_file)
 
 doc:
-	./gen_doc.sh
+	env TRUSTPY_FROM_TRUST=1 ./gen_doc.sh
 
 check:
-	./check_all.sh
+	env TRUSTPY_FROM_TRUST=1 ./check_all.sh
 
 clean:
+	echo "Cleaning ..."
 	rm -rf $(install_dir)
 
 .PHONY: install check clean doc
