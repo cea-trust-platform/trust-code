@@ -33,6 +33,8 @@
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
 #include <Symetrie.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
 /*! @brief Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des faces.
  *
@@ -48,6 +50,12 @@ void Op_VEF_Face::dimensionner(const Domaine_VEF& le_dom, const Domaine_Cl_VEF& 
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
   // Pour ce faire il faut chercher les faces voisines de la face consideree.
+
+  if (le_dom_cl.equation().que_suis_je().debute_par("Convection_Diffusion"))
+    {
+      dimensionner_cd(le_dom, le_dom_cl, la_matrice);
+      return;
+    }
 
   int num_face;
   int ndeb = 0;
@@ -166,6 +174,31 @@ void Op_VEF_Face::dimensionner(const Domaine_VEF& le_dom, const Domaine_Cl_VEF& 
     }
 }
 
+void Op_VEF_Face::dimensionner_cd(const Domaine_VEF& le_dom, const Domaine_Cl_VEF& le_dom_cl, Matrice_Morse& la_matrice) const
+{
+  const int N = le_dom_cl.equation().inconnue().valeurs().line_size(), nb_faces_elem = le_dom.domaine().nb_faces_elem();
+  const IntTab& e_f = le_dom.elem_faces(), &f_e = le_dom.face_voisins();
+
+  IntTab stencil;
+  stencil.resize(0, 2);
+
+  for (int f = 0; f < le_dom.nb_faces_tot(); f++)
+    {
+      for (int n = 0; n < N; n++)
+        stencil.append_line(N * f + n, N * f + n);
+      for (int i = 0, e; i < 2; i++)
+        if ((e = f_e(f, i)) >= 0)
+          for (int j = 0, k; j < nb_faces_elem; j++)
+            if ((k = e_f(e, j)) != f)
+              for (int n = 0; n < N; n++)
+                stencil.append_line(N * f + n, N * e_f(e, j) + n);
+    }
+  tableau_trier_retirer_doublons(stencil);
+  Matrice_Morse mat2;
+  Matrix_tools::allocate_morse_matrix(N * le_dom.nb_faces_tot(), N * le_dom.nb_faces_tot(), stencil, mat2);
+  la_matrice.nb_colonnes() ? la_matrice += mat2 : la_matrice = mat2;
+}
+
 /*! @brief Modification des coef de la matrice et du second membre pour les conditions de Dirichlet
  *
  */
@@ -177,8 +210,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
-  const IntVect& tab1 = la_matrice.get_tab1();
-  DoubleVect& coeff = la_matrice.get_set_coeff();
+  const IntVect& tab1 = la_matrice.get_tab1(), &tab2 = la_matrice.get_tab2();
   const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
   ArrOfDouble normale(nb_comp);
@@ -195,14 +227,11 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
               int face = la_front_dis.num_face(ind_face);
               for (int comp = 0; comp < nb_comp; comp++)
                 {
-                  int idiag = tab1[face * nb_comp + comp] - 1;
-                  coeff[idiag] = 1;
-                  // pour les voisins
-                  int nbvois = tab1[face * nb_comp + 1 + comp] - tab1[face * nb_comp + comp];
-                  for (int k = 1; k < nbvois; k++)
-                    {
-                      coeff[idiag + k] = 0;
-                    }
+                  // on met a 0 toute la ligne
+                  for (int k = tab1[face * nb_comp + comp] - 1; k < tab1[face * nb_comp + 1 + comp] - 1; k++)
+                    la_matrice(face * nb_comp + comp, tab2[k] - 1) = 0;
+                  // on met a 1 la diagonale
+                  la_matrice(face * nb_comp + comp, face * nb_comp + comp) = 1.0;
                   // pour le second membre
                   if (nb_comp == 1)
                     secmem(face) = la_cl_Dirichlet.val_imp(ind_face, 0);
@@ -221,14 +250,11 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
               int face = la_front_dis.num_face(ind_face);
               for (int comp = 0; comp < nb_comp; comp++)
                 {
-                  int idiag = tab1[face * nb_comp + comp] - 1;
-                  coeff[idiag] = 1;
-                  // pour les voisins
-                  int nbvois = tab1[face * nb_comp + 1 + comp] - tab1[face * nb_comp + comp];
-                  for (int k = 1; k < nbvois; k++)
-                    {
-                      coeff[idiag + k] = 0;
-                    }
+                  // on met a 0 toute la ligne
+                  for (int k = tab1[face * nb_comp + comp] - 1; k < tab1[face * nb_comp + 1 + comp] - 1; k++)
+                    la_matrice(face * nb_comp + comp, tab2[k] - 1) = 0;
+                  // on met a 1 la diagonale
+                  la_matrice(face * nb_comp + comp, face * nb_comp + comp) = 1.0;
                   // pour le second membre
                   if (nb_comp == 1)
                     secmem(face) = la_cl_Dirichlet_homogene.val_imp(ind_face, 0);
@@ -240,7 +266,6 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
       if (sub_type(Symetrie, la_cl.valeur()))
         if (le_dom_cl.equation().inconnue().nature_du_champ() == vectoriel)
           {
-            const IntVect& tab2 = la_matrice.get_tab2();
             const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
             const DoubleTab& face_normales = le_dom.face_normales();
             int nfaces = la_front_dis.nb_faces_tot();
