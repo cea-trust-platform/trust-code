@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,8 @@ public:
   void modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, const Equation_base&) const;
 
 private:
+  void dimensionner_cd(const Domaine_VEF& le_dom, const Domaine_Cl_VEF& le_dom_cl, Matrice_Morse& la_matrice) const;
+
   mutable int controle_modifier_flux_ = 0;
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
