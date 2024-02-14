@@ -99,10 +99,6 @@ inline void TRUSTVect<_TYPE_>::resize(int n, RESIZE_OPTIONS opt)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::resize_vect_(int n, RESIZE_OPTIONS opt)
 {
-  // Note B.M.: j'aurais voulu interdire completement resize des qu'on a un descripteur mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja
-  //  la bonne taille). Donc j'autorise si la taille ne change pas.
-  //assert(!md_vector_.non_nul() || n == size_array());
-  // PL: 1.7.0 is now strict about this point:
   if (md_vector_.non_nul())
     {
       Cerr << "Resize of a distributed array is forbidden!" << finl;

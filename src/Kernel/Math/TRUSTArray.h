@@ -26,20 +26,25 @@
 
 #include <View_Types.h>  // Kokkos stuff
 
-/*! @brief Represente un tableau d'elements de type int/double/float.
+/*! @brief Represents a an array of int/int64/double/... values.
  *
- * L'etat du tableau est caracterise par la valeur de p_ et de data_ :
- *   * detache : on a alors p_==0, data_==0, size_array_==0 (etat obtenu par le constructeur par defaut, detach_array() et resize_array(0) dans certains cas)
- *   * normal : alors p pointe vers une structure VTRUSTdata, data_==p->data_ et size_array_ <= p->size_.
- *     A la destruction du tableau, si p->ref_count_ est nul on libere la memoire. data_ n'est pas nul.
- *     L'espace memoire du tableau peut etre partage entre plusieurs TRUSTArray (le pointeur "p" pointe alors sur une meme structure).
- *     Ce type de tableau est produit par ref_array().
- *     Le dernier TRUSTArray a utiliser une zone de memoire la detruit lorsqu'il a fini (voir detach_array())
- *     Si smart_resize_==0, alors on a toujours size_array_==p->size_.
- *   * ref_data : p_==0, data_ pointe vers un tableau existant, la memoire n'est pas liberee a la destruction du TRUSTArray.
- *     Ces tableaux sont obtenus par appel a ref_data(...) et peuvent servir pour importer un tableau fourni par une routine exterieure (C ou fortran)
+ * The two main members are mem_ and span_:
+ * - 'mem_' is the (shared) pointer to the actual underlying data. The block of data itself is a std::vector. This
+ *    block of data can be shared among several arrays (see below) or can be null if we reference external data (ref_data)
+ * - 'span_' is a view on the actual data, and can point to a sub-part of *mem_.
  *
- *   Valeur initiale par defaut : voir "fill_default_value". Priere de supposer desormais que les tableaux ne sont pas initialises par defaut.
+ * We can have 3 states for the array:
+ *   - "detached": meaning mem_==nullptr, span_.empty() == true (state obtained with the default ctor, detach_array() and resize_array(0) in some cases)
+ *   - "normal" : in this case mem_ is a non-null shared pointer to a std::vector holding the data. 'span_' then typically represents the entire span of the vector.
+ *    The array is always initialised with 0.
+ *    When the array is destroyed, the shared_ptr 'mem_' is destroyed too, and if this was the last reference to the underlying data, the std::vector itself
+ *    is freed.
+ *    The memory space of the array can be shared among several TRUSTArray ('mem_' has the same underlying value in several instances).
+ *    This is typically produced by ref_array().
+ *    Note that when this happens, we have two instances pointing to the same underlying block of data, but *none* of them has precedence over the other one (none
+ *    of them is 'the' owner of the data). Ownership is shared, and when the last owner is destroyed, memory is released.
+ *   - "ref_data" : this is used to point to an exterior existing memory zone (not managed by TRUSTArray - for example data provided by an exterior Fortran func)
+ *    In this case, mem_ remains nullptr, just the span_ is correctly filled, and no memory is released when the array is destroyed.
  *
  */
 template <typename _TYPE_>
@@ -72,9 +77,7 @@ public:
   inline Iterator begin() { return span_.begin(); }
   inline Iterator end() { return span_.end(); }
 
-  virtual ~TRUSTArray()
-  {
-  }
+  virtual ~TRUSTArray()  { }
 
   TRUSTArray() : TRUSTArray(0) { }
 
@@ -82,9 +85,9 @@ public:
   {
     if (n)
       {
-        mem_ = std::make_shared<Vector_>(Vector_(n));
+        // Initialize underlying std::vector<> with 0:
+        mem_ = std::make_shared<Vector_>(Vector_(n, (_TYPE_)0));
         span_ = Span_(*mem_);
-//        fill_default_value(RESIZE_OPTIONS::COPY_INIT, 0, n);
       }
   }
 

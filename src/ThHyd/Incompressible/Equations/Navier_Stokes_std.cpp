@@ -1213,9 +1213,8 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   else
     {
       ConstDoubleTab_parts ppart(tab_pression);
-      if (Pa.get_md_vector() == ppart[0].get_md_vector())
-        Pa = ppart[0]; //tab_pression a un morceau en plus
-      else abort(); //euh...
+      assert(Pa.get_md_vector() == ppart[0].get_md_vector());
+      Pa = ppart[0]; //tab_pression a un morceau en plus
     }
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
@@ -1409,7 +1408,6 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
 
 void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
 {
-  //  abort();
   DoubleTab& val= pression_hydro.valeurs();
   const DoubleTab& coords = domaine_dis().domaine().les_sommets();
   if (!milieu().a_gravite())

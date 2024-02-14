@@ -61,21 +61,16 @@ Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
   return is;
 }
 
-//  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
-//    Les autres elements de (*this) sont inchanges.
-// Precondition:
-// Parametre:       const ArrOfDouble& m
-//  Signification:   le tableau a utiliser, doit etre different de *this !
-// Parametre:       int nb_elements
-//  Signification:   nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m.
-//  Valeurs par defaut: -1
-// Parametre:       int first_element_dest
-//  Valeurs par defaut: 0
-// Parametre:       int first_element_source
-//  Valeurs par defaut: 0
-// Retour: ArrOfDouble&
-//    Signification: *this
-// Exception: Sort en erreur si la taille du tableau m est plus grande que la taille de tableau this.
+/**  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
+*    Les autres elements de (*this) sont inchanges.
+
+* @param  const ArrOfDouble& m: le tableau a utiliser, doit etre different de *this !
+* @param int nb_elements: nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m. Valeurs par defaut: -1
+* @param int first_element_dest. Valeurs par defaut: 0
+* @param int first_element_source. Valeurs par defaut: 0
+* @return ArrOfDouble& : *this
+* @throw Sort en erreur si la taille du tableau m est plus grande que la taille de tableau this.
+*/
 template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, int nb_elements, int first_element_dest, int first_element_source)
 {
@@ -109,7 +104,8 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
   return *this;
 }
 
-// Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
+/** Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 {
@@ -123,7 +119,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
   return *this;
 }
 
-// Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
+/** Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
 {
@@ -138,7 +135,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
   return *this;
 }
 
-// ajoute la meme valeur a toutes les cases du tableau
+/** Ajoute la meme valeur a toutes les cases du tableau
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 {
@@ -151,7 +149,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
   return *this;
 }
 
-// Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
+/** Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
 {
@@ -166,7 +165,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
   return *this;
 }
 
-// soustrait la meme valeur a toutes les cases
+/** soustrait la meme valeur a toutes les cases
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 {
@@ -179,7 +179,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
   return *this;
 }
 
-// muliplie toutes les cases par dy
+/** muliplie toutes les cases par dy
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 {
@@ -192,7 +193,8 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
   return *this;
 }
 
-// divise toutes les cases par dy (pas pour TRUSTArray<int>)
+/** divise toutes les cases par dy (pas pour TRUSTArray<int>)
+ */
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 {
