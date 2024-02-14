@@ -60,11 +60,14 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
         }
 
   for (e = 0; e < dom.nb_elem(); e++) sten_p.append_line(e, e); /* sten_p : diagonale du vide + egalites p_s = p_e pour les pressions inutilisees */
-  for (s = 0; s < dom.nb_som() ; s++)
+  for (s = 0; s < dom.nb_som_tot() ; s++)
     {
-      sten_p.append_line(ne_tot + s, ne_tot + s);
+      if (s < dom.nb_som()) sten_p.append_line(ne_tot + s, ne_tot + s);
       if ((sb = ps_ref(s)) >= 0)
-        sten_p.append_line(ne_tot + s, ne_tot + sb), sten_p.append_line(ne_tot + sb, ne_tot + s);
+        {
+          if (s < dom.nb_som()) sten_p.append_line(ne_tot + s, ne_tot + sb);
+          if (sb < dom.nb_som()) sten_p.append_line(ne_tot + sb, ne_tot + s);
+        }
     }
 
   if (matv) tableau_trier_retirer_doublons(sten_v), Matrix_tools::allocate_morse_matrix(press.size_totale(), inco.size_totale(), sten_v, matv2);
@@ -161,8 +164,8 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
     }
 
   //equations restantes aux sommets : pressions imposees et inutiles
-  for (s = 0; has_s && s < dom.nb_som(); s++)
-    if (scl_d(s) < scl_d(s + 1)) /* lignes "pression aux sommets imposee" */
+  for (s = 0; has_s && s < dom.nb_som_tot(); s++)
+    if (s < dom.nb_som() && scl_d(s) < scl_d(s + 1)) /* lignes "pression aux sommets imposee" */
       for (n = 0; n < N; n++)
         {
           secmem(ne_tot + s, n) -= press(ne_tot + s, n) - ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), n);
@@ -171,14 +174,15 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
     else if ((sb = ps_ref(s)) >= 0) /* forces "p_s = p_sb" pour les pressions inutilisees */
       for (n = 0; n < N; n++)
         {
-          secmem(ne_tot + s, n)  += press(ne_tot + sb, n) - press(ne_tot + s , n);
-          secmem(ne_tot + sb, n) += press(ne_tot + s , n) - press(ne_tot + sb, n);
-          if (matp)
+          if (s < dom.nb_som())
             {
-              (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + s ) + n)++;
-              (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + sb) + n)--;
-              (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + sb) + n)++;
-              (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + s ) + n)--;
+              secmem(ne_tot + s, n)  += press(ne_tot + sb, n) - press(ne_tot + s , n);
+              if (matp) (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + s ) + n)++, (*matp)(N * (ne_tot + s ) + n, N * (ne_tot + sb) + n)--;
+            }
+          if (sb < dom.nb_som())
+            {
+              secmem(ne_tot + sb, n) += press(ne_tot + s , n) - press(ne_tot + sb, n);
+              if (matp) (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + sb) + n)++, (*matp)(N * (ne_tot + sb) + n, N * (ne_tot + s ) + n)--;
             }
         }
 }
