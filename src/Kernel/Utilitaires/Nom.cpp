@@ -375,8 +375,13 @@ Nom Nom::operator +(const Nom& x) const
  */
 int Nom::est_egal_a(const Objet_U& x) const
 {
+#ifndef LATATOOLS
   if (!(sub_type(Nom, x))) return 0;
   return (*this == ref_cast( Nom, x));
+#else
+  const Nom& n2 = dynamic_cast<const Nom&>(x);
+  return (*this == n2);
+#endif
 }
 
 /*! @brief Insere _prefix000n (n=me() ou nproc()) dans un nom de fichier (par ex:toto.

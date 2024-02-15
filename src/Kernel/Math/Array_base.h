@@ -23,7 +23,6 @@ class MD_Vector;
 *  RESIZE_OPTIONS::NOCOPY_NOINIT: ne pas copier les anciennes valeurs, ne pas initialiser les nouvelles
 *  RESIZE_OPTIONS::COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
 *  RESIZE_OPTIONS::COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
-* TODO: this is probably deprecated with std::vector<> in TRUSTArray (but careful GPU ...):
 */
 enum class RESIZE_OPTIONS { NOCOPY_NOINIT, COPY_NOINIT, COPY_INIT };
 

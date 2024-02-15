@@ -91,7 +91,7 @@ void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, entier n)
 template<class TabType>
 void DomainUnstructured::compute_cell_center_coordinates(TabType& coord, entier index_begin) const
 {
-  using TYPE = typename TabType::value_type;
+  using TYPE = typename TabType::Value_type_;
   const entier dim = nodes_.dimension(1);
   const entier nb_elem = elements_.dimension(0);
   const entier nb_som_elem = elements_.dimension(1);
@@ -420,7 +420,6 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
         array_sort_indirect(virt_elem_som_array, index);
         // Global nodes indexes of needed virtual nodes
         ArrOfInt nodes_to_read;
-        nodes_to_read.set_smart_resize(1);
         {
           const entier n = index.size_array();
           // Global index of the last loaded node:
@@ -469,7 +468,6 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
           ArrOfInt& virt_elem_faces_array = virt_elem_faces;  // Array seen as monodimensionnal
           array_sort_indirect(virt_elem_faces_array, index);
           ArrOfInt faces_to_read;
-          faces_to_read.set_smart_resize(1);
           {
             const entier n = index.size_array();
             // Global index of the last loaded face:

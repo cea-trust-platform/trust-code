@@ -15,8 +15,11 @@
 
 #include <Entree_Fichier_base.h>
 #include <Process.h>
-#include <EntreeSortie.h>
 #include <Nom.h>
+
+#ifndef LATATOOLS
+#include <EntreeSortie.h>
+#endif
 
 Implemente_base_sans_constructeur_ni_destructeur(Entree_Fichier_base,"Entree_Fichier_base",Objet_U);
 

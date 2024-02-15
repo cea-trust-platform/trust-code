@@ -18,8 +18,11 @@
 #include <ctime>
 #include <string>
 #include <sstream>
+
+#ifndef LATATOOLS
 #include <comm_incl.h>
 #include <Comm_Group_MPI.h>
+#endif
 
 bool init_openmp_ = false;
 bool clock_on = false;

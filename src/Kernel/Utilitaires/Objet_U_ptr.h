@@ -42,7 +42,9 @@ public:
   const Nom& le_nom() const override;
   Objet_U * typer(const char * nom_type);
   void detach();
+#ifndef LATATOOLS
   int associer_(Objet_U& objet) override;
+#endif
 
 protected:
   ~Objet_U_ptr() override;
@@ -52,7 +54,9 @@ protected:
   virtual Objet_U* get_Objet_U_ptr() const;
 
   void recopie(const Objet_U&);
+#ifndef LATATOOLS
   int change_num(const int* const) override; // renumerotation des objets
+#endif
 
   Objet_U* get_Objet_U_ptr_check() const;
   int check_Objet_U_ptr_type(const Objet_U *ptr) const;

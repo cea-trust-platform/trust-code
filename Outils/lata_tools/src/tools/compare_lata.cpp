@@ -328,7 +328,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
     }
   Octree_Double octree;
 
-  octree.build_elements(coord1, connect, 1e-15, 0);
+  octree.build_elements<FloatTab>(coord1, connect, 1e-15, 0);
 
   int nb_elem_1 = nb_maille;
 

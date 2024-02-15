@@ -23,8 +23,12 @@
 #include <memory>
 #include <climits>
 #include <vector>
+
 #include <Device.h>
+
+#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <View_Types.h>  // Kokkos stuff
+#endif
 
 /*! @brief Represents a an array of int/int64/double/... values.
  *
@@ -73,7 +77,7 @@ protected:
   Entree& readOn(Entree& is) override;
 
 public:
-  using value_type = _TYPE_; // return int, double ou float
+  using Value_type_ = _TYPE_;
   using Iterator = typename tcb::span<_TYPE_>::iterator;
   using Vector_ = std::vector<_TYPE_, TVAlloc<_TYPE_> >;
   using Span_ = tcb::span<_TYPE_>;
@@ -225,10 +229,12 @@ public:
   inline virtual const Span_ get_span() const { return span_; }
   inline virtual const Span_ get_span_tot() const { return span_; }
 
+#ifndef LATATOOLS   // Lata tools without Kokkos
   // Kokkos accessors
   inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
   inline ViewArr<_TYPE_> view_wo();             // Write-only
   inline ViewArr<_TYPE_> view_rw();             // Read-write
+#endif
 
   inline void sync_to_host() const;              // Synchronize back to host
   inline void modified_on_host() const;         // Mark data as being modified on host side
@@ -243,7 +249,9 @@ protected:
   inline void init_view_arr() const;
 
   mutable bool dual_view_init_ = false;
+#ifndef LATATOOLS  // Lata tools without Kokkos
   mutable DualViewArr<_TYPE_> dual_view_arr_;
+#endif
 
 private:
   /*! Shared pointer to the actual underlying memory block:
@@ -288,7 +296,11 @@ using ArrOfInt = TRUSTArray<int>;
  * ******************************* */
 
 #include <TRUSTArray_device.tpp> // OMP stuff
+
+#ifndef LATATOOLS
 #include <TRUSTArray_kokkos.tpp> // Kokkos stuff
+#endif
+
 #include <TRUSTArray.tpp> // The rest here!
 
 #endif /* TRUSTArray_included */

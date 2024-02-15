@@ -27,6 +27,23 @@
 // .SECTION Description du source
 // Implemente_base_sans_destructeur(A_base, "A_base", B);
 
+#ifdef LATATOOLS
+#define Declare_base_sans_constructeur_ni_destructeur(_TYPE_)  \
+  public :                                                                \
+  unsigned taille_memoire() const override { return 0; };                                      \
+  int duplique() const override { return 0; };                                                \
+  protected :                                                                \
+  Sortie& printOn(Sortie& x) const override;                                \
+  Entree& readOn(Entree&) override
+
+#define Declare_base_sans_constructeur(_TYPE_)  \
+  public :                                                                \
+  ~_TYPE_();                                                    \
+  Declare_base_sans_constructeur_ni_destructeur(_TYPE_)
+
+#define Implemente_base_sans_constructeur_ni_destructeur(_TYPE_,_NOM_,_BASE_)
+
+#else
 #define Declare_base_sans_constructeur_ni_destructeur(_TYPE_)        \
                                                                 \
   public :                                                        \
@@ -75,6 +92,7 @@
     return &info_obj;                                                        \
   }                                                                          \
   class __dummy__
+#endif
 
 #define Implemente_base_sans_constructeur(_TYPE_,_NOM_,_BASE_)                \
   _TYPE_::~_TYPE_() { }                                                        \

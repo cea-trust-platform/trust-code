@@ -105,7 +105,6 @@ int compare_indirect(const void *ptr1, const void *ptr2)
 void array_sort_indirect(const ArrOfInt& array_to_sort, ArrOfInt& index)
 {
   const entier n = array_to_sort.size_array();
-  index.set_smart_resize(1);
   index.resize_array(n);
   for (entier i = 0; i < n; i++)
     index[i] = i;

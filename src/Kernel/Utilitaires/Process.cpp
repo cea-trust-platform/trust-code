@@ -92,13 +92,6 @@ int Process::je_suis_maitre()
   return r == 0;
 }
 
-/*! @brief Constructeur par defaut
- *
- */
-Process::Process()
-{
-}
-
 /*! @brief renvoie le nombre de processeurs dans le groupe courant Voir Comm_Group::nproc() et PE_Groups::current_group()
  *
  */
@@ -137,13 +130,6 @@ int Process::me()
 void Process::barrier()
 {
   PE_Groups::current_group().barrier(0);
-}
-
-/*! @brief Destructeur Ne fait rien
- *
- */
-Process::~Process()
-{
 }
 
 /*! @brief Calcule le max de x sur tous les processeurs du groupe courant.

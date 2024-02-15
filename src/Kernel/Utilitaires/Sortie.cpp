@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Sortie.h>
 #include <Objet_U.h>
+#include <Sortie.h>
 #include <Separateur.h>
 #include <iostream>
 #include <iomanip>

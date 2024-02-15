@@ -35,9 +35,15 @@ public:
 
   TRUSTTravPool() = delete;
 
+#ifndef LATATOOLS
   static block_ptr_t GetFreeBlock(int sz);
   static block_ptr_t ResizeBlock(block_ptr_t p, int new_sz);
   static void ReleaseBlock(block_ptr_t);
+#else // Cheating when compiling lata_tools: Trav are never needed:
+  static block_ptr_t GetFreeBlock(int sz) { return nullptr; }
+  static block_ptr_t ResizeBlock(block_ptr_t p, int new_sz) { return nullptr; }
+  static void ReleaseBlock(block_ptr_t) { }
+#endif
 
   static void PrintStats();
 };

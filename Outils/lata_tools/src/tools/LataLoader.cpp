@@ -455,7 +455,8 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
 
           const int dim = geom.coord_.size();
           MEDCouplingCMesh *sgrid = MEDCouplingCMesh::New(meshname);
-          ArrOfInt ncoord(3, 1);
+          ArrOfInt ncoord(3);
+          ncoord = 1;
           int i;
           for (i = 0; i < dim; i++)
             ncoord[i] = geom.coord_[i].size_array();

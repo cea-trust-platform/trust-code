@@ -47,16 +47,16 @@ if (loadercpp)
     find_package(PythonInterp REQUIRED)
     find_package(SWIG REQUIRED)
     include(${SWIG_USE_FILE})
-    
+
     set_source_files_properties(LataLoader.i PROPERTIES CPLUSPLUS ON)
     set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
-    
+
     if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
-  		swig_add_module(LataLoader python LataLoader.i)
-	else()
-  		swig_add_library(LataLoader LANGUAGE python SOURCES LataLoader.i)
-	endif()
-    
+        swig_add_module(LataLoader python LataLoader.i)
+    else()
+        swig_add_library(LataLoader LANGUAGE python SOURCES LataLoader.i)
+    endif()
+
     include_directories(${PYTHON_INCLUDE_DIRS})
     if (CYGWIN)
       swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll}.st  ${lib}  ${ajout})

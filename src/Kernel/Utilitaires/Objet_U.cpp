@@ -14,12 +14,14 @@
 *****************************************************************************/
 
 #include <Objet_U.h>
+#include <Nom.h>
+
+#ifndef LATATOOLS
 #include <Memoire.h>
 #include <Interprete_bloc.h>
 #include <Lire.h>
 
 int Objet_U::dimension=0;
-double Objet_U::precision_geom=1e-10;
 int Objet_U::format_precision_geom=11;
 int Objet_U::axi=0;
 int Objet_U::bidim_axi=0;
@@ -38,7 +40,7 @@ static int object_id_to_track = -1;
 // Fonction utilitaire pour intercepter la creation d'un objet
 // ATTENTION: depuis gcc3, le compilo genere plusieurs routines pour
 //  chaque constructeur: au moins Objet_U::Objet_U() et Objet_U::Objet_U$base()
-//  Cela rend difficile l'utilisatino de breakpoints dans ces routines.
+//  Cela rend difficile l'utilisation de breakpoints dans ces routines.
 //  Poser le breakpoint ici:
 static void object_trap(int obj_id)
 {
@@ -79,15 +81,6 @@ Objet_U::Objet_U(const Objet_U&) : Process(),
   Memoire& memoire = Memoire::Instance();
   _num_obj_ = memoire.add(this);
 }
-/*! @brief Destructeur, supprime l'objet de la liste d'objets enregistres dans "memoire".
- *
- */
-Objet_U::~Objet_U()
-{
-  Memoire& memoire = Memoire::Instance();
-  memoire.suppr(_num_obj_);
-  _num_obj_ = -2; // Paranoia
-}
 
 /*! @brief Operateur= : ne fait rien (on conserve le numero et l'identifiant)
  *
@@ -95,14 +88,6 @@ Objet_U::~Objet_U()
 const Objet_U& Objet_U::operator=(const Objet_U&)
 {
   return *this;
-}
-
-/*! @brief Renvoie l'indice de l'objet dans Memoire::data
- *
- */
-int Objet_U::numero() const
-{
-  return _num_obj_;
 }
 
 /*! @brief Renvoie l'identifiant unique de l'objet object_id_
@@ -123,26 +108,6 @@ const Nom& Objet_U::que_suis_je() const
 }
 
 
-/*! @brief Ecriture de l'objet sur un flot de sortie Methode a surcharger
- *
- * @param (Sortie& s) flot de sortie
- * @return (Sortie&) flot de sortie modifie
- */
-Sortie& Objet_U::printOn(Sortie& s) const
-{
-  return s;
-}
-
-
-/*! @brief Lecture d'un Objet_U sur un flot d'entree Methode a surcharger
- *
- * @param (Entree& s) flot d'entree
- * @return (Entree& s) flot d'entree modifie
- */
-Entree& Objet_U::readOn(Entree& s)
-{
-  return s;
-}
 /*! @brief Lecture des parametres de type non simple d'un objet_U a partir d'un flot d'entree.
  *
  * @param (Motcle& motlu) le nom du terme a lire
@@ -176,18 +141,6 @@ int Objet_U::sauvegarder(Sortie& ) const
 {
   return 0;
 }
-
-/*! @brief Donne le nom de l'Objet_U Methode a surcharger : renvoie "neant" dans cette implementation
- *
- * @return (Nom&) le nom de l'Objet_U
- */
-const Nom& Objet_U::le_nom() const
-{
-  static Nom inconnu="neant";
-  return inconnu;
-}
-
-
 
 /*! @brief Donne des informations sur le type de l'Objet_U
  *
@@ -231,18 +184,6 @@ Nom& Objet_U::get_set_nom_du_cas()
   return nom_du_cas_;
 }
 
-/*! @brief Renvoie 1 si l'objet x et *this sont une seule et meme instance (meme adresse en memoire).
- *
- */
-int Objet_U::est_egal_a(const Objet_U& x) const
-{
-  int resultat;
-  if (&x==this)
-    resultat = 1;
-  else
-    resultat = 0;
-  return resultat;
-}
 /*! @brief methode ajoutee pour caster en python
  *
  */
@@ -337,3 +278,78 @@ int operator!=(const Objet_U& x, const Objet_U& y)
   return (1-(x.est_egal_a(y)));
 }
 
+#endif   // LATATOOLS
+
+double Objet_U::precision_geom = 1e-10;
+
+/*! @brief Destructeur, supprime l'objet de la liste d'objets enregistres dans "memoire".
+ *
+ */
+Objet_U::~Objet_U()
+{
+#ifndef LATATOOLS
+  Memoire& memoire = Memoire::Instance();
+  memoire.suppr(_num_obj_);
+  _num_obj_ = -2; // Paranoia
+#endif
+}
+
+/*! @brief Renvoie l'indice de l'objet dans Memoire::data
+ *
+ */
+int Objet_U::numero() const
+{
+#ifndef LATATOOLS
+  return _num_obj_;
+#else
+  return 0;
+#endif
+}
+
+/*! @brief Ecriture de l'objet sur un flot de sortie Methode a surcharger
+ *
+ * @param (Sortie& s) flot de sortie
+ * @return (Sortie&) flot de sortie modifie
+ */
+Sortie& Objet_U::printOn(Sortie& s) const
+{
+  return s;
+}
+
+
+/*! @brief Lecture d'un Objet_U sur un flot d'entree Methode a surcharger
+ *
+ * @param (Entree& s) flot d'entree
+ * @return (Entree& s) flot d'entree modifie
+ */
+Entree& Objet_U::readOn(Entree& s)
+{
+  return s;
+}
+
+/*! @brief Renvoie 1 si l'objet x et *this sont une seule et meme instance (meme adresse en memoire).
+ *
+ */
+int Objet_U::est_egal_a(const Objet_U& x) const
+{
+#ifndef LATATOOLS
+  int resultat;
+  if (&x==this)
+    resultat = 1;
+  else
+    resultat = 0;
+  return resultat;
+#else
+  return 0;
+#endif
+}
+
+/*! @brief Donne le nom de l'Objet_U Methode a surcharger : renvoie "neant" dans cette implementation
+ *
+ * @return (Nom&) le nom de l'Objet_U
+ */
+const Nom& Objet_U::le_nom() const
+{
+  static Nom inconnu="neant";
+  return inconnu;
+}

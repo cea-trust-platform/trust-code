@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+
 #include <errno.h>
 #include <LataDB.h>
 #include <stdio.h>
@@ -2269,7 +2270,6 @@ void LataDB::check_all_data_fileoffsets(entier split_files)
 {
   Noms existing_filenames;
   ArrOfInt counts; // For each filenames, number of fields referring to it
-  counts.set_smart_resize(1);
 
   const entier nb_tsteps = timesteps_.size();
   for (entier i = 0; i < nb_tsteps; i++)
@@ -2599,7 +2599,6 @@ FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const IntT
   if (get_field(tstep, uname).datatype_.array_index_ == LataDBDataType::F_INDEXING)
     {
       IntTab tmp;
-      tmp.set_smart_resize(1);
       tmp.resize(tab.dimension(0), tab.dimension(1));
       ArrOfInt& array = tmp;
       const ArrOfInt& src = tab;

@@ -27,6 +27,7 @@ static bool timer=false;
 template <typename _TYPE_>
 Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
 {
+#ifndef LATATOOLS
   this->checkDataOnHost();
   int sz = size_array();
   os << sz << finl;
@@ -35,12 +36,14 @@ Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
       const _TYPE_* v = span_.data();
       os.put(v,sz,sz);
     }
+#endif
   return os;
 }
 
 template <typename _TYPE_>
 Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
 {
+#ifndef LATATOOLS
   int sz;
   is >> sz;
   if (sz >= 0)
@@ -58,6 +61,7 @@ Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
       Cerr << "Error in TRUSTArray:readOn : size = " << sz << finl;
       Process::exit();
     }
+#endif
   return is;
 }
 

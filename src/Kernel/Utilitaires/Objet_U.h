@@ -25,14 +25,24 @@
 
 #include <assert.h>
 #include <DecBaseInst.h>
+
+#ifdef LATATOOLS
+#include <LataJournal.h>
+#include <Sortie.h>
+#include <Entree.h>
+#define Cerr Journal()
+#define finl std::endl
+#define tspace " "
+
+#else
 #include <EntreeSortie.h>
+#endif
+
 #include <Process.h>
 
 class Type_info;
 class Interprete;
 class Motcle;
-class Entree;
-
 /*! @brief classe Objet_U Cette classe est la classe de base des Objets de TRUST
  *
  *      Dans les classes derivees de Objet_U, on ajoute toujours
@@ -65,13 +75,21 @@ public:
 
   ~Objet_U() override;
   int        numero() const;
+  virtual int    duplique()  const =0;
+  virtual Sortie&   printOn(Sortie& ) const;
+  virtual Entree&   readOn(Entree& ) ;
+  virtual unsigned  taille_memoire() const =0;
+  virtual int    est_egal_a(const Objet_U&) const;
+  virtual const Nom& le_nom() const;
+  static double precision_geom;
+
+#ifndef LATATOOLS            // All the below is not needed in lata_tools:
   int        get_object_id() const;
 
   // Elie Saikali : add to this to statically test if class templates are REF/DERIV or normal !
   static constexpr bool HAS_POINTER = false;
 
   static int dimension;
-  static double precision_geom;
   static int format_precision_geom;
   static int axi;
   static int bidim_axi;
@@ -83,19 +101,13 @@ public:
   virtual const Type_info* get_info() const;
   static const Type_info*  info();
 
-  virtual const Nom& le_nom() const;
   const Nom&         que_suis_je() const;
   virtual void       nommer(const Nom&);
   const char*        le_type() const;
 
-  virtual int    est_egal_a(const Objet_U&) const;
   friend int     operator ==(const Objet_U&, const Objet_U&);
   friend int     operator !=(const Objet_U&, const Objet_U&);
-  virtual int    duplique()  const =0;
-  virtual unsigned  taille_memoire() const =0;
   virtual int    change_num(const int* const );
-  virtual Sortie&   printOn(Sortie& ) const;
-  virtual Entree&   readOn(Entree& ) ;
   virtual int lire_motcle_non_standard(const Motcle& motlu, Entree& is);
   virtual int    reprendre(Entree& ) ;
   virtual int    sauvegarder(Sortie& ) const;
@@ -124,10 +136,14 @@ private:
   // Compteur d'objets crees (incremente par le constructeur).
   static int static_obj_counter_;
   static Interprete* l_interprete;
+
+#endif
 };
 
+#ifndef LATATOOLS
 int operator==(const Objet_U& x, const Objet_U& y) ;
 int operator!=(const Objet_U& x, const Objet_U& y) ;
+#endif
 
 #endif
 

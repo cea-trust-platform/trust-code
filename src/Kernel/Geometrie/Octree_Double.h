@@ -40,7 +40,10 @@ class Octree_Double
 public:
   Octree_Double();
   void reset();
-  void build_elements(const DoubleTab& coords, const IntTab& elements, const double epsilon, const int include_virtual);
+
+  template<class _TAB_TYPE_>
+  void build_elements(const _TAB_TYPE_& coords, const IntTab& elements, const double epsilon, const int include_virtual);
+
   void build_nodes(const DoubleTab& coords, const int include_virtual, const double epsilon = 0.);
   int search_elements(double x, double y, double z, int& index) const;
   int search_elements_box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, ArrOfInt& elements) const;
@@ -56,11 +59,62 @@ public:
 protected:
   inline int integer_position(double x, int direction, int& ix) const;
   inline int integer_position_clip(double xmin, double xmax, int& x0, int& x1, int direction) const;
-  void compute_origin_factors(const DoubleTab& coords, const double epsilon, const int include_virtual);
+
+  template<class _TAB_TYPE_>
+  void compute_origin_factors(const _TAB_TYPE_& coords, const double epsilon, const int include_virtual);
 
   Octree_Int octree_int_;
   // Ces deux tableaux sont toujours de taille 3 par commodite
   ArrOfDouble origin_, factor_;
   int dim_;
 };
+
+//////////////////// INLINE METHODS /////////////////////////////
+
+/*! @brief Convertit une coordonnees reele en coordonnee entiere pour l'octree_int Valeur de retour: 1 si ok, 0 si coordonnee hors de l'octree
+ *
+ */
+inline int Octree_Double::integer_position(double x, int direction, int& ix) const
+{
+  const double coord_max = (double) Octree_Int::coord_max_;
+  double rnd_x = (x - origin_[direction]) * factor_[direction];
+  // 0.49 permet d'accepter une coordonnee x egale a xmin ou xmax de l'octree,
+  //  sinon pour un octree cree a partir de sommets, il y a un risque
+  //  de ne pas trouver les coordonnees des points qu'on avait mis au bord de l'octree.
+  if (rnd_x >= -0.49 && rnd_x <= coord_max + 0.49)
+    {
+      ix = (int) floor(rnd_x + 0.5);
+      return 1;
+    }
+  return 0;
+}
+
+// Valeur de retour: 1 s'il y a une intersection non vide avec l'octree, 0 sinon
+inline int Octree_Double::integer_position_clip(double xmin, double xmax,
+                                                int& x0, int& x1,
+                                                int direction) const
+{
+  const double coord_max = (double) Octree_Int::coord_max_;
+  xmin = (xmin - origin_[direction]) * factor_[direction];
+  xmax = (xmax - origin_[direction]) * factor_[direction];
+  // pas de marge ici comme on cherche avec une boite, l'epsilon est deja
+  // dans la dimension de la boite.
+  if (xmin > coord_max || xmax < 0.)
+    return 0;
+  if (xmin < .0)
+    x0 = 0;
+  else
+    x0 = (int) (floor(xmin+0.5));
+  if (xmax > coord_max)
+    x1 = Octree_Int::coord_max_;
+  else
+    x1 = (int) (floor(xmax+0.5));
+  return 1;
+}
+
+
+//////////////////// TEMPLATE METHOD IMPL ////////////////////////
+
+#include <Octree_Double.tpp>
+
 #endif

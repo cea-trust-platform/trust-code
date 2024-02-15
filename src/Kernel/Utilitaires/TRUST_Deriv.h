@@ -71,7 +71,9 @@ protected:
   int duplique() const override
   {
     TRUST_Deriv *xxx = new TRUST_Deriv(*this);
+#ifndef LATATOOLS
     if (!xxx) Process::exit("Not enough memory !");
+#endif
     return xxx->numero();
   }
 
@@ -190,8 +192,10 @@ public:
   const Type_info& get_info_ptr() const override;
   const TRUST_Deriv_Objet_U& operator=(const Objet_U& t);
   const TRUST_Deriv_Objet_U& operator=(const TRUST_Deriv_Objet_U& t);
+#ifndef LATATOOLS
   int reprendre(Entree& is) override;
   int sauvegarder(Sortie& os) const override;
+#endif
   void deplace(TRUST_Deriv_Objet_U& deriv_obj);
 
   inline const Objet_U& valeur() const

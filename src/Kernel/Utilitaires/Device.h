@@ -19,7 +19,11 @@
 #include <TRUSTTabs_forward.h>
 #include <Nom.h>
 #include <stat_counters.h>
+
+#ifndef LATATOOLS
 #include <kokkos++.h>
+#endif
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -49,7 +53,9 @@ inline void start_gpu_timer(int bytes=-1)
 
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
+#ifndef LATATOOLS
   Kokkos::fence();
+#endif
 #ifdef TRUST_USE_UVM
   cudaDeviceSynchronize();
 #endif

@@ -47,7 +47,6 @@ void Reconnect::search_duplicate_nodes(const FloatTab& src_coord, ArrOfInt& node
     nodes_renumber[i] = i;
   // For each node, are there several nodes within epsilon ?
   ArrOfInt node_list;
-  node_list.set_smart_resize(1);
   entier count = 0; // Number of nodes renumbered
   for (i = 0; i < nb_nodes; i++)
     {

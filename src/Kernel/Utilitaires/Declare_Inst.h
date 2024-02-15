@@ -28,6 +28,17 @@
 // Implemente_instanciable_sans_destructeur(A_base, "A_base", B);
 #include <Cast.h>
 
+#ifdef LATATOOLS
+#define Declare_instanciable_sans_constructeur_ni_destructeur(_TYPE_)        \
+                                                                        \
+  public :                                                                \
+  unsigned taille_memoire() const override { return 0; };                                      \
+  int duplique() const override { return 0; };                                                \
+  protected :                                                                \
+  Sortie& printOn(Sortie& x) const override;                                \
+  Entree& readOn(Entree&) override
+
+#else
 #define Declare_instanciable_sans_constructeur_ni_destructeur(_TYPE_)        \
                                                                         \
   public :                                                                \
@@ -43,6 +54,7 @@
   protected :                                                                \
   Sortie& printOn(Sortie& x) const override;                                \
   Entree& readOn(Entree&) override
+#endif
 
 #define Declare_instanciable_sans_constructeur(_TYPE_)                \
   public:                                                        \
@@ -60,6 +72,10 @@
   ~_TYPE_();                                                        \
   Declare_instanciable_sans_constructeur_ni_destructeur(_TYPE_) \
  
+#ifdef LATATOOLS
+#define Implemente_instanciable_sans_constructeur_ni_destructeur(_TYPE_,_NOM_,_BASE_)
+
+#else
 #define Implemente_instanciable_sans_constructeur_ni_destructeur(_TYPE_,_NOM_,_BASE_) \
                                                                         \
   const Type_info* name2(_TYPE_,bases)[1]={                                \
@@ -97,6 +113,7 @@
     return sizeof(_TYPE_);                                                \
   }                                                                      \
   class __dummy__
+#endif
 
 #define Implemente_instanciable_sans_constructeur(_TYPE_,_NOM_,_BASE_)        \
   _TYPE_::~_TYPE_() { }                                                        \

@@ -1,5 +1,4 @@
-/****************************************************************************
-* Copyright (c) 2022, CEA
+/* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,9 +71,6 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
 
   IntTab element_faces;
   build_ref_elem_face(src.elt_type_, element_faces);
-  op.src_element_.set_smart_resize(1);
-  op.src_face_.set_smart_resize(1);
-  op.src_nodes_.set_smart_resize(1);
   const int nb_nodes_per_face = element_faces.dimension(1);
   const int nb_faces_per_element = element_faces.dimension(0);
 

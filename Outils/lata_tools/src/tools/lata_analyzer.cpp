@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
+#include <Process.h>
 
 #ifdef WITH_MED
 #include <MEDWriter.h>
@@ -198,7 +199,6 @@ entier LataAnalyzerOptions::parse_option(const Nom& s)
   else if (s.debute_par("timestep="))
     {
       // Internally, first timestep is 1.
-      input_timesteps_filter.set_smart_resize(1);
       input_timesteps_filter.append_array(read_int_opt(s)+1);
     }
   else if (s.debute_par("domain="))

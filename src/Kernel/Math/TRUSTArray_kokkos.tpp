@@ -132,6 +132,7 @@ inline void TRUSTArray<_TYPE_>::modified_on_host() const
 template<typename _TYPE_>
 void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, int max_size=-1)
 {
+#ifndef LATATOOLS
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
   int size = max_size;
@@ -146,6 +147,7 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
+#endif
 }
 
 #endif

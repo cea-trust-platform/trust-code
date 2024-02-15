@@ -31,6 +31,8 @@ template <class C_Tab> void LataDB::read_data2_med_(
 }
 #else
 
+#undef space // 'space' is used in TRUST (Separateur.h / Sortie.cpp), but also in HDF5 ... grrrr should scope better in TRUST
+
 #include <medcoupling++.h>
 #include <MEDLoader.hxx>
 #include <MEDCouplingMemArray.hxx>

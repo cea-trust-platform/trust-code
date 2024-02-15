@@ -237,6 +237,7 @@ inline void TRUSTVect<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& m, int start, int n
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
 {
+#ifndef LATATOOLS
   int size_r = TRUSTArray<_TYPE_>::size_array();
   if (md_vector.non_nul())
     {
@@ -261,20 +262,27 @@ inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
     }
   size_reelle_ = size_r;
   md_vector_ = md_vector;
+#endif
 }
+
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 {
+#ifndef LATATOOLS
   MD_Vector_tools::echange_espace_virtuel(*this);
+#endif
 }
 
 //  ecriture des valeurs du tableau "raw" sans structure parallele
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ecrit(Sortie& os) const
 {
+#ifndef LATATOOLS
   TRUSTArray<_TYPE_>::printOn(os);
   os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
+#endif
 }
+
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::jump(Entree& is)
 {
@@ -287,6 +295,7 @@ inline void TRUSTVect<_TYPE_>::jump(Entree& is)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::lit(Entree& is, int resize_and_read)
 {
+#ifndef LATATOOLS
   int sz = -1;
   is >> sz;
   if (resize_and_read)
@@ -334,6 +343,7 @@ inline void TRUSTVect<_TYPE_>::lit(Entree& is, int resize_and_read)
           is >> it_communs_tot;
         }
     }
+#endif
 }
 
 #endif /* TRUSTVect_TPP_included */

@@ -142,6 +142,7 @@ ArrOfBit& ArrOfBit::operator=(int val)
  */
 Sortie& ArrOfBit::printOn(Sortie& os) const
 {
+#ifndef LATATOOLS
   os << taille << finl;
   int i;
   // Un retour a la ligne tous les 32 bits,
@@ -157,6 +158,7 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
   // Un retour a la ligne si la derniere ligne n'etait pas terminee
   if (i & 31)
     os << finl;
+#endif
   return os;
 }
 
@@ -168,6 +170,7 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
  */
 Entree& ArrOfBit::readOn(Entree& is)
 {
+#ifndef LATATOOLS
   int newsize;
   is >> newsize;
   resize_array(newsize);
@@ -180,5 +183,6 @@ Entree& ArrOfBit::readOn(Entree& is)
       is >> bit;
       if (bit) setbit(i);
     }
+#endif
   return is;
 }

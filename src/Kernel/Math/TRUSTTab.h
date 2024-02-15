@@ -20,7 +20,9 @@
 #include <TRUSTVect.h>
 #include <math.h>
 
+#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <View_Types.h>  // Kokkos stuff
+#endif
 
 /*! @brief : Tableau a n entrees pour n<= 4.
  *
@@ -49,6 +51,7 @@ protected:
    */
   Sortie& printOn(Sortie& os) const override
   {
+#ifndef LATATOOLS
     assert(verifie_LINE_SIZE());
     if (TRUSTVect<_TYPE_>::nproc() > 1 && TRUSTVect<_TYPE_>::get_md_vector().non_nul())
       {
@@ -65,6 +68,7 @@ protected:
     const _TYPE_ *data = TRUSTVect<_TYPE_>::addr();
 
     if (sz > 0)  os.put(data, sz, l_size);
+#endif
     return os;
   }
 
@@ -73,6 +77,7 @@ protected:
    */
   Entree& readOn(Entree& is) override
   {
+#ifndef LATATOOLS
     if (TRUSTVect<_TYPE_>::get_md_vector().non_nul())
       {
         // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
@@ -111,6 +116,7 @@ protected:
         Process::exit();
       }
     assert(verifie_LINE_SIZE());
+#endif
     return is;
   }
 
@@ -257,6 +263,7 @@ protected:
   inline void init_view_tab4() const;
 
 public:
+#ifndef LATATOOLS
   // Kokkos view accessors:
   inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
   inline ViewTab<_TYPE_> view_wo();             // Write-only
@@ -280,7 +287,7 @@ public:
 
   inline void sync_to_host4() const;             // Synchronize back to host
   inline void modified_on_host4() const;         // Mark data as being modified on host side
-
+#endif
 
 private:
   static constexpr int MAXDIM_TAB = 4;
@@ -294,10 +301,12 @@ private:
   // Les dimensions dimension_tot(i>=1) sont implicitement egales a dimension(i)
   int dimension_tot_0_;
 
+#ifndef LATATOOLS
   // Kokkos members
   mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
   mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
   mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
+#endif
 
   inline void verifie_MAXDIM_TAB() const
   {
@@ -336,7 +345,10 @@ using IntTab = TRUSTTab<int>;
  * FONCTIONS MEMBRES DE TRUSTTab *
  * ***************************** */
 
+#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <TRUSTTab_kokkos.tpp> // Kokkos stuff
+#endif
+
 #include <TRUSTTab.tpp> // The rest here!
 
 #endif /* TRUSTTab_included */

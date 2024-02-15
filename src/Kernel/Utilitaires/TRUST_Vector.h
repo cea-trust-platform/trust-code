@@ -21,6 +21,7 @@
 #include <vector>
 #include <memory> // pour std::shared_ptr
 #include <Nom.h>
+#include <Separateur.h>
 
 class MD_Vector;
 
@@ -92,6 +93,7 @@ private:
   std::enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
   readOn_(Entree& s)
   {
+#ifndef LATATOOLS
     int i;
     s >> i;
     clear();
@@ -101,6 +103,7 @@ private:
         s >> obj;
         add(std::move(obj));
       }
+#endif
     return s;
   }
 
@@ -108,9 +111,11 @@ private:
   std::enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const
   {
+#ifndef LATATOOLS
     s << (int) z_vect_.size() << tspace;
     for (auto &itr : z_vect_) s << *itr << tspace;
     s << finl;
+#endif
     return s;
   }
 

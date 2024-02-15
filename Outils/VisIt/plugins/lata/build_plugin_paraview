@@ -49,11 +49,11 @@ if [ -d ../../plugin_visit ]
 else
     ln -sf ../src/avtlataFileFormat.* .
 fi
-for i in $LATASRC/trust_commun/*.cpp $LATASRC/trust_compat/*.cpp
+for i in $LATASRC/trust_commun/*.cpp
   do
   ln -sf $i `basename $i .cpp`.C
 done
-for i in $LATASRC/trust_commun/*.h $LATASRC/trust_compat/*.h $LATASRC/trust_compat/*.tpp
+for i in $LATASRC/trust_commun/*.h
   do
   ln -sf $i `basename $i`
 done

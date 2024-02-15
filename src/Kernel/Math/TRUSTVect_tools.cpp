@@ -38,6 +38,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -46,17 +47,19 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return;
 
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
@@ -108,6 +111,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left_size = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -116,16 +120,18 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
       nblocs_left_size = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul. Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left_size = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul. Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left_size = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return;
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -195,6 +201,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -203,17 +210,19 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return;
 
   bool kernelOnDevice = resu.checkDataOnDevice();
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
@@ -316,6 +325,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -324,17 +334,19 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -481,6 +493,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -489,17 +502,19 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return sum;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return sum;
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -595,6 +610,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -603,17 +619,19 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return sum;
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return sum;
 
   bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_>&>(vx).checkDataOnDevice(vy);
   const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);

@@ -47,6 +47,7 @@ extern void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt);
 // DEBUT code pour operation min/max/abs
 enum class TYPE_OPERATION_VECT { IMAX_ , IMIN_ , MAX_ , MIN_ , MAX_ABS_ , MIN_ABS_ };
 
+
 inline double neutral_value_double_(const bool IS_MAX)
 {
   return IS_MAX ? (-HUGE_VAL) : HUGE_VAL;
@@ -260,6 +261,7 @@ inline int mp_moyenne_vect(const TRUSTVect<int>& x) = delete; // forbidden
 template<typename _TYPE_>
 inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
 {
+#ifndef LATATOOLS
   _TYPE_ s = mp_somme_vect(x), n;
   const MD_Vector& md = x.get_md_vector();
   if (md.non_nul()) n = md.valeur().nb_items_seq_tot() * x.line_size();
@@ -269,6 +271,9 @@ inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
       n = x.size_totale();
     }
   return s / n;
+#else
+  return (_TYPE_) 0;
+#endif
 }
 // FIN code pour operation min/max/abs
 // ==================================================================================================================================
@@ -444,6 +449,7 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
 template <typename _TYPE_>
 inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
+#ifndef LATATOOLS
   resu.checkDataOnHost();
   vx.checkDataOnHost();
   vy.checkDataOnHost();
@@ -503,6 +509,7 @@ inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const
   invalidate_data(resu, opt);
 #endif
   return;
+#endif // LATATOOLS
 }
 
 enum class TYPE_OPERATION_VECT_SPEC_GENERIC { MUL_ , DIV_ };
@@ -530,6 +537,7 @@ inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUST
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
+#ifndef LATATOOLS
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
@@ -538,17 +546,19 @@ inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUST
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
     }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
+  else
+#endif  // LATATOOLS
+    if (vect_size_tot > 0)
+      {
+        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        bloc_ptr = one_bloc;
+        one_bloc[0] = 0;
+        one_bloc[1] = vect_size_tot / line_size;
+      }
+    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return;
 
   _TYPE_ *resu_base = resu.addr();
   const _TYPE_ *x_base = vx.addr();

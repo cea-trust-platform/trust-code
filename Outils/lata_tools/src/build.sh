@@ -34,7 +34,12 @@ then
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
 fi 
-cmake $ORG -DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
+
+# CMake option + implicit use of TRUST_DEFINES and EXTRA_SRCS env var:
+cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc " 
+cmake_opt="$cmake_opt -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE "
+cmake $ORG $cmake_opt || exit -1
+
 make -j  $TRUST_NB_PROCS  install || exit -1
 
 echo "Check if compare_lata works"

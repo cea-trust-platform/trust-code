@@ -33,7 +33,6 @@ void find_virtual_layer(DomainUnstructured& domain, IntTab& virtual_elements, In
   construire_connectivite_som_elem(domain.nb_nodes(), domain.elements_, som_elem, 0 /* include virtual */);
 
   virtual_elements.resize(0, 1);
-  virtual_elements.set_smart_resize(1);
 
   // Step 2 : for each sub_zone, add to virtual_elements list all elements
   // touching the zone and not included in the zone
@@ -42,7 +41,6 @@ void find_virtual_layer(DomainUnstructured& domain, IntTab& virtual_elements, In
   const entier nprocs = joints_sommets.dimension(0);
   joints_virtual_elements.resize(nprocs, 2);
   ArrOfInt tmp;
-  tmp.set_smart_resize(1);
   for (entier i_proc = 0; i_proc < nprocs; i_proc++)
     {
       entier first_elem_zone = joints_elements(i_proc, 0);

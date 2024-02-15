@@ -123,21 +123,26 @@ void Static_Int_Lists::copy_list_to_array(int i, ArrOfInt& array) const
 
 Sortie& Static_Int_Lists::printOn(Sortie& os) const
 {
+#ifndef LATATOOLS
   os << index_   << tspace;
   os << valeurs_ << tspace;
+#endif
   return os;
 }
 
 Entree& Static_Int_Lists::readOn(Entree& is)
 {
   reset();
+#ifndef LATATOOLS
   is >> index_;
   is >> valeurs_;
+#endif
   return is;
 }
 
 Sortie& Static_Int_Lists::ecrire(Sortie& os) const
 {
+#ifndef LATATOOLS
   os << "nb lists       : " << get_nb_lists() << finl;
   os << "sizes of lists : ";
   for (int i=0; i<get_nb_lists(); ++i)
@@ -156,6 +161,7 @@ Sortie& Static_Int_Lists::ecrire(Sortie& os) const
         }
       os << "}" << finl;
     }
+#endif
   return os;
 }
 

@@ -19,12 +19,15 @@
 #include <type_traits>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_base.h>
-#include <communications.h>
 #include <DescStructure.h>
 #include <TRUSTArray.h>
-#include <MD_Vector.h>
 #include <limits.h>
 #include <math.h>
+
+#include <MD_Vector.h>
+#ifndef LATATOOLS   // Lata tools does not use parallelism
+#include <communications.h>
+#endif
 
 template<typename _TYPE_>
 class TRUSTVect : public TRUSTArray<_TYPE_>
@@ -45,12 +48,14 @@ protected:
 
   Sortie& printOn(Sortie& os) const override
   {
+#ifndef LATATOOLS
     if (TRUSTArray<_TYPE_>::nproc() > 1 && md_vector_.non_nul())
       {
         Cerr << "Error in TRUSTVect::printOn: try to print a parallel vector" << finl;
         Process::exit();
       }
     TRUSTArray<_TYPE_>::printOn(os);
+#endif
     return os;
   }
 
@@ -61,6 +66,7 @@ protected:
    */
   Entree& readOn(Entree& is) override
   {
+#ifndef LATATOOLS
     if (md_vector_.non_nul())
       {
         // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
@@ -70,6 +76,7 @@ protected:
     TRUSTArray<_TYPE_>::readOn(is);
     size_reelle_ = TRUSTArray<_TYPE_>::size_array();
     line_size_ = 1;
+#endif
     return is;
   }
 
@@ -122,6 +129,9 @@ public:
   inline void operator/=(const TRUSTVect<int>& v) = delete; // forbidden
   inline void operator/= (const _TYPE_ x) { operator_divide(*this, x); }
 
+  inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
+  inline void resize_tab(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) override;
+
   // Options par defaut choisies pour compatibilite avec la version precedente. Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   inline void abs(Mp_vect_options opt = VECT_ALL_ITEMS) { operator_abs(*this, opt); }
   inline void carre(Mp_vect_options opt = VECT_ALL_ITEMS) { carre_(*this, opt); }
@@ -145,6 +155,11 @@ public:
 
   inline void ajoute_carre(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
 
+#ifndef LATATOOLS
+  //
+  //    All the methods below involve parallelism or are not used in lata_tools
+  //
+
   // par defaut: min et max sur items reels (compat. 1.5.6):
   inline _TYPE_ local_max_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return local_max_vect_(*this, opt); }
   inline _TYPE_ local_min_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return local_min_vect_(*this, opt); }
@@ -155,6 +170,7 @@ public:
   inline _TYPE_ mp_max_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_max_abs_vect_(*this, opt); }
   inline _TYPE_ mp_min_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_min_abs_vect_(*this, opt); }
   inline _TYPE_ mp_norme_vect() const { return mp_norme_vect_(*this); }
+#endif  // LATATOOLS
 
   // methodes virtuelles
 
@@ -165,8 +181,7 @@ public:
   inline virtual void lit(Entree&, int resize_and_read=1);
   inline virtual void ecrit(Sortie&) const;
   inline virtual void detach_vect() { md_vector_.detach(); }
-  inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
-  inline void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
+
   inline void ref_data(_TYPE_* ptr, int new_size) override;
   inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
 

@@ -409,7 +409,10 @@ inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, RESIZE_OPTI
         l_size *= n;
       if (n < 0)
         {
-          Cerr << "Internal error in TRUSTTab::resize(const ArrOfInt & tailles, ...) \n" << " wrong dimensions: " << tailles << finl;
+          Cerr << "Internal error in TRUSTTab::resize(const ArrOfInt & tailles, ...) \n";
+#ifndef LATATOOLS
+          Cerr << " wrong dimensions: " << tailles << finl;
+#endif
           Process::exit();
         }
     }
@@ -519,6 +522,7 @@ inline _TYPE_ TRUSTTab<_TYPE_>::operator()(const TRUSTArray<int>& indice) const
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
 {
+#ifndef LATATOOLS
   int dim0 = dimension_tot_0_;
   if (md_vector.non_nul())
     {
@@ -529,17 +533,20 @@ inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
   assert(verifie_LINE_SIZE());
   // a appeler meme pour un md_vector nul (pour remettre size_reelle_):
   TRUSTVect<_TYPE_>::set_md_vector(md_vector);
+#endif
 }
 
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ecrit(Sortie& os) const
 {
+#ifndef LATATOOLS
   os << nb_dim_ << finl;
   if (nb_dim_ > 0) os.put(dimensions_, nb_dim_, nb_dim_);
   TRUSTArray<int> tmp(nb_dim_);
   for (int i = 0; i < nb_dim_; i++) tmp[i] = dimension_tot(i);
   os << tmp;
   TRUSTVect<_TYPE_>::ecrit(os);
+#endif
 }
 
 template<typename _TYPE_>
@@ -554,6 +561,7 @@ inline void TRUSTTab<_TYPE_>::jump(Entree& is)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 {
+#ifndef LATATOOLS
   TRUSTArray<int> tmp;
   is >> tmp;
   int ok = 1;
@@ -592,6 +600,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
         }
     }
   TRUSTVect<_TYPE_>::lit(is,resize_and_read);
+#endif
 }
 
 // ------------------------------------------------------

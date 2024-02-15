@@ -47,15 +47,24 @@ enum Mp_vect_options { VECT_SEQUENTIAL_ITEMS, VECT_REAL_ITEMS, VECT_ALL_ITEMS };
 class MD_Vector
 {
 public:
-  MD_Vector() : ptr_(0) { }
+  MD_Vector() {}
   inline MD_Vector(const MD_Vector&);
   inline ~MD_Vector();
   inline MD_Vector& operator=(const MD_Vector&);
   inline void attach(const MD_Vector&);
 
-  void copy(const MD_Vector_base&);
+  int non_nul() const
+  {
+#ifndef LATATOOLS
+    return (ptr_ != 0);
+#endif
+    return 0;
+  }
 
-  int non_nul() const { return (ptr_ != 0); }
+  inline void detach();
+
+#ifndef LATATOOLS
+  void copy(const MD_Vector_base&);
 
   const MD_Vector_base& valeur() const
   {
@@ -63,14 +72,14 @@ public:
     return *ptr_;
   }
 
-  inline void detach();
   int operator==(const MD_Vector&) const;
   int operator!=(const MD_Vector&) const;
 
 private:
   void detach_();
   void attach_(const MD_Vector&);
-  const MD_Vector_base *ptr_;
+  const MD_Vector_base *ptr_ = 0;
+#endif
 };
 
 /*! @brief constructeur par copie, associe le pointeur au meme objet que la source et incremente le compteur de references, partie inline pour traiter
@@ -78,11 +87,12 @@ private:
  *   le cas ou la source est nulle
  *
  */
-inline MD_Vector::MD_Vector(const MD_Vector& src) :
-  ptr_(0)
+inline MD_Vector::MD_Vector(const MD_Vector& src)
 {
+#ifndef LATATOOLS
   if (src.ptr_)
     attach_(src);
+#endif
 }
 
 /*! @brief Detache le pointeur de l'objet pointe et decremente le compteur de ref.
@@ -92,7 +102,9 @@ inline MD_Vector::MD_Vector(const MD_Vector& src) :
  */
 inline void MD_Vector::detach()
 {
+#ifndef LATATOOLS
   if (ptr_) detach_();
+#endif
 }
 
 /*! @brief Detache le pointeur et attache au meme objet que src, puis incremente le compteur de ref (si le pointeur est non nul).
@@ -100,10 +112,12 @@ inline void MD_Vector::detach()
  */
 inline void MD_Vector::attach(const MD_Vector& src)
 {
+#ifndef LATATOOLS
   if (this == &src)
     return; // sinon a.attach(a) risque de detruire le pointeur !
   if (ptr_) detach_();
   if (src.ptr_) attach_(src);
+#endif
 }
 
 /*! @brief idem que attach(src)
@@ -122,7 +136,9 @@ inline MD_Vector& MD_Vector::operator=(const MD_Vector& src)
  */
 inline MD_Vector::~MD_Vector()
 {
+#ifndef LATATOOLS
   if (ptr_) detach_();
+#endif
 }
 
 #endif
