@@ -22,20 +22,16 @@
 Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_VEF_Face,"Decroissance_Radioactive_VEF_P1NC",Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_VEF_Face,"Radioactive_Decay_VEF_P1NC");
 
-//// printOn
-//
 
 Sortie& Terme_Source_Decroissance_Radioactive_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
 
-//// readOn
-//
-
-Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s )
+Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s)
 {
   double lambda_tmp;
+  int nb_groupes;
   s >> nb_groupes;
   Cerr << "Nombre de groupes a lire : " << nb_groupes << finl;
   for (int i = 0; i < nb_groupes; i++)
@@ -45,18 +41,14 @@ Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s )
       lambda.push_back(lambda_tmp);
     }
 
-  return s ;
-}
-
-void Terme_Source_Decroissance_Radioactive_VEF_Face::completer()
-{
-  Source_base::completer();
-  const int N = equation().inconnue().valeurs().line_size();
-  if (N != nb_groupes)
+  const int N = equation().inconnue().valeurs().line_size(), ng = (int)lambda.size();
+  if (N != ng)
     {
-      Cerr << "Terme_Source_Decroissance_Radioactive_VEF_Face : inconsistency between the number of radioactive decay constants ( " << nb_groupes << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
+      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << ng
+           << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
       Process::exit();
     }
+  return s ;
 }
 
 void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
@@ -68,14 +60,14 @@ void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Dom
 
 DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& resu)  const
 {
-  int nb_faces = le_dom_VEF.valeur().nb_faces();
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
   const DoubleTab& c = equation().inconnue().valeurs();
+  const int nb_faces = le_dom_VEF.valeur().nb_faces(), N = c.line_size();
 
   for (int f = 0; f < nb_faces; f++)
-    for (int l = 0; l < nb_groupes; l++)
-      resu.addr()[nb_groupes * f + l] -= lambda[l] * c.addr()[nb_groupes * f + l] * vf(f);
+    for (int l = 0; l < N; l++)
+      resu(f, l) -= lambda[l] * c(f, l) * vf(f);
 
   return resu;
 }
@@ -89,14 +81,14 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::calculer(DoubleTab& r
 
 void Terme_Source_Decroissance_Radioactive_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  int nb_faces = le_dom_VEF.valeur().nb_faces();
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
+  const int nb_faces = le_dom_VEF.valeur().nb_faces(), N = equation().inconnue().valeurs().line_size();
 
   for (int f = 0; f < nb_faces; f++)
-    for (int l = 0; l < nb_groupes; l++)
+    for (int l = 0; l < N; l++)
       {
-        const int k = f * nb_groupes + l;
+        const int k = f * N + l;
         matrice(k, k) += lambda[l] * vf(f);
       }
 }

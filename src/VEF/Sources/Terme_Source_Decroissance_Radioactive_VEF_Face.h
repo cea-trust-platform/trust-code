@@ -38,12 +38,10 @@ public:
   void mettre_a_jour(double ) override { };
   void associer_pb(const Probleme_base& ) override { };
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  void completer() override;
 
 protected:
 
   std::vector<double> lambda;
-  int nb_groupes=0;
   REF(Domaine_VEF) le_dom_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
