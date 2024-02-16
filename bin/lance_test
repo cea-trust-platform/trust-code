@@ -577,6 +577,7 @@ using_ctest=0
 if [ "$1" = -ctest ]
 then
    using_ctest=1
+   export TRUST_USE_CTEST=1
    shift
 fi
 #export nomail=0 // On commente pour pouvoir faire par exemple: nomail=1 trust -check ....
@@ -1054,6 +1055,11 @@ then
 	i=""
 	fi
 	[ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
+	if [ ${#i} = 0 ] && [ "$TRUST_USE_CTEST" = 1 ]
+	then
+	   echo "test skipped"
+	   exit 200
+	fi
 	if [ ${#i} != 0 ]
 	then
 	    let tests=$tests+1

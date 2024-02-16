@@ -551,7 +551,7 @@ do
             fi
          done
          rm -f $liste_ctest
-         ctest -j$TRUST_NB_PHYSICAL_CORES $I --output-on-failure
+         env TRUST_USE_CTEST=1 ctest -j$TRUST_NB_PHYSICAL_CORES $I --output-on-failure
          exit $?
       else
          # Lancement sequentiel classique:
