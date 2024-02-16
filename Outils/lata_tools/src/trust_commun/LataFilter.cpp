@@ -748,9 +748,9 @@ Noms LataFilter::get_exportable_geometry_names() const
 Field_UNames LataFilter::get_exportable_field_unames(const char *geometry) const
 {
   Field_UNames unames;
-  Motcle geom(geometry);
   for (entier i = 0; i < fields_metadata_.size(); i++)
-    if (geom == fields_metadata_[i].geometry_name_ || geom == "*")
+    if (geometry == fields_metadata_[i].geometry_name_
+        || std::string(geometry) == std::string("*"))  // warning, do not write 'geometry == "*"' -> undefined behavior
       {
         // Do not show faces located fields to the user...
         if (fields_metadata_[i].localisation_ != LataField_base::FACES || opt_.export_fields_at_faces_)
@@ -765,7 +765,7 @@ Field_UNames LataFilter::get_exportable_field_unames(const char *geometry) const
 //  returned by get_exportable_geometry_names()
 const LataGeometryMetaData& LataFilter::get_geometry_metadata(const char *geometry) const
 {
-  Motcle geom(geometry);
+  Nom geom(geometry);
   for (entier i = 0; i < geoms_metadata_.size(); i++)
     if (geom == geoms_metadata_[i].internal_name_)
       return geoms_metadata_[i];
@@ -1166,5 +1166,5 @@ void LataDB_apply_input_filter(const LataDB& lata_db, LataDB& filtered_db, const
       components_filter.add("SOMMETS_IJK_K");
       components_filter.add("INVALID_CONNECTIONS");
     }
-  filtered_db.filter_db(lata_db, noms_to_motcles(domains_filter), noms_to_motcles(components_filter), timesteps_filter);
+  filtered_db.filter_db(lata_db, domains_filter, noms_to_motcles(components_filter), timesteps_filter);
 }

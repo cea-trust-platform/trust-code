@@ -2137,7 +2137,7 @@ void LataDB::read_data(const LataDBField& fld, FloatTab& data, const ArrOfInt& l
 //  field_nms can contain field.name_ (like VITESSE), or extended name with localisation
 //  (like VITESSE_ELEM)
 void LataDB::filter_db(const LataDB& source,
-                       const Motcles& geometry_nms,
+                       const Noms& geometry_nms,
                        const Motcles& field_nms,
                        const ArrOfInt& timesteps)
 {
@@ -2158,16 +2158,17 @@ void LataDB::filter_db(const LataDB& source,
       LataDBTimestep& tstep = timesteps_.add(LataDBTimestep());
       tstep.time_ = source.get_time(src_tstep);
       // Copy geometries
-      Motcles geoms = noms_to_motcles(source.geometry_names(src_tstep));
+      const Noms& geoms = source.geometry_names(src_tstep);
       entier ig;
       for (ig = 0; ig < geoms.size(); ig++)
         if (geometry_nms.rang(geoms[ig]) >= 0)
           tstep.geoms_.add(source.get_geometry(src_tstep, geoms[ig]));
       // Copy fields
-      geoms = noms_to_motcles(geometry_names(nb_timesteps()-1, FIRST_AND_CURRENT));
-      for (ig = 0; ig < geoms.size(); ig++)
+      const Noms& geoms2 = geometry_names(nb_timesteps()-1, FIRST_AND_CURRENT);
+
+      for (ig = 0; ig < geoms2.size(); ig++)
         {
-          LataVector<Field_UName> unames = source.field_unames(src_tstep, geoms[ig], "*");
+          LataVector<Field_UName> unames = source.field_unames(src_tstep, geoms2[ig], "*");
           for (entier i_f = 0; i_f < unames.size(); i_f++)
             {
               const LataDBField& src = source.get_field(src_tstep, unames[i_f]);

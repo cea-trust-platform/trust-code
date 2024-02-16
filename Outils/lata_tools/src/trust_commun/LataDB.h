@@ -116,10 +116,10 @@ public:
   Nom build_string() const;
   const Motcle& get_localisation() const { return loc_; }
   const Motcle& get_field_name() const { return field_name_; }
-  const Motcle& get_geometry() const { return geometry_; }
+  const Nom& get_geometry() const { return geometry_; }
   void        set_field_name(const Nom&);
 protected:
-  Motcle geometry_;
+  Nom geometry_;       // WARNING: geometry name might be lower-case e.g. 'dom'
   Motcle field_name_;
   Motcle loc_;
 };
@@ -204,7 +204,7 @@ public:
   static Nom   read_master_file_options(const char * filename);
 
   virtual void filter_db(const LataDB& source,
-                         const Motcles& geometry_names,
+                         const Noms& geometry_names,
                          const Motcles& field_names,
                          const ArrOfInt& timesteps);
 

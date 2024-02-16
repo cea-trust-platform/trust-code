@@ -190,9 +190,9 @@ void print(const Noms& geoms)
   cerr << endl;
 }
 
-Motcle get_long_field_name(const Field_UName& field)
+Nom get_long_field_name(const Field_UName& field)
 {
-  Motcle titi(field.get_field_name());
+  Nom titi(field.get_field_name());
   titi += "_";
   titi += field.get_localisation();
   titi += "_";
@@ -252,7 +252,7 @@ int compare_noms(const Field_UNames& geoms, const Field_UNames& geoms2, Field_UN
   int size2 = geoms2.size();
   if (size != size2)
     status = 0;
-  Motcles test(size2);
+  Noms test(size2);
   for (int i = 0; i < size2; i++)
     test[i] = get_long_field_name(geoms2[i]);
   for (int i = 0; i < size; i++)
