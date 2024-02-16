@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -169,7 +169,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
               line+=jol;
             }
 
-          else if ((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") )
+          else if (((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") || (motlu.find(",")!=-1 && motlu != ",")) && ! fin_lu )
             {
               Nom msg = "Error while reading '" + motlu.getString() + "' from datafile " + name + " at line " + std::to_string(line) + ".\nCheck for missing space character.\n";
               msg+= "============================================\nExiting TRUST.";
