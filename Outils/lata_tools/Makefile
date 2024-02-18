@@ -25,3 +25,8 @@ $(trg): $(tools_src)/CMakeLists.txt $(tools_src)/tools/CMakeLists.txt $(tools_sr
 
 clean:
 	rm -rf $(TRUST_ROOT)/build/Outils/lata_tools $(TRUST_ROOT)/exec/lata_tools $(TRUST_ROOT)/exec/lata_analyzer $(TRUST_ROOT)/exec/compare_lata
+
+write_extra_src:   # Used by LATA Plugin build in Outils/VisIt/plugin/lata
+	@echo $(EXTRA_SRCS) > $(OUTFILE)
+
+.PHONY: clean write_extra_src

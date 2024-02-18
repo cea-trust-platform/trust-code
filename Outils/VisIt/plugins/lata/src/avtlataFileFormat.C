@@ -605,7 +605,8 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
             vtkRectilinearGrid *sgrid = vtkRectilinearGrid::New();
 
             const int dim = geom.coord_.size();
-            ArrOfInt ncoord(3, 1);
+            ArrOfInt ncoord(3);
+            ncoord = 1;
             int i;
             for (i = 0; i < dim; i++)
                 ncoord[i] = geom.coord_[i].size_array();
