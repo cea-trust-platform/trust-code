@@ -47,6 +47,7 @@ void Octree_Double::build_elements(const _TAB_TYPE_& coords, const IntTab& eleme
           for (int k = 0; k < nb_som_elem; k++)
             {
               const int som = elements(i, k);
+              if (som < 0) continue; // for polyhedrons, som might be -1 (padding)
               const double x = coords(som, j);
               xmin = (x<xmin) ? x : xmin;
               xmax = (x>xmax) ? x : xmax;
