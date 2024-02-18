@@ -150,7 +150,7 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
     {
       os << operator[](i);
       if ((i & 7) == 7)
-        os << space;
+        os << tspace;
       if ((i & 31) == 31)
         os << finl;
     }

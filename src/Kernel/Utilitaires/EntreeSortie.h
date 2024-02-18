@@ -27,6 +27,6 @@ Sortie& get_Cerr();
 
 #include <Separateur.h>
 extern const Separateur finl;
-extern const Separateur space;
+extern const Separateur tspace; // avoid naming it 'space' as it causes conflicts in HDF5 for example ...
 
 #endif

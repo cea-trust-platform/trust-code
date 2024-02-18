@@ -52,12 +52,12 @@ Entree& MD_Vector_base2::readOn(Entree& is)
 Sortie& MD_Vector_base2::printOn(Sortie& os) const
 {
   os << "{" << finl;
-  os << "nb_items_tot" << space << nb_items_tot_ << finl;
-  os << "nb_items_reels" << space << nb_items_reels_ << finl;
-  os << "nb_items_seq_tot" << space << nb_items_seq_tot_ << finl;
-  os << "nb_items_seq_local" << space << nb_items_seq_local_ << finl;
-  os << "blocs_items_to_sum" << space << blocs_items_to_sum_;
-  os << "blocs_items_to_compute" << space << blocs_items_to_compute_;
+  os << "nb_items_tot" << tspace << nb_items_tot_ << finl;
+  os << "nb_items_reels" << tspace << nb_items_reels_ << finl;
+  os << "nb_items_seq_tot" << tspace << nb_items_seq_tot_ << finl;
+  os << "nb_items_seq_local" << tspace << nb_items_seq_local_ << finl;
+  os << "blocs_items_to_sum" << tspace << blocs_items_to_sum_;
+  os << "blocs_items_to_compute" << tspace << blocs_items_to_compute_;
   os << "}" << finl;
   return os;
 }

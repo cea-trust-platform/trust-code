@@ -221,15 +221,15 @@ Sortie& MD_Vector_std::printOn(Sortie& os) const
 {
   MD_Vector_base2::printOn(os);
   os << "{" << finl;
-  os << "pe_voisins" << space << pe_voisins_ << finl;
-  os << "items_to_send_index" << space << items_to_send_.get_index() << finl;
-  os << "items_to_send_data" << space << items_to_send_.get_data() << finl;
-  os << "nb_items_to_items" << space << nb_items_to_items_ << finl;
-  os << "items_to_recv_index" << space << items_to_recv_.get_index();
-  os << "items_to_recv_data" << space << items_to_recv_.get_data();
-  os << "blocs_to_recv_index" << space << blocs_to_recv_.get_index() << finl;
-  os << "blocs_to_recv_data" << space << blocs_to_recv_.get_data();
-  os << "blocs_items_count" << space << blocs_items_count_ << finl;
+  os << "pe_voisins" << tspace << pe_voisins_ << finl;
+  os << "items_to_send_index" << tspace << items_to_send_.get_index() << finl;
+  os << "items_to_send_data" << tspace << items_to_send_.get_data() << finl;
+  os << "nb_items_to_items" << tspace << nb_items_to_items_ << finl;
+  os << "items_to_recv_index" << tspace << items_to_recv_.get_index();
+  os << "items_to_recv_data" << tspace << items_to_recv_.get_data();
+  os << "blocs_to_recv_index" << tspace << blocs_to_recv_.get_index() << finl;
+  os << "blocs_to_recv_data" << tspace << blocs_to_recv_.get_data();
+  os << "blocs_items_count" << tspace << blocs_items_count_ << finl;
   os << "}" << finl;
   return os;
 }

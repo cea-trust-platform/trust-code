@@ -636,7 +636,7 @@ void MD_Vector_tools::dump_vector_with_md(const DoubleVect& v, Sortie& os)
   const MD_Vector_base& md = v.get_md_vector().valeur();
   os << md.que_suis_je() << finl;
   os << md << finl;
-  os << "line_size" << space << v.line_size() << finl;
+  os << "line_size" << tspace << v.line_size() << finl;
 
   os << v.size_array() << finl;
   os.put(v.addr(), v.size_array(), v.line_size());

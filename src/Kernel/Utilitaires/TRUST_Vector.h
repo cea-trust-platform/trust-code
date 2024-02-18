@@ -108,9 +108,10 @@ private:
   std::enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const
   {
-    s << (int) z_vect_.size() << space;
-    for (auto &itr : z_vect_) s << *itr << space;
-    return s << finl;
+    s << (int) z_vect_.size() << tspace;
+    for (auto &itr : z_vect_) s << *itr << tspace;
+    s << finl;
+    return s;
   }
 
   // MD_Vector class does not derive from Objet_U => no readOn & printOn

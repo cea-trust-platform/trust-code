@@ -123,8 +123,8 @@ void Static_Int_Lists::copy_list_to_array(int i, ArrOfInt& array) const
 
 Sortie& Static_Int_Lists::printOn(Sortie& os) const
 {
-  os << index_   << space;
-  os << valeurs_ << space;
+  os << index_   << tspace;
+  os << valeurs_ << tspace;
   return os;
 }
 

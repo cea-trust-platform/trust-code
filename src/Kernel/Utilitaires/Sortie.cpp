@@ -21,7 +21,7 @@
 #include <cstring>
 
 const Separateur finl(Separateur::ENDL);
-const Separateur space(Separateur::SPACE);
+const Separateur tspace(Separateur::SPACE);
 
 // Constructeurs
 Sortie::Sortie()

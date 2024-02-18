@@ -315,7 +315,7 @@ void Debog_Pb::ecrire_gen(const char* const msg, const TRUSTVect<_TYPE_>& arr, i
           os << md.nb_items_seq_tot();
           // other dimensions:
           for (int i = 1; i < n; i++)
-            os << space << tab.dimension(i);
+            os << tspace << tab.dimension(i);
           os << finl;
         }
       // Header of ArrayOfDouble:

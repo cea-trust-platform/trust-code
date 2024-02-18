@@ -38,9 +38,9 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
 
   os << "{" << finl;
   os << "global_md" << finl << global_md_ << finl;
-  os << "parts_offsets" << space << parts_offsets_ << finl;
-  os << "shapes" << space << shapes_ << finl;
-  os << "names" << space << names_ << finl;
+  os << "parts_offsets" << tspace << parts_offsets_ << finl;
+  os << "shapes" << tspace << shapes_ << finl;
+  os << "names" << tspace << names_ << finl;
   os << "}" << finl;
   return os;
 }

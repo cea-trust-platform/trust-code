@@ -622,7 +622,7 @@ void Domaine_VEF::construire_ok_arete()
   for (int i = 0; i < n; i++)
     {
       if (marqueurs_aretes[i])
-        fic_ok_arete_ << xa_(i,0) << space << xa_(i,1) << space << xa_(i,2) << space << ok_arete(i) << finl;
+        fic_ok_arete_ << xa_(i,0) << tspace << xa_(i,1) << tspace << xa_(i,2) << tspace << ok_arete(i) << finl;
     }
   fic_ok_arete_.syncfile();
   fic_ok_arete_.close();
