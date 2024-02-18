@@ -86,6 +86,9 @@ class SingleTest(UnittestCustomMethodsTrust):
 if __name__ == "__main__":
     import sys
     mod = os.environ.get("GEN_MOD", "")
+    verb = int(os.environ.get("VERBOSE", "0"))
+    if verb:
+      TRUU._log_level = 4
     if not os.path.exists(mod):
         print("Unable to find generated module defined in env variable GEN_MOD: %s" % mod)
         sys.exit(-1)

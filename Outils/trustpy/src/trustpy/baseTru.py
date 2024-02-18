@@ -1385,7 +1385,7 @@ class BaseEntierInRange_Tru(IntRangeXyz, AbstractEntier_Tru):
 
   @classmethod
   def _ValidateValue(cls, val, stream):
-    ar = self._allowedRange
+    ar = cls._allowedRange
     try:       i = int(val)
     except:
       err = cls.GenErr(stream, f"Invalid value: '{val}', could not be interpreted as an integer")

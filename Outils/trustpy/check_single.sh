@@ -4,6 +4,8 @@ set -e
 # Check a single dataset with the trustpy tool
 
 echo 'Usage: check_single.sh </the/dataset/path/jdd.data>'
+echo '(to debug the check process itslef, you might use VERBOSE=1 check_single.sh </the/dataset/path/jdd.data>'
+echo ""
 
 org=$TRUST_ROOT/Outils/trustpy
 
@@ -30,4 +32,4 @@ fi
 source $org/env.sh
 
 # Executing!
-env GEN_MOD=$generated_py python $org/src/tst_rw_one_dataset.py $1
+env GEN_MOD=$generated_py python $org/install/trustpy/tst_rw_one_dataset.py $1

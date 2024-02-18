@@ -24,4 +24,4 @@ source $org/env.sh
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "@@@ Testing all TRUST datasets for read/write with the generated Python module"
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-env GEN_MOD=$generated_py python $org/src/tst_rw_all_datasets.py
+env GEN_MOD=$generated_py python $org/install/trustpy/tst_rw_all_datasets.py
