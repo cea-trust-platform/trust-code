@@ -91,14 +91,18 @@ public:
       }
   }
 
-  // Constructeur par copie : deep copy (on duplique les donnees)
+  /**
+   * Copy ctor. Performs a deep copy.
+   *
+   * It is forbidden to deep copy a ref_data.
+   */
   TRUSTArray(const TRUSTArray& A) : Array_base()
   {
+    assert(A.mem_ != nullptr || A.span_.empty());
+    storage_type_ = STORAGE::STANDARD;
     const int size = A.size_array();
     if (size > 0)
       {
-        // Creation d'un tableau "normal"
-        storage_type_ = STORAGE::STANDARD;
         // We deep copy *only* the data span of A, not the full underlying A.mem_:
         mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
         span_ = Span_(*mem_);
@@ -106,12 +110,6 @@ public:
 #ifdef OPENMP   // TODO review this later ... I think we need to keep it
         inject_array(A);
 #endif
-      }
-    else
-      {
-        // Creation d'un tableau "detache", mem_ remains nullptr
-        span_ = A.span_;
-        storage_type_ = STORAGE::STANDARD;
       }
   }
 
@@ -243,10 +241,6 @@ protected:
   inline bool detach_array();
 
 private:
-  // B. Mathieu 22/06/2004 : je mets ces membres "private" pour forcer le passage par les accesseurs dans les classes derivees,
-  // au cas ou on voudrait modifier l'implementation.
-  inline void memory_resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
-
   // Zone de memoire contenant les valeurs du tableau. Pointeur nul => le tableau est "detache" ou "ref_data", Pointeur non nul => le tableau est "normal"
   std::shared_ptr<Vector_> mem_;
 

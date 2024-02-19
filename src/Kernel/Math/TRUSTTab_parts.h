@@ -19,8 +19,8 @@
 #include <MD_Vector_composite.h>
 #include <TRUSTTabs.h>
 
-/*! @brief This class allows to acces to individual sub-parts of DoubleTab objects that have a MD_Vector_composite descriptor.
- *
+/*! @brief This class allows to access the individual sub-parts of DoubleTab objects that have a MD_Vector_composite descriptor.
+ * See const version below.
  */
 template <typename _TYPE_>
 class TRUSTTab_parts
@@ -48,7 +48,7 @@ private:
 using DoubleTab_parts = TRUSTTab_parts<double>;
 using IntTab_parts = TRUSTTab_parts<int>;
 
-/*! @brief This class allows to acces to individual sub-parts of const DoubleTab objects that have a MD_Vector_composite descriptor.
+/*! @brief This class allows to access the individual sub-parts of 'const DoubleTab' objects that have a MD_Vector_composite descriptor.
  *
  * It is designed to preserve the const-ness of the object.
  *

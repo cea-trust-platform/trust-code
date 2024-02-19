@@ -185,7 +185,8 @@ public:
       }
 
     z_vect_.resize(i);
-    for (int j = old_size; j < i; j++) z_vect_[j] = std::make_shared<_CLASSE_>();
+    for (int j = old_size; j < i; j++)
+      z_vect_[j] = std::make_shared<_CLASSE_>();
   }
 
   void dimensionner_force(int i)

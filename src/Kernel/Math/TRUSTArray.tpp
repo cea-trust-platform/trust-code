@@ -322,27 +322,33 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
  *
  * If size < 0, we take the data from the specified start till the end of the block.
  * Array must be detached first before invoking this method.
+ * It is forbidden to attach to a ref_data.
  */
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int size)
 {
   // Array must be detached
   assert(span_.empty() && mem_ == nullptr);
-  // m might be detached too:
+  // we might attach to an already detached array ... make sure that start and size are coherent
   assert(m.mem_ != nullptr || (start == 0 && size == -1));
-  // Le tableau doit etre different de *this
+  // we don't attach to ourself:
   assert(&m != this);
+  // we don't attach to a ref_data:
+  assert(! (m.mem_ == nullptr && !m.span_.empty()) );
 
   if (size < 0)
     size = m.size_array() - start;
 
   assert(start >= 0 && size >=0 && start + size <= m.size_array());
 
-  mem_ = m.mem_;  // shared_ptr copy! One more owner for the underlying data
+  // shared_ptr copy! One more owner for the underlying data:
+  mem_ = m.mem_;
 
   // stupid enough, but we might have ref'ed a detached array ...
   if (mem_ != nullptr)
     span_ = Span_((_TYPE_ *)(m.mem_->data()+start), size);
+  else
+    span_ = Span_();
 }
 
 /** Fills in default values for the array.

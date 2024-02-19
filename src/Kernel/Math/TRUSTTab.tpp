@@ -522,7 +522,7 @@ inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
   int dim0 = dimension_tot_0_;
   if (md_vector.non_nul())
     {
-      // renvoie -1 si l'appel et invalide:
+      // renvoie -1 si l'appel est invalide ou si le MD_Vector est mix (cf doc MD_Vector_base2):
       dim0 = md_vector.valeur().get_nb_items_reels();
     }
   dimensions_[0] = dim0;
