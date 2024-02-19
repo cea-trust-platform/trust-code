@@ -168,7 +168,7 @@ void Assembleur_P_PolyVEF_P0P1NC::assembler_continuite(matrices_t matrices, Doub
   int i, j, e, f, fb, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = domaine.nb_elem_tot();
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
-  double ar_tot, acc, dt = equation().schema_temps().pas_de_temps(), fac2;
+  double ar_tot = 1, acc, dt = equation().schema_temps().pas_de_temps(), fac2;
   secmem = 0, fac = 1;
 
   /* equations sum alpha_k = 1 */
