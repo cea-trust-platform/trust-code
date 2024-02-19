@@ -18,7 +18,7 @@
 #include <Fluide_Incompressible.h>
 #include <Neumann_sortie_libre.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
@@ -99,23 +99,24 @@ void Terme_Boussinesq_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeurs();
-  const IntTab& f_e = domaine.face_voisins();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_base, equation().inconnue()).fcl();
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = domaine.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& pf = equation().milieu().porosite_face(), &grav = gravite().valeurs();
 
   // Verifie la validite de T0:
   check();
-  int e, i, f, n, nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension;
+  int e, i, f, n, nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
   for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
-      {
-        double coeff = 0;
-        for (n = 0; n < nb_dim; n++)
-          coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e, n) * (Scalaire0(n) - valeur(param, e, n));
+    if (!p0p1 || fcl(f, 0) < 2)
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+        {
+          double coeff = 0;
+          for (n = 0; n < nb_dim; n++)
+            coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e, n) * (Scalaire0(n) - valeur(param, e, n));
 
-        for (d = 0; d < D; d++)
-          secmem(f, d) += coeff * grav(d) * vfd(f, i) * pf(f);
-      }
+          for (d = 0; d < D; d++)
+            secmem(f, d) += coeff * grav(d) * vfd(f, i) * pf(f);
+        }
 }
 
