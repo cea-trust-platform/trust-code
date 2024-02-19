@@ -1,0 +1,107 @@
+# PARALLEL ONLY 4 #
+IJK_Grid_Geometry DOM
+
+Lire DOM
+{
+  nbelem_i 128
+  nbelem_j 32
+  nbelem_k 32
+  uniform_domain_size_i 0.02
+  uniform_domain_size_j 0.005
+  uniform_domain_size_k 0.005
+  perio_i
+  perio_j
+  perio_k
+}
+
+IJK_Splitting grid_splitting
+Lire grid_splitting
+{
+  ijk_grid_geometry DOM
+  nproc_i 4
+  nproc_j 1
+  nproc_k 1
+}
+
+IJK_FT_double
+{
+  vol_bulle_monodisperse 5.23583e-10
+  ijk_splitting grid_splitting
+  ijk_splitting_ft_extension 10 # To be checked.. #
+  timestep 1e-4
+  time_scheme RK3_FT # si euler_explicite diminuer le facsec #
+  type_velocity_convection_op Centre
+  Boundary_Conditions {
+    bctype_kmin perio
+    bctype_kmax perio
+  }
+  timestep_facsec 1.0
+  cfl 1.0
+  fo  1.0
+  oh  1.0
+  dt_post 3
+  dt_post_stats_bulles 50
+  dt_post_stats_plans 50
+  t_debut_statistiques 0.0
+
+  champs_a_postraiter 1 PRESSURE
+  check_stop_file DNS_swarm.stop
+  dt_sauvegarde 50
+  tinit 0
+  nb_pas_dt_max 3
+
+  multigrid_solver {
+    solver_precision mixed
+    coarsen_operators 0
+    ghost_size 1
+    pre_smooth_steps 1 7
+    smooth_steps 1 7
+    relax_jacobi 1 0.7
+    solveur_grossier GCP { seuil 1e-12  precond ssor { omega 1.5 }  }
+    seuil 1e-12
+    nb_full_mg_steps 2 20 1
+    iterations_mixed_solver 1
+  }
+  # LECTURE DES INTERFACES DANS UN FICHIER LATA #
+  check_divergence
+  gravite 3 -9.81 0.0 0.0
+  interfaces {
+   terme_gravite rho_g
+   fichier_reprise_interface INIT/init.lata
+   timestep_reprise_interface       1
+   lata_meshname   FTMESH
+   remaillage_ft_ijk {
+     pas_remaillage 1e-6
+     nb_iter_barycentrage 1
+     relax_barycentrage 1.00000000000000000e+00
+     critere_arete 3.49999999999999978e-01
+     seuil_dvolume_residuel 0.00000000000000000e+00
+     nb_iter_correction_volume 6
+     nb_iter_remaillage 6
+     facteur_longueur_ideale 7.50000000000000000e-01
+     lissage_courbure_coeff -2.50000000000000014e-02
+     lissage_courbure_iterations_systematique 1
+     lissage_courbure_iterations_si_remaillage 10
+   }
+  # follow_colors #
+  }
+  terme_force_init 10855.866965787514 # = (0.059688461999999984*87.545+(1.0-0.059688461999999984)*1171.3)*9.81 #
+  expression_derivee_force 0.
+  # check_divergence #
+  # refuse_patch_conservation_QdM_RK3_source_interf #
+  rho_liquide 1171.3
+  rho_vapeur 87.545
+  mu_liquide 0.001578
+  mu_vapeur 1.3493e-05
+  sigma 0.018055
+  # Pour Creer le fichier de Reprise #
+  nom_sauvegarde diph_swarm.sauv
+  # sauvegarder_xyz #
+  # REPRISE #
+  # nom_reprise diph_init.sauv
+ timestep_reprise_vitesse 1 #
+  expression_vx_init 0.0
+  expression_vy_init 0.0
+  expression_vz_init 0.0
+}
+Fin

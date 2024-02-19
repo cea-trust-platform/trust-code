@@ -1,0 +1,10 @@
+LATA_V2.1
+titi
+Trio_U
+Format ASCII,F_INDEXING,C_ORDERING,F_MARKERS_NO,INT32,REAL32
+TEMPS 0
+Geom FTMESH type_elem=TRIANGLE_3D
+Champ SOMMETS init.lata.nodes geometrie=FTMESH size=86412 composantes=3
+Champ ELEMENTS init.lata.elem geometrie=FTMESH size=172482 composantes=3 FORMAT=INT32
+Champ COMPO_CONNEXE init.lata.connex_compo geometrie=FTMESH size=172482 composantes=1 FORMAT=INT32,NO_INDEXING localisation=ELEM
+FIN
