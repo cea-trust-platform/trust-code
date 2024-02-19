@@ -150,7 +150,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_
 
       N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(domaine[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
-      stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
+      stencil[i].resize(0, 2);
+
     }
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
@@ -160,7 +161,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_
     Cerr << "Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner() : ";
   DoubleTrav w2;
   /* probleme local */
-  for (w2.set_smart_resize(1), e = 0; e < ne_tot[0]; e++)
+  for (e = 0; e < ne_tot[0]; e++)
     {
       domaine[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
       //element <-> toutes ses faces (non Dirichlet)
@@ -271,7 +272,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
     v_aux.push_back(use_aux_ ? ref_cast(Op_Diff_PolyMAC_P0P1NC_Elem, *op_ext[i]).var_aux : v_part[i][1]); /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
   DoubleTrav w2, flux(N[0]), acc(N[0]);
-  for (w2.set_smart_resize(1), e = 0; e < ne_tot[0]; e++)
+  for (e = 0; e < ne_tot[0]; e++)
     {
       domaine[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
 

@@ -562,9 +562,9 @@ Calcul_integrale_locale::Calcul_integrale_locale(const Domaine_VF& domaine_sourc
   filter_(filter),
   champ_source_(champ_source)
 {
-  liste_elems_.set_smart_resize(1);
-  filter_coords_.set_smart_resize(1);
-  filter_results_.set_smart_resize(1);
+
+
+
   // Construction d'un octree contenant les centres des elements
   // On copie le tableau car il sera retaille :
   DoubleTab coords = domaine_source.xp();

@@ -56,7 +56,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     // initialisation du tableau d'indice
 
     ArrOfInt pe_voisins(6);
-    pe_voisins.set_smart_resize(1);
+
     VECT(ArrOfInt) items_to_send(6);
     VECT(ArrOfInt) items_to_recv(6);
     VECT(ArrOfInt) blocs_to_recv(6);

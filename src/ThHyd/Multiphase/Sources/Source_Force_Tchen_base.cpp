@@ -50,7 +50,7 @@ void Source_Force_Tchen_base::dimensionner_blocs(matrices_t matrices, const tabs
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   int N = inco.line_size(), nf = domaine.nb_faces();
 
   /* faces */

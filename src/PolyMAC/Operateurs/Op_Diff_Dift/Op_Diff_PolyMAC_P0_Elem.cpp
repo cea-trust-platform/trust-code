@@ -132,8 +132,9 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
     }
 
   /* construction de som_ext_{d, e, f} */
-  som_ext.set_smart_resize(1), som_ext_d.resize(0, 2), som_ext_d.set_smart_resize(1), som_ext_d.append_line(0, 0);
-  som_ext_pe.resize(0, 2), som_ext_pf.resize(0, 4), som_ext_pe.set_smart_resize(1), som_ext_pf.set_smart_resize(1);
+  som_ext_d.resize(0, 2);
+  som_ext_d.append_line(0, 0);
+  som_ext_pe.resize(0, 2), som_ext_pf.resize(0, 4);
   std::set<std::array<int, 2>> s_pe; // (pb, el)
   std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
   std::vector<std::reference_wrapper<const Domaine_PolyMAC_P0>> domaines;
@@ -243,7 +244,10 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   std::vector<int> N(op_ext.size()); //nombre de composantes par probleme de op_ext
   std::vector<IntTrav> stencil(op_ext.size()); //stencils par matrice
   for (i = 0; i < (int) op_ext.size(); i++)
-    stencil[i].resize(0, 2), stencil[i].set_smart_resize(1), N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+    {
+      stencil[i].resize(0, 2);
+      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+    }
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
   domaine.creer_tableau_faces(tpfa), tpfa = 1;
@@ -366,10 +370,6 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   //i_eq_{flux,cont}(i, n) -> n-ieme equation de flux/de continuite a la face i de s_pf
   //i_eq_pbm(i_efs(i, j, n)) -> n-ieme equation "flux = correlation" a la face j de l'elem i de s_pe (seulement si Pb_Multiphase)
   DoubleTrav A, B, mA, mB, Ff, Fec, Qf, Qec, Tefs, C, X, Y, W(1), S, x_fs;
-  i_efs.set_smart_resize(1), i_e.set_smart_resize(1), i_eq_flux.set_smart_resize(1), i_eq_cont.set_smart_resize(1), i_eq_pbm.set_smart_resize(1);
-  A.set_smart_resize(1), B.set_smart_resize(1), Ff.set_smart_resize(1), Fec.set_smart_resize(1), C.set_smart_resize(1), X.set_smart_resize(1);
-  Y.set_smart_resize(1), piv.set_smart_resize(1), W.set_smart_resize(1), x_fs.set_smart_resize(1), Tefs.set_smart_resize(1), S.set_smart_resize(1);
-  mA.set_smart_resize(1), mB.set_smart_resize(1), Qf.set_smart_resize(1), Qec.set_smart_resize(1);
 
   // Et pour les methodes span de la classe Saturation pour le flux parietal
   std::vector<DoubleTrav> Ts_tab(n_ext), Sigma_tab(n_ext), Lvap_tab(n_ext);

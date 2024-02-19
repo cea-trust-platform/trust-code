@@ -57,8 +57,8 @@ static const int COPY_OPERATOR_TAG = 4;
  */
 Schema_Comm::Schema_Comm()
 {
-  send_pe_list_.set_smart_resize(1);
-  recv_pe_list_.set_smart_resize(1);
+
+
   me_to_me_ = 0;
   use_all_to_allv_ = 0;
   // Pour verifier plus tard qu'on est toujours dans le bon groupe,
@@ -88,8 +88,8 @@ Schema_Comm::~Schema_Comm()
  */
 Schema_Comm::Schema_Comm(const Schema_Comm& schema)
 {
-  send_pe_list_.set_smart_resize(1);
-  recv_pe_list_.set_smart_resize(1);
+
+
   operator= (schema);
 }
 
@@ -266,8 +266,8 @@ void Schema_Comm::echange_taille(const ArrOfInt& send_size,
 {
   static ArrOfInt send_sz;
   static ArrOfInt recv_sz;
-  send_sz.set_smart_resize(1);
-  recv_sz.set_smart_resize(1);
+
+
 
   assert(status_ == WRITING && ref_group_.non_nul());
   const Comm_Group& group = ref_group_.valeur();

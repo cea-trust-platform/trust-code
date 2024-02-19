@@ -43,7 +43,7 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   LIST(Nom) name_of_useless_connectors;
   ArrOfInt nodes_of_frontier_face;
   ArrOfInt cells_on_frontier_face;
-  cells_on_frontier_face.set_smart_resize(1);
+
 
   for (auto &itr : domain.faces_bord())
     {

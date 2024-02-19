@@ -156,7 +156,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
   domaine.init_m2();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     {
       //dependance en les Te : diagonale -> faces autour de chaque element
@@ -193,7 +193,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, c
   int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (i = 0; i < cls.size(); i++)
     if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       {

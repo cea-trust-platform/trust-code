@@ -133,7 +133,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
       {
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
-        stencil.set_smart_resize(1);
+
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {

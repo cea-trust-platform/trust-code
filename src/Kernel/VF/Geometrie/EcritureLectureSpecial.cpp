@@ -335,7 +335,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
   DoubleTab buffer(buflines_max, dim + nb_comp);
   int bufptr = buflines_max;
   ArrOfInt items;
-  items.set_smart_resize(1);
+
 
   double max_epsilon_needed = epsilon;
   // Combien de fois on a trouve plusieurs candidats a moins de epsilon ?

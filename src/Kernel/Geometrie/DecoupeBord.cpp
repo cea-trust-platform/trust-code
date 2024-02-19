@@ -106,7 +106,7 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
                     }
                 }
 
-              faces_associees[face_min].set_smart_resize(1);
+
               faces_associees[face_min].append_array(face1);
             }
 
@@ -195,7 +195,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
               int face_min=(int)(res+0.5);
               nb=std::max(nb,face_min);
               //faces_associees.dimensionner_force(nb+1);
-              faces_associees[face_min].set_smart_resize(1);
+
               faces_associees[face_min].append_array(face1);
               //Cerr << face1 << " associee a " << face_min << finl;
             }

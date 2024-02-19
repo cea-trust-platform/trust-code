@@ -134,7 +134,7 @@ ptrParam& Objet_a_lire::add_dict(const char *nom_option, int valeur, const char 
   assert(dictionnaire_noms.search(nom_option) < 0);
 
   dictionnaire_noms.add(nom_option);
-  dictionnaire_valeurs.set_smart_resize(1);
+
   dictionnaire_valeurs.append_array(valeur);
   dictionnaire_params.add(ptrParam());
   ptrParam& ptr = dictionnaire_params[dictionnaire_params.size() - 1];

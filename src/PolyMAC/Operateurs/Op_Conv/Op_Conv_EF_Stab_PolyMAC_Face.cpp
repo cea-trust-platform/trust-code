@@ -117,7 +117,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   ch.fcl(), domaine.init_ve();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
 
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)

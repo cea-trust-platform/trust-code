@@ -527,13 +527,13 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
   schema_comm.set_all_to_allv_flag(1);
   // Sending to write-processes, array contains only other processes, not me
   ArrOfInt send_pe_list(writing_processes.size_array());
-  send_pe_list.set_smart_resize(1);
+
   send_pe_list.resize(0);
   for (int i = 0; i < writing_processes.size_array(); i++)
     if (i != my_writing_process_index) // Declare everybody but me.
       send_pe_list.append_array(writing_processes[i]);
   ArrOfInt recv_pe_list(Process::nproc()-1);
-  recv_pe_list.set_smart_resize(1);
+
   recv_pe_list.resize(0);
   if (my_writing_process_index >= 0)
     {

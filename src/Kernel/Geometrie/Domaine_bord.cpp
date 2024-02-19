@@ -141,7 +141,7 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
   IntTab& elem_dest = dest.les_elems();
   elem_dest.resize(nb_faces, nb_som_face);
   renum_som.reset();
-  renum_som.set_smart_resize(1);
+
   // renum_inverse: pour chaque sommet du domaine source, son indice dans le domaine destination:
   ArrOfInt renum_inverse(src.nb_som());
   renum_inverse= -1;

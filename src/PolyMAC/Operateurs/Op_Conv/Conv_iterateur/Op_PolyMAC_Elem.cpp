@@ -183,7 +183,7 @@ void Op_PolyMAC_Elem::dimensionner_bloc_vitesse(const Domaine_PolyMAC& la_domain
   int nb_faces_tot = la_domaine.nb_faces_tot();
   int nb_elem_tot = la_domaine.nb_elem_tot();
   IntTab stencyl(0, 2);
-  stencyl.set_smart_resize(1);
+
   const IntTab& face_voisins = la_domaine.face_voisins();
 
   int nb_coef = 0;

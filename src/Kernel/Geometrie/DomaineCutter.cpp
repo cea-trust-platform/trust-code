@@ -258,7 +258,7 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
   assert(elements_voisins.size_array() == nb_faces);
   // La liste des faces du tableau faces_sommets a inclure dans le sous-domaine
   ArrOfInt liste_faces;
-  liste_faces.set_smart_resize(1); // Pour faire append_array...
+
 
   // Premier passage : on cherche les faces a inclure
   {
@@ -402,7 +402,7 @@ void DomaineCutter::construire_groupe_faces_ssdom(const ArrOfInt& liste_inverse_
   const int nb_som_face = domaine.frontiere(0).faces().nb_som_faces();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elements_voisins;
-  elements_voisins.set_smart_resize(1);
+
   const IntVect& elem_part = ref_elem_part_.valeur();
 
   for (int grp = 0; grp < nb_groupe_faces; grp++)
@@ -417,7 +417,7 @@ void DomaineCutter::construire_groupe_faces_ssdom(const ArrOfInt& liste_inverse_
       IntTab& faces_sommets_partie = groupe_partie.faces().les_sommets();
 
       ArrOfInt liste_faces;
-      liste_faces.set_smart_resize(1); // Pour faire append_array...
+
 
       // Premier passage : on cherche les faces a inclure
       const IntTab& faces = groupe_faces.les_sommets_des_faces();
@@ -511,14 +511,14 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
   const int nb_elements = elements.dimension_tot(0);
   const int nb_som_elem = elements.dimension(1);
 
-  liste_elements_trouves.set_smart_resize(1);
+
   liste_elements_trouves.resize_array(0);
 
   ArrOfBit sommets_parcourus(nb_sommets);
   ArrOfBit elements_parcourus(nb_elements);
   ArrOfInt new_liste;
-  liste_sommets_depart.set_smart_resize(1);
-  new_liste.set_smart_resize(1);
+
+
   sommets_parcourus = 0;
   elements_parcourus = 0;
 
@@ -604,7 +604,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
   {
     // Construction d'un tableau contenant tous les sommets de tous les joints
     ArrOfInt sommets_joint;
-    sommets_joint.set_smart_resize(1);
+
     const int nb_joints = domaine_partie.nb_joints();
     for (int i_joint = 0; i_joint < nb_joints; i_joint++)
       {
@@ -628,7 +628,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
   // Construire la liste des numeros de domaines voisins et ajouter les joints manquants:
   ArrOfInt parties_voisines;
   {
-    parties_voisines.set_smart_resize(1);
+
     for (int i = 0; i < nb_elements_virtuels; i++)
       {
         const int elem = elements_virtuels[i];
@@ -642,7 +642,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
   // Pour chaque partie voisine, chercher les elements distants:
   const int nb_parties_voisines = parties_voisines.size_array();
   ArrOfInt sommets_depart;
-  sommets_depart.set_smart_resize(1);
+
   for (int i_part = 0; i_part < nb_parties_voisines; i_part++)
     {
       const int partie_voisine = parties_voisines[i_part];
@@ -729,11 +729,6 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
   // apparaitre plusieurs fois dans le tableau, une fois par pe voisin au maximum)
   // C'est le numero global du sommet
   ArrsOfInt joints_sommets(parts);
-  {
-    // Pour append_array :
-    for (int i = 0; i < parts; i++)
-      joints_sommets[i].set_smart_resize(1);
-  }
 
   // Algorithme : boucle sur les sommets de la partie.
   // Pour chaque sommet du sous-domaine "p", on cherche les PEs auxquels appartiennent
@@ -826,7 +821,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     const Joints& joints_partie = domaine_partie.faces_joint();
 
     drapeaux_sommets_joints = 0;
-    liste_elements_joint.set_smart_resize(1);
+
 
     // Marqueurs: pour chaque element du sous-domaine, est-il deja dans la liste ?
     ArrOfBit drapeaux_elements(nb_elem_ssdom);
@@ -875,8 +870,8 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   // (on initialise a zero)
   ArrOfInt nb_faces_joints(nb_parties_);
   {
-    faces_joints.set_smart_resize(1);
-    faces_pe_voisins.set_smart_resize(1);
+
+
 
     // Indices des sommets des faces sur l'element de reference
     IntTab faces_element_reference;
@@ -901,7 +896,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
 
     ArrOfInt une_face(nb_sommets_par_face);
     ArrOfInt elements_voisins;
-    elements_voisins.set_smart_resize(1);
+
 
     // Boucle sur les elements de joint
     const int nb_elem_joints = liste_elements_joint.size_array();
@@ -1090,7 +1085,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
   const int nb_som_face = domaine.frontiere(0).faces().nb_som_faces();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elems_voisins;
-  elems_voisins.set_smart_resize(1);
+
   for (int i = 0; i < nb_front; i++)
     {
       int drap=0;
@@ -1335,7 +1330,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
   // Build temp arrays to eventually reorder the partition numbering
   ArrOfInt ia(nb_parties_+1);
   ArrOfInt ja;
-  ja.set_smart_resize(1);
+
   int nnz=0;
   ia[0]=1;
 
@@ -1626,7 +1621,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                   ArrOfInt elements;
                   {
                     const int n = sous_dom.nb_elem_tot();
-                    elements.set_smart_resize(1);
+
                     int i;
                     for (i = 0; i < n; i++)
                       {
@@ -1720,10 +1715,10 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                   if(otherProcDomaines[proc][i_part])
                     {
                       ArrOfInt tmp_neighbours;
-                      tmp_neighbours.set_smart_resize(1);
+
                       recevoir(tmp_neighbours, proc, 0, proc+2003);
 
-                      Neighbours[i_part].set_smart_resize(1);
+
                       for(int i=0; i<tmp_neighbours.size_array(); i++)
                         Neighbours[i_part].append_array(tmp_neighbours[i]);
                     }

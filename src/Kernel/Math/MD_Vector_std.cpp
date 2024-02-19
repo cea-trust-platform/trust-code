@@ -53,8 +53,8 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
   // selection: liste des indices des pe a conserver dans pe_voisins
   //  (procs avec qui on echange effectivement des donnees)
   ArrOfInt tmp, selection;
-  tmp.set_smart_resize(1);
-  selection.set_smart_resize(1);
+
+
   int i;
   for (i = 0; i < nb_voisins; i++)
     if (items_to_send[i].size_array() > 0 || items_to_recv[i].size_array() > 0 || blocs_to_recv[i].size_array() > 0)
@@ -143,7 +143,7 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
 
     // Construction d'une liste de blocs d'items sequentiels (ceux qui sont restes a 1)
     ArrOfInt blocs;
-    blocs.set_smart_resize(1);
+
     int nb_seq = 0;
     for (i = 0; i < nb_items_tot; i++)
       {

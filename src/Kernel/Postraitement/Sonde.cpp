@@ -1431,7 +1431,7 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
   const IntTab& e_f = domaineVF.elem_faces(), &f_e = domaineVF.face_voisins();
   int nbre_points = les_positions_sondes_.dimension(0), face;
 
-  faces_bords_.set_smart_resize(1);
+
 
   IntTab tmp(2);
   tmp[0] = 0;

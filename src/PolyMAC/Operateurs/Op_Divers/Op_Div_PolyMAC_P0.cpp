@@ -44,7 +44,7 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
                   N = equation().inconnue().valeurs().line_size(), D = dimension;
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (f = 0; f < domaine.nb_faces(); f++)
     for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
       for (n = 0; n < N; n++)

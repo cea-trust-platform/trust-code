@@ -54,7 +54,7 @@ void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, cons
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   int f, k, l, N = inco.line_size();
 
   /*faces*/

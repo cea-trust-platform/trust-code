@@ -139,7 +139,7 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
   ArrOfInt renum_faces(nb_faces);
   renum_faces= -1;
   ArrOfInt nodes_list;
-  nodes_list.set_smart_resize(1);
+
   ArrOfDouble coord(dim);
   int count = 0;
   for (int i_face = 0; i_face < nb_faces; i_face++)

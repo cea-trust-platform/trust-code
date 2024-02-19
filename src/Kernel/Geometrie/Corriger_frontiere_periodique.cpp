@@ -161,7 +161,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
   marker = 0;
   // Tableau temporaire pour l'octree:
   ArrOfInt nodes_list;
-  nodes_list.set_smart_resize(1);
+
   DoubleTab& sommets_src = dom.les_sommets();
   ArrOfDouble coord(dim);
   for (int som = 0; som < nb_som_bord; som++)

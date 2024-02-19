@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -203,8 +203,8 @@ void Raccord_distant_homogene::completer()
   const ArrOfInt& recv_data = Tab_Recep();
   const int n1 = send_data.dimension(0);
   const int n2 = recv_data.size_array();
-  send_pe_list_.set_smart_resize(1);
-  recv_pe_list_.set_smart_resize(1);
+
+
   const int nbproc = Process::nproc();
   ArrOfBit flags(nbproc);
   flags = 0;
@@ -260,8 +260,6 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
     envoyer_broadcast(remote_xv[p], p);
 
   ArrsOfInt racc_vois(parts);
-  for (int p = 0; p < parts; p++)
-    racc_vois[p].set_smart_resize(1);
 
 #ifdef MEDCOUPLING_
   // On traite les informations, chaque proc connait tous les XV

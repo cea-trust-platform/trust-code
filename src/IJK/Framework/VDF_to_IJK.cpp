@@ -121,7 +121,7 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
     }
   Schema_Comm sch;
   ArrOfInt all_pe;
-  all_pe.set_smart_resize(1);
+
 
   {
     // Ajout pour limiter la porte de la variable !!!
@@ -135,7 +135,7 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
   VECT(IntTab) all_data(np);
   for (int pe = 0; pe < np; pe++)
     {
-      all_data[pe].set_smart_resize(1);
+
       all_data[pe].resize(0,2);
     }
 
@@ -199,7 +199,7 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
   VECT(ArrOfInt) to_send(np);
   for (int pe = 0; pe < np; pe++)
     {
-      to_send[pe].set_smart_resize(1);
+
     }
 
   for (int pe = 0; pe < np; pe++)
@@ -220,12 +220,12 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
   VECT(ArrOfInt) to_recv(np);
   for (int pe = 0; pe < np; pe++)
     {
-      to_recv[pe].set_smart_resize(1);
+
     }
 
   for (int pe = 0; pe < np; pe++)
     {
-      to_recv[pe].set_smart_resize(1);
+
       Entree& buf = sch.recv_buffer(pe);
       for (;;)
         {

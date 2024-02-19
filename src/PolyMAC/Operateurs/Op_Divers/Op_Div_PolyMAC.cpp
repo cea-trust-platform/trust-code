@@ -131,7 +131,7 @@ void Op_Div_PolyMAC::dimensionner(Matrice_Morse& matrice) const
   int nb_faces_tot = domaine_PolyMAC.nb_faces_tot();
   int nb_elem_tot = domaine_PolyMAC.nb_elem_tot();
   IntTab stencyl(0, 2);
-  stencyl.set_smart_resize(1);
+
   const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
 
   int nb_coef = 0;

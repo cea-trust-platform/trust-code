@@ -265,7 +265,7 @@ void find_matching_coordinates(const DoubleTab& coords,
   }
   // Exchange boundary nodes coordinates with other processors
   ArrOfInt all_pe;
-  all_pe.set_smart_resize(1);
+
   for (i = 0; i < nproc; i++)
     if (i != moi && bbox_intersection(bounding_boxes, moi, i, epsilon))
       all_pe.append_array(i);
@@ -279,7 +279,7 @@ void find_matching_coordinates(const DoubleTab& coords,
   // Send nodes coordinates to processors with non empty intersection
   // temporary array for octree functions:
   ArrOfInt nodes_list;
-  nodes_list.set_smart_resize(1);
+
   int ipe;
   for (ipe = 0; ipe < all_pe.size_array(); ipe++)
     {
@@ -314,7 +314,7 @@ void find_matching_coordinates(const DoubleTab& coords,
       const int pe = all_pe[ipe]; // processor number
       Entree& buffer = schema.recv_buffer(pe);
       ArrOfInt& resu = match[pe];
-      resu.set_smart_resize(1);
+
       resu.resize_array(0);
       while(1)
         {
@@ -356,7 +356,7 @@ static void find_joint_faces(const Domaine& domaine, IntTab& faces)
   construire_connectivite_som_elem(nb_som, elements, som_elem, 0 /* do not include virtual elements */);
   const int nb_som_faces = domaine.type_elem().valeur().nb_som_face();
   faces.resize(0, nb_som_faces);
-  faces.set_smart_resize(1);
+
   IntTab faces_element_reference;
   domaine.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference);
   const int nb_faces_elem = faces_element_reference.dimension(0);
@@ -366,7 +366,7 @@ static void find_joint_faces(const Domaine& domaine, IntTab& faces)
   boundary_faces = 0;
   ArrOfInt une_face(nb_som_faces);
   ArrOfInt liste_elements;
-  liste_elements.set_smart_resize(1);
+
   const int nb_boundaries = domaine.nb_front_Cl();
   for (int i_boundary = 0; i_boundary < nb_boundaries; i_boundary++)
     {

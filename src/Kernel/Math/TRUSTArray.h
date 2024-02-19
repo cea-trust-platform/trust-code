@@ -120,7 +120,9 @@ public:
   inline void resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-  // TODO: to delete
+  //
+  //  WARNING : kept here only for lata_tools compatibility !!! DO NOT USE
+  //
   inline void set_smart_resize(int flag) {}
 
   // Gestion du type de memoire alouee (standard ou pool de memoire Trio-U)

@@ -63,7 +63,7 @@ void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   domaine.init_m2();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   //partie vitesses : m2 Rf
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = domaine.m2d(e), idx = 0; i < domaine.m2d(e + 1); i++, idx++)

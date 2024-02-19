@@ -244,7 +244,7 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
     listes_elem[i] = i;
 
   ArrOfInt new_nb_elem_part;
-  new_nb_elem_part.set_smart_resize(1);
+
 
   // Algorithme: on cree nb_tranches[0] tranches dans la direction x,
   //  chaque tranche compte le meme nombre d'elements du domaine.

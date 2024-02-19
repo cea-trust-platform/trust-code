@@ -915,7 +915,7 @@ int Domaine_VEF::lecture_ok_arete()
   octree.build_nodes(xa_, 1 /* include virtual nodes */);
   const double eps = precision_geom;
   ArrOfInt liste_aretes;
-  liste_aretes.set_smart_resize(1);
+
 
   IntVect marqueurs;
   creer_tableau_aretes(marqueurs); // initialise a zero par defaut

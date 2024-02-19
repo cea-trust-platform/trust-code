@@ -69,7 +69,7 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
         int m, M = col.line_size();
 
         IntTrav stencil(0, 2);
-        stencil.set_smart_resize(1);
+
 
         for (e = 0; e < ne; e++)
           for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);

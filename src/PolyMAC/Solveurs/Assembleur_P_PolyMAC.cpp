@@ -71,7 +71,7 @@ int Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice, const DoubleVect& d
   domaine.init_m2(), ch.fcl();
 
   DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
-  W.set_smart_resize(1), W0.set_smart_resize(1);
+
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref = 0;
@@ -83,7 +83,7 @@ int Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice, const DoubleVect& d
   if (!stencil_done)
     {
       IntTrav stencil_M(0, 2), stencil_R(0, 2);
-      stencil_M.set_smart_resize(1), stencil_R.set_smart_resize(1);
+
       for (e = 0; e < ne_tot; e++)
         {
           for (i = 0, j = domaine.m2d(e), n_f = domaine.m2d(e + 1) - domaine.m2d(e); i < n_f; i++, j++)

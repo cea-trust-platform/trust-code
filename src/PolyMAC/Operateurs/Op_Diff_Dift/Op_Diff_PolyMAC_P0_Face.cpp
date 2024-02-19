@@ -104,7 +104,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   int i, j, k, i_f, e, e_s, f, fb, fc, f_s, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, c;
 
   IntTrav stencil(0, 2), tpfa(0, N);
-  stencil.set_smart_resize(1), domaine.creer_tableau_faces(tpfa);
+  domaine.creer_tableau_faces(tpfa);
 
   /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) du domaine sinon */
   update_phif(!nu_constant_); //si nu variable, stencil complet

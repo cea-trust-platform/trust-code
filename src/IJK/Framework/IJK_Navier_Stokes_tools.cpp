@@ -730,7 +730,7 @@ void runge_kutta3_update(const DoubleTab& dvi, DoubleTab& G, DoubleTab& l,
   const int nbsom = maillage.nb_sommets();
 
   // Resize du tableau
-  //  G.set_smart_resize(1) ?
+
   G.resize(nbsom, 3);
 
   switch(step)

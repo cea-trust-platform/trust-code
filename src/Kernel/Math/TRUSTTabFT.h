@@ -25,19 +25,17 @@ class TRUSTTabFT : public TRUSTTab<_TYPE_>
 {
 public:
 
-  TRUSTTabFT() { TRUSTTab<_TYPE_>::set_smart_resize(1);}
+  TRUSTTabFT() { }
 
   TRUSTTabFT(const TRUSTTabFT&) = default;
 
   TRUSTTabFT(int i, int j)
   {
-    TRUSTTab<_TYPE_>::set_smart_resize(1);
     TRUSTTab<_TYPE_>::resize(i, j);
   }
 
   TRUSTTabFT(const TRUSTTab<_TYPE_>& x)
   {
-    TRUSTTab<_TYPE_>::set_smart_resize(1);
     TRUSTTab<_TYPE_>::operator=(x);
   }
 
@@ -67,12 +65,11 @@ template<typename _TYPE_>
 class TRUSTArrayFT : public TRUSTArray<_TYPE_>
 {
 public:
-  TRUSTArrayFT() { TRUSTArray<_TYPE_>::set_smart_resize(1); }
+  TRUSTArrayFT() { }
   inline TRUSTArrayFT(const TRUSTArrayFT& x);
 
   TRUSTArrayFT(int n)
   {
-    TRUSTArray<_TYPE_>::set_smart_resize(1);
     TRUSTArray<_TYPE_>::resize_array(n);
   }
 
@@ -100,7 +97,6 @@ inline TRUSTArrayFT<int>::TRUSTArrayFT(const TRUSTArrayFT<int>& x) = default;
 template<>
 inline TRUSTArrayFT<double>::TRUSTArrayFT(const TRUSTArrayFT<double>& x) : TRUSTArray<double>()
 {
-  TRUSTArray<double>::set_smart_resize(1);
   TRUSTArray<double>::operator=(x);
 }
 
@@ -111,7 +107,6 @@ inline TRUSTArrayFT<int>::TRUSTArrayFT(const TRUSTArray<int>& x) = delete;
 template<>
 inline TRUSTArrayFT<double>::TRUSTArrayFT(const TRUSTArray<double>& x)
 {
-  TRUSTArray<double>::set_smart_resize(1);
   TRUSTArray<double>::operator=(x);
 }
 

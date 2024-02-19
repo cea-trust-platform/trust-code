@@ -160,7 +160,7 @@ Entree& Create_domain_from_sub_domain::interpreter_(Entree& is)
           {
             //liste des elements de la sous-sous-domaine
             ArrOfInt polys;
-            polys.set_smart_resize(1);
+
             for (int k = 0, l; k < liste_sous_domaines[j]->nb_elem_tot(); k++)
               if ((l = rev_ssz[liste_sous_domaines[j].valeur()[k]]) >= 0)
                 polys.append_array(l);

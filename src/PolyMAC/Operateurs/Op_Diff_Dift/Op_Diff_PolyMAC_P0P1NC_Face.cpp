@@ -97,7 +97,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
   int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = domaine.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = (int) semi_impl.count(nom_inco);
 
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   Cerr << "Op_Diff_PolyMAC_P0P1NC_Face::dimensionner() : ";
 
   /* bloc (faces, aretes) : rot [(lambda grad)^u]*/
@@ -111,7 +111,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
   Matrice33 L(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iL; //tenseur de diffusion dans chaque element, son inverse
   DoubleTrav inu, m2, w1, v_e, v_ea; //au format compris par domaine.nu_dot
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
-  m2.set_smart_resize(1), w1.set_smart_resize(1), v_e.set_smart_resize(1), v_ea.set_smart_resize(1);
+
   if (!semi)
     for (e = 0; e < domaine.nb_elem_tot(); e++)
       {
@@ -209,7 +209,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t mat
   Matrice33 L(0, 0, 0, 0, 0, 0, 0, 0, D < 3), iL; //tenseur de diffusion dans chaque element, son inverse et le carre de celui-ci
   DoubleTrav dL(N), inu, m2, w1, v_e, v_ea; //determinant, inverse (au format compris par domaine.nu_dot), matrices M2(iL) / W1(L)
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
-  m2.set_smart_resize(1), w1.set_smart_resize(1), v_e.set_smart_resize(1), v_ea.set_smart_resize(1);
+
   if (!aux_only && mat && semi)
     for (a = 0; a < xa.dimension(0); a++)
       for (n = 0; n < N; n++) /* en semi-implicite : egalites w_a^+ = var_aux */

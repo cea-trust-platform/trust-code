@@ -231,7 +231,7 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
   const int dim = coord_par.dimension(1);
   ArrOfDouble center(dim);
   ArrOfInt elements;
-  elements.set_smart_resize(1);
+
   const int n = renum.size_totale();
   for (int i = 0; i < n; i++)
     {

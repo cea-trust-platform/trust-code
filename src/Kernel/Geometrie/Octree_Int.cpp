@@ -96,8 +96,8 @@ void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
   const int nb_elems = elements_boxes.dimension(0);
   nb_elements_ = nb_elems;
 
-  octree_structure_.set_smart_resize(1);
-  floor_elements_.set_smart_resize(1);
+
+
   floor_elements_.resize_array(0);
   const int nb_octrees = 1 << dimension;
   octree_structure_.resize(0, nb_octrees);
@@ -109,8 +109,8 @@ void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
   ArrsOfInt tmp_elem_list(max_levels_);
   for (int i = 0; i < max_levels_; i++)
     {
-      tmp_elem_flags[i].set_smart_resize(1);
-      tmp_elem_list[i].set_smart_resize(1);
+
+
     }
   ArrOfInt& elements_list = tmp_elem_list[0];
   elements_list.resize_array(nb_elems, RESIZE_OPTIONS::NOCOPY_NOINIT);
@@ -171,11 +171,9 @@ struct IntBoxData
   ArrOfBit *markers_;
 };
 
-/*! @brief cherche les elements ayant potentiellement une intersection non vide avec la boite xmin.
- *
- * .zmax. Le tableau elements doit etre de type smart_resize(1).
+/*! @brief cherche les elements ayant potentiellement une intersection non vide
+ * avec la boite xmin..zmax.
  *   Les elements peuvent apparaitre plusieurs fois dans le tableau "elements"
- *
  */
 int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
                                     int xmax, int ymax, int zmax,

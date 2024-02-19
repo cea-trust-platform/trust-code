@@ -51,7 +51,7 @@ void Op_Evanescence_Homogene_Elem_base::dimensionner_blocs(matrices_t matrices, 
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
+
 
         std::set<int> idx;
         for (e = 0; e < domaine.nb_elem(); e++, idx.clear())

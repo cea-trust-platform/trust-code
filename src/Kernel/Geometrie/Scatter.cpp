@@ -279,8 +279,8 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
   const DoubleTab& coords = dom.les_sommets();
   ArrOfInt liste_send;
   ArrOfInt liste_recv;
-  liste_send.set_smart_resize(1);
-  liste_recv.set_smart_resize(1);
+
+
 
   const int moi = Process::me();
   const int myDomaineWasMerged = mergedDomaines[moi];
@@ -451,14 +451,14 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
           const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
           ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
-          items_communs.set_smart_resize(1);
+
           for(int index=0; index<sommets_to_add.size_array(); index++)
             items_communs.append_array(sommets_to_add[index]); // sommets_to_add is already renumbered with 'nums' - see call to renum_joint_common_items above
           items_communs.array_trier_retirer_doublons();
 
           const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
           ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
-          items_distants.set_smart_resize(1);
+
           for(int index=0; index<elements_to_add.size_array(); index++)
             items_distants.append_array(elements_to_add[index]); // idem
         }
@@ -990,11 +990,6 @@ void Scatter::calculer_espace_distant(Domaine&                  domaine,
   // range les items dans "items_distants" par processeur destination.
   // Pour chaque processeur voisin, la liste des items distants a envoyer:
   ArrsOfInt items_distants(nproc);
-  {
-    // Pour append_array
-    for (int pe = 0; pe < nproc; pe++)
-      items_distants[pe].set_smart_resize(1);
-  }
 
   // Boucle sur tous les processeurs (pe_source) qui m'ont envoye des messages:
   // On boucle sur les processeurs voisins, plus moi-meme:
@@ -1032,7 +1027,7 @@ void Scatter::calculer_espace_distant(Domaine&                  domaine,
     // Liste des items deja connus par le processeur voisin (items communs)
     // tries dans l'ordre croissant
     ArrOfInt items_communs_tri;
-    items_communs_tri.set_smart_resize(1);
+
     for (int pe = 0; pe < nproc; pe++)
       {
         ArrOfInt& items = items_distants[pe];
@@ -1058,7 +1053,7 @@ void Scatter::calculer_espace_distant(Domaine&                  domaine,
   // qui il n'existe pas encore de joint. On ajoute les nouveaux joints.
   {
     ArrOfInt nouveaux_voisins;
-    nouveaux_voisins.set_smart_resize(1);
+
     int i;
     for (i = 0; i < nproc; i++)
       if (items_distants[i].size_array() > 0)
@@ -1109,8 +1104,8 @@ void Scatter::ajouter_joints(Domaine& domaine,
 {
   Joints& joints = domaine.faces_joint();
   ArrOfInt liste_pe;
-  pe_voisins.set_smart_resize(1);
-  liste_pe.set_smart_resize(1);
+
+
   // Rendre les joints symetriques (si A->B alors B->A) :
   {
     // On met dans liste pe la "transposee" de la liste des pe_voisins:
@@ -1172,7 +1167,7 @@ static void calculer_espace_distant_item(Domaine& le_dom,
   ArrsOfInt items_to_send(nproc);
   // Un tableau temporaire;
   ArrOfInt liste_items;
-  liste_items.set_smart_resize(1);
+
 
   // Est-ce qu'il y a des items lies ?
   const int flag_items_lies = (items_lies.size_array() > 0);
@@ -1326,7 +1321,7 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
 
   // Le tableau items communs recu du pe voisin:
   ArrOfInt items_communs_voisin;
-  items_communs_voisin.set_smart_resize(1);
+
 
   for (i_joint = 0; i_joint < nb_joints; i_joint++)
     {
@@ -1388,7 +1383,7 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
           {
             // Je dois envoyer ces items au processeur voisin
             ArrOfInt& dest = items_to_send[i_joint];
-            dest.set_smart_resize(1);
+
             for (int i = 0; i < n; i++)
               {
                 const int item = items_communs[i];
@@ -1403,7 +1398,7 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
           {
             // Je recois cet item d'un autre processeur
             ArrOfInt& dest = items_to_recv[i_joint];
-            dest.set_smart_resize(1);
+
             for (int i = 0; i < n; i++)
               {
                 const int item = items_communs[i];
@@ -1534,7 +1529,7 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   // tri par ordre croissant du numero global.
   const int nb_entites_tot = table_.size_totale();
   table_inverse_.resize(0, 2);
-  table_inverse_.set_smart_resize(1);
+
   for (i = 0; i < nb_entites_tot; i++)
     {
       if (table_[i] != i + decal)
@@ -1771,8 +1766,8 @@ void Scatter::reordonner_faces_de_joint(Domaine& dom)
   //  on envoie aux voisins de rang superieur et on recoit des voisins de rang inf.
   ArrOfInt send_list;
   ArrOfInt recv_list;
-  send_list.set_smart_resize(1);
-  recv_list.set_smart_resize(1);
+
+
 
   for (i_joint = 0; i_joint < nb_joints; i_joint++)
     {
@@ -1788,7 +1783,7 @@ void Scatter::reordonner_faces_de_joint(Domaine& dom)
   schema_comm.begin_comm();
   // Envoi des faces de joint, traduites en indices de sommets globaux
   IntTab faces_num_global;
-  faces_num_global.set_smart_resize(1);
+
   for (i_joint = 0; i_joint < nb_joints; i_joint++)
     {
       const Joint&   joint         = joints[i_joint];
@@ -1852,7 +1847,7 @@ static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& 
 {
   liste_sommets = joint.joint_item(Joint::SOMMET).items_communs();
 #if 0
-  liste_sommets.set_smart_resize(1);
+
   // On prend tous les sommets des faces de joint:
   const IntTab& som_faces = joint.faces().les_sommets();
   liste_sommets = ref_cast(ArrOfInt,som_faces);
@@ -1883,7 +1878,7 @@ inline int arete_de_sommets_Si_et_Sj(const int Si, const int Sj, const int arete
 static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& liste_aretes)
 {
   // Construction de la liste des aretes communes liste_aretes
-  liste_aretes.set_smart_resize(1);
+
   ///////////////////////////////////////////////////////
   // Recherche des aretes de joint sur les faces de joint
   ///////////////////////////////////////////////////////
@@ -2013,7 +2008,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
   const int nb_som_face = dom.type_elem().nb_som_face();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elems_voisins;
-  elems_voisins.set_smart_resize(1);
+
 
   const int nb_joints = dom.nb_joints();
 
@@ -2084,7 +2079,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
                   const int elem = elements_distants[i];
                   marqueurs_elements_distants.setbit(elem);
                 }
-              elements_distants.set_smart_resize(1);
+
               for (i = 0; i < n; i++)
                 {
                   const int elem = elements_distants[i];
@@ -2111,7 +2106,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
       ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
-      elements_distants.set_smart_resize(0);
+
       elements_distants.ordonne_array();
     }
 }
@@ -2166,8 +2161,8 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
     // smart_resize car on va faire append_array sur ces tableaux
     for (int i = 0; i < nproc; i++)
       {
-        liste_sommets[i].set_smart_resize(1);
-        elements_distants[i].set_smart_resize(1);
+
+
       }
   }
 
@@ -2364,7 +2359,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
   // Creation des nouveaux joints si besoin, et stockage des elements distants dans les joints
   {
     ArrOfInt voisins;
-    voisins.set_smart_resize(1);
+
 
     for (int pe = 0; pe < nproc; pe++)
       if (elements_distants[pe].size_array() > 0)

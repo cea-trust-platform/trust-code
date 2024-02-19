@@ -1746,10 +1746,10 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
 
   stencil.resize( 0, 2 );
   stencil.resize(tab2_.size_array(), 2);
-  stencil.set_smart_resize( 1 );
+
 
   ArrOfInt tmp;
-  tmp.set_smart_resize( 1 );
+
 
   int compteur = 0;
 
@@ -1778,7 +1778,7 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
       compteur += size;
     }
 
-  stencil.set_smart_resize( 0 );
+
 }
 
 // Local template method : copy either value or ptr to value!
@@ -1804,10 +1804,10 @@ inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& co
 
   stencil.resize( 0, 2 );
   stencil.resize(tab2_.size_array(), 2);
-  stencil.set_smart_resize( 1 );
+
 
   IntTab tmp1(0);
-  tmp1.set_smart_resize( 1 );
+
 
   std::vector<_VALUE_T_> tmp2;
 
@@ -1845,7 +1845,7 @@ inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& co
       compteur += size;
     }
 
-  stencil.set_smart_resize( 0 );
+
 }
 
 
@@ -1885,7 +1885,7 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
       return;
     }
 
-  coefficients.set_smart_resize( 1 );
+
 
   get_stencil_coeff_templ<ArrOfDouble, double>(stencil, coefficients);
   assert( coefficients.size_array( ) == stencil.dimension( 0 ));

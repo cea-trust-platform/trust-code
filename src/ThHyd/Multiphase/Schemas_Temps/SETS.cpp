@@ -586,7 +586,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
           for (auto &&i_bl : bloc) //stencil par inconnue -> en demultipliant
             {
               IntTrav sten(0, 2);
-              sten.set_smart_resize(1);
+
               for (oMg = offs[i_bl], M = dims[i_bl][1], i = 0; i < calc.size_array(); i++)
                 if (calc[i])
                   for (m = 0; m < M; m++)
@@ -622,7 +622,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
       for (i = 0; i < nd; i++) dbp[i] = &b_p.at(vdep[i]), dAp[i] = &A_p.at(vdep[i]); //b_p / A_p des dependances
 
       DoubleTrav D(nb, nb), S; //bloc diagonal, seconds membres
-      S.set_smart_resize(1);
+
       IntTrav piv(nb);
       for (i = 0; i < calc.size_array(); i++)
         if (calc[i])
@@ -714,7 +714,7 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
   if (!P.nb_colonnes()) //dimensionnement au premier passage
     {
       IntTrav stencil(0, 2);
-      stencil.set_smart_resize(1);
+
       for (auto &&n_m : mats.at(inco_p))
         if (n_m.second && n_m.second->nb_colonnes())
           {

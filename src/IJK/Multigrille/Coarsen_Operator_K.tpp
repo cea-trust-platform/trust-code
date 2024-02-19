@@ -27,11 +27,11 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
                                                int additional_k_layers)
 {
   //IntTab src_dest_index;
-  src_dest_index_.set_smart_resize(1);
+
   src_dest_index_.resize(0, 2);
-  coarsen_coefficients_.set_smart_resize(1);
+
   coarsen_coefficients_.resize_array(0);
-  avg_coefficients_.set_smart_resize(1);
+
   avg_coefficients_.resize_array(0);
 
   const IJK_Grid_Geometry& src_grid_geom = fine.get_grid_geometry();
@@ -177,11 +177,11 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
   // Build "local" intersection data:
   {
     src_dest_index_local_.reset();
-    src_dest_index_local_.set_smart_resize(1);
+
     coarsen_coefficients_local_.reset();
-    coarsen_coefficients_local_.set_smart_resize(1);
+
     avg_coefficients_local_.reset();
-    avg_coefficients_local_.set_smart_resize(1);
+
 
     const int fine_k_offset = fine.get_splitting().get_offset_local(DIRECTION_K);
     const int fine_start = fine_k_offset;

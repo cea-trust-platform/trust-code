@@ -44,9 +44,9 @@ int search_connex_components_local(const IntTab& elem_faces, const IntTab& faces
   int start_element = 0;
   int num_compo_courant = 0;
   ArrOfInt liste_elems;
-  liste_elems.set_smart_resize(1);
+
   ArrOfInt tmp_liste;
-  tmp_liste.set_smart_resize(1);
+
   do
     {
       // Cherche le prochain element non attribue a une composante connexe
@@ -210,7 +210,7 @@ int compute_global_connex_components(IntVect& num_compo, int nb_local_components
   markers = 0;
   // Tableau de correspondances entre composantes connexes locales et distantes
   IntTab graph;
-  graph.set_smart_resize(1);
+
   int graph_size = 0;
   // Parcours des elements virtuels uniquement
   for (int i = nbelem; i < nbelem_tot; i++)

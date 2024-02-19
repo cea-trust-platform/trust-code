@@ -34,7 +34,7 @@ Entree& Coarsen_Operator_K::readOn(Entree& is)
   if (Process::je_suis_maitre())
     {
       EFichier fic_coor(file_z_coord_);
-      z_coord_all_.set_smart_resize(1);
+
       while(1)
         {
           double x;

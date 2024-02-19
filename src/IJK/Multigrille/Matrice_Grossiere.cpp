@@ -78,7 +78,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
   else
     {
       // cas ou la frontiere nest pas des deux cotes sur le meme proc...
-      virt_blocs.set_smart_resize(1);
+
       virt_blocs.append_array(count);
 
       for (int k = kmin; k < kmax; k++)
@@ -132,7 +132,7 @@ void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
   if (pe == Process::me())
     return;
 
-  items_to_send.set_smart_resize(1);
+
   const int ni = renum_.dimension(2) - 2;
   for (int k = kmin; k < kmax; k++)
     for (int j = jmin; j < jmax; j++)

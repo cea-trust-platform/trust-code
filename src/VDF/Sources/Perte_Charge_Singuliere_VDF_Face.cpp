@@ -97,7 +97,7 @@ void Perte_Charge_Singuliere_VDF_Face::dimensionner_blocs(matrices_t matrices, c
 
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (int f = 0; f < domaine_VDF.nb_faces(); f++)
     stencil.append_line(f, f);
   tableau_trier_retirer_doublons(stencil);

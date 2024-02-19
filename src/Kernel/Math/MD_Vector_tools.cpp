@@ -271,7 +271,7 @@ void MD_Vector_tools::compute_sequential_items_index(const MD_Vector&, MD_Vector
 static int extract_blocs(const ArrOfInt src, const ArrOfInt& renum, ArrOfInt& dest)
 {
   const int nblocs_src = src.size_array() / 2;
-  dest.set_smart_resize(1);
+
   dest.resize_array(0);
   int end_last_bloc = -1;
   int count = 0;
@@ -359,7 +359,7 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   ArrOfInt dest_blocs_recv_data;
 
   ArrOfInt tmp;
-  tmp.set_smart_resize(1);
+
   {
     dest_items_recv_index.resize_array(nb_pe_voisins + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
     dest_items_recv_index[0] = 0;
@@ -369,10 +369,10 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
     dest.nb_items_to_items_.resize_array(nb_pe_voisins, RESIZE_OPTIONS::NOCOPY_NOINIT);
     // Preallocation de la taille maxi
     dest_items_recv_data.resize_array(src.items_to_recv_.get_data().size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
-    dest_items_recv_data.set_smart_resize(1);
+
     dest_items_recv_data.resize_array(0);
     // On ne peut pas prevoir le nombre de blocs, il peut y en avoir plus que dans la source
-    dest_blocs_recv_data.set_smart_resize(1);
+
     for (int i_pe = 0; i_pe < nb_pe_voisins; i_pe++)
       {
         tmp.resize_array(0);
@@ -496,7 +496,7 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
         Process::exit();
       }
     // On ajuste a la taille definitive
-    dest_items_send_data.set_smart_resize(1);
+
     dest_items_send_data.resize_array(count);
   }
   schema_comm.end_comm();
@@ -538,17 +538,17 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
             pe_count++;
           }
       }
-    dest_items_recv_index.set_smart_resize(1);
+
     dest_items_recv_index.resize_array(pe_count+1);
-    dest_blocs_recv_index.set_smart_resize(1);
+
     dest_blocs_recv_index.resize_array(pe_count+1);
-    dest_items_send_index.set_smart_resize(1);
+
     dest_items_send_index.resize_array(pe_count+1);
-    dest.pe_voisins_.set_smart_resize(1);
+
     dest.pe_voisins_.resize_array(pe_count);
-    dest.blocs_items_count_.set_smart_resize(1);
+
     dest.blocs_items_count_.resize_array(pe_count);
-    dest.nb_items_to_items_.set_smart_resize(1);
+
     dest.nb_items_to_items_.resize_array(pe_count);
   }
   dest.items_to_send_.set_index_data(dest_items_send_index, dest_items_send_data);
@@ -695,7 +695,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
 
   /* recv[p] : items qu'on veut recevoir du processeur p : taille nrecv[p]. On en profite pour les numeroter dans items */
   ArrsOfInt recv(Process::nproc());
-  for (p = 0; p < Process::nproc(); p++) recv[p].set_smart_resize(1);
+
   std::vector<int> nrecv(Process::nproc());
   for (auto &kv : items) recv[kv.first[0]].append_array(kv.first[1]), kv.second = idx, nrecv[kv.first[0]]++, idx++;
 

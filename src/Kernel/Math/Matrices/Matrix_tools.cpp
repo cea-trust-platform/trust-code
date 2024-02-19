@@ -298,7 +298,7 @@ void Matrix_tools::allocate_for_scaled_addition( const Matrice& A,
 
   int size = A_size + B_size;
   IntTab stencil;
-  stencil.set_smart_resize( 1 );
+
   stencil.resize( size, 2 );
 
   for ( int i=0; i<A_size; ++i )
@@ -342,7 +342,7 @@ void Matrix_tools::allocate_for_symmetric_scaled_addition( const Matrice& A,
 
   int size = A_size + B_size;
   IntTab stencil;
-  stencil.set_smart_resize( 1 );
+
   stencil.resize( size, 2 );
 
   for ( int i=0; i<A_size; ++i )
@@ -568,7 +568,7 @@ void Matrix_tools::extend_matrix_stencil( const IntTab& stencil,
 
       IntTab full_stencil;
       matrix.valeur( ).get_stencil( full_stencil );
-      full_stencil.set_smart_resize( 1 );
+
       const int size = stencil.dimension( 0 );
 
       const int old_size = full_stencil.size( ) / 2 ;

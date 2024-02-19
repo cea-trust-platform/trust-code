@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ void Polygone::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_pa
   reduced.nb_face_elem_max_ = nb_face_elem_max_;
 
   ArrOfInt& Pi = reduced.PolygonIndex_, &Fi = reduced.FacesIndex_;
-  Pi.set_smart_resize(1), Fi.resize(0), Fi.set_smart_resize(1);
+  Fi.resize(0);
 
   for (int i = 0; i < elems_sous_part.size_array(); i++)
     {

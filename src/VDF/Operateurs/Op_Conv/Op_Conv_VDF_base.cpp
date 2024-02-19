@@ -108,7 +108,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
       {
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
-        stencil.set_smart_resize(1);
+
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
@@ -152,7 +152,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
   // eb never used ? Warning Error on clang...
   int e, fb,  N = equation().inconnue().valeurs().line_size();
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
 
   /* agit uniquement aux elements; diagonale omise */
   for (int f = 0; f < domaine.nb_faces_tot(); f++)

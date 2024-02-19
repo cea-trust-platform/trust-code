@@ -460,12 +460,9 @@ void Domaine_PolyMAC::init_m2_new() const
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   if (is_init["w2"]) return;
-  m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
-  w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
   Cerr << domaine().le_nom() << " : initializing w2/m2 ... ";
 
   DoubleTab W, M;
-  W.set_smart_resize(1), M.set_smart_resize(1);
 
   /* pour le partage entre procs */
   DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1));
@@ -535,12 +532,9 @@ void Domaine_PolyMAC::init_m2_osqp() const
   char uplo = 'U';
 
   if (is_init["w2"]) return;
-  m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
-  w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
   Cerr << domaine().le_nom() << " : initializing w2/m2 ... ";
 
   DoubleTab W, M, R, N;
-  W.set_smart_resize(1), M.set_smart_resize(1), R.set_smart_resize(1), N.set_smart_resize(1);
 
   /* pour le partage entre procs */
   DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1));
@@ -623,7 +617,8 @@ void Domaine_PolyMAC::init_ve() const
 
   if (is_init["ve"]) return;
   Cerr << domaine().le_nom() << " : initialisation de ve... ";
-  vedeb.resize(1), vedeb.set_smart_resize(1), veji.set_smart_resize(1), veci.resize(0, 3), veci.set_smart_resize(1);
+  vedeb.resize(1);
+  veci.resize(0, 3);
   //formule (1) de Basumatary et al. (2014) https://doi.org/10.1016/j.jcp.2014.04.033 d'apres Perot
   for (e = 0; e < nb_elem_tot(); vedeb.append_line(veji.dimension(0)), e++)
     for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
@@ -645,7 +640,7 @@ void Domaine_PolyMAC::init_rf() const
 
   if (is_init["rf"]) return;
   int i, s, f;
-  rfdeb.resize(1), rfdeb.set_smart_resize(1), rfji.set_smart_resize(1), rfci.set_smart_resize(1);
+  rfdeb.resize(1);
   for (f = 0; f < nb_faces_tot(); rfdeb.append_line(rfji.dimension(0)), f++)
     for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
       {
@@ -691,7 +686,7 @@ void Domaine_PolyMAC::init_we_2d() const
   const DoubleVect& ve = volumes();
   int i, j, e, f, s;
 
-  wedeb.resize(1), wedeb.set_smart_resize(1), weji.set_smart_resize(1), weci.set_smart_resize(1);
+  wedeb.resize(1);
   std::map<int, double> wemi;
   for (e = 0; e < nb_elem_tot(); wedeb.append_line(weji.dimension(0)), wemi.clear(), e++)
     {
@@ -710,7 +705,8 @@ void Domaine_PolyMAC::init_we_3d() const
   const DoubleVect& la = longueur_aretes_, &ve = volumes_;
   int i, j, k, e, f, s;
 
-  wedeb.resize(1), wedeb.set_smart_resize(1), weji.set_smart_resize(1), weci.resize(0, 3), weci.set_smart_resize(1);
+  wedeb.resize(1);
+  weci.resize(0, 3);
   std::map<int, std::array<double, 3> > wemi;
   for (e = 0; e < nb_elem_tot(); wedeb.append_line(weji.dimension(0)), wemi.clear(), e++)
     {
@@ -748,7 +744,8 @@ void Domaine_PolyMAC::init_m1_2d() const
     }
 
   //remplissage
-  m1deb.resize(1), m1deb.set_smart_resize(1), m1ji.resize(0, 2), m1ji.set_smart_resize(1), m1ci.set_smart_resize(1);
+  m1deb.resize(1);
+  m1ji.resize(0, 2);
   for (i = 0; i < domaine().nb_som_tot(); m1deb.append_line(m1ji.dimension(0)), i++)
     for (auto &&kv : m1[i])
       m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);
@@ -764,7 +761,6 @@ void Domaine_PolyMAC::init_m1_3d() const
 
   Cerr << domaine().le_nom() << " : initialisation de m1... ";
   DoubleTab M, N;
-  M.set_smart_resize(1), N.set_smart_resize(1);
 
   /* tableau parallele */
   DoubleTrav m1e(0, e_a.dimension(1), e_a.dimension(1));
@@ -802,7 +798,8 @@ void Domaine_PolyMAC::init_m1_3d() const
         if (std::fabs(m1e(e, i, j)) > 1e-8) m1[a][ {{ ab, e }}] += ve(e) * m1e(e, i, j);
 
   /* remplissage final */
-  m1deb.resize(1), m1deb.set_smart_resize(1), m1ji.resize(0, 2), m1ji.set_smart_resize(1), m1ci.set_smart_resize(1);
+  m1deb.resize(1);
+  m1ji.resize(0, 2);
   for (a = 0; a < domaine().nb_aretes_tot(); m1deb.append_line(m1ji.dimension(0)), a++)
     for (auto &&kv : m1[a])
       m1ji.append_line(kv.first[0], kv.first[1]), m1ci.append_line(kv.second);
@@ -827,7 +824,6 @@ void Domaine_PolyMAC::init_m2solv() const
   /* stencil et allocation */
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
   int e, i, j, k, f, fb;
   for (e = 0; e < nb_elem_tot(); e++)
     for (i = 0, j = m2d(e); j < m2d(e + 1); i++, j++)

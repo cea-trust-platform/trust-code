@@ -451,7 +451,7 @@ void Domaine_Poly_base::orthocentrer()
   const DoubleVect& fs = face_surfaces();
   int i, j, e, f, s, np;
   DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1), vp; //pour les systemes lineaires
-  M.set_smart_resize(1), S.set_smart_resize(1), vp.set_smart_resize(1);
+
   IntTrav b_f_ortho, b_e_ortho; // b_{f,e}_ortho(f/e) = 1 si la face / l'element est orthocentre
   creer_tableau_faces(b_f_ortho), domaine().creer_tableau_elements(b_e_ortho);
 

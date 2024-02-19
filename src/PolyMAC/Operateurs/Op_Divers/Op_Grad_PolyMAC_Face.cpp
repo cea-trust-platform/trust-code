@@ -52,7 +52,7 @@ void Op_Grad_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 
   const Domaine_PolyMAC& zPolyMAC_P0P1NC = ref_domaine.valeur();
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (int f = 0; f < zPolyMAC_P0P1NC.nb_faces(); f++)
     for (int i = 0, e; i < 2 && (e = zPolyMAC_P0P1NC.face_voisins(f, i)) >= 0; i++)
       stencil.append_line(f, e);

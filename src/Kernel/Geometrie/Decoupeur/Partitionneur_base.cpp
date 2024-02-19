@@ -141,7 +141,7 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Domaine& do
   // Liste de correspondances element0 <=> element1
   // entre l'element voisin d'une face et l'element voisin de la face periodique opposee
   IntTab correspondances(0,2);
-  correspondances.set_smart_resize(1);
+
 
   // Premiere etape: remplissage de nb_faces_perio et correspondances
   // Parcours des bords periodiques
@@ -312,9 +312,9 @@ int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
   int count = 0;
   {
     ArrOfInt parties_autorisees;
-    parties_autorisees.set_smart_resize(1);
+
     ArrOfInt tmp;
-    tmp.set_smart_resize(1);
+
     const IntTab& elements = domaine.les_elems();
     const int nb_som_elem = elements.dimension(1);
     for (int elem = 0; elem < nb_elem; elem++)

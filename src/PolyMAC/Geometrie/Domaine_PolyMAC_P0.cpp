@@ -83,7 +83,7 @@ void Domaine_PolyMAC_P0::init_stencils() const
   if (fsten_d.size()) return;
   const IntTab& f_s = face_sommets(), &f_e = face_voisins(), &e_s = domaine().les_elems();
   int i, e, f, s, ne_tot = nb_elem_tot(), ns_tot = domaine().nb_som_tot();
-  fsten_d.set_smart_resize(1), fsten_d.resize(1), fsten_eb.set_smart_resize(1);
+  fsten_d.resize(1);
 
   /* connectivite sommets -> elems / faces de bord */
   std::vector<std::set<int>> som_eb(ns_tot);
@@ -134,7 +134,8 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
   int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
   unsigned long ll;
   double x, eps_g = 1e-6, eps = 1e-10, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, fac[3], vol_s;
-  init_stencils(), phif_d.set_smart_resize(1), phif_e.set_smart_resize(1), phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
+  init_stencils();
+  phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
 
   std::vector<int> s_eb, s_f; //listes d'elements/bord, de faces autour du sommet
   std::vector<double> surf_fs, vol_es; //surfaces partielles des faces connectees au sommet (meme ordre que s_f)
@@ -143,8 +144,6 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
   DoubleTrav M, B, X, Ff, Feb, Mf, Meb, W(1), x_fs, A, S; //systeme M.(grad u) = B dans chaque element, flux a la face Ff.u_fs + Feb.u_eb, equations Mf.u_fs = Meb.u_eb
   IntTrav piv, ctr[3];
   for (i = 0; first_fgrad_ && i < 3; i++) domaine().creer_tableau_sommets(ctr[i]);
-  M.set_smart_resize(1), B.set_smart_resize(1), X.set_smart_resize(1), Ff.set_smart_resize(1), Feb.set_smart_resize(1), Mf.set_smart_resize(1), Meb.set_smart_resize(1);
-  W.set_smart_resize(1), x_fs.set_smart_resize(1), A.set_smart_resize(1), piv.set_smart_resize(1), S.set_smart_resize(1);
 
   /* contributions aux sommets : en evitant ceux de som_ext */
   for (i_s = 0; i_s <= (som_ext ? som_ext->size() : 0); i_s++)

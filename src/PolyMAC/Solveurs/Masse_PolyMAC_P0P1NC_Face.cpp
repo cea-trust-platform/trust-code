@@ -71,7 +71,7 @@ DoubleTab& Masse_PolyMAC_P0P1NC_Face::appliquer_impl(DoubleTab& sm) const
 void Masse_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   IntTrav sten(0, 2);
-  sten.set_smart_resize(1);
+
   Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices, semi_impl, true /* allocate too */, sten);
 }
 

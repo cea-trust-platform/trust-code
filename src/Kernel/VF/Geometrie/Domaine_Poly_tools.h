@@ -63,8 +63,7 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
   return sqrt(res2);
 }
 
-/* compaction d'un tableau qui avait set_smart_resize = 1 */
+/* compaction d'un tableau */
 #define CRIMP(a) a.nb_dim() > 2 ? a.resize(a.dimension(0) + 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) + 1, a.dimension(1)) : a.resize(a.dimension(0) + 1), \
-        a.set_smart_resize(0), \
         a.nb_dim() > 2 ? a.resize(a.dimension(0) - 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) - 1, a.dimension(1)) : a.resize(a.dimension(0) - 1)
 #endif

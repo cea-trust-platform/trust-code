@@ -118,7 +118,7 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
 
   // on construit connectivite item item
   IntTab stencyl(0,2);
-  stencyl.set_smart_resize(1);
+
   int size=0;
   int nbl=liaisons.dimension(0);
   for (int i=0; i<nbl; i++)
@@ -275,7 +275,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   // Deux tableaux de travail:
   ArrOfInt une_face(nb_sommets_par_face); // Les sommets de la face en cours
   ArrOfInt voisins; // Les elements voisins d'une_face
-  voisins.set_smart_resize(1);
+
 
   int error = 0;
   int edge_count = 0;

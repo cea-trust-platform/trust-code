@@ -218,7 +218,7 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
 
 /**  Ajoute une case en fin de tableau et y stocke la "valeur"
  * Precondition:
- *  Tableau doit etre de type "smart_resize" (sinon, ecroulement des performances). De plus, le tableau ne doit pas etre "ref_data",
+ *  Le tableau ne doit pas etre "ref_data",
  *  et il ne doit pas y avoir plus d'une reference a la zone de memoire pointee (meme precondition que resize_array())
  *  Le tableau doit etre de type TRUSTArray (pas un type derive)
  */
@@ -227,7 +227,10 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
 {
   this->checkDataOnHost();
   if (mem_ == nullptr)
-    mem_ = std::make_shared<Vector_>(Vector_(1, valeur));
+    {
+      assert(span_.empty()); // not ref_data
+      mem_ = std::make_shared<Vector_>(Vector_(1, valeur));
+    }
   else
     mem_->push_back(valeur);
   span_ = Span_(*mem_);

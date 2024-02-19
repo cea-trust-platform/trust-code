@@ -101,7 +101,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
   int i, j, l, f, n, N = ch.valeurs().line_size();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   for (i = 0; i < cls.size(); i++)
     if (sub_type(Echange_contact_VDF, cls[i].valeur()))
       {

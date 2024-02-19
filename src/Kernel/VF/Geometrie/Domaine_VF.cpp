@@ -918,8 +918,6 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
     envoyer_broadcast(remote_xv[p], p);
 
   VECT(ArrOfInt) racc_vois(parts);
-  for (int p = 0; p < parts; p++)
-    racc_vois[p].set_smart_resize(1);
 
 #ifdef MEDCOUPLING_
   // On traite les informations, chaque proc connait tous les XV

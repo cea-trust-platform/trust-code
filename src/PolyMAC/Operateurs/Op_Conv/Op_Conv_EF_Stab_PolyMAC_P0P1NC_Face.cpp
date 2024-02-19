@@ -101,7 +101,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices
   int i, j, k, l, e, eb, f, fb, fc, m, n, N = equation().inconnue().valeurs().line_size();
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
+
 
   /* agit uniquement aux elements; diagonale omise */
   for (f = 0; f < domaine.nb_faces_tot(); f++)

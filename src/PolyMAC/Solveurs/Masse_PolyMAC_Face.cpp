@@ -69,7 +69,7 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 
   domaine.init_m1(), domaine.init_m2(), ch.init_ra();
   IntTab indice(0, 2);
-  indice.set_smart_resize(1);
+
   //partie vitesses : matrice de masse des vitesses si la face n'est pas a vitesse imposee, diagonale sinon
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0, j = domaine.m2d(e); j < domaine.m2d(e + 1); i++, j++)

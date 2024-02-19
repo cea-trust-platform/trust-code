@@ -81,10 +81,6 @@ Schema_Comm_Vecteurs_Static_Data::~Schema_Comm_Vecteurs_Static_Data()
 Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
 {
   status_ = RESET;
-  send_buf_sizes_.set_smart_resize(1);
-  recv_buf_sizes_.set_smart_resize(1);
-  send_procs_.set_smart_resize(1);
-  recv_procs_.set_smart_resize(1);
   use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != nullptr;
 }
 

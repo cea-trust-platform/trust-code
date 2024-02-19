@@ -107,7 +107,7 @@ void Ch_front_input::buildSommetsFaces() const
   const DoubleTab& sommets_org=(mon_pb->domaine().les_sommets());
   DoubleTab& sommets=sommets_;
   sommets.resize(sommets_org.dimension_tot(0),sommets_org.dimension(1));
-  sommets.set_smart_resize(1);
+
 
   IntTab& faces=faces_;
   const IntTab& faces_org=(frontiere_dis().frontiere().faces().les_sommets());

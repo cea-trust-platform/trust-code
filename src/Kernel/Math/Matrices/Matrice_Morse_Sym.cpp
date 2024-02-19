@@ -533,10 +533,10 @@ void Matrice_Morse_Sym::get_symmetric_stencil( IntTab& stencil ) const
   assert_check_symmetric_morse_matrix_structure( );
 
   stencil.resize( 0, 2 );
-  stencil.set_smart_resize( 1 );
+
 
   ArrOfInt tmp;
-  tmp.set_smart_resize( 1 );
+
 
   const int nb_lines = nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
@@ -562,7 +562,7 @@ void Matrice_Morse_Sym::get_symmetric_stencil( IntTab& stencil ) const
     }
 
   const int new_size = stencil.dimension( 0 );
-  stencil.set_smart_resize( 0 );
+
   stencil.resize( new_size, 2 );
 }
 
@@ -589,19 +589,19 @@ void Matrice_Morse_Sym::get_symmetric_stencil_and_coefficients( IntTab&      ste
   assert_check_symmetric_morse_matrix_structure( );
 
   stencil.resize( 0, 2 );
-  stencil.set_smart_resize( 1 );
+
 
   coefficients.resize( 0 );
-  coefficients.set_smart_resize( 1 );
+
 
   IntTab tmp1(0);
-  tmp1.set_smart_resize( 1 );
+
 
   ArrOfDouble tmp2;
-  tmp2.set_smart_resize( 1 );
+
 
   ArrOfInt index;
-  index.set_smart_resize( 1 );
+
 
   const int nb_lines = nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
@@ -637,10 +637,10 @@ void Matrice_Morse_Sym::get_symmetric_stencil_and_coefficients( IntTab&      ste
   const int new_size = stencil.dimension( 0 );
   assert( coefficients.size_array( ) == new_size );
 
-  stencil.set_smart_resize( 0 );
+
   stencil.resize( new_size, 2 );
 
-  coefficients.set_smart_resize( 0 );
+
   coefficients.resize_array( new_size );
 }
 

@@ -343,7 +343,7 @@ void Matrice_Dense::get_stencil( IntTab& stencil ) const
   const int nb_cols  = nb_colonnes( );
 
   stencil.resize( 0, 2 );
-  stencil.set_smart_resize( 1 );
+
 
   for(int i=0; i<nb_lines; i++)
     {
@@ -354,7 +354,7 @@ void Matrice_Dense::get_stencil( IntTab& stencil ) const
     }
 
   const int new_size = stencil.dimension( 0 );
-  stencil.set_smart_resize( 0 );
+
   stencil.resize( new_size, 2 );
 
 }

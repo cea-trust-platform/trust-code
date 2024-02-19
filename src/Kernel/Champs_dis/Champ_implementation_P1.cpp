@@ -193,7 +193,7 @@ void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
   ArrOfDouble node_coord; // points to the dim first elements of "tmp" (coordinates of the node)
   node_coord.ref_array(tmp, 0 /* start index */, dim /* size */);
   ArrOfInt node_list;
-  node_list.set_smart_resize(1);
+
 
   ArrOfInt count(dom.nb_som()); // number of times this coordinate has been found
 

@@ -79,7 +79,7 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
 
   domaine.init_m2(), ch.fcl();
   IntTab indice(0, 2);
-  indice.set_smart_resize(1);
+
   //partie superieure : diagonale
   for (e = 0; e < domaine.nb_elem(); e++)
     for (n = 0; n < N; n++)

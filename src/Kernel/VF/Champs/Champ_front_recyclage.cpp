@@ -494,7 +494,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
 
   // tmp array for octree results:
   ArrOfInt elem_list;
-  elem_list.set_smart_resize(1);
+
 
   const Domaine& domaine1 = l_inconnue1.valeur().equation().domaine_dis().valeur().domaine();
   const int nb_elem_domaine1 = domaine1.nb_elem();
@@ -573,11 +573,11 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
 
       // We fill these three arrays:
       DoubleTab& coord1 = inconnues1_coords_to_eval_[pe];
-      coord1.set_smart_resize(1);
+
       ArrOfInt& num_elem = inconnues1_elems_[pe];
-      num_elem.set_smart_resize(1);
+
       ArrOfInt& index_to_recv = indexes_to_recv[pe];
-      index_to_recv.set_smart_resize(1);
+
 
       int nb_remote_faces = 0;
       // Loop on local faces on the process pe:
@@ -679,7 +679,7 @@ void Champ_front_recyclage::mettre_a_jour(double temps)
   DoubleTabs values_to_recv(nprocs);
   // temporary array (because valeur_aux_elems wants intvect and not arrofint)
   IntVect elems;
-  elems.set_smart_resize(1);
+
 
   for (int pe = 0; pe < nprocs; pe++)
     {

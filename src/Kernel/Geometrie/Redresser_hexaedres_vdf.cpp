@@ -72,7 +72,7 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
         {
           ArrOfInt marqueurs(nb_sommets); // initialise a zero
           ArrOfInt liste_sommets;
-          liste_sommets.set_smart_resize(1);
+
           int prochain_sommet = 0;
           while (prochain_sommet < nb_sommets)
             {

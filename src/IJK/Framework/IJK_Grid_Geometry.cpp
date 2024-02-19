@@ -75,7 +75,7 @@ Entree& IJK_Grid_Geometry::readOn(Entree& is)
             {
               Cerr << "Reading coordinates for direction " << i << " in file " << file_coord[i] << finl;
               EFichier EFcoord(file_coord[i]);
-              delta_dir[i].set_smart_resize(1);
+
               double previous_x = 0.;
               int n = 0;
               while(1)
@@ -163,7 +163,7 @@ static void find_unique_coord(const DoubleTab& src, int column, ArrOfDouble& res
   tmp.ordonne_array();
   retirer_doublons(tmp, Objet_U::precision_geom);
 
-  result.set_smart_resize(1);
+
   if (Process::me() != 0)
     {
       envoyer(tmp, 0, 53);

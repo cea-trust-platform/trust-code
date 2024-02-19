@@ -119,10 +119,10 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
     }
   // Allocation memoire pour le nombre de faces prevu pour eviter de reallouer
   // de la memoire n fois (voir set_smart_resize)
-  faces_sommets.set_smart_resize(1);
+
   faces_sommets.resize(nb_faces_prevision, nb_sommets_par_face);
   faces_sommets.resize(0, nb_sommets_par_face);
-  faces_voisins.set_smart_resize(1);
+
   faces_voisins.resize(nb_faces_prevision, 2);
   faces_voisins.resize(0, 2);
 
@@ -239,8 +239,8 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
     }
 
   // RAZ attribut smart_resize des tableaux faces_sommets et faces_voisins.
-  faces_sommets.set_smart_resize(0);
-  faces_voisins.set_smart_resize(0);
+
+
   // RAZ des attributs de la classe
   reset();
 }
@@ -429,15 +429,15 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
   const int   nb_faces         = faces_frontiere.nb_faces();
   ArrOfInt       une_face(nb_sommets_par_face);
   ArrOfInt       voisins;
-  voisins.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur0;
-  liste_faces_erreur0.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur1;
-  liste_faces_erreur1.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur2;
-  liste_faces_erreur2.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur3;
-  liste_faces_erreur3.set_smart_resize(1);
+
 
   int i_face;
   for (i_face = 0; i_face < nb_faces; i_face++)
@@ -567,18 +567,18 @@ void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
   ArrOfInt une_face(nb_sommets_par_face);
   // Tableau temporaire (liste des elements voisins d'une face)
   ArrOfInt voisins;
-  voisins.set_smart_resize(1);
+
   // Liste des faces n'ayant qu'un seul voisin et qui ne figurent pas
   // dans les faces de bord (ce sont des erreurs):
   ArrOfInt liste_faces_frontiere_non_declarees;
-  liste_faces_frontiere_non_declarees.set_smart_resize(1);
+
   ArrOfInt liste_faces_joint_non_declarees;
-  liste_faces_joint_non_declarees.set_smart_resize(1);
+
   // Liste des faces presentant une erreur de connectivite (plus de
   // deux elements voisins, ou connection a des sommets qui ne
   // sont pas une face de l'element:
   ArrOfInt liste_faces_erreurs_connectivite;
-  liste_faces_erreurs_connectivite.set_smart_resize(1);
+
 
   // Boucle sur les elements
   int i_elem;
@@ -751,11 +751,11 @@ void Faces_builder::identification_groupe_faces(Groupe_Faces& groupe_faces,
 
   ArrOfInt       une_face(nb_sommets_par_face);
   ArrOfInt       voisins;
-  voisins.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur0;
-  liste_faces_erreur0.set_smart_resize(1);
+
   ArrOfInt liste_faces_erreur1;
-  liste_faces_erreur1.set_smart_resize(1);
+
 
   for (int i_face = 0; i_face < nb_faces; i_face++)
     {

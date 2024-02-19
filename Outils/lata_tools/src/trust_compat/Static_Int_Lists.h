@@ -18,18 +18,19 @@
 
 #include <TRUSTArray.h>
 
-//  Cette classe permet de stocker des listes d'entiers accessibles en temps constant. La taille des listes ne peut pas changer sans
-//  perdre le contenu (ce sont des listes statiques).
-//  Exemple:
-//   Static_Int_List l;
-//   ArrOfInt tailles(3);
-//   tailles[0] = 2; tailles[1] = 3; tailles[2] = 0;
-//   // On reserve la memoire pour trois listes de taille 2, 3 et 0:
-//   l.set_list_sizes(tailles);
-//   // On affecte une valeur au deuxieme element de la premiere liste:
-//   l.set_value(0,1,765);
-//   // Affiche la valeur
-//   cout << l(0,1);
+/*!  Cette classe permet de stocker des listes d'entiers accessibles en temps constant. La taille des listes ne peut pas changer sans
+*  perdre le contenu (ce sont des listes statiques).
+*  Exemple:
+*   Static_Int_List l;
+*   ArrOfInt tailles(3);
+*   tailles[0] = 2; tailles[1] = 3; tailles[2] = 0;
+*   // On reserve la memoire pour trois listes de taille 2, 3 et 0:
+*   l.set_list_sizes(tailles);
+*   // On affecte une valeur au deuxieme element de la premiere liste:
+*   l.set_value(0,1,765);
+*   // Affiche la valeur
+*   cout << l(0,1);
+*/
 class Static_Int_Lists
 {
 public:
@@ -50,13 +51,15 @@ public:
   Sortie& ecrire(Sortie& os) const;
 
 private:
-  // Les listes d'entiers sont stockees de facon contigue dans le tableau valeurs_.
-  // Le premier element de la liste i est valeurs_[index_[i]] et le dernier element est valeurs_[index_[i+1]-1] (c'est comme le stockage morse des matrices).
+  /*! Les listes d'entiers sont stockees de facon contigue dans le tableau valeurs_.
+    * Le premier element de la liste i est valeurs_[index_[i]] et le dernier element est valeurs_[index_[i+1]-1] (c'est comme le stockage morse des matrices).
+    */
   ArrOfInt index_, valeurs_;
 };
 
-// Description: affecte la "valeur" au j-ieme element de la i-ieme liste avec
-//  0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+/*! Description: affecte la "valeur" au j-ieme element de la i-ieme liste avec
+ * 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+ */
 inline void Static_Int_Lists::set_value(entier i, entier j, entier valeur)
 {
   const entier index = index_[i] + j;
@@ -64,7 +67,8 @@ inline void Static_Int_Lists::set_value(entier i, entier j, entier valeur)
   valeurs_[index] = valeur;
 }
 
-// Description: renvoie le j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+/*! Description: renvoie le j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
+ */
 inline entier Static_Int_Lists::operator() (entier i, entier j) const
 {
   const entier index = index_[i] + j;

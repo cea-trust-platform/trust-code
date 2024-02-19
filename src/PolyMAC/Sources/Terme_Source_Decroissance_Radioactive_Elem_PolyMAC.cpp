@@ -72,7 +72,7 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matr
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
+
         for (int e = 0; e < ne; e++)
           for (int n = 0; n < N; n++)
             sten.append_line(N * e + n, N * e + n);

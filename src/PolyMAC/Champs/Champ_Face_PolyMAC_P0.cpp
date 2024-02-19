@@ -172,7 +172,6 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   //position des points aux faces de bord : CG si interne ou Dirichlet, projection si Neumann
   DoubleTrav xfb(domaine.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
   IntTrav pvt;
-  ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
   for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
       {
@@ -191,8 +190,8 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
     for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
       for (auto &&fa : s_f[s]) e_s_f[e].insert(fa);
 
-  ve2d.resize(1, 2), ve2d.set_smart_resize(1), ve2j.set_smart_resize(1), ve2bj.resize(0, 2), ve2bj.set_smart_resize(1);
-  ve2c.set_smart_resize(1), ve2bc.set_smart_resize(1);
+  ve2d.resize(1, 2);
+  ve2bj.resize(0, 2);
   std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
   std::vector<std::array<int, 2>> i_v; // v_i[i_v[f]] = f
   for (e = 0; e < domaine.nb_elem(); e++, v_i.clear(), i_v.clear())

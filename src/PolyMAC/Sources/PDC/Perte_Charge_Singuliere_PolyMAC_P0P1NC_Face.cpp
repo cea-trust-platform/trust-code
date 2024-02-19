@@ -48,7 +48,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t 
   int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot();
   //DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+
 
   for (i = 0; i < num_faces.size(); i++)
     if ((f = num_faces(i)) < domaine.nb_faces() && fcl(f, 0) < 2)

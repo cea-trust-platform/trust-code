@@ -58,16 +58,6 @@ void tableau_trier_retirer_doublons(IntTab& tab);
  */
 void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& items_a_garder);
 
-/*! @brief Set the smart_resize flag, preallocates memory for the given size, and resize to zero
- *
- */
-template<typename _TYPE_>
-inline void array_smart_allocate(TRUSTArray<_TYPE_>& array, const int n)
-{
-  array.set_smart_resize(1);
-  array.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT); // get memory for the requested size
-  array.resize_array(0); // and set actual size to zero
-}
 
 template<typename _TYPE_>
 inline void append_array_to_array(TRUSTArray<_TYPE_>& dest, const TRUSTArray<_TYPE_>& src)

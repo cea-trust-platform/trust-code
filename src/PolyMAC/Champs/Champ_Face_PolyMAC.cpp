@@ -129,8 +129,8 @@ void Champ_Face_PolyMAC::init_ra() const
   if (radeb.dimension(0)) return;
   init_fcl(), domaine.init_m2(), init_va();
   radeb.resize(1, 2), racf.resize(0, 3);
-  radeb.set_smart_resize(1), raji.set_smart_resize(1), rajf.set_smart_resize(1);
-  raci.set_smart_resize(1), racf.set_smart_resize(1);
+
+
   std::map<int, double> rami;
   std::map<int, std::array<double, 3> > ramf;
   for (a = 0; a < xa.dimension_tot(0); radeb.append_line(raji.dimension(0), rajf.dimension(0)), rami.clear(), ramf.clear(), a++)
@@ -189,8 +189,8 @@ void Champ_Face_PolyMAC::init_va() const
   std::map<int, std::array<double, 3>> vami;
   std::map<std::array<int, 2>, std::array<double, 3>> vamf;
   vadeb.resize(1, 2), vajf.resize(0, 2), vaci.resize(0, 3), vacf.resize(0, 3);
-  vadeb.set_smart_resize(1), vaji.set_smart_resize(1), vajf.set_smart_resize(1);
-  vaci.set_smart_resize(1), vacf.set_smart_resize(1);
+
+
   Matrice33 M, iM;
   for (a = 0; a < xa.dimension_tot(0); vadeb.append_line(vaji.dimension(0), vajf.dimension(0)), vami.clear(), vamf.clear(), a++)
     {

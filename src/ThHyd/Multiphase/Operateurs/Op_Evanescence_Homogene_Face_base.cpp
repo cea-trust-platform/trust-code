@@ -58,7 +58,7 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
     if (n_m.second->nb_colonnes())
       {
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
+
 
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;

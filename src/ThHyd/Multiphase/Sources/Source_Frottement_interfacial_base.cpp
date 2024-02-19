@@ -59,7 +59,7 @@ void Source_Frottement_interfacial_base::dimensionner_blocs(matrices_t matrices,
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
+
   int f, k, l, N = inco.line_size();
   /* faces */
   for (f = 0; f < domaine.nb_faces(); f++)

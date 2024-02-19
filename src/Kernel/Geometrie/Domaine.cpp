@@ -1706,7 +1706,7 @@ void Domaine::creer_aretes()
   // Les elements virtuels sont deja construits:
   const int nbelem_tot = elem_som.dimension_tot(0);
 
-  aretes_som_.set_smart_resize(1);
+
   aretes_som_.resize(0, 2);
   bool is_poly = sub_type(Poly_geom_base, type_elem().valeur());
 
@@ -1718,7 +1718,7 @@ void Domaine::creer_aretes()
     // chaine_aretes_sommets[i] contient l'indice de la prochaine arete attachee au
     // meme sommet ou -1 si c'est la derniere
     ArrOfInt chaine_aretes_sommets;
-    chaine_aretes_sommets.set_smart_resize(1);
+
     // Indice de la premiere arete attachee a chaque sommet dans chaine_aretes_sommets
     ArrOfInt premiere_arete_som(nb_som_tot());
     premiere_arete_som = -1;
@@ -1790,7 +1790,7 @@ void Domaine::creer_aretes()
   // Ajuste la taille du tableau Aretes_som
   const int n_aretes_tot = aretes_som_.dimension(0); // attention, nb_aretes_tot est une methode !
   aretes_som_.append_line(-1, -1); // car le resize suivant ne fait quelque chose que si on change de taille
-  aretes_som_.set_smart_resize(0);
+
   aretes_som_.resize(n_aretes_tot, 2);
 
   Journal() << "Domaine " << le_nom() << " nb_aretes=" << nb_aretes_reelles << " nb_aretes_tot=" << n_aretes_tot << finl;
@@ -1812,13 +1812,13 @@ void Domaine::creer_aretes()
 
     // Construction de pe_voisins
     ArrOfInt pe_voisins;
-    pe_voisins.set_smart_resize(1);
+
     for (i = 0; i < n_aretes_tot; i++)
       if (pe_aretes[i] != moi)
         pe_voisins.append_array(pe_aretes[i]);
 
     ArrOfInt liste_pe;
-    liste_pe.set_smart_resize(1);
+
     reverse_send_recv_pe_list(pe_voisins, liste_pe);
 
     // On concatene les deux listes.
@@ -1837,9 +1837,9 @@ void Domaine::creer_aretes()
     ArrsOfInt aretes_to_send(nb_voisins);
     for (i = 0; i < nb_voisins; i++)
       {
-        aretes_communes_to_recv[i].set_smart_resize(1);
-        blocs_aretes_virt[i].set_smart_resize(1);
-        aretes_to_send[i].set_smart_resize(1);
+
+
+
       }
     // Parcours des aretes: recherche des aretes a recevoir d'un autre processeur.
     // Aretes reeles (items communs)
@@ -2043,7 +2043,7 @@ void Domaine::ajouter(const DoubleTab& soms, IntVect& nums)
       int compteur=0;
       ArrOfDouble tab_coord(dim);
       ArrOfInt liste_sommets;
-      liste_sommets.set_smart_resize(1);
+
       for( i=0; i< ajoutsz; i++)
         {
           for (int j = 0; j < dim; j++)

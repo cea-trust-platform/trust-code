@@ -497,7 +497,7 @@ void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& 
     }
 
   // on redimensionne renum_inverse a la taille du tableau reduit
-  renum_inverse.set_smart_resize(1); // pas de reallocation
+
   renum_inverse.resize_array(count+1);
   // FIN MODIF ELI LAUCOIN 31/01/2012
 }

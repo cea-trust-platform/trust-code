@@ -226,7 +226,7 @@ void Op_Grad_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& sem
 
   const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   IntTab sten(0, 2);
-  sten.set_smart_resize(1);
+
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   const DoubleTab& vit = ch.valeurs(), &press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
   const int N = vit.line_size(), M = press.line_size();

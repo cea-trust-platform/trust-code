@@ -46,7 +46,7 @@ int  Ch_front_input_P1::initialiser(double temps, const Champ_Inc_base& inco)
      const DoubleTab& sommets_org=(mon_pb->domaine().les_sommets());
      DoubleTab& sommets=sommets_;
      sommets=sommets_org;
-     sommets.set_smart_resize(1);
+
 
      IntTab& faces=faces_;
      faces=(frontiere_dis().frontiere().faces().les_sommets());

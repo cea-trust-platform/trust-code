@@ -500,7 +500,7 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   int nb_som_old_elem=les_elems.dimension(1);
   int nb_som_new_elem=new_elems.dimension(1);
   nb_som_elem_max_ = std::max(nb_som_old_elem,nb_som_new_elem);
-  les_elems.set_smart_resize(1);
+
   les_elems.resize(nb_old_elem+nb_new_elem,nb_som_elem_max_, RESIZE_OPTIONS::COPY_NOINIT);
   for (int el=0; el<nb_new_elem; el++)
     {
@@ -518,14 +518,14 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   nb_face_elem_max_=std::max(nb_face_elem_max_,nb_face_new_elem);
   nb_som_face_max_=std::max(nb_som_face_max_,nb_som_face_new_elem);
 
-  PolyhedronIndex_.set_smart_resize(1);
+
   PolyhedronIndex_.resize_array(1+nb_old_elem+nb_new_elem);
 
-  FacesIndex_.set_smart_resize(1);
+
   int old_faces_index= FacesIndex_.size_array();
   FacesIndex_.resize_array(old_faces_index+nb_new_elem*nb_face_new_elem);
 
-  Nodes_.set_smart_resize(1);
+
   int old_nodes_index= Nodes_.size_array();
   Nodes_.resize_array(old_nodes_index+nb_new_elem*nb_face_new_elem*nb_som_face_new_elem);
 
@@ -564,7 +564,7 @@ void Polyedre::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_pa
   reduced.nb_face_elem_max_ = nb_face_elem_max_;
   reduced.nb_som_face_max_  = nb_som_face_max_;
   ArrOfInt& Pi = reduced.PolyhedronIndex_, &Fi = reduced.FacesIndex_, &N = reduced.Nodes_;
-  Pi.set_smart_resize(1), Fi.set_smart_resize(1), N.set_smart_resize(1);
+
 
   for (int i = 0; i < elems_sous_part.size_array(); i++)
     {
