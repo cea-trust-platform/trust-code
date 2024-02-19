@@ -17,8 +17,8 @@
 #include <Terme_Boussinesq_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Neumann_sortie_libre.h>
-#include <Champ_Face_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
+#include <Champ_Face_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
@@ -37,19 +37,9 @@ Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0P
 Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0_Face");
 Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_Face");
 
-Implemente_instanciable(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_PolyVEF_Face", Terme_Boussinesq_PolyMAC_Face);
-Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0");
-Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0P1");
-Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0P1NC");
-Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_concentration_PolyVEF_Face");
-
 Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s) const { return Terme_Boussinesq_base::printOn(s); }
 
 Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s) { return Terme_Boussinesq_base::readOn(s); }
-
-Sortie& Terme_Boussinesq_PolyVEF_Face::printOn(Sortie& s) const { return Terme_Boussinesq_PolyMAC_Face::printOn(s); }
-
-Entree& Terme_Boussinesq_PolyVEF_Face::readOn(Entree& s) { return Terme_Boussinesq_PolyMAC_Face::readOn(s); }
 
 void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
@@ -93,29 +83,3 @@ void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
           secmem(nf_tot + D * e + d) += coeff * g(d) * pe(e) * ve(e);
       }
 }
-
-void Terme_Boussinesq_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
-{
-  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
-  const DoubleTab& param = equation_scalaire().inconnue().valeurs();
-  const DoubleTab& beta_valeurs = beta().valeurs();
-  const IntTab& f_e = domaine.face_voisins();
-  const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = domaine.volumes_entrelaces_dir(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
-  const DoubleVect& pf = equation().milieu().porosite_face(), &grav = gravite().valeurs();
-
-  // Verifie la validite de T0:
-  check();
-  int e, i, f, n, nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension;
-  for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
-      {
-        double coeff = 0;
-        for (n = 0; n < nb_dim; n++)
-          coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e, n) * (Scalaire0(n) - valeur(param, e, n));
-
-        for (d = 0; d < D; d++)
-          secmem(f, d) += coeff * grav(d) * vfd(f, i) * pf(f);
-      }
-}
-
