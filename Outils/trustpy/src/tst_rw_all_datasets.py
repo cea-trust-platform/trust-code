@@ -31,9 +31,10 @@ class TestCase(unittest.TestCase, UnittestCustomMethodsTrust):
         import glob
         tr = os.environ.get("TRUST_ROOT", None)
         pd = os.environ.get("project_directory", None)
+        trustpy_from_trust = os.environ.get("TRUSTPY_FROM_TRUST", None)
         if tr is None:
           raise Exception("TRUST_ROOT not defined! Have you sourced TRUST?")
-        if not pd is None: # Baltik!
+        if not pd is None and trustpy_from_trust is None: # Baltik!
           tst_dir = os.path.join(pd, "build", "tests", "all")
         else:
           tst_dir = os.path.join(tr, "tests")
