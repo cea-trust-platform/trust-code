@@ -383,10 +383,24 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
   assert(new_size >= 0);
 
   if (mem_ == nullptr)
-    mem_ = std::make_shared<Vector_>(Vector_(new_size));
+    {
+      // First allocation - memory space should really be malloc'd:
+      mem_ = std::make_shared<Vector_>(Vector_(new_size));
+      span_ = Span_(*mem_);
+    }
   else
-    mem_->resize(new_size);
-  span_ = Span_(*mem_);
+    {
+      // Array is already allocated, we want to resize:
+      // array must not be shared! (also checked in resize_array()) ... but, still, we allow passing here
+      // if we keep the same size_array(), since this is invoked by TRUSTTab when just changing the overall shape of
+      // the array without modifying the total number of elems ...
+      if(new_size != size_array()) // Yes, we compare to the span's size
+        {
+          assert(ref_count() == 1);
+          mem_->resize(new_size);
+          span_ = Span_(*mem_);
+        }
+    }
 }
 
 

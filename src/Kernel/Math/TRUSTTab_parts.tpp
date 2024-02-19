@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,24 +20,25 @@ template<typename _TYPE_>
 inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& parts, TRUSTTab<_TYPE_> *dummy_type_ptr)
 {
   vect.checkDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU
+
   const MD_Vector& md = vect.get_md_vector();
-  TRUSTTab<_TYPE_>* Tab_ptr = dynamic_cast<TRUSTTab<_TYPE_>*>(&vect);
+  TRUSTTab<_TYPE_>* tab_ptr = dynamic_cast<TRUSTTab<_TYPE_>*>(&vect);
   if (! md.non_nul() || !sub_type(MD_Vector_composite, md.valeur()))
     {
       // Ce n'est pas un tableau a plusieurs sous-parties, on cree juste une partie qui pointe sur vect.
       parts.dimensionner(1);
       TRUSTTab<_TYPE_>& part = parts[0];
       // On preserve le 'shape' du tableau de depart, si c'est un TRUSTTab<_TYPE_>...
-      if (Tab_ptr) part.ref(*Tab_ptr);
+      if (tab_ptr) part.ref(*tab_ptr);
       else part.ref(vect);
     }
   else
     {
       ArrOfInt shape;
       const int line_size = vect.line_size();
-      if (Tab_ptr)
+      if (tab_ptr)
         {
-          const TRUSTTab<_TYPE_>& tab = *Tab_ptr;
+          const TRUSTTab<_TYPE_>& tab = *tab_ptr;
           const int n = tab.nb_dim();
           shape.resize_array(n);
           for (int i = 0; i < n; i++) shape[i] = tab.dimension_tot(i);
@@ -58,19 +59,26 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
         }
 
       const MD_Vector_composite& mdata = ref_cast(MD_Vector_composite, md.valeur());
-      const int n = mdata.data_.size(), un = 1;
+      const int n = mdata.data_.size();
       parts.dimensionner(n);
       for (int i = 0, j; i < n; i++)
         {
           ArrOfInt shape_i;
-          if (mdata.shapes_[i] == 0) shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
-          else for (shape_i.resize(shape.size_array() + 1), shape_i[1] = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i[j + 1] = shape[j];
+          if (mdata.shapes_[i] == 0)
+            shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
+          else
+            {
+              shape_i.resize(shape.size_array() + 1);
+              shape_i[1] = mdata.shapes_[i];
+              for (j = 1; j < shape.size_array(); j++)
+                shape_i[j + 1] = shape[j];
+            }
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
           shape_i[0] = md_part.valeur().get_nb_items_tot();
           TRUSTTab<_TYPE_>& part = parts[i];
           // Fait pointer le domaine de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
-          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], un));
+          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], 1));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)
           part.resize(shape_i);
