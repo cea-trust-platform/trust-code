@@ -99,9 +99,9 @@ const DoubleTab& Champ_Elem_PolyVEF_P0P1::alpha_es() const
 
 DoubleTab& Champ_Elem_PolyVEF_P0P1::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
 {
-  if (!sub_type(Navier_Stokes_std, equation()) || (this != &ref_cast(Navier_Stokes_std, equation()).pression() && this != &ref_cast(Navier_Stokes_std, equation()).pression_pa()))
-    return Champ_Elem_PolyMAC_P0::valeur_aux_elems(positions, polys, result); //ne s'applique qu'a la pression
   const Domaine_PolyMAC& dom = ref_cast(Domaine_PolyVEF_P0P1,le_dom_VF.valeur());
+  if (!sub_type(Navier_Stokes_std, equation()) || (this != &ref_cast(Navier_Stokes_std, equation()).pression() && this != &ref_cast(Navier_Stokes_std, equation()).pression_pa()) || valeurs().dimension_tot(0) == dom.nb_elem_tot())
+    return Champ_Elem_PolyMAC_P0::valeur_aux_elems(positions, polys, result); //ne s'applique qu'a la pression
   const IntTab& e_s = dom.domaine().les_elems();
   const DoubleTab& vals = valeurs(), &a_es = alpha_es();
   int e, s, i, j, n, N = valeurs().line_size(), ne_tot = dom.nb_elem_tot();
