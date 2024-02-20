@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,10 +35,11 @@
 //    * le tableau ne doit pas etre un type derive de TRUSTArray !!!
 //    * le tableau doit etre "resizable", c'est a dire: soit detache, soit normal (pas de type "ref_data") avec ref_count egal a 1
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_array(int new_size, Array_base::Resize_Options opt)
+inline void TRUSTArray<_TYPE_>::resize_array(int new_size, RESIZE_OPTIONS opt)
 {
   // Si le tableau change de taille, il doit etre du type TRUSTArray
-  assert(new_size == size_array_ || std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos );
+  assert(  ( mem_ == nullptr || (int)mem_->size() == new_size ) ||
+           std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos );
   resize_array_(new_size, opt);
 }
 
@@ -47,18 +48,9 @@ inline void TRUSTArray<_TYPE_>::resize_array(int new_size, Array_base::Resize_Op
 // Prerequis: le tableau doit etre "resizable" (voir resize_array()). S'il est d'un type derive (Vect ou Tab),
 //    il ne doit pas avoir de descripteur parallele si la taille est effectivement modifiee.
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
+inline void TRUSTArray<_TYPE_>::resize_tab(int n, RESIZE_OPTIONS opt)
 {
   resize_array(n, opt);
-}
-
-//  Change le mode l'allocation memoire: reallocation d'un tableau a chaque changement de taille (flag = 0) ou reallocation
-// uniquement si la taille augmente et par doublement de la taille du tableau (flag = 1).
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::set_smart_resize(int flag)
-{
-  assert(flag == 0 || flag == 1);
-  smart_resize_ = flag;
 }
 
 //  Change le mode d'allocation memoire lors des resize (voir VTRUSTdata et TRUST_ptr_trav)
@@ -67,7 +59,7 @@ inline void TRUSTArray<_TYPE_>::set_smart_resize(int flag)
 //    tab.set_mem_storage(TEMP_STORAGE); // Changement de mode d'allocation
 //    tab.resize(n); // Allocation memoire
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::set_mem_storage(const Storage storage)
+inline void TRUSTArray<_TYPE_>::set_mem_storage(const STORAGE storage)
 {
   storage_type_ = storage;
 }
@@ -89,9 +81,7 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
   detach_array(); // ToDo OpenMP revenir en arriere sur TRUSTArray.h
-  data_ = ptr;
-  size_array_ = size;
-  memory_size_ = size; // Pour passer les tests si on resize a la meme taille
+  span_ = Span_(ptr, size);
 }
 
 //
@@ -125,7 +115,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
     {
       const int new_size = m.size_array();
       // On utilise la methode resize_array() qui teste le type derive de l'objet (resize interdit sur un type derive)
-      resize_array(new_size, NOCOPY_NOINIT);
+      resize_array(new_size, RESIZE_OPTIONS::NOCOPY_NOINIT);
       inject_array(m);
     }
   return *this;
@@ -141,8 +131,8 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 #ifdef _OPENMP
   this->checkDataOnHost();
 #endif
-  assert(i >= 0 && i < size_array_);
-  return data_[i];
+  assert(i >= 0 && i < size_array());
+  return span_[i];
 }
 
 //  operateur [] pour TRUSTArray<double> : retourne le ieme element du tableau
@@ -158,9 +148,9 @@ inline double& TRUSTArray<double>::operator[](int i)
 #ifdef _OPENMP
   this->checkDataOnHost();
 #endif
-  assert(i >= 0 && i < size_array_);
-  assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
-  return data_[i];
+  assert(i >= 0 && i < size_array());
+  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
+  return span_[i];
 }
 /// \endcond
 
@@ -170,8 +160,8 @@ inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
 #ifdef _OPENMP
   this->checkDataOnHost();
 #endif
-  assert(i >= 0 && i < size_array_);
-  return data_[i];
+  assert(i >= 0 && i < size_array());
+  return span_[i];
 }
 
 /// \cond DO_NOT_DOCUMENT
@@ -181,9 +171,9 @@ inline const double& TRUSTArray<double>::operator[](int i) const
 #ifdef _OPENMP
   this->checkDataOnHost();
 #endif
-  assert(i >= 0 && i < size_array_);
-  assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
-  return data_[i];
+  assert(i >= 0 && i < size_array());
+  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
+  return span_[i];
 }
 #pragma GCC diagnostic pop
 /// \endcond
@@ -196,33 +186,33 @@ template <typename _TYPE_>
 inline _TYPE_* TRUSTArray<_TYPE_>::addr()
 {
   checkDataOnHost();
-  return data_;
+  return span_.data();
 }
 
 template <typename _TYPE_>
 inline const _TYPE_* TRUSTArray<_TYPE_>::addr() const
 {
   checkDataOnHost();
-  return data_;
+  return span_.data();
 }
 
 template <typename _TYPE_>
 inline _TYPE_ *TRUSTArray<_TYPE_>::data()
 {
-  return data_;
+  return span_.data();
 }
 
 template <typename _TYPE_>
 inline const _TYPE_ *TRUSTArray<_TYPE_>::data() const
 {
-  return data_;
+  return span_.data();
 }
 //  Renvoie la taille du tableau (nombre d'elements declares a la construction ou a resize_array()).
 //    C'est le nombre d'elements accessibles a operator[]
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::size_array() const
 {
-  return size_array_;
+  return (int)span_.size();
 }
 
 //  Retourne le nombre de references des donnees du tableau si le tableau est "normal", -1 s'il est "detache"
@@ -231,7 +221,7 @@ inline int TRUSTArray<_TYPE_>::size_array() const
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::ref_count() const
 {
-  return p_ ? p_->ref_count() : -1;
+  return mem_ ? (int)mem_.use_count() : -1;
 }
 
 //  Ajoute une case en fin de tableau et y stocke la "valeur"
@@ -243,10 +233,11 @@ template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
 {
   this->checkDataOnHost();
-  assert(smart_resize_);
-  const int n = size_array_;
-  resize_array(size_array_+1, COPY_NOINIT);
-  data_[n] = valeur;
+  if (mem_ == nullptr)
+    mem_ = std::make_shared<Vector_>(Vector_(1, valeur));
+  else
+    mem_->push_back(valeur);
+  span_ = Span_(*mem_);
 }
 
 //  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
@@ -280,10 +271,10 @@ template <typename _TYPE_ /* double ou float */ >
 inline void TRUSTArray<_TYPE_>::ordonne_array()
 {
   checkDataOnHost(*this);
-  const int size = size_array_;
+  const int size = size_array();
   if (size > 1)
     {
-      _TYPE_ * data = data_;
+      _TYPE_ * data = span_.data();
       qsort(data, size, sizeof(_TYPE_), fonction_compare_arrofdouble_ordonner<_TYPE_>);
     }
 }
@@ -291,10 +282,10 @@ template <>
 inline void TRUSTArray<int>::ordonne_array()
 {
   checkDataOnHost(*this);
-  const int size = size_array_;
+  const int size = size_array();
   if (size > 1)
     {
-      int * data = data_;
+      int * data = span_.data();
       qsort(data, size, sizeof(int), fonction_compare_arrofint_ordonner);
     }
 }
@@ -305,15 +296,15 @@ template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 {
   checkDataOnHost(*this);
-  const int size_ = size_array_;
+  const int size_ = size_array();
   if (size_ <= 0) return;
 
   ordonne_array(); // Tri dans l'ordre croissant
   // Retire les doublons (codage optimise en pointeurs)
-  _TYPE_ last_value = *data_;
-  _TYPE_ *src = data_ + 1;
-  _TYPE_ *dest = data_ + 1;
-  for (int i = size_ - 1; i != 0; i--)
+  _TYPE_ last_value = span_.back();
+  _TYPE_ *src = span_.data() + 1;
+  _TYPE_ *dest = span_.data() + 1;
+  for (int i = 0; i < size_; i++)
     {
       _TYPE_ x = *(src++);
       if (x != last_value)
@@ -322,7 +313,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
           last_value = x;
         }
     }
-  int new_size_ = (int)(dest - data_);
+  int new_size_ = (int)(dest - span_.data());
   resize_array(new_size_);
 }
 
@@ -339,30 +330,42 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int size)
 {
-  // Le tableau doit etre detache
-  assert(data_ == 0 && p_ == 0);
+  // Array must be detached
+  assert(span_.empty() && mem_ == nullptr);
+  // m might be detached too:
+  assert(m.mem_ != nullptr || (start == 0 && size == -1));
   // Le tableau doit etre different de *this
   assert(&m != this);
-  if (size < 0) size = m.size_array_ - start;
 
-  assert(start >= 0 && size >=0 && start + size <= m.size_array_);
-  if (m.size_array() > 0)
-    {
-      p_ = m.p_;
-      if (p_) p_->add_one_ref();
-      data_ = m.data_ + start;
-      size_array_ = size;
-      memory_size_ = m.memory_size_ - start;
-      smart_resize_ = m.smart_resize_;
-    }
-  else
-    {
-      // Cas particulier ou on attache un tableau de taille nulle: en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
-      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
-      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas encore la bonne taille. Solution propre: reecrire les operateurs pour
-      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide et faire p_ = m.p_ dans tous les cas.
-      // Process::Journal() << "Warning TRUSTArray::attach_array(m), m.size_array()==0, on n attache pas le tableau" << finl;
-    }
+  if (size < 0)
+    size = m.size_array() - start;
+
+  assert(start >= 0 && size >=0 && start + size <= m.size_array());
+
+  mem_ = m.mem_;  // shared_ptr copy! One more owner for the underlying data
+
+  // stupid enough, but we might have ref'ed a detached array ...
+  if (mem_ != nullptr)
+    span_ = Span_((_TYPE_ *)(m.mem_->data()+start), size);
+
+//
+//  if (m.size_array() > 0)
+//    {
+//      mem_ = m.mem_;
+//      if (mem_) mem_->add_one_ref();
+//      span_ = m.span_ + start;
+//      size_array_ = size;
+//      memory_size_ = m.memory_size_ - start;
+//      smart_resize_ = m.smart_resize_;
+//    }
+//  else
+//    {
+//      // Cas particulier ou on attache un tableau de taille nulle: en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
+//      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
+//      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas encore la bonne taille. Solution propre: reecrire les operateurs pour
+//      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide et faire p_ = m.p_ dans tous les cas.
+//      // Process::Journal() << "Warning TRUSTArray::attach_array(m), m.size_array()==0, on n attache pas le tableau" << finl;
+//    }
 }
 
 //  Remplit "nb" cases consecutives du tableau a partir de la case "first" avec une valeur par defaut.
@@ -383,41 +386,55 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 //  Signification: nombre de cases a initialiser.
 //  Contrainte:    (nb==0) ou (0 < nb <= memory_size_ - first)
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
+inline void TRUSTArray<_TYPE_>::fill_default_value(RESIZE_OPTIONS opt, int first, int nb)
 {
   checkDataOnHost(*this);
-  assert((nb == 0) || (first >= 0 && first < memory_size_));
-  assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
-  _TYPE_ * data = data_;
-  assert(data!=0 || nb==0);
-  data += first;
-  if (opt != COPY_INIT)
-    {
-#ifndef NDEBUG // On initialise uniquement en mode debug
-      static const _TYPE_  INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : INT_MIN;
-      for (int i = 0; i < nb; i++) data[i] = INVALIDE_;
-#endif
-    }
-  else // Comportement pour les tableaux normaux : compatibilite avec la version precedente : on initialise avec 0.
-    for (int i = 0; i < nb; i++) data[i] = (_TYPE_) 0;
+//  assert((nb == 0) || (first >= 0 && first < memory_size_));
+//  assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
+//  _TYPE_ * data = span_;
+//  assert(data!=0 || nb==0);
+//  data += first;
+//  if (opt != RESIZE_OPTIONS::COPY_INIT)
+//    {
+//#ifndef NDEBUG // On initialise uniquement en mode debug
+//      static const _TYPE_  INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : INT_MIN;
+//      for (int i = 0; i < nb; i++) data[i] = INVALIDE_;
+//#endif
+//    }
+//  else // Comportement pour les tableaux normaux : compatibilite avec la version precedente : on initialise avec 0.
+//    for (int i = 0; i < nb; i++) data[i] = (_TYPE_) 0;
 }
 
 //  methode protegee de changement de taille, appelable par les classes derivees
 //   (idem que resize_array() mais sans condition sur le type derive de l'objet)
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_Options opt)
+inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 {
   assert(new_size >= 0);
-  // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
-  // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau, ou alors la taille ne doit pas changer.
-  assert(new_size == size_array_ || data_ == 0 || (p_ != 0 && ref_count() == 1));
-  // Le seul cas ou on n'appelle pas memory_resize est le suivant : e tableau est smart_resize
-  //  ET la taille reste inferieure ou egale a la taille allouee ET on ne veut pas initialiser les nouvelles cases
-  if ((opt == COPY_INIT) || (new_size > memory_size_) || (smart_resize_ == 0))
-    // attention, il existe un cas ou memory_resize realloue un buffer meme si size_array_== new_size:
-    // si on est passe de smart_resize=1 a smart_resize=0, on realloue juste ce qu'il faut.
-    memory_resize(new_size, opt);
-  size_array_ = new_size;
+
+  if (mem_ == nullptr)
+    mem_ = std::make_shared<Vector_>(Vector_(new_size));
+  else
+    mem_->resize(new_size);
+  span_ = Span_(*mem_);
+//  if (new_size > 0)
+//    {
+//      if (mem_ == nullptr)
+//        mem_ = std::make_shared<Vector_>(Vector_(new_size));
+//      else
+//        mem_->resize(new_size);
+//      span_ = Span_(*mem_);
+//    }
+//  // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
+//  // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau, ou alors la taille ne doit pas changer.
+//  assert(new_size == mem_.size() || span_ == 0 || (mem_ != 0 && ref_count() == 1));
+//  // Le seul cas ou on n'appelle pas memory_resize est le suivant : e tableau est smart_resize
+//  //  ET la taille reste inferieure ou egale a la taille allouee ET on ne veut pas initialiser les nouvelles cases
+//  if ((opt == RESIZE_OPTIONS::COPY_INIT) || (new_size > memory_size_) || (smart_resize_ == 0))
+//    // attention, il existe un cas ou memory_resize realloue un buffer meme si size_array_== new_size:
+//    // si on est passe de smart_resize=1 a smart_resize=0, on realloue juste ce qu'il faut.
+//    memory_resize(new_size, opt);
+//  size_array_ = new_size;
 }
 
 //  Amene le tableau dans l'etat "detache". C'est a dire:
@@ -433,24 +450,11 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_O
 //    Signification: 1 si les donnees du tableau ont ete supprimees
 // Postcondition: On a p_==0, data_==0 et size_array_==0, memory_size_ = 0. L'attribut smart_resize_ est conserve.
 template <typename _TYPE_>
-inline int TRUSTArray<_TYPE_>::detach_array()
+inline bool TRUSTArray<_TYPE_>::detach_array()
 {
-  int retour = 0;
-  if (p_)
-    {
-      // Le tableau est de type "normal". Si la zone de memoire n'est plus utilisee par personne, on la detruit.
-      if ((p_->suppr_one_ref()) == 0)
-        {
-          if (p_->get_dataLocation()!=HostOnly) deleteOnDevice(*this);
-          delete p_;
-          retour = 1;
-        }
-      p_ = 0;
-    }
-  data_ = 0;
-  size_array_ = 0;
-  memory_size_ = 0;
-  return retour;
+  mem_ = nullptr;
+  span_ = Span_();
+  return true;
 }
 
 //  Si besoin, alloue une nouvelle zone de memoire, copie les donnees et efface l'ancienne zone de memoire.
@@ -463,77 +467,13 @@ inline int TRUSTArray<_TYPE_>::detach_array()
 // Parametre: new_size
 //  Signification: nouvelle taille demandee pour le tableau.
 // Parametre: options
-//  Signification: voir ArrOfDouble::Resize_Options
+//  Signification: voir ArrOfDouble::RESIZE_OPTIONS
 // Postcondition:
 //  p_ et data_ sont mis a jour, mais pas size_array_ !!! (on suppose que c'est fait dans resize_array()).
 //  Si la nouvelle taille est nulle, on detache le tableau.
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_Options opt)
+inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, RESIZE_OPTIONS opt)
 {
-  assert(new_size >= 0);
-
-  // Si new_size==size_array_, on ne fait rien, c'est toujours autorise
-  if (new_size == size_array_) return;
-
-  // Sinon, il faut que le resize soit autorise, c'est a dire
-  //  - soit le tableau est detache
-  //  - soit le tableau est normal et il n'y a pas d'autre reference au tableau
-  assert((data_ == 0) || ((p_ != 0) && (p_->get_data() == data_) && (ref_count() == 1)));
-
-  // Occupation memoire de l'ancien tableau:
-  int old_mem_size = memory_size_;
-  assert((!p_) || (p_->get_size() == memory_size_));
-  assert(memory_size_ >= size_array_);
-
-  // Occupation memoire du nouveau tableau : Si smart_resize, on prend au moins deux fois la taille precedente, ou new_size
-  int new_mem_size = new_size;
-  if (smart_resize_)
-    {
-      if (new_size <= old_mem_size) new_mem_size = old_mem_size;
-      else if (new_size < old_mem_size * 2) new_mem_size = old_mem_size * 2;
-      else if (new_size > old_mem_size && old_mem_size > INT_MAX / 2) new_mem_size = INT_MAX;
-    }
-
-  if (new_mem_size != old_mem_size)
-    {
-      // detach_array() efface le contenu de size_array_. On le met de cote:
-      const int old_size_array = size_array_;
-      if (new_mem_size == 0) detach_array(); // La nouvelle taille est nulle, on cree un tableau "detache"
-      else
-        {
-          // Allocation d'une nouvelle zone
-          VTRUSTdata<_TYPE_> * new_p = new VTRUSTdata<_TYPE_>(new_mem_size, storage_type_);
-          _TYPE_ * new_data = new_p->get_data();
-          // Raccourci si le tableau etait "detache", inutile de copier les anciennes donnees. On copie si COPY_OLD est demande
-          int copy_size = 0;
-          if (data_ != 0)
-            {
-              // Calcul du nombre d'elements a copier vers la nouvelle zone de memoire : c'est le min de l'ancienne et de la nouvelle taille.
-              if (opt != NOCOPY_NOINIT)
-                {
-                  this->checkDataOnHost();
-                  copy_size = size_array_;
-                  if (new_size < copy_size) copy_size = new_size;
-                  // Copie des valeurs dans le nouveau tableau
-                  for (int i = 0; i < copy_size; i++) new_data[i] = data_[i];
-                }
-              detach_array(); // Destruction de l'ancienne zone (si plus aucune reference)
-            }
-          // On attache la nouvelle zone de memoire
-          p_ = new_p;
-          data_ = new_data;
-          memory_size_ = new_mem_size;
-          // Initialisation des cases supplementaires avec une valeur par defaut
-          fill_default_value(opt, copy_size, new_mem_size - copy_size);
-          // Restaure l'ancienne valeur de size_array_
-          size_array_ = old_size_array;
-        }
-    }
-  else
-    {
-      // Pas de reallocation, initialisation si besoin
-      if (opt == COPY_INIT && new_size > size_array_) fill_default_value(opt, size_array_, new_size - size_array_);
-    }
 }
 
 #endif /* TRUSTArray_TPP_included */

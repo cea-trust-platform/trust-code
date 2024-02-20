@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
   os << sz << finl;
   if (sz > 0)
     {
-      const _TYPE_* v = data_;
+      const _TYPE_* v = span_.data();
       os.put(v,sz,sz);
     }
   return os;
@@ -45,11 +45,11 @@ Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
   is >> sz;
   if (sz >= 0)
     {
-// Appel a la methode sans precondition sur le type derive (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
+      // Appel a la methode sans precondition sur le type derive (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
       resize_array_(sz);
       if (sz > 0)
         {
-          _TYPE_* v = data_;
+          _TYPE_* v = span_.data();
           is.get(v,sz);
         }
     }
@@ -89,7 +89,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
 
   if (nb_elements > 0)
     {
-      _TYPE_ * addr_dest = data_ + first_element_dest;
+      _TYPE_ * addr_dest = span_.data() + first_element_dest;
       bool kernelOnDevice = checkDataOnDevice(*this, source);
       const _TYPE_ * addr_source = (mapToDevice(source, "", kernelOnDevice)) + first_element_source;
       if (kernelOnDevice)
@@ -113,8 +113,8 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 {
-  const int n = size_array_;
-  _TYPE_ *data = data_;
+  const int n = size_array();
+  _TYPE_ *data = span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -128,8 +128,8 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
 {
   assert(size_array()==y.size_array());
-  _TYPE_* dx = data_;
-  const _TYPE_* dy = y.data_;
+  _TYPE_* dx = span_.data();
+  const _TYPE_* dy = y.span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this, y);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -142,7 +142,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 {
-  _TYPE_ * data = data_;
+  _TYPE_ * data = span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -156,8 +156,8 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
 {
   assert(size_array() == y.size_array());
-  _TYPE_ * data = data_;
-  const _TYPE_ * data_y = y.data_;
+  _TYPE_ * data = span_.data();
+  const _TYPE_ * data_y = y.span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this, y);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -170,7 +170,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 {
-  _TYPE_ * data = data_;
+  _TYPE_ * data = span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -183,7 +183,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 {
-  _TYPE_ * data = data_;
+  _TYPE_ * data = span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -198,7 +198,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 {
   if (std::is_same<_TYPE_,int>::value) throw;
   const _TYPE_ i_dy = 1 / dy;
-  _TYPE_ * data = data_;
+  _TYPE_ * data = span_.data();
   bool kernelOnDevice = checkDataOnDevice(*this);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)

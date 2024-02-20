@@ -16,13 +16,15 @@
 #ifndef Device_included
 #define Device_included
 
-#include <Array_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Nom.h>
 #include <stat_counters.h>
 #include <kokkos++.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
+enum DataLocation { HostOnly, Host, Device, HostDevice, PartialHostDevice };
 
 extern void self_test();
 extern bool init_openmp_, clock_on;

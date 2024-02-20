@@ -16,12 +16,12 @@
 #ifndef TRUSTArray_included
 #define TRUSTArray_included
 
-#include <TRUSTIterator.h>
-#include <VTRUSTdata.h>
 #include <Array_base.h>
 #include <Double.h>
 #include <span.hpp>
+#include <memory>
 #include <climits>
+#include <vector>
 #include <Device.h>
 
 #include <View_Types.h>  // Kokkos stuff
@@ -64,28 +64,27 @@ protected:
 
 public:
   using value_type = _TYPE_; // return int, double ou float
-  using Iterator = TRUSTIterator<TRUSTArray<_TYPE_>>;
+  using Iterator = typename tcb::span<_TYPE_>::iterator;
+  using Vector_ = std::vector<_TYPE_>;
   using Span_ = tcb::span<_TYPE_>;
 
   // Iterators
-  inline Iterator begin() { return Iterator(data_); }
-  inline Iterator end() { return Iterator(data_ + size_array_); }
+  inline Iterator begin() { return span_.begin(); }
+  inline Iterator end() { return span_.end(); }
 
   virtual ~TRUSTArray()
   {
-    detach_array();
-    size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
   }
 
-  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD) { }
+  TRUSTArray() : TRUSTArray(0) { }
 
-  TRUSTArray(int n): p_(0), data_(0), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
+  TRUSTArray(int n): storage_type_(STORAGE::STANDARD)
   {
     if (n)
       {
-        p_ = new VTRUSTdata<_TYPE_>(n, STANDARD);
-        data_ = p_->get_data();
-        fill_default_value(COPY_INIT, 0, n);
+        mem_ = std::make_shared<Vector_>(Vector_(n));
+        span_ = Span_(*mem_);
+//        fill_default_value(RESIZE_OPTIONS::COPY_INIT, 0, n);
       }
   }
 
@@ -96,39 +95,34 @@ public:
     if (size > 0)
       {
         // Creation d'un tableau "normal"
-        storage_type_ = STANDARD;
-        p_ = new VTRUSTdata<_TYPE_>(size, STANDARD);
-        data_ = p_->get_data();
-        size_array_ = size;
-        memory_size_ = size;
-        smart_resize_ = A.smart_resize_;
+        storage_type_ = STORAGE::STANDARD;
+        // We deep copy *only* the data span of A, not the full underlying A.mem_:
+        mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
+        span_ = Span_(*mem_);
         if (A.isDataOnDevice()) allocateOnDevice(*this);
+#ifdef OPENMP   // TODO review this later ... I think we need to keep it
         inject_array(A);
+#endif
       }
     else
       {
-        // Creation d'un tableau "detache"
-        p_ = 0;
-        data_ = 0;
-        size_array_ = 0;
-        memory_size_ = 0;
-        smart_resize_ = 0;
-        storage_type_ = STANDARD;
+        // Creation d'un tableau "detache", mem_ remains nullptr
+        span_ = A.span_;
+        storage_type_ = STORAGE::STANDARD;
       }
   }
 
   // Methodes de construction tardive (on cree un tableau vide avec TRUSTArray() puis on appelle ces methodes
   // pour modifier les caracteristiques du tableau : Change le nombre d'elements du tableau
-  inline void resize(int new_size, Array_base::Resize_Options opt = COPY_INIT) { resize_array(new_size, opt); }
-  inline void resize_array(int new_size, Array_base::Resize_Options opt = COPY_INIT);
+  inline void resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
+  inline void resize_array(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-  // Methodes de gestion de l'allocation memoire :
-  // Assigne une valeur au drapeau "smart_resize" (reallocation uniquement si la taille augmente)
-  inline void set_smart_resize(int flag);
+  // TODO: to delete
+  inline void set_smart_resize(int flag) {}
 
   // Gestion du type de memoire alouee (standard ou pool de memoire Trio-U)
-  inline void set_mem_storage(const Storage storage);
-  inline Storage get_mem_storage() const { return storage_type_; }
+  inline void set_mem_storage(const STORAGE storage);
+  inline STORAGE get_mem_storage() const { return storage_type_; }
 
   // Operateur copie
   inline TRUSTArray& operator=(const TRUSTArray&);
@@ -195,13 +189,16 @@ public:
   // Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel)
   inline virtual void reset() { detach_array(); }
   inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
-  inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+  inline virtual void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Host/Device methods:
-  inline DataLocation get_dataLocation() { return p_==nullptr ? HostOnly : p_->get_dataLocation(); }
-  inline DataLocation get_dataLocation() const { return p_==nullptr ? HostOnly : p_->get_dataLocation(); }
-  inline void set_dataLocation(DataLocation flag) { if (p_!=nullptr) p_->set_dataLocation(flag); }
-  inline void set_dataLocation(DataLocation flag) const { if (p_!=nullptr) p_->set_dataLocation(flag); }
+  inline DataLocation get_dataLocation()
+  {
+    return mem_ == nullptr ? HostOnly : get_dataLocation();
+  }
+  inline DataLocation get_dataLocation() const { return mem_ == nullptr ? HostOnly : dataLocation_; }
+  inline void set_dataLocation(DataLocation flag) { if (mem_ != nullptr) dataLocation_ = flag; }
+  inline void set_dataLocation(DataLocation flag) const { if (mem_ != nullptr) dataLocation_ = flag; }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
   inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
@@ -209,10 +206,11 @@ public:
   inline bool checkDataOnDevice(std::string kernel_name="??") const { return checkDataOnDevice(*this, kernel_name); }
   inline bool checkDataOnDevice(const TRUSTArray& arr, std::string kernel_name="??") { return checkDataOnDevice(*this, arr, kernel_name); }
 
-  inline virtual Span_ get_span() { return Span_(data_,size_array_); }
-  inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }
-  inline virtual const Span_ get_span() const { return Span_((_TYPE_*)data_, size_array_); }
-  inline virtual const Span_ get_span_tot() const { return Span_((_TYPE_*)data_, size_array_); }
+
+  inline virtual Span_ get_span() { return span_; }
+  inline virtual Span_ get_span_tot() { return span_; }
+  inline virtual const Span_ get_span() const { return span_; }
+  inline virtual const Span_ get_span_tot() const { return span_; }
 
   // Kokkos accessors
 protected:
@@ -233,37 +231,34 @@ protected:
   mutable bool dual_view_init_ = false;
   mutable DualViewArr<_TYPE_> dual_view_arr_;
 
-
-  inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);
-  inline void fill_default_value(Array_base::Resize_Options opt, int first, int nb);
-  inline void resize_array_(int n, Array_base::Resize_Options opt = COPY_INIT);
-  inline int detach_array();
+protected:
+  inline void attach_array(const TRUSTArray& a, int start=0, int size=-1);
+  inline void fill_default_value(RESIZE_OPTIONS opt, int first, int nb);
+  inline void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+  inline bool detach_array();
 
 private:
   // B. Mathieu 22/06/2004 : je mets ces membres "private" pour forcer le passage par les accesseurs dans les classes derivees,
   // au cas ou on voudrait modifier l'implementation.
-
-  inline void memory_resize(int new_size, Array_base::Resize_Options opt = COPY_INIT);
+  inline void memory_resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Zone de memoire contenant les valeurs du tableau. Pointeur nul => le tableau est "detache" ou "ref_data", Pointeur non nul => le tableau est "normal"
-  VTRUSTdata<_TYPE_>* p_;
+  std::shared_ptr<Vector_> mem_;
 
   // Pointeur vers le premier element du tableau= Pointeur nul => le tableau est "detache". Pointeur non nul => le tableau est "normal" ou "ref_data"
   // Si p_ est non nul, data_ pointe quelque part a l'interieur de la zone allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
-  _TYPE_* data_;
-
-  // Nombre d'elements du tableau (inferieur ou egal a memory_size_). Si le tableau est "detache", alors size_array_=0
-  int size_array_;
-
-  // Taille memoire reellement allouee pour le tableau (pour le mecanisme smart_resize_). memory_size_ est nul si le tableau est de type "ref_data". Sinon memory_size_ est egal a p_->size_.
-  int memory_size_;
-
-  // Drapeau indiquant si on applique une strategie d'allocation preventive (la memoire alouee augmente d'un facteur constant si la taille devient insuffisante).
-  // Si smart_resize_ == 0, alors on a toujours p_->size_ == size
-  int smart_resize_;
+  Span_ span_;
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
-  Storage storage_type_;
+  STORAGE storage_type_;
+
+  // Drapeau du statut du data sur le Device:
+  // HostOnly  : Non alloue sur le device encore
+  // Host      : A jour sur le host pas sur le device
+  // Device    : A jour sur le device pas sur le host
+  // HostDevice: A jour sur le host et le device
+  // PartialHostDevice : Etat temporaire: certaines valeurs sont plus a jour sur le host que le device (ex: faces frontieres ou items distants)
+  mutable DataLocation dataLocation_ = HostOnly;
 
   // Methodes de verification que le tableau est a jour sur le host:
   // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?

@@ -38,17 +38,17 @@ public:
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
   }
 
-  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD) { }
+  TRUSTArray() : mem_(0), span_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD) { }
 
   TRUSTArray(entier n) :
-      p_(new VTRUSTdata<_TYPE_>(n, STANDARD)), data_(p_->get_data()), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
+      mem_(new VTRUSTdata<_TYPE_>(n, STANDARD)), span_(mem_->get_data()), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
   {
     if (n > 0)
       fill_default_value(0, n);
   }
 
   TRUSTArray(entier n, _TYPE_ x) :
-      p_(new VTRUSTdata<_TYPE_>(n, STANDARD)), data_(p_->get_data()), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
+      mem_(new VTRUSTdata<_TYPE_>(n, STANDARD)), span_(mem_->get_data()), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
   {
     *this = x;
   }
@@ -60,8 +60,8 @@ public:
       {
         // Creation d'un tableau "normal"
         storage_type_ = STANDARD;
-        p_ = new VTRUSTdata<_TYPE_>(size, STANDARD);
-        data_ = p_->get_data();
+        mem_ = new VTRUSTdata<_TYPE_>(size, STANDARD);
+        span_ = mem_->get_data();
         size_array_ = size;
         memory_size_ = size;
         smart_resize_ = A.smart_resize_;
@@ -70,8 +70,8 @@ public:
     else
       {
         // Creation d'un tableau "detache"
-        p_ = 0;
-        data_ = 0;
+        mem_ = 0;
+        span_ = 0;
         size_array_ = 0;
         memory_size_ = 0;
         smart_resize_ = 0;
@@ -82,7 +82,7 @@ public:
   inline TRUSTArray& resize_array(entier new_size)
   {
     assert(new_size >= 0);
-    assert(new_size == size_array_ || data_ == 0 || (p_ != 0 && ref_count() == 1));
+    assert(new_size == size_array_ || span_ == 0 || (mem_ != 0 && ref_count() == 1));
 
     if ((smart_resize_ == 0) || (new_size > memory_size_))
       memory_resize(new_size, COPY_OLD + INITIALIZE_NEW);
@@ -104,7 +104,7 @@ public:
     assert(ptr != 0 || size == 0);
     assert(size >= 0);
     detach_array();
-    data_ = ptr;
+    span_ = ptr;
     size_array_ = size;
     return *this;
   }
@@ -149,15 +149,15 @@ public:
   inline _TYPE_& operator[](entier i);
   inline const _TYPE_& operator[](entier i) const;
 
-  const _TYPE_* addr() const { return data_; }
-  _TYPE_* addr() { return data_; }
+  const _TYPE_* addr() const { return span_; }
+  _TYPE_* addr() { return span_; }
 
   inline entier size_array() const { return size_array_; }
 
   entier ref_count() const
   {
-    if (p_)
-      return p_->ref_count();
+    if (mem_)
+      return mem_->ref_count();
     else
       return -1;
   }
@@ -165,11 +165,11 @@ public:
   inline void append_array(_TYPE_ valeur)
   {
     assert(smart_resize_);
-    assert(data_ == 0 || (p_ != 0 && ref_count() == 1));
+    assert(span_ == 0 || (mem_ != 0 && ref_count() == 1));
 
     if (size_array_+1 > memory_size_)
       memory_resize(size_array_+1, COPY_OLD);
-    data_[size_array_] = valeur;
+    span_[size_array_] = valeur;
     size_array_++;
   }
 
@@ -270,15 +270,15 @@ public:
 protected:
   void attach_array(const TRUSTArray<_TYPE_>& m)
   {
-    assert(data_ == 0 && p_ == 0);
+    assert(span_ == 0 && mem_ == 0);
     assert(&m != this);
 
     if (m.size_array() > 0)
       {
-        p_ = m.p_;
-        if (p_)
-          p_->add_one_ref();
-        data_ = m.data_;
+        mem_ = m.mem_;
+        if (mem_)
+          mem_->add_one_ref();
+        span_ = m.span_;
         size_array_ = m.size_array_;
         memory_size_ = m.memory_size_;
         smart_resize_ = m.smart_resize_;
@@ -289,16 +289,16 @@ protected:
   entier detach_array()
   {
     entier retour = 0;
-    if (p_)
+    if (mem_)
       {
-        if ((p_->suppr_one_ref()) == 0)
+        if ((mem_->suppr_one_ref()) == 0)
           {
-            delete p_;
+            delete mem_;
             retour = 1;
           }
-        p_ = 0;
+        mem_ = 0;
       }
-    data_ = 0;
+    span_ = 0;
     size_array_ = 0;
     memory_size_ = 0;
     return retour;
@@ -320,8 +320,8 @@ protected:
   }
 
 private:
-  VTRUSTdata<_TYPE_> *p_;
-  _TYPE_ *data_;
+  VTRUSTdata<_TYPE_> *mem_;
+  _TYPE_ *span_;
 
   entier size_array_;
   entier memory_size_;
@@ -335,8 +335,8 @@ private:
   {
     assert(new_size >= 0);
     entier old_mem_size = 0;
-    if (p_)
-      old_mem_size = p_->get_size();
+    if (mem_)
+      old_mem_size = mem_->get_size();
 
     entier new_mem_size = new_size;
     if (smart_resize_ && (old_mem_size * 2 > new_size))
@@ -345,7 +345,7 @@ private:
     if (new_mem_size != old_mem_size)
       {
         const entier old_size_array = size_array_;
-        assert(data_ == 0 || (p_ != 0 && ref_count() == 1));
+        assert(span_ == 0 || (mem_ != 0 && ref_count() == 1));
         if (new_mem_size == 0)
           {
             detach_array();
@@ -355,7 +355,7 @@ private:
             VTRUSTdata<_TYPE_> * new_p = new VTRUSTdata<_TYPE_>(new_mem_size, storage_type_);
             _TYPE_ * new_data = new_p->get_data();
             entier copy_size = 0;
-            if (data_ != 0)
+            if (span_ != 0)
               {
                 if (options & COPY_OLD)
                   {
@@ -363,12 +363,12 @@ private:
                     if (new_size < copy_size)
                       copy_size = new_size;
                     for (entier i = 0; i < copy_size; i++)
-                      new_data[i] = data_[i];
+                      new_data[i] = span_[i];
                   }
                 detach_array();
               }
-            p_ = new_p;
-            data_ = new_data;
+            mem_ = new_p;
+            span_ = new_data;
             memory_size_ = new_mem_size;
             if (options & INITIALIZE_NEW)
               fill_default_value(copy_size, new_mem_size - copy_size);
@@ -537,31 +537,31 @@ static int fonction_compare_arrofentier_ordonner(const void * data1, const void 
 template <typename _TYPE_>
 inline _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i)
 {
-  assert(i >= 0 && i < size_array_);
-  assert((smart_resize_==1)|| (data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT));
-  return data_[i];
+  assert(!span.empty() && i >= 0 && i < span.size());
+  assert((smart_resize_==1)|| (span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT));
+  return span_[i];
 }
 
 template <>
 inline entier& TRUSTArray<entier>::operator[](entier i)
 {
   assert(i >= 0 && i < size_array_);
-  return data_[i];
+  return span_[i];
 }
 
 template <typename _TYPE_>
 inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i) const
 {
   assert(i >= 0 && i < size_array_);
-  assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
-  return data_[i];
+  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
+  return span_[i];
 }
 
 template <>
 inline const entier& TRUSTArray<entier>::operator[](entier i) const
 {
   assert(i >= 0 && i < size_array_);
-  return data_[i];
+  return span_[i];
 }
 
 template <>
@@ -570,7 +570,7 @@ inline void TRUSTArray<double>::ordonne_array()
   const int size = size_array_;
   if (size > 1)
     {
-      double * data = data_;
+      double * data = span_;
       qsort(data, size, sizeof(double), fonction_compare_arrofdouble_ordonner);
     }
 }
