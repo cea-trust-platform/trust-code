@@ -976,13 +976,13 @@ fi
       then
          git remote update
          git checkout .
-         git checkout Issue5292_portage193_tmp
+         git checkout Issue5484_portage194
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5292_portage193_tmp KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5484_portage194 KO \" $TRUST_MAIL
          else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5292_portage193_tmp OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5484_portage194 OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
@@ -1368,27 +1368,28 @@ echo "###############################################"
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
 	   check_components $vue
 	fi
-	if [ $vue = tuleap/Livraison ]
-	then
-	   ##########################################
- 	   # Merge needed from patch branch under Git
- 	   ##########################################
-	   to_merge=`mktemp_`
-  	   patch_branch=`cd $WORKDIR/tuleap/Maintenance/TRUST;git rev-parse --abbrev-ref HEAD`
-  	   master_branch=`cd $WORKDIR/tuleap/Livraison/TRUST;git rev-parse --abbrev-ref HEAD`
-	   echo " "
- 	   echo "Call `pwd`/git diff --name-status $master_branch...$patch_branch"
- 	   git diff --name-status $master_branch...$patch_branch 1>$to_merge
-	   cat $to_merge
- 	   if [ -s $to_merge ]
-	   then
-	      echo "  KO: Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch"
-	      cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
-	   else
-	      echo "  OK: No stuff to merge in $master_branch from $patch_branch"
-	   fi
- 	   rm -f $to_merge
-	fi
+	# ND 16/02/2024 : je desactive car maintenance n'est jamais mergee dans next, fix fait sur next directement
+	#if [ $vue = tuleap/Livraison ]
+	#then
+	#   ##########################################
+ 	#   # Merge needed from patch branch under Git
+ 	#   ##########################################
+	#   to_merge=`mktemp_`
+  	#   patch_branch=`cd $WORKDIR/tuleap/Maintenance/TRUST;git rev-parse --abbrev-ref HEAD`
+  	#   master_branch=`cd $WORKDIR/tuleap/Livraison/TRUST;git rev-parse --abbrev-ref HEAD`
+	#   echo " "
+ 	#   echo "Call `pwd`/git diff --name-status $master_branch...$patch_branch"
+ 	#   git diff --name-status $master_branch...$patch_branch 1>$to_merge
+	#   cat $to_merge
+ 	#   if [ -s $to_merge ]
+	#   then
+	#      echo "  KO: Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch"
+	#      cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
+	#   else
+	#      echo "  OK: No stuff to merge in $master_branch from $patch_branch"
+	#   fi
+ 	#   rm -f $to_merge
+	#fi
         echo "<--- End at "`date '+%H:%M:%S %d/%m'`
      fi
   done

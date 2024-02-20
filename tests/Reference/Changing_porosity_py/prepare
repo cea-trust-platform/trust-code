@@ -1,7 +1,11 @@
 #!/bin/bash
 
 source $TRUST_ROOT/env_for_python.sh
-python main.py > main.out
+# ND : running using mpirun is mandatory if:
+#  1. TRUST built using openmpi
+#  2. running in parallel
+# I use mpirun since test case fails on orcus and on other installs using openmpi
+mpirun -np 1 python main.py > main.out
 
 if [ $? -eq 0 ]
 then

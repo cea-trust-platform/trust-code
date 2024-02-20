@@ -1350,7 +1350,9 @@ These new features can be used by loading a specific environment file: \\
 If you are interested in such coupling, you can copy the following test case from TRUST tests database:\\
 \texttt{> source \$TRUST\_ROOT/env\_for\_python.sh} \\
 \texttt{> trust -copy docond\_VEF\_3D\_ICoCo\_py} \\
-and have a look at its prepare script.
+and have a look at its prepare script. \\
+
+Remark: You should run : \texttt{mpirun -np 1 python main.py} even in seq mode.
 
 If you are interested in ICoCo API through Python with baltiks, you can visit:
 \url{https://github.com/cea-trust-platform/icoco-swig-baltik}
