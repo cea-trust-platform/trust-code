@@ -17,6 +17,7 @@
 #define TRUSTArray_TPP_included
 
 #include <string.h>
+#include <algorithm>
 
 
 /**
@@ -274,9 +275,11 @@ inline void TRUSTArray<_TYPE_>::ordonne_array()
   if (size > 1)
     {
       _TYPE_ * data = span_.data();
+      //  TODO: what's the difference with std::sort  (also in N.log(N))?
       qsort(data, size, sizeof(_TYPE_), fonction_compare_arrofdouble_ordonner<_TYPE_>);
     }
 }
+
 template <>
 inline void TRUSTArray<int>::ordonne_array()
 {
@@ -299,21 +302,12 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
   const int size_ = size_array();
   if (size_ <= 0) return;
 
-  ordonne_array(); // Tri dans l'ordre croissant
-  // Retire les doublons (codage optimise en pointeurs)
-  _TYPE_ last_value = span_.back();
-  _TYPE_ *src = span_.data() + 1;
-  _TYPE_ *dest = span_.data() + 1;
-  for (int i = 0; i < size_; i++)
-    {
-      _TYPE_ x = *(src++);
-      if (x != last_value)
-        {
-          *(dest++) = x;
-          last_value = x;
-        }
-    }
-  int new_size_ = (int)(dest - span_.data());
+  // Sort ascending
+  ordonne_array();
+
+  auto new_end = std::unique(span_.begin(), span_.end());
+
+  int new_size_ = (int)std::distance(span_.begin(), new_end);
   resize_array(new_size_);
 }
 
