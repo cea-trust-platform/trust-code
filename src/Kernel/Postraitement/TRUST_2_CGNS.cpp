@@ -426,7 +426,7 @@ CGNS_TYPE TRUST_2_CGNS::convert_elem_type(const Motcle& type)
 {
   if (type == "HEXAEDRE" || type == "HEXAEDRE_VEF")
     return CGNS_ENUMV(HEXA_8);
-  else if (type == "RECTANGLE" || type == "QUADRANGLE" || type == "QUADRANGLE_3D")
+  else if (type == "RECTANGLE" || type == "RECTANGLE_2D_AXI" || type == "QUADRANGLE" || type == "QUADRANGLE_3D")
     return CGNS_ENUMV(QUAD_4);
   else if (type == "TRIANGLE" || type == "TRIANGLE_3D")
     return CGNS_ENUMV(TRI_3);
