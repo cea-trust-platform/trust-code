@@ -113,8 +113,7 @@ public:
       }
   }
 
-  // Methodes de construction tardive (on cree un tableau vide avec TRUSTArray() puis on appelle ces methodes
-  // pour modifier les caracteristiques du tableau : Change le nombre d'elements du tableau
+  // Resizing methods
   inline void resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
@@ -123,11 +122,10 @@ public:
   //
   inline void set_smart_resize(int flag) {}
 
-  // Gestion du type de memoire alouee (standard ou pool de memoire Trio-U)
+  /*! Memory allocation type - TEMP arrays (i.e. Trav) have a different allocation mechanism - see TRUSTTravPool.h) */
   inline void set_mem_storage(const STORAGE storage);
   inline STORAGE get_mem_storage() const { return storage_type_; }
 
-  // Operateur copie
   inline TRUSTArray& operator=(const TRUSTArray&);
 
   inline _TYPE_& operator[](int i);
@@ -144,34 +142,34 @@ public:
 
   inline const _TYPE_ *data() const;
 
-  // Renvoie le nombre d'elements du tableau (et non la taille allouee)
+  /*! Return the size of the span on the data (not the full underlying allocated size)   */
   inline int size_array() const;
 
-  // Renvoie le nombre de tableaux qui pointent vers la stucture "*p_"
+  /*! Returns the number of owners of the data, i.e. the number of Arrays pointing to the same underlying data */
   inline int ref_count() const;
 
-  // Ajoute une case en fin de tableau et y stocke la "valeur"
+  /*! Add a slot at the end of the array and store it valeur -> similar to vector<>::push_back */
   inline void append_array(_TYPE_ valeur);
 
-  // Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
+  /*! Assign 'x' to all slots in the array */
   TRUSTArray& operator=(_TYPE_ x);
 
-  // Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
+  /*! Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this */
   TRUSTArray& operator+=(const TRUSTArray& y);
 
-  // ajoute la meme valeur a toutes les cases du tableau
+  /*! ajoute la meme valeur a toutes les cases du tableau */
   TRUSTArray& operator+=(const _TYPE_ dy);
 
-  // Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
+  /*! Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this */
   TRUSTArray& operator-=(const TRUSTArray& y);
 
-  // soustrait la meme valeur a toutes les cases
+  /*! soustrait la meme valeur a toutes les cases */
   TRUSTArray& operator-=(const _TYPE_ dy);
 
-  // muliplie toutes les cases par dy
+  /*! muliplie toutes les cases par dy */
   TRUSTArray& operator*= (const _TYPE_ dy);
 
-  // divise toutes les cases par dy (pas pour TRUSTArray<int>)
+  /*! divise toutes les cases par dy (pas pour TRUSTArray<int>) */
   TRUSTArray& operator/= (const _TYPE_ dy);
 
   TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
@@ -187,9 +185,9 @@ public:
 
   // methodes virtuelles
 
-  // Construction de tableaux qui pointent vers des donnees existantes !!! Utiliser ref_data avec precaution (attention a size_array_)
+  /*! Construction de tableaux qui pointent vers des donnees existantes !!! Utiliser ref_data avec precaution */
   inline virtual void ref_data(_TYPE_* ptr, int size);
-  // Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel)
+  /*! Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel) */
   inline virtual void reset() { detach_array(); }
   inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
   inline virtual void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
@@ -241,14 +239,17 @@ protected:
   inline bool detach_array();
 
 private:
-  // Zone de memoire contenant les valeurs du tableau. Pointeur nul => le tableau est "detache" ou "ref_data", Pointeur non nul => le tableau est "normal"
+  /*! Shared pointer to the actual underlying memory block:
+   *   - shared_ptr because data can be shared between several owners -> see ref_array()
+   *   - std::vector<> because we want contiguous data, with a smart allocation mechanism
+   * WARNING: allocation mechanism for a Trav array is special.
+   */
   std::shared_ptr<Vector_> mem_;
 
-  // Pointeur vers le premier element du tableau= Pointeur nul => le tableau est "detache". Pointeur non nul => le tableau est "normal" ou "ref_data"
-  // Si p_ est non nul, data_ pointe quelque part a l'interieur de la zone allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
+  /*! Actual view on the data. See comments at the top of the class */
   Span_ span_;
 
-  // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
+  /*! Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de TRUST */
   STORAGE storage_type_;
 
   // Drapeau du statut du data sur le Device:
