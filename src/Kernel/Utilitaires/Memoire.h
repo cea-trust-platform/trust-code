@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,21 +40,6 @@ public :
   int rang(const Nom& nom) const;
   friend Sortie& operator <<(Sortie&, const Memoire&);
   void compacte();
-  ~Memoire();
-
-  // Elie : TODO : FIXME
-  inline Double_ptr_trav* add_trav_double(int n) { return trav_double->add(n); }
-  inline Float_ptr_trav* add_trav_float(int n) { return trav_float->add(n); }
-  inline Int_ptr_trav* add_trav_int(int n) { return trav_int->add(n); }
-
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>
-  add_trav(int n) { return add_trav_double(n); }
-
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>
-  add_trav(int n) { return add_trav_float(n); }
-
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>
-  add_trav(int n) { return add_trav_int(n); }
 
   int verifie() const;
   int imprime() const;
@@ -64,11 +49,6 @@ private :
   Memoire_ptr* data;
   static int step;
   static int prems;
-
-  // Elie : TODO : FIXME
-  Double_ptr_trav* trav_double;
-  Float_ptr_trav* trav_float;
-  Int_ptr_trav* trav_int;
 
   static Memoire* _instance;
 

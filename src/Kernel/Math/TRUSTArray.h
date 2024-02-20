@@ -34,7 +34,7 @@
  * - 'span_' is a view on the actual data, and can point to a sub-part of *mem_.
  *
  * We can have 3 states for the array:
- *   - "detached": meaning mem_==nullptr, span_.empty() == true (state obtained with the default ctor, detach_array() and resize_array(0) in some cases)
+ *   - "detached": meaning mem_==nullptr, span_.empty() == true (state obtained with the default ctor and detach_array())
  *   - "normal" : in this case mem_ is a non-null shared pointer to a std::vector holding the data. 'span_' then typically represents the entire span of the vector.
  *    The array is always initialised with 0.
  *    When the array is destroyed, the shared_ptr 'mem_' is destroyed too, and if this was the last reference to the underlying data, the std::vector itself
@@ -43,9 +43,14 @@
  *    This is typically produced by ref_array().
  *    Note that when this happens, we have two instances pointing to the same underlying block of data, but *none* of them has precedence over the other one (none
  *    of them is 'the' owner of the data). Ownership is shared, and when the last owner is destroyed, memory is released.
- *   - "ref_data" : this is used to point to an exterior existing memory zone (not managed by TRUSTArray - for example data provided by an exterior Fortran func)
+ *   - "ref_data" : this is used to point to an exterior existing memory zone (not managed by TRUSTArray - for example data provided by an external Fortran func)
  *    In this case, mem_ remains nullptr, just the span_ is correctly filled, and no memory is released when the array is destroyed.
  *
+ * Finally, in case of a "XXTrav" array, the memory allocation is special:
+ *  - a Trav array is allocated once, but when released, memory is kept in a pool so that another request for a new Trav might re-use it without having
+ *  to perform the allocation again.
+ *  - a Trav may not be ref_data or ref_array.
+ *  - see implementation details of this mechanism in the TRUSTTravPool class.
  */
 template <typename _TYPE_>
 class TRUSTArray : public Array_base
@@ -77,7 +82,7 @@ public:
   inline Iterator begin() { return span_.begin(); }
   inline Iterator end() { return span_.end(); }
 
-  virtual ~TRUSTArray()  { }
+  inline virtual ~TRUSTArray();
 
   TRUSTArray() : TRUSTArray(0) { }
 

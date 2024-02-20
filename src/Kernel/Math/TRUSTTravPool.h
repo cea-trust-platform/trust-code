@@ -13,71 +13,32 @@
 *
 *****************************************************************************/
 
-#ifndef Memoire_ptr_included
-#define Memoire_ptr_included
+#ifndef TRUSTTravPool_included
+#define TRUSTTravPool_included
 
-#include <Objet_U.h>
-#include <assert.h>
+#include <memory>
+#include <vector>
 
-
-/*! @brief Pointeur dans la Memoire de TRUST pour un Objet_U
+/*! Pool of memory blocks used when requesting temporary storage (Trav arrays)
  *
- * @sa Objet_U Memoire
+ * Purely static methods. One pool per base type (int, double, etc...).
+ *
+ * The implementation details are in the .cpp file.
  */
-class Memoire_ptr
+template<typename _TYPE_>
+class TRUSTTravPool
 {
-public :
+public:
+  using block_ptr_t = std::shared_ptr<std::vector<_TYPE_>>;
 
-  int next;
+  TRUSTTravPool() = delete;
 
-  Memoire_ptr(Objet_U* ptr=0) ;
-  inline int libre() const;
-  inline void set(Objet_U* ptr);
-  inline Objet_U& obj();
-  inline Memoire_ptr& operator=(const Memoire_ptr&);
-private :
-  Objet_U* o_ptr;
+  static block_ptr_t GetFreeBlock(int sz);
+  static block_ptr_t ResizeBlock(block_ptr_t p, int new_sz);
+  static void ReleaseBlock(block_ptr_t);
+
+  static void PrintStats();
 };
 
-/*! @brief Indique si le pointeur memoire est libre, c'est-a-dire s'il pointe sur un Objet_U non nul
- *
- * @return (int) 1 si le pointeur est libre
- */
-inline int Memoire_ptr::libre() const
-{
-  return o_ptr==0;
-}
 
-/*! @brief Affecte un Objet_U a un pointeur memoire
- *
- * @param (Objet_U* ptr) pointeur sur un Objet_U
- */
-inline void Memoire_ptr::set(Objet_U* ptr)
-{
-  o_ptr=ptr;
-}
-
-/*! @brief Retourne une reference sur l'Objet_U pointe par le pointeur memoire
- *
- * @return (Objet_U&) reference sur l'Objet_U pointe
- */
-inline Objet_U& Memoire_ptr::obj()
-{
-  assert(o_ptr!=0);
-  return *o_ptr;
-}
-
-
-/*! @brief Operateur d'affectation entre pointeurs memoire Dans le cas A=B, l'Objet_U pointe par A est l'Objet_U pointe par B
- *
- * @param (const Memoire_ptr& mptr) le pointeur memoire B
- * @return (Memoire_ptr&) le pointeur memoire A
- */
-inline Memoire_ptr& Memoire_ptr::operator=(const Memoire_ptr& mptr)
-{
-  o_ptr=mptr.o_ptr;
-  next=mptr.next;
-  return *this;
-}
-
-#endif
+#endif  // TRUSTTravPool_included

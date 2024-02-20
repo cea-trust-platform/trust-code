@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,10 +39,11 @@ Memoire& Memoire::Instance()
 /*! @brief Constructeur Initialize une zone de travail pour les Objet_U, les "double" et les "int"
  *
  */
-Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
-  trav_double(new Double_ptr_trav()), trav_float(new Float_ptr_trav()), trav_int(new Int_ptr_trav())
+Memoire::Memoire() :
+  size(step), data(new Memoire_ptr[step])
 {
-  for(int i=prems; i<size; i++) data[i].next=i+1;
+  for(int i=prems; i<size; i++)
+    data[i].next=i+1;
 }
 
 /*! @brief Ajoute un Objet_U dans la Memoire de TRUST
@@ -146,9 +147,6 @@ int Memoire::suppr(int num)
       if (data)
         {
           delete[] data;
-          delete trav_double;
-          delete trav_float;
-          delete trav_int;
           data=0;
           delete _instance;
           _instance=0;
@@ -487,38 +485,3 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
   return os << "Occupation taille memoire totale en Mo: " << total/1024/1024 << finl;
 }
 
-/*! @brief Destruction de la memoire Supprime les zone de travail pour les Objet_U, les double et les int
- *
- *     Sort (exit) avec un code 0
- *
- */
-Memoire::~Memoire()
-{
-  // GF on a deja tout detruit avant.
-  return;
-  /*
-  if (data)
-    {
-      int i;
-      for(i=0; i<size; i++)
-        if(! data[i].libre())
-          {
-            Cerr << finl;
-            Cerr << i << " ";
-            const Objet_U& obj=objet_u(i);
-            Cerr << " :: ";
-            Cerr << "TYPE :" << obj.le_type() << finl;
-          }
-
-      delete[] data;
-      delete trav_double;
-      delete trav_float;
-      delete trav_int;
-      data=0;
-    }
-  Cerr << "Memory destruction " << finl;
-  Cerr << "Max Memory Size : " << max_sz_mem << finl;
-  Cerr << "Memory size min : " << min_sz_mem << finl;
-  Cerr << "Memory size used in Ko : " << (max_sz_mem-min_sz_mem)/1024 << finl;
-  Process::exit(); */
-}

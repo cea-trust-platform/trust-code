@@ -74,6 +74,8 @@ public:
   {
     TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::copy(tab, RESIZE_OPTIONS::NOCOPY_NOINIT);
+    // Important! Even with default std::vector<> allocation to 0 in TRUSTArray, Trav re-uses previous blocks
+    // which might not be zero, so we enforce it:
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
@@ -85,6 +87,8 @@ public:
     TRUSTTab<_TYPE_>::set_line_size_(tab.line_size());
     TRUSTTab<_TYPE_>::resize(tab.size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
     TRUSTTab<_TYPE_>::set_md_vector(tab.get_md_vector());
+    // Important! Even with default std::vector<> allocation to 0 in TRUSTArray, Trav re-uses previous blocks
+    // which might not be zero, so we enforce it:
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
@@ -94,6 +98,8 @@ public:
   {
     TRUSTTab<_TYPE_>::set_mem_storage(STORAGE::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::copy(tab, RESIZE_OPTIONS::NOCOPY_NOINIT);
+    // Important! Even with default std::vector<> allocation to 0 in TRUSTArray, Trav re-uses previous blocks
+    // which might not be zero, so we enforce it:
     TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 

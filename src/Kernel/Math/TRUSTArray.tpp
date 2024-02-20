@@ -18,6 +18,18 @@
 
 #include <string.h>
 #include <algorithm>
+#include <TRUSTTravPool.h>
+
+
+/*! Destroy array, potentially making block available again if this was a Trav
+ */
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>::~TRUSTArray()
+{
+  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr)
+    // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
+    TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
+}
 
 
 /**
@@ -324,7 +336,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
   // Array must be detached
   assert(span_.empty() && mem_ == nullptr);
   // we might attach to an already detached array ... make sure that start and size are coherent
-  assert(m.mem_ != nullptr || (start == 0 && size == -1));
+  assert(m.mem_ != nullptr || (start == 0 && size <= 0));
   // we don't attach to ourself:
   assert(&m != this);
   // we don't attach to a ref_data:
@@ -335,7 +347,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 
   assert(start >= 0 && size >=0 && start + size <= m.size_array());
 
-  // shared_ptr copy! One more owner for the underlying data:
+  // shared_ptr copy! One more owner for the underlying data - note we migth copy nullptr here ...
   mem_ = m.mem_;
 
   // stupid enough, but we might have ref'ed a detached array ...
@@ -369,7 +381,11 @@ inline void TRUSTArray<_TYPE_>::fill_default_value(RESIZE_OPTIONS opt, int first
 
 }
 
-/** Protected method for resize. Used by derived classes. Same as resize_array() without the checks.
+/** Protected method for resize. Used by derived classes.
+ * Same as resize_array() with less checks.
+ *
+ * This is also where we deal with the STORAGE::TEMP_STORAGE capability, i.e. the Trav arrays.
+ * There memory is taken from a shared pool (TRUSTTravPool)
  */
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
@@ -378,21 +394,57 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 
   if (mem_ == nullptr)
     {
+      // We avoid allocating for empty arrays ... those are typically situations where we will resize (with a non
+      // null size) just after, so the real allocation will be made at that point.
+      if(new_size == 0) return;
+
       // First allocation - memory space should really be malloc'd:
-      mem_ = std::make_shared<Vector_>(Vector_(new_size));
+      if(storage_type_ == STORAGE::TEMP_STORAGE)
+        {
+          mem_ = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_size);
+          // Don't forget to init! GetFreeBlock doesn't do it ...
+          if(opt == RESIZE_OPTIONS::COPY_INIT)
+            std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
+        }
+      else
+        mem_ = std::make_shared<Vector_>(Vector_(new_size));
       span_ = Span_(*mem_);
     }
   else
     {
       // Array is already allocated, we want to resize:
-      // array must not be shared! (also checked in resize_array()) ... but, still, we allow passing here
-      // if we keep the same size_array(), since this is invoked by TRUSTTab when just changing the overall shape of
+      // array must not be shared! (also checked in resize_array()) ... but, still, we allow passing here (i.e. no assert)
+      // only if we keep the same size_array(). This is for example invoked by TRUSTTab when just changing the overall shape of
       // the array without modifying the total number of elems ...
-      if(new_size != size_array()) // Yes, we compare to the span's size
+      int sz_arr = size_array();
+      if(new_size != sz_arr) // Yes, we compare to the span's size
         {
-          assert(ref_count() == 1);
-          mem_->resize(new_size);
-          span_ = Span_(*mem_);
+          assert(ref_count() == 1);  // from here on, we *really* should not be shared
+          if (storage_type_ == STORAGE::TEMP_STORAGE)
+            {
+              // Resize of a Trav: if the underlying mem_ is already big enough, just update the span, and possibly fill with 0
+              // else, really increase memory allocation using the TRUSTTravPool.
+              int mem_sz = (int)mem_->size();
+              if (new_size <= mem_sz)
+                {
+                  // Cheat, simply update the span (up or down)
+                  span_ = Span_(span_.begin(), span_.begin()+new_size);
+                  // Possibly set to 0 extended part:
+                  if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT)
+                    std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
+                }
+              else  // Real size increase of the underlying std::vector
+                {
+                  // ResizeBlock in its current impl. does also the zeroing:
+                  mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
+                  span_ = Span_(*mem_);
+                }
+            }
+          else  // Normal (non Trav) arrays
+            {
+              mem_->resize(new_size);
+              span_ = Span_(*mem_);
+            }
         }
     }
 }

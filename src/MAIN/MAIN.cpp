@@ -32,6 +32,8 @@ static const char directory_separator = '\\';
 static const char directory_separator = '/';
 #endif
 
+#include <TRUSTTravPool.h>
+
 extern void desalloue_pwd();
 void usage()
 {
@@ -393,6 +395,14 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     if (master)
       {
         Cerr << "Arret des processes." << finl;
+#ifndef NDEBUG
+        Cerr << finl;
+        Cerr << "DEBUG: Statistics for Trav arrays (int): " << finl;
+        TRUSTTravPool<int>::PrintStats();
+        Cerr << finl;
+        Cerr << "DEBUG: Statistics for Trav arrays (double): " << finl;
+        TRUSTTravPool<double>::PrintStats();
+#endif
       }
   }
 
