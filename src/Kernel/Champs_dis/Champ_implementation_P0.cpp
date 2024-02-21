@@ -153,7 +153,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) c
     for (int j = 0; j < nb_nodes_per_cell; j++)
       {
         int node = domaine.sommet_elem(i, j);
-        if (node < nb_nodes)
+        if (node >= 0 && node < nb_nodes)
           {
             count[node]++;
             if (values.nb_dim() == 1) // TODO : FIXME : champ porosite doit etre un DoubleTab
