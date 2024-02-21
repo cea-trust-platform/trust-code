@@ -275,7 +275,7 @@ Entree& Postraitement::readOn(Entree& s)
     }
 
   bool is_supported = false, is_single_lata = false;
-  std::vector<Motcle> supported = { "CGNS" , "LATA", "SINGLE_LATA", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
+  std::vector<Motcle> supported = { "CGNS" , "LATA", "SINGLE_LATA", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ" };
 
   for (auto &itr : supported)
     if (Motcle(format) == itr)
@@ -1196,15 +1196,14 @@ void Postraitement::init()
   Schema_Temps_base& sch = mon_probleme->schema_temps();
   double temps_courant = sch.temps_courant();
   double tinit = sch.temps_init();
-  Postraitement::formats_supportes=Motcles(5);
-  assert(formats_supportes.size()==5);
+  Postraitement::formats_supportes=Motcles(4);
+  assert(formats_supportes.size()==4);
   if(formats_supportes[0]!="lml")
     {
       formats_supportes[0]="lml";
       formats_supportes[1]="lata";
-      formats_supportes[2]="meshtv";
-      formats_supportes[3]="med";
-      formats_supportes[4]="xyz";
+      formats_supportes[2]="med";
+      formats_supportes[3]="xyz";
     }
 
   const Domaine& dom=le_domaine.valeur();

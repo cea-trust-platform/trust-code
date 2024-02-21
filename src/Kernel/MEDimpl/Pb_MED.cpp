@@ -98,11 +98,6 @@ Entree& Pbc_MED::readOn(Entree& is )
       postraiter();
     }
 
-  if (nbpasdetemps==1)
-    {
-      //pour eviter bug meshtv
-      //  postraiter();
-    }
   for (int i=0; i<nb_problemes(); i++)
     ref_cast(Probleme_base,probleme(i)).finir();
   delete [] listob;

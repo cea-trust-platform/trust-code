@@ -250,7 +250,7 @@ int Format_Post_base::ecrire_item_int(const Nom&   id_item,
 
 /////////////////Exemple d utilisation//////////////////////////////////////
 
-void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
+/* void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
                                                            const Domaine& dom,
                                                            const Domaine_dis_base& domaine_dis,
                                                            double temps_champ, double temps_courant,
@@ -342,7 +342,7 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
   finir_ecriture(temps_courant);
   finir(est_le_dernier_post);
 
-}
+} */
 
 
 //Actuellement on commente

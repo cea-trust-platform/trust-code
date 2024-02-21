@@ -57,7 +57,7 @@ void Format_Post_Med::reset()
  */
 Sortie& Format_Post_Med::printOn(Sortie& os) const
 {
-  Cerr << "Format_Post_Meshtv::printOn : error" << finl;
+  Cerr << "Format_Post_Med::printOn : error" << finl;
   exit();
   return os;
 }

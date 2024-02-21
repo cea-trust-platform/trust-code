@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -417,7 +417,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
  *     noms_champs N CHAMP1 CHAMP2 ... (noms des champs a filtrer dans le probleme)
  *     [ nom_fichier_post NOM_SANS_EXTENSION ] (soit on donne nom_fichier et format_post,
  *                                              soit on donne fichier_post)
- *     [ format_post lata|meshtv|lml|med|... ] (par defaut lata)
+ *     [ format_post lata|lml|med|... ] (par defaut lata)
  *     [ fichier_post Format_Post_XXX { ... } ] (lecture par readOn du Format_Post_XXX)
  *     fonction_filtre ...  (format : voir Moyenne_volumique::readOn() )
  *     [ localisation ELEM|SOM ]
