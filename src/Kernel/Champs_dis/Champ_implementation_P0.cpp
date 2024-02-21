@@ -152,7 +152,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& tab_resul
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_cells,nb_nodes_per_cell}), KOKKOS_LAMBDA(const int i, const int j)
   {
     int node = sommet_elem(i, j);
-    if (node < nb_nodes)
+    if (node >= 0 && node < nb_nodes)
       {
         Kokkos::atomic_add(&count[node], 1);
         for (int k = 0; k < nb_components; k++)
