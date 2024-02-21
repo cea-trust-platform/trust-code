@@ -16,7 +16,8 @@ define_modules_config()
    then
       # Compilateur crayCC
       module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
-      module=$module" cce/15.0.1" # 16.0.0 has an issue with crayftn (ToDo contact support)
+      #module=$module" cce/15.0.1" # 16.0.0 has an issue with crayftn (ToDo contact support)
+      module=$module" cce/17.0.0" # 16.0.0 has an issue with crayftn (ToDo contact support)
    else
       # Compilateur GNU
       module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0"   
