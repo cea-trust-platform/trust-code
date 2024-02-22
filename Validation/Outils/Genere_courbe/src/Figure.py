@@ -259,7 +259,8 @@ class Figure:
             elif self.format=='png':
                 #png
                 #ficPlot.write('set size 1.3,1.3\n')
-                ficPlot.write('set terminal png large\n')
+                #ficPlot.write('set terminal png large\n')
+                ficPlot.write('set terminal pngcairo size 800,600\n')
                 self.fichierGraphique = 'fic%03d.png' % (indice)
 
             elif self.format=='epslatex':
