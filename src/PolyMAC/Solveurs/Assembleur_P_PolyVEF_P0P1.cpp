@@ -115,7 +115,7 @@ int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVe
   grad.ajouter_blocs_ext({ { "pression", &mat_grad } }, sec_grad, 1); //avec lignes virtuelles
   div.ajouter_blocs({ { "vitesse", &mat_div_v }, { "pression", &mat_div_p } }, sec_div); //avec lignes virtuelles
   for (f = 0, i = 0; f < nf_tot; f++)
-    for (d = 0; d < D; d++, i++) inv_diag(i) = 1. / (diag.size() ? diag(i) : pf(f) * vf(f));
+    for (d = 0; d < D; d++, i++) inv_diag(i) = 1. / (diag.size() ? diag(D * i + d) : pf(f) * vf(f));
   mat_grad.diagmulmat(inv_diag);
   mat.affecte_prod(mat_div_v, mat_grad);
   mat_div_p *= -1;
