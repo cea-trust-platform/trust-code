@@ -97,6 +97,7 @@ public:
   static std::string modify_domaine_name_for_post(const Nom& );
   static void modify_fileId_for_post(const std::map<std::string, Nom>&, const std::string&, const True_int, True_int&);
   static int get_index_nom_vector(const std::vector<Nom>&, const Nom&);
+  static std::string remove_slash_linkfile(std::string&);
 
 private:
   REF(Domaine) dom_trust_;

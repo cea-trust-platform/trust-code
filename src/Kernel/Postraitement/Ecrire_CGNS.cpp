@@ -1017,6 +1017,8 @@ void Ecrire_CGNS::cgns_open_solution_link_file(const int ind, const std::string&
     Cerr << "Error Ecrire_CGNS::cgns_write_domaine_seq : cgns_open_solution_file !" << finl, Process::is_sequential() ? cg_error_exit() : cgp_error_exit();
 
   std::string linkfile = baseFile_name_ + ".grid.cgns"; // file name
+  linkfile = TRUST_2_CGNS::remove_slash_linkfile(linkfile);
+
   std::string linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/GridCoordinates/";
 
   if (cg_goto(fileId, baseId_[0], "Zone_t", 1, "end") != CG_OK)
@@ -1078,6 +1080,7 @@ void Ecrire_CGNS::cgns_write_final_link_file()
           std::string solname = "FlowSolution" + std::to_string(itr_t) + "_" + LOC;
 
           std::string linkfile = baseFile_name_ + "_" + LOC + ".solution." + std::to_string(itr_t) + ".cgns"; // file name
+          linkfile = TRUST_2_CGNS::remove_slash_linkfile(linkfile);
 
           std::string linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/" + solname + "/";
 
@@ -1167,6 +1170,8 @@ void Ecrire_CGNS::cgns_write_link_file_for_multiple_files()
         Cerr << "Error Ecrire_CGNS::cgns_write_link_file : cg_goto !" << finl, cg_error_exit();
 
       std::string linkfile = (Nom(baseFile_name_)).nom_me(0).getString() + ".cgns"; // file name
+      linkfile = TRUST_2_CGNS::remove_slash_linkfile(linkfile);
+
       std::string linkpath = "/" + std::string(basename) + "/TimeIterValues/TimeValues/";
 
       if (cg_link_write("TimeValues", linkfile.c_str(), linkpath.c_str()) != CG_OK)

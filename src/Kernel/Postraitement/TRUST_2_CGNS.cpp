@@ -28,6 +28,14 @@
 #endif /* INT_is_64_ */
 #endif /* MPI_ */
 
+std::string TRUST_2_CGNS::remove_slash_linkfile(std::string& linkfile)
+{
+  auto found = linkfile.find_last_of("/");
+  if (found != std::string::npos)
+    return linkfile.substr(found + 1);
+  return linkfile;
+}
+
 Motcle TRUST_2_CGNS::modify_field_name_for_post(const Nom& id_du_champ, const Nom& id_du_domaine, const std::string& LOC, True_int& fieldId_som, True_int& fieldId_elem)
 {
   Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
