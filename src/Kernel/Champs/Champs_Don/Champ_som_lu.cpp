@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions, const IntV
 
 DoubleVect& Champ_som_lu::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
-  assert(val.size() == les_polys.size_array());
+  assert(val.size_totale() >= les_polys.size_array());
   const DoubleTab& coord = mon_domaine->coord_sommets();
   const DoubleTab& ch = valeurs();
   int le_poly;

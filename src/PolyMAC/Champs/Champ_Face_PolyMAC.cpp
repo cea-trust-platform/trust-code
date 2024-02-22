@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -502,7 +502,7 @@ DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& position
 {
   fcl();
   const Champ_base& cha=le_champ();
-  assert(val.size() == les_polys.size());
+  assert(val.size_totale() >= les_polys.size());
 
   // seulement si Champ_Face_PolyMAC car interp_ve est besoin de mon_dom_cl_dis ...
   if (mon_dom_cl_dis.est_nul() && que_suis_je() ==  "Champ_Face_PolyMAC")

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_elems(const DoubleTab&, const Int
   int nb_compo_ = cha.nb_comp();
 
   int j, ncomp, num_som, nb_som_elem = get_domaine_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
-  assert(val.size() == nb_elems);
+  assert(val.size_totale() >= nb_elems);
   if (nb_compo_ == 1)
     {
       for (ielem = 0; ielem < nb_elems; ielem++)
@@ -130,7 +130,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
   int nb_compo_ = cha.nb_comp();
 
   int j, num_som, nb_som_elem = get_domaine_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
-  assert(val.size() == nb_elems);
+  assert(val.size_totale() >= nb_elems);
   if (nb_compo_ == 1)
     {
       assert(ncomp == 0);

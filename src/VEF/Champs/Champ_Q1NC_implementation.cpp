@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -205,7 +205,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& p
   double xs, ys, zs;
   int face;
   const Domaine_VEF& domaine_VEF = domaine_vef();
-  assert(val.size() == les_polys.size());
+  assert(val.size_totale() >= les_polys.size());
   int le_poly;
   const DoubleTab& ch = cha.valeurs();
   int init = tab_param.size(), D = Objet_U::dimension;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,7 @@ DoubleVect& Champ_som_lu_VEF::valeur_aux_elems_compo(const DoubleTab& positions,
   double xs, ys, zs;
   const DoubleTab& coord = mon_domaine->coord_sommets();
   const IntTab& sommet_poly = mon_domaine->les_elems();
-  assert(val.size() == les_polys.size());
+  assert(val.size_totale() >= les_polys.size());
   const DoubleTab& ch = valeurs();
 
   if (dimension == 2)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -292,7 +292,7 @@ DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& posit
 {
   if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_compo(positions, polys, val, ncomp);
   int nf_tot = domaine_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
-  assert(val.size() == polys.size());
+  assert(val.size_totale() >= polys.size());
 
   DoubleTab vfe(valeurs());
   update_ve(vfe);

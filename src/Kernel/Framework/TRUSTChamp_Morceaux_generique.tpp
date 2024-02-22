@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -145,7 +145,7 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems(const DoubleT
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems_compo(const DoubleTab&, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
-  assert(val.size() == les_polys.size());
+  assert(val.size_totale() >= les_polys.size());
   int le_poly;
   const DoubleTab& ch = valeurs();
 
