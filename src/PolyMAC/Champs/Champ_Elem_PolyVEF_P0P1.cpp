@@ -92,7 +92,7 @@ const DoubleTab& Champ_Elem_PolyVEF_P0P1::alpha_es() const
       /* stockage */
       for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
         if (ps_ref(s) < 0 || scld(s) < scld(s + 1))
-          alpha_es_(e, j) = B(j), j++;
+          alpha_es_(e, i) = B(j), j++;
     }
   return alpha_es_;
 }
