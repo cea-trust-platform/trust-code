@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,6 +85,7 @@ Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
   recv_buf_sizes_.set_smart_resize(1);
   send_procs_.set_smart_resize(1);
   recv_procs_.set_smart_resize(1);
+  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != NULL;
 }
 
 Schema_Comm_Vecteurs::~Schema_Comm_Vecteurs()
@@ -111,7 +112,6 @@ void Schema_Comm_Vecteurs::begin_init()
   recv_procs_.resize_array(0);
   sorted_ = 1;
   status_ = BEGIN_INIT;
-  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != NULL;
   if (use_gpu_aware_mpi_)
     {
 #if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
