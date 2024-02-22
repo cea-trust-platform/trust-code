@@ -98,8 +98,8 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
         (*matp)(0, 0) += 1;
       const ArrOfInt& items_blocs = xs.get_md_vector().valeur().get_items_to_compute(); /* 1er proc possedant un sommet reel : plus dur... */
       for (ok = 0, i = 0; !ok && i < items_blocs.size_array(); i += 2)
-        for (s = items_blocs[i]; !ok && s < items_blocs[i + 1]; s++)
-          ok |= ps_ref(s) < 0;
+        for (s = items_blocs[i]; s < items_blocs[i + 1]; s++)
+          if ((ok |= ps_ref(s) < 0)) break;
       if (Process::me() == Process::mp_min(ok ? Process::me() : 1e8))
         (*matp)(ne_tot + s, ne_tot + s) += 1;
     }
