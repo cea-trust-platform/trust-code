@@ -95,6 +95,9 @@ int Fluide_reel_base::initialiser(const double temps)
   ch_h.associer_eqn(eqn), ch_h.resize_val_bord(), ch_h.set_val_bord_fluide_multiphase(true);
   ch_e.associer_eqn(eqn), ch_e.resize_val_bord(), ch_e.set_val_bord_fluide_multiphase(true);
 
+  // XXX Elie Saikali : utile pour cas reprise !
+  ch_e.changer_temps(temps), ch_h.changer_temps(temps);
+
   Cp.initialiser(temps);
   mu.initialiser(temps);
   nu.initialiser(temps);

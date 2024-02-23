@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -388,7 +388,14 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
 
 int QDM_Multiphase::preparer_calcul()
 {
-  return Equation_base::preparer_calcul(); //pour eviter Navier_Stokes_std::preparer_calcul() !
+  Equation_base::preparer_calcul(); //pour eviter Navier_Stokes_std::preparer_calcul() !
+
+  // XXX Elie Saikali : utile pour cas reprise !
+  const double temps = schema_temps().temps_courant();
+  pression().changer_temps(temps);
+  pression_pa().changer_temps(temps);
+
+  return 1;
 }
 
 void QDM_Multiphase::update_y_plus(const DoubleTab& tab)

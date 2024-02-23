@@ -186,6 +186,9 @@ int Milieu_composite::initialiser(const double temps)
   ch_h.associer_eqn(eqn), ch_h.init_champ_calcule(*this, calculer_enthalpie);
   t_init_ = temps;
 
+  // XXX Elie Saikali : utile pour cas reprise !
+  rho.changer_temps(temps), e_int.changer_temps(temps), h.changer_temps(temps);
+
   return Milieu_base::initialiser_porosite(temps);
 }
 
