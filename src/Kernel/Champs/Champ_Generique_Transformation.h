@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,6 +74,7 @@
 // "nom_champ_discret2" designe le nom du champ constituant la seconde source
 // ...
 // "loc" permet de specifier une localisation particuliere pour evaluer les valeurs de l espace de stockage
+// "unite" permet a l'utilisateur de donner une unite au champ obtenu
 //  valeurs possibles : "elem", "som", "faces" et "elem_som".
 //  Dans le cas ou aucune localisation n'est specifiee, la localisation retenue est celle du support de la premiere source.
 //
@@ -108,6 +109,7 @@ protected:
   mutable VECT(Parser_U) fxyz; //Parser utilise pour evaluer la valeur prise par la combinaison
   int nb_comp_ = 1;                //Nombre de composantes du champ evalue
   Motcle localisation_;        //Localisation du support d evaluation de l expression
+  Nom unite_;                 //unite du champ obtenu (a specifier par l'utilisateur)
   Nature_du_champ nature_ch = scalaire;   //Nature du champ evalue
 
 };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ class MorEqn;
  *                                                 source Champ_Post_ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" }
  *                }
  *  "nom_champ"     fixe par utilisateur sera le nom du champ generique
+ *  "unite"     fixe par utilisateur pour la lisibilite dans les postraitements
  *  "type_moreqn"   designe le type de morceau d equation (actuellement disponible "operateur")
  *  "numero_moreqn" designe le numero du morceau
  *                    ex : cas operateur : 0 (diffusion) 1 (convection) 2 (gradient) 3 (divergence)
@@ -70,6 +71,8 @@ protected:
   int compo_;                            //Pour identifier la composante a recuperer pour l option flux_bords
   REF(Equation_base) ref_eq_;       //REF vers l equation qui porte le morceau
   Motcle  localisation_;            //localisation correspondant au support du champ postraite
+  Nom unite_;                 //unite du champ obtenu (a specifier par l'utilisateur)
+
 };
 
 #endif

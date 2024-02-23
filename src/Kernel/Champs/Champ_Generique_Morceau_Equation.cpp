@@ -48,6 +48,7 @@ Entree& Champ_Generique_Morceau_Equation::readOn(Entree& s )
 //                   (cas operateur : 0 (diffusion) 1 (convection) 2 (gradient) 3 (divergence))
 //  option          : choix de la quantite a postraiter
 //                     (actuellement "stabilite" pour dt_stab "flux_bords" pour flux_bords_)
+//  unite          : pour imposer l'unite du champ
 //  compo            : numero de la composante a postraiter pour le cas des "flux_bords"
 //                     (si plusieurs composantes)
 void Champ_Generique_Morceau_Equation::set_param(Param& param)
@@ -55,6 +56,7 @@ void Champ_Generique_Morceau_Equation::set_param(Param& param)
   Champ_Gen_de_Champs_Gen::set_param(param);
   param.ajouter("type",&type_morceau_,Param::REQUIRED); // XD_ADD_P chaine can only be operateur for equation operators.
   param.ajouter("numero",&numero_morceau_); // XD_ADD_P entier numero will be 0 (diffusive operator) or 1 (convective operator) or  2 (gradient operator) or 3 (divergence operator).
+  param.ajouter("unite", &unite_); // XD_ADD_P chaine will specify the field unit
   param.ajouter("option",&option_,Param::REQUIRED); // XD_ADD_P chaine(into=["stabilite","flux_bords","flux_surfacique_bords"]) option is stability for time steps or flux_bords for boundary fluxes or flux_surfacique_bords for boundary surfacic fluxes
   param.ajouter("compo",&compo_); // XD_ADD_P entier compo will specify the number component of the boundary flux (for boundary fluxes, in this case compo permits to specify the number component of the boundary flux choosen).
 }
@@ -209,12 +211,16 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
     case 1:
       {
         Noms unites(1);
+        if (unite_ != "??")
+          {
+            unites[0] = unite_;
+            return unites;
+          }
         if (Motcle(option_)=="stabilite")
           unites[0] = "s";
         else if (Motcle(option_).debute_par("FLUX_"))
           {
             // Tres incomplet mais bon...:
-            unites[0] = "??";
             if (ref_eq_->inconnue().le_nom()=="vitesse")
               {
                 if (numero_morceau_<2) unites[0]="N";

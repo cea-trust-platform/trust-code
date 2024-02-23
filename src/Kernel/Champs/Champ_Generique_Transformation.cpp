@@ -36,6 +36,8 @@
 Implemente_instanciable(Champ_Generique_Transformation,"Transformation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Transformation,"Champ_Post_Transformation");
 
+// XD transformation champ_post_de_champs_post champ_post_transformation 1 To create a field with a transformation using source fields and x, y, z, t
+
 Sortie& Champ_Generique_Transformation::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
@@ -58,13 +60,15 @@ Entree& Champ_Generique_Transformation::readOn(Entree& s )
 //-expression : expression de la transformation (cas des methodes formule et vecteur)
 //-numero : numero de la composante a extraire (uniquement pour le cas de la methode composante)
 //-localisation : localisation du champ de stockage
+//-unite : pour specifier l'unite d'un champ pour ameliorer la lisibilite des postraitements
 void Champ_Generique_Transformation::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("methode",&methode_,Param::REQUIRED);
-  param.ajouter_non_std("expression",(this));
-  param.ajouter_non_std("numero",(this));
-  param.ajouter("localisation",&localisation_);
+  param.ajouter("methode",&methode_,Param::REQUIRED); // XD_ADD_P chaine(into=["produit_scalaire","norme","vecteur","formule","composante"]) methode 0 methode norme : will calculate the norm of a vector given by a source field NL2 methode produit_scalaire : will calculate the dot product of two vectors given by two sources fields NL2 methode composante numero integer : will create a field by extracting the integer component of a field given by a source field NL2 methode formule expression 1 : will create a scalar field located to elements using expressions with x,y,z,t parameters and field names given by a source field or several sources fields. NL2 methode vecteur expression N f1(x,y,z,t) fN(x,y,z,t) : will create a vector field located to elements by defining its N components with N expressions with x,y,z,t parameters and field names given by a source field or several sources fields.
+  param.ajouter("unite", &unite_);  // XD_ADD_P chaine will specify the field unit
+  param.ajouter_non_std("expression",(this)); // XD_ADD_P listchaine expression 1 see methodes formule and vecteur
+  param.ajouter_non_std("numero",(this)); // XD_ADD_P entier numero 1 see methode composante
+  param.ajouter("localisation",&localisation_); // XD_ADD_P chaine localisation 1 type_loc indicate where is done the interpolation (elem for element or som for node). The optional keyword methode is limited to calculer_champ_post for the moment
 }
 
 int Champ_Generique_Transformation::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -834,7 +838,7 @@ const Noms Champ_Generique_Transformation::get_property(const Motcle& query) con
       {
         Noms unites(nb_comp_);
         for (int comp=0; comp<nb_comp_; comp++)
-          unites[comp] = "??";
+          unites[comp] = unite_;
         return unites;
       }
     }

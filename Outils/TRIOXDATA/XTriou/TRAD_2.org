@@ -119,11 +119,6 @@ champ_post_de_champs_post champ_generique_base champ_post_de_champs_post -1 not_
   attr source_reference chaine source_reference 1 not_set
   attr sources_reference list_nom_virgule sources_reference 1 not_set
   attr sources listchamp_generique sources 1 sources { Champ_Post.... { ... } Champ_Post.. { ... }}
-transformation champ_post_de_champs_post transformation -1 To create a field with a transformation.
-  attr methode chaine(into=["produit_scalaire","norme","vecteur","formule","composante"]) methode 0 methode norme : will calculate the norm of a vector given by a source field NL2 methode produit_scalaire : will calculate the dot product of two vectors given by two sources fields NL2 methode composante numero integer : will create a field by extracting the integer component of a field given by a source field NL2 methode formule expression 1 : will create a scalar field located to elements using expressions with x,y,z,t parameters and field names given by a source field or several sources fields. NL2 methode vecteur expression N f1(x,y,z,t) fN(x,y,z,t) : will create a vector field located to elements by defining its N components with N expressions with x,y,z,t parameters and field names given by a source field or several sources fields.
-  attr expression listchaine expression 1 see methodes formule and vecteur
-  attr numero entier numero 1 see methode composante
-  attr localisation chaine localisation 1 type_loc indicate where is done the interpolation (elem for element or som for node). The optional keyword methode is limited to calculer_champ_post for the moment
 refchamp champ_generique_base refchamp -1 Field of prolem
   attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
   attr nom_source chaine nom_source 1 The alias name for the field
