@@ -32,6 +32,7 @@
 #include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <cfloat>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable(Op_Grad_PolyVEF_P0P1_Face, "Op_Grad_PolyVEF_P0P1_Face", Op_Grad_PolyMAC_P0_Face);
 
@@ -66,7 +67,7 @@ void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int 
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
   for (f = 0; f < (virt ? dom.nb_faces_tot() : dom.nb_faces()); f++)
-    if (fcl(f, 0) < 2 && f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0)) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
+    if (f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0)) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
       {
         /* elements amont/aval */
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
@@ -105,7 +106,7 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
 
   /* aux faces */
   for (f = 0; f < (virt ? dom.nb_faces_tot() : dom.nb_faces()); f++)
-    if (fcl(f, 0) < 2 && (f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0))) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
+    if (f_e(f, 0) >= 0 && (fcl(f, 0) || f_e(f, 1) >= 0) && fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3)) /* pour eviter les faces virtuelles auxquelles il manque un voisin */
       {
         for (p_a_v = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           for (n = 0; n < N; n++) p_a_v(n) += vfd(f, i) * pf(f) * (alp ? (*alp)(e, n) : 1);
@@ -135,6 +136,13 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
                   for (d = 0; d < D; d++) G(2 + i, d) += fac * nf(f, d), G(2 + ib, d) += fac * nf(f, d);
                 }
           }
+        /* si Symetrie : retrait de la composante normale (on passe apres Masse_PolyVEF, qui le ferait sinon) */
+        if (fcl(f, 0) == 2)
+          for (i = 0; i < 2 + f_s.dimension(1); i++)
+            {
+              for (fac = 0, d = 0; d < D; d++) fac += G(i, d) * nf(f, d) / fs(f);
+              for (d = 0; d < D; d++) G(i, d) -= fac * nf(f, d) / fs(f);
+            }
 
         /* second membre / matrice : elements */
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)

@@ -73,7 +73,6 @@ void Op_Conv_Classic_PolyVEF_Face::completer()
   const DoubleTab& xp = dom.xp(), &xv = dom.xv(), &xs = dom.domaine().coord_sommets();
   int i, j, e, f, s, n_f, D = dimension, skip;
   double vz[3] = { 0, 0, 1 };
-  e_fa_d.set_smart_resize(1), e_fa_f.set_smart_resize(1), e_fa_s.set_smart_resize(1);
   std::map<std::array<int, 2>, std::array<int, 2>> a_f; //faces connectees a chaque arete : on stocke les indices de face + 1
   for (e = 0, e_fa_d.resize(1), e_fa_f.resize(0, 2), e_fa_s.resize(0, D); e < dom.nb_elem_tot(); e_fa_d.append_line(e_fa_f.dimension(0)), e++)
     {
@@ -93,7 +92,7 @@ void Op_Conv_Classic_PolyVEF_Face::completer()
         {
           int s1 = kv.first[0], s2 = kv.first[1], f1 = kv.second[0] - 1, f2 = kv.second[1] - 1;
           e_fa_f.append_line(f1, f2);
-          auto v = dom.cross(D, 3, &xs(s2, 0), D < 3 ? vz : &xs(s1, 0), &xp(e, 0), D < 3 ? NULL : &xp(e, 0));
+          auto v = dom.cross(D, 3, &xs(s2, 0), D < 3 ? vz : &xs(s1, 0), &xp(e, 0), D < 3 ? nullptr : &xp(e, 0));
           double fac = (D < 3 ? 1 : 0.5) * (dom.dot(&xv(f2, 0), &v[0], &xv(f1, 0)) > 0 ? 1 : -1);
           D < 3 ? e_fa_s.append_line(fac * v[0], fac * v[1]) : e_fa_s.append_line(fac * v[0], fac * v[1], fac * v[2]);
         }
@@ -105,10 +104,10 @@ double Op_Conv_Classic_PolyVEF_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
-  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const DoubleVect& pe = porosite_e, &pf = porosite_f, &vf = dom.volumes_entrelaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vfd = dom.volumes_entrelaces_dir(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
   int i, j, e, f, d, D = dimension, n, N = vit.line_size() / D;
   DoubleTrav flux(N), fsum(dom.nb_faces(), N), a_f(N); //flux, somme des flux par face, tx de vide par face
@@ -144,18 +143,17 @@ double Op_Conv_Classic_PolyVEF_Face::calculer_dt_stab() const
 void Op_Conv_Classic_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
-  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const IntTab& fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
   int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
   /* stencil : toutes les faces connectees par une facette de e_fa_f, avec melange des phases si correlation de masse ajoutee */
   for (i = 0; i < e_fa_f.dimension(0); i++)
     for (j = 0; j < 2; j++)
@@ -176,19 +174,19 @@ void Op_Conv_Classic_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
 void Op_Conv_Classic_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
-  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const IntTab& fcl = ch.fcl();
   const DoubleVect& pe = porosite_e;
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
   const std::string& nom_inco = ch.le_nom().getString();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs(), &vit = ch.passe(),
-                   *a_r = !pbm ? NULL : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(),
-                    *alp = pbm ? &pbm->equation_masse().inconnue().passe() : NULL, &rho = equation().milieu().masse_volumique().passe(),
-                     a_b = pbm ? pbm->equation_masse().inconnue()->valeur_aux_bords() : DoubleTab(), r_b = pbm ? equation().milieu().masse_volumique()->valeur_aux_bords() : DoubleTab();
-  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+                   *a_r = !pbm ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(),
+                    *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, &rho = equation().milieu().masse_volumique().passe(),
+                     a_b = pbm ? pbm->equation_masse().inconnue().valeur_aux_bords() : DoubleTab(), r_b = pbm ? equation().milieu().masse_volumique().valeur_aux_bords() : DoubleTab();
+  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   int i, j, k, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
   DoubleTrav masse(N, N), flux(N); //flux de masse a toutes les faces et a la facette (avec masse ajoutee)

@@ -26,6 +26,7 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <SFichier.h>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable(Op_Div_PolyVEF_P0P1, "Op_Div_PolyVEF_P0P1", Op_Div_PolyMAC_P0);
 
@@ -46,18 +47,19 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
   IntTrav sten_v(0,2), sten_p(0, 2); //stencil des deux matrices
 
   for (f = 0; f < dom.nb_faces_tot(); f++)
-    if (fcl(f, 0) < 2) /* sten_v : divergence "classique" */
-      {
+    {
+      if (fcl(f, 0) < 2) /* elements : faces internes / Neumann seulement */
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           if (e < dom.nb_elem()) //elements
             for (d = 0; d < D; d++)
               for (n = 0; n < N; n++)
                 sten_v.append_line(N * e + n, N * (D * f + d) + n);
+      if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3)) /* sommets : Symetrie aussi (sauf si sym_as_diri) */
         for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
           for (d = 0; s < dom.domaine().nb_som() && scl_d(s) == scl_d(s + 1) && d < D; d++) //sommets a pression non imposee
             for (n = 0; n < N; n++)
               sten_v.append_line(N * (ne_tot + s) + n, N * (D * f + d) + n);
-      }
+    }
 
   for (e = 0; e < dom.nb_elem(); e++) sten_p.append_line(e, e); /* sten_p : diagonale du vide + egalites p_s = p_e pour les pressions inutilisees */
   for (s = 0; s < dom.nb_som_tot() ; s++)
@@ -95,13 +97,13 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
   if (matp && !has_P_ref)
     {
       if (Process::me() == Process::mp_min(dom.nb_elem() ? Process::me() : 1e8)) /* 1er proc possedant un element reel */
-        (*matp)(0, 0) += 1;
+        (*matp)(0, 0) -= 1;
       const ArrOfInt& items_blocs = xs.get_md_vector().valeur().get_items_to_compute(); /* 1er proc possedant un sommet reel : plus dur... */
       for (ok = 0, i = 0; !ok && i < items_blocs.size_array(); i += 2)
         for (s = items_blocs[i]; s < items_blocs[i + 1]; s++)
           if ((ok |= ps_ref(s) < 0)) break;
       if (Process::me() == Process::mp_min(ok ? Process::me() : 1e8))
-        (*matp)(ne_tot + s, ne_tot + s) += 1;
+        (*matp)(ne_tot + s, ne_tot + s) -= 1;
     }
 
   for (f = 0; f < dom.nb_faces_tot(); f++)
@@ -147,7 +149,8 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
                 for (n = 0; n < N; n++)
                   {
                     secmem(ne_tot + sc, n) += (D - 1) * v(j, d) * pf(f) * vit(f, N * d + n) / D;
-                    if (matv && fcl(f, 0) < 2) (*matv)(N * (ne_tot + sc) + n, N * (D * f + d) + n) -= (D - 1) * v(j, d) * pf(f) / D;
+                    if (matv && fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3))
+                      (*matv)(N * (ne_tot + sc) + n, N * (D * f + d) + n) -= (D - 1) * v(j, d) * pf(f) / D;
                   }
         }
     }
@@ -165,13 +168,13 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
         {
           if (s < dom.nb_som())
             {
-              secmem(ne_tot + s, n)  += press(e, n) - press(ne_tot + s, n);
-              if (matp) (*matp)(N * (ne_tot + s) + n, N * (ne_tot + s) + n)++, (*matp)(N * (ne_tot + s) + n, N * e + n)--;
+              secmem(ne_tot + s, n)  -= press(e, n) - press(ne_tot + s, n);
+              if (matp) (*matp)(N * (ne_tot + s) + n, N * (ne_tot + s) + n)--, (*matp)(N * (ne_tot + s) + n, N * e + n)++;
             }
           if (e < dom.nb_elem())
             {
-              secmem(e, n) += press(ne_tot + s , n) - press(e, n);
-              if (matp) (*matp)(N * e + n, N * e + n)++, (*matp)(N * e + n, N * (ne_tot + s) + n)--;
+              secmem(e, n) -= press(ne_tot + s , n) - press(e, n);
+              if (matp) (*matp)(N * e + n, N * e + n)--, (*matp)(N * e + n, N * (ne_tot + s) + n)++;
             }
         }
 }
