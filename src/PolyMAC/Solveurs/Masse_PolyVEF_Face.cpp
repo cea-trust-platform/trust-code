@@ -21,7 +21,7 @@
 #include <Domaine_PolyVEF.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Masse_ajoutee_base.h>
-#include <Option_PolyVEF_P0.h>
+#include <Option_PolyVEF.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
@@ -44,22 +44,39 @@ Entree& Masse_PolyVEF_Face::readOn(Entree& s) { return s ; }
 DoubleTab& Masse_PolyVEF_Face::appliquer_impl(DoubleTab& sm) const
 {
   const Domaine_PolyVEF& dom =  ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
-  const IntTab& f_e = dom.face_voisins();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
-  int i, e, f, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
-  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir();
+  const IntTab& f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces(), &fs = dom.face_surfaces();
+  int i, e, f, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales();
   double fac;
 
   //vitesses aux faces
+  DoubleTrav proj(N);
   for (f = 0; f < dom.nb_faces(); f++)
-    for (d = 0; d < D; d++)
-      for (n = 0; n < N; n++)
+    {
+      if (fcl(f, 0) > 1)
         {
-          for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
-          if (fac > 1e-10) sm(f, N * d + n) /= pf(f) * vf(f) * fac; //vitesse calculee
-          else sm(f, N * d + n) = 0; //cas d'une evanescence
+          for (proj = 0, d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              proj(n) += sm(f, N * d + n) * nf(f, d) / fs(f);
+          //Dirichlet (ou Symetrie avec sym_as_diri) : on enleve tout en P0P1, on garde la compo normale pour les autres
+          if (fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2))
+            for (d = 0; d < D; d++)
+              for (n = 0; n < N; n++)
+                sm(f, N * d + n) = p0p1 ? 0 : proj(n) * nf(f, d) / fs(f);
+          else if (fcl(f, 0) == 2 && !Option_PolyVEF::sym_as_diri && p0p1) //Symetrie en P0P1 sans sym_as_diri : on enleve la compo normale
+            for (d = 0; d < D; d++)
+              for (n = 0; n < N; n++)
+                sm(f, N * d + n) -= proj(n) * nf(f, d) / fs(f);
         }
-
+      for (d = 0; d < D; d++)
+        for (n = 0; n < N; n++)
+          {
+            for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
+            if (fac > 1e-10) sm(f, N * d + n) /= pf(f) * vf(f) * fac; //vitesse calculee
+            else sm(f, N * d + n) = 0; //cas d'une evanescence
+          }
+    }
   sm.echange_espace_virtuel();
   return sm;
 }
@@ -68,30 +85,44 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 {
   const std::string& nom_inc = equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inc)) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
+  Matrice_Morse *mat = matrices.at(nom_inc);
   const Domaine_PolyVEF& dom =  ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
   const DoubleTab& inco = equation().inconnue().valeurs();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
-  int i, j, f, d, D = dimension, n, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  int i, j, k, f, d, db, D = dimension, n, m, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
-  IntTrav sten(0, 2);
-  for (f = 0, i = 0; f < dom.nb_faces(); f++)
-    for (d = 0; d < D; d++)
-      for (n = 0; n < N; n++, i++)
-        if (p0p1 && fcl(f, 0) > 1) //Dirichlet/Navier en P0P1 : diagonal
-          sten.append_line(i, i);
-        else if (corr && fcl(f, 0) > 2) //Dirichlet + masse ajoutee : melange tout
-          for (j = N * D * f; j < N * D * (f + 1); j++) sten.append_line(i, j);
-        else if (corr) //juste masse ajoutee : melange les phases
-          for (j = N * (D * f + d); j < N * (D * f + d + 1); j++) sten.append_line(i, j);
-        else if (fcl(f, 0) > 2) //juste Dirichlet : melange les directions
-          for (j = N * D * f + n; j < N * D * (f + 1) + n; j += N) sten.append_line(i, j);
-        else sten.append_line(i, i); //sinon : diagonale!
-
-  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), sten, mat2);
-  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
+  for (auto &&kv : matrices)
+    if (kv.second == mat || kv.second->nb_colonnes())
+      {
+        IntTrav sten(0, 2);
+        std::vector<std::set<int>> s_sten(N * D); //stencil a mettre a chaque ligne
+        for (f = 0; f < dom.nb_faces(); f++)
+          {
+            int mix = p0p1 ? (!Option_PolyVEF::sym_as_diri && fcl(f, 0) == 2) : (fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2)); //va-t-on devoir melanger les lignes?
+            for (i = 0; i < N * D; i++) s_sten[i].clear();
+            if (kv.second == mat) //terme de masse : peut melanger les directions et/ou les composantes
+              for (d = 0; d < D; d++)
+                for (n = 0; n < N; n++)
+                  for (db = (mix ? 0 : d);  db < (mix ? D : d + 1); db++)
+                    for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                      s_sten[N * d + n].insert(N * (D * f + db) + m);
+            //Dirichlet en P0/P0P1NC ou Symetrie en P0P1 : melange des directions (sans melanger les phases) de toutes les lignes
+            if (mix)
+              for (d = 0, i = N * D * f; d < D; d++)
+                for (n = 0; n < N; n++, i++)
+                  for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
+                    for (k = kv.second->get_tab2()(j) - 1, db = 0; db < D; db++)
+                      s_sten[N * db + n].insert(k);
+            for (i = 0; i < N * D; i++)
+              for (auto &&col : s_sten[i])
+                sten.append_line(N * D * f + i, col);
+          }
+        Matrice_Morse mat2;
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), kv.second->nb_colonnes(), sten, mat2);
+        *kv.second += mat2;
+      }
 }
 
 // XXX : a voir si on peut utiliser Solveur_Masse_Face_proto::ajouter_blocs_proto ...
@@ -107,59 +138,84 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
                    *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir();
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   const Conds_lim& cls = equation().inconnue().domaine_Cl_dis().les_conditions_limites();
-  int i, e, f, m, d, db, D = dimension, n, N = inco.line_size() / D, cR = rho.dimension_tot(0) == 1, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
-
+  int i, j, k, e, f, m, d, db, D = dimension, n, N = inco.line_size() / D, cR = rho.dimension_tot(0) == 1, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  double scal;
   /* faces : si CLs, pas de produit par alpha * rho en multiphase */
-  DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
-  double force = 1e12; //forcage des CLs de Dirichlet
+  DoubleTrav masse(N, N), masse_e(N, N), p_eq(N), p_cl(N), cl(D, N), nfu(D); //masse alpha * rho, contribution
   for (f = 0; f < dom.nb_faces(); f++) //faces reelles
-    if (p0p1 && fcl(f, 0) > 1) //Dirichlet/Navier en P0P1 -> trivial
+    {
+      /* calcul de la masse */
+      if (!pbm)
+        for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase -> pas de alpha * rho
+      else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          {
+            for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
+            if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
+            for (n = 0; n < N; n++)
+              for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
+          }
+      masse *= pf(f) * vf(f) / dt;
+      /* contribution hors CLs */
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           {
-            secmem(f, N * d + n) += (fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) : 0) - resoudre_en_increments * inco(f, N * d + n);
-            if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + n) = 1;
+            for (m = 0; m < N; m++) secmem(f, N * d + n) += masse(n, m) * (passe(f, N * d + m) - resoudre_en_increments * inco(f, N * d + m));
+            if (mat)
+              for (m = 0; m < N; m++)
+                if (masse(n, m))
+                  (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += masse(n, m);
           }
-    else
-      {
-        if (!pbm)
-          for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase -> pas de alpha * rho
-        else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            {
-              for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
-              if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
-              for (n = 0; n < N; n++)
-                for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
-            }
-        for (d = 0; d < D; d++)
-          for (n = 0; n < N; n++)
-            {
-              double fac = pf(f) * vf(f) / dt;
-              for (m = 0; m < N; m++) secmem(f, N * d + n) -= fac * resoudre_en_increments * masse(n, m) * inco(f, N * d + m);
-              for (m = 0; m < N; m++) secmem(f, N * d + n) += fac * masse(n, m) * passe(f, N * d + m);
-              if (mat)
-                for (m = 0; m < N; m++)
-                  if (masse(n, m))
-                    (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += fac * masse(n, m);
 
-              if (fcl(f, 0) > 2)
-                {
-                  for (db = 0; db < D; db++) //Dirichlet : forcage des directions tangentielles
-                    secmem(f, N * d + n) -= fac * force * ((d == db) - nf(f, d) * nf(f, db) / (fs(f) * fs(f))) * (resoudre_en_increments * inco(f, N * db + n) - (fcl(f, 0) < 4 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * db + n) : 0));
-                  if (mat)
-                    for (db = 0; db < D; db++) //Dirichlet : forcage des directions tangentielles
-                      (*mat)(N * (D * f + d) + n, N * (D * f + db) + n) += fac * force * ((d == db) - nf(f, d) * nf(f, db) / (fs(f) * fs(f)));
-                }
-              else if (fcl(f, 0) == 2 && sub_type(Frottement_impose_base, cls[fcl(f, 1)].valeur())) //Navier
-                {
-                  // Pour l'instant on fait un truc sale : on appelle un frottement global comme un frottement externe pour avoir une seule classe paroi_frottante
-                  const Frottement_impose_base *cl = sub_type(Frottement_impose_base, cls[fcl(f, 1)].valeur()) ? &ref_cast(Frottement_impose_base, cls[fcl(f, 1)].valeur()) : nullptr;
-                  if (!cl || cl->is_externe()) Process::exit("Masse_PolyVEF_Face: only Frottement_impose_base global is supported!");
-                  secmem(f, N * d + n) -= fs(f) * cl->coefficient_frottement(fcl(f, 2), n) * inco(f, N * d + n);
-                  if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + n) += fs(f) * cl->coefficient_frottement(fcl(f, 2), n);
-                }
-            }
-      }
+      if (p0p1 && fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2)) /* Dirichlet en P0P1 : remplacement total par la CL */
+        {
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              secmem(f, N * d + n) = masse(n, n) * ((fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) : 0) - resoudre_en_increments * inco(f, N * d + n));
+          for (auto &&kv : matrices)
+            for (i = N * D * f, d = 0; d < D; d++)
+              for (n = 0; n < N; n++, i++)
+                for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
+                  kv.second->get_set_coeff()(j) = kv.second == mat && mat->get_tab2()(j) - 1 == i ? masse(n, n) : 0;
+        }
+      else if (p0p1 ? (!Option_PolyVEF::sym_as_diri && fcl(f, 0) == 2) : (fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2))) /* Symetrie en P0P1 / Dirichlet sur les autres : projection + CL */
+        {
+          for (d = 0; d < D; d++) nfu(d) = nf(f, d) / fs(f);
+          /* second membre */
+          for (p_eq = 0, d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              p_eq(n) += secmem(f, N * d + n) * nfu(d);
+          /* CL */
+          for (cl = 0, p_cl = 0, d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              cl(d, n) = masse(n, n) * ((fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) : 0) - resoudre_en_increments * inco(f, N * d + n)), p_cl(n) += cl(d, n) * nfu(d);
+          /* projection de secmem */
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              secmem(f, N * d + n) = p0p1 ? secmem(f, N * d + n) + (p_cl(n) - p_eq(n)) * nfu(d) : cl(d, n) + (p_eq(n) - p_cl(n)) * nfu(d);
+          for (auto &&kv : matrices)
+            if (kv.second->nb_colonnes())
+              {
+                /* projection des lignes de mat */
+                for (i = N * D * f, n = 0; n < N; n++, i += N)
+                  for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
+                    {
+                      for (k = kv.second->get_tab2()(j) - 1, scal = 0, d = 0; d < D; d++)
+                        scal += (*kv.second)(N * (D * f + d) + n, k) * nfu(d);
+                      for (d = 0; d < D; d++)
+                        {
+                          double& coeff = (*kv.second)(N * (D * f + d) + n, k);
+                          coeff = p0p1 ? coeff - scal * nfu(d) : scal * nfu(d);
+                        }
+                    }
+                /* ajout de la partie CL */
+                if (kv.second == mat)
+                  for (d = 0; d < D; d++)
+                    for (n = 0; n < N; n++)
+                      for (db = 0; db < D; db++)
+                        (*mat)(N * (D * f + d) + n, N * (D * f + db) + n) += masse(n, n) * (p0p1 ? nfu(d) * nfu(db) : (d == db) - nfu(d) * nfu(db));
+              }
+        }
+    }
 }
 
 //recalcule les vitesses tangentielles aux faces a partir des vitesses normales

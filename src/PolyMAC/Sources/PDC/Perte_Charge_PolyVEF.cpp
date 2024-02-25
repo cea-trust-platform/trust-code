@@ -56,11 +56,11 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                                                 &ref_cast(Multiplicateur_diphasique_base, pbm->get_correlation("multiplicateur_diphasique")) : nullptr;
 
   const Sous_Domaine *pssz = sous_domaine ? &le_sous_domaine.valeur() : nullptr;
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
 
   int i, j, k, f, d, D = dimension, cN = nu.dimension(0) == 1, cM = mu.dimension(0) == 1, cR = rho.dimension(0) == 1,
-                     C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur()), m, n, N = vit.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, domaine);
+                     C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur()), m, n, N = vit.line_size() / D;
 
   double t = equation().schema_temps().temps_courant(), v_min = 0.1, Gm, Fm, nvm, arm, C_dir, C_iso, v_dir;
 
@@ -98,7 +98,7 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
       /* contributions aux faces de e */
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        if (f < domaine.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
+        if (f < domaine.nb_faces())
           {
             /* vecteur vitesse en e */
             double dh_e = C_dh ? dh.valeurs()(0, 0) : dh.valeur_a_compo(pos, 0);
