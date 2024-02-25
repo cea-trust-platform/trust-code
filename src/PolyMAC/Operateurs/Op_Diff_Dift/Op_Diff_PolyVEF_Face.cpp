@@ -30,7 +30,7 @@
 #include <MD_Vector_base.h>
 #include <Op_Grad_PolyVEF_P0_Face.h>
 #include <Pb_Multiphase.h>
-#include <Option_PolyVEF_P0.h>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable( Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0_Face|Op_Dift_PolyVEF_Face_PolyVEF_P0", Op_Diff_PolyVEF_base ) ;
 Add_synonym(Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0_var_Face");
@@ -106,7 +106,7 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
                 flux(f, n) += std::abs(w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n));
     }
   for (f = 0; f < dom.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
+    if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3))
       {
         for (vol = 0, a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           for (n = 0; n < N; n++)
@@ -121,24 +121,22 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
 void Op_Diff_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
-  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
+  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces();
 
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, e, f, fb, nd, ND = equation().inconnue().valeurs().line_size(), nf_tot = dom.nb_faces_tot(), p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  int i, j, e, f, fb, nd, ND = equation().inconnue().valeurs().line_size(), nf_tot = dom.nb_faces_tot();
 
   IntTrav stencil(0, 2);
 
   /* stencil : tous les voisins de la face par un element, sans melanger les dimensions ou les composantes */
   for (f = 0; f < dom.nb_faces(); f++)
-    if (!p0p1 || fcl(f, 0) < 2)
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          if (!p0p1 || fcl(fb, 0) < 2)
-            for (nd = 0; nd < ND; nd++)
-              stencil.append_line(ND * f + nd, ND * fb + nd);
+    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+      for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+        for (nd = 0; nd < ND; nd++)
+          stencil.append_line(ND * f + nd, ND * fb + nd);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(ND * nf_tot, ND * nf_tot, stencil, mat2);
@@ -154,7 +152,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
-  int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom), skip;
+  int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, skip;
 
   DoubleTrav w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
 
@@ -171,17 +169,17 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             lw2(i, n) += w2(i, j, n), tw2(n) += w2(i, j, n);
 
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (f < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2))
+        if (f < dom.nb_faces())
           for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-            if (fcl(fb, 0) != 2)
+            if (!Option_PolyVEF::sym_as_diri || fcl(fb, 0) != 2)
               for (d = 0, nd = 0; d < D; d++)
                 for (n = 0; n < N; n++, nd++)
                   {
                     double fac = w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n);
                     secmem(f, nd) -= fac * inco(fb, nd);
-                    if (mat && (!p0p1 || fcl(fb, 0) < 2))
+                    if (mat)
                       (*mat)(ND * f + nd, ND * fb + nd) += fac;
                   }
-
     }
+  i++;
 }

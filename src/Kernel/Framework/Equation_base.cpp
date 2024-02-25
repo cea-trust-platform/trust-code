@@ -1872,7 +1872,8 @@ void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
       matrice.set_nb_columns(matrice_stockee.nb_colonnes());
       return;
     }
-
+  else if (has_interface_blocs())
+    return dimensionner_blocs({{ inconnue().le_nom().getString(), &matrice }});
   bool isInit = false;
   // Operators first (they're likely to take most of the slots in the Morse structure)
   for(int opp=0; opp < nombre_d_operateurs(); opp++)
@@ -1899,9 +1900,6 @@ void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
       solv_masse().dimensionner(mat2);
       matrice += mat2; // this only works if the matrix has been given its overall size first
     }
-
-  // and finally sources (mass solver has surely done something already so no need for "isInit" test)
-  les_sources.dimensionner(matrice);
 }
 
 void Equation_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc)
@@ -2018,8 +2016,8 @@ void Equation_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_i
   /* operateurs, masse, sources */
   int nb = nombre_d_operateurs();
   for (int op = 0; op < nb; op++) operateur(op).l_op_base().dimensionner_blocs(matrices, semi_impl);
-  solv_masse().dimensionner_blocs(matrices);
   for (int i = 0; i < les_sources.size(); i++) les_sources(i)->dimensionner_blocs(matrices, semi_impl);
+  solv_masse().dimensionner_blocs(matrices, semi_impl);
 }
 
 void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
