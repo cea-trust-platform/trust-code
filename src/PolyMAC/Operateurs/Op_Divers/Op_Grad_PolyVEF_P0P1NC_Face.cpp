@@ -31,6 +31,7 @@
 #include <Dirichlet.h>
 #include <TRUSTTrav.h>
 #include <cfloat>
+#include <Option_PolyVEF.h>
 
 extern Stat_Counter_Id gradient_counter_;
 
@@ -104,7 +105,7 @@ void Op_Grad_PolyVEF_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& 
         {
           /* taux de vide a la face (identique a celui de Masse_PolyVEF_P0P1NC_Face) */
           double prefac = pe(e) * vfd(f, e != f_e(f, 0)) * (e == f_e(f, 0) ? 1 : -1) / (fs(f) * fs(f)),
-                 prefac2 = pf(f) * vfd(f, e != f_e(f, 0)) / ve(e), scal; /* ponderation pour elimner p_f si on est en TPFA */
+                 prefac2 = fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 3 : 2) ? pf(f) * vfd(f, e != f_e(f, 0)) / ve(e) : 0, scal; /* ponderation pour elimner p_f si on est en TPFA */
           for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
             for (n = 0; n < N; n++)
               alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
