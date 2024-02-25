@@ -28,6 +28,7 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 #include <Synonyme_info.h>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face|Op_Conv_EF_Stab_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face );
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_Face, "Op_Conv_Amont_PolyVEF_P0_Face|Op_Conv_Amont_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyVEF_Face);
@@ -144,7 +145,7 @@ double Op_Conv_EF_Stab_PolyVEF_Face::calculer_dt_stab() const
       }
   /* dt sur ce proc */
   for (f = 0; f < dom.nb_faces(); f++)
-    if (fcl(f, 0) < 2)
+    if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3))
       {
         for (a_f = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           for (n = 0; n < N; n++)
@@ -160,14 +161,13 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
-  const IntTab& fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -176,10 +176,9 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
     for (j = 0; j < 2; j++)
       if ((f = e_fa_f(i, j)) < dom.nb_faces())
         for (fb = e_fa_f(i, !j), d = 0; d < D; d++)
-          if (!p0p1 || (fcl(f, 0) < 2 && fcl(fb, 0) < 2))
-            for (n = 0; n < N; n++)
-              for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
-                stencil.append_line(N * (D * f + d) + n, N * (D * fb + d) + m);
+          for (n = 0; n < N; n++)
+            for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+              stencil.append_line(N * (D * f + d) + n, N * (D * fb + d) + m);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * D * nf_tot, N * D * nf_tot, stencil, mat2);
@@ -192,7 +191,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
-  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces();
   const DoubleTab& vit = ch.passe(), &nf = dom.face_normales();
   const DoubleVect& pf = porosite_f;
 
@@ -206,7 +205,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                      a_b = pbm ? pbm->equation_masse().inconnue()->valeur_aux_bords() : DoubleTab(), r_b = pbm ? equation().milieu().masse_volumique()->valeur_aux_bords() : DoubleTab();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  int i, j, k, l, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
+  int i, j, k, l, e, f, fb, d, D = dimension, m, n, N = inco.line_size() / D;
 
   DoubleTrav F_f(0, N), F_fa(N), masse(N, N), fvf(N); //flux de masse a toutes les faces et a la facette (avec masse ajoutee)
   dom.creer_tableau_faces(F_f);
@@ -240,7 +239,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (n = 0; n < N; n++)
               F_fa(n) += e_fa_c(j) * F_f(f, n);
           for (k = 0; k < 2; k++)
-            if ((f = e_fa_f(i, k)) < dom.nb_faces() && (!p0p1 || fcl(f, 0) < 2)) /* face d'arrivee */
+            if ((f = e_fa_f(i, k)) < dom.nb_faces()) /* face d'arrivee */
               for (l = 0; l < 2; l++)
                 for (fb = e_fa_f(i, l), d = 0; d < D; d++)
                   for (n = 0; n < N; n++)
@@ -248,7 +247,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                       {
                         double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * ((1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2 - (fb == f));
                         secmem(f, N * d + n) -= fac * inco(fb, N * d + m);
-                        if (mat && (!p0p1 || fcl(fb, 0) < 2))
+                        if (mat)
                           (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
                       }
         }
