@@ -31,7 +31,7 @@
 #include <Domaine_PolyVEF.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Fonc_reprise.h>
-#include <Option_PolyVEF_P0.h>
+#include <Option_PolyVEF.h>
 #include <Schema_Temps_base.h>
 #include <TRUSTTab_parts.h>
 #include <Champ_Uniforme.h>
@@ -102,7 +102,7 @@ DoubleTab& Champ_Face_PolyVEF::valeur_aux_elems(const DoubleTab& positions, cons
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, d, db, D = dimension, n, N = valeurs().line_size() / D;
 
-  if (Option_PolyVEF_P0::interp_postraitement_no_poro)  // Cas sans porosite : on fait une moyenne volumique
+  if (Option_PolyVEF::interp_postraitement_no_poro)  // Cas sans porosite : on fait une moyenne volumique
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (d = 0; d < D; d++)
@@ -129,7 +129,7 @@ DoubleVect& Champ_Face_PolyVEF::valeur_aux_elems_compo(const DoubleTab& position
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, db, D = dimension, N = src.line_size() / D, d = ncomp / N, n = ncomp % N;
 
-  if (Option_PolyVEF_P0::interp_postraitement_no_poro) // Cas sans porosite : on fait une moyenne volumique
+  if (Option_PolyVEF::interp_postraitement_no_poro) // Cas sans porosite : on fait une moyenne volumique
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (n = 0; n < N; n++)
@@ -278,7 +278,7 @@ void Champ_Face_PolyVEF::init_vf2() const
 void Champ_Face_PolyVEF::update_vf2(DoubleTab& val, int incr) const
 {
   const Domaine_PolyVEF& dom = domaine_PolyVEF();
-  if (!Option_PolyVEF_P0::interp_vf2 || sub_type(Domaine_PolyVEF_P0P1, dom) || 1)
+  if (!Option_PolyVEF::interp_vf2 || sub_type(Domaine_PolyVEF_P0P1, dom) || 1)
     return;
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = dom.face_normales();
