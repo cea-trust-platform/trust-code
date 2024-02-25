@@ -132,7 +132,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, j, e, eb, s, sb, f, n, M, n_ext = (int)op_ext.size();
+  int i, j, e, eb, s = 0, sb = 0, f, n, M, n_ext = (int)op_ext.size();
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
   std::vector<std::reference_wrapper<const Domaine_PolyVEF>> dom; //domaines
@@ -178,7 +178,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, ib, j, k, l, m, e, eb, f, s, sb, n, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension, n_sf, nt, ok;
+  int i, ib, j, k, l, m, e, eb, f, s = 0, sb = 0, n, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension, n_sf, nt, ok;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
   std::vector<std::reference_wrapper<const Domaine_PolyVEF>> dom; //zones
