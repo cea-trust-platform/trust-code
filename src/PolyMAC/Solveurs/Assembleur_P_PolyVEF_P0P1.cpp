@@ -36,6 +36,7 @@
 #include <Dirichlet.h>
 #include <Debog.h>
 #include <Piso.h>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable(Assembleur_P_PolyVEF_P0P1, "Assembleur_P_PolyVEF_P0P1", Assembleur_P_PolyMAC_P0);
 
@@ -54,7 +55,7 @@ const IntTab& Assembleur_P_PolyVEF_P0P1::ps_ref() const
 
   dom.domaine().creer_tableau_sommets(ps_ref_);
   for (int f = 0; f < dom.nb_faces_tot(); f++)
-    if (fcl(f, 0) < 2)
+    if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3))
       for (int i = 0, s; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
         ps_ref_(s) = -1;
   ps_ref_.echange_espace_virtuel();
@@ -115,7 +116,7 @@ int  Assembleur_P_PolyVEF_P0P1::assembler_mat(Matrice& la_matrice,const DoubleVe
   grad.ajouter_blocs_ext({ { "pression", &mat_grad } }, sec_grad, 1); //avec lignes virtuelles
   div.ajouter_blocs({ { "vitesse", &mat_div_v }, { "pression", &mat_div_p } }, sec_div); //avec lignes virtuelles
   for (f = 0, i = 0; f < nf_tot; f++)
-    for (d = 0; d < D; d++, i++) inv_diag(i) = 1. / (diag.size() ? diag(D * i + d) : pf(f) * vf(f));
+    for (d = 0; d < D; d++, i++) inv_diag(i) = 1. / (diag.size() ? diag(i) : pf(f) * vf(f));
   mat_grad.diagmulmat(inv_diag);
   mat.affecte_prod(mat_div_v, mat_grad);
   mat_div_p *= -1;
@@ -145,7 +146,7 @@ void Assembleur_P_PolyVEF_P0P1::dimensionner_continuite(matrices_t matrices, int
       for (n = 0; n < N; n++) sten_a.append_line(e, N * e + n);
   /* equations aux sommets */
   for (f = 0; f < dom.nb_faces_tot(); f++)
-    if (fcl(f, 0) < 2) /* sten_v : divergence "classique" */
+    if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3)) /* sten_v : divergence "classique" */
       for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
         for (d = 0; s < dom.domaine().nb_som() && scl_d(s) == scl_d(s + 1) && d < D; d++) //sommets a pression non imposee
           for (n = 0; n < N; n++)
@@ -180,14 +181,13 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
                    &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr,
-                    ar_bord = pbm ? pbm->equation_masse().champ_conserve().valeur_aux_bords() : DoubleTab(), &xp = dom.xp(), &xv = dom.xv(), &xs = dom.domaine().coord_sommets(),
-                    &nf = dom.face_normales();
+                    &xp = dom.xp(), &xv = dom.xv(), &xs = dom.domaine().coord_sommets(), &nf = dom.face_normales(), &vfd = dom.volumes_entrelaces_dir();
   const IntTab& fcl = ch.fcl(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1), &f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &ps_r = ps_ref();
-  const DoubleVect& ve = dom.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
+  const DoubleVect& ve = dom.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
   int i, j, e, f, s, sb, sc, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = dom.nb_elem_tot();
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, a_r(N), v(2, D);
-  double ar_tot = 1, acc, dt = equation().schema_temps().pas_de_temps(), fac, xa[3], vz[3] = { 0, 0, 1 };
+  double ar_tot = 1, dt = equation().schema_temps().pas_de_temps(), fac, xa[3], vz[3] = { 0, 0, 1 };
   secmem = 0, a_r = 1;
 
   /* equations sum alpha_k = 1 : on multiplie par porosite * volume * rho_m / dt pour que l'equation ressemble a delta p = 0 */
@@ -204,15 +204,11 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
   /* equations aux sommets : comme dans Op_Div_PolyVEF_P0P1, mais avec produit par alpha * rho */
   for (f = 0; f < dom.nb_faces_tot(); f++)
     {
-      //alpha * rho amont
+      //alpha * rho centre
       if (alpha_rho)
         for (n = 0; n < N; n++)
-          {
-            for (acc = 0, d = 0; d < D; d++)
-              acc += nf(f, d) * vit(f, N * d + n);
-            for (a_r(n) = 0, i = 0; i < 2; i++)
-              a_r(n) += (acc * (i ? -1 : 1) > 0 ? 1 : acc ? 0 : 0.5) * (f_e(f, i) >= 0 ? (*alpha_rho)(f_e(f, i), n) : ar_bord(f, n));
-          }
+          for (a_r(n) = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+            a_r(n) += vfd(f, i) / vf(f) * (*alpha_rho)(f_e(f, i), n);
       //divergence aux sommets
       for (i = 0; i < (D < 3 ? 1 : f_s.dimension(1)) && (s = f_s(f, i)) >= 0; i++)
         {
@@ -238,7 +234,8 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
                 for (n = 0, m = 0; n < N; n++, m += (M > 1))
                   {
                     secmem(!aux_only * ne_tot + sc, m) -= (D - 1) * v(j, d) * pf(f) * vit(f, N * d + n) * a_r(n) / D;
-                    if (fcl(f, 0) < 2) mat_v(M * (!aux_only * ne_tot + sc) + m, N * (D * f + d) + n) += (D - 1) * v(j, d) * pf(f) * a_r(n) / D;
+                    if (fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3))
+                      mat_v(M * (!aux_only * ne_tot + sc) + m, N * (D * f + d) + n) += (D - 1) * v(j, d) * pf(f) * a_r(n) / D;
                   }
         }
     }
