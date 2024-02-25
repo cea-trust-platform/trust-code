@@ -31,6 +31,7 @@
 #include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <cfloat>
+#include <Option_PolyVEF.h>
 
 Implemente_instanciable(Op_Grad_PolyVEF_P0_Face, "Op_Grad_PolyVEF_P0_Face", Op_Grad_PolyMAC_P0_Face);
 
@@ -104,16 +105,15 @@ void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const Conds_lim& cls = ref_dcl->les_conditions_limites();
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
-                   &press = semi_impl.count("pression") ? semi_impl.at("pression") :
-                            (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()), *alp =
-                              sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
-  const DoubleVect& pf = equation().milieu().porosite_face();
+  const DoubleTab& vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales(),
+                   &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces();
   int i, e, f, fb, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = secmem.line_size() / D, m, M = press.line_size();
   update_grad();
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : nullptr;
 
-  DoubleTrav a_v(N); //(grad p)_f, produit alpha * vol
+  DoubleTrav a_v(N), grad(D, M), scal(M); //(grad p)_f, produit alpha * vol
 
   /* aux faces */
   for (f = 0; f < dom.nb_faces(); f++)
@@ -126,13 +126,29 @@ void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
       /* |f| grad p */
       for (i = fgrad_d(f); i < fgrad_d(f + 1); i++)
-        for (e = fgrad_e(i), fb = e - ne_tot, d = 0; d < D; d++)
-          for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        {
+          /* projection sur la composante normale si Dirichlet */
+          for (d = 0; d < D; d++)
+            for (m = 0; m < M; m++)
+              grad(d, m) = fgrad_c(i, d, m);
+          if (fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2))
             {
-              double fac = a_v(n) * pf(f) * fgrad_c(i, d, m);
-              secmem(f, N * d + n) -= fac * (e < ne_tot || fcl(fb, 0) > 1 ? press(e < ne_tot ? e : ne_tot + dom.fbord(fb), m) : ref_cast(Neumann, cls[fcl(fb, 1)].valeur()).flux_impose(fcl(fb, 2), m));
-              if (mat && (e < ne_tot || fcl(fb, 0) > 1))
-                (*mat)(N * (D * f + d) + n, M * (e < ne_tot ? e : ne_tot + dom.fbord(fb)) + m) += fac;
+              for (scal = 0, d = 0; d < D; d++)
+                for (m = 0; m < M; m++)
+                  scal(m) += grad(d, m) * nf(f, d) / fs(f);
+              for (d = 0; d < D; d++)
+                for (m = 0; m < M; m++)
+                  grad(d, m) = scal(m) * nf(f, d) / fs(f);
             }
+          /* contribution */
+          for (e = fgrad_e(i), fb = e - ne_tot, d = 0; d < D; d++)
+            for (n = 0, m = 0; n < N; n++, m += (M > 1))
+              {
+                double fac = a_v(n) * pf(f) * grad(d, m);
+                secmem(f, N * d + n) -= fac * (e < ne_tot || fcl(fb, 0) > 1 ? press(e < ne_tot ? e : ne_tot + dom.fbord(fb), m) : ref_cast(Neumann, cls[fcl(fb, 1)].valeur()).flux_impose(fcl(fb, 2), m));
+                if (mat && (e < ne_tot || fcl(fb, 0) > 1))
+                  (*mat)(N * (D * f + d) + n, M * (e < ne_tot ? e : ne_tot + dom.fbord(fb)) + m) += fac;
+              }
+        }
     }
 }

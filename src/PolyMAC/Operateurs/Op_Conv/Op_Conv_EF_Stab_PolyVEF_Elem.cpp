@@ -23,7 +23,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
-#include <Option_PolyVEF_P0.h>
+#include <Option_PolyVEF.h>
 #include <Pb_Multiphase.h>
 #include <Probleme_base.h>
 #include <Matrix_tools.h>
@@ -73,7 +73,7 @@ double Op_Conv_EF_Stab_PolyVEF_Elem::calculer_dt_stab() const
   for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 ; i++)
-        if (!Option_PolyVEF_P0::traitement_axi || (Option_PolyVEF_P0::traitement_axi && !(fcl(f,0) == 4 || fcl(f,0) == 5)) )
+        if (!Option_PolyVEF::traitement_axi || (Option_PolyVEF::traitement_axi && !(fcl(f,0) == 4 || fcl(f,0) == 5)) )
           for (n = 0; n < N; n++)
             {
               for (fv = 0, d = 0; d < D; d++)
