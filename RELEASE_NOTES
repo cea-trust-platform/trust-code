@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+26/02/24 (TRUST) New feature  : Fallback to coarse solver if the IJK-multigrid has not reached convergence during current timestep (this concerns IJK discretization only)
 05/02/24 (TRUST) New feature  : New post-processing format introduced in TRUST : CGNS (CFD General Notation System). Not yet available for FT interface mesh (will be soon !)
 02/02/24 (TRUST) Fix          : Fixed bug in post-processing fields on nodes (SOM) in MED Format (internal MEDCouplingUMesh was not always in sync with Domaine)
 31/01/24 (TRUST) Fix          : Fixed handling of empty domains in VEF, PolyMAC_P0, and other related areas.

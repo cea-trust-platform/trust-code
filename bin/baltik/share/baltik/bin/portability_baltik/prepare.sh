@@ -270,7 +270,7 @@ then
 elif [ "`basename $TRUST_CC_BASE`" = "icpx" ]
 then
    echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $5}'`
-elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ]
+elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ] || [ "`basename $TRUST_CC_BASE`" = "crayCC" ]
 then
    echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $4}'`
 else
