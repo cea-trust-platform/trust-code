@@ -31,8 +31,17 @@ cd build
 options="-DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCGNS_BUILD_SHARED=OFF"
 [ "$TRUST_DISABLE_MPI" = 0 ] && options=$options" -DHDF5_NEED_MPI=ON -DCGNS_ENABLE_PARALLEL=ON"
 
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   CC=$TRUST_cc_BASE_EXTP
+   FC=$TRUST_F77_BASE_EXTP
+else
+   FC=$TRUST_F77
+   CC=$TRUST_cc
+fi
+
 # We use the hdf5 of TRUST
-env CC=$TRUST_cc FC=$TRUST_F77 cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
+cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
 
 # make & install
 $TRUST_MAKE
