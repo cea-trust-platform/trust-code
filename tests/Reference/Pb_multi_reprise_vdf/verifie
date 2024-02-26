@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Running reprise_xyz.data ..."
+trust reprise_xyz.data 1>xyz.out 2>xyz.err
+
+echo "Running reprise_sauv.data ..."
+trust reprise_sauv.data 1>sauv.out 2>sauv.err
+
+compare_lata reprise_xyz.lata reprise_sauv.lata 1>verifie.log 2>&1 || exit -1
+
+numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+if [[ "$numb_diff" -gt "0" ]]
+then
+  echo "   ===> Error ! Difference between xyz/sauv resume files !!!"
+  exit -1
+else
+  echo "   ===> All OK ! No difference between xyz/sauv resume files !"
+fi
