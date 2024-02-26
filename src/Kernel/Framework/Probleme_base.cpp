@@ -1244,6 +1244,12 @@ int Probleme_base::postraiter(int force)
 
 void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
 {
+  // XXX Elie Saikali : for polymac => No xyz for the moment
+  if (la_discretisation_->is_polymac_family())
+    {
+      Cerr << "Problem "  << le_nom() << " with " << la_discretisation_->que_suis_je() <<  " => EcritureLectureSpecial = 0 !" << finl;
+      EcritureLectureSpecial::Active = 0;
+    }
   restart_format_ = "binaire";
   restart_file_name_ = Objet_U::nom_du_cas();
   // Desormais les fichiers de sauvegarde sont nommes par defaut nomducas_nomdupb.sauv
@@ -1269,6 +1275,16 @@ void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
               Cerr << "Restarting calculation... : keyword " << format_rep << " not understood. Waiting for:" << finl << motlu << " formatte|binaire|xyz|single_hdf Filename" << finl;
               exit();
             }
+
+          // XXX Elie Saikali : for polymac => only .sauv files are possible
+          if (la_discretisation_->is_polymac_family() && format_rep != "binaire")
+            {
+              Cerr << "Error in Probleme_base::" << __func__ << " !! " << finl;
+              Cerr << "Only the binary format is currently supported to resume a simulation with the discretization " << la_discretisation_->que_suis_je() << " ! " << finl;
+              Cerr << "Please update your data file and use a .sauv file !" << finl;
+              Process::exit();
+            }
+
           // Read the filename:
           Nom nomfic;
           is >> nomfic;
