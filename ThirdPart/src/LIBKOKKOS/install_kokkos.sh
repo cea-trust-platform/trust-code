@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
 # Attention 4.x C++17 pour TRUST GPU mais necessaire pour nvc++ -cuda
@@ -23,11 +23,21 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         mkdir -p BUILD
         cd BUILD
         CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_CXX_FLAGS=-fPIC"
-        # We try to use nvc++ for Cuda to mix Kokkos with OpenMP:
-        [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
-        [ "$TRUST_USE_CUDA" = 1 ]                                && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
-        [ "$TRUST_USE_ROCM" = 1 ]                                && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON" && echo "ToDo and test" && exit -1
-        CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
+        if [ "$TRUST_USE_CUDA" = 1 ]
+        then
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE80=ON" # -DKokkos_ARCH_AMPERE86=ON 
+           # To mix Kokkos with OpenMP:
+           [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
+        elif [ "$TRUST_USE_ROCM" = 1 ]
+        then
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
+           [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
+           #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
+           # To mix Kokkos with OpenMP:
+           [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=ON"
+        fi
+        [ "$TRUST_USE_ROCM" != 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
         CMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR/$TRUST_ARCH`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
         CMAKE_OPT="$CMAKE_OPT -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX"
         # Activation de check supplementaires au run-time en mode debug:
@@ -37,12 +47,12 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON"  # Debug check on dual views
         fi
         # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
-        echo "cmake ../kokkos $CMAKE_OPT" >$log_file
-        cmake ../kokkos $CMAKE_OPT 1>>$log_file 2>&1 
-        [ $? != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1
+        echo "cmake ../kokkos $CMAKE_OPT" | tee $log_file
+        cmake ../kokkos $CMAKE_OPT 2>&1 | tee -a $log_file
+        [ ${PIPESTATUS[0]} != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1
 
-        make -j$TRUST_NB_PHYSICAL_PROCS install 1>>$log_file 2>&1
-        [ $? != 0 ] && echo "Error when compiling Kokkos - look at $log_file" && exit -1
+        make -j$TRUST_NB_PHYSICAL_PROCS install 2>&1 | tee -a $log_file
+        [ ${PIPESTATUS[0]} != 0 ] && echo "Error when compiling Kokkos - look at $log_file" && exit -1
         echo "Kokkos $CMAKE_BUILD_TYPE installed under $CMAKE_INSTALL_PREFIX"
         cd ..
       done
