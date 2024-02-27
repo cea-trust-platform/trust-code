@@ -144,7 +144,7 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
   // Kokkos initialisation
-  int argc2 = argc;
+  True_int argc2 = argc;
   Kokkos::initialize( argc2, argv );
   Cerr << "Kokkos initialized!" << finl;
 #ifdef TRUST_USE_CUDA
