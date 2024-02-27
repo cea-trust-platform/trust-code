@@ -41,7 +41,7 @@ else
 fi
 
 # We use the hdf5 of TRUST
-cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
+env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
 
 # make & install
 $TRUST_MAKE
