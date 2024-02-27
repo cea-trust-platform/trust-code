@@ -1175,6 +1175,20 @@ then
          exit -1
       fi
    fi
+   if [ "$TRUST_CUDA_CC" = "" ]
+   then
+      TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv | tail -1 | awk '{gsub("\\\.","",$1);print $1}'`
+      # nvidia-smi trop anciens ne supporte pas query-gpu=compute_cap:
+      [ "$TRUST_CUDA_CC" = "" ] && [ "`nvidia-smi 2>&1 | grep -e A[3456]000`" != "" ] && TRUST_CUDA_CC=86 # Cartes A3000-A6000
+      if [ "$TRUST_CUDA_CC" != "" ] 
+      then
+         m="# Cuda Compute Capability:";e="TRUST_CUDA_CC=\"$TRUST_CUDA_CC\" && export TRUST_CUDA_CC";
+         ecrit $m"|"$e"|"$env;eval $e
+      else
+         echo "Cuda Compute Capability not detected ! TRUST_CUDA_CC should be set."
+	 exit -1
+      fi	 
+   fi
    #########################
    # Detection CUDA run time
    #########################
@@ -1194,6 +1208,7 @@ then
       [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
    done
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
+   
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env;eval $e
@@ -2108,12 +2123,13 @@ then
      if [ "$TRUST_USE_CUDA" = 1 ]
      then
         # A partir de HPC SDK 21.3 et necessite compute_capability 70 !
-        openmp_target="-target=gpu $march" # ToDo OpenMP -gpu=cc86 pour a5000/a6000, detecter nvidia-smi ou autre et pour cluster mettre dans HOST.sh. Gain limite: 1% sur petra ?
+	openmp_target="-target=gpu $march -gpu=cc$TRUST_CUDA_CC" # Desormais detecte
+        #openmp_target="-target=gpu $march" # ToDo OpenMP -gpu=cc86 pour a5000/a6000, detecter nvidia-smi ou autre et pour cluster mettre dans HOST.sh. Gain limite: 1% sur petra ?
         # Sur cluster pour compiler sur la frontale (pas de carte):
         # https://forums.developer.nvidia.com/t/compile-error-for-openmp-code-with-target-offloading-in-nvhpc-20-11/164188
-        # ToDo: faire un TRUST_CUDA_ARCH=70 (v100), 80 (A100), 86 (A5000, A6000) et mettre ici ou ailleurs (ex: PETSc/install)
+        # ToDo: faire un TRUST_CUDA_CC=70 (v100), 80 (A100), 86 (A5000, A6000) et mettre ici ou ailleurs (ex: PETSc/install)
         # Mais comment detecter ? Placer dans le HOST deja... Sinon, faire un nvidia-smi...
-        [ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70,cc80" # cc80 pour topaze (A100)
+        #[ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70,cc80" # cc80 pour topaze (A100)
         #Flags utiles du debug:
         #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
         #export NVCOMPILER_ACC_TIME = 1
@@ -2169,7 +2185,7 @@ double b[3];
    fi
 fi
 # Ajout des flags OpenMP:
-CppFlags=$CppFlags" "$openmp" "$openmp_target
+CppFlags=$openmp" "$openmp_target" "$CppFlags
 SYSLIBS=$SYSLIBS" "$openmp
 
 ##########

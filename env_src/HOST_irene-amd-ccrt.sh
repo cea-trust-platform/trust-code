@@ -36,6 +36,7 @@ define_modules_config()
          #module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.6" # Ok, it works
       fi
+      echo "export TRUST_CUDA_CC=70 # V100, Cuda Compute Capability" >> $env
    else
       # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
       # module="intel/19.0.5.281 mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # openmpi/io/collective_buffering recommendation CCRT pour IO paralleles

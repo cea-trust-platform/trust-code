@@ -26,6 +26,7 @@ define_modules_config()
          module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
          #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
       fi
+      echo "export TRUST_CUDA_CC=70 # V100, Cuda Compute Capability" >> $env
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"

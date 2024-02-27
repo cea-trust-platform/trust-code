@@ -26,7 +26,16 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
-           CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE80=ON" # -DKokkos_ARCH_AMPERE86=ON 
+           # KOKKOS ARCH (Cuda Compute Capability):
+           if [ "$TRUST_CUDA_CC" = 70 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_VOLTA$TRUST_CUDA_CC=ON"
+           elif [ "$TRUST_CUDA_CC" = 80 ] || [ "$TRUST_CUDA_CC" = 86 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE$TRUST_CUDA_CC=ON"
+           else
+              echo "KOKKOS_ARCH not set!" && exit -1
+           fi
            # To mix Kokkos with OpenMP:
            [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
@@ -39,7 +48,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         fi
         [ "$TRUST_USE_ROCM" != 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
         CMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR/$TRUST_ARCH`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
-        CMAKE_OPT="$CMAKE_OPT -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX"
+        CMAKE_OPT="$CMAKE_OPT -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX -DCMAKE_INSTALL_LIBDIR=lib64"
         # Activation de check supplementaires au run-time en mode debug:
         if [ $CMAKE_BUILD_TYPE = Debug ]
         then

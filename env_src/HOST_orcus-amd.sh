@@ -23,6 +23,7 @@ define_modules_config()
          module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
          module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
       fi
+      echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
       #module=$module" cmake/3.22.0"
    elif [ $gnu = 1 ]
    then
