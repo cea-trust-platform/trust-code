@@ -239,7 +239,6 @@ protected:
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start=0, int size=-1);
-  inline void fill_default_value(RESIZE_OPTIONS opt, int first, int nb);
   inline void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
   inline bool detach_array();
 

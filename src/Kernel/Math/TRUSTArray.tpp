@@ -357,30 +357,6 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
     span_ = Span_();
 }
 
-/** Fills in default values for the array.
- * This is only meaning full in debug for resizing arrays without copying data. In this situation we fill the array with
- * huge non-sensical data to spot potential mistakes.
- */
-template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::fill_default_value(RESIZE_OPTIONS opt, int first, int nb)
-{
-  checkDataOnHost(*this);
-
-#ifndef NDEBUG // On initialise uniquement en mode debug
-  assert((nb == 0) || (first >= 0 && first < (int)mem_->size()));
-  assert((nb == 0) || (nb > 0 && nb <= (int)mem_->size() - first));
-  _TYPE_ * data = span_.data();
-  assert(data!=0 || nb==0);
-  data += first;
-  if (opt != RESIZE_OPTIONS::COPY_INIT)
-    {
-      static const _TYPE_  INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : INT_MIN;
-      for (int i = 0; i < nb; i++) data[i] = INVALIDE_;
-    }
-#endif
-
-}
-
 /** Protected method for resize. Used by derived classes.
  * Same as resize_array() with less checks.
  *
