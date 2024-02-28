@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo "Running reprise_sauv.data ..."
+trust reprise_sauv.data 1>sauv.out 2>sauv.err
+
+if [ $? != 0 ] 
+then
+	echo "Error in sauv resume file !"
+	exit -1
+else
+	echo "All OK ! Simulation well resumed !"
+fi
