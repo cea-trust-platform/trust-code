@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,26 +13,26 @@
 *
 *****************************************************************************/
 
+#include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Linear_algebra_tools_impl.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
 #include <Connectivite_som_elem.h>
 #include <Champ_Fonc_reprise.h>
-#include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Schema_Temps_base.h>
+#include <MD_Vector_base.h>
 #include <Champ_Uniforme.h>
 #include <TRUSTTab_parts.h>
-#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
 #include <Equation_base.h>
 #include <Matrix_tools.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
+#include <Domaine_VF.h>
+#include <Operateur.h>
 #include <Symetrie.h>
 #include <EChaine.h>
 #include <Domaine.h>
-#include <Domaine_VF.h>
 #include <array>
 #include <cmath>
-#include <Operateur.h>
-#include <Op_Diff_PolyMAC_P0P1NC_base.h>
-#include <MD_Vector_base.h>
 
 Implemente_instanciable(Champ_Face_PolyMAC_P0P1NC,"Champ_Face_PolyMAC_P0P1NC", Champ_Face_PolyMAC) ;
 
@@ -71,7 +71,10 @@ void Champ_Face_PolyMAC_P0P1NC::init_auxiliary_variables()
 
 int Champ_Face_PolyMAC_P0P1NC::reprendre(Entree& fich)
 {
-  const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : NULL;
+  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
+  if (pbm) return Champ_Inc_base::reprendre(fich); // pour le moment pas de champ foc reprise ... TODO FIXME Elie Saikali
+
+  const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : nullptr;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);
@@ -85,7 +88,7 @@ void Champ_Face_PolyMAC_P0P1NC::interp_ve(const DoubleTab& inco, DoubleTab& val,
 {
   const Domaine_PolyMAC_P0P1NC& domaine = domaine_PolyMAC_P0P1NC();
   const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
-  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = domaine.volumes();
+  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr, *ppe = ppf ? &equation().milieu().porosite_elem() : nullptr, &ve = domaine.volumes();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int e, f, j, r;
 
@@ -103,7 +106,7 @@ void Champ_Face_PolyMAC_P0P1NC::interp_ve(const DoubleTab& inco, const IntVect& 
 {
   const Domaine_PolyMAC_P0P1NC& domaine = domaine_PolyMAC_P0P1NC();
   const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
-  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = domaine.volumes();
+  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr, *ppe = ppf ? &equation().milieu().porosite_elem() : nullptr, &ve = domaine.volumes();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int e, f, j, d, D = dimension, n, N = inco.line_size();
   assert(ve.line_size() == N * D);

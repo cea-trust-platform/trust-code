@@ -19,6 +19,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <MD_Vector_base.h>
 #include <Domaine_Cl_dis.h>
+#include <Pb_Multiphase.h>
 
 Implemente_instanciable(Champ_Elem_PolyMAC_P0P1NC,"Champ_Elem_PolyMAC_P0P1NC",Champ_Elem_PolyMAC);
 
@@ -64,7 +65,10 @@ void Champ_Elem_PolyMAC_P0P1NC::init_auxiliary_variables()
 
 int Champ_Elem_PolyMAC_P0P1NC::reprendre(Entree& fich)
 {
-  const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : NULL;
+  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
+  if (pbm) return Champ_Inc_base::reprendre(fich); // pour le moment pas de champ foc reprise ... TODO FIXME Elie Saikali
+
+  const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : nullptr;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);
