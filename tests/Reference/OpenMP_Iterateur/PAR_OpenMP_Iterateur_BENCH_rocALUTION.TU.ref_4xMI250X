@@ -1,44 +1,44 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       5.02417
+Temps total                       4.96232
 
 Statistiques de resolution du probleme
 
-Temps total                       2.05327
+Temps total                       1.91656
 
 
 Timesteps                         10
-Secondes / pas de temps           0.205326
-Dont solveurs Ax=B                0.130283 63% (1 appel/pas de temps)
-Dont mettre_a_jour                0.005048  2% (1 appel/pas de temps)
-Dont operateurs convection        0.032009 15% (1 appel/pas de temps)
-Dont operateurs diffusion         0.010913  5% (1 appel/pas de temps)
-Dont operateurs gradient          0.007583  3% (2 appels/pas de temps)
-Dont operateurs divergence        0.001891  0% (2 appels/pas de temps)
-Dont operations postraitement     0.002247  1% (1 appel/pas de temps)
-Dont calcul dt                    0.002510  1% (2 appels/pas de temps)
-Dont calcul divers                0.014010  6% (0 appels/pas de temps)
+Secondes / pas de temps           0.191655
+Dont solveurs Ax=B                0.126019 65% (1 appel/pas de temps)
+Dont mettre_a_jour                0.003759  1% (1 appel/pas de temps)
+Dont operateurs convection        0.030084 15% (1 appel/pas de temps)
+Dont operateurs diffusion         0.010863  5% (1 appel/pas de temps)
+Dont operateurs gradient          0.007484  3% (2 appels/pas de temps)
+Dont operateurs divergence        0.001881  0% (2 appels/pas de temps)
+Dont operations postraitement     0.002363  1% (1 appel/pas de temps)
+Dont calcul dt                    0.002040  1% (2 appels/pas de temps)
+Dont calcul divers                0.008006  4% (0 appels/pas de temps)
 Nb MPI_allreduce / pas de temps 13.1
 Nb solveur / pas de temps         1
-Secondes / solveur                0.130283
+Secondes / solveur                0.126019
 Iterations / solveur              60
 GPU statistics per time step (experimental):
-Libraries: 0.129161 s 62.9%  2.0 calls
-Kernels  : 0.052642 s 25.6% 127.5 calls
-Copy H2D : 0.008727 s  4.3% 28.2 calls  7.9 GB/s
-Copy D2H : 0.007610 s  3.7% 28.0 calls  7.0 GB/s
-GPU: 88.5% Copy H<->D: 7.9% Comm: 3.3% CPU & I/O: 0.1%
+Libraries: 0.125351 s 65.4%  2.0 calls
+Kernels  : 0.052662 s 27.5% 127.5 calls
+Copy H2D : 0.003304 s  1.7% 28.2 calls 20.8 GB/s
+Copy D2H : 0.003639 s  1.9% 28.0 calls 14.6 GB/s
+GPU: 92.8% Copy H<->D: 3.6% Comm: 2.8% CPU & I/O: 0.6%
 I/O:
-Communications avg        3.3 % of total time
-Communications max        3.8 % of total time
-Communications min        2.2 % of total time
-Network latency benchmark 1.36137e-06 s
-Network bandwidth max     10879.7 MB/s
+Communications avg        2.8 % of total time
+Communications max        3.2 % of total time
+Communications min        2.4 % of total time
+Network latency benchmark 1.37091e-06 s
+Network bandwidth max     11593.5 MB/s
 Total network traffic     189.879 MB / timestep
 Average message size      734.824 kB
-Min waiting time          0 % of total time
-Max waiting time          1.5 % of total time
-Avg waiting time          1.05 % of total time
+Min waiting time          0.1 % of total time
+Max waiting time          1 % of total time
+Avg waiting time          0.6 % of total time
 
 Timesteps = number of time steps
 Nb solveur = number of linear system resolutions
@@ -56,5 +56,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.21059
+Temps total                       0.225604
 
