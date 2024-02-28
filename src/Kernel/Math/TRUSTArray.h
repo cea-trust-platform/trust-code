@@ -239,8 +239,9 @@ protected:
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start=0, int size=-1);
-  inline void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
   inline bool detach_array();
+
+  void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
 private:
   /*! Shared pointer to the actual underlying memory block:
