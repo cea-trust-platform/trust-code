@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,6 @@ Entree& Masse_Multiphase::readOn(Entree& is)
 
   terme_convectif.set_fichier("Debit");
   terme_convectif.set_description((Nom)"Mass flow rate=Integral(-alpha*rho*u*ndS) [kg/s] if SI units used");
-
-  champs_compris_.ajoute_champ(l_inco_ch);
 
   // Special treatment for Pb_Multiphase_HEM
   // We enforce the presence of a source term related to the interfacial flux automatically.
@@ -168,6 +166,7 @@ void Masse_Multiphase::discretiser()
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   dis.discretiser_champ("temperature",domaine_dis(),"alpha","sans_dimension", pb.nb_phases(),nb_valeurs_temp,temps,l_inco_ch);
   l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  champs_compris_.ajoute_champ(l_inco_ch);
   Equation_base::discretiser();
   for (int i = 0; i < pb.nb_phases(); i++)
     l_inco_ch.valeur().fixer_nom_compo(i, Nom("alpha_") + pb.nom_phase(i));
