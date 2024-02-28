@@ -189,9 +189,9 @@ _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
   {
     device_ptr = ptr;
   }
-    return device_ptr;
+  return device_ptr;
 #else
-    return tab.data();
+  return tab.data();
 #endif
 }
 

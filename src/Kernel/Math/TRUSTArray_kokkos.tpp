@@ -30,8 +30,8 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
   bool is_init = dual_view_init_;
   if(is_init && dual_view_arr_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_arr_.h_view.data() != this->data() || dual_view_arr_.view_device().data() != addrOnDevice(*this) ||
-          (long) dual_view_arr_.extent(0) != ze_dim)
+    if (dual_view_arr_.h_view.data() != this->data() || dual_view_arr_.view_device().data() != addrOnDevice(*this) ||
+        (long) dual_view_arr_.extent(0) != ze_dim)
       is_init = false;
 
   if (is_init) return;
@@ -75,7 +75,7 @@ inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
   dual_view_arr_.template sync<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_arr_.view_device();
+  return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>
@@ -89,7 +89,7 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_arr_.template modify<memory_space>();
   // return *device* view:
-    return dual_view_arr_.view_device();
+  return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>
@@ -106,7 +106,7 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
   dual_view_arr_.template modify<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_arr_.view_device();
+  return dual_view_arr_.view_device();
 }
 
 template<typename _TYPE_>
@@ -140,14 +140,14 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   if (size==-1) size = view_tab.extent(0);
   Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
   {
-    Kokkos::printf("[Kokkos]: %p [%d]=%e\n", view_tab.data(), i, view_tab(i));
+    Kokkos::printf("[Kokkos]: %p [%2ld]=%e\n", view_tab.data(), i, view_tab(i));
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert(view_tab.size()==tab.size_array());
   _TYPE_ *ptr = tab.data();
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
-    printf("[OpenMP]: %p [%d]=%e\n", ptr, i, ptr[i]);
+    printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
 }
 
 #endif

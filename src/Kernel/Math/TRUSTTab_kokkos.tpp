@@ -40,8 +40,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab2_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab2_.h_view.data() != this->data() ||
-          dual_view_tab2_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab2_.extent(0) != dims[0] ||
+    if (dual_view_tab2_.h_view.data() != this->data() ||
+        dual_view_tab2_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab2_.extent(0) != dims[0] ||
         (long) dual_view_tab2_.extent(1) != dims[1])
       is_init = false;
 
@@ -111,7 +111,7 @@ inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
   dual_view_tab2_.template sync<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_tab2_.view_device();
+  return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -126,7 +126,7 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_wo()
   dual_view_tab2_.template modify<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_tab2_.view_device();
+  return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -143,7 +143,7 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
   dual_view_tab2_.template modify<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_tab2_.view_device();
+  return dual_view_tab2_.view_device();
 }
 
 template<typename _TYPE_>
@@ -183,8 +183,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab3_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab3_.h_view.data() != this->data() ||
-          dual_view_tab3_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab3_.extent(0) != dims[0] ||
+    if (dual_view_tab3_.h_view.data() != this->data() ||
+        dual_view_tab3_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab3_.extent(0) != dims[0] ||
         (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
       is_init = false;
 
@@ -238,7 +238,7 @@ inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_ro() const
 #endif
 
   // return *device* view:
-    return dual_view_tab3_.view_device();
+  return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -253,7 +253,7 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_wo()
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
   // return *device* view:
-    return dual_view_tab3_.view_device();
+  return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -270,7 +270,7 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_rw()
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
   // return *device* view:
-    return dual_view_tab3_.view_device();
+  return dual_view_tab3_.view_device();
 }
 
 template<typename _TYPE_>
@@ -311,8 +311,8 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
   bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab4_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-      if (dual_view_tab4_.h_view.data() != this->data() ||
-          dual_view_tab4_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab4_.extent(0) != dims[0] ||
+    if (dual_view_tab4_.h_view.data() != this->data() ||
+        dual_view_tab4_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab4_.extent(0) != dims[0] ||
         (long) dual_view_tab4_.extent(1) != dims[1]
         || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
       is_init = false;
@@ -366,7 +366,7 @@ inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
   dual_view_tab4_.template sync<memory_space>();
 #endif
   // return *device* view:
-    return dual_view_tab4_.view_device();
+  return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
@@ -380,7 +380,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
   // return *device* view:
-    return dual_view_tab4_.view_device();
+  return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
@@ -396,7 +396,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
   // return *device* view:
-    return dual_view_tab4_.view_device();
+  return dual_view_tab4_.view_device();
 }
 
 template<typename _TYPE_>
@@ -432,7 +432,7 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
   {
     for (int j=0; j<nb_compo; j++)
-      Kokkos::printf("[Kokkos]: %p [%d,%d]=%e\n", (void*)view_tab.data(), i, j, view_tab(i,j));
+      Kokkos::printf("[Kokkos]: %p [%2ld,%2ld]=%e\n", (void*)view_tab.data(), i, j, view_tab(i,j));
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert((int)view_tab.size()==tab.size_array());
@@ -442,7 +442,7 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   for (int i=0; i<size; i++)
     {
       for (int j=0; j<nb_compo; j++)
-        printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
+        printf("[OpenMP]: %p [%2ld,%2ld]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
     }
 }
 

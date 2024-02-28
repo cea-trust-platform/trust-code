@@ -385,8 +385,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
       const double *face_normales_addr = mapToDevice(domaine_VEF.face_normales());
       const double *nu_addr = mapToDevice(nu, "nu");
       const double *grad_addr = mapToDevice(grad_, "grad");
-      DoubleTab resu_cop = resu;
-      DoubleTab flux_cop = tab_flux_bords;
+      //DoubleTab resu_cop = resu;
+      //DoubleTab flux_cop = tab_flux_bords;
       double *resu_addr = computeOnTheDevice(resu, "resu");
       double *tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
       start_timer();

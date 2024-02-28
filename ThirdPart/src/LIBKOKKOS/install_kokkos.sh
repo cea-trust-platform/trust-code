@@ -40,7 +40,9 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
-           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
+	   # Impossible de mixer HIP et OpenMP dans une meme translation unit:
+           #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
            #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
            # To mix Kokkos with OpenMP:
