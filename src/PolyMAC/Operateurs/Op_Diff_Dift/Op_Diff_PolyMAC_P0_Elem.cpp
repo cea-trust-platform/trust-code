@@ -369,7 +369,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   IntTrav i_efs, i_e, i_eq_flux, i_eq_cont, i_eq_pbm, piv(1); //indices dans les matrices : i_efs(i, j, n) -> composante n de la face j de l'elem i dans s_pe, i_e(i, n) -> indice de la phase n de l'elem i de s_pe
   //i_eq_{flux,cont}(i, n) -> n-ieme equation de flux/de continuite a la face i de s_pf
   //i_eq_pbm(i_efs(i, j, n)) -> n-ieme equation "flux = correlation" a la face j de l'elem i de s_pe (seulement si Pb_Multiphase)
-  DoubleTrav A, B, mA, mB, Ff, Fec, Qf, Qec, Tefs, C, X, Y, W(1), S, x_fs;
+  DoubleTrav A, B, Ff, Fec, Qf, Qec, Tefs, C, X, Y, W(1), S, x_fs;
 
   // Et pour les methodes span de la classe Saturation pour le flux parietal
   std::vector<DoubleTrav> Ts_tab(n_ext), Sigma_tab(n_ext), Lvap_tab(n_ext);
