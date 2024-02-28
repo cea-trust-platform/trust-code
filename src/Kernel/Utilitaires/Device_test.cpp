@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void self_test()
         assert(inco.ref_count() == 2);
         DoubleTab b(N);
 
-        const double *a_addr = mapToDevice(a, "a"); // up-to-date
+        const double *a_addr = mapToDevice(a, "a"); // up-to-date, so does nothing normally
         double *b_addr = b.addr();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
@@ -92,7 +92,7 @@ void self_test()
         assert(a.get_dataLocation() == HostDevice);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
-        const double *a_addr = mapToDevice(a, "a"); // up-to-date
+        const double *a_addr = mapToDevice(a, "a"); // up-to-date, so does nothing normally
 
         DoubleTab b(N);
         double *b_addr = b.data();
@@ -247,7 +247,7 @@ void self_test()
         mapToDevice(a,"a");
         assert(a.get_dataLocation() == HostDevice);
         mapToDevice(b, "b");
-        assert(a.get_dataLocation() == HostDevice);
+        assert(b.get_dataLocation() == HostDevice);
         a=b;  // TRUSTArray<_TYPE_>::inject_array(v) faite sur le device (a=10)
         assert(a.get_dataLocation() == Device);
         a+=b; // operator_vect_vect_generic(ADD_) faite sur le device (a=20)

@@ -86,13 +86,14 @@ public:
 
   TRUSTArray() : TRUSTArray(0) { }
 
-  TRUSTArray(int n): storage_type_(STORAGE::STANDARD)
+  TRUSTArray(int n) : storage_type_(STORAGE::STANDARD)
   {
     if (n)
       {
         // Initialize underlying std::vector<> with 0:
         mem_ = std::make_shared<Vector_>(Vector_(n, (_TYPE_)0));
         span_ = Span_(*mem_);
+        dataLocation_ = std::make_shared<DataLocation>(HostOnly);
       }
   }
 
@@ -101,20 +102,21 @@ public:
    *
    * It is forbidden to deep copy a ref_data.
    */
-  TRUSTArray(const TRUSTArray& A) : Array_base()
+  TRUSTArray(const TRUSTArray& A) : Array_base(), storage_type_(STORAGE::STANDARD)
   {
     assert(A.mem_ != nullptr || A.span_.empty());
-    storage_type_ = STORAGE::STANDARD;
     const int size = A.size_array();
     if (size > 0)
       {
         // We deep copy *only* the data span of A, not the full underlying A.mem_:
         mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
         span_ = Span_(*mem_);
-        if (A.isDataOnDevice()) allocateOnDevice(*this);
-#ifdef OPENMP   // TODO review this later ... I think we need to keep it
-        inject_array(A);
-#endif
+        dataLocation_ = std::make_shared<DataLocation>(A.get_dataLocation());
+        if (A.isDataOnDevice())
+          {
+            allocateOnDevice(*this);
+            inject_array(A);
+          }
       }
   }
 
@@ -177,7 +179,7 @@ public:
   /*! divise toutes les cases par dy (pas pour TRUSTArray<int>) */
   TRUSTArray& operator/= (const _TYPE_ dy);
 
-  TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
+  TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements=-1,  int first_element_dest=0, int first_element_source=0);
 
   inline TRUSTArray& copy_array(const TRUSTArray& a)
   {
@@ -194,17 +196,15 @@ public:
   inline virtual void ref_data(_TYPE_* ptr, int size);
   /*! Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel) */
   inline virtual void reset() { detach_array(); }
-  inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
+  inline virtual void ref_array(TRUSTArray&, int start=0, int sz=-1);
   inline virtual void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Host/Device methods:
-  inline DataLocation get_dataLocation()
-  {
-    return mem_ == nullptr ? HostOnly : get_dataLocation();
-  }
-  inline DataLocation get_dataLocation() const { return mem_ == nullptr ? HostOnly : dataLocation_; }
-  inline void set_dataLocation(DataLocation flag) { if (mem_ != nullptr) dataLocation_ = flag; }
-  inline void set_dataLocation(DataLocation flag) const { if (mem_ != nullptr) dataLocation_ = flag; }
+  inline DataLocation get_dataLocation() {  return dataLocation_ == nullptr ? HostOnly : *dataLocation_;   }
+  inline DataLocation get_dataLocation() const { return dataLocation_ == nullptr ? HostOnly : *dataLocation_; }
+  inline void set_dataLocation(DataLocation flag) { if (dataLocation_ != nullptr) *dataLocation_ = flag; }
+  inline void set_dataLocation(DataLocation flag) const { if (dataLocation_ != nullptr) *dataLocation_ = flag; }
+
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
   inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
@@ -263,7 +263,8 @@ private:
   // Device    : A jour sur le device pas sur le host
   // HostDevice: A jour sur le host et le device
   // PartialHostDevice : Etat temporaire: certaines valeurs sont plus a jour sur le host que le device (ex: faces frontieres ou items distants)
-  mutable DataLocation dataLocation_ = HostOnly;
+  // In a shared_ptr because this state has the same status as mem_ (same sharing properties)
+  mutable std::shared_ptr<DataLocation> dataLocation_;
 
   // Methodes de verification que le tableau est a jour sur le host:
   // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?

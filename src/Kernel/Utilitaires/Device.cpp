@@ -310,7 +310,9 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
       if (currentLocation==HostOnly)
         {
-          allocateOnDevice(tab_addr, tab.size_array());
+          // Not a Trav which is already allocated on device:
+          if (!(dynamic_cast<TRUSTTrav<_TYPE_> *>(&tab) != nullptr && isAllocatedOnDevice(tab_addr)))
+            allocateOnDevice(tab_addr, tab.size_array());
           copyToDevice(tab_addr, tab.size_array(), "array "+arrayName);
         }
       else if (currentLocation==Host)

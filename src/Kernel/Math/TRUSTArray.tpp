@@ -29,6 +29,9 @@ inline TRUSTArray<_TYPE_>::~TRUSTArray()
   if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr)
     // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
     TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
+  // Deletion on device if last (shared) instance and not a Trav:
+  if (isDataOnDevice() && ref_count() == 1 && storage_type_ != STORAGE::TEMP_STORAGE)
+    deleteOnDevice(*this);
 }
 
 
@@ -350,6 +353,9 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
   // shared_ptr copy! One more owner for the underlying data - note we migth copy nullptr here ...
   mem_ = m.mem_;
 
+  // Copy (shared) data location from m - locations will be synchronized automatically between ref arrays
+  dataLocation_ = m.dataLocation_;
+
   // stupid enough, but we might have ref'ed a detached array ...
   if (mem_ != nullptr)
     span_ = Span_((_TYPE_ *)(m.mem_->data()+start), size);
@@ -365,6 +371,8 @@ inline bool TRUSTArray<_TYPE_>::detach_array()
 {
   mem_ = nullptr;
   span_ = Span_();
+  if (isDataOnDevice())
+    deleteOnDevice(*this);
   return true;
 }
 

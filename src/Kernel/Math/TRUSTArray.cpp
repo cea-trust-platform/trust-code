@@ -69,7 +69,7 @@ Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
  * There memory is taken from a shared pool (TRUSTTravPool)
  */
 template <typename _TYPE_>
-inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
+void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 {
   assert(new_size >= 0);
 
@@ -86,10 +86,18 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
           // Don't forget to init! GetFreeBlock doesn't do it ...
           if(opt == RESIZE_OPTIONS::COPY_INIT)
             std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
+          // TODO - should be in TRUSTTravPool logic:
+          if (isDataOnDevice() && !isAllocatedOnDevice(*this))
+            allocateOnDevice(*this);
         }
       else
-        mem_ = std::make_shared<Vector_>(Vector_(new_size));
+        {
+          mem_ = std::make_shared<Vector_>(Vector_(new_size));
+          // Allocate on GPU if needed:
+          if (isDataOnDevice()) allocateOnDevice(*this);
+        }
       span_ = Span_(*mem_);
+      dataLocation_ = std::make_shared<DataLocation>(HostOnly);
     }
   else
     {
@@ -101,6 +109,7 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
       if(new_size != sz_arr) // Yes, we compare to the span's size
         {
           assert(ref_count() == 1);  // from here on, we *really* should not be shared
+
           if (storage_type_ == STORAGE::TEMP_STORAGE)
             {
               // Resize of a Trav: if the underlying mem_ is already big enough, just update the span, and possibly fill with 0
@@ -116,6 +125,9 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
                 }
               else  // Real size increase of the underlying std::vector
                 {
+                  // No Trav resize (from non null size!) on GPU for now:
+                  assert(storage_type_ != STORAGE::TEMP_STORAGE || !isDataOnDevice());
+
                   // ResizeBlock in its current impl. does also the zeroing:
                   mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
                   span_ = Span_(*mem_);
@@ -123,8 +135,20 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
             }
           else  // Normal (non Trav) arrays
             {
+              _TYPE_ * prev_ad = span_.data(); // before resize!
               mem_->resize(new_size);
               span_ = Span_(*mem_);
+              if(isDataOnDevice())
+                {
+                  // Allocate new (bigger) block on device:
+                  allocateOnDevice(*this);
+                  // Copy data (use a dummy TRUSTArray just because of inject_array API)
+                  TRUSTArray<_TYPE_> dummy_src;
+                  dummy_src.span_ = Span_(prev_ad, prev_ad+sz_arr);
+                  inject_array(dummy_src, 0, sz_arr);
+                  // Delete former block
+                  deleteOnDevice(prev_ad, sz_arr);
+                }
             }
         }
     }
