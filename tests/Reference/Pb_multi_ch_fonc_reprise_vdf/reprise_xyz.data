@@ -1,0 +1,181 @@
+# PARALLEL OK 8 #
+dimension 2
+Pb_multiphase pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+  Pave volum0
+  {
+    Origine 0. 0.
+    Nombre_de_Noeuds 31 31
+    Longueurs 1 1
+    Facteurs 1. 1.
+  }
+  {
+    Bord boundary   X = 0.0  0.0 <= Y <= 1
+    Bord boundary   X = 1    0.0 <= Y <= 1
+    Bord boundary   Y = 0.0  0.0 <= X <= 1
+    Bord boundary   Y = 1    0.0 <= X <= 1
+  }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+vdf dis
+option_vdf { all_options }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 30
+    dt_max 1e-2
+    tmax 10
+    seuil_statio 1e-6
+    solveur ice
+    {
+        solveur petsc cli { }
+        criteres_convergence { vitesse 1e-3 }
+    }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    Milieu_Composite
+    {
+        liquide_eau	Fluide_Incompressible
+        {
+            rho    Champ_Uniforme 1 100
+            mu     Champ_Uniforme 1 1e-3
+            lambda Champ_Uniforme 1 1
+            Cp     Champ_Uniforme 1 1
+        }
+
+        gaz_eau Fluide_Incompressible
+        {
+            rho    Champ_Uniforme 1 1
+            mu     Champ_Uniforme 1 1e-3
+            lambda Champ_Uniforme 1 1
+            Cp     Champ_Uniforme 1 1
+        }
+    }
+
+    Correlations {
+        Frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 }
+         masse_ajoutee coef_constant { beta 0.5 } 
+    }
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        evanescence { homogene { alpha_res 1e-5 } }
+        initial_conditions
+        {
+            vitesse Champ_composite 2 /* champ par phase */
+            {
+                Champ_Fonc_xyz dom 2 0 0
+                Champ_Fonc_xyz dom 2 0 0
+            }
+
+            pression Champ_composite 1
+            {
+                Champ_Fonc_xyz dom 1  -100*y*(y<0.5)-(45+10*y)*(y>0.5)
+            }
+        }
+        sources
+        {
+            frottement_interfacial { a_res 1.e-2 dv_min 0.1 } ,
+            source_qdm Champ_composite 2 /* champ par phase */
+            {
+                champ_fonc_xyz dom 2  0 -10
+                champ_fonc_xyz dom 2  0 -10
+            }
+        }
+        boundary_conditions
+        {
+            boundary symetrie
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha Champ_composite 2 /* champ par phase */
+            {
+                Champ_Fonc_xyz dom 1 /* (y<0.5) */ 0.5
+                Champ_Fonc_xyz dom 1 /* (y>0.5) */ 0.5
+            }
+        }
+        convection { amont }
+        boundary_conditions { boundary paroi }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_composite 2 /* champ par phase */
+            {
+                Champ_Uniforme 1 0
+                Champ_Uniforme 1 0
+            }
+        }
+        boundary_conditions { boundary paroi_adiabatique }
+    }
+    Post_processing
+    {
+        probes
+        {
+            profil_vg vitesse_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
+            profil_vl vitesse_liquide_eau periode 1e-8 segment 500 0.5 0 0.5 1
+            alpha       alpha_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
+        }
+        Format single_lata
+        fields dt_post 0.2
+        {
+            pression elem
+            vitesse_liquide_eau elem
+            vitesse_gaz_eau elem
+            alpha_liquide_eau elem
+            alpha_gaz_eau elem
+            vitesse_debitante_liquide_eau elem
+            vitesse_debitante_gaz_eau elem
+            temperature elem
+            masse_volumique elem
+            viscosite_cinematique elem
+            viscosite_dynamique elem
+            conductivite elem
+            capacite_calorifique elem
+            energie_interne elem
+            enthalpie elem
+            masse_volumique_melange elem
+            enthalpie_melange elem
+        }
+    }
+    resume_last_time xyz Pb_multi_ch_fonc_reprise_vdf_pb.xyz
+}
+Solve pb
+End
