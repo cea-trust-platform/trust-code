@@ -83,6 +83,9 @@ cd - 1>/dev/null 2>&1
 # Patch for OverlapDEC
 echo "Applying patch for OverlapDEC ..."
 (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/odec_multi_compo.patch)
+# Patch for tetra intersections 
+echo "Applying patch for tetra intersect ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/tetra_mc.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
