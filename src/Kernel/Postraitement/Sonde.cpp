@@ -875,7 +875,7 @@ void Sonde::initialiser()
         }
     }
   bool supprime_doublons = true; // Nouveaute 1.8.4 (unicite des points de sondes)
-  if (mon_post->DeprecatedKeepDuplicatedProbes) supprime_doublons = false;
+  if (mon_post->DeprecatedKeepDuplicatedProbes) supprime_doublons = false; // option a garder car besoin pour P-E de garder les sondes dupliquees en 1.9.3
   ArrOfInt doublon(elem_.size_array());
   if (supprime_doublons)
     {

@@ -21,7 +21,7 @@ build=build_visit$vt
 ###########################
 # Recuperation des packages
 ###########################
-for file in `ls ../../../externalpackages/VisIt/*`
+for file in `ls $TRUST_ROOT/externalpackages/VisIt/*`
 do
    ln -sf $file .
 done

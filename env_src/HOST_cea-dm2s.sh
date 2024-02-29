@@ -27,8 +27,7 @@ define_modules_config()
       # sur pegasi2, tout OK avec gcc 8.3
       echo "source /etc/profile.d/modules.sh" >> $env
       echo "module purge" >> $env
-      echo "module load gcccore/.8.3.0 gcc/8.3.0 || exit -1" >> $env
-      [ -d /volatile/projet/trust_trio/texlive/2019 ] && echo "export PATH=/volatile/projet/trust_trio/texlive/2019/bin/x86_64-linux:\$PATH" >> $env
+      echo "module load gcccore/.8.3.0 gcc/8.3.0 texlive/20220321 || exit -1" >> $env
    fi
    #echo "module load texlive/20220321 || exit -1" >> $env
    . $env

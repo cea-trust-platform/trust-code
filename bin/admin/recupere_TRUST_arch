@@ -354,15 +354,15 @@ do
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
-	#[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
+	[ "`grep 'configure called with options' $CR | grep ' -disable-petsc'`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
-	#[ "`grep ' -disable-mpi' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
+	[ "`grep 'configure called with options' $CR | grep ' -disable-mpi'`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
 	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT	
-	#[ "`grep ' -disable-gmsh' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT
+	[ "`grep 'configure called with options' $CR | grep ' -disable-gmsh'`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT
 	[ "`grep 'Disabling VISIT' $CR`" != "" ]        && [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
-	#[ "`grep ' -without-visit' $CR`" != "" ]	&& [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
+	[ "`grep 'configure called with options' $CR | grep ' -without-visit'`" != "" ]	&& [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
 	[ "`grep 'Disabling PLOT2D' $CR`" != "" ]       && [ "`grep IHM:OK $CR`" = "" ] 	 && PLOT2D=$NOT	
-	#[ "`grep ' -disable-plot2d' $CR`" != "" ]       && [ "`grep IHM:OK $CR`" = "" ] 	 && PLOT2D=$NOT
+	[ "`grep 'configure called with options' $CR | grep ' -disable-plot2d'`" != "" ]       && [ "`grep IHM:OK $CR`" = "" ] 	 && PLOT2D=$NOT
 	# On compte le nombre de machines cibles selon le type de tests
 	if [ "$machine_cible" = 1 ]
 	then
