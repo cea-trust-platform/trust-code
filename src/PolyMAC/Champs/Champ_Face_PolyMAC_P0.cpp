@@ -83,7 +83,9 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
       else
         {
           init_auxiliary_variables();
-          val = ch_val;
+          for (int i = 0; i < ch_val.dimension_tot(0); i++)
+            for (int j = 0; j < ch_val.line_size(); j++)
+              val(i,j) = ch_val(i,j);
         }
     }
   else
