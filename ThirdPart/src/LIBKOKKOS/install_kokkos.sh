@@ -3,6 +3,8 @@
 archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
 # Attention 4.x C++17 pour TRUST GPU mais necessaire pour nvc++ -cuda
 [ "$TRUST_USE_OPENMP" = 1 ] && archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
+# Attention pour SIMD, pareil C++17 et Kokkos 4.2. Ajout option -kokkos_simd dans le configure de TRUST...
+[ "$TRUST_USE_KOKKOS_SIMD" = 1 ] && archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
 build_dir=$TRUST_ROOT/build/kokkos
 KOKKOS_ROOT_DIR=$TRUST_ROOT/lib/src/LIBKOKKOS
 # Log file of the process:

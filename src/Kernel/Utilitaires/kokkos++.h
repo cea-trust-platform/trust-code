@@ -20,9 +20,13 @@
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
 
 #pragma GCC diagnostic pop
+#ifdef __NVCOMPILER
+#pragma diag_warning 177
+#endif
 
