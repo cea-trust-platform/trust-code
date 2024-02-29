@@ -90,11 +90,16 @@ then
       [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
    fi
    
-   # in the case where we do not download visit, build VisIt 3.3.3 sources since avail in externalpackages
-   [ "$TRUST_DOWNLOAD_VISIT" != "1" ] && version=3_3_3
-   
-   version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-   
+   if [ `uname -s` = Darwin ]
+   then
+      version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+   else
+      # in the case where we do not download visit, build VisIt 3.3.3 sources since avail in externalpackages
+      [ "$TRUST_DOWNLOAD_VISIT" != "1" ] && version=3_3_3
+      
+      version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+   fi
+
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
