@@ -35,7 +35,14 @@ do
    $TRUST_MAKE || exit -1
    make install || echo error on installation, but we hope that is ok
    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
-   echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
+   # https://stackoverflow.com/questions/20657816/how-do-i-check-if-a-terminal-is-available-through-my-gnuplot-script
+   # echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
+   echo "if (strstrt(GPVAL_TERMINALS, 'pngcairo') > 0) {
+    set terminal pngcairo size 800,600
+} else {
+    set terminal png large
+}" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
+
    [ $? -ne 0 ] && exit -1
    cd ..
    rm -r -f ${package%.tar.gz}
