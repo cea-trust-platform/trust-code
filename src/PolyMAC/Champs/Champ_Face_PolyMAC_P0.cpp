@@ -72,30 +72,43 @@ void Champ_Face_PolyMAC_P0::init_auxiliary_variables()
 
 Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 {
-  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  const DoubleVect& fs = domaine.face_surfaces();
-  const DoubleTab& nf = domaine.face_normales(), &xv = domaine.xv();
-  DoubleTab& val = valeurs(), eval;
+  const DoubleTab& ch_val = ch.valeurs();
+  DoubleTab& val = valeurs();
+  const int N = val.line_size(), D = Objet_U::dimension;
 
   if (sub_type(Champ_Fonc_reprise, ch))
     {
-      for (int num_face=0; num_face<domaine.nb_faces(); num_face++)
-        val(num_face) = ch.valeurs()[num_face];
+      if (val.dimension_tot(0) == ch_val.dimension_tot(0) && val.line_size() == ch_val.line_size())
+        val = ch_val;
+      else
+        {
+          init_auxiliary_variables();
+          val = ch_val;
+        }
     }
   else
     {
-      int f, n, N = val.line_size(), d, D = dimension, unif = sub_type(Champ_Uniforme, ch);
+      const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+      const DoubleVect& fs = domaine.face_surfaces();
+      const DoubleTab& nf = domaine.face_normales(), &xv = domaine.xv();
+      const int unif = sub_type(Champ_Uniforme, ch);
+      DoubleTab eval;
 
-      if (unif) eval = ch.valeurs();
-      else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
-      for (f = 0; f < domaine.nb_faces_tot(); f++)
-        for (d = 0; d < D; d++)
-          for (n = 0; n < N; n++)
+      if (unif)
+        eval = ch_val;
+      else
+        eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv, eval);
+
+      for (int f = 0; f < domaine.nb_faces_tot(); f++)
+        for (int d = 0; d < D; d++)
+          for (int n = 0; n < N; n++)
             val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
+
       update_ve(val);
       //copie dans toutes les cases
-      valeurs().echange_espace_virtuel();
-      for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
+      val.echange_espace_virtuel();
+      for (int i = 1; i < les_valeurs->nb_cases(); i++)
+        les_valeurs[i].valeurs() = val;
     }
   return *this;
 }
