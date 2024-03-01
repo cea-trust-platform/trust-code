@@ -1,17 +1,53 @@
 #!/bin/bash
-
-echo "Running reprise_sauv.data ..."
-trust reprise_sauv.data 1>sauv.out 2>sauv.err
-
-echo "Running ch_reprise_sauv.data ..."
-trust ch_reprise_sauv.data 1>sauv2.out 2>sauv2.err
-
-compare_lata reprise_sauv.lata ch_reprise_sauv.lata 1>verifie3.log 2>&1 || exit -1
-numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
-if [[ "$numb_diff3" -gt "0" ]]
+if [ -f PAR_Pb_multi_ch_fonc_reprise_polymac_pb_0000.sauv ] # version PAR
 then
-  echo "   ===> Error ! Difference between sauv & ch_fonc_reprise resume files !!!"
-  exit -1
-else
-  echo "   ===> All OK ! No difference between sauv & ch_fonc_reprise resume files !"
+    echo "Running PAR_reprise_sauv.data on 2 cpus ..."
+    make_PAR.data reprise_sauv.data 2 >poubelle.out
+    sed -i 's/Pb_multi_ch_fonc_reprise_polymac_pb/PAR_Pb_multi_ch_fonc_reprise_polymac_pb/g' PAR_reprise_sauv.data
+    trust PAR_reprise_sauv.data 2 1>sauv.out 2>sauv.err
+
+    echo "Running PAR_ch_reprise_sauv.data on 2 cpus ..."
+    make_PAR.data ch_reprise_sauv.data 2 >poubelle.out
+    sed -i 's/Pb_multi_ch_fonc_reprise_polymac_pb/PAR_Pb_multi_ch_fonc_reprise_polymac_pb/g' PAR_ch_reprise_sauv.data
+    trust PAR_ch_reprise_sauv.data 2 1>sauv2.out 2>sauv2.err
+
+    compare_lata PAR_reprise_sauv.lata PAR_ch_reprise_sauv.lata 1>verifie3.log 2>&1 || exit -1
+    numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+    if [[ "$numb_diff3" -gt "0" ]]
+    then
+      echo "   ===> Error ! Difference between PAR sauv & ch_fonc_reprise resume files !!!"
+      exit -1
+    else
+      echo "   ===> All OK ! No difference between PAR sauv & ch_fonc_reprise resume files !"
+    fi
+
+    if [ -f reprise_sauv.lata ]
+    then
+        compare_lata_gz PAR_reprise_sauv.lata reprise_sauv.lata 1>verifie4.log 2>&1 || exit -1
+        numb_diff4=`awk '$1=="Number"{print $5}' verifie4.log`
+        if [[ "$numb_diff4" -gt "0" ]]
+        then
+          echo "   ===> Error ! Difference between PAR/SEQ sauv resume files !!!"
+          exit -1
+        else
+          echo "   ===> All OK ! No difference between PAR/SEQ sauv resume files !"
+        fi
+    fi
+
+else # version SEQ
+    echo "Running reprise_sauv.data ..."
+    trust reprise_sauv.data 1>sauv.out 2>sauv.err
+
+    echo "Running ch_reprise_sauv.data ..."
+    trust ch_reprise_sauv.data 1>sauv2.out 2>sauv2.err
+
+    compare_lata_gz reprise_sauv.lata ch_reprise_sauv.lata 1>verifie3.log 2>&1 || exit -1
+    numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+    if [[ "$numb_diff3" -gt "0" ]]
+    then
+      echo "   ===> Error ! Difference between sauv & ch_fonc_reprise resume files !!!"
+      exit -1
+    else
+      echo "   ===> All OK ! No difference between sauv & ch_fonc_reprise resume files !"
+    fi
 fi

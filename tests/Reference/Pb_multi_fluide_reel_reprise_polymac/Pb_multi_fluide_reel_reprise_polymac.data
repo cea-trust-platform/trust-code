@@ -37,8 +37,8 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-vdf dis
-option_vdf { all_options }
+polymac_P0 dis
+option_polymac_P0 {  }
 
 Schema_euler_implicite sch
 Read sch
@@ -140,7 +140,7 @@ Read pb
             profil_vl vitesse_liquide_sodium periode 1e-8 segment 500 0.5 0 0.5 1
             alpha       alpha_gaz_sodium periode 1e-8 segment 500 0.5 0 0.5 1
         }
-        Format single_lata
+        Format lml
         fields dt_post 0.2
         {
             pression elem
@@ -162,7 +162,6 @@ Read pb
             enthalpie_melange elem
         }
     }
-    resume_last_time binaire Pb_multi_fluide_reel_reprise_vdf_pb.sauv
 }
 Solve pb
 End

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ -f PAR_Pb_multi_reprise_polymac_pb_0000.sauv ] # version PAR
+if [ -f PAR_Pb_multi_fluide_reel_reprise_polymac_pb_0000.sauv ] # version PAR
 then
 	echo "Running PAR_reprise_sauv.data on 2 cpus ..."
 	make_PAR.data reprise_sauv.data 2 >poubelle.out
-    sed -i 's/Pb_multi_reprise_polymac_pb/PAR_Pb_multi_reprise_polymac_pb/g' PAR_reprise_sauv.data
+    sed -i 's/Pb_multi_fluide_reel_reprise_polymac_pb/PAR_Pb_multi_fluide_reel_reprise_polymac_pb/g' PAR_reprise_sauv.data
     trust PAR_reprise_sauv.data 2 1>sauv.out 2>sauv.err
 
 	if [ $? != 0 ] 

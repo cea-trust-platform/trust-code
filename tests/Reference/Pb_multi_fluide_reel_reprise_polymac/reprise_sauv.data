@@ -37,8 +37,8 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-vdf dis
-option_vdf { all_options }
+polymac_P0 dis
+option_polymac_P0 {  }
 
 Schema_euler_implicite sch
 Read sch
@@ -162,7 +162,7 @@ Read pb
             enthalpie_melange elem
         }
     }
-    resume_last_time binaire Pb_multi_fluide_reel_reprise_vdf_pb.sauv
+    resume_last_time binaire Pb_multi_fluide_reel_reprise_polymac_pb.sauv
 }
 Solve pb
 End

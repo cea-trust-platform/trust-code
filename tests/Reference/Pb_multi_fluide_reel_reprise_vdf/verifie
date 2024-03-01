@@ -1,18 +1,53 @@
 #!/bin/bash
 
-echo "Running reprise_xyz.data ..."
-trust reprise_xyz.data 1>xyz.out 2>xyz.err
-
-echo "Running reprise_sauv.data ..."
-trust reprise_sauv.data 1>sauv.out 2>sauv.err
-
-compare_lata reprise_xyz.lata reprise_sauv.lata 1>verifie.log 2>&1 || exit -1
-
-numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
-if [[ "$numb_diff" -gt "0" ]]
+if [ -f PAR_Pb_multi_fluide_reel_reprise_vdf_pb.xyz ] # version PAR
 then
-  echo "   ===> Error ! Difference between xyz/sauv resume files !!!"
-  exit -1
-else
-  echo "   ===> All OK ! No difference between xyz/sauv resume files !"
+    echo "Running PAR_reprise_xyz.data on 2 cpus ..."
+    make_PAR.data reprise_xyz.data 2 >poubelle.out
+    sed -i 's/Pb_multi_fluide_reel_reprise_vdf_pb/PAR_Pb_multi_fluide_reel_reprise_vdf_pb/g' PAR_reprise_xyz.data
+    trust PAR_reprise_xyz.data 2 1>xyz.out 2>xyz.err
+
+    echo "Running PAR_reprise_sauv.data on 2 cpus ..."
+    make_PAR.data reprise_sauv.data 2 >poubelle.out
+    sed -i 's/Pb_multi_fluide_reel_reprise_vdf_pb/PAR_Pb_multi_fluide_reel_reprise_vdf_pb/g' PAR_reprise_sauv.data
+    trust PAR_reprise_sauv.data 2 1>sauv.out 2>sauv.err
+
+    compare_lata_gz PAR_reprise_xyz.lata PAR_reprise_sauv.lata 1>verifie.log 2>&1 || exit -1
+    numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+    if [[ "$numb_diff" -gt "0" ]]
+    then
+      echo "   ===> Error ! Difference between PAR xyz/sauv resume files !!!"
+      exit -1
+    else
+      echo "   ===> All OK ! No difference between PAR xyz/sauv resume files !"
+    fi
+
+    if [ -f reprise_xyz.lata ]
+    then
+        compare_lata_gz PAR_reprise_xyz.lata reprise_xyz.lata 1>verifie2.log 2>&1 || exit -1
+        numb_diff2=`awk '$1=="Number"{print $5}' verifie2.log`
+        if [[ "$numb_diff2" -gt "0" ]]
+        then
+          echo "   ===> Error ! Difference between PAR/SEQ xyz resume files !!!"
+          exit -1
+        else
+          echo "   ===> All OK ! No difference between PAR/SEQ xyz resume files !"
+        fi
+    fi
+else # version SEQ
+    echo "Running reprise_xyz.data ..."
+    trust reprise_xyz.data 1>xyz.out 2>xyz.err
+
+    echo "Running reprise_sauv.data ..."
+    trust reprise_sauv.data 1>sauv.out 2>sauv.err
+
+    compare_lata_gz reprise_xyz.lata reprise_sauv.lata 1>verifie.log 2>&1 || exit -1
+    numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+    if [[ "$numb_diff" -gt "0" ]]
+    then
+      echo "   ===> Error ! Difference between xyz/sauv resume files !!!"
+      exit -1
+    else
+      echo "   ===> All OK ! No difference between xyz/sauv resume files !"
+    fi
 fi
