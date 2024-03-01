@@ -1,0 +1,2 @@
+#!/bin/bash
+trust compute_velocity_PolyMAC_P0 1>compute_velocity_PolyMAC_P0.out_err 2>&1 || exit -1

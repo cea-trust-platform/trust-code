@@ -1,4 +1,4 @@
-# Champ_fonc_reprise d'un champ vitesse PolyMAC #
+# Champ_fonc_reprise d'un champ vitesse PolyMAC_P0 #
 dimension  2
 domaine    dom_fluide
 
@@ -40,7 +40,7 @@ lire  sch
 associate  pb_fluide  sch
 
 
-PolyMAC  dis
+PolyMAC_P0  dis
 discretize  pb_fluide  dis
 
 
