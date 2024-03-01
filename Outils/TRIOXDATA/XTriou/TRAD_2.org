@@ -174,15 +174,6 @@ condinit objet_lecture nul 0 Initial condition.
   attr nom chaine nom 0 Name of initial condition field.
   attr ch field_base ch 0 Type field and the initial values.
 condinits listobj condinits -1 condinit 0 Initial conditions.
-condlim_base objet_u condlim_base 0 Basic class of boundary conditions.
-condlimlu objet_lecture nul 0 Boundary condition specified.
-  attr bord chaine bord 0 Name of the edge where the boundary condition applies.
-  attr cl condlim_base cl 0 Boundary condition at the boundary called bord (edge).
-condlims listobj condlims -1 condlimlu 0 Boundary conditions.
-source_base objet_u source_base -1 Basic class of source terms introduced in the equation.
-source_generique source_base source_generique 0 to define a source term depending on some discrete fields of the problem and (or) analytic expression. It is expressed by the way of a generic field usually used for post-processing.
-  attr champ champ_generique_base champ 0 the source field
-sources listobj sources -1 source_base -1 The sources.
 nom objet_u nom 0 Class to name the TRUST objects.
   attr mot chaine mot 1 Chain of characters.
 nom_anonyme nom nul -1 not_set
@@ -214,7 +205,6 @@ defbord_3 defbord nul -1 2-D edge (plane) in the 3-D space.
   attr dir3 chaine(into=["Y","Z"]) dir3 0 Edge is parallel to this direction.
   attr inf4 chaine(into=["<="]) inf4 0 Less than or equal to sign.
   attr pos3_max floattant pos3_max 0 Maximal value.
-bord_base objet_lecture bord_base -1 Basic class for block sides. Block sides that are neither edges nor connectors are not specified. The duplicate nodes of two blocks in contact are automatically recognized and deleted.
 bord bord_base bord 0 The block side is not in contact with another block and boundary conditions are applied to it.
   attr nom chaine nom 0 Name of block side.
   attr defbord defbord defbord 0 Definition of block side.
@@ -226,11 +216,6 @@ raccord bord_base raccord 0 The block side is in contact with the block of anoth
 internes bord_base internes 0 To indicate that the block has a set of internal faces (these faces will be duplicated automatically by the program and will be processed in a manner similar to edge faces). NL2 Two boundaries with the same boundary conditions may have the same name (whether or not they belong to the same block). NL2 The keyword Internes (Internal) must be used to execute a calculation with plates, followed by the equation of the surface area covered by the plates.
   attr nom chaine nom 0 Name of block side.
   attr defbord defbord defbord 0 Definition of block side.
-list_bord listobj list_bord 1 bord_base 0 The block sides.
-pave mailler_base pave 0 Class to create a pave (block) with boundaries.
-  attr name chaine name 0 Name of the pave (block).
-  attr bloc bloc_pave bloc 0 Definition of the pave (block).
-  attr list_bord list_bord list_bord 0 Domain boundaries definition.
 epsilon mailler_base epsilon 0 Two points will be confused if the distance between them is less than eps. By default, eps is set to 1e-12. The keyword Epsilon allows an alternative value to be assigned to eps.
   attr eps floattant eps 0 New value of precision.
 domain mailler_base domain 0 Class to reuse a domain.
@@ -239,68 +224,19 @@ list_bloc_mailler listobj list_bloc_mailler 1 mailler_base 1 List of block mesh.
 mailler interprete mailler -1 The Mailler (Mesh) interpretor allows a Domain type object domaine to be meshed with objects objet_1, objet_2, etc...
   attr domaine ref_domaine domaine 0 Name of domain.
   attr bloc list_bloc_mailler bloc 0 Instructions to mesh.
-maillerparallel interprete maillerparallel 1 creates a parallel distributed hexaedral mesh of a parallelipipedic box. It is equivalent to creating a mesh with a single Pave, splitting it with Decouper and reloading it in parallel with Scatter. It only works in 3D at this time. It can also be used for a sequential computation (with all NPARTS=1)}
-  attr domain ref_domaine domain 0 the name of the domain to mesh (it must be an empty domain object).
-  attr nb_nodes listentier nb_nodes 0 dimension defines the spatial dimension (currently only dimension=3 is supported), and nX, nY and nZ defines the total number of nodes in the mesh in each direction.
-  attr splitting listentier splitting 0 dimension is the spatial dimension and npartsX, npartsY and npartsZ are the number of parts created. The product of the number of parts must be equal to the number of processors used for the computation.
-  attr ghost_thickness entier ghost_thickness 0 he number of ghost cells (equivalent to the epaisseur_joint parameter of Decouper.
-  attr perio_x rien perio_x 1 change the splitting method to provide a valid mesh for periodic boundary conditions.
-  attr perio_y rien perio_y 1 change the splitting method to provide a valid mesh for periodic boundary conditions.
-  attr perio_z rien perio_z 1 change the splitting method to provide a valid mesh for periodic boundary conditions.
-  attr function_coord_x chaine function_coord_x 1 By default, the meshing algorithm creates nX nY nZ coordinates ranging between 0 and 1 (eg a unity size box). If function_coord_x} is specified, it is used to transform the [0,1] segment to the coordinates of the nodes. funcX must be a function of the x variable only.
-  attr function_coord_y chaine function_coord_y 1 like function_coord_x for y
-  attr function_coord_z chaine function_coord_z 1 like function_coord_x for z
-  attr file_coord_x chaine file_coord_x 1 Keyword to read the Nx floating point values used as nodes coordinates in the file.
-  attr file_coord_y chaine file_coord_y 1 idem file_coord_x for y
-  attr file_coord_z chaine file_coord_z 1 idem file_coord_x for z
-  attr boundary_xmin chaine boundary_xmin 1 the name of the boundary at the minimum X direction. If it not provided, the default boundary names are xmin, xmax, ymin, ymax, zmin and zmax. If the mesh is periodic in a given direction, only the MIN boundary name is used, for both sides of the box.
-  attr boundary_xmax chaine boundary_xmax 1 not_set
-  attr boundary_ymin chaine boundary_ymin 1 not_set
-  attr boundary_ymax chaine boundary_ymax 1 not_set
-  attr boundary_zmin chaine boundary_zmin 1 not_set
-  attr boundary_zmax chaine boundary_zmax 1 not_set
 write_file interprete ecrire_fichier -1 Keyword to write the object of name name_obj to a file filename. Since the v1.6.3, the default format is now binary format file.
   attr name_obj chaine name_obj 0 Name of the object to be written.
   attr filename chaine filename 0 Name of the file.
 ecrire_fichier_formatte write_file ecrire_fichier_formatte -1 Keyword to write the object of name name_obj to a file filename in ASCII format.
 write interprete ecrire -1 Keyword to write the object of name name_obj to a standard outlet.
   attr name_obj chaine name_obj 0 Name of the object to be written.
-read_file interprete lire_fichier -1 Keyword to read the object name_obj contained in the file filename. NL2 This is notably used when the calculation domain has already been meshed and the mesh contains the file filename, simply write read_file dom filename (where dom is the name of the meshed domain). NL2 If the filename is ;, is to execute a data set given in the file of name name_obj (a space must be entered between the semi-colon and the file name).
-  attr name_obj chaine name_obj 0 Name of the object to be read.
-  attr filename chaine filename 0 Name of the file.
-read_unsupported_ascii_file_from_icem read_file read_unsupported_ascii_file_from_icem -1 not_set
-read_file_bin read_file lire_fichier_bin -1 Keyword to read an object name_obj in the unformatted type file filename.
-read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D (triangles or quadrangles) and 3D (tetra or hexa elements) meshes, may be read by TRUST.
-  attr dom ref_domaine dom 0 Name of domaine.
-  attr filename chaine filename 0 Name of file containing the mesh.
 discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
 vdf discretisation_base vdf -1 Finite difference volume discretization.
 polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
 polymac_P0P1NC discretisation_base polymac_P0P1NC -1 polymac_P0P1NC discretization (previously polymac discretization compatible with pb_multi).
 polymac_p0 discretisation_base polymac_p0 -1 polymac_p0 discretization (previously covimac discretization compatible with pb_multi).
-solve interprete resoudre -2 Interpretor to start calculation with TRUST.
-  attr pb ref_pb_gen_base pb 0 Name of problem to be solved.
-execute_parallel interprete execute_parallel 1 This keyword allows to run several computations in parallel on processors allocated to TRUST. The set of processors is split in N subsets and each subset will read and execute a different data file. Error messages usualy written to stderr and stdout are redirected to .log files (journaling must be activated).
-  attr liste_cas listchaine liste_cas 0 N datafile1 ... datafileN. datafileX the name of a TRUST data file without the .data extension.
-  attr nb_procs listentier nb_procs 1 nb_procs is the number of processors needed to run each data file. If not given, TRUST assumes that computations are sequential.
 fin interprete fin -1 Keyword which must complete the data file. The execution of the data file stops when reaching this keyword.
-dimension interprete dimension -1 Keyword allowing calculation dimensions to be set (2D or 3D), where dim is an integer set to 2 or 3. This instruction is mandatory.
-  attr dim entier(into=[2,3]) dim 0 Number of dimensions.
-bidim_axi interprete bidim_axi -1 Keyword allowing a 2D calculation to be executed using axisymetric coordinates (R, Z). If this instruction is not included, calculations are carried out using Cartesian coordinates.
-axi interprete axi -1 This keyword allows a 3D calculation to be executed using cylindrical coordinates (R,$\jolitheta$,Z). If this instruction is not included, calculations are carried out using Cartesian coordinates.
 domaine objet_u domaine -1 Keyword to create a domain.
-transformer interprete transformer -1 Keyword to transform the coordinates of the geometry. NL2 Exemple to rotate your mesh by a 90o rotation and to scale the z coordinates by a factor 2: Transformer domain_name -y -x 2*z
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-  attr formule listchainef formule 0 Function_for_x Function_for_y \[ Function_for z \]
-rotation interprete rotation -1 Keyword to rotate the geometry of an arbitrary angle around an axis aligned with Ox, Oy or Oz axis.
-  attr domain_name ref_domaine domain_name 0 Name of domain to wich the transformation is applied.
-  attr dir chaine(into=["X","Y","Z"]) dir 0 X, Y or Z to indicate the direction of the rotation axis
-  attr coord1 floattant coord1 0 coordinates of the center of rotation in the plane orthogonal to the rotation axis. These coordinates must be specified in the direct triad sense.
-  attr coord2 floattant coord2 0 not_set
-  attr angle floattant angle 0 angle of rotation (in degrees)
-dilate interprete dilate -1 Keyword to multiply the whole coordinates of the geometry.
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-  attr alpha floattant alpha 0 Value of dilatation coefficient.
 class_generic objet_u class_generic -1 not_set
 dt_start class_generic dt_start 0 not_set
 dt_calc_dt_calc dt_start dt_calc 0 The time step at first iteration is calculated in agreement with CFL condition.
@@ -424,10 +360,6 @@ modele_turbulence_hyd_deriv objet_lecture modele_turbulence_hyd_deriv -1 Basic c
   attr dt_impr_ustar floattant dt_impr_ustar 1 This keyword is used to print the values (U +, d+, u$\star$) obtained with the wall laws into a file named datafile_ProblemName_Ustar.face and periode refers to the printing period, this value is expressed in seconds.
   attr dt_impr_ustar_mean_only dt_impr_ustar_mean_only dt_impr_ustar_mean_only 1 This keyword is used to print the mean values of u* ( obtained with the wall laws) on each boundary, into a file named datafile_ProblemName_Ustar_mean_only.out. periode refers to the printing period, this value is expressed in seconds. If you don\'t use the optional keyword boundaries, all the boundaries will be considered. If you use it, you must specify nb_boundaries which is the number of boundaries on which you want to calculate the mean values of u*, then you have to specify their names.
   attr nut_max floattant nut_max 1 Upper limitation of turbulent viscosity (default value 1.e8).
-turbulence_paroi_scalaire_base objet_u turbulence_paroi_scalaire_base -1 Basic class for wall laws for energy equation.
-modele_turbulence_scal_base objet_u modele_turbulence_scal_base -1 Basic class for turbulence model for energy equation.
-  attr turbulence_paroi turbulence_paroi_scalaire_base turbulence_paroi 0 Keyword to set the wall law.
-  attr dt_impr_nusselt floattant dt_impr_nusselt 1 Keyword to print local values of Nusselt number and temperature near a wall during a turbulent calculation. The values will be printed in the _Nusselt.face file each dt_impr_nusselt time period. The local Nusselt expression is as follows : Nu = ((lambda+lambda_t)/lambda)*d_wall/d_eq where d_wall is the distance from the first mesh to the wall and d_eq is given by the wall law. This option also gives the value of d_eq and h = (lambda+lambda_t)/d_eq and the fluid temperature of the first mesh near the wall. NL2 For the Neumann boundary conditions (flux_impose), the <<equivalent>> wall temperature given by the wall law is also printed (Tparoi equiv.) preceded for VEF calculation by the edge temperature <<T face de bord>>.
 paroi_fixe condlim_base paroi_fixe -1 Keyword to designate a situation of adherence to the wall called bord (edge) (normal and tangential velocity at the edge is zero).
 symetrie condlim_base symetrie -1 1). For Navier-Stokes equations, this keyword is used to designate a symmetry condition concerning the velocity at the boundary called bord (edge) (normal velocity at the edge equal to zero and tangential velocity gradient at the edge equal to zero); 2). For scalar transport equation, this keyword is used to set a symmetry condition on scalar on the boundary named bord (edge).
 periodic condlim_base periodique -1 1). For Navier-Stokes equations, this keyword is used to indicate that the horizontal inlet velocity values are the same as the outlet velocity values, at every moment. As regards meshing, the inlet and outlet edges bear the same name.; 2). For scalar transport equation, this keyword is used to set a periodic condition on scalar. The two edges dealing with this periodic condition bear the same name.
@@ -599,26 +531,6 @@ ssor_bloc precond_base ssor_bloc -1 not_set
   attr preconda precond_base preconda 1 not_set
 precondsolv precond_base precondsolv 0 not_set
   attr solveur solveur_sys_base solveur 0 Solver type.
-optimal solveur_sys_base optimal 1 Optimal is a solver which tests several solvers of the previous list to choose the fastest one for the considered linear system.
-  attr seuil floattant seuil 0 Convergence threshold
-  attr impr rien impr 1 To print the convergency of the fastest solver
-  attr quiet rien quiet 1 To disable printing of information
-  attr save_matrice|save_matrix rien save_matrice 1 To save the linear system (A, x, B) into a file
-  attr frequence_recalc entier frequence_recalc 1 To set a time step period (by default, 100) for re-checking the fatest solver
-  attr nom_fichier_solveur chaine nom_fichier_solveur 1 To specify the file containing the list of the tested solvers
-  attr fichier_solveur_non_recree rien fichier_solveur_non_recree 1 To avoid the creation of the file containing the list
-test_solveur interprete test_solveur 1 To test several solvers
-  attr fichier_secmem chaine fichier_secmem 1 Filename containing the second member B
-  attr fichier_matrice chaine fichier_matrice 1 Filename containing the matrix A
-  attr fichier_solution chaine fichier_solution 1 Filename containing the solution x
-  attr nb_test entier nb_test 1 Number of tests to measure the time resolution (one preconditionnement)
-  attr impr rien impr 1 To print the convergence solver
-  attr solveur solveur_sys_base solveur 1 To specify a solver
-  attr fichier_solveur chaine fichier_solveur 1 To specify a file containing a list of solvers
-  attr genere_fichier_solveur floattant genere_fichier_solveur 1 To create a file of the solver with a threshold convergence
-  attr seuil_verification floattant seuil_verification 1 Check if the solution satisfy ||Ax-B||<precision
-  attr pas_de_solution_initiale rien pas_de_solution_initiale 1 Resolution isn\'t initialized with the solution x
-  attr ascii rien ascii 1 Ascii files
 ilu precond_base ilu -1 This preconditionner can be only used with the generic GEN solver. 
   attr type entier type 1 values can be 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2)
   attr filling entier filling 1 default value = 1.
@@ -666,31 +578,6 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr dim_espace_krilov entier dim_espace_krilov 1 not_set
-postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA,SINGLE_LATA).
-  attr format chaine(into=["lml","lata","single_lata","lata_v2","med"]) format 0 File format.
-  attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
-  attr domaine ref_domaine domain 1 Name of domain
-  attr sous_zone ref_sous_zone sous_zone 1 Name of the sub_zone
-  attr domaines bloc_lecture domaines 1 Names of domains : { name1 name2 }
-  attr joints_non_postraites entier(into=[0,1]) joints_non_postraites 1 The joints_non_postraites (1 by default) will not write the boundaries between the partitioned mesh.
-  attr binaire entier(into=[0,1]) binaire 1 Binary (binaire 1) or ASCII (binaire 0) may be used. By default, it is 0 for LATA and only ASCII is available for LML and only binary is available for MED.
-  attr ecrire_frontiere entier(into=[0,1]) ecrire_frontiere 1 This option will write (if set to 1, the default) or not (if set to 0) the boundaries as fields into the file (it is useful to not add the boundaries when writing a domain extracted from another domain)
-modif_bord_to_raccord interprete modif_bord_to_raccord -1 Keyword to convert a boundary of domain_name domain of kind Bord to a boundary of kind Raccord (named boundary_name). It is useful when using meshes with boundaries of kind Bord defined and to run a coupled calculation.
-  attr domaine ref_domaine domain 0 Name of domain
-  attr nom_bord chaine nom_bord 0 Name of the boundary to transform.
-remove_elem_bloc objet_lecture nul 1 not_set
-  attr liste listentier liste 1 not_set
-  attr fonction chaine fonction 1 not_set
-remove_elem interprete remove_elem -1 Keyword to remove element from a VDF mesh (named domaine_name), either from an explicit list of elements or from a geometric condition defined by a condition f(x,y)>0 in 2D and f(x,y,z)>0 in 3D. All the new borders generated are gathered in one boundary called : newBord (to rename it, use RegroupeBord keyword. To split it to different boundaries, use DecoupeBord_Pour_Rayonnement keyword). Example of a removed zone of radius 0.2 centered at (x,y)=(0.5,0.5): NL2 Remove_elem dom { fonction $0.2*0.2-(x-0.5)^2-(y-0.5)^2>0$ } NL2 Warning : the thickness of removed zone has to be large enough to avoid singular nodes as decribed below : \includepng{{removeelem.png}}{{11.234}}
-  attr domaine ref_domaine domain 0 Name of domain
-  attr bloc remove_elem_bloc bloc 0 not_set
-regroupebord interprete regroupebord -1 Keyword to build one boundary new_bord with several boundaries of the domain named domaine.
-  attr domaine ref_domaine domain 0 Name of domain
-  attr new_bord chaine new_bord 0 Name of the new boundary
-  attr bords bloc_lecture bords 0 { Bound1 Bound2 }
-supprime_bord interprete supprime_bord -1 Keyword to remove boundaries (named Boundary_name1 Boundary_name2 ) of the domain named domain_name.
-  attr domaine ref_domaine domain 0 Name of domain
-  attr bords list_nom bords 0 { Boundary_name1 Boundaray_name2 }
 lecture_bloc_moment_base objet_lecture nul 0 Auxiliary class to compute and print the moments.
 calcul lecture_bloc_moment_base calcul -1 The centre of gravity will be calculated.
 centre_de_gravite lecture_bloc_moment_base centre_de_gravite -1 To specify the centre of gravity.
@@ -698,10 +585,6 @@ centre_de_gravite lecture_bloc_moment_base centre_de_gravite -1 To specify the c
 calculer_moments interprete calculer_moments -1 Calculates and prints the torque (moment of force) exerted by the fluid on each boundary in output files (.out) of the domain nom_dom.
   attr nom_dom ref_domaine nom_dom 0 Name of domain.
   attr mot lecture_bloc_moment_base mot 0 Keyword.
-imprimer_flux interprete imprimer_flux -1 This keyword prints the flux per face at the specified domain boundaries in the data set. The fluxes are written to the .face files at a frequency defined by dt_impr, the evaluation printing frequency (refer to time scheme keywords). By default, fluxes are incorporated onto the edges before being displayed.
-  attr domain_name ref_domaine domain_name 0 Name of the domain.
-  attr noms_bord bloc_lecture noms_bord 0 List of boundaries, for ex: { Bord1 Bord2 }
-imprimer_flux_sum imprimer_flux imprimer_flux_sum -1 This keyword prints the sum of the flux per face at the domain boundaries defined by the user in the data set. The fluxes are written into the .out files at a frequency defined by dt_impr, the evaluation printing frequency (refer to time scheme keywords).
 bloc_origine_cotes objet_lecture nul 0 Class to create a rectangle (or a box).
   attr name chaine(into=["Origine"]) name 0 Keyword to define the origin of the rectangle (or the box).
   attr origin listf origine 0 Coordinates of the origin of the rectangle (or the box).
@@ -739,9 +622,6 @@ sous_zone objet_u sous_zone 1 It is an object type describing a domain sub-set. 
   attr fonction_sous_zone chaine fonction_sous_domaine 1 Keyword to build a sub-area with the the elements included into the area defined by fonction>0.
   attr union ref_sous_zone union_with 1 The elements of the sub-area nom_sous_zone3 will be added to the sub-area nom_sous_zone. This keyword should be used last in the Read keyword.
   ref domaine domaine
-decouper_bord_coincident interprete decouper_bord_coincident -1 In case of non-coincident meshes and a paroi_contact condition, run is stopped and two external files are automatically generated in VEF (connectivity_failed_boundary_name and connectivity_failed_pb_name.med). In 2D, the keyword Decouper_bord_coincident associated to the connectivity_failed_boundary_name file allows to generate a new coincident mesh.
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-  attr bord chaine bord 0 connectivity_failed_boundary_name
 raffiner_anisotrope interprete raffiner_anisotrope -1 Only for VEF discretizations, allows to cut triangle elements in 3, or tetrahedra in 4 parts, by defining a new summit located at the center of the element: \includepng{{raffineranisotri.pdf}}{{4}} \includepng{{raffineranisotetra.jpeg}}{{6}} NL2 Note that such a cut creates flat elements (anisotropic).
   attr domain_name ref_domaine domain_name 0 Name of domain.
 raffiner_isotrope interprete raffiner_isotrope -1 For VDF and VEF discretizations, allows to cut triangles/quadrangles or tetrahedral/hexaedras elements respectively in 4 or 8 new ones by defining new summits located at the middle of edges (and center of faces and elements for quadrangles and hexaedra). Such a cut preserves the shape of original elements (isotropic). For 2D elements: \includetabfig{{raffinerisotri.pdf}}{{4}}{{raffinerisorect.pdf}}{{4}} For 3D elements: \includetabfig{{raffinerisotetra.jpeg}}{{6}}{{raffinerisohexa.jpeg}}{{5}}.
@@ -782,8 +662,6 @@ porosites objet_u porosites 0 To define the volume porosity and surface porosity
   attr sous_zone2 chaine sous_zone2 1 Name of the 2nd sub-area to which porosity are allocated.
   attr bloc2 bloc_lecture_poro bloc2 1 Surface and volume porosity values.
   attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
-discretiser_domaine interprete discretiser_domaine 0 Useful to discretize the domain domain_name (faces will be created) without defining a problem.
-  attr domain_name ref_domaine domain_name 0 Name of the domain.
 champ_front_calc front_field_base champ_front_calc 0 This keyword is used on a boundary to get a field from another boundary. The local and remote boundaries should have the same mesh. If not, the Champ_front_recyclage keyword could be used instead. It is used in the condition block at the limits of equation which itself refers to a problem called pb1. We are working under the supposition that pb1 is coupled to another problem.
   attr problem_name ref_Pb_base problem_name 0 Name of the other problem to which pb1 is coupled.
   attr bord chaine bord 0 Name of the side which is the boundary between the 2 domains in the domain object description associated with the problem_name object.
@@ -874,10 +752,6 @@ perte_charge_circulaire source_base perte_charge_circulaire 1 New pressure loss.
   attr diam_hydr_ortho champ_don_base diam_hydr_ortho 0 Transverse hydraulic diameter value.
   attr direction champ_don_base direction 0 Field which indicates the direction of the pressure loss.
   attr sous_zone chaine sous_zone 1 Optional sub-area where pressure loss applies.
-convection_diffusion_concentration eqn_base convection_diffusion_concentration -1 Constituent transport vectorial equation (concentration diffusion convection).
-  attr nom_inconnue chaine nom_inconnue 1 Keyword Nom_inconnue will rename the unknown of this equation with the given name. In the postprocessing part, the concentration field will be accessible with this name. This is usefull if you want to track more than one concentration (otherwise, only the concentration field in the first concentration equation can be accessed).
-  attr masse_molaire floattant masse_molaire 1 not_set
-  attr alias chaine alias 1 not_set
 darcy source_base darcy 0 Class for calculation in a porous media with source term of Darcy -nu/K*V. This keyword must be used with a permeability model. For the moment there are two models : permeability constant or Ergun\'s law. Darcy source term is available for quasi compressible calculation. A new keyword is aded for porosity (porosite).
   attr bloc bloc_lecture bloc 0 Description.
 forchheimer source_base forchheimer 0 Class to add the source term of Forchheimer -Cf/sqrt(K)*V2 in the Navier-Stokes equations. We must precise a permeability model : constant or Ergun\'s law. Moreover we can give the constant Cf : by default its value is 1. Forchheimer source term is available also for quasi compressible calculation. A new keyword is aded for porosity (porosite).
@@ -891,16 +765,6 @@ debog interprete debog 0 Class to debug some differences between two TRUST versi
   attr fichier2 chaine file2 0 Name of the file where faces will be written in sequential calculation.
   attr seuil floattant seuil 0 Minimal value (by default 1.e-20) for the differences between the two codes.
   attr mode entier mode 0 By default -1 (nothing is written in the different files), you will set 0 for the sequential run, and 1 for the parallel run.
-pilote_icoco interprete pilote_icoco 1 not_set
-  attr pb_name chaine pb_name 0 not_set
-  attr main chaine main 0 not_set
-ch_front_input front_field_base ch_front_input 1 not_set
-  attr nb_comp entier nb_comp 0 not_set
-  attr nom chaine nom 0 not_set
-  attr initial_value list initial_value 1 not_set
-  attr probleme chaine probleme 0 not_set
-  attr sous_zone ref_sous_zone sous_zone 1 not_set
-ch_front_input_uniforme ch_front_input ch_front_input_uniforme -1 for coupling, you can use ch_front_input_uniforme which is a champ_front_uniforme, which use an external value. It must be used with Problem.setInputField.
 champ_input_base field_base champ_input_base 1 not_set
   attr nb_comp entier nb_comp 0 not_set
   attr nom chaine nom 0 not_set
@@ -908,36 +772,8 @@ champ_input_base field_base champ_input_base 1 not_set
   attr probleme chaine probleme 0 not_set
   attr sous_zone ref_sous_zone sous_zone 1 not_set
 champ_input_p0 champ_input_base champ_input_p0 1 not_set
-moyenne_volumique interprete moyenne_volumique 1 This keyword should be used after Resoudre keyword. It computes the convolution product of one or more fields with a given filtering function.
-  attr nom_pb ref_Pb_base nom_pb 0 name of the problem where the source fields will be searched.
-  attr nom_domaine ref_domaine nom_domaine 0 name of the destination domain (for example, it can be a coarser mesh, but for optimal performance in parallel, the domain should be split with the same algorithm as the computation mesh, eg, same tranche parameters for example)
-  attr noms_champs listchaine noms_champs 0 name of the source fields (these fields must be accessible from the postraitement) N source_field1 source_field2 ... source_fieldN
-  attr nom_fichier_post chaine nom_fichier_post 1 indicates the filename where the result is written
-  attr format_post chaine format_post 1 gives the fileformat for the result (by default : lata)
-  attr localisation chaine(into=["elem","som"]) localisation 1 indicates where the convolution product should be computed: either on the elements or on the nodes of the destination domain.
-  attr fonction_filtre bloc_lecture fonction_filtre 0 to specify the given filter NL2 Fonction_filtre {NL2 type filter_typeNL2 demie-largeur lNL2 [ omega w ] NL2 [ expression string ]NL2 } NL2 NL2 type filter_type : This parameter specifies the filtering function. Valid filter_type are:NL2 Boite is a box filter, $f(x,y,z)=(abs(x)<l)*(abs(y) <l)*(abs(z) <l) / (8 l^3)$NL2 Chapeau is a hat filter (product of hat filters in each direction) centered on the origin, the half-width of the filter being l and its integral being 1.NL2 Quadra is a 2nd order filter.NL2 Gaussienne is a normalized gaussian filter of standard deviation sigma in each direction (all field elements outside a cubic box defined by clipping_half_width are ignored, hence, taking clipping_half_width=2.5*sigma yields an integral of 0.99 for a uniform unity field).NL2 Parser allows a user defined function of the x,y,z variables. All elements outside a cubic box defined by clipping_half_width are ignored. The parser is much slower than the equivalent c++ coded function...NL2 NL2 demie-largeur l : This parameter specifies the half width of the filterNL2 [ omega w ] : This parameter must be given for the gaussienne filter. It defines the standard deviation of the gaussian filter.NL2 [ expression string] : This parameter must be given for the parser filter type. This expression will be interpreted by the math parser with the predefined variables x, y and z.
-lire_ideas interprete lire_ideas -1 Read a geom in a unv file. 3D tetra mesh elements only may be read by TRUST.
-  attr nom_dom ref_domaine nom_dom 0 Name of domain.
-  attr file chaine file 0 Name of file.
 system interprete system -1 To run Unix commands from the data file. Example: System \'echo The End | mail trust@cea.fr\'
   attr cmd chaine cmd 0 command to execute.
-redresser_hexaedres_vdf interprete redresser_hexaedres_vdf -1 Keyword to convert a domain (named domain_name) with quadrilaterals/VEF hexaedras which looks like rectangles/VDF hexaedras into a domain with real rectangles/VDF hexaedras.
-  attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
-analyse_angle interprete analyse_angle -1 Keyword Analyse_angle prints the histogram of the largest angle of each mesh elements of the domain named name_domain. nb_histo is the histogram number of bins. It is called by default during the domain discretization with nb_histo set to 18. Useful to check the number of elements with angles above 90 degrees.
-  attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
-  attr nb_histo entier nb_histo 0 not_set
-remove_invalid_internal_boundaries interprete remove_invalid_internal_boundaries -1 Keyword to suppress an internal boundary of the domain_name domain. Indeed, some mesh tools may define internal boundaries (eg: for post processing task after the calculation) but TRUST does not support it yet.
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-resequencing interprete reordonner -1 The Reordonner interpretor is required sometimes for a VDF mesh which is not produced by the internal mesher. Example where this is used: NL2 Read_file dom fichier.geom NL2 Reordonner dom NL2 Observations: This keyword is redundant when the mesh that is read is correctly sequenced in the TRUST sense. This significant mesh operation may take some time... The message returned by TRUST is not explicit when the Reordonner (Resequencing) keyword is required but not included in the data set...
-  attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
-precisiongeom interprete precisiongeom 0 Class to change the way floating-point number comparison is done. By default, two numbers are equal if their absolute difference is smaller than 1e-10. The keyword is useful to modify this value. Moreover, nodes coordinates will be written in .geom files with this same precision.
-  attr precision floattant precision 0 New value of precision.
-nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-scatter interprete scatter 0 Class to read a partionned mesh in the files during a parallel calculation. The files are in binary format.
-  attr file chaine file 0 Name of file.
-  attr domaine ref_domaine domaine 0 Name of domain.
-scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
 listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without curly brackets).
 partitionneur_deriv objet_u partitionneur_deriv -1 not_set
   attr nb_parts entier nb_parts 1 The number of non empty parts that must be generated (generally equal to the number of processors in the parallel run).
@@ -965,11 +801,6 @@ extruder interprete extruder 1 Class to create a 3D tetrahedral/hexahedral mesh 
   attr domaine ref_domaine domain_name 0 Name of the domain.
   attr direction troisf direction 0 Direction of the extrude operation.
   attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
-extract_2d_from_3d interprete extract_2d_from_3d -1 Keyword to extract a 2D mesh by selecting a boundary of the 3D mesh. To generate a 2D axisymmetric mesh prefer Extract_2Daxi_from_3D keyword.
-  attr dom3D ref_domaine dom3D 0 Domain name of the 3D mesh
-  attr bord chaine bord 0 Boundary name. This boundary becomes the new 2D mesh and all the boundaries, in 3D, attached to the selected boundary, give their name to the new boundaries, in 2D.
-  attr dom2D chaine dom2D 0 Domain name of the new 2D mesh
-extract_2daxi_from_3d extract_2d_from_3d extract_2daxi_from_3d -1 Keyword to extract a 2D axisymetric mesh by selecting a boundary of the 3D mesh.
 extruder_en3 extruder extruder_en3 1 Class to create a 3D tetrahedral/hexahedral mesh (a prism is cut in 3) from a 2D triangular/quadrangular mesh. The names of the boundaries (by default, devant (front) and derriere (back)) may be edited by the keyword nom_cl_devant and nom_cl_derriere. If NULL is written for nom_cl, then no boundary condition is generated at this place. NL2 Recommendation : to ensure conformity between meshes (in case of fluid/solid coupling) it is recommended to extrude all the domains at the same time.
   attr domaine listchaine domain_name 0 List of the domains
   attr nom_cl_devant chaine nom_cl_devant 1 New name of the first boundary.
@@ -978,46 +809,8 @@ extruder_en20 interprete extruder_en20 1 It does the same task as Extruder excep
   attr domaine ref_domaine domain_name 0 Name of the domain.
   attr direction troisf direction 1 0 Direction of the extrude operation.
   attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
-extrudeparoi interprete extrudeparoi 1 Keyword dedicated in 3D (VEF) to create prismatic layer at wall. Each prism is cut into 3 tetraedra.
-  attr domaine ref_domaine domain_name 0 Name of the domain.
-  attr nom_bord chaine nom_bord 0 Name of the (no-slip) boundary for creation of prismatic layers.
-  attr epaisseur list epaisseur 1 n r1 r2 .... rn : (relative or absolute) width for each layer.
-  attr critere_absolu entier critere_absolu 1 relative (0, the default) or absolute (1) width for each layer.
-  attr projection_normale_bord rien projection_normale_bord 1 keyword to project layers on the same plane that contiguous boundaries. defaut values are : epaisseur_relative 1 0.5 projection_normale_bord 1
 frontiere_ouverte_fraction_massique_imposee condlim_base frontiere_ouverte_fraction_massique_imposee -1 not_set
   attr ch front_field_base ch 0 Boundary field type.
-paroi_echange_contact_correlation_vdf condlim_base paroi_echange_contact_correlation_vdf 1 Class to define a thermohydraulic 1D model which will apply to a boundary of 2D or 3D domain. NL2 Warning : For parallel calculation, the only possible partition will be according the axis of the model with the keyword Tranche.
-  attr dir entier dir 0 Direction (0 : axis X, 1 : axis Y, 2 : axis Z) of the 1D model.
-  attr tinf floattant tinf 0 Inlet fluid temperature of the 1D model (oC or K).
-  attr tsup floattant tsup 0 Outlet fluid temperature of the 1D model (oC or K).
-  attr lambda chaine lambda_u 0 Thermal conductivity of the fluid (W.m-1.K-1).
-  attr rho chaine rho 0 Mass density of the fluid (kg.m-3) which may be a function of the temperature T.
-  attr cp floattant cp 0 Calorific capacity value at a constant pressure of the fluid (J.kg-1.K-1).
-  attr dt_impr floattant dt_impr 0 Printing period in name_of_data_file_time.dat files of the 1D model results.
-  attr mu chaine mu 0 Dynamic viscosity of the fluid (kg.m-1.s-1) which may be a function of thetemperature T.
-  attr debit floattant debit 0 Surface flow rate (kg.s-1.m-2) of the fluid into the channel.
-  attr dh floattant dh 0 Hydraulic diameter may be a function f(x) with x position along the 1D axis (xinf <= x <= xsup)
-  attr volume chaine volume 0 Exact volume of the 1D domain (m3) which may be a function of the hydraulic diameter (Dh) and the lateral surface (S) of the meshed boundary.
-  attr nu chaine nu 0 Nusselt number which may be a function of the Reynolds number (Re) and the Prandtl number (Pr).
-  attr reprise_correlation rien reprise_correlation 1 Keyword in the case of a resuming calculation with this correlation.
-paroi_echange_contact_correlation_vef condlim_base paroi_echange_contact_correlation_vef 1 Class to define a thermohydraulic 1D model which will apply to a boundary of 2D or 3D domain. NL2 Warning : For parallel calculation, the only possible partition will be according the axis of the model with the keyword Tranche_geom.
-  attr dir entier dir 0 Direction (0 : axis X, 1 : axis Y, 2 : axis Z) of the 1D model.
-  attr tinf floattant tinf 0 Inlet fluid temperature of the 1D model (oC or K).
-  attr tsup floattant tsup 0 Outlet fluid temperature of the 1D model (oC or K).
-  attr lambda chaine lambda_u 0 Thermal conductivity of the fluid (W.m-1.K-1).
-  attr rho chaine rho 0 Mass density of the fluid (kg.m-3) which may be a function of the temperature T.
-  attr cp floattant cp 0 Calorific capacity value at a constant pressure of the fluid (J.kg-1.K-1).
-  attr dt_impr floattant dt_impr 0 Printing period in name_of_data_file_time.dat files of the 1D model results.
-  attr mu chaine mu 0 Dynamic viscosity of the fluid (kg.m-1.s-1) which may be a function of thetemperature T.
-  attr debit floattant debit 0 Surface flow rate (kg.s-1.m-2) of the fluid into the channel.
-  attr dh chaine dh 0 Hydraulic diameter may be a function f(x) with x position along the 1D axis (xinf <= x <= xsup)
-  attr n entier n 0 Number of 1D cells of the 1D mesh.
-  attr surface chaine surface 0 Section surface of the channel which may be function f(Dh,x) of the hydraulic diameter (Dh) and x position along the 1D axis (xinf <= x <= xsup)
-  attr nu chaine nu 0 Nusselt number which may be a function of the Reynolds number (Re) and the Prandtl number (Pr).
-  attr xinf floattant xinf 0 Position of the inlet of the 1D mesh on the axis direction.
-  attr xsup floattant xsup 0 Position of the outlet of the 1D mesh on the axis direction.
-  attr emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies floattant emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies 1 Coefficient of emissivity for radiation between two quasi infinite plates.
-  attr reprise_correlation rien reprise_correlation 1 Keyword in the case of a resuming calculation with this correlation.
 spec_pdcr_base objet_lecture spec_pdcr_base 0 Class to read the source term modelling the presence of a bundle of tubes in a flow. Cf=A Re-B.
   attr ch_a chaine(into=["a","cf"]) ch_a 0 Keyword to be used to set law coefficient values for the coefficient of regular pressure losses.
   attr a floattant a 0 Value of a law coefficient for regular pressure losses.
@@ -1034,23 +827,6 @@ transversale spec_pdcr_base transversale 0 Class to define the pressure loss in 
 perte_charge_reguliere source_base perte_charge_reguliere 0 Source term modelling the presence of a bundle of tubes in a flow.
   attr spec spec_pdcr_base spec 0 Description of longitudinale or transversale type.
   attr zone_name chaine name_of_zone 0 Name of the sub-area occupied by the tube bundle. A Sous_Zone (Sub-area) type object called zone_name should have been previously created.
-pb_post Pb_base nul -1 not_set
-info_med objet_lecture nul 0 not_set
-  attr file_med chaine file_med 0 Name of the MED file.
-  attr domaine chaine domaine 0 Name of domain.
-  attr pb_post pb_post pb_post 0 not_set
-list_info_med listobj nul -1 info_med 1 not_set
-pbc_med pb_gen_base pbc_med 0 Allows to read med files and post-process them.
-  attr list_info_med list_info_med list_info_med 0 not_set
-decoupebord_pour_rayonnement interprete decoupebord_pour_rayonnement 1 To subdivide the external boundary of a domain into several parts (may be useful for better accuracy when using radiation model in transparent medium). To specify the boundaries of the fine_domain_name domain to be splitted. These boundaries will be cut according the coarse mesh defined by either the keyword domaine_grossier (each boundary face of the coarse mesh coarse_domain_name will be used to group boundary faces of the fine mesh to define a new boundary), either by the keyword nb_parts_naif (each boundary of the fine mesh is splitted into a partition with nx*ny*nz elements), either by a geometric condition given by a formulae with the keyword condition_geometrique. If used, the coarse_domain_name domain should have the same boundaries name of the fine_domain_name domain. NL2 A mesh file (ASCII format, except if binaire option is specified) named by default newgeom (or specified by the nom_fichier_sortie keyword) will be created and will contain the fine_domain_name domain with the splitted boundaries named boundary_name%I (where I is between from 0 and n-1). Furthermore, several files named boundary_name%I and boundary_name_xv will be created, containing the definition of the subdived boundaries. newgeom will be used to calculate view factors with geom2ansys script whereas only the boundary_name_xv files will be necessary for the radiation calculation. The file listb will contain the list of the boundaries boundary_name%I.
-  attr domaine ref_domaine domaine 0 not_set
-  attr domaine_grossier ref_domaine domaine_grossier 1 not_set
-  attr nb_parts_naif listentier nb_parts_naif 1 not_set
-  attr nb_parts_geom listentier nb_parts_geom 1 not_set
-  attr bords_a_decouper listchaine bords_a_decouper 0 not_set
-  attr nom_fichier_sortie chaine nom_fichier_sortie 1 not_set
-  attr condition_geometrique listchaine condition_geometrique 1 not_set
-  attr binaire entier binaire 1 not_set
 methode_transport_deriv objet_lecture methode_transport_deriv 0 Basic class for method of transport of interface.
 loi_horaire objet_u loi_horaire 1 to define the movement with a time-dependant law for the solid interface.
   attr position listchaine position 0 not_set
@@ -1097,30 +873,6 @@ thi traitement_particulier_base thi -1 Keyword for a THI (Homogeneous Isotropic 
   attr longueur_boite floattant longueur_boite 1 Length of the calculation domain
 chmoy_faceperio traitement_particulier_base chmoy_faceperio 0 non documente
   attr bloc bloc_lecture bloc 0 not_set
-extraire_plan interprete extraire_plan -3 This keyword extracts a plane mesh named domain_name (this domain should have been declared before) from the mesh of the pb_name problem. The plane can be either a triangle (defined by the keywords Origine, Point1, Point2 and Triangle), either a regular quadrangle (with keywords Origine, Point1 and Point2), or either a generalized quadrangle (with keywords Origine, Point1, Point2, Point3). The keyword Epaisseur specifies the thickness of volume around the plane which contains the faces of the extracted mesh. The keyword via_extraire_surface will create a plan and use Extraire_surface algorithm. Inverse_condition_element keyword then will be used in the case where the plane is a boundary not well oriented, and avec_certains_bords_pour_extraire_surface is the option related to the Extraire_surface option named avec_certains_bords.
-  attr domaine ref_domaine domaine 0 domain_namme
-  attr probleme ref_Pb_base probleme 0 pb_name
-  attr epaisseur floattant epaisseur 0 not_set
-  attr origine list origine 0 not_set
-  attr point1 list point1 0 not_set
-  attr point2 list point2 0 not_set
-  attr point3 list point3 1 not_set
-  attr triangle rien triangle 1 not_set
-  attr via_extraire_surface rien via_extraire_surface 1 not_set
-  attr inverse_condition_element rien inverse_condition_element 1 not_set
-  attr avec_certains_bords_pour_extraire_surface listchaine avec_certains_bords_pour_extraire_surface 1 not_set
-extraire_domaine interprete extraire_domaine -3 Keyword to create a new domain built with the domain elements of the pb_name problem verifying the two conditions given by Condition_elements. The problem pb_name should have been discretized.
-  attr domaine ref_domaine domaine 0 Domain in which faces are saved
-  attr probleme ref_Pb_base probleme 0 Problem from which faces should be extracted
-  attr condition_elements chaine condition_elements 1 not_set
-  attr sous_zone ref_sous_zone sous_zone 1 not_set
-extraire_surface interprete extraire_surface -3 This keyword extracts a surface mesh named domain_name (this domain should have been declared before) from the mesh of the pb_name problem. The surface mesh is defined by one or two conditions. The first condition is about elements with Condition_elements. For example: Condition_elements x*x+y*y+z*z<1 NL2 Will define a surface mesh with external faces of the mesh elements inside the sphere of radius 1 located at (0,0,0). The second condition Condition_faces is useful to give a restriction.NL2 By default, the faces from the boundaries are not added to the surface mesh excepted if option avec_les_bords is given (all the boundaries are added), or if the option avec_certains_bords is used to add only some boundaries.
-  attr domaine ref_domaine domaine 0 Domain in which faces are saved
-  attr probleme ref_Pb_base probleme 0 Problem from which faces should be extracted
-  attr condition_elements chaine condition_elements 1 not_set
-  attr condition_faces chaine condition_faces 1 not_set
-  attr avec_les_bords rien avec_les_bords 1 not_set
-  attr avec_certains_bords listchaine avec_certains_bords 1 not_set
 integrer_champ_med interprete integrer_champ_med 1 his keyword is used to calculate a flow rate from a velocity MED field read before. The method is either debit_total to calculate the flow rate on the whole surface, either integrale_en_z to calculate flow rates between z=zmin and z=zmax on nb_tranche surfaces. The output file indicates first the flow rate for the whole surface and then lists for each tranche : the height z, the surface average value, the surface area and the flow rate. For the debit_total method, only one tranche is considered.NL2 file :z Sum(u.dS)/Sum(dS) Sum(dS) Sum(u.dS)
   attr champ_med ref_champ_fonc_med champ_med 0 not_set
   attr methode chaine(into=["integrale_en_z","debit_total"]) methode 0 to choose between the integral following z or over the entire height (debit_total corresponds to zmin=-DMAXFLOAT, ZMax=DMAXFLOAT, nb_tranche=1)
@@ -1215,12 +967,6 @@ chimie objet_u chimie 1 Keyword to describe the chmical reactions
   attr modele_micro_melange entier modele_micro_melange 1 modele_micro_melange (0 by default)
   attr constante_modele_micro_melange floattant constante_modele_micro_melange 1 constante of modele (1 by default)
   attr espece_en_competition_micro_melange chaine espece_en_competition_micro_melange 1 espece in competition in reactions
-rectify_mesh interprete rectify_mesh -1 Keyword to raffine a mesh
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-verifier_simplexes interprete verifier_simplexes -1 Keyword to raffine a simplexes
-  attr domain_name ref_domaine domain_name 0 Name of domain.
-verifier_qualite_raffinements interprete verifier_qualite_raffinements 0 not_set
-  attr domain_names vect_nom domain_names 0 not_set
 schema_adams_bashforth_order_2 schema_temps_base schema_adams_bashforth_order_2 -1 not_set
 schema_adams_bashforth_order_3 schema_temps_base schema_adams_bashforth_order_3 -1 not_set
 schema_adams_moulton_order_2 schema_implicite_base schema_adams_moulton_order_2 -1 not_set
@@ -1234,17 +980,6 @@ schema_backward_differentiation_order_3 schema_implicite_base schema_backward_di
 ef discretisation_base ef -1 Element Finite discretization.
 diffusion_option diffusion_deriv option 0 not_set
   attr bloc_lecture bloc_lecture bloc_lecture 0 not_set
-testeur_medcoupling interprete testeur_medcoupling 0 not_set
-  attr pb_name chaine pb_name 0 Name of domain.
-  attr field_name chaine filed_name 0 Name of domain.
 champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
   attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
-bloc_pdf_model objet_lecture nul 1 not_set
-  attr eta floattant eta 0 penalization coefficient
-  attr temps_relaxation_coefficient_PDF floattant temps_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help   
-  attr echelle_relaxation_coefficient_PDF floattant echelle_relaxation_coefficient_PDF 1 time relaxation on the forcing term to help convergence
-  attr local rien local 1 rien whether the prescribed velocity is expressed in the global or local basis
-  attr vitesse_imposee_data field_base vitesse_imposee_data 1 Prescribed velocity as a field
-  attr vitesse_imposee_fonction troismots vitesse_imposee_fonction 1 Prescribed velocity as a set of ananlytical component
-create_domain_from_sous_zone Create_domain_from_sub_domain create_domain_from_sous_zone -1 kept for backward compatibility. please use Create_domain_from_sub_domain

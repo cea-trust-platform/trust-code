@@ -29,17 +29,10 @@
 
 Implemente_instanciable(Perte_Charge_Circulaire_VEF_P1NC,"Perte_Charge_Circulaire_VEF_P1NC",Perte_Charge_VEF);
 
-
 Sortie& Perte_Charge_Circulaire_VEF_P1NC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
 }
-
-////////////////////////////////////////////////////////////////
-//                                                            //
-//                         readOn                             //
-//                                                            //
-////////////////////////////////////////////////////////////////
 
 Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
 {

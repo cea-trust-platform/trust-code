@@ -25,10 +25,28 @@
 #include <MD_Vector_tools.h>
 
 Implemente_instanciable(Test_solveur,"Test_solveur",Interprete);
+// XD test_solveur interprete test_solveur 1 To test several solvers
+// XD   attr fichier_secmem chaine fichier_secmem 1 Filename containing the second member B
+// XD   attr fichier_matrice chaine fichier_matrice 1 Filename containing the matrix A
+// XD   attr fichier_solution chaine fichier_solution 1 Filename containing the solution x
+// XD   attr nb_test entier nb_test 1 Number of tests to measure the time resolution (one preconditionnement)
+// XD   attr impr rien impr 1 To print the convergence solver
+// XD   attr solveur solveur_sys_base solveur 1 To specify a solver
+// XD   attr fichier_solveur chaine fichier_solveur 1 To specify a file containing a list of solvers
+// XD   attr genere_fichier_solveur floattant genere_fichier_solveur 1 To create a file of the solver with a threshold convergence
+// XD   attr seuil_verification floattant seuil_verification 1 Check if the solution satisfy ||Ax-B||<precision
+// XD   attr pas_de_solution_initiale rien pas_de_solution_initiale 1 Resolution isn\'t initialized with the solution x
+// XD   attr ascii rien ascii 1 Ascii files
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Optimal,"Solv_Optimal",solv_iteratif);
-//
-// printOn et readOn
+// XD optimal solveur_sys_base optimal 1 Optimal is a solver which tests several solvers of the previous list to choose the fastest one for the considered linear system.
+// XD   attr seuil floattant seuil 0 Convergence threshold
+// XD   attr impr rien impr 1 To print the convergency of the fastest solver
+// XD   attr quiet rien quiet 1 To disable printing of information
+// XD   attr save_matrice|save_matrix rien save_matrice 1 To save the linear system (A, x, B) into a file
+// XD   attr frequence_recalc entier frequence_recalc 1 To set a time step period (by default, 100) for re-checking the fatest solver
+// XD   attr nom_fichier_solveur chaine nom_fichier_solveur 1 To specify the file containing the list of the tested solvers
+// XD   attr fichier_solveur_non_recree rien fichier_solveur_non_recree 1 To avoid the creation of the file containing the list
 
 Sortie& Test_solveur::printOn(Sortie& s ) const
 {

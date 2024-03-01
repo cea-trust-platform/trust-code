@@ -16,7 +16,7 @@
 #include <TroisDto2Daxi.h>
 
 Implemente_instanciable(TroisDto2Daxi,"Extract_2Daxi_from_3D",TroisDto2D);
-
+// XD extract_2daxi_from_3d extract_2d_from_3d extract_2daxi_from_3d -1 Keyword to extract a 2D axisymetric mesh by selecting a boundary of the 3D mesh.
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

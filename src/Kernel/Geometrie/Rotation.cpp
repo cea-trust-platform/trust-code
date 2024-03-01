@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,12 @@
 #include <Rotation.h>
 
 Implemente_instanciable(Rotation,"Rotation",Transformer);
+// XD rotation interprete rotation -1 Keyword to rotate the geometry of an arbitrary angle around an axis aligned with Ox, Oy or Oz axis.
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain to wich the transformation is applied.
+// XD  attr dir chaine(into=["X","Y","Z"]) dir 0 X, Y or Z to indicate the direction of the rotation axis
+// XD  attr coord1 floattant coord1 0 coordinates of the center of rotation in the plane orthogonal to the rotation axis. These coordinates must be specified in the direct triad sense.
+// XD  attr coord2 floattant coord2 0 not_set
+// XD  attr angle floattant angle 0 angle of rotation (in degrees)
 
 
 /*! @brief Simple appel a: Transformer::printOn(Sortie&)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Interprete.h>
 
 Implemente_instanciable(Ch_front_input_uniforme,"Ch_front_input_uniforme",Champ_front_instationnaire_base);
-
+// XD ch_front_input_uniforme ch_front_input ch_front_input_uniforme -1 for coupling, you can use ch_front_input_uniforme which is a champ_front_uniforme, which use an external value. It must be used with Problem.setInputField.
 
 Entree& Ch_front_input_uniforme::readOn(Entree& is)
 {

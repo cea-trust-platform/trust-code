@@ -15,12 +15,13 @@
 
 #include <Analyse_Angle.h>
 #include <Domaine.h>
-
+#include <Linear_algebra_tools_impl.h>
 
 Implemente_instanciable(Analyse_Angle,"Analyse_Angle",Interprete);
+// XD analyse_angle interprete analyse_angle -1 Keyword Analyse_angle prints the histogram of the largest angle of each mesh elements of the domain named name_domain. nb_histo is the histogram number of bins. It is called by default during the domain discretization with nb_histo set to 18. Useful to check the number of elements with angles above 90 degrees.
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
+// XD  attr nb_histo entier nb_histo 0 not_set
 
-
-// printOn et readOn
 
 Sortie& Analyse_Angle::printOn(Sortie& s ) const
 {
@@ -29,14 +30,9 @@ Sortie& Analyse_Angle::printOn(Sortie& s ) const
 
 Entree& Analyse_Angle::readOn(Entree& is )
 {
-  //
-  // VERIFIER ICI QU'ON A BIEN TOUT LU;
-  //
   return is;
 }
 
-
-#include <Linear_algebra_tools_impl.h>
 
 double largest_angle(const DoubleTab& coords)
 {

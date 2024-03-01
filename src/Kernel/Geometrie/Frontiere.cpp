@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <TRUSTTab.h>
 
 Implemente_base(Frontiere,"Frontiere",Objet_U);
-
+// XD bord_base objet_lecture bord_base -1 Basic class for block sides. Block sides that are neither edges nor connectors are not specified. The duplicate nodes of two blocks in contact are automatically recognized and deleted.
 
 /*! @brief Lit les specification d'une frontiere a partir d'un flot d'entree.
  *

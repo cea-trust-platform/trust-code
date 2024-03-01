@@ -16,6 +16,8 @@
 #include <PrecisionGeom.h>
 
 Implemente_instanciable(PrecisionGeom,"PrecisionGeom",Interprete);
+// XD precisiongeom interprete precisiongeom 0 Class to change the way floating-point number comparison is done. By default, two numbers are equal if their absolute difference is smaller than 1e-10. The keyword is useful to modify this value. Moreover, nodes coordinates will be written in .geom files with this same precision.
+// XD  attr precision floattant precision 0 New value of precision.
 
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)

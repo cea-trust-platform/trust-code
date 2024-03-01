@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,11 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Conds_lim,"Conds_lim",VECT(Cond_lim));
+// XD condlimlu objet_lecture nul 0 Boundary condition specified.
+// XD  attr bord chaine bord 0 Name of the edge where the boundary condition applies.
+// XD  attr cl condlim_base cl 0 Boundary condition at the boundary called bord (edge).
+
+// XD condlims listobj condlims -1 condlimlu 0 Boundary conditions.
 
 Sortie& Conds_lim::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 

@@ -38,6 +38,9 @@ inline void decompression(Nom& nom_fichier)
     }
 }
 Implemente_instanciable(Lire_Tgrid,"Lire_Tgrid",Interprete_geometrique_base);
+// XD read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D (triangles or quadrangles) and 3D (tetra or hexa elements) meshes, may be read by TRUST.
+// XD  attr dom ref_domaine dom 0 Name of domaine.
+// XD  attr filename chaine filename 0 Name of file containing the mesh.
 
 Sortie& Lire_Tgrid::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

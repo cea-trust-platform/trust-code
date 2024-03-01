@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,6 @@
 
 Implemente_base(Champ_front_instationnaire_base,"Champ_front_instationnaire_base",Champ_front_base);
 
-
 /*! @brief Lit le temps du champ instationnaire sur un flot d'entree.
  *
  * @param (Entree& is) un flot d'entree
@@ -27,7 +26,6 @@ Entree& Champ_front_instationnaire_base::readOn(Entree& is)
 {
   return is;
 }
-
 
 /*! @brief Ecrit le temps du champ instationnaire sur un flot de sortie.
  *

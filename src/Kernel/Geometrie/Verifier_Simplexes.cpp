@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,8 @@
 #include <Motcle.h>
 
 Implemente_instanciable(Verifier_Simplexes,"Verifier_Simplexes",Interprete_geometrique_base) ;
+// XD verifier_simplexes interprete verifier_simplexes -1 Keyword to raffine a simplexes
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
 Sortie& Verifier_Simplexes::printOn(Sortie& os) const
 {

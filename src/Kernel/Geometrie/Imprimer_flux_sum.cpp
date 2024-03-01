@@ -14,13 +14,10 @@
 *****************************************************************************/
 
 #include <Imprimer_flux_sum.h>
-//#include <Motcle.h>
 #include <Domaine.h>
 
-
 Implemente_instanciable(Imprimer_flux_sum,"Imprimer_flux_sum",Interprete_geometrique_base);
-
-// printOn et readOn
+// XD imprimer_flux_sum imprimer_flux imprimer_flux_sum -1 This keyword prints the sum of the flux per face at the domain boundaries defined by the user in the data set. The fluxes are written into the .out files at a frequency defined by dt_impr, the evaluation printing frequency (refer to time scheme keywords).
 
 Sortie& Imprimer_flux_sum::printOn(Sortie& s ) const
 {

@@ -25,6 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Extraire_plan,"Extraire_plan",Interprete_geometrique_base);
+// XD extraire_plan interprete extraire_plan -3 This keyword extracts a plane mesh named domain_name (this domain should have been declared before) from the mesh of the pb_name problem. The plane can be either a triangle (defined by the keywords Origine, Point1, Point2 and Triangle), either a regular quadrangle (with keywords Origine, Point1 and Point2), or either a generalized quadrangle (with keywords Origine, Point1, Point2, Point3). The keyword Epaisseur specifies the thickness of volume around the plane which contains the faces of the extracted mesh. The keyword via_extraire_surface will create a plan and use Extraire_surface algorithm. Inverse_condition_element keyword then will be used in the case where the plane is a boundary not well oriented, and avec_certains_bords_pour_extraire_surface is the option related to the Extraire_surface option named avec_certains_bords.
 
 Sortie& Extraire_plan::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -52,22 +53,22 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   int triangle;
   double epaisseur;
   Param param(que_suis_je());
-  param.ajouter("domaine",&nom_dom,Param::REQUIRED);
-  param.ajouter("probleme",&nom_pb,Param::REQUIRED);
-  param.ajouter("origine",&origine,Param::REQUIRED);
-  param.ajouter("point1",&point1,Param::REQUIRED);
-  param.ajouter("point2",&point2,Param::REQUIRED);
-  param.ajouter("point3",&point3);
-  param.ajouter_flag("triangle",&triangle);
-  param.ajouter("epaisseur",&epaisseur,Param::REQUIRED);
+  param.ajouter("domaine",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine domain name
+  param.ajouter("probleme",&nom_pb,Param::REQUIRED); // XD_ADD_P  ref_Pb_base pb_name
+  param.ajouter("origine",&origine,Param::REQUIRED); // XD_ADD_P list not_set
+  param.ajouter("point1",&point1,Param::REQUIRED); // XD_ADD_P list not_set
+  param.ajouter("point2",&point2,Param::REQUIRED); // XD_ADD_P list not_set
+  param.ajouter("point3",&point3); // XD_ADD_P list not_set
+  param.ajouter_flag("triangle",&triangle); // XD_ADD_P rien not_set
+  param.ajouter("epaisseur",&epaisseur,Param::REQUIRED); // XD_ADD_P floattant thickness
 
   int via_extraire_surface=0, inverse_condition_element;
-  param.ajouter_flag("via_extraire_surface",&via_extraire_surface);
-  param.ajouter_flag("inverse_condition_element",&inverse_condition_element);
+  param.ajouter_flag("via_extraire_surface",&via_extraire_surface); // XD_ADD_P rien not_set
+  param.ajouter_flag("inverse_condition_element",&inverse_condition_element); // XD_ADD_P rien not_set
 
   Noms bords;
 
-  param.ajouter("avec_certains_bords_pour_extraire_surface",&bords);
+  param.ajouter("avec_certains_bords_pour_extraire_surface",&bords); // XD_ADD_P listchaine name of boundaries to include when extracting plan
 
   param.lire_avec_accolades_depuis(is);
 

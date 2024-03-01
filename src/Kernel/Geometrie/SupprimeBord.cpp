@@ -16,6 +16,9 @@
 #include <SupprimeBord.h>
 #include <EFichier.h>
 Implemente_instanciable(SupprimeBord,"Supprime_Bord",Interprete_geometrique_base);
+// XD supprime_bord interprete supprime_bord -1 Keyword to remove boundaries (named Boundary_name1 Boundary_name2 ) of the domain named domain_name.
+// XD   attr domaine ref_domaine domain 0 Name of domain
+// XD   attr bords list_nom bords 0 { Boundary_name1 Boundaray_name2 }
 
 Sortie& SupprimeBord::printOn(Sortie& os) const
 {

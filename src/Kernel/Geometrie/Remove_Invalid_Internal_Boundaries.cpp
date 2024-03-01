@@ -21,6 +21,8 @@
 #include <Param.h>
 
 Implemente_instanciable(Remove_Invalid_Internal_Boundaries,"Remove_Invalid_Internal_Boundaries",Interprete_geometrique_base);
+// XD remove_invalid_internal_boundaries interprete remove_invalid_internal_boundaries -1 Keyword to suppress an internal boundary of the domain_name domain. Indeed, some mesh tools may define internal boundaries (eg: for post processing task after the calculation) but TRUST does not support it yet.
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
 Sortie& Remove_Invalid_Internal_Boundaries::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

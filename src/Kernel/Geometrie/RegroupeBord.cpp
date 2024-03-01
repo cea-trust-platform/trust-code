@@ -15,7 +15,12 @@
 
 #include <RegroupeBord.h>
 #include <EFichier.h>
+
 Implemente_instanciable(RegroupeBord,"RegroupeBord",Interprete_geometrique_base);
+// XD regroupebord interprete regroupebord -1 Keyword to build one boundary new_bord with several boundaries of the domain named domaine.
+// XD   attr domaine ref_domaine domain 0 Name of domain
+// XD   attr new_bord chaine new_bord 0 Name of the new boundary
+// XD   attr bords bloc_lecture bords 0 { Bound1 Bound2 }
 
 Sortie& RegroupeBord::printOn(Sortie& os) const
 {

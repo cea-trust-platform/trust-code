@@ -18,6 +18,8 @@
 #include <Scatter.h>
 
 Implemente_instanciable(NettoieNoeuds, "NettoiePasNoeuds", Interprete_geometrique_base);
+// XD nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
 Sortie& NettoieNoeuds::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

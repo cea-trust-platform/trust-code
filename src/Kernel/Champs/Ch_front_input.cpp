@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,12 @@
 #include <Convert_ICoCoTrioField.h>
 
 Implemente_instanciable(Ch_front_input,"Ch_front_input",Ch_front_var_instationnaire_dep);
+// XD ch_front_input front_field_base ch_front_input 1 not_set
+// XD  attr nb_comp entier nb_comp 0 not_set
+// XD  attr nom chaine nom 0 not_set
+// XD  attr initial_value list initial_value 1 not_set
+// XD  attr probleme chaine probleme 0 not_set
+// XD  attr sous_zone ref_sous_zone sous_zone 1 not_set
 
 
 Entree& Ch_front_input::readOn(Entree& is)

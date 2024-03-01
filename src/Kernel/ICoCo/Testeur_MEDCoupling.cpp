@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,9 @@
 #include <Champ_base.h>
 
 Implemente_instanciable( Testeur_MEDCoupling, "Testeur_MEDCoupling", Interprete ) ;
+// XD testeur_medcoupling interprete testeur_medcoupling 0 not_set
+// XD  attr pb_name chaine pb_name 0 Name of domain.
+// XD  attr field_name chaine filed_name 0 Name of domain.
 
 Sortie& Testeur_MEDCoupling::printOn( Sortie& os ) const
 {
@@ -33,8 +36,6 @@ Entree& Testeur_MEDCoupling::readOn( Entree& is )
   Interprete::readOn( is );
   return is;
 }
-
-
 
 Entree& Testeur_MEDCoupling::interpreter(Entree& is)
 {

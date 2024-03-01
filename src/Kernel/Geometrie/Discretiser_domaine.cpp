@@ -17,6 +17,8 @@
 #include <Domaine_VF_inst.h>
 
 Implemente_instanciable(Discretiser_domaine,"Discretiser_domaine",Interprete_geometrique_base);
+// XD discretiser_domaine interprete discretiser_domaine 0 Useful to discretize the domain domain_name (faces will be created) without defining a problem.
+// XD  attr domain_name ref_domaine domain_name 0 Name of the domain.
 
 Sortie& Discretiser_domaine::printOn(Sortie& os) const
 {

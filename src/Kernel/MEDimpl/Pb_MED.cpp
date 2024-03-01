@@ -23,6 +23,16 @@
 
 Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);
+// XD pbc_med pb_gen_base pbc_med 0 Allows to read med files and post-process them.
+// XD  attr list_info_med list_info_med list_info_med 0 not_set
+
+// XD pb_post Pb_base nul -1 not_set
+// XD info_med objet_lecture nul 0 not_set
+// XD   attr file_med chaine file_med 0 Name of the MED file.
+// XD   attr domaine chaine domaine 0 Name of domain.
+// XD   attr pb_post pb_post pb_post 0 not_set
+// XD list_info_med listobj nul -1 info_med 1 not_set
+
 
 Sortie& Pb_MED::printOn(Sortie& s ) const { return s; }
 Sortie& Pbc_MED::printOn(Sortie& s ) const { return s; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <Axi.h>
 
 Implemente_instanciable(Axi,"Axi",Interprete);
-
+// XD axi interprete axi -1 This keyword allows a 3D calculation to be executed using cylindrical coordinates (R,$\jolitheta$,Z). If this instruction is not included, calculations are carried out using Cartesian coordinates.
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Execute_parallel,"Execute_parallel",Interprete);
+// XD execute_parallel interprete execute_parallel 1 This keyword allows to run several computations in parallel on processors allocated to TRUST. The set of processors is split in N subsets and each subset will read and execute a different data file. Error messages usualy written to stderr and stdout are redirected to .log files (journaling must be activated).
 
 Entree& Execute_parallel::readOn(Entree& is)
 {
@@ -62,8 +63,8 @@ Entree& Execute_parallel::interpreter(Entree& is)
   int disable_journal = 0;
 
   Param param(que_suis_je());
-  param.ajouter("liste_cas", &liste_cas, Param::REQUIRED);
-  param.ajouter("nb_procs", &nb_procs);
+  param.ajouter("liste_cas", &liste_cas, Param::REQUIRED); // XD_ADD_P listchaine N datafile1 ... datafileN. datafileX the name of a TRUST data file without the .data extension.
+  param.ajouter("nb_procs", &nb_procs); // XD_ADD_P listentier nb_procs is the number of processors needed to run each data file. If not given, TRUST assumes that computations are sequential.
   param.ajouter_flag("disable_journal", &disable_journal);
   param.lire_avec_accolades_depuis(is);
   // Si on n'a pas donne nb_procs, on suppose que ca vaut 1

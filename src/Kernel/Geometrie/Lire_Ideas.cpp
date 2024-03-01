@@ -19,8 +19,9 @@
 #include <Scatter.h>
 
 Implemente_instanciable(Lire_Ideas,"Lire_Ideas",Interprete_geometrique_base);
-
-// printOn et readOn
+// XD lire_ideas interprete lire_ideas -1 Read a geom in a unv file. 3D tetra mesh elements only may be read by TRUST.
+// XD  attr nom_dom ref_domaine nom_dom 0 Name of domain.
+// XD  attr file chaine file 0 Name of file.
 
 Sortie& Lire_Ideas::printOn(Sortie& s ) const
 {

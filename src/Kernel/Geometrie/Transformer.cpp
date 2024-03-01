@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,9 @@
 #include <Scatter.h>
 
 Implemente_instanciable(Transformer, "Transformer", Interprete_geometrique_base);
+// XD transformer interprete transformer -1 Keyword to transform the coordinates of the geometry. NL2 Exemple to rotate your mesh by a 90o rotation and to scale the z coordinates by a factor 2: Transformer domain_name -y -x 2*z
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain.
+// XD  attr formule listchainef formule 0 Function_for_x Function_for_y \[ Function_for z \]
 
 Sortie& Transformer::printOn(Sortie& os) const
 {

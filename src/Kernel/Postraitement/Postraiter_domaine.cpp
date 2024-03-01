@@ -20,6 +20,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Postraiter_domaine, "Postraiter_domaine", Interprete_geometrique_base);
+// XD postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA,SINGLE_LATA).
 
 Sortie& Postraiter_domaine::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -177,17 +178,18 @@ Entree& Postraiter_domaine::interpreter_(Entree& is)
   Nom nom_pdb;
   Nom un_dom;
   Param param(que_suis_je());
-  param.ajouter("format", &format_post_, Param::REQUIRED);
+  param.ajouter("format", &format_post_, Param::REQUIRED); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med"]) File format.
   format_binaire_ = 1;
-  param.ajouter("binaire", &format_binaire_);
+  param.ajouter("binaire", &format_binaire_); // XD_ADD_P entier(into=[0,1]) Binary (binaire 1) or ASCII (binaire 0) may be used. By default, it is 0 for LATA and only ASCII is available for LML and only binary is available for MED.
   ecrire_frontiere_ = 1;
-  param.ajouter("ecrire_frontiere", &ecrire_frontiere_);
+  param.ajouter("ecrire_frontiere", &ecrire_frontiere_); // XD_ADD_P entier(into=[0,1]) This option will write (if set to 1, the default) or not (if set to 0) the boundaries as fields into the file (it is useful to not add the boundaries when writing a domain extracted from another domain)
   nom_pdb = "NOM_DU_CAS";
-  param.ajouter("fichier|file", &nom_pdb);
+  param.ajouter("fichier|file", &nom_pdb); // XD_ADD_P chaine The file name can be changed with the fichier option.
+  // desactive l'ecriture des joints pratique pour comparer parallele et sequentielle
   joint_non_ecrit_ = 1;
-  param.ajouter("joints_non_postraites", &joint_non_ecrit_); // desactive l'ecriture des joints pratique pour comparer parallele et sequentielle
-  param.ajouter("domaine|domain", &un_dom);
-  param.ajouter_non_std("domaines", (this));
+  param.ajouter("joints_non_postraites", &joint_non_ecrit_); // XD_ADD_P entier(into=[0,1]) The joints_non_postraites (1 by default) will not write the boundaries between the partitioned mesh.
+  param.ajouter("domaine|domain", &un_dom); // XD_ADD_P ref_domaine Name of domain
+  param.ajouter_non_std("domaines", (this)); // XD_ADD_P bloc_lecture Names of domains : { name1 name2 }
   param.ajouter_condition("is_read_domaine_or_is_read_domaines", "Vous devez preciser domaine ou domaines dans Postraiter_domaine");
   param.ajouter_condition("is_read_domaine_or_is_read_domaines", "Interpreter Postraiter_domaine : one of the keywords domaine or domaines must be specified.");
   param.lire_avec_accolades_depuis(is);

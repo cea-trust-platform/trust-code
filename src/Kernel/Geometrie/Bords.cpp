@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,7 @@
 #include <Bords.h>
 
 Implemente_instanciable(Bords, "Bords", LIST(Bord));
+// XD list_bord listobj list_bord 1 bord_base 0 The block sides.
 
 Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,9 @@
 #include <Read_unsupported_ASCII_file_from_ICEM.h>
 
 Implemente_instanciable(Lire_Fichier,"Lire_Fichier|Read_file",Interprete);
+// XD read_file interprete lire_fichier -1 Keyword to read the object name_obj contained in the file filename. NL2 This is notably used when the calculation domain has already been meshed and the mesh contains the file filename, simply write read_file dom filename (where dom is the name of the meshed domain). NL2 If the filename is ;, is to execute a data set given in the file of name name_obj (a space must be entered between the semi-colon and the file name).
+// XD  attr name_obj chaine name_obj 0 Name of the object to be read.
+// XD  attr filename chaine filename 0 Name of the file.
 
 /*! @brief Pas code: exit()
  *

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration,"Convection_Diffusion_Concentration",Convection_Diffusion_std);
+// XD convection_diffusion_concentration eqn_base convection_diffusion_concentration -1 Constituent transport vectorial equation (concentration diffusion convection).
 
 Convection_Diffusion_Concentration::Convection_Diffusion_Concentration():nb_constituants_(-1), masse_molaire_(-1.) { }
 
@@ -74,9 +75,9 @@ const double& Convection_Diffusion_Concentration::masse_molaire() const
 void Convection_Diffusion_Concentration::set_param(Param& param)
 {
   Convection_Diffusion_std::set_param(param);
-  param.ajouter_non_std("nom_inconnue",(this));
-  param.ajouter_non_std("alias",(this));
-  param.ajouter("masse_molaire",&masse_molaire_);
+  param.ajouter_non_std("nom_inconnue",(this)); // XD_ADD_P chaine Keyword Nom_inconnue will rename the unknown of this equation with the given name. In the postprocessing part, the concentration field will be accessible with this name. This is usefull if you want to track more than one concentration (otherwise, only the concentration field in the first concentration equation can be accessed).
+  param.ajouter_non_std("alias",(this)); // XD_ADD_P chaine not_set
+  param.ajouter("masse_molaire",&masse_molaire_); // XD_ADD_P floattant not_set
 }
 
 int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& mot, Entree& is)

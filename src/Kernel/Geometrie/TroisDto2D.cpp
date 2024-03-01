@@ -18,6 +18,10 @@
 #include <Scatter.h>
 
 Implemente_instanciable_sans_constructeur(TroisDto2D,"Extract_2D_from_3D",Interprete_geometrique_base);
+// XD extract_2d_from_3d interprete extract_2d_from_3d -1 Keyword to extract a 2D mesh by selecting a boundary of the 3D mesh. To generate a 2D axisymmetric mesh prefer Extract_2Daxi_from_3D keyword.
+// XD  attr dom3D ref_domaine dom3D 0 Domain name of the 3D mesh
+// XD  attr bord chaine bord 0 Boundary name. This boundary becomes the new 2D mesh and all the boundaries, in 3D, attached to the selected boundary, give their name to the new boundaries, in 2D.
+// XD  attr dom2D chaine dom2D 0 Domain name of the new 2D mesh
 
 TroisDto2D::TroisDto2D()
 {

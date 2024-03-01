@@ -17,6 +17,8 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Reordonner,"Reordonner",Interprete_geometrique_base);
+// XD resequencing interprete reordonner -1 The Reordonner interpretor is required sometimes for a VDF mesh which is not produced by the internal mesher. Example where this is used: NL2 Read_file dom fichier.geom NL2 Reordonner dom NL2 Observations: This keyword is redundant when the mesh that is read is correctly sequenced in the TRUST sense. This significant mesh operation may take some time... The message returned by TRUST is not explicit when the Reordonner (Resequencing) keyword is required but not included in the data set...
+// XD attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
 
 
 /*! @brief Ecrit le type de l'objet sur un flot de sortie.

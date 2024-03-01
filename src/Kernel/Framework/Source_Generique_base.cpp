@@ -19,7 +19,8 @@
 #include <Postraitement.h>
 
 Implemente_base(Source_Generique_base,"Source_Generique_base",Source_base);
-
+// XD source_generique source_base source_generique 0 to define a source term depending on some discrete fields of the problem and (or) analytic expression. It is expressed by the way of a generic field usually used for post-processing.
+// XD  attr champ champ_generique_base champ 0 the source field
 
 /*! @brief DOES NOTHING - to override in derived classes.
  *
@@ -32,7 +33,6 @@ Sortie& Source_Generique_base::printOn(Sortie& os) const
 {
   return os;
 }
-
 
 /*! @brief DOES NOTHING - to override in derived classes.
  *

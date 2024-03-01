@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Motcle.h>
 
 Implemente_instanciable(Read_unsupported_ASCII_file_from_ICEM,"Read_unsupported_ASCII_file_from_ICEM",Lire_Fichier);
+// XD read_unsupported_ascii_file_from_icem read_file read_unsupported_ascii_file_from_icem -1 not_set
 
 Sortie& Read_unsupported_ASCII_file_from_ICEM::printOn(Sortie& os) const
 {

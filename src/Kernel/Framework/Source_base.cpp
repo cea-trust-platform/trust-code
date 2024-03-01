@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #include <map>
 
 Implemente_base(Source_base,"Source_base",Objet_U);
-
+// XD source_base objet_u source_base -1 Basic class of source terms introduced in the equation.
 
 /*! @brief DOES NOTHING - to override in derived classes.
  *
@@ -38,7 +38,6 @@ Sortie& Source_base::printOn(Sortie& os) const
   return os;
 }
 
-
 /*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Lecture d'un terme source sur un flot d'entree.
@@ -50,7 +49,6 @@ Entree& Source_base::readOn(Entree& is)
 {
   return is;
 }
-
 
 /*! @brief DOES NOTHING - to override in derived classes.
  *
@@ -156,7 +154,6 @@ void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
   else
     nom.add(champs_compris_.liste_noms_compris());
 }
-
 
 /*! @brief DOES NOTHING - to override in derived classes.
  *

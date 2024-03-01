@@ -26,7 +26,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VDF,"Paroi_Echange_contact_Correlation_VDF",Echange_global_impose);
-
+// XD paroi_echange_contact_correlation_vdf condlim_base paroi_echange_contact_correlation_vdf 1 Class to define a thermohydraulic 1D model which will apply to a boundary of 2D or 3D domain. NL2 Warning : For parallel calculation, the only possible partition will be according the axis of the model with the keyword Tranche.
 
 Sortie& Echange_contact_Correlation_VDF::printOn(Sortie& s ) const { return s << que_suis_je() << finl; }
 
@@ -49,21 +49,21 @@ Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )
 
 void Echange_contact_Correlation_VDF::set_param(Param& param)
 {
-  param.ajouter("dir",&dir);
+  param.ajouter("dir",&dir); // XD_ADD_P entier Direction (0 : axis X, 1 : axis Y, 2 : axis Z) of the 1D model.
   param.ajouter_condition("(value_of_dir_ge_0)_AND_(value_of_dir_le_2)", "La direction doit etre 0, 1 ou 2 dans Echange_contact_Correlation_VDF");
-  param.ajouter("Tinf",&Tinf);
-  param.ajouter("Tsup",&Tsup);
-  param.ajouter_non_std("lambda",(this));
-  param.ajouter_non_std("rho",(this));
-  param.ajouter("dt_impr",&dt_impr);
-  param.ajouter("Cp",&Cp);
-  param.ajouter_non_std("mu",(this));
-  param.ajouter("debit",&debit);
-  param.ajouter("Dh",&diam);
-  param.ajouter_non_std("volume",(this));
-  param.ajouter_non_std("Nu",(this));
+  param.ajouter("Tinf",&Tinf); // XD_ADD_P floattant Inlet fluid temperature of the 1D model (oC or K).
+  param.ajouter("Tsup",&Tsup); // XD_ADD_P floattant Outlet fluid temperature of the 1D model (oC or K).
+  param.ajouter_non_std("lambda",(this)); // XD_ADD_P chaine Thermal conductivity of the fluid (W.m-1.K-1).
+  param.ajouter_non_std("rho",(this)); // XD_ADD_P chaine Mass density of the fluid (kg.m-3) which may be a function of the temperature T.
+  param.ajouter("dt_impr",&dt_impr); // XD_ADD_P floattant Printing period in name_of_data_file_time.dat files of the 1D model results.
+  param.ajouter("Cp",&Cp); // XD_ADD_P floattant Calorific capacity value at a constant pressure of the fluid (J.kg-1.K-1).
+  param.ajouter_non_std("mu",(this)); // XD_ADD_P chaine Dynamic viscosity of the fluid (kg.m-1.s-1) which may be a function of thetemperature T.
+  param.ajouter("debit",&debit); // XD_ADD_P floattant Surface flow rate (kg.s-1.m-2) of the fluid into the channel.
+  param.ajouter("Dh",&diam); // XD_ADD_P floattant Hydraulic diameter may be a function f(x) with x position along the 1D axis (xinf <= x <= xsup)
+  param.ajouter_non_std("volume",(this)); // XD_ADD_P chaine Exact volume of the 1D domain (m3) which may be a function of the hydraulic diameter (Dh) and the lateral surface (S) of the meshed boundary.
+  param.ajouter_non_std("Nu",(this)); // XD_ADD_P chaine Nusselt number which may be a function of the Reynolds number (Re) and the Prandtl number (Pr).
   // Rajout Cyril MALOD (14/09/2006)
-  param.ajouter_flag("Reprise_correlation",&Reprise_temperature);
+  param.ajouter_flag("Reprise_correlation",&Reprise_temperature); // XD_ADD_P rien Keyword in the case of a resuming calculation with this correlation.
 }
 
 int Echange_contact_Correlation_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)

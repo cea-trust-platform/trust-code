@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,8 @@
 #include <Dimension.h>
 
 Implemente_instanciable(Dimension,"Dimension",Interprete);
-
+// XD dimension interprete dimension -1 Keyword allowing calculation dimensions to be set (2D or 3D), where dim is an integer set to 2 or 3. This instruction is mandatory.
+// XD  attr dim entier(into=[2,3]) dim 0 Number of dimensions.
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

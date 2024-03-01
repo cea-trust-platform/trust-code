@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <SFichier.h>
 
 Implemente_instanciable(ScatterMED,"ScatterMED",Scatter);
-
+// XD scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

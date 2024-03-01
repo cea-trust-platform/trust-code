@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,11 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Pave,"Pave",Domaine);
+// XD pave mailler_base pave 0 Class to create a pave (block) with boundaries.
+// XD  attr name chaine name 0 Name of the pave (block).
+// XD  attr bloc bloc_pave bloc 0 Definition of the pave (block).
+// XD  attr list_bord list_bord list_bord 0 Domain boundaries definition.
+
 // XD bloc_pave objet_lecture nul -1 Class to create a pave.
 // XD attr Origine listf Origine 1 Keyword to define the pave (block) origin, that is to say one of the 8 block points (or 4 in a 2D coordinate system).
 // XD attr longueurs listf longueurs 1 Keyword to define the block dimensions, that is to say knowing the origin, length along the axes.

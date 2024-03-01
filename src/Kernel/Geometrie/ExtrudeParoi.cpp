@@ -25,6 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(ExtrudeParoi,"ExtrudeParoi",Interprete_geometrique_base);
+// XD extrudeparoi interprete extrudeparoi 1 Keyword dedicated in 3D (VEF) to create prismatic layer at wall. Each prism is cut into 3 tetraedra.
 
 ExtrudeParoi::ExtrudeParoi()
 {
@@ -96,11 +97,11 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
 {
   Nom nom_dom;
   Param param(que_suis_je());
-  param.ajouter("domaine",&nom_dom,Param::REQUIRED);
-  param.ajouter("nom_bord",&nom_front,Param::REQUIRED);
-  param.ajouter("epaisseur",&epaisseur);
-  param.ajouter_flag("critere_absolu",&type);
-  param.ajouter("projection_normale_bord",&projection_normale_bord);
+  param.ajouter("domaine",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine Name of the domain.
+  param.ajouter("nom_bord",&nom_front,Param::REQUIRED); // XD_ADD_P chaine Name of the (no-slip) boundary for creation of prismatic layers.
+  param.ajouter("epaisseur",&epaisseur); // XD_ADD_P list n r1 r2 .... rn : (relative or absolute) width for each layer.
+  param.ajouter_flag("critere_absolu",&type); // XD_ADD_P entier relative (0, the default) or absolute (1) width for each layer.
+  param.ajouter("projection_normale_bord",&projection_normale_bord); // XD_ADD_P rien keyword to project layers on the same plane that contiguous boundaries. defaut values are : epaisseur_relative 1 0.5 projection_normale_bord 1
   param.lire_avec_accolades_depuis(is);
   epaisseur.array_trier_retirer_doublons();
   nb_couche=epaisseur.size_array();

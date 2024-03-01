@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,8 @@
 
 Implemente_instanciable(Rectify_Mesh,"Rectify_Mesh",Interprete_geometrique_base) ;
 Add_synonym(Rectify_Mesh,"Orienter_Simplexes");
+// XD rectify_mesh interprete rectify_mesh -1 Keyword to raffine a mesh
+// XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
 Sortie& Rectify_Mesh::printOn(Sortie& os) const
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 #include <Param.h>
 
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
-// (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
+// XD bloc_pdf_model objet_lecture nul 1 not_set
 
 Sortie& PDF_model::printOn(Sortie& os) const
 {
@@ -33,12 +33,12 @@ Entree& PDF_model::readOn(Entree& is)
 {
   // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
   Param param(que_suis_je());
-  param.ajouter("eta",&eta_, Param::REQUIRED);
-  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL);
-  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL);
-  param.ajouter_flag("local",&local_);
-  param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL);
-  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL);
+  param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P floattant penalization coefficient
+  param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL); // XD_ADD_P floattant time relaxation on the forcing term to help
+  param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P floattant time relaxation on the forcing term to help convergence
+  param.ajouter_flag("local",&local_); // XD_ADD_P rien whether the prescribed velocity is expressed in the global or local basis
+  param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL); // XD_ADD_P field_base Prescribed velocity as a field
+  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P troismots Prescribed velocity as a set of ananlytical component
   param.lire_avec_accolades_depuis(is);
   if (type_vitesse_imposee_ == -1)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Sources.h>
 
 Implemente_instanciable(Sources, "Sources", LIST(Source));
+// XD sources listobj sources -1 source_base -1 The sources.
 
 Sortie& Sources::printOn(Sortie& os) const { return LIST(Source)::printOn(os); }
 

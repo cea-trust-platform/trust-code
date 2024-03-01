@@ -23,6 +23,9 @@
 #include <Param.h>
 
 Implemente_base(Modele_turbulence_scal_base, "Modele_turbulence_scal_base", Objet_U);
+// XD turbulence_paroi_scalaire_base objet_u turbulence_paroi_scalaire_base -1 Basic class for wall laws for energy equation.
+
+// XD modele_turbulence_scal_base objet_u modele_turbulence_scal_base -1 Basic class for turbulence model for energy equation.
 
 Sortie& Modele_turbulence_scal_base::printOn(Sortie& s) const
 {
@@ -62,8 +65,8 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is)
 
 void Modele_turbulence_scal_base::set_param(Param& param)
 {
-  param.ajouter("dt_impr_nusselt", &dt_impr_nusselt_);
-  param.ajouter_non_std("turbulence_paroi", this);
+  param.ajouter("dt_impr_nusselt", &dt_impr_nusselt_); // XD_ADD_P floattant Keyword to print local values of Nusselt number and temperature near a wall during a turbulent calculation. The values will be printed in the _Nusselt.face file each dt_impr_nusselt time period. The local Nusselt expression is as follows : Nu = ((lambda+lambda_t)/lambda)*d_wall/d_eq where d_wall is the distance from the first mesh to the wall and d_eq is given by the wall law. This option also gives the value of d_eq and h = (lambda+lambda_t)/d_eq and the fluid temperature of the first mesh near the wall. NL2 For the Neumann boundary conditions (flux_impose), the <<equivalent>> wall temperature given by the wall law is also printed (Tparoi equiv.) preceded for VEF calculation by the edge temperature <<T face de bord>>.
+  param.ajouter_non_std("turbulence_paroi", this); // XD_ADD_P turbulence_paroi_scalaire_base Keyword to set the wall law.
 }
 int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
 {

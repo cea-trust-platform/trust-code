@@ -34,12 +34,15 @@
 #include <FichierHDFPar.h>
 #include <LecFicDiffuse.h>
 #include <Format_Post_Lata.h>
-
 #include <EFichierBin.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
 Implemente_instanciable_sans_constructeur(Scatter,"Scatter",Interprete);
+// XD scatter interprete scatter 0 Class to read a partionned mesh in the files during a parallel calculation. The files are in binary format.
+// XD  attr file chaine file 0 Name of file.
+// XD  attr domaine ref_domaine domaine 0 Name of domain.
+
 Scatter::Scatter()
 {}
 
