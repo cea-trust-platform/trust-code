@@ -69,28 +69,29 @@ index 6ae42053..9b631fd7 100644
        }
        
 diff --git a/src/INTERP_KERNEL/TransformedTriangle.cxx b/src/INTERP_KERNEL/TransformedTriangle.cxx
-index fdaeb656..4b189204 100644
+index fdaeb656..ac83c338 100644
 --- a/src/INTERP_KERNEL/TransformedTriangle.cxx
 +++ b/src/INTERP_KERNEL/TransformedTriangle.cxx
-@@ -71,8 +71,15 @@ namespace INTERP_KERNEL
+@@ -70,9 +70,15 @@ namespace INTERP_KERNEL
+      */
      bool operator()(const double* pt1, const double* pt2)
      {
-       // calculate angles with the axis
+-      // calculate angles with the axis
 -      const double ang1 = atan2(pt1[_aIdx] - _a, pt1[_bIdx] - _b);
 -      const double ang2 = atan2(pt2[_aIdx] - _a, pt2[_bIdx] - _b);
-+//      const double ang1 = atan2(pt1[_aIdx] - _a, pt1[_bIdx] - _b);
-+//      const double ang2 = atan2(pt2[_aIdx] - _a, pt2[_bIdx] - _b);
-+
 +      // A ***much*** faster alternative to atan2 to get a pseudo-angle suitable for sorting:
 +      // https://stackoverflow.com/questions/16542042/fastest-way-to-sort-vectors-by-angle-without-actually-computing-that-angle
 +      const double dy1 = pt1[_aIdx] - _a, dx1 = pt1[_bIdx] - _b,
 +                   dy2 = pt2[_aIdx] - _a, dx2 = pt2[_bIdx] - _b;
-+      const double ang1 = std::copysign(1. - dx1/(std::fabs(dx1)+fabs(dy1)),dy1);
-+      const double ang2 = std::copysign(1. - dx2/(std::fabs(dx2)+fabs(dy2)),dy2);
++      const double deno1 = std::fabs(dx1)+fabs(dy1),
++                   deno2 = std::fabs(dx2)+fabs(dy2);
++
++      const double ang1 = deno1 == 0.0 ? 0.0 : std::copysign(1. - dx1/deno1, dy1),
++                   ang2 = deno2 == 0.0 ? 0.0 : std::copysign(1. - dx2/deno2, dy2);
  
        return ang1 > ang2;
      }
-@@ -122,13 +129,15 @@ namespace INTERP_KERNEL
+@@ -122,13 +128,15 @@ namespace INTERP_KERNEL
      _coords[5*Q + 3] = 1 - q[0] - q[1] - q[2];
      _coords[5*R + 3] = 1 - r[0] - r[1] - r[2];
  
@@ -108,7 +109,7 @@ index fdaeb656..4b189204 100644
      // initialise rest of data
      preCalculateDoubleProducts();
  
-@@ -147,14 +156,10 @@ namespace INTERP_KERNEL
+@@ -147,14 +155,10 @@ namespace INTERP_KERNEL
    TransformedTriangle::~TransformedTriangle()
    {
      // delete elements of polygons
@@ -127,7 +128,7 @@ index fdaeb656..4b189204 100644
    }
  
    /**
-@@ -206,6 +211,11 @@ namespace INTERP_KERNEL
+@@ -206,6 +210,11 @@ namespace INTERP_KERNEL
      if(_polygonA.size() > 2)
        {
          LOG(2, "---- Treating polygon A ... ");
@@ -139,7 +140,7 @@ index fdaeb656..4b189204 100644
          calculatePolygonBarycenter(A, barycenter);
          sortIntersectionPolygon(A, barycenter);
          volA = calculateVolumeUnderPolygon(A, barycenter);
-@@ -214,17 +224,27 @@ namespace INTERP_KERNEL
+@@ -214,17 +223,27 @@ namespace INTERP_KERNEL
  
      double volB = 0.0;
      // if triangle is not in h = 0 plane, calculate volume under B
@@ -170,7 +171,7 @@ index fdaeb656..4b189204 100644
    
      return _volume = sign * (volA + volB);
  
-@@ -265,7 +285,7 @@ namespace INTERP_KERNEL
+@@ -265,7 +284,7 @@ namespace INTERP_KERNEL
    }
  
    // ----------------------------------------------------------------------------------
@@ -179,7 +180,7 @@ index fdaeb656..4b189204 100644
    // ----------------------------------------------------------------------------------
  
    /**
-@@ -278,6 +298,11 @@ namespace INTERP_KERNEL
+@@ -278,6 +297,11 @@ namespace INTERP_KERNEL
     */
    void TransformedTriangle::calculateIntersectionAndProjectionPolygons()
    {
@@ -191,7 +192,7 @@ index fdaeb656..4b189204 100644
      assert(_polygonA.size() == 0);
      assert(_polygonB.size() == 0);
      // avoid reallocations in push_back() by pre-allocating enough memory
-@@ -293,15 +318,15 @@ namespace INTERP_KERNEL
+@@ -293,15 +317,15 @@ namespace INTERP_KERNEL
              double* ptA = new double[3];
              calcIntersectionPtSurfaceEdge(edge, ptA);
              _polygonA.push_back(ptA);
@@ -210,7 +211,7 @@ index fdaeb656..4b189204 100644
            }
        }
  
-@@ -313,7 +338,7 @@ namespace INTERP_KERNEL
+@@ -313,7 +337,7 @@ namespace INTERP_KERNEL
              double* ptB = new double[3];
              copyVector3(&COORDS_TET_CORNER[3 * corner], ptB);
              _polygonB.push_back(ptB);
@@ -219,7 +220,7 @@ index fdaeb656..4b189204 100644
            }
        }
  
-@@ -323,33 +348,31 @@ namespace INTERP_KERNEL
+@@ -323,33 +347,31 @@ namespace INTERP_KERNEL
  
          bool isZero[NO_DP];
  
@@ -260,7 +261,7 @@ index fdaeb656..4b189204 100644
                    }
  
                }
-@@ -365,112 +388,113 @@ namespace INTERP_KERNEL
+@@ -365,112 +387,113 @@ namespace INTERP_KERNEL
                  double* ptA = new double[3];
                  calcIntersectionPtSegmentEdge(seg, edge, ptA);
                  _polygonA.push_back(ptA);
@@ -438,7 +439,7 @@ index fdaeb656..4b189204 100644
    /**
     * Calculates the intersection polygon A, performing the intersection tests
     * and storing the corresponding point in the vector _polygonA.
-@@ -504,10 +528,9 @@ namespace INTERP_KERNEL
+@@ -504,10 +527,9 @@ namespace INTERP_KERNEL
          bool isZero[NO_DP];
  
          // check beforehand which double-products are zero
@@ -451,7 +452,7 @@ index fdaeb656..4b189204 100644
  
          // segment - facet
          for(TetraFacet facet = OYZ ; facet < NO_TET_FACET ; facet = TetraFacet(facet + 1))
-@@ -623,20 +646,19 @@ namespace INTERP_KERNEL
+@@ -623,20 +645,19 @@ namespace INTERP_KERNEL
        const std::size_t m = polygon.size();
  
        for(int j = 0 ; j < 3 ; ++j)
@@ -482,7 +483,7 @@ index fdaeb656..4b189204 100644
          }
        LOG(3,"Barycenter is " << vToStr(barycenter));
      }
-@@ -674,14 +696,7 @@ namespace INTERP_KERNEL
+@@ -674,14 +695,7 @@ namespace INTERP_KERNEL
            // We keep the test here anyway, to avoid interdependency.
  
            // is triangle inclined to x == 0 ?
@@ -498,7 +499,7 @@ index fdaeb656..4b189204 100644
          }
  
        // create order object
-@@ -751,18 +766,13 @@ namespace INTERP_KERNEL
+@@ -751,18 +765,13 @@ namespace INTERP_KERNEL
       */
      bool TransformedTriangle::isTriangleInPlaneOfFacet(const TetraFacet facet) const
      {
@@ -520,7 +521,7 @@ index fdaeb656..4b189204 100644
        return true;
      }
  
-@@ -776,7 +786,7 @@ namespace INTERP_KERNEL
+@@ -776,7 +785,7 @@ namespace INTERP_KERNEL
      {
        // coordinate to check
        const int coord = static_cast<int>(facet);
@@ -529,7 +530,7 @@ index fdaeb656..4b189204 100644
      }
  
      /**
-@@ -801,9 +811,7 @@ namespace INTERP_KERNEL
+@@ -801,9 +810,7 @@ namespace INTERP_KERNEL
  
        double sign = uv_xy[0] * uv_xy[3] - uv_xy[1] * uv_xy[2];
        if(epsilonEqual(sign, 0.))
@@ -540,7 +541,7 @@ index fdaeb656..4b189204 100644
        return (sign < 0.) ? -1 : (sign > 0.) ? 1 : 0;
      }
  
-@@ -815,13 +823,10 @@ namespace INTERP_KERNEL
+@@ -815,13 +822,10 @@ namespace INTERP_KERNEL
      bool TransformedTriangle::isTriangleBelowTetraeder() const
      {
        for(TriCorner c = P ; c < NO_TRI_CORNER ; c = TriCorner(c + 1))
@@ -558,7 +559,7 @@ index fdaeb656..4b189204 100644
        return true;
      }
  
-@@ -833,10 +838,10 @@ namespace INTERP_KERNEL
+@@ -833,10 +837,10 @@ namespace INTERP_KERNEL
      {
        std::cout << "Coords : ";
        for(int i = 0 ; i < 3; ++i)
