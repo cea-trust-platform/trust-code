@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,6 +95,7 @@ protected :
 
   int nb_corrections_max_; //nombre de corrections maximun pour affinet la projection
   int avancement_crank_;   // on ne fait pas vraiment du piso mais plutot du CN
+  int with_sources_ = 0;   //prise en compte des termes sources dans la matrice de pression -> plus de termes en implicite, moins de termes en PISO
 
   Entree& lire(const Motcle&, Entree&) override;
 
