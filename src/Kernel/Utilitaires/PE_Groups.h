@@ -26,7 +26,8 @@
  *   La creation du groupe principal doit etre dans le MAIN.cpp
  *   et il faut initialiser PE_Groups en lui donnant le groupe principal.
  *   Les autres groupes crees seront du meme type.
- *   Voir aussi la class Comm_Group
+ *
+ *   @sa la class Comm_Group
  *
  */
 class PE_Groups

@@ -63,13 +63,17 @@ double Champ_Generique_base::get_time() const
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
 }
 
-//Renvoie le probleme qui porte le champ cible
+/*! @brief Renvoie le probleme qui porte le champ cible
+ *
+ */
 const Probleme_base& Champ_Generique_base::get_ref_pb_base() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
 }
 
-//Renvoie la discretisation associee au probleme
+/*! @brief Renvoie la discretisation associee au probleme
+ *
+ */
 const Discretisation_base& Champ_Generique_base::get_discretisation() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
@@ -78,8 +82,10 @@ const Discretisation_base& Champ_Generique_base::get_discretisation() const
   return discr;
 }
 
-//Renvoie la directive (champ_elem, champ_sommets, champ_face ou pression)
-//pour lancer la discretisation de l espace de stockage rendu par get_champ()
+/*! @brief Renvoie la directive (champ_elem, champ_sommets, champ_face ou pression)
+ * pour lancer la discretisation de l espace de stockage rendu par get_champ()
+ *
+ */
 const Motcle Champ_Generique_base::get_directive_pour_discr() const
 {
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
@@ -126,7 +132,7 @@ const Noms Champ_Generique_base::get_property(const Motcle& query) const
  *
  *   champ P0, etc). Il est conseille d'utiliser la syntaxe get_localisation() sans
  *   parametre, sauf si on sait quoi faire pour les champs multi-supports.
- *   Voir aussi get_nb_localisations()
+ *   @sa get_nb_localisations()
  *  Parametre : index
  *  Signification : index de la localisation demandee (pour les champs multi-support).
  *   Si index = -1 : si le champ est multi-support on leve une exception, sinon on renvoie le support.

@@ -52,7 +52,6 @@ class Param;
 // int            est_le_premier_post         : 1 si premier postraitement pour un fichier d ecriture donne, 0 sinon
 // int            est_le_dernier_post  : 1 si dernier postraitement pour un fichier d ecriture donne, 0 sinon
 // Domaine            dom                        : domaine de calcul
-// Nom                    id_domaine                : nom du domaine
 // Nom                   id_domaine                : nom du domaine
 // IntVect           faces_som                : connectivites faces-sommets
 // IntVect           elem_faces                : connectivites elements-faces
@@ -134,18 +133,13 @@ public:
 
   virtual int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size);
 
-  //Methode qui postraite les valeurs d un champ discret a un instant donne
-  /*void postraiter_debug_valeurs_un_instant(const Nom& nom_fich, const Domaine& dom, const Domaine_dis_base& domaine_dis, double temps_champ, double temps_courant, const Nom& id_champ_post,
-                                           const Nature_du_champ& nature_champ, const Noms& noms_compos, const Noms& unites, const Motcle& loc_post, const DoubleTab& data, int ncomp = -1, int axi = 0,
-                                           int champ = 1, int stat = 0, double dt_ch = 1., double dt_stat = 1., int reprise = 0, int est_le_premier_post = 1, int est_le_dernier_post = 1,
-                                           double t_init = 0., double temps_post = -2); */
-
   virtual void set_single_lata_option(const bool )
   {
     Process::exit("Format_Post_base::set_single_lata_option is only available for lata post !");
   }
 
   virtual void set_postraiter_domain() { /* Do nothing */ }
+
 };
 
 #endif

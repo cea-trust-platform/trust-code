@@ -26,7 +26,7 @@
  *      pour les calculs de  l'energie cinetique totale
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VEF
  */
 class Traitement_particulier_NS_EC : public Traitement_particulier_NS_base
 {

@@ -30,10 +30,9 @@ class Interprete;
  *    agit sur d'autres objets declares dans le jeu de donnees. Il peut
  *    y acceder par les methodes objet() et est_un_objet_existant().
  *    Voir par exemple la classe Lire ou la classe Associer
- *    Voir aussi la classe Interprete_bloc qui lit une serie d'instructions
- *    a executer dans le jeu de donnees.
  *
- * @sa Interprete_bloc
+ * @sa Interprete_bloc qui lit une serie d'instructions
+ *    a executer dans le jeu de donnees.
  */
 class Interprete : public Objet_U
 {

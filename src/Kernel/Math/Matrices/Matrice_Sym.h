@@ -33,7 +33,7 @@
  *     DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const
  *     qui est une methode abstraite.
  *
- * @sa Matrice_Morse_Sym, Cette classe n'herite pas d'objet U car elle est utilisee par, heritage multiple avec d'autre classe heritant deja d'objet U., Voir par exemple Mat_Morse_Sym., Classe abstraite, Methodes abstraites, int ssor(const DoubleVect& secmem, DoubleVect& solution,, double=_OMEGA_SSOR_ ) const;, DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const [protegee]
+ * @sa Matrice_Morse_Sym, Cette classe n'herite pas d'objet U car elle est utilisee par, heritage multiple avec d'autre classe heritant deja d'objet U., Classe abstraite
  */
 
 class Matrice_Sym

@@ -26,7 +26,7 @@
  *         un seul fichier binaire contenant les positions + les valeurs
  *     Permet de faire une reprise sur un nbre different de proc
  *
- * @sa Si le format est active (en lecture ou en ecriture) sur un probleme,, il doit l'etre sur tous.
+ * @sa Si le format est active (en lecture ou en ecriture) sur un probleme, il doit l'etre sur tous.
  */
 
 class Sortie;

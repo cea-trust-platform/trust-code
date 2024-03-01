@@ -30,7 +30,7 @@ class Champ_Inc_base;
  *      pour les calculs de la pression
  *
  *
- * @sa Navier_Stokes, Traitement_particulier_base,, Traitement_particulier_Pression
+ * @sa Navier_Stokes, Traitement_particulier_base, Traitement_particulier_Pression
  */
 class Traitement_particulier_NS_Pression_VEF : public Traitement_particulier_NS_Pression
 {

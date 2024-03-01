@@ -125,9 +125,6 @@ class Param;
 //    methode_recyc = 4 : deux fichiers a lire : le premier contenant les valeurs de la variable
 //                                                 et le second contenant les positions
 //
-//
-// .SECTION voir aussi
-//
 //////////////////////////////////////////////////////////////////////////////
 
 class Champ_front_recyclage : public Ch_front_var_instationnaire_dep

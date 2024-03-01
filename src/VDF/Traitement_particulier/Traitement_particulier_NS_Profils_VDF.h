@@ -28,7 +28,7 @@
  *          + fluctuations
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VDF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VDF
  */
 class Traitement_particulier_NS_Profils_VDF : public Traitement_particulier_NS_Profils
 {

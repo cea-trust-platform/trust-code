@@ -33,7 +33,7 @@ class Sous_Domaine;
  * De meme, le Sous_domaine_dis definit un sous_ensemble des attributs
  * du Domaine_dis, en particulier des faces.
  *
- * Voir aussi Domaine_dis, Sous_Domaine, Domaine_dis_base, Sous_Domaine_VF
+ * @sa Domaine_dis, Sous_Domaine, Domaine_dis_base, Sous_Domaine_VF
 */
 class Sous_domaine_dis_base : public Objet_U
 {

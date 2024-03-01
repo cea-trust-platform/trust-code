@@ -18,21 +18,19 @@
 #include <Domaine.h>
 
 class Equation_base;
+
 /*! @brief classe Ensemble_Lagrange_base Classe de base des classes representant une structure geometrique constituee
  *
- *      d un ensemble de points dont on realise un suivi Lagrangien
+ *      d'un ensemble de points dont on realise un suivi Lagrangien
  *      Actuellement une seule classe derivant instanciable : Maillage_FT_Disc
  *      -un ensemble Lagrangien est caracterise par les coordonnees de ses points
  *
+ * @sa Classe abstraite.
+ * @sa Methodes abstraites:
+ *       void associer_equation_transport)
+ *       Equation_base& equation_associee()
  */
 
-// .SECTION voir aussi
-//
-//     Classe abstraite.
-//     Methodes abstraites:
-//       void associer_equation_transport)
-//       Equation_base& equation_associee()
-//////////////////////////////////////////////////////////////////////////////
 class Ensemble_Lagrange_base : public Objet_U
 {
   Declare_base_sans_constructeur(Ensemble_Lagrange_base);

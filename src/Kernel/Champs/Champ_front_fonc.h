@@ -23,8 +23,6 @@
  *
  */
 
-//.SECTION voir aussi
-
 class Champ_front_fonc : public Ch_front_var_stationnaire
 {
 

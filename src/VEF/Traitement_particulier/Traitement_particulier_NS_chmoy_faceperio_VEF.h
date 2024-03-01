@@ -29,7 +29,7 @@ class Convection_Diffusion_std;
  *          * calculs de moyennes
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VEF
  */
 class Traitement_particulier_NS_chmoy_faceperio_VEF : public Traitement_particulier_NS_chmoy_faceperio
 {

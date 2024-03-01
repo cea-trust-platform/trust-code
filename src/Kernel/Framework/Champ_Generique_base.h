@@ -27,7 +27,9 @@ class Param;
 
 enum class Entity { NODE, SEGMENT, FACE, ELEMENT };
 
-/*! @brief Classe de base des champs generiques pour importation d un champ discret et actions elementaires sur ce champ
+/*! @brief class Champ_Generique_base
+ *
+ * Classe de base des champs generiques pour importation d un champ discret et actions elementaires sur ce champ
  *
  *   (postraitement, etc)
  *  Attention: toutes les methodes sont PARALLELES, il faut les appeler

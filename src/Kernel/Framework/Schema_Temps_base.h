@@ -31,38 +31,38 @@ class Equation;
 class Motcle;
 class Param;
 
-/*! @brief classe Schema_Temps_base
+/*! @brief class Schema_Temps_base
  *
+ * Cette classe represente un schema en temps, c'est-a-dire un
+ * algorithme de resolution particulier qui sera associe a un
+ * Probleme_base (un probleme simple et non un couplage).
+ * Schema_Temps_base est la classe abstraite qui est a la base de
+ * la hierarchie des schemas en temps.
+ *
+ * On note n le temps present, et n+1 le temps a l'issue du pas de temps.
+ * Un schema en temps permet de calculer u(n+1) connaissant u jusqu'a u(n).
+ * Il utilise u(n), mais peut aussi avoir besoin  de valeurs passees de u,
+ * telles que u(n-1), ...
+ * Il peut aussi en cours de calcul utiliser des valeurs de u a des temps
+ * intermediaires entre n et n+1, par exemple n+1/2.
+ * nb_valeurs_temporelles compte toutes les valeurs allouees :
+ * n, n+1, les valeurs passees retenues etles valeurs intermediaires
+ * entre n et n+1.
+ * nb_valeurs_futures compte n+1 et les valeurs intermediaires entre n et n+1.
+ * C'est donc le nombre de crans dont tournent les roues en avancant d'un pas de temps.
+ * temps_futur(i) renvoie la i-eme valeur future du temps.
+ * Enfin temps_defaut est le temps que doivent rendre les champs a
+ * l'appel de valeurs() - donc notamment dans les operateurs.
+ * Pour le moment n'est respecte que par les Champ_Front des CLs.
+ *
+ * @sa Equation Equation_base Probleme_base Algo_MG_base
+ *
+ * Classe abstraite dont tous les schemas en temps doivent deriver.
+ *
+ * Methodes abstraites:
+ *   int faire_un_pas_de_temps_eqn_base(Equation_base&)
  */
 
-//     Cette classe represente un schema en temps, c'est-a-dire un
-//     algorithme de resolution particulier qui sera associe a un
-//     Probleme_base (un probleme simple et non un couplage).
-//     Schema_Temps_base est la classe abstraite qui est a la base de
-//     la hierarchie des schemas en temps.
-//
-//     On note n le temps present, et n+1 le temps a l'issue du pas de temps.
-//     Un schema en temps permet de calculer u(n+1) connaissant u jusqu'a u(n).
-//     Il utilise u(n), mais peut aussi avoir besoin  de valeurs passees de u,
-//     telles que u(n-1), ...
-//     Il peut aussi en cours de calcul utiliser des valeurs de u a des temps
-//     intermediaires entre n et n+1, par exemple n+1/2.
-//     nb_valeurs_temporelles compte toutes les valeurs allouees :
-//     n, n+1, les valeurs passees retenues etles valeurs intermediaires
-//     entre n et n+1.
-//     nb_valeurs_futures compte n+1 et les valeurs intermediaires entre n et n+1.
-//     C'est donc le nombre de crans dont tournent les roues en avancant d'un pas de temps.
-//     temps_futur(i) renvoie la i-eme valeur future du temps.
-//     Enfin temps_defaut est le temps que doivent rendre les champs a
-//     l'appel de valeurs() - donc notamment dans les operateurs.
-//     Pour le moment n'est respecte que par les Champ_Front des CLs.
-//
-// .SECTION voir aussi
-//     Equation Equation_base Probleme_base Algo_MG_base
-//     Classe abstraite dont tous les schemas en temps doivent deriver.
-//     Methodes abstraites:
-//       int faire_un_pas_de_temps_eqn_base(Equation_base&)
-//////////////////////////////////////////////////////////////////////////////
 class Schema_Temps_base : public Objet_U
 {
   Declare_base_sans_constructeur(Schema_Temps_base);

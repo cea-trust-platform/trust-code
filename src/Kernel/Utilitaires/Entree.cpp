@@ -363,7 +363,8 @@ int Entree::check_types() const
  *      que tout va toujours bien)
  *    - lever une exception (permet une gestion rigoureuse des erreurs
  *      et une information utilisateur optimale en fonction du contexte)
- *   Voir aussi set_error_action()
+ *
+ *   @sa set_error_action()
  *
  */
 int Entree::error_handle_(int fail_flag)

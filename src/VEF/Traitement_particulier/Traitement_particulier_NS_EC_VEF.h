@@ -25,7 +25,7 @@
  *      classe de base.
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_NS_EC
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_NS_EC
  */
 class Traitement_particulier_NS_EC_VEF : public Traitement_particulier_NS_EC
 {

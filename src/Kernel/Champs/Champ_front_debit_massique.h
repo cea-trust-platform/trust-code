@@ -26,10 +26,8 @@
  *
  *  Classe derivee de Champ_front_debit pour les amateurs de kg/s
  *
+ * @sa Champ_front_base
  */
-
-//.SECTION voir aussi
-// Champ_front_base
 
 class Champ_front_debit_massique : public Champ_front_debit
 {

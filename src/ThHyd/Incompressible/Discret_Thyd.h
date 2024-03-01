@@ -32,7 +32,7 @@ class Convection_Diffusion_Temperature;
  *     derivees pour typer et discretiser les champs portes par les
  *     equations liees a la discretisation.
  *
- * @sa Discret_Thermique, Classe abstraite, Methodes abstraites:, void vitesse(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void pression(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void concentration(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&,, int =1) const, void proprietes_physiques_Fluide_base(Domaine_dis& ,, Fluide_base&, const Champ_Inc& ) const, void proprietes_physiques_fluide_Ostwald(Domaine_dis& ,Fluide_Ostwald&,, const Navier_Stokes_std& ,, const Champ_Inc& ) const ;
+ * @sa Discret_Thermique
  */
 class Discret_Thyd : public Discret_Thermique
 {

@@ -30,7 +30,8 @@
  * ..
  *   Il supporte la notion d'items "communs" (sommets du maillage partages entre plusieurs processeurs)
  *   et d'items "distants" et "virtuels" (sommets, elements dans l'epaisseur de joint).
- *   Voir aussi MD_Vector_composite (descripteur compose d'une reunion de plusieurs descripteurs, pour le P1Bulle
+ *
+ *   @sa MD_Vector_composite (descripteur compose d'une reunion de plusieurs descripteurs, pour le P1Bulle
  *   par exemple)
  *
  */

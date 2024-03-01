@@ -17,18 +17,12 @@
 #define Pred_Cor_included
 
 
+#include <Schema_Temps_base.h>
 
 /*! @brief class Pred_Cor Le schema doit etre utilise avec un schema d'espace alternant
  *
+ * @sa Schema_Temps_base
  */
-
-
-// .SECTION voir aussi
-// Schema_Temps_base
-
-#include <Schema_Temps_base.h>
-
-
 
 class Pred_Cor: public Schema_Temps_base
 {

@@ -24,8 +24,6 @@
  *
  */
 
-//.SECTION voir aussi
-
 class Champ_front_fonc_pois_tube : public Champ_front_fonc
 {
 

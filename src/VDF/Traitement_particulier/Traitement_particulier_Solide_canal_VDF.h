@@ -28,7 +28,7 @@ class Entree;
  *      sur le champs de temperature solide (moyenne, ecart-types... )
  *
  *
- * @sa Conduction,, Traitement_particulier_VDF
+ * @sa Conduction, Traitement_particulier_VDF
  */
 class Traitement_particulier_Solide_canal_VDF : public Traitement_particulier_Solide_canal
 {

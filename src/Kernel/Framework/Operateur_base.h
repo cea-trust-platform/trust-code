@@ -40,7 +40,9 @@ class SFichier;
  *      Exemple de classe d'operateur: Op_Diff_K_Eps_negligeable,
  *                                     Operateur_Div_base
  *
- * @sa MorEqn Operateur Equation_base, Classe abstraite. Un certain nombre de methodes DOIVENT etre, surchargees dans les classes derivees., Methodes abstraites:, DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const, DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const, void associer(const Domaine_dis&,, const Domaine_Cl_dis&,, const Champ_Inc& inco)
+ * @sa MorEqn Operateur Equation_base
+ *
+ * Classe abstraite. Un certain nombre de methodes DOIVENT etre, surchargees dans les classes derivees.
  */
 class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_interface
 {

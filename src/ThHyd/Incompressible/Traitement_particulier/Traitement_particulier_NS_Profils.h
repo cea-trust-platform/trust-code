@@ -19,20 +19,17 @@
 
 #include <Traitement_particulier_NS_base.h>
 
+/*! @brief class Trait_part_NS_Profils_VDF
+ *
+ *     This class enables a particular treatment
+ *     for computations which have a periodic BC (ie homogeneous direction)
+ *     and on which we want profiles in a specific direction and position :
+ *         + mean velocity profiles
+ *         + fluctuations
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VDF
+ */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//     class Trait_part_NS_Profils_VDF
-//     This classe enables a particular treatment
-//     for computations which have a periodic BC (ie homogeneous direction)
-//     and on which we want profiles in a specific direction and position :
-//         + mean velocity profiles
-//         + fluctuations
-//
-// .SECTION voir aussi
-//      Navier_Stokes_Turbulent, Traitement_particulier_base,
-//      Traitement_particulier_VDF
-//////////////////////////////////////////////////////////////////////////////
 class Traitement_particulier_NS_Profils : public Traitement_particulier_NS_base
 {
   Declare_base(Traitement_particulier_NS_Profils);

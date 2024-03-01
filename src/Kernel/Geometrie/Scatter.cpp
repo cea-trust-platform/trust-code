@@ -1145,7 +1145,7 @@ void Scatter::ajouter_joints(Domaine& domaine,
  *   les "type_item" attaches aux elements distants.
  *   Exemple : les sommets distants sont tous les sommets de tous les elements
  *   distants.
- *  Voir aussi:
+ *  @sa
  *   Scatter::calculer_espace_distant_sommets
  *   Scatter::calculer_espace_distant_faces
  *

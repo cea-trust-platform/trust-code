@@ -172,7 +172,7 @@ int Process::mp_max(int x)
 
 /*! @brief Calcule le min de x sur tous les processeurs du groupe courant.
  *
- * Voir aussi mp_max()
+ * @sa mp_max()
  *
  */
 double Process::mp_min(double x)
@@ -193,7 +193,7 @@ int Process::mp_min(int x)
 
 /*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
  *
- * Voir aussi mp_max()
+ * @sa mp_max()
  *
  */
 double Process::mp_sum(double x)
@@ -206,7 +206,7 @@ double Process::mp_sum(double x)
 
 /*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
  *
- * Voir aussi mp_max()
+ * @sa mp_max()
  *
  */
 int Process::mp_sum(int x)
@@ -507,7 +507,7 @@ Sortie& get_Cerr()
 
 /*! @brief Si on est sur le maitre, on renvoie cout ou le fichier journal sinon journal_zero_.
  *
- *   Voir aussi cerr_to_journal_
+ *   @sa cerr_to_journal_
  *
  */
 Sortie& get_Cout()

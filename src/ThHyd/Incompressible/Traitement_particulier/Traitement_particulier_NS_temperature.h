@@ -22,12 +22,12 @@
 #include <Champ_Don.h>
 #include <SFichier.h>
 
-/*! @brief classe Traitement_particulier_temperature Cette classe permet de faire les traitements particuliers
+/*! @brief classe Traitement_particulier_NS_temperature Cette classe permet de faire les traitements particuliers
  *
  *      pour les calculs de  l'energie cinetique totale
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_NS_base, Traitement_particulier_VEF
  */
 class Traitement_particulier_NS_temperature : public Traitement_particulier_NS_base
 {

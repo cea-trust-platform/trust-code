@@ -20,12 +20,8 @@
 
 /*! @brief class OrienteFacesBord
  *
+ * @sa Interprete
  */
-/**
- */
-//
-// .SECTION voir aussi
-// Interprete
 
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>

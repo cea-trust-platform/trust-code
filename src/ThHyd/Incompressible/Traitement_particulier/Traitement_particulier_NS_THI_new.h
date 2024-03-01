@@ -29,7 +29,7 @@
  *      particuliere et calculs des spectres!!
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VEF
  */
 class Traitement_particulier_NS_THI_new : public Traitement_particulier_NS_base
 {

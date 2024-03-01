@@ -24,7 +24,7 @@
  *      pour les calculs de l'energie cinetique totale en VDF
  *      Rien de particulier au VDF, calculs implementes dans la classe de base.
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_NS_EC
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_NS_EC
  */
 class Traitement_particulier_NS_EC_VDF : public Traitement_particulier_NS_EC
 {

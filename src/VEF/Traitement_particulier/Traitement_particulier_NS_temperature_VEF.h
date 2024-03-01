@@ -27,7 +27,7 @@ class Convection_Diffusion_std;
  *      pour le calcul de la temperature moyenne de sortie
  *
  *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base, Traitement_particulier_VEF
  */
 class Traitement_particulier_NS_temperature_VEF : public Traitement_particulier_NS_temperature
 {
