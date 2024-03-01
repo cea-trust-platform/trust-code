@@ -17,9 +17,16 @@
 #include <EcrFicPartage.h>
 #include <SChaine.h>
 #include <petsc_for_kernel.h>
+#include <communications.h>
 #ifdef VTRACE
 #include <vt_user.h>
 #endif
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// The first part of this file aims at giving basic functions for getting time for Windows and Unix boots.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifdef MICROSOFT
 //struct timeval { time_t tv_usec; time_t tv_sec; };
 
@@ -238,8 +245,7 @@ void Time::calibrate()
 
 /*! @brief Cette methode renvoie un temps en secondes depuis une origine qui depend de la methode de mesure de la classe Time.
  *
- * Precision, normalement
- *   de l'ordre de 1ms ou inferieur.
+ * Precision, de l'ordre de 1ms maximum.
  *
  */
 double Statistiques::get_time_now()
@@ -249,87 +255,80 @@ double Statistiques::get_time_now()
   return t.second();
 }
 
-// =================================================================
-// =================================================================
+static const int MAXCOUNTERS = 1000; ///< Maximum number of counter (static) and size of the tables in Stat_Internals
 
-
-//    CLASSE STAT_INTERNALS (interne au systeme de statistiques)
-// =================================================================
-// =================================================================
-
-// Je mets une limite en dur parce que:
-// - un nombre trop eleve de compteurs est sans doute le signe d'un bug
-//   (creation repetee du meme compteur)
-// - dans un premier temps, ca suffit et c'est plus simple
-static const int MAXCOUNTERS = 1000;
-
+/*! @brief Interne object of the class Statistiques containing diverse informations about counters
+ *
+ * This is an internal object of the Statistiques class that encapsulate informations about counters. For each numerical simulation, a unique Stat_Internals is created at the start of the computation and associated with the Statistiques type object.
+ *
+ *
+ */
 class Stat_Internals
 {
 public:
+
   Stat_Internals();
-  int nb_counters;
-  int nb_comm_counters;  //nombre de compteurs de communication
 
-  // Tous les compteurs sont crees, meme si le niveau est inferieur,
-  // cela permet d'activer un niveau superieur au cours du calcul.
-  // A la fin, on imprime les resultats correspondant au niveau le plus
-  // eleve atteint au cours du calcul.
-  int max_debug_level_during_session;
+  int nb_counters; ///< number of counters
+  int nb_comm_counters;  //< number of communication counters
+  int max_debug_level_during_session; ///< Debug level which change the quantity of output in the performance log file
 
-  Time time_begin[MAXCOUNTERS];
-
-  // Cumul des temps cpu pour chaque compteur
-  Time counter_time[MAXCOUNTERS];
-  // Le compteur est-il en cours de comptage ?
-  int counter_running[MAXCOUNTERS];
-  // Nombre de comptages pour chaque compteur
-  unsigned long long counter_nb[MAXCOUNTERS];
-  // Cumul des quantites pour chaque compteur
-  unsigned long long counter_quantity[MAXCOUNTERS];
-  /*! @brief des compteurs
-   *
+  /*!
+   * A set of tables of the size MAX_COUNTER is created, containing the needed information for the creation of the performance file
    */
-  const char * description[MAXCOUNTERS];
-  // Famille de chaque compteur
-  const char * family[MAXCOUNTERS];
-  // Niveau de debug du compteur (on n'a pas acces aux Stat_Counter_Id lors
-  // de l'impression des statistiques, et on veut pouvoir afficher le niveau
-  // quand meme).
-  int counter_level[MAXCOUNTERS];
 
-  int change_level_forbidden;
-  int debug_level_before;
+  Time time_begin[MAXCOUNTERS]; ///< Contains the time when each counter is firstly start
 
-  //mapping between counter description and counter id
-  std::map<const char*, int> description_to_id;
+  Time counter_time[MAXCOUNTERS];  ///< Contains the total CPU time for each counter
 
-  //is the counter a communication counter ?
-  int counter_comm[MAXCOUNTERS];
-  //est-ce qu'on traque les communications pour ce compteur ?
+  int counter_running[MAXCOUNTERS]; ///< For each counter, is equal to 1 if the counter is still running, 0 otherwise
+
+  unsigned long long counter_nb[MAXCOUNTERS]; ///< For each counter, count the number of time it has been called
+
+  unsigned long long counter_quantity[MAXCOUNTERS]; ///< A user based quantity, which depends on the counter and is updated in the end_count function
+
+  const char * description[MAXCOUNTERS]; ///< Table of the counters names
+
+  const char * family[MAXCOUNTERS]; ///< Table of the counters family for which we want joined stats
+
+  int counter_level[MAXCOUNTERS]; ///< Table of the counter level
+
+  int change_level_forbidden; ///< If = 1, no change of level allowed, 0 otherwise
+  int debug_level_before;  ///< Save the debug level during the printing process
+
+
+  std::map<const char*, int> description_to_id;  ///< mapping between counter description and counter id
+
+  int counter_comm[MAXCOUNTERS]; ///< Equal to 1 if it is a communication counter, 0 otherwise
+
   bool comm_domaines_on[MAXCOUNTERS];
-  //if the counter is a communication, give its index inside the communication_tracking_info array (-1 otherwise)
-  int index_in_communication_tracking_info[MAXCOUNTERS];
 
-  /* tableau stockant les temps de communication de chaque domaine du code souhaitee
+  int index_in_communication_tracking_info[MAXCOUNTERS]; ///< if the counter is a communication, give its index inside the communication_tracking_info array (-1 otherwise)
+
+  /*! @brief Table containing communication times of each wanted part of the code
+   *
    * 1ere dimension : les differents types de communication
    * 2eme dimension : le temps passe dans chaque domaine  de communication qu'on a definie pour chaque compteur
    * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans le domaine j par la communication i
    * ==> quand j = 0 : l'element (i,j) contient le temps total (dans tout le code) consomme par la communication i
    */
+
   Stat_Results** communication_tracking_info;
 
 
-  /*
-   * Ce tableau stocke et calcule a la fin de chaque iteration:
-   * 1: le cumul du temps passe dans chaque compteur sans compter la derniere iteration
-   * 2: la moyenne du temps passe dans chaque compteur durant une iteration
-   * 3: le temps minimal passe durant une iteration pour chaque compteur
-   * 4: le temps maximal passe durant une iteration pour chaque compteur
-   * 5: la variance du temps passe dans chaque compteur durant une iteration
+  /*! @brief This table contains and compute time quantities at the end of the last calculation iteration for each counter
+   *
+   * 1: Total time passed by in each counter (without counting the last iteration)
+   * 2: Averaged time passed by for each counter on an iteration
+   * 3: Minimum time passed by for each counter on an iteration
+   * 4: Maximum time passed by for each counter on an iteration
+   * 5: Variance of the time passed by for each counter on an iteration
    */
   double counters_avg_min_max_var_per_step[MAXCOUNTERS][5];
 };
-
+/*! @brief Constructor of the class Sat_Internals that sets everything to 0
+ *
+ */
 Stat_Internals::Stat_Internals() :
   nb_counters(0),
   nb_comm_counters(0),
@@ -381,13 +380,13 @@ Statistiques::~Statistiques()
   delete stat_internals;
   stat_internals = 0;
 }
-
+/*!@brief Function that change the debug level
+ *
+ * @param level the new debug level
+ * During the printing of the performance, the debug level is set to 0
+ */
 void Statistiques::set_debug_level(int level)
 {
-  Stat_Internals& si = *stat_internals;
-  // Lors de l'impression des stats, on bloque les compteurs.
-  // Le niveau est mis a zero, et
-  // on n'a pas le droit de changer de niveau.
   if (si.change_level_forbidden)
     return;
 
@@ -531,9 +530,10 @@ double Statistiques::last_time(const Stat_Counter_Id& counter_id)
 }
 
 
-// static => ne pas exporter cette fonction
+/// static => do not export this function ; used in dum
 static void print_stat(Sortie& perfs,
                        Sortie& perfs_globales,
+		       const char * message,
                        const char * description,
                        int level,
                        double time,
@@ -541,152 +541,206 @@ static void print_stat(Sortie& perfs,
                        double quantity,
                        double temps_total_max,
                        int skip_globals,
+		       int skip_local,
                        double avg_time_per_step = 0,
                        double min_time_per_step = 0,
                        double max_time_per_step = 0,
                        double var_time_per_step = 0)
 {
   char tampon[BUFLEN+200];
+  if (! skip_local)
+      {
   if (Process::is_parallel())
     {
       double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
 
-      char s[50];
-      s[0] = 0;
-
-      if (min_time_per_step != max_time_per_step)
-        snprintf(s, 50, "(%0.3f,%0.3f, %0.3f)", min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step);
-
-      snprintf(tampon, BUFLEN + 200, "%55s (%02d) %10.2f %5.1f%% %10.3g %10.3g %10.2f %10s ",
-               description, (True_int)level, time, percent_time, nb, quantity,
-               avg_time_per_step, s);
+      snprintf(tampon, BUFLEN + 200, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
+               message, Process::me(), description, (True_int)level, time, percent_time, 0.0, 0.0, 0.0,
+               nb, 0.0, 0.0, 0.0, avg_time_per_step, min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step);
       perfs << tampon << finl;
     }
-
-  if (! skip_globals)
+      }
+  if (! skip_globals )
     {
-      ArrOfDouble tmp(3);
-      // Min
-      tmp[0]=time;
-      tmp[1]=nb;
-      tmp[2]=quantity;
-      mp_min_for_each_item(tmp);
-      double min_time = tmp[0];
-      double min_nb = tmp[1];
-      double min_quantity = tmp[2];
-
-      // Max
-      tmp[0]=time;
-      tmp[1]=nb;
-      tmp[2]=quantity;
-      mp_max_for_each_item(tmp);
-      double max_time = tmp[0];
-      double max_nb = tmp[1];
-      double max_quantity = tmp[2];
-
-      // Average
-      tmp.resize(5);
+      ArrOfDouble tmp(7);
+      /// Min of each quantity on the set of processor
       tmp[0]=time;
       tmp[1]=nb;
       tmp[2]=quantity;
       tmp[3]=avg_time_per_step;
-      tmp[4]=var_time_per_step;
+      tmp[4]=min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step;
+      tmp[5]=max_time_per_step;
+      tmp[6]=var_time_per_step;
+      mp_min_for_each_item(tmp);
+
+      double min_time = tmp[0];
+      double min_nb = tmp[1];
+      double min_quantity = tmp[2];
+      double min_avg_time_per_step = tmp[3];
+      double min_min_time_per_step = tmp[4];
+      double min_max_time_per_step = tmp[5];
+      double min_var_time_per_step = tmp[6];
+
+      /// Max of each quantity on the set of processor
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
+      tmp[3]=avg_time_per_step;
+      tmp[4]=min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step;
+      tmp[5]=max_time_per_step;
+      tmp[6]=var_time_per_step;
+      mp_max_for_each_item(tmp);
+
+      double max_time = tmp[0];
+      double max_nb = tmp[1];
+      double max_quantity = tmp[2];
+      double max_avg_time_per_step = tmp[3];
+      double max_min_time_per_step = tmp[4];
+      double max_max_time_per_step = tmp[5];
+      double max_var_time_per_step = tmp[6];
+
+      /// Average of each quantity on the set of processor
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
+      tmp[3]=avg_time_per_step;
+      tmp[4]=min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step;
+      tmp[5]=max_time_per_step;
+      tmp[6]=var_time_per_step;
       mp_sum_for_each_item(tmp);
 
-      double avg_time = tmp[0] / Process::nproc();
-      double avg_nb = tmp[1] / Process::nproc();
-      double avg_quantity = tmp[2] / Process::nproc();
-      double avg_avg_time_ps = tmp[3] / Process::nproc();
-      double avg_var_time_ps = tmp[4]/ Process::nproc();
+      double avg_time = tmp[0]/ Process::nproc();
+      double avg_nb = tmp[1]/ Process::nproc();
+      double avg_quantity = tmp[2]/ Process::nproc();
+      double avg_avg_time_per_step = tmp[3]/ Process::nproc();
+      double avg_min_time_per_step = tmp[4]/ Process::nproc();
+      double avg_max_time_per_step = tmp[5]/ Process::nproc();
+      double avg_var_time_per_step = tmp[6]/ Process::nproc();
+
+
+      /// Standard Deviation of each quantity on the set of processor
+
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
+      tmp[3]=avg_time_per_step;
+      tmp[4]=min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step;
+      tmp[5]=max_time_per_step;
+      tmp[6]=var_time_per_step;
+
+      double time_offset_[Process::nproc()];
+      double nb_offset_[Process::nproc()];
+      double quantity_offset_[Process::nproc()];
+//      double avg_time_per_step_offset_[Process::nproc()];
+//      double min_time_per_step_offset_[Process::nproc()];
+//      double max_time_per_step_offset_[Process::nproc()];
+//      double var_time_per_step_offset_[Process::nproc()];
+
+#ifdef MPI_
+      MPI_Gather(&tmp[0], 1,MPI_DOUBLE, time_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&tmp[1], 1,MPI_DOUBLE, nb_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&tmp[2], 1,MPI_DOUBLE, quantity_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+//      MPI_Gather(&tmp[3], 1,MPI_DOUBLE, avg_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+//      MPI_Gather(&tmp[4], 1,MPI_DOUBLE, min_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+//      MPI_Gather(&tmp[5], 1,MPI_DOUBLE, max_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+//     MPI_Gather(&tmp[6], 1,MPI_DOUBLE, var_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+#endif
 
       if (Process::je_suis_maitre())
-        {
+	{
+	  double percent_time = (temps_total_max==0 ? 0 : avg_time / temps_total_max * 100.);
 
-          double percent_time = (temps_total_max==0 ? 0 : avg_time / temps_total_max * 100.);
+	  double SD_time = 0.0;
+	  double SD_nb = 0.0;
+	  double SD_quantity = 0.0;
+//	  double SD_avg_time_per_step = 0.0;
+//	  double SD_min_time_per_step = 0.0;
+//	  double SD_max_time_per_step = 0.0;
+//	  double SD_var_time_per_step = 0.0;
 
-          char s1[50], s2[50], s3[50];
-          s1[0] = s2[0] = s3[0] = 0;
-          if (min_time != max_time)
-            snprintf(s1, 50, "(%0.2f,%0.2f)", min_time, max_time);
-          if (min_nb != max_nb)
-            snprintf(s2, 50, "(%0.3g,%0.3g)", min_nb, max_nb);
-          if (min_quantity != max_quantity)
-            snprintf(s3, 50, "(%0.3g,%0.3g)", min_quantity, max_quantity);
+	  for (int proc_i =0 ; proc_i< Process::nproc(); proc_i ++)
+	    {
+	      SD_time += (time_offset_[proc_i]-avg_time)*(time_offset_[proc_i]-avg_time);
+	      SD_nb += (nb_offset_[proc_i]-avg_nb)*(nb_offset_[proc_i]-avg_nb);
+	      SD_quantity += (quantity_offset_[proc_i]-avg_quantity)*(quantity_offset_[proc_i]-avg_quantity);
+//	      SD_avg_time_per_step += (avg_time_per_step_offset_[proc_i]-avg_avg_time_per_step)*(avg_time_per_step_offset_[proc_i]-avg_avg_time_per_step);
+//	      SD_min_time_per_step += (min_time_per_step_offset_[proc_i]-avg_min_time_per_step)*(min_time_per_step_offset_[proc_i]-avg_min_time_per_step);
+//	      SD_max_time_per_step += (max_time_per_step_offset_[proc_i]-avg_max_time_per_step)*(max_time_per_step_offset_[proc_i]-avg_max_time_per_step);
+//	      SD_var_time_per_step += (var_time_per_step_offset_[proc_i]-avg_var_time_per_step)*(var_time_per_step_offset_[proc_i]-avg_var_time_per_step);
+	    }
+	  SD_time = sqrt(SD_time/Process::nproc());
+	  SD_nb = sqrt(SD_nb/Process::nproc());
+	  SD_quantity = sqrt(SD_quantity/Process::nproc());
+//	  SD_avg_time_per_step = sqrt(SD_avg_time_per_step/Process::nproc());
+//	  SD_min_time_per_step = sqrt(SD_min_time_per_step/Process::nproc());
+//	  SD_max_time_per_step = sqrt(SD_max_time_per_step/Process::nproc());
+//	  SD_var_time_per_step = sqrt(SD_var_time_per_step/Process::nproc());
 
-          snprintf(tampon, BUFLEN + 200,
-                   "%55s (%02d) %10.2f  %5.1f%% %-23s %10.3g %-23s %10.3g %-23s %10.2f (%0.3f)",
-                   description, (True_int)level,
-                   avg_time, percent_time, s1,
-                   avg_nb, s2,
-                   avg_quantity, s3,
-                   avg_avg_time_ps, avg_var_time_ps);
+	  snprintf(tampon, BUFLEN + 200, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
+		   message, Process::me(), description, (True_int)level, avg_time, percent_time, min_time, max_time, SD_time,
+		   avg_nb, min_nb, max_nb, SD_nb, avg_avg_time_per_step, avg_min_time_per_step, avg_max_time_per_step, avg_var_time_per_step);
 
-          perfs_globales << tampon << finl;
-        }
+	  perfs_globales << tampon << finl;
+	}
     }
 }
-
+/// This function construct a .csv file in which counter stats are saved
 void Statistiques::dump(const char * message, int mode_append)
 {
-  assert(message); // message non nul !
+  assert(message);
 
   Stat_Internals& si = *stat_internals;
 
-  char tampon[BUFLEN+150];
-
+  char tampon[BUFLEN+250];
   stop_counters();
 
-  SChaine perfs;
-  SChaine perfs_globales;
+  SChaine perfs;   ///< String that contains stats on each processor
+  SChaine perfs_globales;   ///< String that contains stats average on the processors : processor number = -1
+  SChaine File_header;      ///< String at the start of the file
+
+  if ( (Process::je_suis_maitre()) && (message == "Statistiques d'initialisation du calcul") )
+  {
+	  File_header << "Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
+	  File_header << "The time was measured by the following method :" << Time::description << finl;
+	  File_header << "Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << finl;
+	  File_header << "If a counter does not belong in any particular family, then counter family equal to 0" << finl;
+	  File_header << "Count means the number of time the counter is called during the overall calculation step." << finl;
+	  File_header << "Min, max and SD accounts respectively for the minimum, maximum and Standard Deviation of the quantity of the previous row" << finl;
+	  File_header << finl << finl;
+	  snprintf(tampon, BUFLEN + 150, "%22s \t %10s \t %30s \t %30s \t %5s \t %10s \t %10s \t %10s \t %10s \t %20s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s", "Overall simulation step", "Processor Number", "Counter family",
+	                 "Counter name", "Counter level", "Percentage of total time", "time (s)", "min", "max", "SD", "count", "min", "max", "SD", "time_per_step", "min", "max", "SD", "");
+	  File_header << tampon << finl;
+  }
+
+
   if (Process::is_parallel())
     {
-      perfs.precision(3);
-      perfs << "Statistics execution [PE " << Process::me() << "] : " << message << finl;
-      perfs << " the time was measured by the following method :" << finl;
-      perfs << " " << Time::description << finl;
-
-
-      snprintf(tampon, BUFLEN + 150, "%60s %10s         %10s %10s  %-23s %10s ",
-               "Counter (level)", "time(s)", "count", "quantity", "avg time per step", "(min,max,std dev)" );
-      perfs << tampon << finl;
+      perfs.precision(5);
+      perfs_globales.precision(5);
     }
 
-  if (Process::je_suis_maitre())
-    {
-      snprintf(tampon, BUFLEN + 150,
-               "%60s %10s         %-23s %10s %-23s %10s %-23s %10s %-23s",
-               "Counter (level)",
-               "avg time", "(min,max)",
-               "avg count", "(min,max)",
-               "avg qty", "(min,max)",
-               "avg time per step", "(std dev)");
-      perfs_globales << "Statistics overall execution : " << message << finl;
-      perfs_globales << " the time was measured by the following method :" << finl;
-      perfs_globales << " " << Time::description << finl;
-      perfs_globales << tampon << finl;
-    }
-
-  // Verification : on a le meme nombre de compteurs sur tous les procs ?
+  /// Check if all of the processors see the same number of counter, if not print an error message in perfs_globales
   int skip_globals = 0;
+  int skip_local = 0;
   {
-    int min_nb = (int) Process::mp_min(si.nb_counters);
-    int max_nb = (int) Process::mp_max(si.nb_counters);
-    if (min_nb != max_nb)
+    int min_nb_of_counters = (int) Process::mp_min(si.nb_counters);
+    int max_nb_of_counters = (int) Process::mp_max(si.nb_counters);
+    if (min_nb_of_counters != max_nb_of_counters)
       {
         if (Process::je_suis_maitre())
           {
             perfs_globales << "Unable to collect statistics :" << finl
                            << " there is not the same number of counters on all"
-                           " processors.";
+                           " processors."<< finl;
           }
         skip_globals = 1;
       }
   }
 
-  // Temps de reference pour les pourcentages
+  /// Time of reference for statistics computation
   double temps_total_max = 0.;
 
-  // Compute Divers (time not counted by other counters in time step loop):
+  /// Compute Divers (time not counted by other counters in time step loop):
   if (si.counter_nb[2]>0)
     {
       if (strcmp(si.description[2],"Resoudre (timestep loop)"))
@@ -695,11 +749,11 @@ void Statistiques::dump(const char * message, int mode_append)
           Process::exit();
         }
       int id=-1;
-      // Look for counter Divers
+      /// Look for counter Divers
       for (int i = 0; i < si.nb_counters; i++)
         if (!strcmp(si.description[i],"Divers"))
           id=i;
-      // Compute CPU Divers = counter(time step) - sum(other counters))
+      /// Compute CPU Divers = counter(time step) - sum(other counters))
       si.counter_time[id].add(si.counter_time[2]);
       for (int i = 3; i < si.nb_counters; i++)
         {
@@ -708,26 +762,24 @@ void Statistiques::dump(const char * message, int mode_append)
         }
     }
 
-  // Affichage des compteurs individuels
+  /// Extract information of each counter
   for (int i = 0; i < si.nb_counters; i++)
     {
-      char description[BUFLEN];
+      char name_description[BUFLEN];
 
       if (si.family[i])
-        snprintf(description, BUFLEN, "%s:%s", si.family[i], si.description[i]);
+        snprintf(name_description, BUFLEN, "%10s \t %10s", si.family[i], si.description[i]); ///< name_description is a string that give the family and the description of a counter
       else
-        snprintf(description, BUFLEN, "%s", si.description[i]);
+        snprintf(name_description, BUFLEN, "%40d  \t %s", 0, si.description[i]); ///< if the counter does not belong in a family, family becomes 0
 
       double time;
-      double nb;
-      double quantity;
+      double nb; ///< number of time the counter is open and closed
+      double quantity; ///< A custom quantity which depends on the counter
 
-      //si l'option GET_COMM_DETAILS est activee, les infos des compteurs de communication dans les stat_internals ne sont plus a jour
-      //elles sont neanmoins stockees dans le tableau communication_tracking_times
+      /// Update the time statistics of communication counters using the table communication_tracking_info as if GET_COMM_DETAILS is equal to 1, the stats in stat_internals are not up to date
       if(GET_COMM_DETAILS && si.counter_comm[i] && si.communication_tracking_info )
         {
-          // correspondance entre l'identifiant du compteur de communication et son indice dans le tableau communication_tracking_times
-          int index =  si.index_in_communication_tracking_info[i];
+          int index =  si.index_in_communication_tracking_info[i]; ///< Finds the index associated with the counter i in the communication_tracking_info table
           time = si.communication_tracking_info[index][0].time;
           nb = si.communication_tracking_info[index][0].count;
           quantity = si.communication_tracking_info[index][0].quantity;
@@ -748,15 +800,15 @@ void Statistiques::dump(const char * message, int mode_append)
       if (i == 0)
         {
           temps_total_max = time;
-          total_time_+=time;     // Update total_time_
+          total_time_+=time;     ///< Update total_time_
         }
 
-      if( JUMP_3_FIRST_STEPS && i == 2 )
+      if( JUMP_3_FIRST_STEPS && i == 2 ) ///< The first three time steps are disregard
         temps_total_max = time;
 
       assert(var_time_per_step >= 0.);
-      print_stat(perfs,perfs_globales,description,
-                 level,time,nb,quantity,temps_total_max, skip_globals,
+      print_stat(perfs,perfs_globales,message,name_description,
+                 level,time,nb,quantity,temps_total_max, skip_globals, skip_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
 
     }
@@ -789,7 +841,7 @@ void Statistiques::dump(const char * message, int mode_append)
         break;
 
 
-      // Somme des valeurs des compteurs de cette famille
+      /// Aggregated stats by family
       for (int i = next; i < si.nb_counters; i++)
         {
           if (si.family[i] != 0)
@@ -825,11 +877,13 @@ void Statistiques::dump(const char * message, int mode_append)
         }
 
 
-      const char * description = si.family[next];
+
+      char name_family_description[BUFLEN];
+      snprintf(name_family_description, BUFLEN, "%10s \t %10s", si.family[next], "Aggregated by family"); ///< name_description is a string that give the family and the description of a counter
 
       assert(var_time_per_step >= 0.);
-      print_stat(perfs,perfs_globales,description,
-                 level,time,nb,quantity,temps_total_max, skip_globals,
+      print_stat(perfs,perfs_globales,message,name_family_description,
+                 level,time,nb,quantity,temps_total_max, skip_globals, skip_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
 
       next++;
@@ -844,11 +898,12 @@ void Statistiques::dump(const char * message, int mode_append)
 
   // Les fichiers sont ouverts en mode append.
   {
-    Nom TU(Objet_U::nom_du_cas());
-    TU+="_detail.TU";
-    EcrFicPartage file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
+    Nom CSV(Objet_U::nom_du_cas());
+    CSV+="_log_perf.csv";
+    EcrFicPartage file(CSV, mode_append ? (ios::out | ios::app) : (ios::out));
     if (Process::je_suis_maitre())
-      file << perfs_globales.get_str();
+    file << File_header.get_str();
+    file << perfs_globales.get_str();
     file << perfs.get_str();
     file.syncfile();
   }
@@ -1065,7 +1120,7 @@ void Statistiques::end_communication_tracking(int cid)
 
   if (si.comm_domaines_on[cid] == false)
     {
-      if (si.counter_nb[cid]<=3) // Moins verbeux
+      if (si.counter_nb[cid]<=3) // Moins verbeux mais suppose que l'on saute les trois premiers pas de temps
         Process::Journal() << "Error! end_communication_tracking (" << si.description[cid] << ") has not been activated" <<finl;
       return;
     }

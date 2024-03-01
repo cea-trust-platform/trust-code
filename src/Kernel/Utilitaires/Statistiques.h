@@ -22,111 +22,172 @@ class Stat_Results;
 class Stat_Internals;
 class Time;
 
-//si 1, permet de faire demarrer les compteurs seulement apres les 3 premiers pas de temps
-static const int JUMP_3_FIRST_STEPS = 0;
-//si 1, permet de traquer les communications dans les fonctions souhaitees
-static const int GET_COMM_DETAILS = 1;
+
+static const int JUMP_3_FIRST_STEPS = 0; ///< If equal to 1, counters will start after the 3 first time steps
+
+static const int GET_COMM_DETAILS = 1; ///< If equal to 1, enable to track the communications of the wanted functions
 
 class Statistiques
 {
-public:
-  Statistiques();
-  ~Statistiques();
+//private:
 
-  // Niveau de debug (on peut le changer en cours de calcul, cela
-  // permet d'activer ou non les compteurs)
-  // !!! Cette fonction doit obligatoirement etre appelee simultanement sur tous
-  // les processeurs.
+  //Statistiques() = delete;
+  //~Statistiques() = delete;
+
+  //static std::unordered_map<std::string, StatCntObject> ze_map_;
+
+public:
+ // static void CreateCounter(std::string short_name, std::string long_name, int lvl)
+ // {
+ //   ze_map_[short_name] = StatCntObject();
+ // }
+
+  /*!@brief Function that change the debug level
+   *
+   *This function have to be called simultanely on each processor
+   * @param level the new debug level
+   * During the printing of the performance, the debug level is set to 0
+   */
   void set_debug_level(int level);
 
-  // Creation d'un nouveau compteur
-  // !!! Cette fonction doit obligatoirement etre appelee simultanement sur tous
-  // les processeurs.
-  // level : niveau de debug, superieur ou egal a 1 (compteur active si debug_level >= level)
-  // compteur affichee a la fin du calcul (non nul !)
-  //               Attention, on ne fait pas de copie locale de la chaine, le pointeur doit
-  //               rester valide jusqu'a la fin de l'execution.
-  // family : eventuellement zero, nom d'une famille de compteurs pour grouper les stats.
+  /*!@brief Create a new counter in the Statistiques object
+   *
+   * This function has to be called simultaneously on every processor
+   * @param level If level <= debug_level, then the statistics of this counter will be printed at the end.
+   * @param decsription String used as the counter name/short description
+   * @param familly Parameter to regroup counter together (if they have the same family number) in order to create aggregated stats ; if equal to zero, then no aggregation
+   * @param comm If equal to 1, then the counter is a communication counter, otherwise, it is a "basic" counter. Set to 0 by default
+   */
   Stat_Counter_Id new_counter(int level,
                               const char * const description,
                               const char * const familly = 0,
                               int comm = 0);
 
-  // L'appel a begin_count est en deux etages pour mettre le test de debug_level
-  // en inline et pas les details d'implementation.
-  // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
-  // track_comm permet d'indiquer si l'on souhaite egalement traquer les communications
+  /*! @brief Start the count of a counter
+   *
+   * @param counter_id The ID of the counter that the user want to start. It is a global variable that is declare in stats_counters.cpp
+   * @param track_comm Indicate if the user want to record the communication associated with the counter, set to true by default
+   */
   inline void begin_count(const Stat_Counter_Id& counter_id, bool track_comm = true);
+
+  /*! @brief End the count of a counter and update values in the Stat_Internals object of the Statistiques object
+   *
+   * @param counter_id The ID of the counter that the user want to start. It is a global variable that is declare in stats_counters.cpp
+   * @param quantity A user defined quantity which depends on the counter (can be a number of iteration, a buffer size,.... It is set to zero by default
+   * @count Parameter that count the number of time the counter has been used between begin_count and end_count. By default equal to 1.
+   * @param track_comm Indicate if the user want to record the communication associated with the counter, set to true by default
+   */
   inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1, bool track_comm = true);
 
 
-  // Renvoie le dernier intervalle de temps mesure par un compteur, en secondes
+  /*! @brief Give the last interval of time the counter has been used
+   *
+   * If the counter is still running, return the time since the last begin_count
+   * If the counter is stopped, return the interval of time of the last count
+   * @param counter_id The ID of the counter that the user want to start. It is a global variable that is declare in stats_counters.cpp
+   */
   double last_time(const Stat_Counter_Id& counter_id);
 
-  // !!! Les trois fonctions suivantes doivent etre appelees simultanement
-  // sur tous les processeurs.
-  // Impression des statistiques par processeur et globales.
-  // Tous les compteurs en cours sont arretes.
-  // (les fichiers .TU sont ouverts en mode append)
+  /*! @brief Function that create the file CASE_NAME_log_perf.csv
+   *
+   * This function prints the global and detailed performance log, depending on the debug_level.
+   * It has to be called on every processor simultaneously
+   * During this function, all counters are stop and then restart
+   * @param message_info String that state the overall step of calculation we are in : initialization, resolution or post-processing
+   */
   void dump(const char * message_info, int mode_append);
-  // Remise a zero de tous les compteurs
+
+
+  /*! @brief Reset all counters
+   *
+   * Some variables are kept even after the reset : counters_avg_min_max_var_per_step and communication_tracking_info
+   */
   void reset_counters();
-  // Remise a zero du compteur counter_id
-  //(certaines donnees sont conservees, comme counters_avg_min_max_var_per_step et communication_tracking_info)
+
+  /*! @brief Reset the counter related to the counter_id
+   *
+   * Some variables are kept even after the reset : counters_avg_min_max_var_per_step and communication_tracking_info
+   */
   void reset_counter(int counter_id);
 
+  void stop_counters(); //< Stop all counters, has to be called on every processor simultaneously
 
-  // Exploitation des resultats
-  // !!! Les 4 fonctions suivantes doivent etre appelees simultanement
-  // sur tous les processeurs
-  void stop_counters();
-  void restart_counters();
+  void restart_counters(); //< Restart all counters, has to be called on every processor simultaneously
+
+  /*! @brief Get back the stats of a counter and store them in a Stat_Resluts type object
+   *
+   * @param counter_id Global variable link to a specific counter. It is declare in stats_counters.cpp
+   * @param result A Stat_Results type object used to store the stats concerning the wanted counter
+   */
+
   void get_stats(const Stat_Counter_Id& counter_id, Stat_Results& result);
+
+  /*! @brief Get back and agregate the stats of a set of counters and store them in a Stat_Resluts type object
+   *
+   * @param familly Name of a set of counter for which we want aggregated stats. It is declare in stats_counters.cpp
+   * @param result A Stat_Results type object used to store the stats concerning the wanted counter
+   */
+
   void get_stats_familly(const char * familly, Stat_Results& result);
+
+  /*! @brief Aggregate stats of the counter associated with counter ID to the stats in a Stat_Results type object
+   *
+   * @param counter_id Global variable link to a specific counter. It is declare in stats_counters.cpp
+   * @param result A Stat_Results type object used to store the stats concerning the wanted counter
+   */
   void cumulate_stats(int counter_id, Stat_Results& result);
 
+  /// Get the protected variable total_time of a Statistics type object
   inline double get_total_time()
   {
     return total_time_;
   };
-  static double get_time_now();
 
-  //calcule les moyennes, minimum, maximum et variance des temps passes dans chaque compteur lors d'une iteration
+  static double get_time_now(); ///< Return the clock time
+
+  /*! Compute the average, minimum, maximum and variance of the elapsed time on an iteration for each counter
+   *
+   * @param tstep Number of time step of the calculation
+   */
   void compute_avg_min_max_var_per_step(int tstep);
 
-
-  //le tableau communication_tracking_times ne peut etre alloue qu'apres la declaration de tous les compteurs
+  /// Create the table of communication stats after the declaration of all of the counters
   int allocate_communication_tracking_times();
+
+  /// Delete the table of communication stats at the end of the calculation
   int delete_communication_tracking_times();
 
-  /* Debut du domaine de code dont on veut traquer les communications :
-   * on sauvegarde toutes les donnees des compteurs de communication dans le tableau communication_tracking_times,
-   * puis on les remet a zero
-   * Donnee d'entree:
-   * 	- cid : identifiant du domaine qu'on souhaite initialiser
+  /*! @brief Start communication tracking
+   *
+   * Counters stats are saved in the table communication_tracking_info
+   * Update the entire table communication_tracking_info : the total time of communication for all communication counter and the communication time per domain j for each counter
+   * /!\ reset the counter associated with cid
+   * comm_domaines_on becomes true
    */
   void begin_communication_tracking(int cid);
 
-  /* Fin du domaine de code dont on veut traquer les communications :
-   * on recupere toutes les donnees des compteurs de communication qui ont ete produites
-   * depuis la derniere remise a zero des compteurs
-   * Donnee d'entree:
-   * 	- cid : identifiant du domaine
+  /*! @brief Update communications info regarding counter cid and stop the count
+   *
+   * Update the variable communication_tracking_info[i][cid+1] with the communication tracking associated with counter cid.
+   * comm_domaines_on become flase
    */
   void end_communication_tracking(int cid);
 
-  /* Affichage des statistiques de communication collectees:
-   *  - pour chaque domaine de communication declaree,
-   *  on affiche le temps qu'on y a passe en moyenne sur chaque proc dans chaque type de communication
-   *  - pour chaque type de communication,
-   *   on affiche le temps passe en moyenne sur chaque proc dans chaque domaine delcaree
+  /*! Print communication stats
+   *
+   * For each declared communication domain/function, print the average time spend for each type of communication on each processor
+   * And for each time of communication, print the average time spend on each domain/function on each processor
    */
   void print_communciation_tracking_details(const char * message, int mode_append);
 
   const char* get_counter_family(int id);
+
   int get_counter_id_from_index_in_comm_tracking_info(int index) const;
+
   int get_index_in_comm_tracking_info_from_counter_id(int id) const;
+
   int get_nb_comm_counters() const;
+
   Stat_Results get_communication_tracking_info(int i, int j) const;
 
   inline void set_three_first_steps_elapsed(bool b)
@@ -144,7 +205,7 @@ protected:
   int debug_level_;
   Stat_Internals * stat_internals;
   double total_time_;
-  bool three_first_steps_elapsed_;  //si true, indique que les 3 premiers pas de temps sont passes
+  bool three_first_steps_elapsed_;  ///< If TRUE, the 3 first time steps are elapsed
 
 };
 
@@ -190,6 +251,9 @@ inline Statistiques& statistiques()
 // a tout recompiler si on change Stat.
 class Stat_Internals;
 
+/*! @brief An object that is used to store counter data
+ *
+ */
 class Stat_Results
 {
 public:

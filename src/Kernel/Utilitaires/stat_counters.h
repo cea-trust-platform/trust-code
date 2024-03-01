@@ -16,7 +16,6 @@
 
 extern void print_statistics_analyse(const char * message, int mode_append);
 extern void declare_stat_counters();
-
 extern Stat_Counter_Id mpi_sendrecv_counter_;
 extern Stat_Counter_Id mpi_send_counter_;
 extern Stat_Counter_Id mpi_recv_counter_;

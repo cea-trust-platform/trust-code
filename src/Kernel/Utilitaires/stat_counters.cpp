@@ -94,6 +94,7 @@ Stat_Counter_Id gpu_kernel_counter_;
 //       de la quantite sommee (quand elle n'est pas nulle).
 //
 
+
 void declare_stat_counters()
 {
   // Creation de l'objet statistiques
@@ -325,7 +326,6 @@ void print_statistics_analyse(const char * message, int mode_append)
       // Ouverture du fichier principal (pour tous les processeurs)
       SFichier stat_file(TU,
                          mode_append ? (ios::out | ios::app) : (ios::out));
-
       stat_file << message << "\n\n";
       stat_file << "Temps total                       "
                 << temps_total.max_time << "\n";
@@ -671,4 +671,3 @@ void print_statistics_analyse(const char * message, int mode_append)
   // Restart counters
   statistiques().restart_counters();
 }
-
