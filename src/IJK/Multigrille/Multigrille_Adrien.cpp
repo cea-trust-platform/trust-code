@@ -1,5 +1,6 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2023, CEA
+>>>>>>> indic_ghost passee en local
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +95,15 @@ void Multigrille_Adrien::initialize(const IJK_Splitting& split)
     }
 
   IJK_Field_float rho;
-  rho.allocate(split, IJK_Splitting::ELEM, 0);
+  if (IJK_Splitting::defilement_==1)
+    {
+      rho.allocate(split, IJK_Splitting::ELEM, 0, 0 ,1, false, 2, IJK_Splitting::rho_vap_ref_for_poisson_, IJK_Splitting::rho_liq_ref_for_poisson_);
+    }
+  else
+    {
+      rho.allocate(split, IJK_Splitting::ELEM, 0);
+    }
+
   rho.data() = 1.;
   set_rho<float, ArrOfFloat>(rho);
 }

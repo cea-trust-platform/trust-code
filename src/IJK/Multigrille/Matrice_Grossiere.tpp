@@ -21,23 +21,25 @@
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&   coeffs_face)
 {
+  shear_x_time_=IJK_Splitting::shear_x_time_;
+  defilement_=IJK_Splitting::defilement_;
+  order_interpolation_poisson_solver_=IJK_Splitting::order_interpolation_poisson_solver_;
   const IJK_Splitting& splitting = coeffs_face.get_splitting();
 
   int i, j, k;
   const int ni = splitting.get_nb_elem_local(DIRECTION_I);
   const int nj = splitting.get_nb_elem_local(DIRECTION_J);
   const int nk = splitting.get_nb_elem_local(DIRECTION_K);
+
   {
     renum_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
     renum_ = -1; // init a -1
     // plusieur vecteur renum pour le cas shear periodic ou une case peut renvoyer vers plusieurs
     // + 4 autres vecteur contenant les ponderation associee pour interpolation 4th order
-
-    ponderation_shear_ = new double[IJK_Splitting::order_interpolation_poisson_solver_+1];
-    for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
-      {
-        ponderation_shear_[interp] = 0.;
-      }
+    ponderation_shear_p_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
+    ponderation_shear_m_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
+    ii_p_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
+    ii_m_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
 
     int count = 0;
     for (k = 0; k < nk; k++)
@@ -237,14 +239,23 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           }
       }*/
 
-
-    for (k = 0; k < nk; k++)
+    for (i = 0; i < ni; i++)
       {
-        for (j = 0; j < nj; j++)
+
+        double DX = splitting.get_grid_geometry().get_constant_delta(0);
+        double istmp = shear_x_time_ /DX;
+        int offset2 = (int) round(istmp);
+        interpolation_for_shear_periodicity(i , offset2, istmp, ni, 1.);
+        istmp = -shear_x_time_ /DX;
+        offset2 = (int) round(istmp);
+        interpolation_for_shear_periodicity(i , offset2, istmp, ni, -1.);
+
+
+        for (k = 0; k < nk; k++)
           {
-            for (i = 0; i < ni; i++)
+            for (j = 0; j < nj; j++)
               {
-                if (z_index==z_index_min && IJK_Splitting::defilement_==1 && k==0)
+                if (z_index==z_index_min && defilement_==1 && k==0)
                   {
                     ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), splitting, 1.);
                   }
@@ -256,7 +267,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
                 ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0), splitting);
                 ajoute_coeff(i,j,k,i+1,j,k,coeffs_face(i+1,j,k,0), splitting);
                 ajoute_coeff(i,j,k,i,j+1,k,coeffs_face(i,j+1,k,1), splitting);
-                if (z_index==z_index_max && IJK_Splitting::defilement_==1 && k==nk-1)
+                if (z_index==z_index_max && defilement_==1 && k==nk-1)
                   {
                     ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), splitting, -1.);
                   }
@@ -267,6 +278,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
               }
           }
       }
+
+
 
     for (i = 0; i < n_reels; i++)
       {
@@ -333,9 +346,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     // rect.imprimer_formatte(Cout);
     //}
 
-  }
 
-  delete[] ponderation_shear_;
+  }
 
 }
 

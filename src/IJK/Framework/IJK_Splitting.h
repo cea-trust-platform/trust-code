@@ -35,7 +35,6 @@ protected:
   typedef FixedVector<Int3,2> Int23;
 public:
   static double shear_x_time_ ;
-  static double shear_x_DT_ ;
   static double Lx_for_shear_perio ;
   static int defilement_ ;
   static int nb_maille_bord_a_exclure_pour_residu_solverP_;

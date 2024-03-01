@@ -191,11 +191,14 @@ void force_zero_on_walls(IJK_Field_double& vz)
     }
 }
 
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost)
+void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, double DU)
 {
   v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
   v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
   v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+  v[0].set_dU_(DU);
+  v[1].set_dU_(0.);
+  v[2].set_dU_(0.);
 }
 
 void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost)
@@ -519,47 +522,16 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
-                         IJK_Field_double& pressure_rhs_before_shear,
                          int check_divergence,
-                         Multigrille_Adrien& poisson_solver, double Shear_DU)
+                         Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
-
-  // terme a ajouter au second membre pour la resolution de la matrice de pression
-  // uniquement dans le cas de condition shear-periodique.
-  // Permet de compenser l interpolation de la pression monofluide
-  if (IJK_Splitting::defilement_ == 1)
-    {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
-                }
-            }
-        }
-
-      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
-    }
 
   double divergence_before = 0.;
   if (check_divergence)
@@ -574,7 +546,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
@@ -598,46 +570,17 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
-                                  IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver, double Shear_DU)
+                                  Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
-  // terme a ajouter au second membre pour la resolution de la matrice de pression
-  // uniquement dans le cas de condition shear-periodique.
-  // Permet de compenser l interpolation de la pression monofluide
-  if (IJK_Splitting::defilement_ == 1)
-    {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
-                }
-            }
-        }
 
-      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
-    }
+  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
   double divergence_before = 0.;
   if (check_divergence)
     {
@@ -652,7 +595,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
@@ -669,53 +612,23 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
-                                      IJK_Field_double& pressure_rhs_before_shear,
                                       int check_divergence,
-                                      Multigrille_Adrien& poisson_solver, double Shear_DU)
+                                      Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
-  // terme a ajouter au second membre pour la resolution de la matrice de pression
-  // uniquement dans le cas de condition shear-periodique.
-  // Permet de compenser l interpolation de la pression monofluide
-  if (IJK_Splitting::defilement_ == 1)
-    {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
-                }
-            }
-        }
-
-      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
-    }
+  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
   double divergence_before = 0.;
   if (check_divergence)
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
-
   poisson_solver.set_inv_rho(inv_rho); // Attention, on met l'inverse de rho.
+
   // Fait aussi : compute_faces_coefficients_from_inv_rho
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
@@ -725,7 +638,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
@@ -1223,161 +1136,6 @@ void calculer_rho_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_dou
         calculer_rho_v_DIR(DIRECTION::Z, rho, v[2], rho_v[2], k);
     }
 }
-
-void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir)
-{
-  IJK_Field_double velocity_ft_tmp = output;
-  IJK_Splitting splitting_ns = input.get_splitting();
-  IJK_Splitting splitting_ft = output.get_splitting();
-  double Lx = splitting_ns.get_grid_geometry().get_domain_length(0);
-  double Lz = splitting_ns.get_grid_geometry().get_domain_length(2);
-  int ni = input.ni();
-  int nk = input.nk();
-  double DZ = Lz / nk;
-  double DX = Lx / ni;
-  for (int i = 0; i < output.ni(); i++)
-    {
-      for (int j = 0; j < output.nj(); j++)
-        {
-          for (int k = 0; k < output.nk(); k++)
-            {
-              Vecteur3 xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_I);
-              double limitbasse = 0.;
-              double limithaute = 0.;
-              if (dir == 0)
-                {
-                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_I);
-                  limitbasse = 0.;
-                  limithaute = Lz;
-                }
-              else if (dir == 1)
-                {
-                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_J);
-                  limitbasse = 0.;
-                  limithaute = Lz;
-                }
-              else if (dir == 2)
-                {
-                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_K);
-                  limitbasse = -DZ / 2;
-                  limithaute = Lz - DZ / 2;
-                }
-              else
-                {
-                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::ELEM);
-                  limitbasse = 0.;
-                  limithaute = Lz;
-                }
-
-              double x_deplacement = 0.;
-
-              if (xyz[2] < limitbasse)
-                {
-                  x_deplacement = IJK_Splitting::shear_x_time_;
-                }
-              else if (xyz[2] > limithaute)
-                {
-                  x_deplacement = -IJK_Splitting::shear_x_time_;
-                }
-
-
-              double istmp = i+x_deplacement/DX;
-              int ifloor0 = (int) round(istmp);
-              velocity_ft_tmp(i, j, k) = interpolation_for_shear_periodicity(output, ifloor0, j, k, istmp, ni);
-
-              if (xyz[2] < 0)
-                {
-                  velocity_ft_tmp(i, j, k) -= DU_perio;
-                }
-              else if (xyz[2] > Lz)
-                {
-                  velocity_ft_tmp(i, j, k) += DU_perio;
-                }
-
-            }
-        }
-    }
-  output = velocity_ft_tmp;
-  return;
-}
-
-double interpolation_for_shear_periodicity(const IJK_Field_double& output, const int send_i, const int send_j, const int send_k, const double istmp, const int real_size_i)
-{
-  // renvoi la valeur interpolee pour la condition de shear-periodicity
-
-  int nb_points = IJK_Splitting::order_interpolation_poisson_solver_+1;
-  double* x = new double[nb_points];
-  double* y= new double[nb_points];
-  double* a= new double[nb_points];
-  double* res = new double[nb_points];
-  double resu = 0.;
-
-  if (nb_points==2)
-    {
-      x[0] = (double)floor(istmp);
-      x[1] = (double)floor(istmp)+1.;
-    }
-  else if(nb_points==3)
-    {
-      x[0] = (double)send_i-1;
-      x[1] = (double)send_i;
-      x[2] = (double)send_i+1;
-    }
-  else if(nb_points==5)
-    {
-      x[0] = (double)send_i-2;
-      x[1] = (double)send_i-1;
-      x[2] = (double)send_i;
-      x[3] = (double)send_i+1;
-      x[4] = (double)send_i+2;
-    }
-  else if(nb_points==7)
-    {
-      x[0] = (double)send_i-3;
-      x[1] = (double)send_i-2;
-      x[2] = (double)send_i-1;
-      x[3] = (double)send_i;
-      x[4] = (double)send_i+1;
-      x[5] = (double)send_i+2;
-      x[6] = (double)send_i+3;
-    }
-
-  for (int pt = 0; pt < nb_points ; pt++)
-    {
-      y[pt] = output(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
-    }
-
-  for (int pt = 0; pt < nb_points ; pt++)
-    {
-      double denum = 1.;
-      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
-        {
-          if (pt_autre!=pt)
-            denum *= (x[pt] - x[pt_autre]);
-        }
-      a[pt]=y[pt]/denum;
-    }
-
-
-  for (int pt = 0; pt < nb_points ; pt++)
-    {
-      res[pt] = a[pt];
-      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
-        {
-          if (pt_autre!=pt)
-            res[pt] *= (istmp - x[pt_autre]);
-        }
-      resu+=res[pt];
-    }
-
-  delete[] x;
-  delete[] y;
-  delete[] a;
-  delete[] res;
-
-  return resu;
-}
-
 
 // On utilise la moyenne harmonique au lieu de la moyenne arithmetique.
 void calculer_rho_harmonic_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)

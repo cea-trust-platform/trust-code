@@ -59,150 +59,76 @@ public:
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
 
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
-  void echange_espace_virtuel(int ghost, double Shear_DU=0.);
-  void change_to_sheared_reference_frame(double sens, int loc, int time=1);
-  void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
-  void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
-  void update_I_sigma_kappa(const IJK_Field_double& indic_ft, const IJK_Field_double& courbure_ft, const int ft_extension, const double sigma);
-  void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);
-  _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+  void echange_espace_virtuel(int ghost);
+  void prepare_interpolation_for_shear_periodicity(const int send_i, const double istmp, const int real_size_i);
+  //_TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_j, const int send_k);
+  _TYPE_ interpolation_for_shear_periodicity_IJK_Field(const int send_j, const int send_k);
+  void redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio, const int ft_extension);
+
 
   int monofluide_variable_ = -123, order_interpolation_ = -123;
   int compo_ ;
+  int real_size_i_ ;
+  ArrOfInt x_;
+  ArrOfInt send_i_real_;
+  ArrOfDouble denum_;
+  ArrOfDouble res_;
   int use_inv_rho_in_pressure_solver_ ;
 
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmin_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmax_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
-
   double rho_v_ = -123., rho_l_ = -123.;
-  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_indicatrice_ghost_zmin_() const
+  IJK_Field_local_template<double,ArrOfDouble> indicatrice_ghost_zmin_ ;
+  IJK_Field_local_template<double,ArrOfDouble> indicatrice_ghost_zmax_ ;
+  //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
+  //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
+  double DU_ ;
+  const IJK_Field_local_template<double,ArrOfDouble>& get_indicatrice_ghost_zmin_() const
   {
     return indicatrice_ghost_zmin_;
   }
-  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_indicatrice_ghost_zmax_() const
+  const IJK_Field_local_template<double,ArrOfDouble>& get_indicatrice_ghost_zmax_() const
   {
     return indicatrice_ghost_zmax_;
   }
-  void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_min)
+
+  void show_indicatrice_ghost_() const
   {
-    for (int k = 0; k < indic_z_min.nk() ; k++)
+    std::cout << "get   indicatrice_ghost_zmin_" <<  std::endl ;
+    for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
       {
-        for (int j = 0; j < indic_z_min.nj() ; j++)
-          {
-            for (int i = 0; i < indic_z_min.ni(); i++)
-              {
-                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)indic_z_min(i,j,k);
-              }
-          }
+        std::cout << std::endl ;
+        for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
+          std::cout << indicatrice_ghost_zmin_(i, 5, k) << " " ;
       }
+
+    std::cout << "get   indicatrice_ghost_zmax_" <<  std::endl ;
+    for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
+      {
+        std::cout << std::endl ;
+        for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
+          std::cout << indicatrice_ghost_zmin_(i, 5, k) << " " ;
+      }
+
+    return;
+  }
+
+  void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_min, int decallage = 0)
+  {
     for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
-      {
-        for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
-          {
-            for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
-              {
-                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmin_(i,j,k));
-              }
-          }
-      }
-
-
-    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
-      {
-        envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
-      }
-
-
+      for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
+        for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
+          indicatrice_ghost_zmin_(i,j,k)=indic_z_min(i,j,k+decallage);
   }
-  void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_max)
+  void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_max, int decallage = 0)
   {
-    for (int k = 0; k < indic_z_max.nk() ; k++)
-      {
-        for (int j = 0; j < indic_z_max.nj() ; j++)
-          {
-            for (int i = 0; i < indic_z_max.ni(); i++)
-              {
-                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)indic_z_max(i,j,k);
-              }
-          }
-      }
     for (int k = 0; k < indicatrice_ghost_zmax_.nk() ; k++)
-      {
-        for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
-          {
-            for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
-              {
-                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmax_(i,j,k));
-              }
-          }
-      }
-
-
-    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
-      {
-        envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
-      }
+      for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
+        for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
+          indicatrice_ghost_zmax_(i,j,k)=indic_z_max(i,j,k+decallage);
 
   }
-  void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_min)
+  void set_dU_(double DU)
   {
-    for (int k = 0; k < indic_z_min.nk() ; k++)
-      {
-        for (int j = 0; j < indic_z_min.nj() ; j++)
-          {
-            for (int i = 0; i < indic_z_min.ni(); i++)
-              {
-                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)indic_z_min(i,j,k);
-              }
-          }
-      }
-    for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
-      {
-        for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
-          {
-            for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
-              {
-                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmin_(i,j,k));
-              }
-          }
-      }
-
-
-    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
-      {
-        envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
-      }
-  }
-  void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_max)
-  {
-    for (int k = 0; k < indic_z_max.nk() ; k++)
-      {
-        for (int j = 0; j < indic_z_max.nj() ; j++)
-          {
-            for (int i = 0; i < indic_z_max.ni(); i++)
-              {
-                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)indic_z_max(i,j,k);
-              }
-          }
-      }
-    for (int k = 0; k < indicatrice_ghost_zmax_.nk() ; k++)
-      {
-        for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
-          {
-            for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
-              {
-                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)Process::mp_max(indicatrice_ghost_zmax_(i,j,k));
-              }
-          }
-      }
-
-
-    for (int iproc = 0; iproc < Process::nproc() ; iproc++)
-      {
-        envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
-      }
+    DU_ = DU;
   }
 
 protected:

@@ -48,33 +48,30 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
-                         IJK_Field_double& pressure_rhs_before_shear,
                          int check_divergence,
-                         Multigrille_Adrien& poisson_solver, double Shear_DU);
+                         Multigrille_Adrien& poisson_solver);
 
 void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
-                                  IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver,double Shear_DU);
+                                  Multigrille_Adrien& poisson_solver);
 
 void pressure_projection_with_inv_rho(const IJK_Field_double& rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
-                                      IJK_Field_double& pressure_rhs_before_shear,
                                       int check_divergence,
-                                      Multigrille_Adrien& poisson_solver, double Shear_DU);
+                                      Multigrille_Adrien& poisson_solver);
 
 void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Field_double& v,
                          const int step, const int k_layer, double dt_tot);
 
 void force_zero_on_walls(IJK_Field_double& vz);
 
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost);
-void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost);
+void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, double DU=0.);
+void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, double DU=0.);
 
 //void allocate_cell_vector(FixedVector<IJK_Field_double, 3> & v, const IJK_Splitting & s, int ghost);
 template<int N>
@@ -109,9 +106,6 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
 void calculer_rho_v(const IJK_Field_double& rho,
                     const FixedVector<IJK_Field_double, 3>& v,
                     FixedVector<IJK_Field_double, 3>& rho_v);
-void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir);
-double interpolation_for_shear_periodicity(const IJK_Field_double& output, const int send_i, const int send_j, const int send_k, const double istmp, const int real_size_i);
-
 
 void calculer_rho_harmonic_v(const IJK_Field_double& rho,
                              const FixedVector<IJK_Field_double, 3>& v,

@@ -48,7 +48,10 @@ public:
 protected:
   void ajoute_coeff(int i, int j, int k,
                     int i_voisin, int j_voisin, int k_voisin,
-                    const double coeff, IJK_Splitting splitting, const double shear_perio = 0.);
+                    const double coeff, IJK_Splitting splitting, const double shear_perio);
+  void ajoute_coeff(int i, int j, int k,
+                    int i_voisin, int j_voisin, int k_voisin,
+                    const double coeff, IJK_Splitting splitting);
 
   int& renum(int i, int j, int k)
   {
@@ -66,7 +69,7 @@ protected:
 
 
   void interpolation_for_shear_periodicity(const int i, const int send_i /*offset2*/, const double istmp/*istmp*/,
-                                           const int real_size_i /*ni*/, int * ii);
+                                           const int real_size_i /*ni*/, const double shear_perio);
 
 
   Matrice_Bloc mat_;
@@ -74,8 +77,14 @@ protected:
   MD_Vector md_;
 
   // renum_(k+1,j+1,i+1) = indice de l'inconnue dans le vecteur inconnue de la matrice
+  double shear_x_time_;
+  int defilement_;
+  int order_interpolation_poisson_solver_;
   IntTab renum_;
-  double* ponderation_shear_;
+  ArrOfInt ii_p_;
+  ArrOfInt ii_m_;
+  ArrOfDouble ponderation_shear_p_;
+  ArrOfDouble ponderation_shear_m_;
 
 
   IntLists voisins_;
