@@ -54,9 +54,10 @@ Entree& Implicite::readOn(Entree& is ) { return Piso::readOn(is); }
 
 Entree& Piso::lire(const Motcle& motlu,Entree& is)
 {
-  Motcles les_mots(1);
+  Motcles les_mots(2);
   {
     les_mots[0] = "nb_corrections_max";
+    les_mots[1] = "with_sources";
   }
 
   int rang = les_mots.search(motlu);
@@ -67,12 +68,15 @@ Entree& Piso::lire(const Motcle& motlu,Entree& is)
         is >> nb_corrections_max_;
         if (nb_corrections_max_ < 2)
           {
-            Cerr<<"There must be at least two corrections steps for the PISO algorithm."<<finl;
-            exit();
+            Cerr<<"There should be at least two corrections steps for the PISO algorithm."<<finl;
           }
         break;
       }
-
+    case 1:
+      {
+        is >> with_sources_;
+        break;
+      }
     default :
       {
         Cerr << "Keyword : " << motlu << " is not understood in " << que_suis_je() << finl;
@@ -172,7 +176,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
   SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
 
-  if (avancement_crank_==0)
+  if (avancement_crank_==0 && !with_sources_)
     {
       assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
       solveur_pression_->reinit();
@@ -186,6 +190,15 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   test_imposer_cond_lim(eqn,current,"apres resolution ",0);
   current.echange_espace_virtuel();
   Debog::verifier("Piso::iterer_NS current apres solveur",current);
+
+  if (with_sources_)
+    {
+      matrice.get_set_coeff() = 0;
+      eqnNS.sources().contribuer_a_avec(current, matrice);
+      eqnNS.solv_masse().ajouter_masse(dt, matrice, 1);
+      assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
+      solveur_pression_->reinit();
+    }
 
   //Calcul de secmem = BU* (en incompressible) BU* -drho/dt (en quasi-compressible)
   if (is_dilat)
@@ -218,8 +231,13 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //Resolution du systeme (BD-1Bt)P' = Bu* (D-1 = M-1 pour le cas implicite)
   //correction_en_pression = P' pour Piso et correction_en_pression = delta_t*P' pour implicite
   eqnNS.assembleur_pression()->modifier_secmem_pour_incr_p(pression, 1. / dt, secmem);
+  //si la matrice varie, passage increments -> valeurs pour aider les solveurs iteratifs
+  if (with_sources_)
+    matrice_en_pression_2->ajouter_multvect(pression, secmem);
   solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(),
                                      secmem,correction_en_pression);
+  if (with_sources_)
+    correction_en_pression -= pression;
   correction_en_pression.echange_espace_virtuel();
   Debog::verifier("Piso::iterer_NS apres correction_pression",correction_en_pression);
 
@@ -228,7 +246,13 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       //calcul de Un+1
       //Calcul de Bt(delta_t*delta_P)
       gradient->multvect(correction_en_pression,gradP);
-      eqn.solv_masse().appliquer(gradP);
+
+      if (with_sources_)
+        for (int i = 0, N = gradP.nb_dim() == 2 ? gradP.dimension(1) : 1; i < gradP.dimension_tot(0); i++)
+          for (int n  = 0; n < N; n++)
+            gradP(i, n) = matrice.get_tab1()(N * i + n + 1) > matrice.get_tab1()(N * i + n) && matrice(N * i + n, N * i + n) ? gradP(i, n) / matrice(N * i + n, N * i + n) : 0;
+      else
+        eqn.solv_masse().appliquer(gradP);
 
       if (is_NS_IBM)
         correct_gradP(eqnNS, gradP);
@@ -241,7 +265,8 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de Pn+1 = Pn + (delta_t*delta_P)/delat_t
       Debog::verifier("Piso::iterer_NS correction avant dt",correction_en_pression);
-      correction_en_pression /= dt;
+      if (!with_sources_)
+        correction_en_pression /= dt;
 
       if (is_NS_IBM)
         correct_pressure(eqnNS, pression, correction_en_pression);
@@ -356,6 +381,8 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 //version PolyMAC de la fonction ci-dessus
 void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleTab& pression, double dt, Matrice_Morse& matrice, int& ok)
 {
+  if (avancement_crank_ == 0)
+    Process::exit("sorry, the PISO solver is not implemented with PolyMAC! Please use Implicite instead");
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
   SolveurSys& le_solveur_ = param_eqn.solveur();
 
@@ -389,7 +416,7 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleT
       p_sec[1] = 0;      //p_res[0];
 
       //matrice (sauf si avancement_crank_ == 1) : prise en compte des contributions des sources (et pas des operateurs!)
-      if (avancement_crank_ == 0)
+      if (avancement_crank_==0 || with_sources_)
         {
           matrice.get_set_coeff() = 0, eqn.sources().contribuer_a_avec(current, matrice);
           DoubleTrav diag(p_sec[1]);

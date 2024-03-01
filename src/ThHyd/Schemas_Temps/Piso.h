@@ -89,6 +89,7 @@ protected :
 
   int nb_corrections_max_ = 21; //nombre de corrections maximum pour affinet la projection
   int avancement_crank_ = 0;   // on ne fait pas vraiment du piso mais plutot du CN
+  int with_sources_ = 0;   //prise en compte des termes sources dans la matrice de pression -> plus de termes en implicite, moins de termes en PISO
 
   Entree& lire(const Motcle&, Entree&) override;
 
