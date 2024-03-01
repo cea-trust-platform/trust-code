@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+04/03/24 (TRUST) Change       : EcritureLectureSpecial is forced to 0 for PolyMAC simulations (all versions); ie: for resuming a simulation, only binary sauv files are accepted for this discretization family.
+04/03/24 (TRUST) New feature  : It is now possible to resume Pb_Multiphase simulations (both via last time or champ_fonc_reprise).
 29/02/24 (TRUST) Tools        : Patched MEDCoupling to correct tetrahedrons remapping (fix will be included in next release of MEDCoupling)
 26/02/24 (TRUST) New feature  : Fallback to coarse solver if the IJK-multigrid has not reached convergence during current timestep (this concerns IJK discretization only)
 05/02/24 (TRUST) New feature  : New post-processing format introduced in TRUST : CGNS (CFD General Notation System). Not yet available for FT interface mesh (will be soon !)
