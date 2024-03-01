@@ -615,8 +615,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
 /**
  * When reseting time (see ProblemTrio::resetTime() documentation) we change the name
- * of the postprocessing files with a new suffix (default "_AFTER_RESET") to avoid
- * mixing up outputs.
+ * of the postprocessing files with a new suffix.
+ * TODO: In the current setup suffix is "" meaning that the previous output **are** discarded. This
+ * might change in the future!
  */
 void Postraitement::resetTime(double time)
 {
@@ -653,7 +654,7 @@ Postraitement::Postraitement():
   nom_fich_(nom_du_cas()),
   format("lml"),
   option_para("SIMPLE"),
-  suffix_for_reset_("_AFTER_RESET"),
+  suffix_for_reset_(""),  // See resetTime() documentation in this class
   temps_(-1.), dernier_temps(-1.)
 {
 }
