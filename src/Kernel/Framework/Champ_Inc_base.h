@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -139,6 +139,9 @@ public:
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { }
 
+  void set_via_ch_fonc_reprise() { via_ch_fonc_reprise_ = true; }
+  bool via_ch_fonc_reprise() const { return via_ch_fonc_reprise_; }
+
 protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
@@ -153,7 +156,7 @@ protected:
   RefObjU obj_calc_; //un objet a passer en argument
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
-  bool bord_fluide_multiphase_ = false;
+  bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
 };
 
 #endif /* Champ_Inc_base_included */

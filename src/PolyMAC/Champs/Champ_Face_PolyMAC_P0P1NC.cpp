@@ -71,9 +71,12 @@ void Champ_Face_PolyMAC_P0P1NC::init_auxiliary_variables()
 
 int Champ_Face_PolyMAC_P0P1NC::reprendre(Entree& fich)
 {
-  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
-  if (pbm) return Champ_Inc_base::reprendre(fich); // pour le moment pas de champ foc reprise ... TODO FIXME Elie Saikali
+  if (! via_ch_fonc_reprise()) return Champ_Inc_base::reprendre(fich); /* ie: resume last time ! */
 
+  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
+  if (pbm) return Champ_Inc_base::reprendre(fich);
+
+  // sinon on fait ca ...
   const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : nullptr;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
