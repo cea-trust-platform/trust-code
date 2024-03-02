@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -295,7 +295,7 @@ void Loi_horaire::imprimer(const Schema_Temps_base& sch, const ArrOfDouble& coor
       nom_fichier+="_loi_horaire_";
       nom_fichier+=le_nom();
       nom_fichier+=".out";
-      SFichier fic; // * os=NULL;
+      SFichier fic; // * os=nullptr;
       struct stat f;
       // On cree le fichier a la premiere impression avec l'en tete ou si le fichier n'existe pas
       if (stat(nom_fichier,&f) || (sch.nb_impr()==1 && !sch.pb_base().reprise_effectuee()))

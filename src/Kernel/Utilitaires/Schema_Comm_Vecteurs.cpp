@@ -85,7 +85,7 @@ Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
   recv_buf_sizes_.set_smart_resize(1);
   send_procs_.set_smart_resize(1);
   recv_procs_.set_smart_resize(1);
-  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != NULL;
+  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != nullptr;
 }
 
 Schema_Comm_Vecteurs::~Schema_Comm_Vecteurs()

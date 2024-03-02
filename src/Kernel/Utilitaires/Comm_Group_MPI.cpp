@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -559,7 +559,7 @@ void Comm_Group_MPI::init_group_trio()
         }
       must_finalize_ = 1;
       True_int argc=0;
-      char** argv=NULL;
+      char** argv=nullptr;
       int errcode = MPI_Init(&argc, &argv);
       //int errcode = MPI_Init(0,0); Message d'erreur sur MPI Voltaire
       if (errcode != MPI_SUCCESS)

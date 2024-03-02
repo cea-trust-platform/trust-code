@@ -57,7 +57,7 @@ protected:
   {
     constexpr bool is_FACE_OP = (_TYPE_ == Type_Operateur::Op_CONV_FACE);
     const std::string& nom_inco = static_cast<const OP_TYPE *>(this)->equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
+    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : nullptr, mat2;
     is_FACE_OP ? dimensionner_face(mat2) : dimensionner_elem(mat2) /* elem */;
     mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
   }

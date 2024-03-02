@@ -196,10 +196,10 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         //options[METIS_OPTION_NO2HOP]=1;                 // 5.1.0: not perform any 2-hop matchings (as 5.0.3)
         int ncon=1;
 
-        // Implementation reduite (plusieurs valeurs par defaut->NULL) pour METIS 5.0
+        // Implementation reduite (plusieurs valeurs par defaut->nullptr) pour METIS 5.0
         int status = METIS_PartGraphRecursive(&graph.nvtxs, &ncon, graph.xadj.addr(),
-                                              graph.adjncy.addr(), graph.vwgts.addr(), NULL, graph.ewgts.addr(),
-                                              &int_parts, NULL, NULL, options,
+                                              graph.adjncy.addr(), graph.vwgts.addr(), nullptr, graph.ewgts.addr(),
+                                              &int_parts, nullptr, nullptr, options,
                                               &edgecut, partition.data());
         if (status != METIS_OK)
           {
@@ -230,8 +230,8 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         // Conseil de la doc Metis 4.0 : METIS_PartGraphKway si int_parts>8, METIS_PartGraphRecursive sinon...
         // En effet semble plus rapide, mais edgecut en sortie est moins bon...
         int status = METIS_PartGraphKway(&graph.nvtxs, &ncon, graph.xadj.addr(),
-                                         graph.adjncy.addr(), graph.vwgts.addr(), NULL, graph.ewgts.addr(),
-                                         &int_parts, NULL, NULL, options ,
+                                         graph.adjncy.addr(), graph.vwgts.addr(), nullptr, graph.ewgts.addr(),
+                                         &int_parts, nullptr, nullptr, options ,
                                          &edgecut, partition.data());
         if (status != METIS_OK)
           {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -267,7 +267,7 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
   const Champ_base& ch_rho = fl.masse_volumique().valeur();
   const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).equation_masse().inconnue(),
                         &ch_en = ref_cast(Champ_Inc_base, fl.energie_interne()), //toujours un Champ_Inc
-                         *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
+                         *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr; //pas toujours un Champ_Inc
   const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs(), &en = ch_en.valeurs();
 
   /* valeurs du champ */
@@ -295,7 +295,7 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
 
   for (auto && var : vars)
     {
-      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *de = d_en.count(var) ? &d_en.at(var) : NULL;
+      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : nullptr, *de = d_en.count(var) ? &d_en.at(var) : nullptr;
       DoubleTab& d_v = deriv[var];
       for (d_v.resize(Nl, N), i = 0; i < Nl; i++)
         for (n = 0; n < N; n++)
@@ -310,7 +310,7 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
   const Champ_base& ch_rho = fl.masse_volumique().valeur();
   const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).equation_masse().inconnue(),
                         &ch_h = ref_cast(Champ_Inc_base, fl.enthalpie()), //toujours un Champ_Inc
-                         *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
+                         *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr; //pas toujours un Champ_Inc
   const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs(), &h = ch_h.valeurs();
 
   /* valeurs du champ */
@@ -338,7 +338,7 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
 
   for (auto && var : vars)
     {
-      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *dh = d_h.count(var) ? &d_h.at(var) : NULL;
+      const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : nullptr, *dh = d_h.count(var) ? &d_h.at(var) : nullptr;
       DoubleTab& d_v = deriv[var];
       for (d_v.resize(Nl, N), i = 0; i < Nl; i++)
         for (n = 0; n < N; n++)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -278,7 +278,7 @@ inline void Domaine_PolyMAC::ajouter_stabilisation(DoubleTab& M, DoubleTab& N) c
   DoubleTab A, S, b(n_f, 1), D(1, 1), x(1, 1), work(1), U(n_f - dimension, n_f - dimension), V;
 
   /* spectre de M */
-  kersol(M, b, 1e-12, NULL, x, S);
+  kersol(M, b, 1e-12, nullptr, x, S);
   double l_max = S(0), l_min = S(dimension - 1); //vp la plus petite sans stabilisation
 
   /* D : noyau de N (N.D = 0), de taille n_f * (n_f - dimension) */
@@ -403,7 +403,7 @@ int Domaine_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int 
       data.l = lb.data(), data.u = ub.data(), data.m = (int)lb.size();
 
       /* resolution  */
-      OSQPWorkspace *osqp = NULL;
+      OSQPWorkspace *osqp = nullptr;
       if (osqp_setup(&osqp, &data, &settings)) Cerr << "Domaine_PolyMAC::W_stabiliser : osqp_setup error" << finl, Process::exit();
       if (it) osqp_warm_start_x(osqp, sol.data()); //repart de l'iteration precedente
       osqp_solve(osqp);

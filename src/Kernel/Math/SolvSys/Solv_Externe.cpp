@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
   /**********************/
   /* Build renum_ array */
   /**********************/
-  //if (MatricePetsc_==NULL)
+  //if (MatricePetsc_==nullptr)
   {
     const MD_Vector& md = b.get_md_vector();
     renum_.reset();

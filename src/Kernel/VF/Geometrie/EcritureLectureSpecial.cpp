@@ -548,7 +548,7 @@ Nom& EcritureLectureSpecial::get_Output()
 
   // disable MPIIO if TRUST_DISABLE_MPIIO=1
   char* theValue = getenv("TRUST_DISABLE_MPIIO");
-  if (theValue != NULL)
+  if (theValue != nullptr)
     {
       if (option=="EcrFicPartageMPIIO" && strcmp(theValue,"1")==0) option="EcrFicPartageBin";
     }

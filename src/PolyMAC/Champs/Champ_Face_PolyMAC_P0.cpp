@@ -120,7 +120,7 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
   if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
-  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL , *pe = pf ? &equation().milieu().porosite_elem() : NULL;
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr , *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();

@@ -506,7 +506,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
               char tmp_lu;
               //int code;
               Fichier_sauv=fopen(Fichier_sauv_nom,"r");                                // J'ouvre le fichier de sauvgarde en lecture seule
-              if (Fichier_sauv!=NULL)
+              if (Fichier_sauv!=nullptr)
                 {
                   if (!fscanf(Fichier_sauv,"%s",&tmp_lu)) exit();                                // Je lis le premier mot "Temps" pour rien
                   if (!fscanf(Fichier_sauv,"%s",&tmp_lu)) exit();                                // Je lis le deuxieme mot "=" pour rien
@@ -555,7 +555,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
           double temps_lu=0., Temperature_reprise=0.;
           char tmp_lu;
 
-          if (Fichier_sauv!=NULL)
+          if (Fichier_sauv!=nullptr)
             {
               if (!fscanf(Fichier_sauv,"%s",&tmp_lu)) exit();                        // Je lis le premier mot "Temps" pour rien
               if (!fscanf(Fichier_sauv,"%s",&tmp_lu)) exit();                        // Je lis le deuxieme mot "=" pour rien

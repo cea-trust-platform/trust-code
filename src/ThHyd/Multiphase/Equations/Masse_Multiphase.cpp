@@ -254,7 +254,7 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Champ_base& ch_rho = eqn.milieu().masse_volumique().valeur();
-  const Champ_Inc_base& ch_alpha = eqn.inconnue(), *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL;
+  const Champ_Inc_base& ch_alpha = eqn.inconnue(), *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr;
   const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs();
   int i, nl = val.dimension_tot(0), n, N = val.line_size(), cR = sub_type(Champ_Uniforme, ch_rho);
 

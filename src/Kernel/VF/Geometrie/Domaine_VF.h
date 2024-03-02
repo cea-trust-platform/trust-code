@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,7 +156,7 @@ public :
   inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 
   //produit vectoriel
-  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 
   inline virtual double dist_norm(int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
   inline virtual double dist_norm_bord(int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }

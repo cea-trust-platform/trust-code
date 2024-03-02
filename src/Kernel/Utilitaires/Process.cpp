@@ -63,7 +63,7 @@ int Process::multiple_files=5120; // Valeur modifiable avec la variable d'enviro
 bool Process::force_single_file(const int ranks, const Nom& filename)
 {
   char* theValue = getenv("TRUST_MultipleFiles");
-  if (theValue != NULL) multiple_files=atoi(theValue);
+  if (theValue != nullptr) multiple_files=atoi(theValue);
   if (ranks>multiple_files)
     {
       if (Process::je_suis_maitre())   // Attention, necessaire, car appel possible tres tot dans main.cpp alors que Cerr par defini completement sur les processes
@@ -253,7 +253,7 @@ void Process::exit(const Nom& message ,int i)
       Cerr << message << finl;
       Cerr.flush();
       // Utile pour XData et la creation de syno.py
-      if (getenv("TRUST_USE_XDATA")!=NULL)
+      if (getenv("TRUST_USE_XDATA")!=nullptr)
         {
           SFichier hier("hierarchie.dump");
           hier << "\n             KEYWORDS\n";

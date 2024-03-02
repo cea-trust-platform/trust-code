@@ -538,7 +538,7 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
   statistiques().begin_count(assemblage_sys_counter_);
 
   const std::string& nom_inco = inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
   if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
 
   for (auto &&i_m : mats2)

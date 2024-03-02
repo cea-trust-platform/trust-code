@@ -126,7 +126,7 @@ void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs(), &nf = dom.face_normales();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int D = dimension, N = vit.line_size() / D;
 
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;

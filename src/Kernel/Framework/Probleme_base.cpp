@@ -756,7 +756,7 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
-  Champ_base const * champ = NULL ;
+  Champ_base const * champ = nullptr ;
   try
     {
       champ = &domaine_dis()->get_champ(un_nom);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,20 +56,20 @@ public:
   /* valeurs de sortie */
   struct output_t
   {
-    DoubleTab *qpk = NULL;     // (*qpk)(n)           -> flux de chaleur vers la phase n
-    DoubleTab *da_qpk = NULL;  // (*da_qpk)(n, m)     -> derivee par rapport a alpha_m
-    DoubleTab *dp_qpk = NULL;  // (*dp_qpk)(n)        -> derivee par rapport a p
-    DoubleTab *dv_qpk = NULL;  // (*dv_qpk)(n, m)     -> derivee par rapport a v[m]
-    DoubleTab *dTf_qpk = NULL; // (*dTf_qpk)(n, m)    -> derivee par rapport a T[m]
-    DoubleTab *dTp_qpk = NULL; // (*dTp_qpk)(n)       -> derivee par rapport a Tp
-    DoubleTab *qpi = NULL;     // (*qpi)(k, l)        -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
-    DoubleTab *da_qpi = NULL;  // (*da_qpi)(k, l, m)  -> derivee par rapport a alpha_m
-    DoubleTab *dp_qpi = NULL;  // (*dp_qpi)(k, l)     -> derivee par rapport a p
-    DoubleTab *dv_qpi = NULL;  // (*dv_qpi)(k, l,m)   -> derivee par rapport a v[m]
-    DoubleTab *dTf_qpi = NULL; // (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
-    DoubleTab *dTp_qpi = NULL; // (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
-    DoubleTab *d_nuc = NULL;   // (*d_nucleation)(k)  -> diametre de nucleation de la phase k
-    int *nonlinear = NULL;     // nonlinear           -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
+    DoubleTab *qpk = nullptr;     // (*qpk)(n)           -> flux de chaleur vers la phase n
+    DoubleTab *da_qpk = nullptr;  // (*da_qpk)(n, m)     -> derivee par rapport a alpha_m
+    DoubleTab *dp_qpk = nullptr;  // (*dp_qpk)(n)        -> derivee par rapport a p
+    DoubleTab *dv_qpk = nullptr;  // (*dv_qpk)(n, m)     -> derivee par rapport a v[m]
+    DoubleTab *dTf_qpk = nullptr; // (*dTf_qpk)(n, m)    -> derivee par rapport a T[m]
+    DoubleTab *dTp_qpk = nullptr; // (*dTp_qpk)(n)       -> derivee par rapport a Tp
+    DoubleTab *qpi = nullptr;     // (*qpi)(k, l)        -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
+    DoubleTab *da_qpi = nullptr;  // (*da_qpi)(k, l, m)  -> derivee par rapport a alpha_m
+    DoubleTab *dp_qpi = nullptr;  // (*dp_qpi)(k, l)     -> derivee par rapport a p
+    DoubleTab *dv_qpi = nullptr;  // (*dv_qpi)(k, l,m)   -> derivee par rapport a v[m]
+    DoubleTab *dTf_qpi = nullptr; // (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
+    DoubleTab *dTp_qpi = nullptr; // (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
+    DoubleTab *d_nuc = nullptr;   // (*d_nucleation)(k)  -> diametre de nucleation de la phase k
+    int *nonlinear = nullptr;     // nonlinear           -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
   };
   virtual void qp(const input_t& input, output_t& output) const = 0;
   /* 1 si T[n] doit etre fourni a la paroi, 0 si il doit etre fourni au centre des mailles */

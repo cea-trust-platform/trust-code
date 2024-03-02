@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ void Sortie_Fichier_base::set_toFlush()
   // sinon les sondes pas ecrites...
   // Si lent, mettre export TRIOU_FLUSHFILES=0 dans son sub_file
   toFlush_ = 1;
-  if (theValue != NULL)
+  if (theValue != nullptr)
     {
       toFlush_=atoi(theValue);
     }
@@ -96,7 +96,7 @@ void Sortie_Fichier_base::set_buffer()
       // On fixe une valeur a 3000000 par defaut pour buffSize
       // Elle peut etre changee par la variable d'environnement
       int buffSize = 3000000;
-      if (theValue != NULL)
+      if (theValue != nullptr)
         {
           buffSize = atoi(theValue);
         }

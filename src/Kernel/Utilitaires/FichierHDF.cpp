@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -149,7 +149,7 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
 
 void FichierHDF::create_datasets(Noms dataset_names, hsize_t length)
 {
-  hid_t dataspace_id = H5Screate_simple(1, &length, NULL);
+  hid_t dataspace_id = H5Screate_simple(1, &length, nullptr);
 
   // Create the dataset
   for(int i=0; i<dataset_names.size(); i++)
@@ -173,7 +173,7 @@ void FichierHDF::fill_dataset(Nom dataset_name, Sortie_Brute& sortie)
   const char * data = sortie.get_data();
 
   hsize_t dims[1] = {lenData};
-  hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+  hid_t dataspace_id = H5Screate_simple(1, dims, nullptr);
 
   // Open the dataset
   hid_t dataset_id = H5Dopen2(file_id_, dataset_name, H5P_DEFAULT);
@@ -228,7 +228,7 @@ void FichierHDF::create_and_fill_dataset_MW(Nom dataset_basename, const char* da
       dname = dname.nom_me(p, 0, 1 /*without_padding*/);
       if(p == Process::me()) my_dataset_name = dname;
       hsize_t dlen= datasets_len[p];
-      hid_t dspace = H5Screate_simple(1, &dlen, NULL);
+      hid_t dspace = H5Screate_simple(1, &dlen, nullptr);
 
       datasets_id[p] = H5Dcreate2(file_id_, dname, datatype, dspace,
                                   H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
@@ -237,7 +237,7 @@ void FichierHDF::create_and_fill_dataset_MW(Nom dataset_basename, const char* da
 
   Cerr << "[HDF5] All datasets created !" << finl;
 
-  hid_t dataspace_id = H5Screate_simple(1, &lenData, NULL);
+  hid_t dataspace_id = H5Screate_simple(1, &lenData, nullptr);
 
   Cerr << "[HDF5] Writing into HDF dataset " << my_dataset_name << "...";
   // Writing my own dataset
@@ -260,7 +260,7 @@ void FichierHDF::create_and_fill_dataset_SW(Nom dataset_name, Sortie_Brute& sort
   const char * data = sortie.get_data();
 
   hsize_t dims[1] = {lenData};
-  hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+  hid_t dataspace_id = H5Screate_simple(1, dims, nullptr);
 
   // Create the dataset
   hid_t dataset_id = H5Dcreate2(file_id_, dataset_name, H5T_NATIVE_OPAQUE, dataspace_id,
@@ -328,7 +328,7 @@ void  FichierHDF::check_int_size(Nom filename)
 #endif
       Cerr << "Or set environment variable TRUST_FORCE_DIFFERENT_INT_SIZE to 1 to try" << finl;
       Cerr << "reading the int32 (or int64) file by a int64 (or int32) TRUST binary." << finl;
-      if (getenv("TRUST_FORCE_DIFFERENT_INT_SIZE")!=NULL) is_different_int_size_ = true;
+      if (getenv("TRUST_FORCE_DIFFERENT_INT_SIZE")!=nullptr) is_different_int_size_ = true;
     }
   else
     {

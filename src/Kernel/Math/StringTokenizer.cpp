@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ int StringTokenizer::nextToken(void)
   char *tmp;
   int type_sep, length;
   tmp=find_sep(reste, type_sep, length);
-  if (tmp == NULL)
+  if (tmp == nullptr)
     {
       //Cout << "Fin ? " << reste << finl;
       if (reste[0] == '\0')
@@ -292,12 +292,12 @@ void StringTokenizer::init_keyword_op()
  */
 char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
 {
-  char * trouve=NULL;
+  char * trouve=nullptr;
   char * trouve_tmp;
   type_sep=-1;
   trouve_tmp = strstr(ch, "(");
   int pos=100000;
-  if (trouve_tmp != NULL)
+  if (trouve_tmp != nullptr)
     {
       pos = (int)(trouve_tmp-ch);
       type_sep=GRP;
@@ -305,7 +305,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
       trouve=trouve_tmp;
     }
   trouve_tmp = strstr(ch, ")");
-  if ((trouve_tmp != NULL) && (trouve_tmp-ch<pos))
+  if ((trouve_tmp != nullptr) && (trouve_tmp-ch<pos))
     {
       pos = (int)(trouve_tmp-ch);
       type_sep=ENDGRP;
@@ -315,7 +315,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   for (int i=0; i<StringTokenizer::nb_op; i++)
     {
       trouve_tmp = strstr(ch, op_sep[i]);
-      if ((trouve_tmp != NULL) && (trouve_tmp-ch<pos))
+      if ((trouve_tmp != nullptr) && (trouve_tmp-ch<pos))
         {
           pos = (int)(trouve_tmp-ch);
           type_sep=i;
@@ -326,7 +326,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   for (int i=0; i<StringTokenizer::nb_op_bis; i++)
     {
       trouve_tmp = strstr(ch, keyword_op_bis[i]);
-      if ((trouve_tmp != NULL) && ((int)(trouve_tmp-ch)<pos))
+      if ((trouve_tmp != nullptr) && ((int)(trouve_tmp-ch)<pos))
         {
           pos = (int)(trouve_tmp-ch);
           type_sep=i;

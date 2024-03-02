@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   const DoubleTab& passe = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().passe();
   const DoubleTab& inco = equation().inconnue().valeurs();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   DoubleTrav diag(inco);
 
   const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();

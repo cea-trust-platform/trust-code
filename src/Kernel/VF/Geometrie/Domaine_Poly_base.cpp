@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -473,7 +473,7 @@ void Domaine_Poly_base::orthocentrer()
           for (j = 0, S(i, 0) = 0, M(i, 3) = 1; j < 3; j++)
             S(i, 0) += 0.5 * std::pow(M(i, j) = xs(f_s(f, i), j) - xv_(f, j), 2);
         for (j = 0, S(np, 0) = M(np, 3) = 0; j < 3; j++) M(np, j) = nf(f, j) / fs(f);
-        if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //la face n'a pas d'orthocentre
+        if (kersol(M, S, 1e-12, nullptr, X, vp) > 1e-8) continue; //la face n'a pas d'orthocentre
 
         //contrainte : ne pas diminuer la distance entre xv et chaque arete de plus de 50%
         double r2min = DBL_MAX;
@@ -510,7 +510,7 @@ void Domaine_Poly_base::orthocentrer()
       for (i = 0; i < np; i++)
         for (j = 0, S(i, 0) = 0, M(i, dimension) = 1; j < dimension; j++)
           S(i, 0) += 0.5 * std::pow(M(i, j) = xs(e_s(e, i), j) - xp_(e, j), 2);
-      if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //l'element n'a pas d'orthocentre
+      if (kersol(M, S, 1e-12, nullptr, X, vp) > 1e-8) continue; //l'element n'a pas d'orthocentre
 
       //contrainte : ne pas diminuer la distance entre xp et chaque face de plus de 50%
       double rmin = DBL_MAX;

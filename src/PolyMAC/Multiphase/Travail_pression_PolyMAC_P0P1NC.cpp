@@ -24,6 +24,7 @@ Entree& Travail_pression_PolyMAC_P0P1NC::readOn(Entree& is) { return Source_Trav
 void Travail_pression_PolyMAC_P0P1NC::completer()
 {
   Source_Travail_pression_Elem_base::completer();
-  const Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem *op_conv = sub_type(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, equation().operateur(1).l_op_base()) ? &ref_cast(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, equation().operateur(1).l_op_base()) : NULL;
+  const Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem *op_conv = sub_type(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, equation().operateur(1).l_op_base()) ?
+                                                       &ref_cast(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, equation().operateur(1).l_op_base()) : nullptr;
   alp = op_conv ? op_conv->alpha : 1; /* meme decentrement que l'operateur de convection si il existe, amont sinon */
 }

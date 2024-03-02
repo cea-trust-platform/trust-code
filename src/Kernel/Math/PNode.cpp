@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,8 +24,8 @@ const int PNode::PARAMETER=5;
 
 PNode::PNode()
 {
-  left = NULL;
-  right = NULL;
+  left = nullptr;
+  right = nullptr;
   type = NOTHING;
   value = 0;
 }
@@ -37,7 +37,7 @@ PNode::PNode(PNode* n)
 
 void PNode::replace(PNode* n)
 {
-  if(n == NULL) return;
+  if(n == nullptr) return;
   type = n->type;
   left = n->left;
   right = n->right;

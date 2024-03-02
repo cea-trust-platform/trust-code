@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ Entree& Transport_turbulent_GGDH::readOn(Entree& is)
 void Transport_turbulent_GGDH::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
   const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(), &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
-                   *alp = sub_type(Pb_Multiphase, pb_.valeur()) ? &pb_->get_champ("alpha").passe() : NULL; //produit par alpha si Pb_Multiphase
+                   *alp = sub_type(Pb_Multiphase, pb_.valeur()) ? &pb_->get_champ("alpha").passe() : nullptr; //produit par alpha si Pb_Multiphase
   int i, nl = nu.dimension(0), n, N = nu.dimension(1), d, db, D = dimension;
   //par la viscosite turbulente : tenseur de Reynolds, facteur k / eps
   DoubleTrav Rij(0, N, D, D), k_sur_eps(0, N);

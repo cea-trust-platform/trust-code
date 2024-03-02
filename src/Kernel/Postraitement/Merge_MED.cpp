@@ -42,7 +42,7 @@ std::vector<std::string> glob_med_files(const std::string& fileName)
 #ifndef __CYGWIN__
   glob_t glob_result;
 
-  glob(fileName.c_str(),GLOB_TILDE,NULL,&glob_result);
+  glob(fileName.c_str(),GLOB_TILDE,nullptr,&glob_result);
 
   std::vector<std::string> ls_med;
   for(unsigned int i=0; i<glob_result.gl_pathc; ++i)

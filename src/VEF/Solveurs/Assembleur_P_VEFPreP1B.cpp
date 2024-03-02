@@ -330,7 +330,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
       // Methode verifier
       char *theValue = getenv("TRUST_VERIFIE_MATRICE_VEF");
-      if (theValue != NULL) verifier(*this, la_matrice_bloc_sym_de_travail, domaine_vef, inverse_quantitee_entrelacee);
+      if (theValue != nullptr) verifier(*this, la_matrice_bloc_sym_de_travail, domaine_vef, inverse_quantitee_entrelacee);
 
       ////////////////////////////////////////////
       // Changement de base eventuel P0P1->P1Bulle
@@ -394,7 +394,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
   // Affichage eventuel du conditionnement de la matrice
   //////////////////////////////////////////////////////
   char* theValue2 = getenv("TRUST_CONDITIONNEMENT_MATRICE");
-  if(theValue2 != NULL)
+  if(theValue2 != nullptr)
     Cout << "Estimation du conditionnement de la matrice: " << estim_cond(la_matrice)<<finl;
 
   return 1;
@@ -727,7 +727,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
     Assembleur_P_VEF::modifier_solution( pression);
   // Verification possible par variable d'environnement:
   char* theValue = getenv("TRUST_VERIFIE_DIRICHLET");
-  if(theValue != NULL) verifier_dirichlet();
+  if(theValue != nullptr) verifier_dirichlet();
 
   return 1;
 }

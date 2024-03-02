@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
   char ** messages = backtrace_symbols(array, size);
 
   // Skip first stack frame (points here) and print out backtrace
-  for (int i = 1; i < size && messages != NULL; ++i)
+  for (int i = 1; i < size && messages != nullptr; ++i)
     {
       Process::Journal() << "[proc " << Process::me() << "]: (" << i << ") " << messages[i] << finl;
       // Find first occurence of '(' or ' ' in message[i] and assume
@@ -130,14 +130,14 @@ void install_handlers()
   sigact.sa_sigaction = crit_err_hdlr;
   sigact.sa_flags = SA_RESTART | SA_SIGINFO;
 
-  if (sigaction(SIGABRT, &sigact, (struct sigaction *)NULL) != 0)
+  if (sigaction(SIGABRT, &sigact, (struct sigaction *)nullptr) != 0)
     {
       std::cerr << "FATAL ERROR setting handler for signal " << SIGABRT
                 << " (" << strsignal(SIGABRT) << ")" << std::endl;
       Process::exit();
     }
 
-  if (sigaction(SIGFPE, &sigact, (struct sigaction *)NULL) != 0)
+  if (sigaction(SIGFPE, &sigact, (struct sigaction *)nullptr) != 0)
     {
       std::cerr << "FATAL ERROR setting handler for signal " << SIGFPE
                 << " (" << strsignal(SIGFPE) << ")" << std::endl;

@@ -123,7 +123,7 @@ Entree& Milieu_composite::readOn(Entree& is)
             {
               Cerr << "Interface between fluid " << n << " : " << fluides[n]->le_nom() << " and " << m << " : " << fluides[m]->le_nom() << finl;
               inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu.valeur() : inter_lu.valeur()));
-              const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : NULL;
+              const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : nullptr;
               if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {
                   const double hn = pn ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
@@ -132,7 +132,7 @@ Entree& Milieu_composite::readOn(Entree& is)
                   fluides[n]->set_h0_T0(hn, T0), fluides[m]->set_h0_T0(hm, T0);
                 }
             }
-          else inter.push_back(NULL);
+          else inter.push_back(nullptr);
         }
       tab_interface.push_back(inter);
     }
@@ -408,14 +408,14 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->masse_volumique().valeur()).derivees() : nullptr;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
       for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
   for (auto &&nom : noms_der)
     {
-      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : NULL;
+      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : nullptr;
       DoubleTab& der = deriv[nom];
       for (der.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;
@@ -438,14 +438,14 @@ void Milieu_composite::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->energie_interne()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->energie_interne()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->energie_interne()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->energie_interne()).derivees() : nullptr;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
       for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
   for (auto &&nom : noms_der)
     {
-      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : NULL;
+      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : nullptr;
       DoubleTab& der = deriv[nom];
       for (der.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;
@@ -468,14 +468,14 @@ void Milieu_composite::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->enthalpie()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->enthalpie()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->enthalpie()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->enthalpie()).derivees() : nullptr;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
       for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
   for (auto &&nom : noms_der)
     {
-      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : NULL;
+      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : nullptr;
       DoubleTab& der = deriv[nom];
       for (der.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;

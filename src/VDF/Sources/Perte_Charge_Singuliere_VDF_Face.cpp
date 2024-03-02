@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
 void Perte_Charge_Singuliere_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr, mat2;
 
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   IntTab stencil(0, 2);
@@ -113,7 +113,7 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();

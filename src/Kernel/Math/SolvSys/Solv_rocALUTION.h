@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ struct rocalution_initializer
         disable_accelerator_rocalution(!Objet_U::computeOnDevice); // TRUST_DISABLE_DEVICE=1 $exec pour desactiver la version GPU de rocALUTION
         set_omp_affinity_rocalution(false); // Disable OpenMP thread affinity
         //char* dev_per_node = getenv("TRUST_DEVICES_PER_NODE");
-        //init_rocalution(Process::me(), dev_per_node==NULL ? 1 : atoi(dev_per_node));
+        //init_rocalution(Process::me(), dev_per_node==nullptr ? 1 : atoi(dev_per_node));
         //set_device_rocalution(Process::me());
         init_rocalution(Process::me(),
                         1); // Lancement sur lumi01 (8 GPUS pour 64 cores, 1 rank MPI/GPU): srun --cpus-per-task=8 --gpus-per-task=1 --threads-per-core=1 -n ...

@@ -40,8 +40,8 @@ public :
   void calculer_volumes_entrelaces() override;
   void calculer_h_carre();
 
-  inline double dot (const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
-  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
+  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 
   IntVect cyclic; // cyclic(i) = 1 i le poly i est cyclique
 

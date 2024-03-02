@@ -53,7 +53,7 @@ void exit_on_copy_condition(int size)
 }
 void set_exit_on_copy_condition(int size)
 {
-  if (getenv("TRUST_COPY_BEFORE_EXIT")!=NULL)
+  if (getenv("TRUST_COPY_BEFORE_EXIT")!=nullptr)
     {
       copy_before_exit = atoi(getenv("TRUST_COPY_BEFORE_EXIT"));
       if (size < size_copy_before_exit) size_copy_before_exit = size;
@@ -83,13 +83,13 @@ void init_openmp()
   // ToDo: OMP_TARGET_OFFLOAD=DISABLED equivaut a TRUST_DISABLE_DEVICE=1
   // donc peut etre supprimer cette derniere variable (qui disable aussi rocALUTION sur GPU dans le code mais pas AmgX encore)...
   // https://www.openmp.org/spec-html/5.0/openmpse65.html
-  if (init_openmp_ || getenv("TRUST_DISABLE_DEVICE")!=NULL)
+  if (init_openmp_ || getenv("TRUST_DISABLE_DEVICE")!=nullptr)
     return;
   char const* var = getenv("OMP_TARGET_OFFLOAD");
-  if (var!=NULL && std::string(var)=="DISABLED")
+  if (var!=nullptr && std::string(var)=="DISABLED")
     return;
   init_openmp_ = true;
-  if (getenv("TRUST_CLOCK_ON")!= NULL) clock_on = true;
+  if (getenv("TRUST_CLOCK_ON")!= nullptr) clock_on = true;
 #ifdef MPI_
   MPI_Comm localWorld;
   MPI_Comm globalWorld;

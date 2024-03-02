@@ -689,7 +689,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
   /* remplissage de : recep[p] -> liste des items qu'on veut recevoir du processeur p
                       items[{p, i}] -> ou on va placer chaque item dans le MD_Vector elargi */
   int i, j, p, nb_items_tot = src.valeur().get_nb_items_tot(), idx = nb_items_tot;
-  const MD_Vector_std *mds = NULL;
+  const MD_Vector_std *mds = nullptr;
   if (sub_type(MD_Vector_std, src.valeur())) mds = &ref_cast(MD_Vector_std, src.valeur());
   else if (sub_type(MD_Vector_composite, src.valeur())) mds = &ref_cast(MD_Vector_composite, src.valeur()).global_md_;
 

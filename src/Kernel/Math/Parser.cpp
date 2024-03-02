@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ Parser::Parser()
 {
   init_parser();
   state=0;
-  root=NULL;
+  root=nullptr;
   str= new std::string("0");
   maxvar=1;
   ivar=0;
@@ -53,7 +53,7 @@ Parser::Parser(const Parser& p)
   maxvar=p.maxvar;
   ivar=p.ivar;
 
-  root=NULL;
+  root=nullptr;
 
   str= new std::string(*p.str);
 
@@ -76,7 +76,7 @@ Parser::Parser(std::string& s,int n)
   impuls_tempo = 0.;
 
   state=0;
-  root=NULL;
+  root=nullptr;
   str= new std::string(s);
   maxvar=n;
   ivar=0;
@@ -136,18 +136,18 @@ void Parser::init_parser()
 
 void destroy(PNode* p)
 {
-  if (p!=NULL)
+  if (p!=nullptr)
     {
-      if (p->left!=NULL) destroy(p->left);
-      if (p->right!=NULL) destroy(p->right);
+      if (p->left!=nullptr) destroy(p->left);
+      if (p->right!=nullptr) destroy(p->right);
       delete p;
-      p=NULL;
+      p=nullptr;
     }
 }
 
 Parser::~Parser()
 {
-  if (root !=NULL) destroy(root);
+  if (root !=nullptr) destroy(root);
   for (int i =0; i<ivar; i++)
     delete les_var[i];
   delete str;
@@ -168,7 +168,7 @@ void Parser::setNbVar(int nvar)
 
 void Parser::parseString()
 {
-  if (root!=NULL) destroy(root);
+  if (root!=nullptr) destroy(root);
   PSTACK(PNode) st_ob(20);
   STACK(int) st_op(20);
   StringTokenizer tok(*str);
@@ -227,8 +227,8 @@ double Parser::evalFunc(PNode* node)
 double Parser::evalOp(PNode* node)
 {
   // PL 12/11/2010, reecriture avec switch pour optimisation
-  double x = (node->left  != NULL ? eval(node->left)  : 0);
-  double y = (node->right != NULL ? eval(node->right) : 0);
+  double x = (node->left  != nullptr ? eval(node->left)  : 0);
+  double y = (node->right != nullptr ? eval(node->right) : 0);
   switch (node->value)
     {
     case 0: // ADD
@@ -529,7 +529,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   node->type=PNode::FUNCTION;
                   node->value=tmp;
                   node->left = un;
-                  node->right=NULL;
+                  node->right=nullptr;
                   ob->push(node);
                 }
               else if ( (tmp == StringTokenizer::GRP) || (tmp == StringTokenizer::ENDGRP) )
@@ -575,7 +575,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   node->type=PNode::FUNCTION;
                   node->value=tmp;
                   node->left = un;
-                  node->right=NULL;
+                  node->right=nullptr;
                   ob->push(node);
                 }
               else if ( (tmp == StringTokenizer::GRP) || (tmp == StringTokenizer::ENDGRP) )
@@ -619,7 +619,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               node->type=PNode::FUNCTION;
               node->value=tmp;
               node->left = un;
-              node->right=NULL;
+              node->right=nullptr;
               ob->push(node);
             }
           else if ( (tmp == StringTokenizer::GRP) || (tmp == StringTokenizer::ENDGRP) )

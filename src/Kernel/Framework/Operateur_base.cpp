@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -555,11 +555,11 @@ void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matri
   int test_op=0;
   {
     char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");
-    if (theValue != NULL) test_op=2;
+    if (theValue != nullptr) test_op=2;
   }
   {
     char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
-    if (theValue != NULL) test_op=1;
+    if (theValue != nullptr) test_op=1;
   }
   if (test_op==0) return;
 

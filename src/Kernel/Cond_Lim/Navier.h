@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
 
   virtual double coefficient_frottement(int ) const { return 0.; }
   virtual double coefficient_frottement(int , int ) const { return 0.; }
-  virtual double coefficient_frottement_grad(int ) const { return 0.; } // Change the coefficient when calculation of gradient : nu = NULL
+  virtual double coefficient_frottement_grad(int ) const { return 0.; } // Change the coefficient when calculation of gradient : nu = nullptr
   virtual double coefficient_frottement_grad(int , int ) const { return 0.; }
 };
 

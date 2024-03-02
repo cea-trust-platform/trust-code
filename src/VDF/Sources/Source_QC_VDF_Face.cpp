@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@ DoubleTab& Acceleration_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Terme
 void Acceleration_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
@@ -35,7 +35,7 @@ DoubleTab& Source_qdm_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Terme_S
 void Source_qdm_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
@@ -48,7 +48,7 @@ DoubleTab& Perte_Charge_Reguliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) con
 void Perte_Charge_Reguliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
@@ -62,7 +62,7 @@ DoubleTab& Perte_Charge_Singuliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) co
 void Perte_Charge_Singuliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
@@ -77,7 +77,7 @@ DoubleTab& Darcy_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source_Darcy
 void Darcy_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }
@@ -92,7 +92,7 @@ DoubleTab& Forchheimer_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source
 void Forchheimer_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
 }

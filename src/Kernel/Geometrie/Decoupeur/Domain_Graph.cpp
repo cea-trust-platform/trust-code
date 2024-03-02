@@ -248,11 +248,11 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   edgegsttab.resize_array(nb_edges+nb_faces_bord);
   edgegsttab = -1;
 
-  vwgts.resize_array(0); //NULL
+  vwgts.resize_array(0); //nullptr
   if (! use_weights)
     {
       weightflag = 0;
-      ewgts.resize_array(0); //NULL
+      ewgts.resize_array(0); //nullptr
     }
   else
     {

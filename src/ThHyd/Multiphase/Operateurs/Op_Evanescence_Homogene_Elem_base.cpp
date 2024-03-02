@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleTab& inco = ch.valeurs(), &alpha = pb.equation_masse().inconnue().valeurs(), &rho = equation().milieu().masse_volumique().valeurs(), &p = ref_cast(QDM_Multiphase, pb.equation_qdm()).pression().valeurs();
 
   const SETS *sch = sub_type(Schema_Implicite_base, pb.equation_qdm().schema_temps()) && sub_type(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur())
-                    ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur()) : NULL;
+                    ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur()) : nullptr;
 
   int e, i, j, k, n, N = inco.line_size(), m, M = p.line_size(), is_m = ch.le_nom() == "alpha", cR = (rho.dimension_tot(0) == 1),
                      iter = sch ? sch->iteration : 0, p_degen = is_m && sch ? sch->p_degen : 0;

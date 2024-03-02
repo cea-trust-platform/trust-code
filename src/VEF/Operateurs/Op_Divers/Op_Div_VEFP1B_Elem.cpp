@@ -707,7 +707,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   // et uniquement en sequentiel
   if ((Process::is_sequential()) && equation().schema_temps().nb_pas_dt() == 0)
     decoupage_som = 1;
-  //SFichier* os=NULL;
+  //SFichier* os=nullptr;
   SChaine decoup_som;
   decoup_som << "1" << finl;
   decoup_som << Objet_U::dimension << " " << nb_som << finl;

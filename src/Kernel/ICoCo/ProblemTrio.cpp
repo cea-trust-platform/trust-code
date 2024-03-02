@@ -144,7 +144,7 @@ bool ProblemTrio::initialize()
   strcpy(argv[1],(*my_params).data_file.c_str());
   // pour salome
   if (p) delete p;
-  p=NULL;
+  p=nullptr;
   int res;
   // on lance avec ou sans mpi
   res=main_TRUST(argc,argv,p,(*my_params).is_mpi);
@@ -192,7 +192,7 @@ bool ProblemTrio::initialize()
 }
 bool ProblemTrio::initialize_pb(Probleme_U& pb_to_solve)
 {
-  if (pb==NULL)
+  if (pb==nullptr)
     pb=&pb_to_solve;
   pb_to_solve.initialize();
   pb_to_solve.postraiter(1);

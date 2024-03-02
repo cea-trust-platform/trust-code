@@ -249,7 +249,7 @@ void Pb_Multiphase::preparer_calcul()
 
 bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
 {
-  Champ_base const * champ = NULL ;
+  Champ_base const * champ = nullptr ;
 
   for (auto &&corr : correlations)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ Parser_U::Parser_U(const Parser_U& p): Objet_U(p)
 
 Parser_U::~Parser_U()
 {
-  if (parser != NULL)
+  if (parser != nullptr)
     delete parser;
 }
 
@@ -61,7 +61,7 @@ Parser_U::~Parser_U()
 
 const Parser_U& Parser_U::operator=(const Parser_U& p)
 {
-  if (parser != NULL)
+  if (parser != nullptr)
     delete parser;
   parser = new Parser(*(p.parser));
   return *this;

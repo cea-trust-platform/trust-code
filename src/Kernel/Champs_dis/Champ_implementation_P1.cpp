@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
 void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
   const Domaine& domaine = get_domaine_geom();
-  const Domaine_Poly_base *zpoly = sub_type(Domaine_Poly_base, get_domaine_dis()) ? &ref_cast(Domaine_Poly_base, get_domaine_dis()) : NULL;
+  const Domaine_Poly_base *zpoly = sub_type(Domaine_Poly_base, get_domaine_dis()) ? &ref_cast(Domaine_Poly_base, get_domaine_dis()) : nullptr;
   const IntTab& les_elems = domaine.les_elems();
   const DoubleTab& nodes = domaine.les_sommets();
   const int nb_nodes_per_cell = domaine.nb_som_elem(), N = resu.line_size();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ EcrFicPartageMPIIO::EcrFicPartageMPIIO() : SFichier()
 {
   bin_ = 1; // Binaire par defaut
 #ifdef MPI_
-  mpi_file_=NULL;
+  mpi_file_=nullptr;
 #endif
 }
 EcrFicPartageMPIIO::~EcrFicPartageMPIIO()
@@ -250,7 +250,7 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   if (Process::nproc()>1024)
     {
       char* ROMIO_HINTS=getenv("ROMIO_HINTS");
-      if (ROMIO_HINTS==NULL)
+      if (ROMIO_HINTS==nullptr)
         {
           Cerr << "Warning, no ROMIO_HINTS detected on your massive parallel calculation." << finl;
           Cerr << "Performances of MPI I/O could be improved with ROMIO hints." << finl;

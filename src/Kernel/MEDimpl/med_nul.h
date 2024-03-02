@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 
 #define PCLINUX
 
-#define MED_NULL       (void *) NULL
+#define MED_NULL       (void *) nullptr
 #define MED_MAX_PARA        20
 
 #define MED_TAILLE_DESC 200

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ int Ch_front_Vortex::my_rand( )
 {
   if (first_rand == 1)
     {
-      srand((int)time (NULL));
+      srand((int)time (nullptr));
       first_rand = 0;
     }
   return (rand ());

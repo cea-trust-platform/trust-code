@@ -98,7 +98,7 @@ public :
   };
   DoubleVect norm, residu; //chaque ligne vaut norm * sum alpha, espace pour le residu
   ArrOfInt ix; //indices pour recuperer le residu
-  cv_test_t *cv_ctx = NULL;
+  cv_test_t *cv_ctx = nullptr;
   void init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norm);
 #endif
 

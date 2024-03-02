@@ -140,7 +140,7 @@ void Champ_Face_PolyMAC::init_ra() const
         {
           //sens par rapport a l'arete
           std::array<double, 3> taz = {{ 0, 0, 1 }}, vec; //vecteur tangent a l'arete et produit vectoriel de celui-ci avec xv - xa
-          vec = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(f, 0), NULL, dimension < 3 ? &xs(a, 0): &xa(a, 0));
+          vec = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(f, 0), nullptr, dimension < 3 ? &xs(a, 0): &xa(a, 0));
           int sgn = domaine.dot(&vec[0], &nf(f, 0)) > 0 ? 1 : -1;
 
           //partie m2
@@ -196,7 +196,7 @@ void Champ_Face_PolyMAC::init_va() const
     {
       /* liste des faces ordonnee dans le sens trigo */
       //base locale
-      std::array<double, 3> taz = {{ 0, 0, 1 }}, v0 = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(a_f(a, 0), 0), NULL, &xa(a, 0)),
+      std::array<double, 3> taz = {{ 0, 0, 1 }}, v0 = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(a_f(a, 0), 0), nullptr, &xa(a, 0)),
       v1 = domaine.cross(3, 3, dimension < 3 ? &taz[0] : &ta(a, 0), &v0[0]);
       // liste des faces, ordonnee en tournant dans la base locale
       std::map<double, int> fmap;
@@ -210,7 +210,7 @@ void Champ_Face_PolyMAC::init_va() const
       //orientations des faces par rapport au contour
       for (i = 0; i < (int) fas.size(); i++)
         {
-          std::array <double, 3> vec = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(fas[i], 0), NULL, &xa(a, 0));
+          std::array <double, 3> vec = domaine.cross(3, dimension, dimension < 3 ? &taz[0] : &ta(a, 0), &xv(fas[i], 0), nullptr, &xa(a, 0));
           sgn.push_back(domaine.dot(&vec[0], &nf(fas[i], 0)) > 0 ? 1 : -1);
         }
       for (i = 0; i < (int) fas.size(); i++)
@@ -360,7 +360,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = domaine.face_normales();
-  const DoubleVect& fs = domaine.face_surfaces(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *pe = pf ? &equation().milieu().porosite_elem() : NULL;
+  const DoubleVect& fs = domaine.face_surfaces(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr, *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
 
   int e, f, j, k, r;
 
@@ -386,7 +386,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_polys, DoubleTab& val, bool is_vit) const
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
-  const DoubleVect *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *pe = pf ? &equation().milieu().porosite_elem() : NULL;
+  const DoubleVect *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr, *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
   int e, f, j, r;
 
   domaine.init_ve();

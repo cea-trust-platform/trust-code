@@ -215,7 +215,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       else if (i == 2)
         {
           errno = 0;
-          int nprocs = (int) strtol(argv[2], (char **)NULL, 10);
+          int nprocs = (int) strtol(argv[2], (char **)nullptr, 10);
           if (!errno && nprocs)
             {
               nproc = nprocs;
@@ -280,7 +280,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     if ( ieee == 1 )
       {
         char* theValue = getenv("TRUST_DISABLE_FP_EXCEPT");
-        if (theValue == NULL || atoi(theValue) == 0)
+        if (theValue == nullptr || atoi(theValue) == 0)
           {
             arguments_info += "feenableexcept enabled.\n";
 #ifdef linux

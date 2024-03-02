@@ -204,11 +204,11 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
   int test_op=0;
   {
     char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");
-    if (theValue != NULL) test_op=2;
+    if (theValue != nullptr) test_op=2;
   }
   {
     char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
-    if (theValue != NULL) test_op=1;
+    if (theValue != nullptr) test_op=1;
   }
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();
@@ -316,7 +316,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
 void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Diffusion_Fluide_Dilatable_base& eqn,matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   const std::string& nom_inco = eqn.inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();
   const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();

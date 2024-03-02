@@ -73,9 +73,9 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
   const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = domaine.face_voisins();
   DoubleTab b_alpha = ch_a.valeur_aux_bords();
-  Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : NULL,
-                 *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : NULL,
-                  *Mv = matrices.count("vitesse") ? matrices.at("vitesse") : NULL;
+  Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : nullptr,
+                 *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : nullptr,
+                  *Mv = matrices.count("vitesse") ? matrices.at("vitesse") : nullptr;
 
   int i, j, e, eb, f, n, N = alpha.line_size(), m, M = press.line_size();
   double dt = equation().schema_temps().pas_de_temps();

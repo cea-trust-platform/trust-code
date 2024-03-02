@@ -195,10 +195,10 @@ public:
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
   // Host/Device methods:
-  inline DataLocation get_dataLocation() { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
-  inline DataLocation get_dataLocation() const { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
-  inline void set_dataLocation(DataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); }
-  inline void set_dataLocation(DataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
+  inline DataLocation get_dataLocation() { return p_==nullptr ? HostOnly : p_->get_dataLocation(); }
+  inline DataLocation get_dataLocation() const { return p_==nullptr ? HostOnly : p_->get_dataLocation(); }
+  inline void set_dataLocation(DataLocation flag) { if (p_!=nullptr) p_->set_dataLocation(flag); }
+  inline void set_dataLocation(DataLocation flag) const { if (p_!=nullptr) p_->set_dataLocation(flag); }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
   inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
@@ -276,7 +276,7 @@ private:
   }
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
   {
-    if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
+    if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=nullptr)
       {
         std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
         std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name

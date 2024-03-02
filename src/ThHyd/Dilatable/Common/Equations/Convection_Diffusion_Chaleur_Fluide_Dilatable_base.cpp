@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler_blocs_avec_in
   if (!discretisation().is_polymac_family())
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
-      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
       modifier_pour_Cl(*mat,secmem);
     }
   statistiques().end_count(assemblage_sys_counter_);

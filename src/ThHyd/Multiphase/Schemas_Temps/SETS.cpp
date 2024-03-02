@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -154,7 +154,7 @@ void SETS::init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norme)
 {
   cv_ctx = (SETS::cv_test_t *) calloc(1, sizeof(SETS::cv_test_t));
   cv_ctx->obj = this, cv_ctx->eps_alpha = crit_conv["alpha"];
-  norm = norme, residu = secmem, cv_ctx->t = NULL, cv_ctx->v = NULL;
+  norm = norme, residu = secmem, cv_ctx->t = nullptr, cv_ctx->v = nullptr;
   /* numerotation pour recuperer le residu : on fait comme dans Solv_Petsc */
   ArrOfBit items_to_keep;
   int i, size = secmem.size_array(), idx = mppartial_sum(MD_Vector_tools::get_sequential_items_flags(secmem.get_md_vector(), items_to_keep, secmem.line_size()));
@@ -182,10 +182,10 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
   if (ret || *reason <= 0) return ret; //pas encore converge -> rien a faire
   /* sinon -> on verfie que sum alpha = 1 est aussi OK */
   Vec resi;
-  if (ctx->t == NULL) /* ctx->t, ctx-v non initialises -> on les cree */
+  if (ctx->t == nullptr) /* ctx->t, ctx-v non initialises -> on les cree */
     {
       Mat m;
-      KSPGetOperators(ksp,&m,NULL);
+      KSPGetOperators(ksp,&m,nullptr);
       MatCreateVecs(m, &ctx->v, &ctx->t);
       VecSetOption(ctx->v, VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
     }
@@ -558,7 +558,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
                     }
                   else if (e_i.count(v_m.first) || i_bloc.count(v_m.first)) //dependance en une variable partiellement / totalement eliminee
                     {
-                      A = A_p.count(v_m.first) ? &A_p.at(v_m.first) : NULL;
+                      A = A_p.count(v_m.first) ? &A_p.at(v_m.first) : nullptr;
                       for (i = 0; i < calc.size_array(); i++)
                         if (calc[i])
                           for (j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++)
@@ -615,9 +615,9 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
           if (!b_p.count(vbloc[i])) b_p[vbloc[i]] = *vsec[i]; //creation des b_p
           bp[i] = &b_p[vbloc[i]];
           const matrices_t& line = mats.at(vbloc[i]);
-          pmat[i] = line.count(inco_p) && line.at(inco_p)->nb_colonnes() ? line.at(inco_p) : NULL;
-          for ( mat[i].resize(nv), j = 0; j < nv; j++)  mat[i][j] = line.count(vbloc[j]) && line.at(vbloc[j])->nb_colonnes() ? line.at(vbloc[j]) : NULL;
-          for (dmat[i].resize(nd), j = 0; j < nd; j++) dmat[i][j] = line.count(vdep[j]) && line.at(vdep[j])->nb_colonnes() ? line.at(vdep[j]) : NULL;
+          pmat[i] = line.count(inco_p) && line.at(inco_p)->nb_colonnes() ? line.at(inco_p) : nullptr;
+          for ( mat[i].resize(nv), j = 0; j < nv; j++)  mat[i][j] = line.count(vbloc[j]) && line.at(vbloc[j])->nb_colonnes() ? line.at(vbloc[j]) : nullptr;
+          for (dmat[i].resize(nd), j = 0; j < nd; j++) dmat[i][j] = line.count(vdep[j]) && line.at(vdep[j])->nb_colonnes() ? line.at(vdep[j]) : nullptr;
         }
       for (i = 0; i < nd; i++) dbp[i] = &b_p.at(vdep[i]), dAp[i] = &A_p.at(vdep[i]); //b_p / A_p des dependances
 
@@ -718,7 +718,7 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
       for (auto &&n_m : mats.at(inco_p))
         if (n_m.second && n_m.second->nb_colonnes())
           {
-            const Matrice_Morse& Mp = *n_m.second, *Ap = n_m.first != inco_p ? &A_p.at(n_m.first) : NULL;
+            const Matrice_Morse& Mp = *n_m.second, *Ap = n_m.first != inco_p ? &A_p.at(n_m.first) : nullptr;
             for (i = 0; i < np; i++)
               if (calc[i])
                 for (ib = M * i, m = 0; m < M; m++, ib++)

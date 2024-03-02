@@ -156,7 +156,7 @@ Entree& Scatter::interpreter(Entree& is)
 #ifdef linux
   static int gdb_non_lance=1;
   char* TRUST_GDB=getenv("TRUST_GDB");
-  if (gdb_non_lance && ((Motcle)nomentree=="DEBUG" || TRUST_GDB!=NULL))
+  if (gdb_non_lance && ((Motcle)nomentree=="DEBUG" || TRUST_GDB!=nullptr))
     {
       gdb_non_lance=0;
       if ((Motcle)nomentree=="DEBUG") is >> nomentree;

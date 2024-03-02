@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ Entree& Champ_Don_Fonc_txyz::readOn(Entree& is)
       else
         {
           nom_dom = motlu;
-          //dim = strtol(motlu.getChar(), (char **)NULL, 10);
+          //dim = strtol(motlu.getChar(), (char **)nullptr, 10);
           dim = lire_dimension(is, que_suis_je());
         }
     }

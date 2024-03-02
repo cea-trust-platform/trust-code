@@ -57,7 +57,7 @@ int htoi(const char * szChaine)
   int lResult = 0;
   int iLength = 0;
   // Pointeur null, on renvoi -1
-  if (szChaine == NULL)
+  if (szChaine == nullptr)
     return -1;
   // On calcule la longueur de la chaine
   iLength = (int)strlen(szChaine);

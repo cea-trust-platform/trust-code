@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -138,7 +138,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
 
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
       if(i==0) Op_VDF_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
@@ -179,7 +179,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs_pour_monolithique(matrices_t matrices,
   for (int i = 0; i < n_ext; i++)
     {
       std::string nom_mat = nom_inco + "/" + op_ext[i + 1]->equation().probleme().le_nom().getString();
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(mat[i])
         {
           inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i + 1]->equation().inconnue()->valeurs();
