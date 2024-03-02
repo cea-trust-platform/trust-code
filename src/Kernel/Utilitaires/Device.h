@@ -47,6 +47,9 @@ inline void start_timer(int bytes=-1)
 inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
   Kokkos::fence();
+#ifdef TRUST_USE_UVM
+  cudaDeviceSynchronize();
+#endif
 #ifdef _OPENMP
   if (init_openmp_)
     {

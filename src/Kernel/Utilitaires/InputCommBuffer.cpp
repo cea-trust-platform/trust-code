@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,9 @@ void InputCommBuffer::create_stream_from_output_stream(OutputCommBuffer& output_
 void InputCommBuffer::clear()
 {
   assert(stream_);
+#ifndef TRUST_USE_UVM // ToDo bug ?
   delete stream_;
+#endif
   stream_ = 0;
   set_istream(stream_);
   size_ = -1;

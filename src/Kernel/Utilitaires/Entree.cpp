@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -291,8 +291,10 @@ int Entree::good()
 }
 Entree::~Entree()
 {
+#ifndef TRUST_USE_UVM // ToDo bug ?
   if(istream_)
     delete istream_;
+#endif
   istream_=0;
 }
 

@@ -50,6 +50,7 @@ int main() {
        if (data[0]!=1) std::cerr << "Error: data[0]=" << data[0] << " should be 1." << std::endl;
 
        // Perform the computation on the device : data is automatically copied to device
+       // It is NOT possible to force copy
        auto start = std::chrono::high_resolution_clock::now();
        #pragma omp target teams distribute parallel for
        for (int i = 0; i < N; i++)
@@ -66,7 +67,7 @@ int main() {
        for (int i = 0; i < N; i++)
           if (data[i]!=2) OK=0;
        diff = std::chrono::high_resolution_clock::now() - start;
-       std::cout << "[Non Unified Memory] D2H automatic copy during Host Kernel: " << 1000*diff.count() << " ms " << std::endl;   
+       std::cout << "[Unified Memory] D2H automatic copy during Host Kernel: " << 1000*diff.count() << " ms " << std::endl;   
        std::cerr << (!OK ? "Error!" : "OK!") << std::endl;       
        // Free memory
        cudaFree(data);

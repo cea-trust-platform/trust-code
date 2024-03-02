@@ -1842,6 +1842,8 @@ case $TRUST_ARCH_CC in
         if [ "$TRUST_USE_KOKKOS" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
         then
            CppFlags="-cuda" # nvc++ compile cuda code to avoid use of "nvcc -ccbin=nvc++"
+           #TRUST_USE_UVM=1 # Provisoire
+           [ "$TRUST_USE_UVM" = 1 ] && CppFlags=$CppFlags" -gpu=managed" && Defines=$Defines" -DTRUST_USE_UVM"
            # Attention -mp=gpu -gpu=nordc ne marche pas sur le GPU !!! Voir: https://forums.developer.nvidia.com/t/openmp-offload-w-cuda-interop-undefined-reference-to-fatbinwrap-nv-module-id/253051
            # Donc on active Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON au niveau de Kokkos
            STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)

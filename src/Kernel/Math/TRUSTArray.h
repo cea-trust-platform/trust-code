@@ -269,7 +269,7 @@ private:
   // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
-#ifdef _OPENMP
+#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
     if (tab.get_dataLocation()==Device)
       {
         copyFromDevice(tab, "const detected with checkDataOnHost()");
@@ -279,7 +279,7 @@ private:
   }
   inline void checkDataOnHost(TRUSTArray& tab)
   {
-#ifdef _OPENMP
+#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
     const DataLocation& loc = tab.get_dataLocation();
     if (loc==Host || loc==HostOnly || loc==PartialHostDevice) return;
     else if (loc==Device)
