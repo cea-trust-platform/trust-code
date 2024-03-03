@@ -1,38 +1,53 @@
 #include <iostream>
+#include <chrono>
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
 using namespace Kokkos;
 int main() {
     Kokkos::initialize();
-    {
-       const int size = 1000;
+    {    
+       #pragma omp target
+       {;}
+       const int size = 260000;
        int data[size];
-       data[1]=-1;
-
-       // OpenMP target parallel loop
-       #pragma omp target teams distribute parallel for map(tofrom: data[0:size])
-       for (int i = 0; i < size; ++i) {
+       
+       // Kernel on HOST:
+       auto start = std::chrono::high_resolution_clock::now();
+       for (int i = 0; i < size; ++i)
            data[i] = i;
-       }
+       auto end = std::chrono::high_resolution_clock::now();
+       std::chrono::duration<double> diff = end - start;double SEC = diff.count();
+       std::cout << "[Host a=0] host: " << 1000*SEC << " ms \n";
+       std::cout << "After Host (should be 1):" << data[1] << std::endl;
+       
+       // OpenMP target parallel loop
+       #pragma omp target enter data map(alloc:data[0:size])
+       #pragma omp target update to(data[0:size])
+       start = std::chrono::high_resolution_clock::now();
+       #pragma omp target teams distribute parallel for
+       for (int i = 0; i < size; ++i)
+           data[i] = i;
+       end = std::chrono::high_resolution_clock::now();
+       diff = end - start;SEC = diff.count();
+       std::cout << "[OpenMP a=1] gpu: " << 1000*SEC << " ms \n";
+       #pragma omp target update from(data[0:size])
        std::cout << "After OpenMP (should be 1):" << data[1] << std::endl;
 
-       Kokkos::View<int*> data_view(data, size);
-       Kokkos::View<int*, Kokkos::CudaSpace> kokkosData("KokkosData", size);
-
+       // Vue sur le device:
+       Kokkos::View<int*> kokkosData("KokkosData", size);
+       start = std::chrono::high_resolution_clock::now();
        Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i) {
-               kokkosData(i) = i * 2;
+          kokkosData(i) = i * 2;
        });
-
+       Kokkos::fence();
+       end = std::chrono::high_resolution_clock::now();
+       diff = end - start;SEC = diff.count();
+       std::cout << "[Kokkos a=1] gpu: " << 1000*SEC << " ms \n";
+       Kokkos::View<int*>::HostMirror data_view = Kokkos::create_mirror_view(kokkosData);
        // Kokkos::deep_copy is used to bring data back to the host
        Kokkos::deep_copy(data_view, kokkosData);
-       std::cout << "Kokkos View on ";
 
-       if (std::is_same<Kokkos::DefaultExecutionSpace, Kokkos::Cuda>::value) {
-           std::cout << "GPU\n";
-       } else {
-           std::cout << "Host\n";
-       }
-       std::cout << "After Kokkos (should be 2):" << data[1] << std::endl;
+       std::cout << "After Kokkos (should be 2):" << data_view[1] << std::endl;
     
        // Now create a DualView:
        constexpr int arraySize = 10;

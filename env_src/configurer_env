@@ -1026,7 +1026,7 @@ fi
 if [ "$TRUST_CC_BASE_EXTP" = "" ]
 then
    CC_BASE=`basename $TRUST_CC_BASE`
-   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ] || [ "$CC_BASE" = nvcc_wrapper ] 
+   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ] || [ "$CC_BASE" = nvcc_wrapper ]
    then
       TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
       TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
@@ -1242,10 +1242,9 @@ then
    echo "ADD_LD_LIBRARY_PATH \$ROCM_PATH/lib" >> $env
    # Detection de l'architecture de la carte AMD:
    ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
-   [ "$ROCM_ARCH" = "" ] && ROCM_ARCH=gfx90a # Adastra
-   # Pour la carte du PC AMD:
-   # https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
-   [ "$ROCM_ARCH" = gfx1032 ] && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
+   [ "$HOST" = adastra ] && ROCM_ARCH=gfx90a # Adastra
+   # Pour les cartes mal supportees (ex PC AMD): https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
+   [ "${ROCM_ARCH#gfx103}" != $ROCM_ARCH ] && ROCM_ARCH=gfx1030 && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
    echo "export ROCM_ARCH=$ROCM_ARCH # Carte AMD" >> $env
 fi
 
@@ -1814,16 +1813,18 @@ case $TRUST_ARCH_CC in
         if [ "$TRUST_USE_KOKKOS" = 1 ] && [ "$TRUST_USE_ROCM" = 1 ]
         then
            STDCPP="c++17"   # For Kokkos 4.x
-           CppFlags="-fgpu-rdc -Wno-openmp-mapping"
+           CppFlags="-Wno-openmp-mapping"
            #CppFlags=$CppFlags" -xhip" # Mode de compilation Hip incompatible avec OpenMP: https://github.com/ROCm/ROCm/discussions/2137 & https://github.com/burlen/cuda_plus_offload
         fi   
         CppFlags=$CppFlags" -O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
-        SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
+        #[ "$TRUST_CC_BASE_EXTP" != "" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
+	[ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
         SYSLIBS=$SYSLIBS" ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}" # Librairie GTL necessaire pour activer GPU-Direct
         F77Flags="-O3 -fPIC"
         F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
-        [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -default64"
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;

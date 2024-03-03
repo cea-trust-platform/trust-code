@@ -146,6 +146,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
       precond_option(is, "");
     }
+  /* Deprecated in ROCm 6.0.0 :
   else if (precond==(Motcle)"PairwiseAMG|Pairwise-AMG|PW-AMG") // Converge pas sur P0P1...
     {
       // Crashe parfois en parallele:
@@ -160,7 +161,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
 
       //pairwiseamg.SetKcycleFull(true); // default true
       precond_option(is, "");
-    }
+    } */
   /* Crash bizarre en sequentiel et parallele.
    * ToDo OpenMP travail sur les samples cg-rsamg_mpi.cpp et cg-rsamg.cpp
    Le support annonce que cg-rsamg_mpi pas supporte encore...: https://github.com/ROCmSoftwarePlatform/rocALUTION/issues/196

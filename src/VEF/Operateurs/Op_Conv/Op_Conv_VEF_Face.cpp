@@ -516,13 +516,13 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
               double *resu_addr = computeOnTheDevice(resu, "resu");
               double *flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
-#if ((defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__)) || (!defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__)))
+//#if ((defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__)) || (!defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__)))
               // Provisoire crash sur compilateur offload clang++ non Cray:
-              Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
-#else
+//              Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
+//#else
               start_timer();
               #pragma omp target teams if (computeOnDevice)
-#endif
+//#endif
               {
                 int face[4] {};
                 double vs[3] {};
