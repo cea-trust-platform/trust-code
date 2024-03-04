@@ -37,21 +37,10 @@
 #define _ARCH_H_
 
 #include <generique.h>
-// PL: stdlib.h necessaire pour exit() partout dans le code excepte g++>3.x?
-//#include <stdlib.h>
 
-#if defined(_COMPILE_AVEC_GCC_) || defined(_COMPILE_AVEC_PGCC)
-#define IOS_OPEN_MODE std::_Ios_Openmode
-#define IOS_FORMAT std::_Ios_Fmtflags
-#else
-#if defined(_COMPILE_AVEC_INTEL) || defined(_COMPILE_AVEC_CLANG)
+// The below used to differ according to compilers, but now should be standard:
 #define IOS_OPEN_MODE std::ios_base::openmode
 #define IOS_FORMAT std::ios_base::fmtflags
-#else
-#define IOS_OPEN_MODE long
-#define IOS_FORMAT long
-#endif
-#endif
 
 #ifdef __CYGWIN__
 void srand48(int) ;
