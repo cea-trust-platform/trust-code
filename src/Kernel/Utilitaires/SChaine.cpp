@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,20 +58,12 @@ using namespace std;
 SChaine::SChaine()
 {
   set_bin(0);
-  ostringstream *os = new ostringstream();
-  set_ostream(os);
+  ostream_ = std::make_unique<std::ostringstream>();
 }
 
 void SChaine::setf(IOS_FORMAT code)
 {
   Sortie::setf( code );
-  //  Cerr << "Error in SChaine::setf(IOS_FORMAT code)" << finl;
-  //  Process::exit();
-}
-
-SChaine::~SChaine()
-{
-
 }
 
 /*! @brief returns a copy of the string stored by the SChaine

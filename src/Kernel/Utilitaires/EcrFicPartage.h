@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ protected:
 
 private:
   OBuffer& get_obuffer();
-  OBuffer * obuffer_ptr_; // Pointeur : permet de ne pas inclure OBuffer.h
+  OBuffer * obuffer_ptr_ = nullptr; // Pointeur : permet de ne pas inclure OBuffer.h
 
   template <typename _TYPE_>
   int put_template(const _TYPE_* ob, int n, int pas)

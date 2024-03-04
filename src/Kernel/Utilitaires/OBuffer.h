@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@ class OBuffer : public Sortie
 
 public:
   OBuffer();
-  ~OBuffer() override;
   void new_buffer();
   void precision(int) override;
   int get_precision();
@@ -40,8 +39,13 @@ public:
 protected:
 
 private:
-  int precision_; // used to keep current precision when new_buffer() is called
-  std::ostringstream* buf_;
+  int precision_; ///< used to keep current precision when new_buffer() is called
+
+  /*! This pointer is just a (typed) view on the smart ptr hold by the base class (Sortie).
+   * The base class is managing the memory.
+   */
+  std::ostringstream* buf_ = nullptr;
+
   std::string string_;
 };
 

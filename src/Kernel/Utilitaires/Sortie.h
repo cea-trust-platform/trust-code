@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <arch.h>
 #include <string>
+#include <memory>
 
 using std::ostream;
 using std::flush;
@@ -49,17 +50,21 @@ class Objet_U;
 class Sortie
 {
 public:
-  Sortie();
+  Sortie()
+  {
+    // Constructor does **not** instanciate ostream_ - typically done in derived classes
+  }
+
   Sortie(ostream& os);
   Sortie(const Sortie& os);
 
   Sortie& operator=(ostream& os);
   Sortie& operator=(Sortie& os);
 
-  ostream& get_ostream();
-  const ostream& get_ostream() const;
-  void set_ostream(ostream* os);
-  void set_col_width(const int );
+  inline ostream& get_ostream() { return *ostream_; }
+  inline const ostream& get_ostream() const { return *ostream_; }
+//  inline void set_ostream(ostream* os) { ostream_ = os; }
+  inline void set_col_width(int w) { col_width_ = w; }
 
   Sortie& operator <<(ostream& (*f)(ostream&));
   Sortie& operator <<(Sortie& (*f)(Sortie&));
@@ -102,16 +107,21 @@ public:
   virtual int put(const long  * ob, int n, int nb_colonnes=1);
 #endif
 
-  virtual ~Sortie();
+  virtual ~Sortie() {}
   virtual int set_bin(int bin);
-  int is_bin();
-  bool has_ostream() const;
-protected:
-  int bin_=0;
-  int col_width_=-1;
-private:
-  ostream * ostream_;
+  inline int is_bin() { return bin_; }
+  inline bool has_ostream() const { return ostream_ != nullptr; }
 
+protected:
+  int bin_ = 0;
+  int col_width_ = -1;
+
+  /*! A smart pointer to a std::ostream object, or any of its derived class.
+   * Explicit construction might be done in derived classes of Sortie.
+   */
+  std::unique_ptr<ostream> ostream_;
+
+private:
   template <typename _TYPE_>
   int put_template(const _TYPE_* ob, int n, int nb_col);
 

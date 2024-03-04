@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,13 +24,10 @@ Sortie_Brute::Sortie_Brute() :
   Sortie()
 {
   set_bin(1);
-  ostringstream *os = new ostringstream();  // deletion in Sortie destructor
-  set_ostream(os);
+
+  ostream_ = std::make_unique<std::ostringstream>();
 }
 
-Sortie_Brute::~Sortie_Brute()
-{
-}
 
 /*! @brief returns a pointer to the internal data.
  *

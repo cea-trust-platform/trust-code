@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@ class SChaine :  public Sortie
 {
 public:
   SChaine();
-  ~SChaine() override;
   const char* get_str() const;
   unsigned get_size() const;
   void setf(IOS_FORMAT code) override;

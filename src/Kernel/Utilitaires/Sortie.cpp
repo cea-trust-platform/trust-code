@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,12 +23,6 @@
 const Separateur finl(Separateur::ENDL);
 const Separateur tspace(Separateur::SPACE);
 
-// Constructeurs
-Sortie::Sortie()
-{
-  ostream_=0;
-}
-
 void Sortie::setf(IOS_FORMAT code)
 {
   if(ostream_)
@@ -41,70 +35,49 @@ void Sortie::precision(int pre)
     ostream_->precision(pre);
 }
 
-void Sortie::set_col_width(int w) { col_width_ = w; }
-
 Sortie::Sortie(ostream& os)
 {
   if(os.rdbuf())
-    {
-      ostream_ = new ostream(os.rdbuf());
-    }
+    ostream_ = std::make_unique<ostream>(os.rdbuf());
   else
-    {
-      Process::exit();
-    }
+    Process::exit();
 }
 
 Sortie::Sortie(const Sortie& os)
 {
   if (os.has_ostream())
     {
-      Cerr<<"we try to copy a Sortie with ostream !!!"<<finl;
+      Cerr<<"we try to copy a Sortie with a non-empty std::ostream!!!"<<finl;
       abort();
-      ostream_ = new ostream(os.get_ostream().rdbuf());
     }
-  else
-    ostream_=0;
 }
 
 // Operateurs d'affectation
 Sortie& Sortie::operator=(ostream& os)
 {
-  if(ostream_)
-    delete ostream_;
-  ostream_ = new ostream(os.rdbuf());
+  // Make a new ostream_:
+  ostream_ = std::make_unique<ostream>(os.rdbuf());
   return *this;
 }
 
 Sortie& Sortie::operator=(Sortie& os)
 {
-  if(ostream_)
-    delete ostream_;
   if (os.has_ostream())
     {
-      Cerr<<"we try to copy a Sortie with ostream !!!"<<finl;
+      Cerr<<"we try to copy a Sortie with a non-empty std::stream!!!"<<finl;
       abort();
-      ostream_ = new ostream(os.get_ostream().rdbuf());
     }
-  else
-    ostream_=0;
+  else  // We are copying from a void Sortie - make sure we clean our side:
+    ostream_ = nullptr;
   return *this;
 }
-
-ostream& Sortie::get_ostream() { return *ostream_; }
-
-const ostream& Sortie::get_ostream() const { return *ostream_; }
-
-void Sortie::set_ostream(ostream* os) { ostream_ = os; }
 
 int Sortie::add_col(const double ob)
 {
   if (bin_ or col_width_ == -1)
     abort();
   else
-    {
-      (*ostream_) << std::right << std::setw(col_width_) << ob;
-    }
+    (*ostream_) << std::right << std::setw(col_width_) << ob;
   return ostream_->good();
 }
 
@@ -113,9 +86,7 @@ int Sortie::add_col(const char * ob)
   if (bin_ or col_width_ == -1)
     abort();
   else
-    {
-      (*ostream_) << std::right << std::setw(col_width_) << ob;
-    }
+    (*ostream_) << std::right << std::setw(col_width_) << ob;
   return ostream_->good();
 }
 
@@ -264,13 +235,6 @@ Sortie& Sortie::operator <<(const char* ob)
 Sortie& Sortie::operator <<(const std::string& str) { return (*this) << str.c_str(); }
 
 
-Sortie::~Sortie()
-{
-  if(ostream_)
-    delete ostream_;
-  ostream_=0;
-}
-
 /*! @brief Change le mode d'ecriture du fichier.
  *
  * Cette methode peut etre appelee n'importe quand. Attention
@@ -293,6 +257,3 @@ int Sortie::set_bin(int bin)
   return bin_;
 }
 
-bool Sortie::has_ostream() const { return (ostream_!=0); }
-
-int Sortie::is_bin() { return bin_; }

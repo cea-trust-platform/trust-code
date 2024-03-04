@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,20 +21,12 @@ OBuffer::OBuffer() :
   new_buffer();
 }
 
-OBuffer::~OBuffer()
-{
-  if(buf_)
-    delete buf_;
-  buf_=0;
-  set_ostream(buf_); // Empeche Sortie::~Sortie de detruire l'objet une deuxieme fois.
-}
-
 void OBuffer::new_buffer()
 {
-  if(buf_)
-    delete buf_;
-  buf_ = new std::ostringstream();
-  set_ostream(buf_);
+  ostream_ = std::make_unique<std::ostringstream>();
+  // Typed view - memory is managed by Sortie:
+  buf_ = static_cast<std::ostringstream *>(ostream_.get());
+
   buf_->setf(ios::scientific);
   buf_->precision(precision_);
 }
@@ -75,8 +67,8 @@ void OBuffer::put_null_char()
  */
 const char* OBuffer::str()
 {
-// Need a copy:
-  string_ = buf_->str();
+  // Need a copy:
+  string_ = std::string(buf_->str());
   return string_.c_str();
 }
 

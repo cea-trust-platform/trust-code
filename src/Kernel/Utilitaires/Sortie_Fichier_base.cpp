@@ -30,40 +30,20 @@ Sortie& Sortie_Fichier_base::printOn(Sortie& s) const
 {
   throw;
 }
-Sortie_Fichier_base::Sortie_Fichier_base()
+
+Sortie_Fichier_base::Sortie_Fichier_base() : Sortie()
 {
-  bin_=0;
-  ofstream_=0;
-  set_ostream(ofstream_);
-  internalBuff_=0;
   set_toFlush();
 }
 
-Sortie_Fichier_base::Sortie_Fichier_base(const char* name, IOS_OPEN_MODE mode)
+Sortie_Fichier_base::Sortie_Fichier_base(const char* name, IOS_OPEN_MODE mode) : Sortie()
 {
-  bin_=0;
-  internalBuff_=0;
-  ofstream_ = 0;
   ouvrir(name,mode);
-  /*
-  new ofstream(name,mode);
-  set_toFlush();
-  set_buffer();
-  set_ostream(ofstream_);
-  #ifdef ver_file
-  if (Process::me()!=0)
-    {
-      Cerr<<Process::me()<<name<<" :"<<__FILE__<<(int)__LINE__<<finl;
-      ::abort();
-    }
-  #endif
-  */
 }
 
 Sortie_Fichier_base::~Sortie_Fichier_base()
 {
-  // il est important de ne pas detruire ofstream_
-  Sortie_Fichier_base::close();
+  close();
 }
 
 void Sortie_Fichier_base::set_toFlush()
@@ -121,14 +101,11 @@ void Sortie_Fichier_base::close()
     {
       ofstream_->flush();
       ofstream_->close();
-      //  Destruction faite dans ~Sortie :
-      //  delete ofstream_;
-      //  ofstream_=0;
     }
   if (internalBuff_)
     {
       delete[] internalBuff_;
-      internalBuff_=0;
+      internalBuff_ = nullptr;
     }
 }
 
@@ -191,25 +168,21 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
     }
 #endif
   if (++counters[name]%100==0) Cerr << "Warning, file " << name << " has been opened/closed " << counters[name] << " times..." << finl;
-  if(ofstream_)
-    delete ofstream_;
   IOS_OPEN_MODE ios_mod=mode;
   int new_bin=0;
   if (bin_)
     {
 
       if (ios_mod==ios::out)
-        {
-          new_bin=1;
-        }
+        new_bin=1;
       else
         assert((ios_mod==ios::app)||(ios_mod==(ios::app|ios::out)));
       ios_mod=ios_mod|ios::binary;
     }
-  ofstream_ = new ofstream(name,ios_mod);
+  ostream_ = std::make_unique<ofstream>(name,ios_mod); // will delete any existing ostream_ member
+  ofstream_ = static_cast<ofstream *>(ostream_.get()); // the typed version of the pointer for this class.
   set_toFlush();
   set_buffer();
-  set_ostream(ofstream_);
   if (!ofstream_->good())
     {
       Cerr << "Error when opening the file " << name << ". File was opened " << counters[name] << " time(s) ..." << finl;
@@ -238,9 +211,9 @@ Sortie& Sortie_Fichier_base::flush()
   if (toFlush()) ofstream_->flush();
   return *this;
 }
+
 bool Sortie_Fichier_base::is_open()
 {
-
   return (ofstream_&&get_ofstream().is_open()) ;
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,32 +18,36 @@
 OutputCommBuffer::OutputCommBuffer()
 {
   bin_ = 1;
-  set_ostream(& stream_);
+
+  ostream_ = std::make_unique<std::ostringstream>();
+  // Typed view - memory is managed by Sortie:
+  stream_ = static_cast<std::ostringstream *>(ostream_.get());
+
   // Initialisation avec les 2 lignes suivantes car sinon plantage sur PAR_Cx 7 procs sur AIX:
   // La STD est specifique sur cette machine
   *this << "";
-  stream_.seekp(0);
+  stream_->seekp(0);
 }
 
 OutputCommBuffer::~OutputCommBuffer()
 {
   clear();
-  set_ostream(0);
 }
 
 const char * OutputCommBuffer::get_buffer()
 {
   // Need a copy:
-  string_ = stream_.str();
+  string_ = stream_->str();
   return string_.c_str();
 }
 
 int OutputCommBuffer::get_buffer_size()
 {
-  return (int)stream_.tellp();
+  return (int)stream_->tellp();
 }
 
 void OutputCommBuffer::clear()
 {
-  stream_.seekp(0);
+  if (stream_)
+    stream_->seekp(0);
 }

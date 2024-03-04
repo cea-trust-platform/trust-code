@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,10 +44,14 @@ public:
   int get_buffer_size();
   ostringstream& get_stream()
   {
-    return stream_;
+    return *stream_;
   };
 private:
-  ostringstream stream_;
+  /*! This pointer is just a (typed) view on the smart ptr hold by the base class (Sortie).
+   * The base class is managing the memory.
+   */
+  ostringstream * stream_ = nullptr;
+
   std::string string_;
 };
 #endif
