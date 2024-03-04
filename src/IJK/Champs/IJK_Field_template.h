@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,11 +41,7 @@ protected:
   int duplique() const override
   {
     IJK_Field_template *xxx = new IJK_Field_template(*this);
-    if (!xxx)
-      {
-        Cerr << "Not enough memory " << finl;
-        Process::exit();
-      }
+    if (!xxx) Process::exit("Not enough memory !");
     return xxx->numero();
   }
 
@@ -71,14 +67,12 @@ public:
   void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);
   _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
 
-  int monofluide_variable_ ;
-  int order_interpolation_ ;
+  int monofluide_variable_ = -123, order_interpolation_ = -123;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmin_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmax_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
-  double rho_v_;
-  double rho_l_;
+  double rho_v_ = -123., rho_l_ = -123.;
 
 protected:
   REF(IJK_Splitting) splitting_ref_;

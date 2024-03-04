@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,16 +34,12 @@ public:
   void reynolds_stress(DoubleTab& R_ij) const override;
   void k_over_eps(DoubleTab& k_sur_eps) const override;
   void eps(DoubleTab& eps) const override;
-  inline double limiteur() const {return limiter_;};
-  int gradu_required() const override {  return 1; };
-
-  const double& get_l_melange() const
-  {
-    return l_melange_;
-  };
+  inline double limiteur() const {return limiter_;}
+  int gradu_required() const override {  return 1; }
+  const double& get_l_melange() const { return l_melange_; }
 
 protected:
-  double l_melange_;
+  double l_melange_ = -123.;
   double limiter_ = 0.01;
 };
 

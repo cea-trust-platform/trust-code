@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,17 +23,14 @@
 Implemente_instanciable(Viscosite_turbulente_l_melange, "Viscosite_turbulente_l_melange", Viscosite_turbulente_base);
 // XD type_diffusion_turbulente_multiphase_l_melange type_diffusion_turbulente_multiphase_deriv l_melange 1 not_set
 
-Sortie& Viscosite_turbulente_l_melange::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Viscosite_turbulente_l_melange::printOn(Sortie& os) const { return os; }
 
 Entree& Viscosite_turbulente_l_melange::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("l_melange", &l_melange_); // XD_ADD_P floattant not_set
+  param.ajouter("l_melange", &l_melange_, Param::REQUIRED); // XD_ADD_P floattant not_set
   param.lire_avec_accolades_depuis(is);
-  Cout << "l_melange = " << l_melange_ << finl ;
+  Cerr << "l_melange = " << l_melange_ << finl ;
 
   pb_->creer_champ("taux_cisaillement"); //On en aura besoin pour le calcul de la viscosite turbulente
   pb_->creer_champ("distance_paroi_globale"); // Besoin de distance a la paroi
