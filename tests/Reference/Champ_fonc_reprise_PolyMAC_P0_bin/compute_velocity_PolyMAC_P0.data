@@ -38,7 +38,7 @@ lire  sch
 associate  pb_fluide  sch
 
 
-PolyMAC  dis
+PolyMAC_P0  dis
 discretize  pb_fluide  dis
 
 
@@ -76,7 +76,7 @@ read  pb_fluide
         }
     }
 
-    sauvegarde_simple  binaire  velocity_PolyMAC_P0P1NC.sauv
+    sauvegarde_simple  binaire  velocity_PolyMAC_P0.sauv
 
 }
 

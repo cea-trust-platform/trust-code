@@ -25,7 +25,6 @@ associate  pb_fluide  dom_fluide
 schema_euler_implicite  sch
 lire  sch
 {
-    tinit         23.8
     tmax          10000.0
     dt_max        2e-1
     facsec        1e8
@@ -60,7 +59,7 @@ read  pb_fluide
         solveur_pression  petsc  cholesky  { }
         convection  { amont }
         diffusion   { }
-        initial_conditions   { vitesse  champ_fonc_reprise  binaire  velocity_PolyMAC_P0P1NC.sauv  pb_fluide  vitesse  last_time }
+        initial_conditions   { vitesse champ_uniforme 2 0 0  }
         boundary_conditions
         {
             bord_bas     paroi_fixe
@@ -79,6 +78,7 @@ read  pb_fluide
             vitesse      elem
         }
     }
+    resume_last_time binaire velocity_PolyMAC.sauv
 }
 
 
