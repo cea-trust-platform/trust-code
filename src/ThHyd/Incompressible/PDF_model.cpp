@@ -53,10 +53,7 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
 {
   if (un_mot == "vitesse_imposee_fonction")
     {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << " PDF_model is reading imposed velocity... " << finl;
-        }
+      Cerr << " PDF_model is reading imposed velocity... " << finl;
       type_vitesse_imposee_ = 1;
       Nom expr_vit_imp;
       int dim = Objet_U::dimension;

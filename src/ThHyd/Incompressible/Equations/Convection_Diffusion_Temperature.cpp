@@ -161,15 +161,13 @@ void Convection_Diffusion_Temperature::discretiser()
 
 
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  if (Process::je_suis_maitre())
-    Cerr << "Energy equation discretization" << finl;
+  Cerr << "Energy equation discretization" << finl;
   dis.temperature(schema_temps(), domaine_dis(), la_temperature);
   champs_compris_.ajoute_champ(la_temperature);
 
   Equation_base::discretiser();
 
-  if (Process::je_suis_maitre())
-    Cerr << "Convection_Diffusion_Temperature::discretiser() ok" << finl;
+  Cerr << "Convection_Diffusion_Temperature::discretiser() ok" << finl;
 }
 
 int Convection_Diffusion_Temperature::preparer_calcul()

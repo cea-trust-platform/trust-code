@@ -431,8 +431,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       // fich << flush ; Ne flushe pas en binaire !
       fich.flush();
     }
-  if (Process::je_suis_maitre())
-    Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_, "%e") << finl;
+  Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_, "%e") << finl;
   if (!est_egal(temps_, equation().probleme().schema_temps().temps_courant()))
     {
       Cerr.precision(12);

@@ -63,8 +63,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   Nom fichier = dom.le_nom();
   fichier += "_Wall_length.xyz";
 
-  if (Process::je_suis_maitre())
-    Cerr << "In Distanceparoi::interpreter : Generate faces" << finl;
+  Cerr << "In Distanceparoi::interpreter : Generate faces" << finl;
   Faces* les_faces_ptr=new(Faces);
   Faces& les_faces= *les_faces_ptr;
 
@@ -92,8 +91,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
                                      les_faces,
                                      elem_faces);
   }
-  if (Process::je_suis_maitre())
-    Cerr << "In Distanceparoi::interpreter : Generate faces finished" << finl;
+  Cerr << "In Distanceparoi::interpreter : Generate faces finished" << finl;
 
   DoubleTab xp;                                     // centres de gravite des elements
   DoubleTab xv;                                     // centres de gravite des faces
@@ -117,8 +115,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
     }
   else
     {
-      if (Process::je_suis_maitre())
-        Cerr << " Generation of the external file named : " << fichier << finl;
+      Cerr << " Generation of the external file named : " << fichier << finl;
 
       for (int b=0; b<nb_paroi; b++)
         {

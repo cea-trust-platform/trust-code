@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -688,8 +688,7 @@ void Milieu_base::resetTime(double time)
 
 void Milieu_base::creer_alpha()
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Milieu_base::creer_alpha (champ non lu)" << finl;
+  Cerr << "Milieu_base::creer_alpha (champ non lu)" << finl;
   assert(lambda.non_nul());
   assert(rho.non_nul());
   assert(Cp.non_nul());

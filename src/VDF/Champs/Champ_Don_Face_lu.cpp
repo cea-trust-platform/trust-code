@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,8 +55,7 @@ Entree& Champ_Don_Face_lu::readOn(Entree& is)
   is >> dim;
   dimensionner(nb_faces, dim);
   is >> nom;
-  if (Process::je_suis_maitre())
-    Cerr << "Champ_Don_Face_lu: lecture du fichier " << nom << finl;
+  Cerr << "Champ_Don_Face_lu: lecture du fichier " << nom << finl;
   EFichier fic(nom);
   fic.set_check_types(1); //Remplace UFichier
 
@@ -105,8 +104,7 @@ Entree& Champ_Don_Face_lu::readOn(Entree& is)
   int erreur = mp_sum(nb_faces - nb_faces_affectees);
   if (erreur)
     {
-      if (Process::je_suis_maitre())
-        Cerr << "Erreur dans Champ_Don_Face_lu.\n" << erreur << " faces n'ont pas ete affectees.\n" << "Voir la liste des faces dans les fichiers .log" << finl;
+      Cerr << "Erreur dans Champ_Don_Face_lu.\n" << erreur << " faces n'ont pas ete affectees.\n" << "Voir la liste des faces dans les fichiers .log" << finl;
       Journal() << "Champ_Don_Face_lu. Liste des faces non affectees :\n";
       for (i = 0; i < nb_faces; i++)
         if (!flag[i])

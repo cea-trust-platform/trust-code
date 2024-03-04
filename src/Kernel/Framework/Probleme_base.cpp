@@ -1154,8 +1154,7 @@ void Probleme_base::sauver_xyz(int verbose) const
       nom_fich_xyz += "_";
       nom_fich_xyz += le_nom();
       nom_fich_xyz += ".xyz";
-      if (Process::je_suis_maitre())
-        Cerr << "Creation of " << nom_fich_xyz << " (" << EcritureLectureSpecial::get_Output() << ") for resumption of a calculation with a different number of processors." << finl;
+      Cerr << "Creation of " << nom_fich_xyz << " (" << EcritureLectureSpecial::get_Output() << ") for resumption of a calculation with a different number of processors." << finl;
     }
   else
     {

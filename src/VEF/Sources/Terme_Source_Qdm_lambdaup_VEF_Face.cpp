@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -165,12 +165,9 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
   if( (rapport>cible) && (rapport>rapport_old)  )  l*=0.95;
   l=std::min(lambda, lambda_max);
   l=std::max(lambda_min, lambda);
-  if (Process::je_suis_maitre())
-    {
-      Cerr << "|ubar| = " << normbar << finl;
-      Cerr << "|ubar|/|uprim| = " << rapport << finl;
-      Cerr << "lambda " << lambda << finl;
-    }
+  Cerr << "|ubar| = " << normbar << finl;
+  Cerr << "|ubar|/|uprim| = " << rapport << finl;
+  Cerr << "lambda " << lambda << finl;
   for(face=0; face<nb_faces; face++)
     for(k=0; k< dimension; k++)
       {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -554,16 +554,13 @@ int Schema_Implicite_Multi_TimeStep_base::reprendre(Entree& s)
         facsec_ = facsec_lu;
       else
         facsec_ = facsec_max_;
-      if (Process::je_suis_maitre()) Cerr << "Facsec after reading in " << nom_fichier << " : " << facsec_ << finl;
-      if (Process::je_suis_maitre()) Cerr << "Residu after reading in " << nom_fichier << " : " << residu_ << finl;
+      Cerr << "Facsec after reading in " << nom_fichier << " : " << facsec_ << finl;
+      Cerr << "Residu after reading in " << nom_fichier << " : " << residu_ << finl;
     }
   else
     {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "The readen facsec in " << nom_fichier << " : " << facsec_lu << finl;
-          Cerr << "is not used since it is lower than the facsec from the data set : " << facsec_ << finl;
-        }
+      Cerr << "The readen facsec in " << nom_fichier << " : " << facsec_lu << finl;
+      Cerr << "is not used since it is lower than the facsec from the data set : " << facsec_ << finl;
     }
   return 1;
 }

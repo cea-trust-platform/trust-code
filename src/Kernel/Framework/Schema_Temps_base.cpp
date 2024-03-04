@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -413,16 +413,14 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
  */
 Entree& Schema_Temps_base::lire_nb_pas_dt_max(Entree& is)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Reading of the maximum number of time steps"  << finl;
+  Cerr << "Reading of the maximum number of time steps"  << finl;
   is >> nb_pas_dt_max_;
   return is;
 }
 
 Entree& Schema_Temps_base::lire_periode_sauvegarde_securite_en_heures(Entree& is)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Reading of the safety backup period in hours"  << finl;
+  Cerr << "Reading of the safety backup period in hours"  << finl;
   is >> periode_cpu_sans_sauvegarde_;
   periode_cpu_sans_sauvegarde_*=3600; // Conversion en secondes
   limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
@@ -431,8 +429,7 @@ Entree& Schema_Temps_base::lire_periode_sauvegarde_securite_en_heures(Entree& is
 
 Entree& Schema_Temps_base::lire_temps_cpu_max(Entree& is)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Reading the max cpu time allowed"  << finl;
+  Cerr << "Reading the max cpu time allowed"  << finl;
   is >> tcpumax_;
   tcpumax_*=3600; // Conversion en secondes
   return is;

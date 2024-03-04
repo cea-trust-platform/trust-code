@@ -118,8 +118,7 @@ Entree& Domaine_Poly_base::readOn(Entree& is)
  */
 void Domaine_Poly_base::reordonner(Faces& les_faces)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Domaine_Poly_base::reordonner faces " << finl;
+  Cerr << "Domaine_Poly_base::reordonner faces " << finl;
 
   // Construction de rang_elem_non_std_ :
   //  C'est un vecteur indexe par les elements du domaine.

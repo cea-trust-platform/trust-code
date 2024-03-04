@@ -86,17 +86,14 @@ Entree& Op_Diff_VEFP1NCP1B_Face::readOn(Entree& s )
   //Verification de la syntaxe
   s >> motlu;
   if (motlu!=accouverte)
-    if (Process::je_suis_maitre())
-      {
-        Cerr << "Erreur Op_Diff_VEFP1NCP1B_Face::readOn()" << finl;
-        Cerr << "Depuis la 1.5.5, la syntaxe du mot cle P1NCP1B a change."
-             << finl;
-        Cerr << "Il faut commencer par une accolade ouvrante {" << finl;
-        Cerr << "et les options eventuelles sont entre les accolades :"
-             << finl;
-        Cerr << "Diffusion { P1NCP1B } -> Diffusion { P1NCB { } }" << finl;
-        exit();
-      }
+    {
+      Cerr << "Erreur Op_Diff_VEFP1NCP1B_Face::readOn()" << finl;
+      Cerr << "Depuis la 1.5.5, la syntaxe du mot cle P1NCP1B a change." << finl;
+      Cerr << "Il faut commencer par une accolade ouvrante {" << finl;
+      Cerr << "et les options eventuelles sont entre les accolades :" << finl;
+      Cerr << "Diffusion { P1NCP1B } -> Diffusion { P1NCB { } }" << finl;
+      exit();
+    }
 
 
   //Lecture des parametres
@@ -121,11 +118,10 @@ Entree& Op_Diff_VEFP1NCP1B_Face::readOn(Entree& s )
 
           if (Objet_U::dimension==3)
             s >> alphaA;
-          else if (Process::je_suis_maitre())
+          else
             {
               Cerr << "Erreur Op_Diff_VEFP1NCP1B_Face::readOn()" << finl;
-              Cerr << "L'option alphaA ne peut etre activee qu'en "
-                   << "dimension 3" << finl;
+              Cerr << "L'option alphaA ne peut etre activee qu'en " << "dimension 3" << finl;
               Cerr << "Sortie du programme" << finl;
               exit();
             }
@@ -148,14 +144,11 @@ Entree& Op_Diff_VEFP1NCP1B_Face::readOn(Entree& s )
 
         default :
 
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "Erreur Op_Diff_VEFP1NCP1B_Face::readOn()" << finl;
-              Cerr << "Mot clef " << motlu << " non reconnu" << finl;
-              Cerr << "Les mots clef reconnus sont : " << les_mots << finl;
-              Cerr << "Sortie du programme" << finl;
-              exit();
-            }
+          Cerr << "Erreur Op_Diff_VEFP1NCP1B_Face::readOn()" << finl;
+          Cerr << "Mot clef " << motlu << " non reconnu" << finl;
+          Cerr << "Les mots clef reconnus sont : " << les_mots << finl;
+          Cerr << "Sortie du programme" << finl;
+          exit();
           break;
         }//fin du switch
 

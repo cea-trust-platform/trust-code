@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,12 +92,11 @@ Entree& Op_Diff_VEF_Face_Stab::readOn(Entree& s )
 
   s>>motlu;
   if (motlu!=accouverte)
-    if (Process::je_suis_maitre())
-      {
-        Cerr<<"Error in Op_Diff_VEF_Face_Stab::readOn()"<<finl;
-        Cerr<<"Option keywords must be preceded by an open brace"<<finl;
-        Process::exit();
-      }
+    {
+      Cerr<<"Error in Op_Diff_VEF_Face_Stab::readOn()"<<finl;
+      Cerr<<"Option keywords must be preceded by an open brace"<<finl;
+      Process::exit();
+    }
 
   s>>motlu;
   while (motlu!=accfermee)
@@ -115,13 +114,10 @@ Entree& Op_Diff_VEF_Face_Stab::readOn(Entree& s )
           s>>new_jacobian_;
           break;
         default :
-          if (Process::je_suis_maitre())
-            {
-              Cerr<<"Error in Op_Diff_VEF_Face_Stab::readOn()"<<finl;
-              Cerr<<"Word "<<motlu<<" is unknown"<<finl;
-              Cerr<<"Known keywords are : "<<les_mots<<finl;
-              Process::exit();
-            }
+          Cerr<<"Error in Op_Diff_VEF_Face_Stab::readOn()"<<finl;
+          Cerr<<"Word "<<motlu<<" is unknown"<<finl;
+          Cerr<<"Known keywords are : "<<les_mots<<finl;
+          Process::exit();
           break;
         }
       s>>motlu;

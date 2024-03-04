@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,14 +72,11 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
   s >> motlu;
   if (motlu!=accouverte)
     {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::readOn()" << finl;
-          Cerr << "Depuis la 1.5.3, la syntaxe du mot cle EF_stab a change." << finl;
-          Cerr << "Il faut commencer par une accolade ouvrante {" << finl;
-          Cerr << "et les options eventuelles sont entre les accolades:" << finl;
-          Cerr << "Convection { EF_stab } -> Convection { EF_stab { } }" << finl;
-        }
+      Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::readOn()" << finl;
+      Cerr << "Depuis la 1.5.3, la syntaxe du mot cle EF_stab a change." << finl;
+      Cerr << "Il faut commencer par une accolade ouvrante {" << finl;
+      Cerr << "et les options eventuelles sont entre les accolades:" << finl;
+      Cerr << "Convection { EF_stab } -> Convection { EF_stab { } }" << finl;
       Process::exit();
     }
   s >> motlu;

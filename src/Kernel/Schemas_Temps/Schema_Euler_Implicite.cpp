@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -605,11 +605,8 @@ int Schema_Euler_Implicite::reprendre(Entree&)
     }
   else
     {
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "The readen facsec in " << nom_fichier << " : " << facsec_lu << finl;
-          Cerr << "is not used since it is lower than the facsec from the data set : " << facsec_ << finl;
-        }
+      Cerr << "The readen facsec in " << nom_fichier << " : " << facsec_lu << finl;
+      Cerr << "is not used since it is lower than the facsec from the data set : " << facsec_ << finl;
     }
   return 1;
 }

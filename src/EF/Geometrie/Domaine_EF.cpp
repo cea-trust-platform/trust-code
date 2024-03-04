@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -228,8 +228,7 @@ void Domaine_EF::swap(int fac1, int fac2, int nb_som_faces )
  */
 void Domaine_EF::reordonner(Faces& les_faces)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Domaine_EF::reordonner les_faces " << finl;
+  Cerr << "Domaine_EF::reordonner les_faces " << finl;
 
   // Construction de rang_elem_non_std_ :
   //  C'est un vecteur indexe par les elements du domaine.

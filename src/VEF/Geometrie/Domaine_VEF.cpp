@@ -155,8 +155,7 @@ void Domaine_VEF::swap(int fac1, int fac2, int nb_som_faces)
  */
 void Domaine_VEF::reordonner(Faces& les_faces)
 {
-  if (Process::je_suis_maitre())
-    Cerr << "Domaine_VEF::reordonner les_faces " << finl;
+  Cerr << "Domaine_VEF::reordonner les_faces " << finl;
 
   // Construction de rang_elem_non_std_ :
   //  C'est un vecteur indexe par les elements du domaine.
@@ -873,12 +872,9 @@ void Domaine_VEF::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_d
         Cerr << somme_nombre_aretes_superflues_prevues_par_domaine << " != " << total_nombre_aretes_superflues << finl;
         Process::exit();
       }
-  if (Process::je_suis_maitre())
-    {
-      Cerr << "Nombre total d'aretes superflues: " << somme_nombre_aretes_superflues_prevues_par_domaine << finl;
-      Cerr << "Nombre total de sommets non periodiques = " << total_nb_sommets_non_periodiques << finl;
-      Cerr << "Verification de l'egalite du nombre total d'aretes superflues et du nombre total de sommets: ";
-    }
+  Cerr << "Nombre total d'aretes superflues: " << somme_nombre_aretes_superflues_prevues_par_domaine << finl;
+  Cerr << "Nombre total de sommets non periodiques = " << total_nb_sommets_non_periodiques << finl;
+  Cerr << "Verification de l'egalite du nombre total d'aretes superflues et du nombre total de sommets: ";
   // Verification que le nombre d'aretes superflues et egal au nombre de sommets
   if (!est_egal(somme_nombre_aretes_superflues_prevues_par_domaine,total_nb_sommets_non_periodiques) && je_suis_maitre())
     {

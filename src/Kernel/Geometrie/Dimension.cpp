@@ -51,7 +51,6 @@ Entree& Dimension::interpreter(Entree& is)
   is >> dimension;
   // GF assert permet de tester facilement si un exec est compile avec ou sans les assert
   assert(dimension>0);
-  if (Process::je_suis_maitre())
-    Cerr << "Dimension::interpreter : dimension = " << dimension << finl;
+  Cerr << "Dimension::interpreter : dimension = " << dimension << finl;
   return is;
 }

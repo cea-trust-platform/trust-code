@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -321,12 +321,9 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
         else
           {
-            if (Process::je_suis_maitre())
-              {
-                Cerr << "Erreur Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre()" << finl;
-                Cerr << "Condition aux limites " << la_cl.que_suis_je() << " non codee."   << finl;
-                Cerr << "Sortie du programme." << finl;
-              }
+            Cerr << "Erreur Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre()" << finl;
+            Cerr << "Condition aux limites " << la_cl.que_suis_je() << " non codee."   << finl;
+            Cerr << "Sortie du programme." << finl;
             Process::exit();
           }//fin du else sur les autres conditions aux limites
 
@@ -1082,12 +1079,9 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
         }
       else
         {
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "Erreur Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords()" << finl;
-              Cerr << "Condition aux limites " << la_cl.que_suis_je() << " non codee."   << finl;
-              Cerr << "Sortie du programme." << finl;
-            }
+          Cerr << "Erreur Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords()" << finl;
+          Cerr << "Condition aux limites " << la_cl.que_suis_je() << " non codee."   << finl;
+          Cerr << "Sortie du programme." << finl;
           Process::exit();
         }//fin du else sur les autres conditions aux limites
     }
@@ -1280,12 +1274,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion(const DoubleTab& Kij, const Do
       return ajouter_antidiffusion_v2(Kij,Fij,transporte,resu);
 
     default :
-
-      if (Process::je_suis_maitre())
-        {
-          Cerr<<"Error in Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion()"<<finl;
-          Cerr<<"Version number "<<version_<<" of antidiffusive operator does not exist"<<finl;
-        }
+      Cerr<<"Error in Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion()"<<finl;
+      Cerr<<"Version number "<<version_<<" of antidiffusive operator does not exist"<<finl;
       Process::exit();
       break;
     }

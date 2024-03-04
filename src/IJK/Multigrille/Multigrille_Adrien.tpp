@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,8 +26,6 @@ template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::prepare_secmem_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x) const
 {
   double moyenne = somme_ijk(x);
-  // if (Process::je_suis_maitre())
-  //  Cout << "prepare secmem: somme initiale " << moyenne << finl;
   double nb_elem_tot = (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_I)
                        * (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_J)
                        * (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_K);

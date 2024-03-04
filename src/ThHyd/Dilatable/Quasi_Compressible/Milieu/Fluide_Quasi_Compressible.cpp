@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,21 +85,15 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine
 
       if (pression_imposee && traitement_PTh!=2)
         {
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-              Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
-            }
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
           Process::exit();
         }
 
       if (!pression_imposee && traitement_PTh!=1)
         {
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-              Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
-            }
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
           Process::exit();
         }
     }
