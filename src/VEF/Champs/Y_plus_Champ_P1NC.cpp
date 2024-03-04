@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ void Y_plus_Champ_P1NC::me_calculer(double tps)
     {
       const RefObjU& modele_turbulence = mon_champ().equation().get_modele(TURBULENCE);
       const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
-      if (mod_turb.loi_paroi().que_suis_je() == "loi_standard_hydr_diphasique_VEF")
+      if (mod_turb.loi_paroi()->que_suis_je() == "loi_standard_hydr_diphasique_VEF")
         mon_champ_->calcul_y_plus_diphasique(le_dom_Cl_VEF.valeur(), valeurs());
     }
   else
