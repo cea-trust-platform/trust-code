@@ -152,6 +152,7 @@ help()
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
    echo "-convert_data datafile        : Convert a data file to the new 1.9.1 syntax (milieu, interfaces, read_med and champ_fonc_med)."
+   echo "-quiet                        : Runs the TRUST case without producing any output on the terminal (stdout and stderr are redirected to /dev/null)."
 
    exit 0
 }
@@ -171,6 +172,7 @@ prm=""
 copy=""
 gdb=""
 taches=""
+quiet=""
 cpus_per_task=""
 gpus_per_node=""
 hintnomultithread=""
@@ -405,6 +407,9 @@ do
    elif [ "$1" = "-bigmem" ]
    then
       bigmem=1
+   elif [ "$1" = "-quiet" ]
+   then
+      quiet=" 1>/dev/null 2>&1"
    elif [ "$1" = "-ipm" ]
    then
       ipm=1
@@ -1280,9 +1285,9 @@ else
    [ "$cpus_per_task" != "" ] 	&& [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
-      run="$nsight $gdb $exec $NOM $PETSC_OPTIONS"
+      run="$nsight $gdb $exec $NOM $PETSC_OPTIONS $quiet"
    else
-      run="$nsight $TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
+      run="$nsight $TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS $quiet"
    fi
    if [ "$create_sub_file" ]
    then
