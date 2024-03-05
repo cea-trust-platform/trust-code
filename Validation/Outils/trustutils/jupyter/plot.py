@@ -22,7 +22,7 @@ from trustutils.jupyter.run import BUILD_DIRECTORY, saveFileAccumulator
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
-def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", skiprows=0):
+def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", skiprows=0, **kwargs):
     """
     Method for loading and saving files.
         
@@ -40,6 +40,8 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
         type of the data (default="float")
     skiprows : int
         initial lines skip when reading (default=0)
+    kwargs : dictionary
+        additional properties available in numpy.loadtxt() options
 
     Returns
     ------- 
@@ -56,7 +58,7 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
 
     try:
         if transpose:
-            matrix = np.loadtxt(data, dtype=dtype, skiprows=skiprows).T[index_column:nb]
+            matrix = np.loadtxt(data, dtype=dtype, skiprows=skiprows, **kwargs).T[index_column:nb]
         else:
             matrix = np.loadtxt(data, dtype=dtype, skiprows=skiprows)[index_column:nb]
     except:
