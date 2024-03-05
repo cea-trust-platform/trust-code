@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 #include <Noms.h>
+#include <unordered_map>
 
 class Champ_base;
 
@@ -40,15 +41,11 @@ public :
   // Same thing, but without raising:
   virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
   virtual void ajoute_champ(const Champ_base& champ);
-  virtual void ajoute_nom_compris(const Nom& nom);
   virtual const Noms liste_noms_compris() const;
-  //virtual Noms& liste_noms_compris();
 
 protected :
 
-  LIST(REF(Champ_base)) liste_champs_;
-  Noms liste_noms_;
-  Noms liste_noms_construits_;
+  std::unordered_map<std::string, REF(Champ_base)> liste_champs_;
 
 };
 

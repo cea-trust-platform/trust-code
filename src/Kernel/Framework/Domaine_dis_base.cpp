@@ -181,8 +181,6 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
       if (face_ok)
         typer_discretiser_ss_domaine(i);
     }
-  champs_compris_.ajoute_nom_compris("volume_maille");
-  champs_compris_.ajoute_nom_compris("mesh_numbering");
 }
 
 void Domaine_dis_base::creer_champ(const Motcle& motlu, const Probleme_base& pb)

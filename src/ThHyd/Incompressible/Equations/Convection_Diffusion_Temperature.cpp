@@ -35,10 +35,6 @@ Implemente_instanciable_sans_constructeur(Convection_Diffusion_Temperature,"Conv
 
 Convection_Diffusion_Temperature::Convection_Diffusion_Temperature()
 {
-//  champs_compris_.ajoute_nom_compris("temperature_paroi");
-  champs_compris_.ajoute_nom_compris("gradient_temperature");
-  champs_compris_.ajoute_nom_compris("h_echange_");
-  champs_compris_.ajoute_nom_compris("temperature_residu");
   eta = 1.0;
   is_penalized = 0;
   tag_indic_pena_global = -1;

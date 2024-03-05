@@ -35,14 +35,8 @@
 #include <Navier_Stokes_std.h>
 #include <Op_Conv_EF.h>
 
-Implemente_instanciable_sans_constructeur(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
+Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
 // XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
-
-Source_PDF_EF::Source_PDF_EF()
-{
-  champs_compris_.ajoute_nom_compris("u_star_ibm");
-  champs_compris_.ajoute_nom_compris("y_plus_ibm");
-}
 
 /*##################################################################################################
 ####################################################################################################

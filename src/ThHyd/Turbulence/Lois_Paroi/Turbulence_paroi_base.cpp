@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,6 @@ Turbulence_paroi_base::Turbulence_paroi_base()
 {
   nb_impr0_ = 0;
   nb_impr_ = 0;
-  champs_compris_.ajoute_nom_compris("u_star");
 }
 
 Sortie& Turbulence_paroi_base::printOn(Sortie& s) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,9 +32,6 @@ Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
 
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   noms_d_t_post_.dimensionner(pb.nb_phases()), d_t_post_.resize(pb.nb_phases());
-  for (int i = 0; i < pb.nb_phases(); i++)
-    champs_compris_.ajoute_nom_compris(noms_d_t_post_[i] = Nom("diffusivite_turbulente_") + pb.nom_phase(i));
-
   return is;
 }
 

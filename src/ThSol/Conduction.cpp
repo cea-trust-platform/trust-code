@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,13 +21,9 @@
 #include <Param.h>
 
 
-Implemente_instanciable_sans_constructeur(Conduction,"Conduction",Equation_base);
+Implemente_instanciable(Conduction,"Conduction",Equation_base);
 // XD Conduction eqn_base Conduction -1 Heat equation.
-Conduction::Conduction()
-{
-  // champs_compris_.ajoute_nom_compris("temperature_paroi");
-  champs_compris_.ajoute_nom_compris("temperature_residu");
-}
+
 /*! @brief Ecrit le type de l'equation sur un flot de sortie.
  *
  * @param (Sortie& s) un flot de sortie

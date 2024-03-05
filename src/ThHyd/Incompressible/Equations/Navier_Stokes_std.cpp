@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,16 +50,6 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   seuil_divU = 100.;
   cumulative_=0;
   raison_seuil_divU=-100;
-  champs_compris_.ajoute_nom_compris("vorticite");
-  champs_compris_.ajoute_nom_compris("critere_Q");
-  champs_compris_.ajoute_nom_compris("porosite_volumique");
-  champs_compris_.ajoute_nom_compris("y_plus");
-  champs_compris_.ajoute_nom_compris("reynolds_maille");
-  champs_compris_.ajoute_nom_compris("courant_maille");
-  champs_compris_.ajoute_nom_compris("taux_cisaillement");
-  champs_compris_.ajoute_nom_compris("pression_hydrostatique");
-  champs_compris_.ajoute_nom_compris("gradient_vitesse");
-  champs_compris_.ajoute_nom_compris("vitesse_residu");
 }
 
 /*! @brief Simple appel a:  Equation_base::printOn(Sortie&) Ecrit l'equation sur un flot de sortie.

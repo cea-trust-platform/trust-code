@@ -97,13 +97,7 @@ Entree& QDM_Multiphase::readOn(Entree& is)
 
   /* champs de vitesse par phase pour le postpro */
   noms_vit_phases_.dimensionner(pb.nb_phases()), vit_phases_.resize(pb.nb_phases());
-  for (int i = 0; i < pb.nb_phases(); i++)
-    champs_compris_.ajoute_nom_compris(noms_vit_phases_[i] = Nom("vitesse_") + pb.nom_phase(i));
-
   noms_grad_vit_phases_.dimensionner(pb.nb_phases()), grad_vit_phases_.resize(pb.nb_phases());
-  for (int i = 0; i < pb.nb_phases(); i++)
-    champs_compris_.ajoute_nom_compris(noms_grad_vit_phases_[i] = Nom("gradient_vitesse_") + pb.nom_phase(i));
-
   return is;
 }
 
