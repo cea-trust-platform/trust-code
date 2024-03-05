@@ -281,7 +281,6 @@ void main_pilote_icoco_3(Probleme_U& pb_to_solve, int nb_pas_dt_reset)
 {
   ProblemTrio pb;
 
-  Nom pb_name=pb_to_solve.le_nom();
   pb.initialize_pb(pb_to_solve);
 
   bool stop=false; // Does the Problem want to stop ?
