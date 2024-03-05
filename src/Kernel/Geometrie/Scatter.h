@@ -27,9 +27,8 @@ class Joints;
 
 class Scatter : public Interprete
 {
-  Declare_instanciable_sans_constructeur(Scatter);
+  Declare_instanciable(Scatter);
 public:
-  Scatter();
   Entree& interpreter(Entree&) override;
   virtual void lire_domaine(Nom&, Noms& liste_bords_periodiques);
   Domaine& domaine();
