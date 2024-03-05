@@ -94,9 +94,9 @@ then
    [ -f $TRUST_ROOT/Outils/TRIOXDATA/XTriou/Keywords.txt ] && cp $TRUST_ROOT/Outils/TRIOXDATA/XTriou/Keywords.txt  $TRUST_ROOT/doc/TRUST/Keywords.txt
    [ -f $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc.pdf ] && cp $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc.pdf  $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf
    # ajout de la doc pdf non geree en gestion de configuration
-   echo doc/TRUST/TRUST_tutorial.pdf >> build/Src.files
-   echo doc/TRUST/exercices/Tutorial_solutions.pdf >> build/Src.files
-   echo doc/TRUST/Baltik_tutorial.pdf >> build/Src.files
+   #echo doc/TRUST/TRUST_tutorial.pdf >> build/Src.files
+   #echo doc/TRUST/exercices/Tutorial_solutions.pdf >> build/Src.files
+   #echo doc/TRUST/Baltik_tutorial.pdf >> build/Src.files
    if [ ! -f "doc/TRUST/TRUST_Generic_documentation.pdf" ] || [ ! -f "doc/TRUST/TRUST_tutorial.pdf" ] || [ ! -f "doc/TRUST/exercices/Tutorial_solutions.pdf" ] || [ ! -f "doc/TRUST/Baltik_tutorial.pdf" ]
    then
       echo "Error doc !"
