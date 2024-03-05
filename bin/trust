@@ -1,7 +1,7 @@
 #!/bin/bash
-# Lancement de TRUST par clavier avec comme argument 
+# Lancement de TRUST par clavier avec comme argument
 # le nom du jeu de donnees et le nombre de processeurs
-# Variables d'environnements qui influencent le script: 
+# Variables d'environnements qui influencent le script:
 # exec (fixe au chemin global de l'executable a utiliser)
 # bigmem (fixee a 1 elle permet de lancer en batch sur des noeuds a 4Go de tantale)
 # node (fixee a 1 elle permet d'utiliser tous les processeurs d'un noeud)
@@ -13,7 +13,7 @@ then
 fi
 
 qsub_interactif()
-{   
+{
    # Provisoire qsub ne marche pas donc on lance direct:
    id=`cat $sub_file | qsub | $TRUST_Awk -F . '{print $1}'`
    # Attente de la fin du job
@@ -45,14 +45,14 @@ sbatch_interactif()
       then
          if [ "`echo $id | grep 'Job violates accounting'`" != "" ]
          then
-	    echo "Waiting, cause several jobs submitted:"
-	    squeue -u $me -p $queue
-	    sleep 60
-	 else
-	    # Unknown error
-            echo $id && exit -1 
-	 fi
-      fi     
+            echo "Waiting, cause several jobs submitted:"
+            squeue -u $me -p $queue
+            sleep 60
+         else
+            # Unknown error
+            echo $id && exit -1
+         fi
+      fi
    done
    id=`echo $id | $TRUST_Awk '/Submitted batch/ {print $NF}'`
    echo "Job $id submitted."
@@ -62,7 +62,7 @@ sbatch_interactif()
       sleep 3
    done
 }
-# Sur les dernieres machines du CCRT on utilise desormais un wrapper ccc_msub (au lieu de qsub, bsub,...) 
+# Sur les dernieres machines du CCRT on utilise desormais un wrapper ccc_msub (au lieu de qsub, bsub,...)
 # Il faut aussi utiliser ccc_mdel au lieu de qdel et ccc_mstat au lieu de qstat...
 ccc_msub_interactif()
 {
@@ -77,16 +77,16 @@ ccc_msub_interactif()
       then
          if [ "`echo $id | grep 'Job violates accounting'`" != "" ]
          then
-	    echo "Waiting, cause several jobs submitted:"
-	    #qstat -u $me $queue
-	    #ccc_mpstat -u $me $queue
-	    squeue -u $me -p $queue
-	    sleep 60
-	 else
-	    # Unknown error
-            echo $id && exit -1 
-	 fi
-      fi     
+            echo "Waiting, cause several jobs submitted:"
+            #qstat -u $me $queue
+            #ccc_mpstat -u $me $queue
+            squeue -u $me -p $queue
+            sleep 60
+         else
+            # Unknown error
+            echo $id && exit -1
+         fi
+      fi
    done
    id=`echo $id | $TRUST_Awk '/Session/ {print $4}'`
    echo "Job $id submitted."
@@ -110,7 +110,6 @@ help()
    echo "-html                         : Access to the doxygen documentation."
    echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
    echo "-edit                         : Edit datafile."
-#   echo "-xedit                        : Edit datafile with xdata."
    echo "-trustpy                      : Check the datafile's keywords with trustpy."
    echo "-xcheck                       : Check the datafile's keywords with xdata."
    echo "-xdata                        : Check and run the datafile's keywords with xdata."
@@ -118,7 +117,6 @@ help()
    echo "-mesh                         : Visualize the mesh(es) contained in the data file."
    echo "-eclipse-trust                : Generate Eclipse configuration files to import TRUST sources."
    echo "-eclipse-baltik               : Generate Eclipse configuration files to import BALTIK sources (TRUST project should have been configured under Eclipse)."
-#   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (GUI)."
    echo "-prm                          : Write a prm file (deprecated)."
@@ -134,7 +132,7 @@ help()
    echo "-valgrind                     : Run under valgrind."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
-   echo "-massif                       : Run massif tool (heap profile) from valgrind." 
+   echo "-massif                       : Run massif tool (heap profile) from valgrind."
    echo "-heaptrack                    : Run heaptrack (heap profile). Better than massif."
    echo "-advisor                      : Run advisor tool (vectorization)."
    echo "-vtune                        : Run vtune tool (profiling). Best profiler tool."
@@ -148,8 +146,8 @@ help()
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
    echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
    echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
-[ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
-#   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
+   [ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+   #[ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
    echo "-convert_data datafile        : Convert a data file to the new 1.9.1 syntax (milieu, interfaces, read_med and champ_fonc_med)."
    echo "-quiet                        : Runs the TRUST case without producing any output on the terminal (stdout and stderr are redirected to /dev/null)."
@@ -157,7 +155,7 @@ help()
    exit 0
 }
 binary=$exec
-ici=`pwd`   
+ici=`pwd`
 me=`whoami`
 edit=""
 xedit=""
@@ -199,20 +197,20 @@ do
       if [ "$1" = nedit ]
       then
          # Configure nedit
-	 Language_mode_TRUST.sh #-no_verbose
-	 exit 0
+         Language_mode_TRUST.sh #-no_verbose
+         exit 0
       elif [ "$1" = vim ]
       then
          # Configure vim
-	 configure_vim.sh && exit 0
+         configure_vim.sh && exit 0
       elif [ "$1" = emacs ]
       then
          # Configure emacs
-	 configure_emacs.sh && exit 0
+         configure_emacs.sh && exit 0
       elif [ "$1" = gedit ]
       then
          # Configure gedit
-	 configure_gedit.sh && exit 0
+         configure_gedit.sh && exit 0
       else
          help
       fi
@@ -228,8 +226,8 @@ do
          echo "No PDF reader found!"
          exit -1
       else
-	 echo "$doc not found!" 
-	 exit -1
+         echo "$doc not found!"
+         exit -1
       fi
    elif [ "$1" = "-html" ]
    then
@@ -249,9 +247,9 @@ do
       fi
    elif [ "$1" = "-baltik" ]
    then
-      [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1 
+      [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1
       shift
-      if [ "$1" != "" ] 
+      if [ "$1" != "" ]
       then
          baltik_name=$1
          mkdir -p $baltik_name
@@ -270,12 +268,12 @@ do
       rm -r -f src/Hello.* tests/Reference/New/Hello tests/Reference/New/new tests/Reference/Validation/Hello_world_jdd1 share/Validation/Rapports_automatiques/Hello_world
       echo "Running baltik_build_configure..."
       baltik_build_configure
-      echo "Read the README.BALTIK file to know more about Baltik projects." 
+      echo "Read the README.BALTIK file to know more about Baltik projects."
       #./configure && make check_optim
       exit 0
    elif [ "$1" = "-index" ]
    then
-      ($TRUST_WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  
+      ($TRUST_WEBBROWSER $TRUST_ROOT/index.html &) && exit 0
    elif [ "$1" = "-exec" ] ||  [ "$1" = "-exe" ]
    then
       shift
@@ -414,37 +412,37 @@ do
    then
       ipm=1
    elif [ "$1" = "-valgrind" ]
-   then 
+   then
       VALGRIND=1
    elif [ "$1" = "-valgrind_strict" ]
    then
       VALGRIND_STRICT=1
    elif [ "$1" = "-callgrind" ]
-   then 
+   then
       CALLGRIND=1
    elif [ "$1" = "-massif" ]
-   then 
+   then
       MASSIF=1
    elif [ "$1" = "-heaptrack" ]
    then
       HEAPTRACK=1
    elif [ "$1" = "-advisor" ]
-   then 
+   then
       ADVISOR=1
       [ "`advisor --help 2>/dev/null`" = "" ] && echo "advisor is not available." && exit
    elif [ "$1" = "-vtune" ]
-   then 
+   then
       VTUNE=1
       vtune=`ls /opt/intel/oneapi/vtune/latest/bin64/vtune 2>/dev/null`
       [ "$vtune" != "" ] && export PATH=`dirname $vtune`:$PATH
       [ "`vtune --help 2>/dev/null`" = "" ] && echo "vtune is not available." && exit
    elif [ "$1" = "-perf" ]
-   then 
+   then
       PERF=1
       rm -f perf.data
       [ ! -f /usr/bin/perf ] && echo "/usr/bin/perf doesn't exist." && exit
    elif [ "$1" = "-trace" ]
-   then 
+   then
       export VT_PCTRACE=15
       [ "`type traceanalyzer 2>/dev/null`" = "" ] && echo "traceanalyzer doesn't exist." && exit
    elif [ "$1" = "-nsys" ]
@@ -466,7 +464,7 @@ do
       exit $?
    elif [ "$1" = "-prm" ]
    then
-      prm=1 
+      prm=1
    elif [ "$1" = "-jupyter" ]
    then
       shift
@@ -478,14 +476,14 @@ do
       [ "`ls *.ipynb 2>/dev/null`" != "" ] && echo "" && echo "Fatal error: you already have .ipynb file inside `pwd`" && exit 255
       if [ "$1" != "" ]
       then
-      	 jy=$1
+         jy=$1
       else
-      	 if [ "`basename $ici`" = src ]
-      	 then
-      	    jy=`cd ..;basename $PWD`
-      	 else
-      	    jy=`basename $PWD`
-      	 fi
+         if [ "`basename $ici`" = src ]
+         then
+            jy=`cd ..;basename $PWD`
+         else
+            jy=`basename $PWD`
+         fi
       fi
       create_basic_jupyter_notebook.sh $jy
       exit $?
@@ -495,7 +493,7 @@ do
       option=""
       while [ "$1" != "" ]
       do
-	 option=$option" "$1
+         option=$option" "$1
          shift
       done
       cherche.ksh $option
@@ -506,24 +504,24 @@ do
       shift
       if [ "$1" = "" ]
       then
-	 help
+         help
       elif [ "$1" = all ]
       then
-	 # All test cases
-	 option=0 
+         # All test cases
+         option=0
       # elif [ "`ls $TRUST_TESTS/*/$1/$1.lml.gz 2>/dev/null`" != "" ]
       elif [ "`find $TRUST_TESTS/ -follow -name $1.lml.gz -print 2>/dev/null | sort`" != "" ]
       then
-	 # Single test case
-	 option=$1   
+         # Single test case
+         option=$1
       elif [ -f $1 ]
       then
-	 # List of test cases in a file
-	 option=$1
+         # List of test cases in a file
+         option=$1
       else
-	 # Test cases covering a method::class
-	 Qui $1 || exit -1
-	 option=liste_cas
+         # Test cases covering a method::class
+         Qui $1 || exit -1
+         option=liste_cas
       fi
       # Lorsque lance depuis ctest on desactive l'envoi de mail
       # sinon si 1000 cas tests -> 1000 mails (1 par cas test)
@@ -566,13 +564,13 @@ do
    elif [ "$1" = "-clean" ]
    then
       for ext in list lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
-      do 
-	 echo "rm *.$ext files."
-	 rm -f *.$ext
+      do
+         echo "rm *.$ext files."
+         rm -f *.$ext
       done
       # echo "rm *.lata.* core.* err.* out.*"
       # rm -f *.lata.* core.* err.* out.*
-	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
+      # A priori c est un peu fort : err.* out.* ne sont pas crees au run.
       echo "rm *.lata.* / *.lata_single / core.* / convert_jdd files."
       rm -f *.lata_single core.* convert_jdd
       echo "rm *.cgns files."
@@ -592,13 +590,13 @@ do
    else
       # Unknown option
       supported_option=0
-   fi 
+   fi
    # Option is known, jump to next
    [ "$supported_option" = 1 ] && shift
 done
 # deplace pas besoin d exec pour clean help ....
 [ "$exec" = "" ] && echo "Error: the variable \$exec containing TRUST binary path is undefined." && exit -1
-[ ! -f $exec ] && echo "Error: the binary pointed by the variable \$exec=$exec does NOT exist." && exit -1  
+[ ! -f $exec ] && echo "Error: the binary pointed by the variable \$exec=$exec does NOT exist." && exit -1
 
 ############
 # Filename #
@@ -611,13 +609,13 @@ NOM=`basename $ici` && [ ${#1} != 0 ] && NOM=$1 && NOM=${NOM%.data} && shift
 ###############
 # si $1 non vide et pas de tiret au debut
 #export NB_PROCS=1 && [ ${#1} != 0 ] && [ ${1#-} = $1 ] && NB_PROCS=$1 && USE_MPIRUN=1 && shift
-export NB_PROCS=1 
+export NB_PROCS=1
 [ $1 -eq 0 ] 2>/dev/null
 code_retour=$?
 # verifie que $1 est une valeur numerique
 if [ $code_retour -eq 0 -o $code_retour -eq 1 ]
-then 
-  [ ${#1} != 0 ] && [ ${1#-} = $1 ] && export NB_PROCS=$1 && USE_MPIRUN=1 && shift
+then
+   [ ${#1} != 0 ] && [ ${1#-} = $1 ] && export NB_PROCS=$1 && USE_MPIRUN=1 && shift
 fi
 # verifie si le code est compile en parallele ou non
 [ "$TRUST_DISABLE_MPI" = 1 ] && [ "$USE_MPIRUN" = 1 ] && export USE_MPIRUN=0
@@ -674,7 +672,7 @@ then
    exit $?
 fi
 if [ "$probes" = 2 ]
-then 
+then
    DIR=`dirname $NOM`
    DIR=`(cd $DIR;pwd)`
    cd $DIR
@@ -684,10 +682,10 @@ then
    while [ $i -le 0 ]
    do
       let i=i+1
-     # break
+      #break
       [ -f $dt_ev ] && break
       echo "waiting for $dt_ev"
-     sleep 0.1
+      sleep 0.1
    done
    #[ ! -f $dt_ev ] && exit 1
    bash  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
@@ -811,47 +809,47 @@ fi
 ############
 val=`which valgrind 2>/dev/null`
 if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
-then    
-    suppressions=""
-    if [ "$VALGRIND_STRICT" != "1" ]
-    then
-        suppressions="--gen-suppressions=all"
-	    suppressions=$suppressions" --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions"
-    fi
-    if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
-    then
-       gdb.sh -valgrind $exec
-       exit
-    fi
-    if [ "$VALGRIND_LOG_FILE" = 1 ]
-    then
-       # Call from testval:
-       log_file="--log-file=tmp_log%p" 
-    else
-       # Too slow in testval:
-       # Disable if extern library cause big jump in RAM and time:
-       if [ "`grep -i -e petsc -e 'polymac ' -e amgx $NOM.data`" = "" ]
-       then
-          more_info_but_slower="--track-origins=yes"
-       else
-          echo "=================================================================="
-          echo "Warning: --track-origins option is disabled for Valgrind analysis."
-          echo "=================================================================="
-       fi
-    fi
-    #  more_info_but_slower=""      # --track-origins=yes"
-    # GF sinon on a des erreurs au demarrage de mpi
-    [ $NB_PROCS -ge 2 ] && log_file="--log-file=tmp_log%p" 
-    #  log_file="--log-file=tmp_log%p" 
-    # Still reachable only checked for OpenMPI 1.2.9: 
-    if [ "`$Mpirun --version | grep 1.2.9`" != "" ]
-    then
-       reachable=yes
-    else
-       reachable=yes
-       # Cause MPI_irecv, a table is allocated but not freed, see 4.8.6 in https://wiki.uiowa.edu/download/attachments/109785161/Valgrind-Quick-Start.pdf?version=1&modificationDate=1385057441990&api=v2
-    fi
-    exec="$XTERM $val --error-exitcode=1 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all   --show-reachable=$reachable --num-callers=15 $log_file $more_info_but_slower $suppressions $ATTACH $binary"
+then
+   suppressions=""
+   if [ "$VALGRIND_STRICT" != "1" ]
+   then
+      suppressions="--gen-suppressions=all"
+      suppressions=$suppressions" --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions"
+   fi
+   if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
+   then
+      gdb.sh -valgrind $exec
+      exit
+   fi
+   if [ "$VALGRIND_LOG_FILE" = 1 ]
+   then
+      # Call from testval:
+      log_file="--log-file=tmp_log%p"
+   else
+      # Too slow in testval:
+      # Disable if extern library cause big jump in RAM and time:
+      if [ "`grep -i -e petsc -e 'polymac ' -e amgx $NOM.data`" = "" ]
+      then
+         more_info_but_slower="--track-origins=yes"
+      else
+         echo "=================================================================="
+         echo "Warning: --track-origins option is disabled for Valgrind analysis."
+         echo "=================================================================="
+      fi
+   fi
+   #  more_info_but_slower=""      # --track-origins=yes"
+   # GF sinon on a des erreurs au demarrage de mpi
+   [ $NB_PROCS -ge 2 ] && log_file="--log-file=tmp_log%p"
+   #  log_file="--log-file=tmp_log%p"
+   # Still reachable only checked for OpenMPI 1.2.9:
+   if [ "`$Mpirun --version | grep 1.2.9`" != "" ]
+   then
+      reachable=yes
+   else
+      reachable=yes
+      # Cause MPI_irecv, a table is allocated but not freed, see 4.8.6 in https://wiki.uiowa.edu/download/attachments/109785161/Valgrind-Quick-Start.pdf?version=1&modificationDate=1385057441990&api=v2
+   fi
+   exec="$XTERM $val --error-exitcode=1 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all   --show-reachable=$reachable --num-callers=15 $log_file $more_info_but_slower $suppressions $ATTACH $binary"
 fi
 
 #############
@@ -879,7 +877,7 @@ then
    exec="vtune -collect hotspots -r $vtune_result $binary"
 elif [ "$PERF" = 1 ]
 then
-   exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet 
+   exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet
 elif [ "$NSYS" = 1 ]
 then
    rm -f $NOM.qdrep
@@ -922,14 +920,14 @@ fi
 ###############################################
 USE_PETSC=0
 if [ -f $NOM.data ]
-then 
+then
    # To avoid dos problems:
    dos2unix_ $NOM.data
    USE_PETSC=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc=0} \
                             // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
                             /^fin/ && (dieses%2==0) && (NF==1) {exit} \
                             / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / || / resoudre / {use_petsc=1;exit}
-	                    END {print use_petsc}'`
+                            END {print use_petsc}'`
 fi
 if [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_ROCM" = 1 ]
 then
@@ -939,7 +937,7 @@ fi
 # Selon les machines #
 ######################
 soumission=999
-sub="" 
+sub=""
 queue=""
 qos=""
 cpu=""
@@ -961,7 +959,7 @@ fi
 define_soumission_batch
 
 ######################################
-# Check the datafile with VerifData on 
+# Check the datafile with VerifData on
 # clusters with job scheduling if exec
 # is a TRUST binary
 ######################################
@@ -971,26 +969,26 @@ if [ $soumission != 999 ] && [ ${shortbin#TRUST} != $shortbin ] && [ "`VerifData
 then
    if [ ! -f $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh ]
    then
-        echo $ECHO_OPTS "Warning no Check of the syntax of the $NOM.data file before submitting the job !!!! "
+      echo $ECHO_OPTS "Warning no Check of the syntax of the $NOM.data file before submitting the job !!!! "
    else
-        echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
-        VerifData $NOM.data 1>/dev/null 2>&1
-        if [ $? != 0 ]
-        then
-            echo KO
-            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            echo "Check your data file. Syntax error detected:"
-            echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            VerifData $NOM.data
-            echo "Error: Check your $NOM.data file."
-            #exit -1
-            else
-            echo OK
-        fi
+      echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
+      VerifData $NOM.data 1>/dev/null 2>&1
+      if [ $? != 0 ]
+      then
+         echo KO
+         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+         echo "Check your data file. Syntax error detected:"
+         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+         VerifData $NOM.data
+         echo "Error: Check your $NOM.data file."
+         #exit -1
+      else
+         echo OK
+      fi
    fi
 fi
 
-# En sequentiel, si l'utilisateur n'a pas force l'utilisation de MPI_RUN et 
+# En sequentiel, si l'utilisateur n'a pas force l'utilisation de MPI_RUN et
 # si le Kernel est compile avec MPI_INIT_NEEDS_MPIRUN, alors on utilise mpi_run sauf si
 # on est sur de ne pas utiliser un solveur PETSC ou OPTIMAL dans le jeu de donnees
 if  [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
@@ -1000,9 +998,9 @@ then
    then
       if [ -f $NOM.data ]
       then
-	 USE_MPIRUN=$USE_PETSC
+         USE_MPIRUN=$USE_PETSC
       else
-	 USE_MPIRUN=1
+         USE_MPIRUN=1
       fi
    fi
 fi
@@ -1019,7 +1017,7 @@ fi
 [ -f $MPI_ROOT/sbin/cleanipcs ] && [ "`ps -fl -U $me | grep 'mpirun ' | grep TRUST_mpich | grep -v grep | grep -v $$`" = "" ] && $MPI_ROOT/sbin/cleanipcs
 
 # Surcharge de la queue
-[ "$queue_choisie" != "" ] && queue=$queue_choisie 
+[ "$queue_choisie" != "" ] && queue=$queue_choisie
 [ "$queue" != "" ] && echo "Partition $queue selected (soumission=$soumission ; NB_PROCS=$NB_PROCS ; USE_MPIRUN=$USE_MPIRUN)."
 
 ###############################
@@ -1037,136 +1035,135 @@ rm -f $sub_file
 if [ $NB_PROCS -ge $soumission ]
 then
    ###########################################
-   # En test du sub_file selon le gestionnaire 
+   # En test du sub_file selon le gestionnaire
    ###########################################
    case $sub in
-   	SLURM)
-		# http://www.idris.fr/media/su/idrischeatsheet.pdf
-		echo "#!/bin/bash"					>> $sub_file	# Shell
-		echo "#SBATCH -J $NOM" 					>> $sub_file	# Job name
-		[ "$queue" != "" ] && echo "#SBATCH -p $queue"		>> $sub_file	# Partition
-		[ "$constraint" != "" ] && echo "#SBATCH -C $constraint">> $sub_file	# Constraint
-		[ "$qos" != "" ] && echo "#SBATCH --qos=$qos"		>> $sub_file	# Quality of service
-		echo "#SBATCH -t $cpu"					>> $sub_file	# Time in minutes
-		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
-		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
-		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
-		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
-		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
-		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"			>> $sub_file	# Number of cores per task
-		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"		>> $sub_file	# Number of GPUs per node
-    # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
-		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"		>> $sub_file
-		#[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
-		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
-		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
-		echo "##SBATCH --mail-user=email"			>> $sub_file
-		echo "##SBATCH --mail-type=BEGIN,END"			>> $sub_file
-		echo "set -x"				 		>> $sub_file
-		echo "cd \$SLURM_SUBMIT_DIR" 				>> $sub_file    # Submit directory for reprise_auto script
-		;;
-   	POE)
-		echo "#!/bin/bash" 					>> $sub_file
-		echo "#@ job_name=$NOM"					>> $sub_file
-		[ "$queue" != "" ] && echo "#@ class=$queue"		>> $sub_file
-		echo "#@ wall_clock_limit=$cpu"				>> $sub_file
-		echo "#@ output=myjob.\$(jobid).o"			>> $sub_file
-		echo "#@ error=myjob.\$(jobid).e"			>> $sub_file
-		#echo "#@ job_type=parallel"				>> $sub_file
-		#echo "#@ network.MPI=sn_all,,us"			>> $sub_file
-		#echo "#@ node_topology=island"				>> $sub_file
-		#echo "#@ island_count=`echo "1+($NB_PROCS-1)/8192" | bc`" >> $sub_file # ceil($NB_PROCS/8192)
-		#echo "#@ energy_policy_tag=NONE"			>> $sub_file
-		#echo "#@ queue"					>> $sub_file
-		echo "#@ total_tasks=$NB_PROCS"				>> $sub_file
-		#echo "#@ node=`echo "1+($NB_PROCS-1)/16" | bc`" 	>> $sub_file # ceil($NB_PROCS/16)
-		[ "$noeuds" != "" ] && echo "#@ node=$noeuds"		>> $sub_file 
-		[ "$node" = 1 ] && echo "#@ node_usage=not_shared"	>> $sub_file
-		[ "$ram" != "" ] && echo "#@ requirements=(Memory >= $ram)" >> $sub_file
-		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		#echo "#@ initialdir=$ici"				>> $sub_file
-		echo "cd \$LOADL_STEP_INITDIR" 				>> $sub_file
-		;;		
-   	LSF)
-	 	echo "#BSUB -J $NOM"				>> $sub_file
-      		[ "$queue" != "" ] && echo "#BSUB -q $queue" 	>> $sub_file
-      		echo "#BSUB -W $cpu" 				>> $sub_file 
-		echo "#BSUB -o myjob.%J.o" 			>> $sub_file
-		echo "#BSUB -e myjob.%J.e" 			>> $sub_file 
-		echo "#BSUB -n $NB_PROCS"			>> $sub_file
-		[ "$node" = 1 ] && echo "#BSUB -x"		>> $sub_file
-      		[ "$ram" != "" ] && echo "#BSUB -M $ram" 	>> $sub_file
-		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		echo "cd \$LS_SUBCWD" 				>> $sub_file
- 		;;
-	CCC)
-		echo "#!/bin/bash" 						>> $sub_file 
-		echo "#MSUB -r $NOM" 						>> $sub_file 
-		[ "$queue" != "" ] && echo "#MSUB -q $queue"			>> $sub_file 
-		[ "$qos" != "" ] && echo "#MSUB -Q $qos"			>> $sub_file 
-		[ "`echo $cpu | grep :`" != "" ] && echo "#BSUB -W $cpu" 	>> $sub_file # Exprime en HH:MM:SS !!! BSUB !!!
-		[ "`echo $cpu | grep :`" = "" ] && echo "#MSUB -T $cpu" 	>> $sub_file # Exprime en SSSSS      	
-		echo "#MSUB -o myjob.%J.o"					>> $sub_file
-		echo "#MSUB -e myjob.%J.e" 					>> $sub_file
-		[ "$project" != "" ] && echo "#MSUB -A $project" 		>> $sub_file 
-		echo "#MSUB -E \"--no-requeue\""            			>> $sub_file # Prevent from restart
-		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 
-		[ "$noeuds" != "" ] && echo "#MSUB -N $noeuds" 			>> $sub_file 
-		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
-		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file # Exclusive use of nodes during production run
-		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
-		[ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"		>> $sub_file
-		echo "##MSUB -@ email:begin,end"				>> $sub_file
-		echo "set -x"				 			>> $sub_file 
-		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
- 		;;
-	SGE)
-	 	echo "#$ -N $NOM"				>> $sub_file
-      		[ "$queue" != "" ] && echo "#$ -q $queue" 	>> $sub_file
-		echo "#$ -l h_rt=$cpu"                          >> $sub_file
-		echo "#$ -o myjob.%J.o"                         >> $sub_file
-		echo "#$ -e myjob.%J.e"                         >> $sub_file
-		#echo "#$ -cwd" 				>> $sub_file
-		#echo "#$ -S /bin/bash"				>> $sub_file
-		#[ "$balise" != "" ]	&& echo $balise		>> $sub_file
-		[ "$taches" != "" ] && echo "#$ -pe $taches"	>> $sub_file
-		[ "$node" = 1 ] && echo "#$ -l exclusive"	>> $sub_file
-		[ "$ram" != "" ] && echo "#$ -l mem_free=$ram"  >> $sub_file
-		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		echo "cd \$SGE_O_WORKDIR" 			>> $sub_file
-		;;	
-	NQS)
-	 	echo "#QSUB -r $NOM"		>> $sub_file
-		echo "#QSUB -lt $cpu"		>> $sub_file
-		echo "#QSUB -n $NB_PROCS" 	>> $sub_file
-		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-                echo "cd $ici" 			>> $sub_file
-		;;
-	PBS)
-		echo "#!/bin/bash"                                      >> $sub_file    # Shell (sh ou bash)
-		echo "#PBS -N `echo $NOM | cut -c 1-15`"                >> $sub_file    # Job name
-		[ "$queue" != "" ] && echo "#PBS -q $queue"             >> $sub_file    # Partition
-		[ "$qos" != "" ] && echo "#PBS -l qos=$qos"             >> $sub_file    # Quality of service
-		echo "#PBS -l walltime=$cpu"                            >> $sub_file    # Time in minutes
-		echo "#PBS -o myjob.%J.o"                               >> $sub_file    # Output log
-		echo "#PBS -e myjob.%J.e"                               >> $sub_file    # Error log
-		echo "#PBS -l nodes=$noeuds:ppn=$taches"                >> $sub_file    # Number of nodes and tasks
-		#echo "#PBS -l ppn=$taches"      		        >> $sub_file    # Number of tasks
-		#echo "#PBS -l nodes=$noeuds"           		>> $sub_file    # Number of nodes	
-		#[ "$node" = 1 ] && echo "#PBS -l naccesspolicy=singlejob" >> $sub_file	# Exclusive use of nodes during production run	
-		[ "$ram" != "" ] && echo "#PBS -l mem=$ram"             >> $sub_file    # Real memory required per node in MegaBytes
-		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		echo "cd \$PBS_O_WORKDIR" 				>> $sub_file
-		;;
-	*) echo "sub=$sub not planned." && exit -1
-		;;
-   esac	   
+      SLURM)
+         # http://www.idris.fr/media/su/idrischeatsheet.pdf
+         echo "#!/bin/bash"                                                    >> $sub_file    # Shell
+         echo "#SBATCH -J $NOM"                                                >> $sub_file    # Job name
+         [ "$queue" != "" ] && echo "#SBATCH -p $queue"                        >> $sub_file    # Partition
+         [ "$constraint" != "" ] && echo "#SBATCH -C $constraint"              >> $sub_file    # Constraint
+         [ "$qos" != "" ] && echo "#SBATCH --qos=$qos"                         >> $sub_file    # Quality of service
+         echo "#SBATCH -t $cpu"                                                >> $sub_file    # Time in minutes
+         echo "#SBATCH -o myjob.%j.o"                                          >> $sub_file    # Output log
+         echo "#SBATCH -e myjob.%j.e"                                          >> $sub_file    # Error log
+         [ "$project" != "" ] && echo "#SBATCH -A $project"                    >> $sub_file    # Account
+         echo "#SBATCH -n $NB_PROCS"                                           >> $sub_file    # Number of tasks
+         [ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"                      >> $sub_file    # Number of nodes
+         [ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"        >> $sub_file    # Number of cores per task
+         [ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node">> $sub_file    # Number of GPUs per node
+         # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
+         [ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread" >> $sub_file
+         #[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks" >> $sub_file
+         [ "$node" = 1 ] && echo "#SBATCH --exclusive"                         >> $sub_file    # Exclusive use of nodes during production run
+         [ "$ram" != "" ] && echo "#SBATCH --mem=$ram"                         >> $sub_file    # Real memory required per node in MegaBytes
+         echo "##SBATCH --mail-user=email"                                     >> $sub_file
+         echo "##SBATCH --mail-type=BEGIN,END"                                 >> $sub_file
+         echo "set -x"                                                         >> $sub_file
+         echo "cd \$SLURM_SUBMIT_DIR"                                          >> $sub_file    # Submit directory for reprise_auto script
+         ;;
+      POE)
+         echo "#!/bin/bash"                                                    >> $sub_file
+         echo "#@ job_name=$NOM"                                               >> $sub_file
+         [ "$queue" != "" ] && echo "#@ class=$queue"                          >> $sub_file
+         echo "#@ wall_clock_limit=$cpu"                                       >> $sub_file
+         echo "#@ output=myjob.\$(jobid).o"                                    >> $sub_file
+         echo "#@ error=myjob.\$(jobid).e"                                     >> $sub_file
+         #echo "#@ job_type=parallel"                                          >> $sub_file
+         #echo "#@ network.MPI=sn_all,,us"                                     >> $sub_file
+         #echo "#@ node_topology=island"                                       >> $sub_file
+         #echo "#@ island_count=`echo "1+($NB_PROCS-1)/8192" | bc`"            >> $sub_file # ceil($NB_PROCS/8192)
+         #echo "#@ energy_policy_tag=NONE"                                     >> $sub_file
+         #echo "#@ queue"                                                      >> $sub_file
+         echo "#@ total_tasks=$NB_PROCS"                                       >> $sub_file
+         #echo "#@ node=`echo "1+($NB_PROCS-1)/16" | bc`"                      >> $sub_file # ceil($NB_PROCS/16)
+         [ "$noeuds" != "" ] && echo "#@ node=$noeuds"                         >> $sub_file
+         [ "$node" = 1 ] && echo "#@ node_usage=not_shared"                    >> $sub_file
+         [ "$ram" != "" ] && echo "#@ requirements=(Memory >= $ram)"           >> $sub_file
+         echo "cd \$LOADL_STEP_INITDIR"                                        >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+         ;;
+      LSF)
+         echo "#BSUB -J $NOM"                                                  >> $sub_file
+         [ "$queue" != "" ] && echo "#BSUB -q $queue"                          >> $sub_file
+         echo "#BSUB -W $cpu"                                                  >> $sub_file
+         echo "#BSUB -o myjob.%J.o"                                            >> $sub_file
+         echo "#BSUB -e myjob.%J.e"                                            >> $sub_file
+         echo "#BSUB -n $NB_PROCS"                                             >> $sub_file
+         [ "$node" = 1 ] && echo "#BSUB -x"                                    >> $sub_file
+         [ "$ram" != "" ] && echo "#BSUB -M $ram"                              >> $sub_file
+         echo "cd \$LS_SUBCWD"                                                 >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+         ;;
+      CCC)
+         echo "#!/bin/bash"                                                    >> $sub_file
+         echo "#MSUB -r $NOM"                                                  >> $sub_file
+         [ "$queue" != "" ] && echo "#MSUB -q $queue"                          >> $sub_file
+         [ "$qos" != "" ] && echo "#MSUB -Q $qos"                              >> $sub_file
+         [ "`echo $cpu | grep :`" != "" ] && echo "#BSUB -W $cpu"              >> $sub_file # Exprime en HH:MM:SS !!! BSUB !!!
+         [ "`echo $cpu | grep :`" = "" ] && echo "#MSUB -T $cpu"               >> $sub_file # Exprime en SSSSS
+         echo "#MSUB -o myjob.%J.o"                                            >> $sub_file
+         echo "#MSUB -e myjob.%J.e"                                            >> $sub_file
+         [ "$project" != "" ] && echo "#MSUB -A $project"                      >> $sub_file
+         echo "#MSUB -E \"--no-requeue\""                                      >> $sub_file # Prevent from restart
+         echo "#MSUB -n $NB_PROCS"                                             >> $sub_file
+         [ "$noeuds" != "" ] && echo "#MSUB -N $noeuds"                        >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"          >> $sub_file
+         [ "$node" = 1 ] && echo "#MSUB -x"                                    >> $sub_file # Exclusive use of nodes during production run
+         [ "$ram" != "" ] && echo "#MSUB -M $ram"                              >> $sub_file
+         [ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"                  >> $sub_file
+         echo "##MSUB -@ email:begin,end"                                      >> $sub_file
+         echo "set -x"                                                         >> $sub_file
+         echo "cd \$BRIDGE_MSUB_PWD"                                           >> $sub_file
+         ;;
+      SGE)
+         echo "#$ -N $NOM"                                                     >> $sub_file
+         [ "$queue" != "" ] && echo "#$ -q $queue"                             >> $sub_file
+         echo "#$ -l h_rt=$cpu"                                                >> $sub_file
+         echo "#$ -o myjob.%J.o"                                               >> $sub_file
+         echo "#$ -e myjob.%J.e"                                               >> $sub_file
+         #echo "#$ -cwd"                                                       >> $sub_file
+         #echo "#$ -S /bin/bash"                                               >> $sub_file
+         #[ "$balise" != "" ]        && echo $balise                           >> $sub_file
+         [ "$taches" != "" ] && echo "#$ -pe $taches"                          >> $sub_file
+         [ "$node" = 1 ] && echo "#$ -l exclusive"                             >> $sub_file
+         [ "$ram" != "" ] && echo "#$ -l mem_free=$ram"                        >> $sub_file
+         echo "cd \$SGE_O_WORKDIR"                                             >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+         ;;
+      NQS)
+         echo "#QSUB -r $NOM"                                                  >> $sub_file
+         echo "#QSUB -lt $cpu"                                                 >> $sub_file
+         echo "#QSUB -n $NB_PROCS"                                             >> $sub_file
+         echo "cd $ici"                                                        >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+         ;;
+      PBS)
+         echo "#!/bin/bash"                                                    >> $sub_file    # Shell (sh ou bash)
+         echo "#PBS -N `echo $NOM | cut -c 1-15`"                              >> $sub_file    # Job name
+         [ "$queue" != "" ] && echo "#PBS -q $queue"                           >> $sub_file    # Partition
+         [ "$qos" != "" ] && echo "#PBS -l qos=$qos"                           >> $sub_file    # Quality of service
+         echo "#PBS -l walltime=$cpu"                                          >> $sub_file    # Time in minutes
+         echo "#PBS -o myjob.%J.o"                                             >> $sub_file    # Output log
+         echo "#PBS -e myjob.%J.e"                                             >> $sub_file    # Error log
+         echo "#PBS -l nodes=$noeuds:ppn=$taches"                              >> $sub_file    # Number of nodes and tasks
+         #echo "#PBS -l ppn=$taches"                                           >> $sub_file    # Number of tasks
+         #echo "#PBS -l nodes=$noeuds"                                         >> $sub_file    # Number of nodes
+         #[ "$node" = 1 ] && echo "#PBS -l naccesspolicy=singlejob"            >> $sub_file        # Exclusive use of nodes during production run
+         [ "$ram" != "" ] && echo "#PBS -l mem=$ram"                           >> $sub_file    # Real memory required per node in MegaBytes
+         echo "cd \$PBS_O_WORKDIR"                                             >> $sub_file
+         [ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+         ;;
+      *) echo "sub=$sub not planned." && exit -1
+         ;;
+   esac
    #######
    # IPM #
    #######
    if [ "$ipm" = 1 ]
    then
-      echo "module load ipm" 				>> $sub_file
+      echo "module load ipm"                            >> $sub_file
       echo "export LD_PRELOAD=\$IPM_ROOT/lib/libipm.so" >> $sub_file
    fi
    ##########
@@ -1174,8 +1171,8 @@ then
    ##########
    if [ "$VAMPIRTRACE_ROOT" != "" ]
    then
-      echo "export VT_IOTRACE=yes" 	>> $sub_file
-      echo "export VT_MAX_FLUSHES=0" 	>> $sub_file
+      echo "export VT_IOTRACE=yes"         >> $sub_file
+      echo "export VT_MAX_FLUSHES=0"       >> $sub_file
    fi
    ######################
    # Commandes de calculs
@@ -1190,7 +1187,7 @@ then
    else
       # En interactif OUTPUT=.$NOM et non OUTPUT=$NOM car sinon conflit avec lance_test (trust NOM 1>$NOM.out 2>$NOM.err)
       # et blocage possible sur castor avec Baltik par exemple !!!
-      OUTPUT=.$NOM   
+      OUTPUT=.$NOM
    fi
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
@@ -1202,15 +1199,15 @@ then
          then
             echo "$mpirun \$exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          elif [ "$sub" = "CCC" ]
-	       then
+         then
             echo "$mpirun \$exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-	       else
+         else
             echo "$mpirun \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-	       fi
+         fi
       else
          echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi
-   fi   
+   fi
    #######
    # IPM #
    #######
@@ -1219,17 +1216,17 @@ then
       echo "report=\`ls -rt triou.*.*.0 | tail -1\`" >> $sub_file
       echo "ipm_parse -full \$report 1>>$OUTPUT.out 2>>$OUTPUT.err" >> $sub_file
       echo "ipm_parse -html \$report" >> $sub_file
-   fi   
+   fi
    if [ "$create_sub_file" ]
    then
       case $sub in
         SLURM) echo "sbatch $sub_file";;
-      	POE) echo "llsubmit $sub_file";;
-        LSF) echo "bsub < $sub_file";;
-        CCC) echo "ccc_msub $sub_file";;
-        SGE) echo "qsub $sub_file";;
-        NQS) echo "qsub $sub_file";;
-        PBS) echo "qsub $sub_file";;
+        POE)   echo "llsubmit $sub_file";;
+        LSF)   echo "bsub < $sub_file";;
+        CCC)   echo "ccc_msub $sub_file";;
+        SGE)   echo "qsub $sub_file";;
+        NQS)   echo "qsub $sub_file";;
+        PBS)   echo "qsub $sub_file";;
       esac
       echo "***************************************************"
       exit
@@ -1240,28 +1237,28 @@ then
       echo "No command qstat found for listing jobs..."
       qstat
       exit -1
-   fi   
+   fi
    ##############################################
-   # Soumission du sub_file selon le gestionnaire 
+   # Soumission du sub_file selon le gestionnaire
    ##############################################
    case $sub in
-   	SLURM)	sbatch_interactif;;
-   	POE) 	llsubmit -s $sub_file;;
-   	LSF) 	cat $sub_file | bsub -I;;
-    CCC) 	ccc_msub_interactif;;
-    SGE) 	qsub -S /bin/bash -sync yes $sub_file;;
-    NQS) 	qsub -I $sub_file;;
-    PBS) 	qsub_interactif;;
-   esac	
-   err=$?   
+      SLURM)       sbatch_interactif;;
+      POE)         llsubmit -s $sub_file;;
+      LSF)         cat $sub_file | bsub -I;;
+      CCC)         ccc_msub_interactif;;
+      SGE)         qsub -S /bin/bash -sync yes $sub_file;;
+      NQS)         qsub -I $sub_file;;
+      PBS)         qsub_interactif;;
+   esac
+   err=$?
    if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
    then
-     if [ "`awk '/ERROR SUMMARY/ {errs+=$4} END {print errs}' $OUTPUT.err $OUTPUT.out tmp_log*`" != "0" ]
-     then
-        exit -1
-     else
-        exit 0
-     fi
+      if [ "`awk '/ERROR SUMMARY/ {errs+=$4} END {print errs}' $OUTPUT.err $OUTPUT.out tmp_log*`" != "0" ]
+      then
+         exit -1
+      else
+         exit 0
+      fi
    fi
    #[ $err = 0 ] && rm -f $sub_file # On garde desormais la trace du fichier de soumission...
    # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "trust jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
@@ -1282,7 +1279,7 @@ then
    exit $err
 else
    # Pas de gestionnaire, example PC:
-   [ "$cpus_per_task" != "" ] 	&& [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+   [ "$cpus_per_task" != "" ]         && [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
       run="$nsight $gdb $exec $NOM $PETSC_OPTIONS $quiet"
@@ -1293,7 +1290,7 @@ else
    then
       echo $run > $sub_file
       chmod +x $sub_file
-      echo "./$sub_file"  
+      echo "./$sub_file"
       echo "***************************************************"
       exit
    fi
@@ -1359,7 +1356,7 @@ then
    #nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
    #if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
    #   echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
-   #   LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys 
+   #   LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys
    #else
    #   echo "Sorry, can't run nsight-sys GUI for GPU profiling..."
    #fi
