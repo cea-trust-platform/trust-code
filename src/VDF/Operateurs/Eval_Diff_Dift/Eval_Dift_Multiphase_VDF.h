@@ -18,6 +18,7 @@
 
 #include <Correlation_base.h>
 #include <Eval_Dift_VDF.h>
+#include <Pb_Multiphase.h>
 
 class Eval_Dift_Multiphase_VDF : public Eval_Dift_VDF
 {
@@ -38,7 +39,7 @@ public:
     const int cR = rho.dimension(0) == 1;
     tab_diffusivite_turbulente = nu_t_;
 
-    if (need_alpha_rho_ && ref_probleme_->que_suis_je() == "Pb_Multiphase")
+    if (need_alpha_rho_ && sub_type(Pb_Multiphase, ref_probleme_.valeur()))
       {
         for (int e = 0; e < nu_t_->dimension(0); e++)
           for (int n = 0; n < nu_t_->dimension(1); n++)
