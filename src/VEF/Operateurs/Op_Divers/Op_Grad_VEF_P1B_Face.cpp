@@ -281,7 +281,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       end_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
-  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
+  if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
     {
       const int *face_voisins_addr = mapToDevice(face_voisins);
       const double *porosite_face_addr = mapToDevice(porosite_face);
@@ -693,7 +693,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   bool alphaS = domaine_VEF.get_alphaS();
   int nb_som_par_face = sommets.dimension(1);
 
-  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
+  if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
     {
       const int *face_voisins_addr = mapToDevice(face_voisins);
       const int *sommets_addr = mapToDevice(sommets);

@@ -491,7 +491,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-          if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
+          if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
             {
               const int *rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
               const int *elem_faces_addr = mapToDevice(elem_faces);

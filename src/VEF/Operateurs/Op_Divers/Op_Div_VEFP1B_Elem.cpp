@@ -106,7 +106,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   int nfe = domaine.nb_faces_elem();
   int nb_elem = domaine.nb_elem();
 
-  if (getenv("TRUST_DISABLE_KOKKOS")!=NULL)
+  if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
     {
       const int *face_voisins_addr = mapToDevice(face_voisins);
       const double *face_normales_addr = mapToDevice(face_normales);
