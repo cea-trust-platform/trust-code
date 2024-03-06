@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,31 +27,33 @@ class Param;
  *
  *  <Description of class DomaineAxi1d>
  */
-
-class DomaineAxi1d : public Domaine
+template <typename _SIZE_>
+class DomaineAxi1d_32_64 : public Domaine_32_64<_SIZE_>
 {
 
-  Declare_instanciable( DomaineAxi1d ) ;
+  Declare_instanciable_32_64( DomaineAxi1d_32_64 ) ;
 
 public :
+  using int_t = _SIZE_;
+  using DoubleTab_t = DTab_T<_SIZE_>;
 
-  const Champ& champ_origine() const;
-  const Champ& champ_origine();
-  const DoubleTab& origine_repere();
-  const DoubleTab& origine_repere() const;
-  void associer_origine_repere(const DoubleTab& orig);
-  inline double origine_repere(int i,int j);
-  inline double origine_repere(int i,int j) const;
 
+  const Champ& champ_origine() const {   return champ_orig; }
+  const Champ& champ_origine()  {   return champ_orig; }
+  const DoubleTab_t& origine_repere() {   return ref_origine_.valeur(); }
+  const DoubleTab_t& origine_repere() const {   return ref_origine_.valeur(); }
+  void associer_origine_repere(const DoubleTab_t& orig) {   ref_origine_ = orig; }
+  inline double origine_repere(int_t i,int j) { return ref_origine_.valeur()(i,j); }
+  inline double origine_repere(int_t i,int j) const { return ref_origine_.valeur()(i,j); }
 
 protected :
   void set_param(Param& param);
 
   Champ champ_orig;
-  REF(DoubleTab) ref_origine_;
+  REF(DoubleTab_t) ref_origine_;
 };
 
-inline double DomaineAxi1d::origine_repere(int i,int j) { return ref_origine_.valeur()(i,j); }
-inline double DomaineAxi1d::origine_repere(int i,int j) const {  return ref_origine_.valeur()(i,j); }
+using DomaineAxi1d = DomaineAxi1d_32_64<int>;
+using DomaineAxi1d_64 = DomaineAxi1d_32_64<trustIdType>;
 
 #endif /* DomaineAxi1d_included */
