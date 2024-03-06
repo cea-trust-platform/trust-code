@@ -112,7 +112,8 @@ configure_compilateur_ccache()
       # On cree un script g++ et gcc
       eval $e
       script=$TRUST_ROOT/exec/ccache/$compilateur
-      echo $ECHO_OPTS "#!/bin/bash\n\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \"\$@\"" > $script
+      TMPDIR="" && [ -d /dev/shm ] && [ "`basename $chemin | grep nvc`" != "" ] && TMPDIR="TMPDIR=/dev/shm" # Trick to boost nvc/nvcc/nvc++ build by using RAM for temporary files
+      echo $ECHO_OPTS "#!/bin/bash\n$TMPDIR\n\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \"\$@\"" > $script
       chmod +x $script
       e=$variable=\""\$TRUST_ROOT/exec/ccache/$compilateur\" && export $variable"
    fi
