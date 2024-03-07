@@ -20,10 +20,7 @@
 
 Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
 // XD champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as a function of another field.
-// XD  attr aco chaine(into=["{"]) aco 0 opening curly brache
-// XD  attr pb chaine pb 0 Name of the problem.
-// XD  attr inco chaine inco 0 Name of the field (for example: temperature).
-// XD  attr acof chaine(into=["}"]) acof 0 closing curly brace
+// XD  attr pb_field bloc_lecture pb_field 0 block similar to { pb1 field1 } or { pb1 field1 ... pbN fieldN }
 // XD  attr dim int dim 0 Number of field components.
 // XD  attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 
@@ -79,18 +76,18 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
  */
 Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 {
-  int nbcomp, old_table_syntax_ = 0;
+  int nbcomp;
   Nom motlu;
   const Motcle accolade_ouverte("{"), accolade_fermee("}");
   is >> motlu;
   if (motlu != accolade_ouverte)
     {
-      noms_champs_parametre_.add(motlu);
-      old_table_syntax_ = 1;
+      Cerr << "You are using an old syntaxe, you should now use:"<< finl;
+      Cerr << "Champ_Fonc_Tabule { problem_name field_name } ncomp { table }" << finl;
+      exit();
     }
   else
     {
-      assert(old_table_syntax_ == 0);
       while (true)
         {
           is >> motlu;
@@ -102,12 +99,6 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
         }
     }
   const int nb_param = noms_champs_parametre_.size();
-
-  if (old_table_syntax_ && noms_pbs_.size() != 0 && nb_param != 1)
-    {
-      Cerr << "What ??? Big problem in Champ_Fonc_Tabule::readOn !!!" << finl;
-      throw;
-    }
 
   is >> nbcomp;
   fixer_nb_comp(nbcomp);

@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+07/03/24 (TRUST) Keyword      : Obsolete syntax for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, and Sutherland (pre v1.8.4) is not accepted anymore.
+07/03/24 (TRUST) Keyword      : Obsolete syntax for Champ_Fonc_tabule (pre v1.8.4) is not accepted anymore. Syntax should be on the form Champ_fonc_tabule { pb field } nbcomp { table }
 07/03/24 (TRUST) Change       : EcritureLectureSpecial is forced to 0 for PolyMAC_P0 simulations; ie: for resuming a simulation, only binary sauv files are accepted for this discretization.
 07/03/24 (TRUST) New Keyword  : Possible to use "Unite" keyword in Definition_champs with Transformation and Morceau_Equation to specify the unit of the field (specified unit will be written in post-processing files instead of "??")
 06/03/24 (TRUST) New feature  : Implementing ICoCo resetTime() method allowing to reset the time origin during the computation. For now previous post files are overwritten by default.
