@@ -39,6 +39,8 @@ public:
   {
     Process::exit("Assembleur_P_PolyVEF_P0P1NC::corriger_vitesses() should not be used ... ");
   }
+private:
+  IntTab div_v_tab1, div_v_tab2, div_p_tab1, div_p_tab2, grad_tab1, grad_tab2; //stencils des matrices "div" (lignes reelles seulement) et "grad" (toutes les lignes)
 };
 
 #endif /* Assembleur_P_PolyVEF_P0P1NC_included */

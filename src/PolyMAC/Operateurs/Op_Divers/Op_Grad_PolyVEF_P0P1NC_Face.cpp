@@ -55,7 +55,7 @@ void Op_Grad_PolyVEF_P0P1NC_Face::completer()
     }
 }
 
-void Op_Grad_PolyVEF_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+void Op_Grad_PolyVEF_P0P1NC_Face::dimensionner_blocs_ext(matrices_t matrices, int virt, const tabs_t& semi_impl) const
 {
   if (!matrices.count("pression")) return; //rien a faire
 
@@ -67,18 +67,19 @@ void Op_Grad_PolyVEF_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const 
   Matrice_Morse *mat = matrices["pression"], mat2;
   IntTrav sten(0, 2);
   DoubleTrav w2;
-  for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-      {
-        for (d = 0; d < D; d++)
-          for (n = 0, m = 0; n < N; n++, m += (M > 1))
-            sten.append_line(N * (D * f + d) + n, M * e + m); /* bloc (face, elem )*/
-        for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          if (fcl(fb, 0) != 1)
-            for (d = 0; d < D; d++)
-              for (n = 0, m = 0; n < N; n++, m += (M > 1))
-                sten.append_line(N * (D * f + d) + n, M * (ne_tot + fb) + m);
-      }
+  for (f = 0; f < (virt ? domaine.nb_faces_tot() : domaine.nb_faces()); f++)
+    for (i = 0; i < 2; i++)
+      if ((e = f_e(f, i)) >= 0)
+        {
+          for (d = 0; d < D; d++)
+            for (n = 0, m = 0; n < N; n++, m += (M > 1))
+              sten.append_line(N * (D * f + d) + n, M * e + m); /* bloc (face, elem )*/
+          for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            if (fcl(fb, 0) != 1)
+              for (d = 0; d < D; d++)
+                for (n = 0, m = 0; n < N; n++, m += (M > 1))
+                  sten.append_line(N * (D * f + d) + n, M * (ne_tot + fb) + m);
+        }
 
   /* allocation / remplissage */
   tableau_trier_retirer_doublons(sten);
@@ -86,7 +87,7 @@ void Op_Grad_PolyVEF_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const 
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }
 
-void Op_Grad_PolyVEF_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Op_Grad_PolyVEF_P0P1NC_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab& secmem, int virt, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(gradient_counter_);
   const Domaine_PolyVEF_P0P1NC& dom = ref_cast(Domaine_PolyVEF_P0P1NC, ref_domaine.valeur());
@@ -101,11 +102,11 @@ void Op_Grad_PolyVEF_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& 
 
   for (e = 0; e < ne_tot; e++)
     for (dom.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)
-      if ((f = e_f(e, i)) < dom.nb_faces())
+      if ((f = e_f(e, i)) < dom.nb_faces() || virt)
         {
           /* taux de vide a la face (identique a celui de Masse_PolyVEF_P0P1NC_Face) */
           double prefac = pe(e) * vfd(f, e != f_e(f, 0)) * (e == f_e(f, 0) ? 1 : -1) / (fs(f) * fs(f)),
-                 prefac2 = fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 3 : 2) ? pf(f) * vfd(f, e != f_e(f, 0)) / ve(e) : 0, scal; /* ponderation pour elimner p_f si on est en TPFA */
+                 prefac2 = fcl(f, 0) < (Option_PolyVEF::sym_as_diri ? 2 : 3) ? pf(f) * vfd(f, e != f_e(f, 0)) / ve(e) : 0, scal; /* ponderation pour elimner p_f si on est en TPFA */
           for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
             for (n = 0; n < N; n++)
               alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
