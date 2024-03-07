@@ -1243,10 +1243,10 @@ int Probleme_base::postraiter(int force)
 
 void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
 {
-  // XXX Elie Saikali : for polymac => No xyz for the moment
-  if (la_discretisation_->is_polymac_family())
+  // XXX Elie Saikali : for PolyMAC_P0 => No xyz for the moment
+  if (la_discretisation_->is_polymac_p0())
     {
-      Cerr << "Problem "  << le_nom() << " with " << la_discretisation_->que_suis_je() <<  " => EcritureLectureSpecial = 0 !" << finl;
+      Cerr << "Problem "  << le_nom() << " with the discretization " << la_discretisation_->que_suis_je() <<  " => EcritureLectureSpecial = 0 !" << finl;
       EcritureLectureSpecial::Active = 0;
     }
   restart_format_ = "binaire";
@@ -1272,11 +1272,11 @@ void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
           if ((format_rep != "formatte") && (format_rep != "binaire") && (format_rep != "xyz") && (format_rep != "single_hdf"))
             {
               Cerr << "Restarting calculation... : keyword " << format_rep << " not understood. Waiting for:" << finl << motlu << " formatte|binaire|xyz|single_hdf Filename" << finl;
-              exit();
+              Process::exit();
             }
 
           // XXX Elie Saikali : for polymac => only .sauv files are possible
-          if (la_discretisation_->is_polymac_family() && format_rep != "binaire")
+          if (la_discretisation_->is_polymac_p0() && format_rep != "binaire")
             {
               Cerr << "Error in Probleme_base::" << __func__ << " !! " << finl;
               Cerr << "Only the binary format is currently supported to resume a simulation with the discretization " << la_discretisation_->que_suis_je() << " ! " << finl;

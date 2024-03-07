@@ -71,13 +71,8 @@ int Champ_Elem_PolyMAC_P0P1NC::reprendre(Entree& fich)
   if (pbm) return Champ_Inc_base::reprendre(fich);
 
   // sinon on fait ca ...
-  const Domaine_PolyMAC_P0P1NC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0P1NC,le_dom_VF.valeur()) : nullptr;
-  valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
-  valeurs().resize(0);
-  int ret = Champ_Inc_base::reprendre(fich);
-  //et on remet le bon si on peut
-  if (domaine) valeurs().set_md_vector(valeurs().dimension_tot(0) > domaine->nb_elem_tot() ? domaine->mdv_elems_faces : domaine->domaine().md_vector_elements());
-  return ret;
+  init_auxiliary_variables();
+  return Champ_Inc_base::reprendre(fich);
 }
 
 Champ_base& Champ_Elem_PolyMAC_P0P1NC::affecter_(const Champ_base& ch)
