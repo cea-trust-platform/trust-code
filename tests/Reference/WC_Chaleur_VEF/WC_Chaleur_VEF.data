@@ -111,9 +111,9 @@ Read pb
     {
         Definition_champs
         {
-            exact_t transformation { methode formule expression 1 333.15-9.81/1005*y localisation elem }
+            exact_t transformation { methode formule expression 1 333.15-9.81/1005*y localisation elem unite K }
             temp transformation { methode formule expression 1 tt source refChamp { Pb_Champ pb temperature nom_source tt } }
-            error_t transformation { unite K methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
+            error_t transformation { methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
         }
         Format lml
         fields dt_post 5000.
@@ -124,7 +124,7 @@ Read pb
             pression_tot elem
             Pression_hydro elem
             temperature elem
-            error_t elem
+            exact_t elem
         }
     }
 }
