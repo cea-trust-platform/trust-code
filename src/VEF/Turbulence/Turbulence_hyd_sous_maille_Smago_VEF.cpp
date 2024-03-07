@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Smago_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_Smago_VEF.h>
 #include <Champ_P1NC.h>
@@ -26,22 +20,19 @@
 #include <Param.h>
 #include <Domaine_VEF.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Smago_VEF,"Modele_turbulence_hyd_sous_maille_Smago_VEF",Mod_turb_hyd_ss_maille_VEF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Smago_VEF, "Modele_turbulence_hyd_sous_maille_Smago_VEF", Mod_turb_hyd_ss_maille_VEF);
 
 Turbulence_hyd_sous_maille_Smago_VEF::Turbulence_hyd_sous_maille_Smago_VEF()
 {
-  cs=0.18;
+  cs = 0.18;
 }
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_Smago_VEF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_Smago_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Turbulence_hyd_sous_maille_Smago_VEF::readOn(Entree& is )
+Entree& Turbulence_hyd_sous_maille_Smago_VEF::readOn(Entree& is)
 {
   Mod_turb_hyd_ss_maille_VEF::readOn(is);
   return is;
@@ -50,8 +41,8 @@ Entree& Turbulence_hyd_sous_maille_Smago_VEF::readOn(Entree& is )
 void Turbulence_hyd_sous_maille_Smago_VEF::set_param(Param& param)
 {
   Mod_turb_hyd_ss_maille_VEF::set_param(param);
-  param.ajouter("cs",&cs);
-  param.ajouter_condition("value_of_cs_ge_0","sous_maille_smago model constant must be positive.");
+  param.ajouter("cs", &cs);
+  param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,8 +66,8 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Smago_VEF::calculer_viscosite_turbulente(
       Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
       exit();
     }
-  for (int elem=0 ; elem<nb_elem ; elem++)
-    visco_turb(elem)=cs*cs*l_(elem)*l_(elem)*sqrt(SMA_barre[elem]);
+  for (int elem = 0; elem < nb_elem; elem++)
+    visco_turb(elem) = cs * cs * l_(elem) * l_(elem) * sqrt(SMA_barre[elem]);
 
   double temps = mon_equation->inconnue().temps();
   la_viscosite_turbulente.changer_temps(temps);
@@ -88,7 +79,5 @@ void Turbulence_hyd_sous_maille_Smago_VEF::calculer_S_barre()
   const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
   const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
 
-  Champ_P1NC::calcul_S_barre(la_vitesse,SMA_barre,domaine_Cl_VEF);
+  Champ_P1NC::calcul_S_barre(la_vitesse, SMA_barre, domaine_Cl_VEF);
 }
-
-

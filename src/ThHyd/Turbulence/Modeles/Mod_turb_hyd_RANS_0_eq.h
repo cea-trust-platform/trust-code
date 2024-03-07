@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_RANS_0_eq.h
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Mod_turb_hyd_RANS_0_eq_included
 #define Mod_turb_hyd_RANS_0_eq_included
@@ -30,7 +23,7 @@ class Equation_base;
  *
  * @sa Modele_turbulence_hyd_base
  */
-class Mod_turb_hyd_RANS_0_eq : public Modele_turbulence_hyd_base
+class Mod_turb_hyd_RANS_0_eq: public Modele_turbulence_hyd_base
 {
 
   Declare_base_sans_constructeur(Mod_turb_hyd_RANS_0_eq);
@@ -40,18 +33,18 @@ public:
   Mod_turb_hyd_RANS_0_eq();
   void set_param(Param& param) override;
   int reprendre(Entree& is) override;
-  int comprend_mot(const Motcle& mot) const ;
-  int a_pour_Champ_Fonc(const Motcle& mot,REF(Champ_base)& ch_ref ) const;
+  int comprend_mot(const Motcle& mot) const;
+  int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
 
   /////////////////////////////////////////////////////
 
   void completer() override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   void discretiser() override;
   virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
   virtual void calculer_energie_cinetique_turb()=0;
-  void imprimer (Sortie& )  const override  ;
+  void imprimer(Sortie&) const override;
   inline virtual Champ_Fonc& energie_cinetique_turbulente();
   inline virtual const Champ_Fonc& energie_cinetique_turbulente() const;
 

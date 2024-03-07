@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_ss_maille.h
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Mod_turb_hyd_ss_maille_included
 #define Mod_turb_hyd_ss_maille_included
@@ -34,7 +28,7 @@
  *
  * @sa Modele_turbulence_hyd_base Modele_turbulence_hyd_K_Eps
  */
-class Mod_turb_hyd_ss_maille : public Modele_turbulence_hyd_base
+class Mod_turb_hyd_ss_maille: public Modele_turbulence_hyd_base
 {
 
   Declare_base_sans_constructeur(Mod_turb_hyd_ss_maille);
@@ -47,9 +41,15 @@ public:
   void verifie_loi_paroi_diphasique();
   int preparer_calcul() override;
   void completer() override;
-  void mettre_a_jour(double ) override;
-  inline virtual Champ_Fonc& energie_cinetique_turbulente() { return energie_cinetique_turb_; }
-  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const { return energie_cinetique_turb_; }
+  void mettre_a_jour(double) override;
+  inline virtual Champ_Fonc& energie_cinetique_turbulente()
+  {
+    return energie_cinetique_turb_;
+  }
+  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const
+  {
+    return energie_cinetique_turb_;
+  }
   virtual void calculer_longueurs_caracteristiques()=0;
   virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
   virtual void calculer_energie_cinetique_turb();
@@ -59,7 +59,6 @@ protected:
   Champ_Fonc energie_cinetique_turb_;
   DoubleVect l_;
   Motcle methode;
-
 
 };
 

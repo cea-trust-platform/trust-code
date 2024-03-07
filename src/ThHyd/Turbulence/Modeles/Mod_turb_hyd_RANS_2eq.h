@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_RANS_2eq.h
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Mod_turb_hyd_RANS_2eq_included
 #define Mod_turb_hyd_RANS_2eq_included
@@ -26,7 +19,6 @@
 #include <Modele_turbulence_hyd_base.h>
 
 class Equation_base;
-
 
 /*! @brief Classe Mod_turb_hyd_RANS_2eq Classe de base des modeles de type RANS à deux equations
  *
@@ -41,9 +33,6 @@ public:
 
   Mod_turb_hyd_RANS_2eq();
 
-protected:
-
 };
-
 
 #endif

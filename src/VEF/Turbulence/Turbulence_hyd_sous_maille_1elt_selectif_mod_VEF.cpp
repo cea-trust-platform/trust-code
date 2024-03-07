@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,20 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF.h>
 #include <VEF_discretisation.h>
 #include <Champ_P1NC.h>
 #include <Domaine_VEF.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF,"Modele_turbulence_hyd_sous_maille_1elt_selectif_mod_VEF",Turbulence_hyd_sous_maille_1elt_VEF);
-
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF, "Modele_turbulence_hyd_sous_maille_1elt_selectif_mod_VEF", Turbulence_hyd_sous_maille_1elt_VEF);
 
 Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF()
 {
@@ -38,18 +31,17 @@ Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::Turbulence_hyd_sous_maille_1el
 //// printOn
 //
 
-Sortie& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
 //// readOn
 //
 
-Entree& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::readOn(Entree& s )
+Entree& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::readOn(Entree& s)
 {
-  return Turbulence_hyd_sous_maille_1elt_VEF::readOn(s) ;
+  return Turbulence_hyd_sous_maille_1elt_VEF::readOn(s);
 }
 
 // Entree& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::lire(const Motcle& motlu, Entree& is)
@@ -90,18 +82,18 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::discretiser()
       exit();
     }
   Mod_turb_hyd_ss_maille::discretiser();
-  const VEF_discretisation& dis=ref_cast(VEF_discretisation, mon_equation->discretisation());
-  dis.vorticite(mon_equation->domaine_dis(),mon_equation->inconnue(), la_vorticite);
+  const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
+  dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }
 
 int Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::a_pour_Champ_Fonc(const Motcle& mot,
-                                                                        REF(Champ_base)& ch_ref ) const
+                                                                        REF(Champ_base) &ch_ref) const
 {
   Motcles les_motcles(7);
   {
-    les_motcles[0] ="viscosite_turbulente";
-    les_motcles[1] ="k";
-    les_motcles[2] ="vorticite";
+    les_motcles[0] = "viscosite_turbulente";
+    les_motcles[1] = "k";
+    les_motcles[2] = "vorticite";
 
   }
   int rang = les_motcles.search(mot);
@@ -143,7 +135,7 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::cutoff()
 {
   //  static const double Sin2Angl = SIN2ANGL_new2;
   double Sin2Angl;
-  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC,mon_equation->inconnue().valeur());
+  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation->inconnue().valeur());
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -158,12 +150,12 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::cutoff()
   vorticite.echange_espace_virtuel();
 
   //  int el0,el1,el2,el3;
-  double norme,norme_moyen,prod,angle;//,delta;
+  double norme, norme_moyen, prod, angle;  //,delta;
   DoubleVect vorti_moyen(3);
   IntVect elem_nn(4);
   IntVect elem_autour(4);
   DoubleVect dist(4);
-  int nb_elem_nn,compteur,elem,k,num_elem;
+  int nb_elem_nn, compteur, elem, k, num_elem;
   double d;
 
   //////**************************************
@@ -173,43 +165,43 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::cutoff()
   // Pour l'instant, on met k_I en dur !!
   // k_I(0)=5 --> k_I = 3
   static double ki = 2.5;
-  double kc,rapport;
+  double kc, rapport;
 
-  for (num_elem=0; num_elem<nb_elem; num_elem++)
+  for (num_elem = 0; num_elem < nb_elem; num_elem++)
     {
       // Calcul de k_c=(\pi)/(l[elem])
-      kc = M_PI/l_[num_elem];
-      rapport = kc/ki;
-      calculer_angle_limite(rapport,angle);
+      kc = M_PI / l_[num_elem];
+      rapport = kc / ki;
+      calculer_angle_limite(rapport, angle);
 
       Sin2Angl = sin(angle);
       Sin2Angl *= Sin2Angl;
 
-      elem_autour[0] = face_voisins(elem_faces(num_elem,0),0);
+      elem_autour[0] = face_voisins(elem_faces(num_elem, 0), 0);
       if (elem_autour[0] == num_elem)
-        elem_autour[0] = face_voisins(elem_faces(num_elem,0),1);
-      elem_autour[1] = face_voisins(elem_faces(num_elem,1),0);
+        elem_autour[0] = face_voisins(elem_faces(num_elem, 0), 1);
+      elem_autour[1] = face_voisins(elem_faces(num_elem, 1), 0);
       if (elem_autour[1] == num_elem)
-        elem_autour[1] = face_voisins(elem_faces(num_elem,1),1);
-      elem_autour[2] = face_voisins(elem_faces(num_elem,2),0);
+        elem_autour[1] = face_voisins(elem_faces(num_elem, 1), 1);
+      elem_autour[2] = face_voisins(elem_faces(num_elem, 2), 0);
       if (elem_autour[2] == num_elem)
-        elem_autour[2] = face_voisins(elem_faces(num_elem,2),1);
-      elem_autour[3] = face_voisins(elem_faces(num_elem,3),0);
+        elem_autour[2] = face_voisins(elem_faces(num_elem, 2), 1);
+      elem_autour[3] = face_voisins(elem_faces(num_elem, 3), 0);
       if (elem_autour[3] == num_elem)
-        elem_autour[3] = face_voisins(elem_faces(num_elem,3),1);
+        elem_autour[3] = face_voisins(elem_faces(num_elem, 3), 1);
 
       //      double d0,d1,d2,d3,d;
-      double x,y,z;
-      x = xp(num_elem,0);
-      y = xp(num_elem,1);
-      z = xp(num_elem,2);
+      double x, y, z;
+      x = xp(num_elem, 0);
+      y = xp(num_elem, 1);
+      z = xp(num_elem, 2);
 
       nb_elem_nn = 0;
       elem_nn = 0;
       compteur = 0;
       d = 0.;
 
-      while(compteur<4)  // nb_elem_nn = nbr d elts autour non nuls!!!
+      while (compteur < 4)  // nb_elem_nn = nbr d elts autour non nuls!!!
         {
           if (elem_autour[compteur] != -1)
             {
@@ -219,25 +211,24 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::cutoff()
           compteur++;
         }
 
-      for (elem=0; elem<nb_elem_nn; elem++)
+      for (elem = 0; elem < nb_elem_nn; elem++)
         {
-          dist[elem] = (x-xp(elem_nn[elem],0))*(x-xp(elem_nn[elem],0))+(y-xp(elem_nn[elem],1))*(y-xp(elem_nn[elem],1))+(z-xp(elem_nn[elem],2))*(z-xp(elem_nn[elem],2));
-          dist[elem] = 1./sqrt(dist[elem]);
+          dist[elem] = (x - xp(elem_nn[elem], 0)) * (x - xp(elem_nn[elem], 0)) + (y - xp(elem_nn[elem], 1)) * (y - xp(elem_nn[elem], 1)) + (z - xp(elem_nn[elem], 2)) * (z - xp(elem_nn[elem], 2));
+          dist[elem] = 1. / sqrt(dist[elem]);
           d += dist[elem];
         }
 
       vorti_moyen = 0.;
-      for (elem=0; elem<nb_elem_nn; elem++)
+      for (elem = 0; elem < nb_elem_nn; elem++)
         {
-          for (k=0; k<3; k++)
-            vorti_moyen(k) +=  dist[elem]*vorticite(elem_nn[elem],k)/d;
+          for (k = 0; k < 3; k++)
+            vorti_moyen(k) += dist[elem] * vorticite(elem_nn[elem], k) / d;
         }
-
 
       if (nb_elem_nn == 0)  // Cas d'un element coin ; on met F2 a zero
         // On rend nul le vecteur vorti_moyen(k) ce qui provoquera la mise a zero de F2
         {
-          for (k=0; k<3; k++)
+          for (k = 0; k < 3; k++)
             vorti_moyen(k) = 0;
         }
 
@@ -246,24 +237,24 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::cutoff()
 
       norme = 0;
       int kk;
-      for (kk=0; kk<3; kk++)
-        norme += carre(vorticite(num_elem,kk));
+      for (kk = 0; kk < 3; kk++)
+        norme += carre(vorticite(num_elem, kk));
 
       norme_moyen = 0;
-      for (kk=0; kk<3; kk++)
+      for (kk = 0; kk < 3; kk++)
         norme_moyen += carre(vorti_moyen(kk));
 
-      if ( (norme > 1.e-10) && (norme_moyen > 1.e-10 ) )
+      if ((norme > 1.e-10) && (norme_moyen > 1.e-10))
         {
-          prod = carre(vorti_moyen(1)*vorticite(num_elem,2)-vorti_moyen(2)*vorticite(num_elem,1))
-                 +  carre(vorti_moyen(2)*vorticite(num_elem,0)-vorti_moyen(0)*vorticite(num_elem,2))
-                 +  carre(vorti_moyen(0)*vorticite(num_elem,1)-vorti_moyen(1)*vorticite(num_elem,0));
-          prod /= (norme*norme_moyen);
+          prod = carre(vorti_moyen(1) * vorticite(num_elem, 2) - vorti_moyen(2) * vorticite(num_elem, 1)) + carre(vorti_moyen(2) * vorticite(num_elem, 0) - vorti_moyen(0) * vorticite(num_elem, 2))
+                 + carre(vorti_moyen(0) * vorticite(num_elem, 1) - vorti_moyen(1) * vorticite(num_elem, 0));
+          prod /= (norme * norme_moyen);
 
           if (prod <= Sin2Angl)
             F2(num_elem) = 0;
         }
-      else // bruit numerique ou element de coin
+      else
+        // bruit numerique ou element de coin
         F2(num_elem) = 0;
 
     }
@@ -275,38 +266,38 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::calculer_angle_limite(con
   //   if (rapport < 1)
   //     angle = 23.;
   //   else
-  if (rapport<10.)
-    angle = 23.*pow(rapport,-0.4);
+  if (rapport < 10.)
+    angle = 23. * pow(rapport, -0.4);
   else
     angle = 9.;
 
-  angle *= M_PI/180.;
+  angle *= M_PI / 180.;
 
   //  Cerr << "angle=" << angle << finl;
 }
 
 /* PQ:07/09/05
-   const Champ_Fonc& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::calculer_energie_cinetique_turb(const DoubleTab& F2)
-   {
-   //  static const double Csms2 = 1.8764;  // si CSMS1 = 0.143
-   //  static const double Csms2 = 0.676;  // si CSMS1 = 0.087 pour 64^3
-   static const double Csms2 = 0.6703;  // si CSMS1 = 0.086 pour 32^3
-   //  CSMS2 = 27/8*M_PI^2*CSMS1^2*C_k^3
-   double temps = mon_equation->inconnue().temps();
-   DoubleVect& k = energie_cinetique_turb_.valeurs();
-   int nb_poly = le_dom_VEF->domaine().nb_elem();
+ const Champ_Fonc& Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::calculer_energie_cinetique_turb(const DoubleTab& F2)
+ {
+ //  static const double Csms2 = 1.8764;  // si CSMS1 = 0.143
+ //  static const double Csms2 = 0.676;  // si CSMS1 = 0.087 pour 64^3
+ static const double Csms2 = 0.6703;  // si CSMS1 = 0.086 pour 32^3
+ //  CSMS2 = 27/8*M_PI^2*CSMS1^2*C_k^3
+ double temps = mon_equation->inconnue().temps();
+ DoubleVect& k = energie_cinetique_turb_.valeurs();
+ int nb_poly = le_dom_VEF->domaine().nb_elem();
 
-   if (k.size() != nb_poly) {
-   Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
-   exit();
-   }
+ if (k.size() != nb_poly) {
+ Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
+ exit();
+ }
 
-   for (int elem=0; elem<nb_poly; elem++)
-   k[elem] = Csms2*F2[elem];
+ for (int elem=0; elem<nb_poly; elem++)
+ k[elem] = Csms2*F2[elem];
 
-   //Cerr << "On est passe dans Turbulence_hyd_sous_maille_1elt_selectif_VEF::calculer_energie_cinetique_turb" <<  finl;
+ //Cerr << "On est passe dans Turbulence_hyd_sous_maille_1elt_selectif_VEF::calculer_energie_cinetique_turb" <<  finl;
 
-   energie_cinetique_turb_.changer_temps(temps);
-   return energie_cinetique_turb_;
-   }
-*/
+ energie_cinetique_turb_.changer_temps(temps);
+ return energie_cinetique_turb_;
+ }
+ */

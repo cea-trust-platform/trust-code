@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Fst_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_Fst_VEF.h>
 #include <Champ_P1NC.h>
@@ -26,28 +20,21 @@
 #include <Schema_Temps_base.h>
 #include <Domaine_VEF.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Fst_VEF,"Modele_turbulence_hyd_sous_maille_fst_VEF",Mod_turb_hyd_ss_maille_VEF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Fst_VEF, "Modele_turbulence_hyd_sous_maille_fst_VEF", Mod_turb_hyd_ss_maille_VEF);
 
 Turbulence_hyd_sous_maille_Fst_VEF::Turbulence_hyd_sous_maille_Fst_VEF()
 {
-  C1 =0.777*0.18247*0.18247;
+  C1 = 0.777 * 0.18247 * 0.18247;
 }
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_Fst_VEF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_Fst_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_Fst_VEF::readOn(Entree& is )
+Entree& Turbulence_hyd_sous_maille_Fst_VEF::readOn(Entree& is)
 {
-  return Mod_turb_hyd_ss_maille_VEF::readOn(is) ;
+  return Mod_turb_hyd_ss_maille_VEF::readOn(is);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,7 +42,6 @@ Entree& Turbulence_hyd_sous_maille_Fst_VEF::readOn(Entree& is )
 //  Implementation de fonctions de la classe Turbulence_hyd_sous_maille_Fst_VEF
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 Champ_Fonc& Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente()
 {
@@ -77,12 +63,12 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente()
       exit();
     }
 
-  Debog::verifier("Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente visco_turb 0",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
-  for (int elem=0 ; elem<nb_elem ; elem++)
-    visco_turb(elem)=C1*l_(elem)*l_(elem)*sqrt(Racine[elem]);
+  for (int elem = 0; elem < nb_elem; elem++)
+    visco_turb(elem) = C1 * l_(elem) * l_(elem) * sqrt(Racine[elem]);
 
-  Debog::verifier("Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente visco_turb 1",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
   la_viscosite_turbulente.changer_temps(temps);
   return la_viscosite_turbulente;
@@ -112,7 +98,6 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Fst_VEF::calculer_viscosite_turbulente()
 //  return energie_cinetique_turb_;
 //}
 
-
 void Turbulence_hyd_sous_maille_Fst_VEF::calculer_racine()
 {
   const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
@@ -122,37 +107,37 @@ void Turbulence_hyd_sous_maille_Fst_VEF::calculer_racine()
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const DoubleVect& vol = domaine_VEF.volumes();
 
-  DoubleTab Sij(nb_elem_tot,dimension,dimension);
+  DoubleTab Sij(nb_elem_tot, dimension, dimension);
 
   // MAINTENANT : on prend la racine cubique du volume
 
-  for (int elem=0; elem<nb_elem; elem ++)
-    l_(elem) = exp(log(vol[elem])/double(dimension));
+  for (int elem = 0; elem < nb_elem; elem++)
+    l_(elem) = exp(log(vol[elem]) / double(dimension));
 
-  DoubleTab duidxj(nb_elem,dimension,dimension);
-  Champ_P1NC::calcul_gradient(la_vitesse,duidxj,domaine_Cl_VEF);
+  DoubleTab duidxj(nb_elem, dimension, dimension);
+  Champ_P1NC::calcul_gradient(la_vitesse, duidxj, domaine_Cl_VEF);
 
-  for(int elem=0 ; elem<nb_elem_tot ; elem ++)
-    for(int i=0 ; i<dimension ; i ++)
-      for(int j=0 ; j<dimension ; j ++)
-        Sij(elem,i,j) = 0.5 * (duidxj(elem,i,j) + duidxj(elem,j,i));
+  for (int elem = 0; elem < nb_elem_tot; elem++)
+    for (int i = 0; i < dimension; i++)
+      for (int j = 0; j < dimension; j++)
+        Sij(elem, i, j) = 0.5 * (duidxj(elem, i, j) + duidxj(elem, j, i));
 
-  DoubleTrav vorticite(nb_elem,dimension);
-  vorticite=0;
-  Champ_P1NC& vit = ref_cast(Champ_P1NC,mon_equation->inconnue().valeur());
+  DoubleTrav vorticite(nb_elem, dimension);
+  vorticite = 0;
+  Champ_P1NC& vit = ref_cast(Champ_P1NC, mon_equation->inconnue().valeur());
   vit.cal_rot_ordre1(vorticite);
 
   // On calcule Racine
-  for (int elem=0 ; elem<nb_elem; elem++)
+  for (int elem = 0; elem < nb_elem; elem++)
     {
       double temp = 0.;
-      for (int i=0 ; i<dimension ; i++)
+      for (int i = 0; i < dimension; i++)
         {
-          for (int j=0 ; j<dimension ; j++)
-            temp += 2. * Sij(elem,i,j) * Sij(elem,i,j);
+          for (int j = 0; j < dimension; j++)
+            temp += 2. * Sij(elem, i, j) * Sij(elem, i, j);
 
-          temp += vorticite(elem,i) * vorticite(elem,i);
+          temp += vorticite(elem, i) * vorticite(elem, i);
         }
-      Racine(elem)= temp;
+      Racine(elem) = temp;
     }
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,18 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Wale_VDF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Turbulence_hyd_sous_maille_Wale_VDF_included
 #define Turbulence_hyd_sous_maille_Wale_VDF_included
-
-
-
 
 #include <Mod_turb_hyd_ss_maille_VDF.h>
 
@@ -35,7 +26,7 @@
  *  Mod_turb_hyd_ss_maille
  *
  */
-class Turbulence_hyd_sous_maille_Wale_VDF : public Mod_turb_hyd_ss_maille_VDF
+class Turbulence_hyd_sous_maille_Wale_VDF: public Mod_turb_hyd_ss_maille_VDF
 {
 
   Declare_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Wale_VDF);
@@ -45,13 +36,13 @@ public:
   Turbulence_hyd_sous_maille_Wale_VDF();
   void set_param(Param& param) override;
 
-protected :
+protected:
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_OP1_OP2();
 
   double cw;
-  DoubleVect OP1,OP2;
+  DoubleVect OP1, OP2;
 };
 
 #endif

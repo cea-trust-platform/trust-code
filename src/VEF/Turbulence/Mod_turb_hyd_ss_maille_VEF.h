@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_ss_maille_VEF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Mod_turb_hyd_ss_maille_VEF_included
 #define Mod_turb_hyd_ss_maille_VEF_included
@@ -29,7 +23,6 @@ class Domaine_Cl_dis;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
 
-
 /*! @brief classe Mod_turb_hyd_ss_maille_VEF Cette classe correspond a la mise en oeuvre des modeles sous
  *
  *  maille en VEF
@@ -38,17 +31,17 @@ class Domaine_VEF;
  *  Mod_turb_hyd_ss_maille
  *
  */
-class Mod_turb_hyd_ss_maille_VEF : public Mod_turb_hyd_ss_maille
+class Mod_turb_hyd_ss_maille_VEF: public Mod_turb_hyd_ss_maille
 {
 
   Declare_base(Mod_turb_hyd_ss_maille_VEF);
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void calculer_longueurs_caracteristiques() override;
 
-protected :
+protected:
 
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;

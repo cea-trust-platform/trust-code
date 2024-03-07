@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,17 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_VDF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Turbulence_hyd_sous_maille_VDF_included
 #define Turbulence_hyd_sous_maille_VDF_included
-
-
 
 #include <Mod_turb_hyd_ss_maille_VDF.h>
 
@@ -34,7 +26,7 @@
  *  Mod_turb_hyd_ss_maille
  *
  */
-class Turbulence_hyd_sous_maille_VDF : public Mod_turb_hyd_ss_maille_VDF
+class Turbulence_hyd_sous_maille_VDF: public Mod_turb_hyd_ss_maille_VDF
 {
 
   Declare_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_VDF);
@@ -45,14 +37,14 @@ public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-protected :
+protected:
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_energie_cinetique_turb() override;
   virtual void calculer_fonction_structure();
 
   int nb_points;    // nb_points=4 ou 6 selon que nous utilisons la formulation de la FST en 4 ou 6 points!!
-  int dir1,dir2; // direction du plan dans lequel on veut calculer la FST en 4 points
+  int dir1, dir2; // direction du plan dans lequel on veut calculer la FST en 4 points
   int dir3; // 3eme direction!!
 
   DoubleVect F2;
@@ -61,10 +53,9 @@ protected :
   double Csm2_; // constante pour calcul de l'energie ( idem )
 };
 
-
 inline Turbulence_hyd_sous_maille_VDF::Turbulence_hyd_sous_maille_VDF()
 {
-  nb_points=6;
+  nb_points = 6;
   Csm1_ = CSM1;
   Csm2_ = CSM2;
 }

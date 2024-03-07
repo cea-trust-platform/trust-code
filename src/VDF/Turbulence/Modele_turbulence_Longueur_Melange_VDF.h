@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_Longueur_Melange_VDF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Modele_turbulence_Longueur_Melange_VDF_included
 #define Modele_turbulence_Longueur_Melange_VDF_included
@@ -35,7 +29,7 @@ class Domaine_VDF;
  *
  * @sa Modele_turbulence_hyd_base
  */
-class Modele_turbulence_Longueur_Melange_VDF : public Mod_turb_hyd_RANS_0_eq
+class Modele_turbulence_Longueur_Melange_VDF: public Mod_turb_hyd_RANS_0_eq
 {
 
   Declare_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VDF);
@@ -63,7 +57,5 @@ private:
   double alt_min, alt_max;
 
 };
-
-
 
 #endif

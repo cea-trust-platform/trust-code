@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_axi_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_axi_VDF.h>
 #include <Periodique.h>
@@ -31,34 +25,24 @@
 #include <Domaine_Cl_VDF.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Turbulence_hyd_sous_maille_axi_VDF,"Modele_turbulence_hyd_sous_maille_axi_VDF",Turbulence_hyd_sous_maille_VDF);
+Implemente_instanciable(Turbulence_hyd_sous_maille_axi_VDF, "Modele_turbulence_hyd_sous_maille_axi_VDF", Turbulence_hyd_sous_maille_VDF);
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_axi_VDF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_axi_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_axi_VDF::readOn(Entree& s )
+Entree& Turbulence_hyd_sous_maille_axi_VDF::readOn(Entree& s)
 {
-  ////return Mod_turb_hyd_ss_maille::readOn(s) ;
   return Turbulence_hyd_sous_maille_VDF::readOn(s);
 
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Implementation de fonctions de la classe Turbulence_hyd_sous_maille_axi_VDF
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 Champ_Fonc& Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente()
 {
@@ -70,10 +54,9 @@ Champ_Fonc& Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente()
   int nb_poly = domaine_VDF.domaine().nb_elem();
   int nb_poly_tot = le_dom_VDF->domaine().nb_elem_tot();
   int numfa[6];
-  double delta_C_axi ;
-  double h_x,h_y,h_z;
-  double un_tiers   = 1./3.;
-
+  double delta_C_axi;
+  double h_x, h_y, h_z;
+  double un_tiers = 1. / 3.;
 
   F2.resize(nb_poly_tot);
   calculer_fonction_structure();
@@ -84,24 +67,23 @@ Champ_Fonc& Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente()
       exit();
     }
 
-  Debog::verifier("Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente visco_turb 0",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
-  for (int elem=0; elem<nb_poly; elem++)
+  for (int elem = 0; elem < nb_poly; elem++)
     {
-      for (int i=0; i<6; i++)
-        numfa[i] = elem_faces(elem,i);
-      h_x = domaine_VDF.dist_face_axi(numfa[0],numfa[3],0);
-      h_y = domaine_VDF.dist_face_axi(numfa[1],numfa[4],1);
-      h_z = domaine_VDF.dist_face_axi(numfa[2],numfa[5],2);
+      for (int i = 0; i < 6; i++)
+        numfa[i] = elem_faces(elem, i);
+      h_x = domaine_VDF.dist_face_axi(numfa[0], numfa[3], 0);
+      h_y = domaine_VDF.dist_face_axi(numfa[1], numfa[4], 1);
+      h_z = domaine_VDF.dist_face_axi(numfa[2], numfa[5], 2);
       // filter width by bardina
       // delta_C_axi = sqrt(h_x*h_x + h_y*h_y + h_z*h_z) ;
       // filter lesieur
-      delta_C_axi = pow(h_x*h_y*h_z,un_tiers) ;
-      visco_turb[elem] = Csm1*delta_C_axi*sqrt(F2[elem]);
+      delta_C_axi = pow(h_x * h_y * h_z, un_tiers);
+      visco_turb[elem] = Csm1 * delta_C_axi * sqrt(F2[elem]);
     }
 
-  Debog::verifier("Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente visco_turb 1",visco_turb);
-
+  Debog::verifier("Turbulence_hyd_sous_maille_axi_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
   la_viscosite_turbulente.changer_temps(temps);
   return la_viscosite_turbulente;
@@ -116,10 +98,10 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const IntTab& Qdm = domaine_VDF.Qdm();
   const IntVect& orientation = domaine_VDF.orientation();
-  DoubleTrav F_Elem(nb_poly,dimension);
-  int num0,num1,num2,num3;
-  int k1,k2;
-  double diff1,diff2,aux;
+  DoubleTrav F_Elem(nb_poly, dimension);
+  int num0, num1, num2, num3;
+  int k1, k2;
+  double diff1, diff2, aux;
 
   // Dans le tableau F_Elem on stocke les fonctions de structure dans
   // chacune des directions d'espace
@@ -142,79 +124,87 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
   if (dimension == 3)  //dimension == 3
     {
       int num_elem;
-      for (num_elem=0; num_elem<nb_poly; num_elem++)
+      for (num_elem = 0; num_elem < nb_poly; num_elem++)
         {
-          diff = vitesse[elem_faces(num_elem,0)] - vitesse[elem_faces(num_elem,3)];
-          F_Elem(num_elem,0) = diff*diff;
-          diff = vitesse[elem_faces(num_elem,1)] - vitesse[elem_faces(num_elem,4)];
-          F_Elem(num_elem,1) = diff*diff;
-          diff = vitesse[elem_faces(num_elem,2)] - vitesse[elem_faces(num_elem,5)];
-          F_Elem(num_elem,2) = diff*diff;
+          diff = vitesse[elem_faces(num_elem, 0)] - vitesse[elem_faces(num_elem, 3)];
+          F_Elem(num_elem, 0) = diff * diff;
+          diff = vitesse[elem_faces(num_elem, 1)] - vitesse[elem_faces(num_elem, 4)];
+          F_Elem(num_elem, 1) = diff * diff;
+          diff = vitesse[elem_faces(num_elem, 2)] - vitesse[elem_faces(num_elem, 5)];
+          F_Elem(num_elem, 2) = diff * diff;
         }
 
       int ndeb0 = domaine_VDF.premiere_arete_interne();
       int nfin0 = ndeb0 + domaine_VDF.nb_aretes_internes();
       int num_arete0;
 
-      for (num_arete0=ndeb0; num_arete0<nfin0; num_arete0++)
+      for (num_arete0 = ndeb0; num_arete0 < nfin0; num_arete0++)
         {
-          num0 = Qdm(num_arete0,0);
-          num1 = Qdm(num_arete0,1);
-          num2 = Qdm(num_arete0,2);
-          num3 = Qdm(num_arete0,3);
+          num0 = Qdm(num_arete0, 0);
+          num1 = Qdm(num_arete0, 1);
+          num2 = Qdm(num_arete0, 2);
+          num3 = Qdm(num_arete0, 3);
 
-          aux = vitesse[num1]-vitesse[num0];
-          diff1= 0.25*aux*aux;
-          aux = vitesse[num3]-vitesse[num2];
-          diff2= 0.25*aux*aux;
+          aux = vitesse[num1] - vitesse[num0];
+          diff1 = 0.25 * aux * aux;
+          aux = vitesse[num3] - vitesse[num2];
+          diff2 = 0.25 * aux * aux;
           k1 = orientation(num0);
           k2 = orientation(num2);
 
-          F_Elem(face_voisins(num0,0),k2) += diff1;
-          F_Elem(face_voisins(num0,1),k2) += diff1;
-          F_Elem(face_voisins(num1,0),k2) += diff1;
-          F_Elem(face_voisins(num1,1),k2) += diff1;
-          F_Elem(face_voisins(num2,0),k1) += diff2;
-          F_Elem(face_voisins(num2,1),k1) += diff2;
-          F_Elem(face_voisins(num3,0),k1) += diff2;
-          F_Elem(face_voisins(num3,1),k1) += diff2;
+          F_Elem(face_voisins(num0, 0), k2) += diff1;
+          F_Elem(face_voisins(num0, 1), k2) += diff1;
+          F_Elem(face_voisins(num1, 0), k2) += diff1;
+          F_Elem(face_voisins(num1, 1), k2) += diff1;
+          F_Elem(face_voisins(num2, 0), k1) += diff2;
+          F_Elem(face_voisins(num2, 1), k1) += diff2;
+          F_Elem(face_voisins(num3, 0), k1) += diff2;
+          F_Elem(face_voisins(num3, 1), k1) += diff2;
 
         }
 
       ndeb0 = domaine_VDF.premiere_arete_mixte();
       nfin0 = ndeb0 + domaine_VDF.nb_aretes_mixtes();
 
-      for (num_arete0=ndeb0; num_arete0<nfin0; num_arete0++)
+      for (num_arete0 = ndeb0; num_arete0 < nfin0; num_arete0++)
         {
-          num0 = Qdm(num_arete0,0);
-          num1 = Qdm(num_arete0,1);
-          num2 = Qdm(num_arete0,2);
-          num3 = Qdm(num_arete0,3);
+          num0 = Qdm(num_arete0, 0);
+          num1 = Qdm(num_arete0, 1);
+          num2 = Qdm(num_arete0, 2);
+          num3 = Qdm(num_arete0, 3);
 
-          aux = vitesse[num1]-vitesse[num0];
-          diff1= 0.25*aux*aux;
-          aux = vitesse[num3]-vitesse[num2];
-          diff2= 0.25*aux*aux;
+          aux = vitesse[num1] - vitesse[num0];
+          diff1 = 0.25 * aux * aux;
+          aux = vitesse[num3] - vitesse[num2];
+          diff2 = 0.25 * aux * aux;
           k1 = orientation(num0);
           k2 = orientation(num2);
 
           //int num_elem;
-          num_elem = face_voisins(num0,0);
-          if (num_elem != -1) F_Elem(num_elem,k2) += diff1;
-          num_elem = face_voisins(num0,1);
-          if (num_elem != -1) F_Elem(num_elem,k2) += diff1;
-          num_elem = face_voisins(num1,0);
-          if (num_elem != -1) F_Elem(num_elem,k2) += diff1;
-          num_elem = face_voisins(num1,1);
-          if (num_elem != -1) F_Elem(num_elem,k2) += diff1;
-          num_elem = face_voisins(num2,0);
-          if (num_elem != -1) F_Elem(num_elem,k1) += diff2;
-          num_elem = face_voisins(num2,1);
-          if (num_elem != -1) F_Elem(num_elem,k1) += diff2;
-          num_elem = face_voisins(num3,0);
-          if (num_elem != -1) F_Elem(num_elem,k1) += diff2;
-          num_elem = face_voisins(num3,1);
-          if (num_elem != -1) F_Elem(num_elem,k1) += diff2;
+          num_elem = face_voisins(num0, 0);
+          if (num_elem != -1)
+            F_Elem(num_elem, k2) += diff1;
+          num_elem = face_voisins(num0, 1);
+          if (num_elem != -1)
+            F_Elem(num_elem, k2) += diff1;
+          num_elem = face_voisins(num1, 0);
+          if (num_elem != -1)
+            F_Elem(num_elem, k2) += diff1;
+          num_elem = face_voisins(num1, 1);
+          if (num_elem != -1)
+            F_Elem(num_elem, k2) += diff1;
+          num_elem = face_voisins(num2, 0);
+          if (num_elem != -1)
+            F_Elem(num_elem, k1) += diff2;
+          num_elem = face_voisins(num2, 1);
+          if (num_elem != -1)
+            F_Elem(num_elem, k1) += diff2;
+          num_elem = face_voisins(num3, 0);
+          if (num_elem != -1)
+            F_Elem(num_elem, k1) += diff2;
+          num_elem = face_voisins(num3, 1);
+          if (num_elem != -1)
+            F_Elem(num_elem, k1) += diff2;
         }
 
       // ATTENTION!!!!!!!!!!!  Modifs periodicite      DEBUT
@@ -222,11 +212,10 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
       // Les aretes bords sont considerees comme des faces internes
       // par modification du tableau Qdm ( dans Domaine_VDF.cpp )
 
-
       const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
       const int nb_cond_lim = domaine_Cl_VDF.nb_cond_lim();
 
-      for(int i=0; i<nb_cond_lim; i++)
+      for (int i = 0; i < nb_cond_lim; i++)
         {
           const Cond_lim_base& cl = le_dom_Cl_VDF->les_conditions_limites(i).valeur();
 
@@ -240,33 +229,33 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
               int nfin = ndeb + domaine_VDF.nb_aretes_bord();
               int num_arete;
 
-              for (num_arete=ndeb; num_arete<nfin; num_arete++)
+              for (num_arete = ndeb; num_arete < nfin; num_arete++)
                 {
-                  int n_type=domaine_Cl_VDF.type_arete_bord(num_arete-ndeb);
+                  int n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
                   if (n_type == TypeAreteBordVDF::PERIO_PERIO) // arete de type periodicite
                     {
 
-                      num0 = Qdm(num_arete,0);
-                      num1 = Qdm(num_arete,1);
-                      num2 = Qdm(num_arete,2);
-                      num3 = Qdm(num_arete,3);
+                      num0 = Qdm(num_arete, 0);
+                      num1 = Qdm(num_arete, 1);
+                      num2 = Qdm(num_arete, 2);
+                      num3 = Qdm(num_arete, 3);
 
-                      aux = vitesse[num1]-vitesse[num0];
-                      diff1= 0.25*aux*aux;
-                      aux = vitesse[num3]-vitesse[num2];
-                      diff2= 0.25*aux*aux;
+                      aux = vitesse[num1] - vitesse[num0];
+                      diff1 = 0.25 * aux * aux;
+                      aux = vitesse[num3] - vitesse[num2];
+                      diff2 = 0.25 * aux * aux;
                       k1 = orientation(num0);
                       k2 = orientation(num2);
 
-                      F_Elem(face_voisins(num0,0),k2) += diff1;
-                      F_Elem(face_voisins(num0,1),k2) += diff1;
-                      F_Elem(face_voisins(num1,0),k2) += diff1;
-                      F_Elem(face_voisins(num1,1),k2) += diff1;
-                      F_Elem(face_voisins(num2,0),k1) += diff2;
-                      F_Elem(face_voisins(num2,1),k1) += diff2;
-                      F_Elem(face_voisins(num3,0),k1) += diff2;
-                      F_Elem(face_voisins(num3,1),k1) += diff2;
+                      F_Elem(face_voisins(num0, 0), k2) += diff1;
+                      F_Elem(face_voisins(num0, 1), k2) += diff1;
+                      F_Elem(face_voisins(num1, 0), k2) += diff1;
+                      F_Elem(face_voisins(num1, 1), k2) += diff1;
+                      F_Elem(face_voisins(num2, 0), k1) += diff2;
+                      F_Elem(face_voisins(num2, 1), k1) += diff2;
+                      F_Elem(face_voisins(num3, 0), k1) += diff2;
+                      F_Elem(face_voisins(num3, 1), k1) += diff2;
                     }
 
                 }
@@ -274,32 +263,29 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
         }
       // ATTENTION!!!!!!!!!!!  Modifs periodicite       FIN
 
-
       // Calcul de la Fonction de structure a partir de ses
       // composantes directionnelles
 
-      double un_tiers   = 1./3.;
-      double deux_tiers = 2./3.;
+      double un_tiers = 1. / 3.;
+      double deux_tiers = 2. / 3.;
       double delta_C_axi;
-      double h_x,h_y,h_z;
+      double h_x, h_y, h_z;
       int numfa[6];
 
-      for (num_elem=0; num_elem<nb_poly; num_elem++)
+      for (num_elem = 0; num_elem < nb_poly; num_elem++)
         {
-          for (int i=0; i<6; i++)
-            numfa[i] = elem_faces(num_elem,i);
-          h_x = domaine_VDF.dist_face_axi(numfa[0],numfa[3],0);
-          h_y = domaine_VDF.dist_face_axi(numfa[1],numfa[4],1);
-          h_z = domaine_VDF.dist_face_axi(numfa[2],numfa[5],2);
+          for (int i = 0; i < 6; i++)
+            numfa[i] = elem_faces(num_elem, i);
+          h_x = domaine_VDF.dist_face_axi(numfa[0], numfa[3], 0);
+          h_y = domaine_VDF.dist_face_axi(numfa[1], numfa[4], 1);
+          h_z = domaine_VDF.dist_face_axi(numfa[2], numfa[5], 2);
           // filter width by bardina
           // delta_C_axi = sqrt(h_x*h_x + h_y*h_y + h_z*h_z) ;
           // filter lesieur
-          delta_C_axi = pow(h_x*h_y*h_z,un_tiers) ;
-          F2[num_elem]  = un_tiers*(  F_Elem(num_elem,0)*pow(delta_C_axi/h_x,deux_tiers)
-                                      + F_Elem(num_elem,1)*pow(delta_C_axi/h_y,deux_tiers)
-                                      + F_Elem(num_elem,2)*pow(delta_C_axi/h_z,deux_tiers));
+          delta_C_axi = pow(h_x * h_y * h_z, un_tiers);
+          F2[num_elem] = un_tiers
+                         * (F_Elem(num_elem, 0) * pow(delta_C_axi / h_x, deux_tiers) + F_Elem(num_elem, 1) * pow(delta_C_axi / h_y, deux_tiers) + F_Elem(num_elem, 2) * pow(delta_C_axi / h_z, deux_tiers));
         }
-
 
       // On traite les bords pour completer la fonction de structure
       // sur les  mailles de bord
@@ -310,65 +296,65 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_fonction_structure()
       // structure
 
       int num_face;
-      int elem,n0,n1;
+      int elem, n0, n1;
 
-      for (int n_bord=0; n_bord<domaine_VDF.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
         {
 
           // pour chaque Condition Limite on regarde son type
 
           const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
-          if (sub_type(Dirichlet_entree_fluide,la_cl.valeur()) )
+          if (sub_type(Dirichlet_entree_fluide, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb0 = le_bord.num_premiere_face();
               nfin0 = ndeb0 + le_bord.nb_faces();
-              for (num_face=ndeb0; num_face<nfin0; num_face++)
-                if ( (n0 = face_voisins(num_face,0)) != -1)
+              for (num_face = ndeb0; num_face < nfin0; num_face++)
+                if ((n0 = face_voisins(num_face, 0)) != -1)
                   {
-                    elem = domaine_VDF.elem_voisin(n0,num_face,0);
-                    F2[n0] = F2[elem] ;
+                    elem = domaine_VDF.elem_voisin(n0, num_face, 0);
+                    F2[n0] = F2[elem];
                   }
                 else
                   {
-                    n1 = face_voisins(num_face,1);
-                    elem = domaine_VDF.elem_voisin(n1,num_face,1);
-                    F2[n1] = F2[elem] ;
+                    n1 = face_voisins(num_face, 1);
+                    elem = domaine_VDF.elem_voisin(n1, num_face, 1);
+                    F2[n1] = F2[elem];
                   }
             }
-          else if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
+          else if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb0 = le_bord.num_premiere_face();
               nfin0 = ndeb0 + le_bord.nb_faces();
-              for (num_face=ndeb0; num_face<nfin0; num_face++)
-                if ( (n0 = face_voisins(num_face,0)) != -1)
+              for (num_face = ndeb0; num_face < nfin0; num_face++)
+                if ((n0 = face_voisins(num_face, 0)) != -1)
                   {
-                    elem = domaine_VDF.elem_voisin(n0,num_face,0);
-                    F2[n0] = F2[elem] ;
+                    elem = domaine_VDF.elem_voisin(n0, num_face, 0);
+                    F2[n0] = F2[elem];
                   }
                 else
                   {
-                    n1 = face_voisins(num_face,1);
-                    elem = domaine_VDF.elem_voisin(n1,num_face,1);
-                    F2[n1] = F2[elem] ;
+                    n1 = face_voisins(num_face, 1);
+                    elem = domaine_VDF.elem_voisin(n1, num_face, 1);
+                    F2[n1] = F2[elem];
                   }
             }
-          else if (sub_type(Symetrie,la_cl.valeur()) )
+          else if (sub_type(Symetrie, la_cl.valeur()))
             {
               ;
             }
           else
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb0 = le_bord.num_premiere_face();
               nfin0 = ndeb0 + le_bord.nb_faces();
-              for (num_face=ndeb0; num_face<nfin0; num_face++)
-                if ( (n0 = face_voisins(num_face,0)) != -1)
+              for (num_face = ndeb0; num_face < nfin0; num_face++)
+                if ((n0 = face_voisins(num_face, 0)) != -1)
                   F2[n0] = 0;
                 else
                   {
-                    n1 = face_voisins(num_face,1);
+                    n1 = face_voisins(num_face, 1);
                     F2[n1] = 0;
                   }
             }
@@ -388,4 +374,3 @@ void Turbulence_hyd_sous_maille_axi_VDF::calculer_longueurs_caracteristiques()
   //de sous maille pour ce type de modele et n est pas utilisee non plus pour
   //calculer la viscosite turbulente
 }
-

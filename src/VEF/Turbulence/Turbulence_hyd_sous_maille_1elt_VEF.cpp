@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_1elt_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_1elt_VEF.h>
 #include <Debog.h>
@@ -25,7 +19,7 @@
 #include <Domaine_VEF.h>
 #include <Equation_base.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_1elt_VEF,"Modele_turbulence_hyd_sous_maille_1elt_VEF",Mod_turb_hyd_ss_maille_VEF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_1elt_VEF, "Modele_turbulence_hyd_sous_maille_1elt_VEF", Mod_turb_hyd_ss_maille_VEF);
 
 Turbulence_hyd_sous_maille_1elt_VEF::Turbulence_hyd_sous_maille_1elt_VEF()
 {
@@ -33,17 +27,14 @@ Turbulence_hyd_sous_maille_1elt_VEF::Turbulence_hyd_sous_maille_1elt_VEF()
   Csm2 = CSM2;
 }
 
-//
-// printOn et readOn
-
-Sortie& Turbulence_hyd_sous_maille_1elt_VEF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_1elt_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Turbulence_hyd_sous_maille_1elt_VEF::readOn(Entree& s )
+Entree& Turbulence_hyd_sous_maille_1elt_VEF::readOn(Entree& s)
 {
-  return Mod_turb_hyd_ss_maille_VEF::readOn(s) ;
+  return Mod_turb_hyd_ss_maille_VEF::readOn(s);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,7 +42,6 @@ Entree& Turbulence_hyd_sous_maille_1elt_VEF::readOn(Entree& s )
 //  Implementation de fonctions de la classe Turbulence_hyd_sous_maille_VEF
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 Champ_Fonc& Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente()
 {
@@ -71,13 +61,13 @@ Champ_Fonc& Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente()
       Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
       exit();
     }
-  visco_turb=0.;
+  visco_turb = 0.;
 
-  Debog::verifier("Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente visco_turb 0",visco_turb);
-  for (num_elem = 0; num_elem<nb_elem; num_elem++)
-    visco_turb(num_elem) = Csm1*l_[num_elem]*sqrt(F2(num_elem));
+  Debog::verifier("Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
+  for (num_elem = 0; num_elem < nb_elem; num_elem++)
+    visco_turb(num_elem) = Csm1 * l_[num_elem] * sqrt(F2(num_elem));
 
-  Debog::verifier("Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente visco_turb 1",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_1elt_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
   la_viscosite_turbulente.changer_temps(temps);
   return la_viscosite_turbulente;
@@ -90,60 +80,60 @@ void Turbulence_hyd_sous_maille_1elt_VEF::calculer_fonction_structure()
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const DoubleTab& xv = domaine_VEF.xv();
-  const DoubleTab& xp= domaine_VEF.xp();
+  const DoubleTab& xp = domaine_VEF.xp();
   //DoubleVect volume = domaine_VEF.volumes();
   const Domaine& domaine = domaine_VEF.domaine();
   int nfac = domaine.nb_faces_elem();
 
-  int num_elem,num_face,i;
-  double vit_x_elem ,vit_y_elem,vit_z_elem;
-  double dist,F2_int1,F2_int2,delta_c_val,dist1;
-  static double un_tiers = 1./3.;
+  int num_elem, num_face, i;
+  double vit_x_elem, vit_y_elem, vit_z_elem;
+  double dist, F2_int1, F2_int2, delta_c_val, dist1;
+  static double un_tiers = 1. / 3.;
   double delta_c_calc;
 
-  for (num_elem = 0; num_elem < nb_elem ; num_elem ++)
+  for (num_elem = 0; num_elem < nb_elem; num_elem++)
     {
       delta_c_val = l_[num_elem];
       // Vitesse au centre de gravite
-      vit_x_elem=0.;
-      vit_y_elem=0.;
-      vit_z_elem=0.;
+      vit_x_elem = 0.;
+      vit_y_elem = 0.;
+      vit_z_elem = 0.;
       dist1 = 0;
       delta_c_calc = 0.;
-      for (i=0; i<nfac; i++)
+      for (i = 0; i < nfac; i++)
         {
-          num_face = elem_faces(num_elem,i);
-          vit_x_elem += la_vitesse(num_face,0);
-          vit_y_elem += la_vitesse(num_face,1);
-          vit_z_elem += la_vitesse(num_face,2);
-          dist1 = (xp(num_elem,0)-xv(num_face,0))*(xp(num_elem,0)-xv(num_face,0));
-          dist1 += (xp(num_elem,1)-xv(num_face,1))*(xp(num_elem,1)-xv(num_face,1));
-          dist1 += (xp(num_elem,2)-xv(num_face,2))*(xp(num_elem,2)-xv(num_face,2));
-          delta_c_calc = std::min(delta_c_calc,dist1);
+          num_face = elem_faces(num_elem, i);
+          vit_x_elem += la_vitesse(num_face, 0);
+          vit_y_elem += la_vitesse(num_face, 1);
+          vit_z_elem += la_vitesse(num_face, 2);
+          dist1 = (xp(num_elem, 0) - xv(num_face, 0)) * (xp(num_elem, 0) - xv(num_face, 0));
+          dist1 += (xp(num_elem, 1) - xv(num_face, 1)) * (xp(num_elem, 1) - xv(num_face, 1));
+          dist1 += (xp(num_elem, 2) - xv(num_face, 2)) * (xp(num_elem, 2) - xv(num_face, 2));
+          delta_c_calc = std::min(delta_c_calc, dist1);
         }
-      vit_x_elem /= (nfac*1.);
-      vit_y_elem /= (nfac*1.);
-      vit_z_elem /= (nfac*1.);
+      vit_x_elem /= (nfac * 1.);
+      vit_y_elem /= (nfac * 1.);
+      vit_z_elem /= (nfac * 1.);
 
       // fonction de structure
       F2_int2 = 0.;
-      for (i=0; i<nfac; i++)
+      for (i = 0; i < nfac; i++)
         {
-          num_face = elem_faces(num_elem,i);
+          num_face = elem_faces(num_elem, i);
 
-          dist = (xp(num_elem,0)-xv(num_face,0))*(xp(num_elem,0)-xv(num_face,0));
-          dist += (xp(num_elem,1)-xv(num_face,1))*(xp(num_elem,1)-xv(num_face,1));
-          dist += (xp(num_elem,2)-xv(num_face,2))*(xp(num_elem,2)-xv(num_face,2));
+          dist = (xp(num_elem, 0) - xv(num_face, 0)) * (xp(num_elem, 0) - xv(num_face, 0));
+          dist += (xp(num_elem, 1) - xv(num_face, 1)) * (xp(num_elem, 1) - xv(num_face, 1));
+          dist += (xp(num_elem, 2) - xv(num_face, 2)) * (xp(num_elem, 2) - xv(num_face, 2));
 
-          dist = 1./dist;
-          dist *= (delta_c_val*delta_c_val);
-          dist = exp(un_tiers*log(dist));
+          dist = 1. / dist;
+          dist *= (delta_c_val * delta_c_val);
+          dist = exp(un_tiers * log(dist));
 
-          F2_int1 = (vit_x_elem-la_vitesse(num_face,0))*(vit_x_elem-la_vitesse(num_face,0));
-          F2_int1 += (vit_y_elem-la_vitesse(num_face,1))*(vit_y_elem-la_vitesse(num_face,1));
-          F2_int1 += (vit_z_elem-la_vitesse(num_face,2))*(vit_z_elem-la_vitesse(num_face,2));
-          F2_int2 += F2_int1*dist;
+          F2_int1 = (vit_x_elem - la_vitesse(num_face, 0)) * (vit_x_elem - la_vitesse(num_face, 0));
+          F2_int1 += (vit_y_elem - la_vitesse(num_face, 1)) * (vit_y_elem - la_vitesse(num_face, 1));
+          F2_int1 += (vit_z_elem - la_vitesse(num_face, 2)) * (vit_z_elem - la_vitesse(num_face, 2));
+          F2_int2 += F2_int1 * dist;
         }
-      F2(num_elem) = F2_int2/nfac;
+      F2(num_elem) = F2_int2 / nfac;
     }
 }

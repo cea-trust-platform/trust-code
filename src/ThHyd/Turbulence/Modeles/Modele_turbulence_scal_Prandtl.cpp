@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_scal_Prandtl.cpp
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/Common/Scal
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Modele_turbulence_scal_Prandtl.h>
 #include <Pb_Thermohydraulique_Turbulent_QC.h>
@@ -28,50 +22,35 @@
 #include <Parser_U.h>
 #include <Domaine_VF.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl,"Modele_turbulence_scal_Prandtl",Mod_Turb_scal_diffturb_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl, "Modele_turbulence_scal_Prandtl", Mod_Turb_scal_diffturb_base);
 
-Modele_turbulence_scal_Prandtl::Modele_turbulence_scal_Prandtl() : LePrdt(0.9) {}
+Modele_turbulence_scal_Prandtl::Modele_turbulence_scal_Prandtl() :
+  LePrdt(0.9)
+{
+}
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Modele_turbulence_scal_Prandtl::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_scal_Prandtl::printOn(Sortie& s) const
 {
 
   return Mod_Turb_scal_diffturb_base::printOn(s);
 }
 
-
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- *     Format:
- *       {
- *       }
- *     (il n'y a rien a lire sauf les accolades)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- * @throws accolade fermante attendue
- */
-Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is )
+Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is)
 {
   Mod_Turb_scal_diffturb_base::readOn(is);
   /*
-  // GF on  peut forcer le modele a toujours utilise le parser
-  //pour l'instant c'est bloquant pour les constituants
-  if (definition_fonction==Nom())
-  {
-  definition_fonction=Nom("nu_t/");
-  Nom nprtd(LePrdt);
-  definition_fonction+=nprtd;
-  }
-  */
+   // GF on  peut forcer le modele a toujours utilise le parser
+   //pour l'instant c'est bloquant pour les constituants
+   if (definition_fonction==Nom())
+   {
+   definition_fonction=Nom("nu_t/");
+   Nom nprtd(LePrdt);
+   definition_fonction+=nprtd;
+   }
+   */
 
   // si on  a lu une fonction, on initialise le Parser
-  if (definition_fonction!=Nom())
+  if (definition_fonction != Nom())
     {
       fonction.setNbVar(2);
       fonction.addVar("alpha");
@@ -80,7 +59,7 @@ Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is )
       fonction.parseString();
     }
 
-  if (LePrdt_fct!=Nom())
+  if (LePrdt_fct != Nom())
     {
       fonction1.setNbVar(3);
       fonction1.addVar("x");
@@ -101,22 +80,19 @@ Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is )
 
 void Modele_turbulence_scal_Prandtl::set_param(Param& param)
 {
-  param.ajouter("Prdt",&LePrdt_fct);
-  param.ajouter("Prandt_turbulent_fonction_nu_t_alpha",&definition_fonction);
+  param.ajouter("Prdt", &LePrdt_fct);
+  param.ajouter("Prandt_turbulent_fonction_nu_t_alpha", &definition_fonction);
   Modele_turbulence_scal_base::set_param(param);
 }
-
-
-
 
 /*! @brief Calcule la diffusivite turbulente et la loi de paroi.
  *
  * @param (double)
  */
-void Modele_turbulence_scal_Prandtl::mettre_a_jour(double )
+void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
 {
   calculer_diffusivite_turbulente();
-  const Milieu_base& mil=equation().probleme().milieu();
+  const Milieu_base& mil = equation().probleme().milieu();
   const Turbulence_paroi_scal& lp = loi_paroi();
   if (lp.non_nul())
     {
@@ -128,16 +104,18 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double )
   const bool Ccp = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
   const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique().valeurs();
   const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique().valeurs();
-  if (sub_type(Pb_Thermohydraulique_Turbulent_QC,mon_pb))
+  if (sub_type(Pb_Thermohydraulique_Turbulent_QC, mon_pb))
     {
-      for (int i = 0; i < lambda_t.size(); i++)  lambda_t(i) *= tab_Cp(Ccp ? 0 : i);
-      if (equation().probleme().is_dilatable()) multiplier_par_rho_si_dilatable(lambda_t,mil);
+      for (int i = 0; i < lambda_t.size(); i++)
+        lambda_t(i) *= tab_Cp(Ccp ? 0 : i);
+      if (equation().probleme().is_dilatable())
+        multiplier_par_rho_si_dilatable(lambda_t, mil);
     }
-  else lambda_t *= mon_equation->domaine_dis()->nb_elem() > 0 ?  tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
+  else
+    lambda_t *= mon_equation->domaine_dis()->nb_elem() > 0 ? tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
   lambda_t.echange_espace_virtuel();
   diffusivite_turbulente_->valeurs().echange_espace_virtuel();
 }
-
 
 /*! @brief Calcule la diffusivite turbulente.
  *
@@ -154,12 +132,12 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
   double temps = la_viscosite_turbulente->temps();
 
   //Domaine& domaine = mon_equation->domaine_dis().domaine();
-  const DoubleTab& xp= ref_cast(Domaine_VF,mon_equation->domaine_dis().valeur()).xp();
+  const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation->domaine_dis().valeur()).xp();
   //domaine.calculer_centres_gravite(xp);
 
   // if (temps != la_diffusivite_turbulente.temps())
   {
-    int n= alpha_t.size();
+    int n = alpha_t.size();
     if (nu_t.size() != n)
       {
         Cerr << "Les DoubleTab des champs diffusivite_turbulente et viscosite_turbulente" << finl;
@@ -167,65 +145,65 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
         exit();
       }
 
-
-    if (definition_fonction!=Nom())
+    if (definition_fonction != Nom())
       {
         // modif VB pour utiliser l'equation qui approche Yakhot : LePrdt = 0.7/Pe-t + 0.85
         // Pe-t est un nombre de Peclet turbulent defini par Pr*(nut/nu)
         // On a alors alpha_t = nut * nut / ( 0.7 alpha + 0.85 nut )
 
-        const Milieu_base& milieu=mon_equation.valeur().milieu();
+        const Milieu_base& milieu = mon_equation.valeur().milieu();
         const Champ_Don& alpha = milieu.diffusivite();
         if (!alpha.non_nul())
           {
             // GF si cette condition est bloquante, on peut ameliorer en
             // tentant de creer un parser sans la variable alpha, si ok on peut dire que alpha existe , est constant et vaut 1.
-            Cerr<<"Erreur dans Modele_turbulence_scal_prandt, l'option Prandt_turbulent_fonction_nu_t_alpha n'est disponible que pour des milieux ayant defini la diffusivite"<<finl;
+            Cerr << "Erreur dans Modele_turbulence_scal_prandt, l'option Prandt_turbulent_fonction_nu_t_alpha n'est disponible que pour des milieux ayant defini la diffusivite" << finl;
             exit();
           }
-        double d_alpha=0.;
-        int is_alpha_unif=sub_type(Champ_Uniforme,alpha.valeur());
+        double d_alpha = 0.;
+        int is_alpha_unif = sub_type(Champ_Uniforme, alpha.valeur());
         if (is_alpha_unif)
           {
-            d_alpha = alpha(0,0);
-            fonction.setVar("alpha",d_alpha);
+            d_alpha = alpha(0, 0);
+            fonction.setVar("alpha", d_alpha);
           }
-        for (int i=0; i<n; i++)
+        for (int i = 0; i < n; i++)
           {
             if (!is_alpha_unif)
-              fonction.setVar("alpha",alpha(i));
-            fonction.setVar("nu_t",nu_t[i]);
+              fonction.setVar("alpha", alpha(i));
+            fonction.setVar("nu_t", nu_t[i]);
 
             alpha_t[i] = fonction.eval();
           }
       }
     else
-      for (int i=0; i<n; i++)
+      for (int i = 0; i < n; i++)
         {
-          if (LePrdt_fct!=Nom())
+          if (LePrdt_fct != Nom())
             {
-              double x = xp(i,0);
-              double y = xp(i,1);
+              double x = xp(i, 0);
+              double y = xp(i, 1);
               double z = 0;
-              if (xp.nb_dim()==3)
+              if (xp.nb_dim() == 3)
                 {
-                  z = xp(i,2);
+                  z = xp(i, 2);
                 }
-              fonction1.setVar("x",x);
-              fonction1.setVar("y",y);
-              fonction1.setVar("z",z);
+              fonction1.setVar("x", x);
+              fonction1.setVar("y", y);
+              fonction1.setVar("z", z);
               double NbPrandtlCell = fonction1.eval();
-              alpha_t[i] = nu_t[i]/NbPrandtlCell;
+              alpha_t[i] = nu_t[i] / NbPrandtlCell;
             }
           else
             {
-              alpha_t[i] = nu_t[i]/LePrdt;
+              alpha_t[i] = nu_t[i] / LePrdt;
             }
         }
 
     diffusivite_turbulente_.changer_temps(temps);
   }
-  if (equation().probleme().is_dilatable()) diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
+  if (equation().probleme().is_dilatable())
+    diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
   return diffusivite_turbulente_;
 }
 

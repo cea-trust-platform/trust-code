@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,38 +12,28 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_ss_maille_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Mod_turb_hyd_ss_maille_VDF.h>
 #include <Domaine_VDF.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_VDF.h>
 
-Implemente_base(Mod_turb_hyd_ss_maille_VDF,"Mod_turb_hyd_ss_maille_VDF",Mod_turb_hyd_ss_maille);
+Implemente_base(Mod_turb_hyd_ss_maille_VDF, "Mod_turb_hyd_ss_maille_VDF", Mod_turb_hyd_ss_maille);
 
-//// printOn
-//
-
-Sortie& Mod_turb_hyd_ss_maille_VDF::printOn(Sortie& s ) const
+Sortie& Mod_turb_hyd_ss_maille_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Mod_turb_hyd_ss_maille_VDF::readOn(Entree& is )
+Entree& Mod_turb_hyd_ss_maille_VDF::readOn(Entree& is)
 {
   return Mod_turb_hyd_ss_maille::readOn(is);
 }
 
-void Mod_turb_hyd_ss_maille_VDF::associer(const Domaine_dis& domaine_dis,
-                                          const Domaine_Cl_dis& domaine_Cl_dis)
+void Mod_turb_hyd_ss_maille_VDF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF,domaine_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 void Mod_turb_hyd_ss_maille_VDF::calculer_longueurs_caracteristiques()
@@ -56,40 +46,40 @@ void Mod_turb_hyd_ss_maille_VDF::calculer_longueurs_caracteristiques()
   l_.resize(nb_elem);
 
   ArrOfDouble h(dimension);
-  double dist_tot,dist_min,dist_max,dist_moy;
-  double a1,a2,f_scotti;
+  double dist_tot, dist_min, dist_max, dist_moy;
+  double a1, a2, f_scotti;
 
-  const int modele_scotti = (methode ==  Motcle("Scotti"));
-  if (modele_scotti && (dimension==2))
+  const int modele_scotti = (methode == Motcle("Scotti"));
+  if (modele_scotti && (dimension == 2))
     {
       Cerr << "The Scotti correction can be used only for dimension 3." << finl;
       exit();
     }
 
-  for(int elem=0 ; elem<nb_elem ; elem ++)
+  for (int elem = 0; elem < nb_elem; elem++)
     {
-      for (int i=0 ; i<dimension ; i++)
-        h[i]=domaine_VDF.dim_elem(elem,orientation(elem_faces(elem,i)));
+      for (int i = 0; i < dimension; i++)
+        h[i] = domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
 
-      if (dimension==2)
-        l_(elem)=exp((log(h[0]*h[1]))/2);
+      if (dimension == 2)
+        l_(elem) = exp((log(h[0] * h[1])) / 2);
       else
-        l_(elem)=exp((log(h[0]*h[1]*h[2]))/3);
+        l_(elem) = exp((log(h[0] * h[1] * h[2])) / 3);
 
       if (modele_scotti)
         {
-          dist_tot=h[0]+h[1]+h[2];
+          dist_tot = h[0] + h[1] + h[2];
 
-          dist_min=min_array(h);
-          dist_max=max_array(h);
-          dist_moy=dist_tot-dist_min-dist_max;
+          dist_min = min_array(h);
+          dist_max = max_array(h);
+          dist_moy = dist_tot - dist_min - dist_max;
 
-          a1=dist_min/dist_max;
-          a2=dist_moy/dist_max;
+          a1 = dist_min / dist_max;
+          a2 = dist_moy / dist_max;
 
-          f_scotti=cosh(sqrt((4./27.)*( log(a1)*log(a1) - log(a1)*log(a2) + log(a2)*log(a2) )));
+          f_scotti = cosh(sqrt((4. / 27.) * (log(a1) * log(a1) - log(a1) * log(a2) + log(a2) * log(a2))));
 
-          l_(elem) *=f_scotti;
+          l_(elem) *= f_scotti;
         }
     }
 }

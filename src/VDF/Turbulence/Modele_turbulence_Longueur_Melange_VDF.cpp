@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_Longueur_Melange_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Modele_turbulence_Longueur_Melange_VDF.h>
 #include <Probleme_base.h>
@@ -31,13 +25,13 @@
 #include <Equation_base.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VDF,"Modele_turbulence_hyd_Longueur_Melange_VDF",Mod_turb_hyd_RANS_0_eq);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VDF, "Modele_turbulence_hyd_Longueur_Melange_VDF", Mod_turb_hyd_RANS_0_eq);
 
 Modele_turbulence_Longueur_Melange_VDF::Modele_turbulence_Longueur_Melange_VDF()
 {
-  alt_min=0.;
-  alt_max=2.;
-  direction=1;
+  alt_min = 0.;
+  alt_max = 2.;
+  direction = 1;
 }
 
 /*! @brief Ecrit le type de l'objet sur un flot de sortie.
@@ -45,11 +39,10 @@ Modele_turbulence_Longueur_Melange_VDF::Modele_turbulence_Longueur_Melange_VDF()
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Modele_turbulence_Longueur_Melange_VDF::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_Longueur_Melange_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
 
 /*! @brief Simple appel a Mod_turb_hyd_RANS_0_eq::readOn(Entree&)
  *
@@ -64,29 +57,27 @@ Entree& Modele_turbulence_Longueur_Melange_VDF::readOn(Entree& s)
 void Modele_turbulence_Longueur_Melange_VDF::set_param(Param& param)
 {
   Mod_turb_hyd_RANS_0_eq::set_param(param);
-  param.ajouter("canal_hmin",&alt_min);
-  param.ajouter("canal_hmax",&alt_max);
-  param.ajouter("direction_normale_canal",&direction);
+  param.ajouter("canal_hmin", &alt_min);
+  param.ajouter("canal_hmax", &alt_max);
+  param.ajouter("direction_normale_canal", &direction);
 }
 
-int Modele_turbulence_Longueur_Melange_VDF::preparer_calcul( )
+int Modele_turbulence_Longueur_Melange_VDF::preparer_calcul()
 {
   Modele_turbulence_hyd_base::preparer_calcul();
   mettre_a_jour(0.);
   return 1;
 }
 
-void Modele_turbulence_Longueur_Melange_VDF::associer(
-  const Domaine_dis& domaine_dis,
-  const Domaine_Cl_dis& domaine_Cl_dis)
+void Modele_turbulence_Longueur_Melange_VDF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF,domaine_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 Champ_Fonc& Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulente()
 {
-  double hauteur = std::fabs(alt_max-alt_min); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
+  double hauteur = std::fabs(alt_max - alt_min); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
   //Attention, ici "hauteur" est la hauteur reelle du canal (pas la demi-hauteur)
   const double Kappa = 0.415;
   double Cmu = CMU;
@@ -109,7 +100,7 @@ Champ_Fonc& Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulent
       exit();
     }
 
-  Debog::verifier("Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulente visco_turb 0",visco_turb);
+  Debog::verifier("Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
   if (k.size() != nb_elem)
     {
@@ -119,17 +110,18 @@ Champ_Fonc& Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulent
 
   //    CANAL PLAN suivant (Ox - h=2) **********************************
 
-  for(int elem=0 ; elem<nb_elem ; elem ++)
+  for (int elem = 0; elem < nb_elem; elem++)
     {
-      double y = xp(elem,direction);
-      y = std::fabs(y-alt_min);
-      if(y>(hauteur/2.)) y=std::fabs(alt_max-y);
+      double y = xp(elem, direction);
+      y = std::fabs(y - alt_min);
+      if (y > (hauteur / 2.))
+        y = std::fabs(alt_max - y);
 
-      visco_turb(elem) = Kappa*Kappa*y*y*(1.-2*y/hauteur)*sqrt(2.*Sij2(elem));
-      k(elem)=pow(visco_turb(elem)/(Cmu*y),2);
+      visco_turb(elem) = Kappa * Kappa * y * y * (1. - 2 * y / hauteur) * sqrt(2. * Sij2(elem));
+      k(elem) = pow(visco_turb(elem) / (Cmu * y), 2);
     }
 
-  Debog::verifier("Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulente visco_turb 1",visco_turb);
+  Debog::verifier("Modele_turbulence_Longueur_Melange_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
   la_viscosite_turbulente.changer_temps(temps);
   return la_viscosite_turbulente;
@@ -154,28 +146,28 @@ void Modele_turbulence_Longueur_Melange_VDF::calculer_energie_cinetique_turb()
 void Modele_turbulence_Longueur_Melange_VDF::calculer_Sij2()
 {
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF,mon_equation->inconnue().valeur());
+  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const int nb_elem = domaine_VDF.nb_elem_tot();
 
-  assert (vitesse.line_size() == 1);
-  DoubleTab duidxj(nb_elem,dimension,dimension, vitesse.line_size());
-  int i,j;
+  assert(vitesse.line_size() == 1);
+  DoubleTab duidxj(nb_elem, dimension, dimension, vitesse.line_size());
+  int i, j;
   double Sij;
 
-  Sij2=0.;
+  Sij2 = 0.;
 
-  ch.calcul_duidxj(vitesse,duidxj,domaine_Cl_VDF);
+  ch.calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
-  for (int elem=0 ; elem<nb_elem ; elem++)
+  for (int elem = 0; elem < nb_elem; elem++)
     {
-      for ( i=0 ; i<dimension ; i++)
-        for ( j=0 ; j<dimension ; j++)
+      for (i = 0; i < dimension; i++)
+        for (j = 0; j < dimension; j++)
           {
             //Deplacement du calcul de Sij
-            Sij=0.5*(duidxj(elem,i,j,0) + duidxj(elem,j,i,0));
-            Sij2(elem)+=Sij*Sij;
+            Sij = 0.5 * (duidxj(elem, i, j, 0) + duidxj(elem, j, i, 0));
+            Sij2(elem) += Sij * Sij;
           }
     }
 }

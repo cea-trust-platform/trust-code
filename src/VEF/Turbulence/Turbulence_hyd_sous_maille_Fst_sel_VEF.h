@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,18 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Fst_sel_VEF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Turbulence_hyd_sous_maille_Fst_sel_VEF_included
 #define Turbulence_hyd_sous_maille_Fst_sel_VEF_included
-
-
-
 
 #include <Turbulence_hyd_sous_maille_Fst_VEF.h>
 
@@ -40,7 +31,7 @@
  *  Turbulence_hyd_sous_maille_1elt_VEF
  *
  */
-class Turbulence_hyd_sous_maille_Fst_sel_VEF : public Turbulence_hyd_sous_maille_Fst_VEF
+class Turbulence_hyd_sous_maille_Fst_sel_VEF: public Turbulence_hyd_sous_maille_Fst_VEF
 {
 
   Declare_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Fst_sel_VEF);
@@ -48,11 +39,11 @@ class Turbulence_hyd_sous_maille_Fst_sel_VEF : public Turbulence_hyd_sous_maille
 public:
 
   Turbulence_hyd_sous_maille_Fst_sel_VEF();
-  int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)& ) const;
+  int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void discretiser() override;
   void calculer_racine() override;
 
-protected :
+protected:
 
   Champ_Fonc la_vorticite;
   void cutoff();
@@ -60,4 +51,3 @@ protected :
 };
 
 #endif
-

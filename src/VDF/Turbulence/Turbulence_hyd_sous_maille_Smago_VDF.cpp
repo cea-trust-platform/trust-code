@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Smago_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_Smago_VDF.h>
 #include <Champ_Face_VDF.h>
@@ -27,25 +21,19 @@
 #include <Domaine_VDF.h>
 #include <Equation_base.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Smago_VDF,"Modele_turbulence_hyd_sous_maille_Smago_VDF",Mod_turb_hyd_ss_maille_VDF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Smago_VDF, "Modele_turbulence_hyd_sous_maille_Smago_VDF", Mod_turb_hyd_ss_maille_VDF);
 
 Turbulence_hyd_sous_maille_Smago_VDF::Turbulence_hyd_sous_maille_Smago_VDF()
 {
-  cs=0.18;
+  cs = 0.18;
 }
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_Smago_VDF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_Smago_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_Smago_VDF::readOn(Entree& is )
+Entree& Turbulence_hyd_sous_maille_Smago_VDF::readOn(Entree& is)
 {
   Mod_turb_hyd_ss_maille_VDF::readOn(is);
   return is;
@@ -54,8 +42,8 @@ Entree& Turbulence_hyd_sous_maille_Smago_VDF::readOn(Entree& is )
 void Turbulence_hyd_sous_maille_Smago_VDF::set_param(Param& param)
 {
   Mod_turb_hyd_ss_maille_VDF::set_param(param);
-  param.ajouter("cs",&cs);
-  param.ajouter_condition("value_of_cs_ge_0","sous_maille_smago model constant must be positive.");
+  param.ajouter("cs", &cs);
+  param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,12 +68,12 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Smago_VDF::calculer_viscosite_turbulente(
       exit();
     }
 
-  Debog::verifier("Turbulence_hyd_sous_maille_Smago_VDF::calculer_viscosite_turbulente visco_turb 0",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_Smago_VDF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
-  for (int elem=0; elem<nb_elem; elem++)
-    visco_turb[elem]=cs*cs*l_(elem)*l_(elem)*sqrt(SMA_barre_(elem));
+  for (int elem = 0; elem < nb_elem; elem++)
+    visco_turb[elem] = cs * cs * l_(elem) * l_(elem) * sqrt(SMA_barre_(elem));
 
-  Debog::verifier("Turbulence_hyd_sous_maille_Smago_VDF::calculer_viscosite_turbulente visco_turb 1",visco_turb);
+  Debog::verifier("Turbulence_hyd_sous_maille_Smago_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
   la_viscosite_turbulente.changer_temps(temps);
   return la_viscosite_turbulente;
@@ -99,27 +87,26 @@ void Turbulence_hyd_sous_maille_Smago_VDF::calculer_S_barre()
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
-  int i,j;
+  int i, j;
   int elem;
   //DoubleTab psc(dimension,dimension);
 
-  assert (vitesse.line_size() == 1);
-  DoubleTab duidxj(nb_elem_tot,dimension,dimension, vitesse.line_size());
+  assert(vitesse.line_size() == 1);
+  DoubleTab duidxj(nb_elem_tot, dimension, dimension, vitesse.line_size());
 
-  vit.calcul_duidxj(vitesse,duidxj,domaine_Cl_VDF);
+  vit.calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
-  double Sij,temp;
-  for (elem=0 ; elem<nb_elem_tot; elem++)
+  double Sij, temp;
+  for (elem = 0; elem < nb_elem_tot; elem++)
     {
       temp = 0.;
-      for ( i=0 ; i<dimension ; i++)
-        for ( j=0 ; j<dimension ; j++)
+      for (i = 0; i < dimension; i++)
+        for (j = 0; j < dimension; j++)
           //Deplacement du calcul de Sij
           {
-            Sij=0.5*(duidxj(elem,i,j,0) + duidxj(elem,j,i,0));
-            temp+=Sij*Sij;
+            Sij = 0.5 * (duidxj(elem, i, j, 0) + duidxj(elem, j, i, 0));
+            temp += Sij * Sij;
           }
-      SMA_barre_(elem)=2.*temp;
+      SMA_barre_(elem) = 2. * temp;
     }
 }
-

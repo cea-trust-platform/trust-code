@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Wale_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_Wale_VDF.h>
 #include <Champ_Face_VDF.h>
@@ -27,28 +21,20 @@
 #include <Equation_base.h>
 #include <Domaine_VDF.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Wale_VDF,"Modele_turbulence_hyd_sous_maille_Wale_VDF",Mod_turb_hyd_ss_maille_VDF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_Wale_VDF, "Modele_turbulence_hyd_sous_maille_Wale_VDF", Mod_turb_hyd_ss_maille_VDF);
 
 Turbulence_hyd_sous_maille_Wale_VDF::Turbulence_hyd_sous_maille_Wale_VDF()
 {
   declare_support_masse_volumique(1);
-  cw=0.5;
+  cw = 0.5;
 }
 
-//// printOn
-//
-
-
-Sortie& Turbulence_hyd_sous_maille_Wale_VDF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_Wale_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_Wale_VDF::readOn(Entree& is )
+Entree& Turbulence_hyd_sous_maille_Wale_VDF::readOn(Entree& is)
 {
   Mod_turb_hyd_ss_maille_VDF::readOn(is);
   return is;
@@ -57,8 +43,8 @@ Entree& Turbulence_hyd_sous_maille_Wale_VDF::readOn(Entree& is )
 void Turbulence_hyd_sous_maille_Wale_VDF::set_param(Param& param)
 {
   Mod_turb_hyd_ss_maille_VDF::set_param(param);
-  param.ajouter("cw",&cw);
-  param.ajouter_condition("value_of_cw_ge_0","sous_maille_Wale_VDF model constant must be positive.");
+  param.ajouter("cw", &cw);
+  param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale_VDF model constant must be positive.");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,15 +53,14 @@ void Turbulence_hyd_sous_maille_Wale_VDF::set_param(Param& param)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 Champ_Fonc& Turbulence_hyd_sous_maille_Wale_VDF::calculer_viscosite_turbulente()
 {
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   double temps = mon_equation->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
-  if (est_egal(cw,0.,1.e-15))
+  if (est_egal(cw, 0., 1.e-15))
     {
-      visco_turb=0.;
+      visco_turb = 0.;
     }
   else
     {
@@ -93,12 +78,12 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Wale_VDF::calculer_viscosite_turbulente()
           exit();
         }
 
-      for (int elem=0; elem<nb_elem; elem++)
+      for (int elem = 0; elem < nb_elem; elem++)
         {
-          if (OP1[elem]!=0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
-            visco_turb[elem]=cw*cw*l_(elem)*l_(elem)*OP1[elem]/OP2[elem];
+          if (OP1[elem] != 0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
+            visco_turb[elem] = cw * cw * l_(elem) * l_(elem) * OP1[elem] / OP2[elem];
           else
-            visco_turb[elem]=0;
+            visco_turb[elem] = 0;
         }
     }
 
@@ -107,10 +92,8 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Wale_VDF::calculer_viscosite_turbulente()
   return la_viscosite_turbulente;
 }
 
-
 void Turbulence_hyd_sous_maille_Wale_VDF::calculer_OP1_OP2()
 {
-
 
   Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
@@ -122,68 +105,67 @@ void Turbulence_hyd_sous_maille_Wale_VDF::calculer_OP1_OP2()
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
 
-  int i,j,k,elem;
+  int i, j, k, elem;
   //IntVect element(4);
 
-  DoubleTrav gij2(dimension,dimension);
-  DoubleTrav sd(dimension,dimension);
+  DoubleTrav gij2(dimension, dimension);
+  DoubleTrav sd(dimension, dimension);
 
   double gkk2;
   double sd2;
-  double Sij,Sij2;
+  double Sij, Sij2;
 
-  assert (vitesse.line_size() == 1);
-  DoubleTab duidxj(nb_elem_tot,dimension,dimension, vitesse.line_size());
+  assert(vitesse.line_size() == 1);
+  DoubleTab duidxj(nb_elem_tot, dimension, dimension, vitesse.line_size());
 
-  vit.calcul_duidxj(vitesse,duidxj,domaine_Cl_VDF);
+  vit.calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
-  for(elem=0 ; elem<nb_elem ; elem ++)
+  for (elem = 0; elem < nb_elem; elem++)
     {
 
       //Calcul du terme gij2
-      for(i=0; i<dimension; i++)
-        for(j=0; j<dimension; j++)
+      for (i = 0; i < dimension; i++)
+        for (j = 0; j < dimension; j++)
           {
-            gij2(i,j)=0;
+            gij2(i, j) = 0;
 
-            for(k=0; k<dimension; k++)
+            for (k = 0; k < dimension; k++)
               {
-                gij2(i,j)+=duidxj(elem,i,k,0)*duidxj(elem,k,j,0);
+                gij2(i, j) += duidxj(elem, i, k, 0) * duidxj(elem, k, j, 0);
               }
           }
 
       // Calcul du terme gkk2
-      gkk2=0;
-      for(k=0; k<dimension; k++)
+      gkk2 = 0;
+      for (k = 0; k < dimension; k++)
         {
-          gkk2 += gij2(k,k);
+          gkk2 += gij2(k, k);
         }
 
       // Calcul de sd
-      for(i=0; i<dimension; i++)
-        for(j=0; j<dimension; j++)
+      for (i = 0; i < dimension; i++)
+        for (j = 0; j < dimension; j++)
           {
-            sd(i,j)=0.5*(gij2(i,j)+gij2(j,i));
-            if(i==j)
+            sd(i, j) = 0.5 * (gij2(i, j) + gij2(j, i));
+            if (i == j)
               {
-                sd(i,j)-=gkk2/3.; // Terme derriere le tenseur de Kronecker
+                sd(i, j) -= gkk2 / 3.; // Terme derriere le tenseur de Kronecker
               }
           }
 
       // Calcul de sd2 et Sij2
-      sd2=0.;
-      Sij2=0.;
+      sd2 = 0.;
+      Sij2 = 0.;
 
-      int face1=0,face2=0;
-      int elem1,elem2;
+      int face1 = 0, face2 = 0;
+      int elem1, elem2;
 
-      for ( i=0 ; i<dimension ; i++)
-        for ( j=0 ; j<dimension ; j++)
+      for (i = 0; i < dimension; i++)
+        for (j = 0; j < dimension; j++)
           {
-            sd2+=sd(i,j)*sd(i,j);
+            sd2 += sd(i, j) * sd(i, j);
             //Deplacement du calcul de sij
-            Sij=0.5*(duidxj(elem,i,j,0) + duidxj(elem,j,i,0));
-
+            Sij = 0.5 * (duidxj(elem, i, j, 0) + duidxj(elem, j, i, 0));
 
             // PQ : 24/01/07 : le stencil de Sij est par contruction de :
             //                   -  1 maille pour les termes diagonaux Sii
@@ -196,13 +178,13 @@ void Turbulence_hyd_sous_maille_Wale_VDF::calculer_OP1_OP2()
             //
             // A traiter : Quid sur canal plan ???
 
-            if(i==j)  // augmentation du stencil de Sii
+            if (i == j)  // augmentation du stencil de Sii
               {
-                face1=elem_faces(elem,i);
-                face2=elem_faces(elem,i+dimension);
+                face1 = elem_faces(elem, i);
+                face2 = elem_faces(elem, i + dimension);
 
-                elem1=face_voisins(face1,0);
-                elem2=face_voisins(face2,1);
+                elem1 = face_voisins(face1, 0);
+                elem2 = face_voisins(face2, 1);
 
                 //if(elem1==elem) elem1=face_voisins(face1,1);  // par construction il n'y a pas besoin
                 //if(elem2==elem) elem2=face_voisins(face2,0);  // par construction il n'y a pas besoin
@@ -210,17 +192,16 @@ void Turbulence_hyd_sous_maille_Wale_VDF::calculer_OP1_OP2()
                 // si pas de bord a proximite on passe au stencil de 3 mailles
                 // sinon on reste au stencil a 1 maille
 
-                if( elem1>=0 && elem2>=0 ) Sij = ((duidxj(elem1,i,i,0)+duidxj(elem,i,i,0)+duidxj(elem2,i,i,0)))/3.;
+                if (elem1 >= 0 && elem2 >= 0)
+                  Sij = ((duidxj(elem1, i, i, 0) + duidxj(elem, i, i, 0) + duidxj(elem2, i, i, 0))) / 3.;
               }
 
-
-            Sij2+=Sij*Sij;
+            Sij2 += Sij * Sij;
           }
 
       // Calcul de OP1 et OP2
-      OP1(elem)=pow(sd2,1.5);
-      OP2(elem)=pow(Sij2,2.5)+pow(sd2,1.25);
+      OP1(elem) = pow(sd2, 1.5);
+      OP2(elem) = pow(Sij2, 2.5) + pow(sd2, 1.25);
 
-    }// fin de la boucle sur les elements
+    }                // fin de la boucle sur les elements
 }
-

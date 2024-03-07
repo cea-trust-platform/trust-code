@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_ss_maille_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Mod_turb_hyd_ss_maille_VEF.h>
 #include <distances_VEF.h>
@@ -25,27 +19,22 @@
 #include <Domaine_Cl_VEF.h>
 #include <Domaine_Cl_dis.h>
 
-Implemente_base(Mod_turb_hyd_ss_maille_VEF,"Mod_turb_hyd_ss_maille_VEF",Mod_turb_hyd_ss_maille);
+Implemente_base(Mod_turb_hyd_ss_maille_VEF, "Mod_turb_hyd_ss_maille_VEF", Mod_turb_hyd_ss_maille);
 
-//// printOn
-//
-
-Sortie& Mod_turb_hyd_ss_maille_VEF::printOn(Sortie& s ) const
+Sortie& Mod_turb_hyd_ss_maille_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-Entree& Mod_turb_hyd_ss_maille_VEF::readOn(Entree& is )
+Entree& Mod_turb_hyd_ss_maille_VEF::readOn(Entree& is)
 {
   return Mod_turb_hyd_ss_maille::readOn(is);
 }
 
-void Mod_turb_hyd_ss_maille_VEF::associer(const Domaine_dis& domaine_dis,
-                                          const Domaine_Cl_dis& domaine_Cl_dis)
+void Mod_turb_hyd_ss_maille_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF,domaine_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 void Mod_turb_hyd_ss_maille_VEF::calculer_longueurs_caracteristiques()

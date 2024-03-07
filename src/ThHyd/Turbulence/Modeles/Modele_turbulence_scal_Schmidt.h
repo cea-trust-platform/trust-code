@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_scal_Schmidt.h
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/Common/Scal
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Modele_turbulence_scal_Schmidt_included
 #define Modele_turbulence_scal_Schmidt_included
@@ -31,16 +25,16 @@
  *
  * @sa Mod_Turb_scal_diffuturb_base
  */
-class Modele_turbulence_scal_Schmidt : public Mod_Turb_scal_diffturb_base
+class Modele_turbulence_scal_Schmidt: public Mod_Turb_scal_diffturb_base
 {
 
   Declare_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt);
 
 public:
   Modele_turbulence_scal_Schmidt();
-  virtual int comprend_champ(const Motcle& ) const;
-  virtual int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)& ) const;
-  void mettre_a_jour(double ) override;
+  virtual int comprend_champ(const Motcle&) const;
+  virtual int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
+  void mettre_a_jour(double) override;
   void set_param(Param&) override;
   inline double get_Scturb() const;
 protected:

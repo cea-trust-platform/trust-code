@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_ss_maille_VDF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Mod_turb_hyd_ss_maille_VDF_included
 #define Mod_turb_hyd_ss_maille_VDF_included
@@ -37,17 +31,17 @@ class Domaine_VDF;
  *  Mod_turb_hyd_ss_maille
  *
  */
-class Mod_turb_hyd_ss_maille_VDF : public Mod_turb_hyd_ss_maille
+class Mod_turb_hyd_ss_maille_VDF: public Mod_turb_hyd_ss_maille
 {
 
   Declare_base(Mod_turb_hyd_ss_maille_VDF);
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void calculer_longueurs_caracteristiques() override;
 
-protected :
+protected:
 
   REF(Domaine_VDF) le_dom_VDF;
   REF(Domaine_Cl_VDF) le_dom_Cl_VDF;

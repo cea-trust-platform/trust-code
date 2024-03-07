@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_turb_hyd_RANS_2eq.cpp
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Mod_turb_hyd_RANS_2eq.h>
 
@@ -28,24 +22,12 @@ Mod_turb_hyd_RANS_2eq::Mod_turb_hyd_RANS_2eq()
 {
 
 }
-
-/*! @brief Simple appel a Modele_turbulence_hyd_base::printOn(Sortie&)
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Mod_turb_hyd_RANS_2eq::printOn(Sortie& is) const
 {
   return Modele_turbulence_hyd_base::printOn(is);
 }
 
-/*! @brief Simple appel a Modele_turbulence_hyd_base::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Mod_turb_hyd_RANS_2eq::readOn(Entree& is)
 {
-  Modele_turbulence_hyd_base::readOn(is);
-  return is;
+  return Modele_turbulence_hyd_base::readOn(is);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_selectif_VDF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_selectif_VDF.h>
 #include <math.h>
@@ -26,7 +20,7 @@
 #include <Equation_base.h>
 #include <Domaine_VDF.h>
 
-Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_selectif_VDF,"Modele_turbulence_hyd_sous_maille_selectif_VDF",Turbulence_hyd_sous_maille_VDF);
+Implemente_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_selectif_VDF, "Modele_turbulence_hyd_sous_maille_selectif_VDF", Turbulence_hyd_sous_maille_VDF);
 
 Turbulence_hyd_sous_maille_selectif_VDF::Turbulence_hyd_sous_maille_selectif_VDF()
 {
@@ -35,23 +29,15 @@ Turbulence_hyd_sous_maille_selectif_VDF::Turbulence_hyd_sous_maille_selectif_VDF
   //  CSM2 = 27/8*M_PI^2*CSM1^2*C_k^3
 }
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_selectif_VDF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_selectif_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_selectif_VDF::readOn(Entree& s )
+Entree& Turbulence_hyd_sous_maille_selectif_VDF::readOn(Entree& s)
 {
   return Turbulence_hyd_sous_maille_VDF::readOn(s);
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -65,18 +51,18 @@ void Turbulence_hyd_sous_maille_selectif_VDF::discretiser()
 {
   // Cerr << "Turbulence_hyd_sous_maille_selectif_VDF::discretiser()" << finl;
   Mod_turb_hyd_ss_maille::discretiser();
-  const VDF_discretisation& dis=ref_cast(VDF_discretisation, mon_equation->discretisation());
-  dis.vorticite(mon_equation->domaine_dis(),mon_equation->inconnue(), la_vorticite);
+  const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation->discretisation());
+  dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }
 
 int Turbulence_hyd_sous_maille_selectif_VDF::a_pour_Champ_Fonc(const Motcle& mot,
-                                                               REF(Champ_base)& ch_ref ) const
+                                                               REF(Champ_base) &ch_ref) const
 {
   Motcles les_motcles(3);
   {
-    les_motcles[0] ="viscosite_turbulente";
-    les_motcles[1] ="k";
-    les_motcles[2] ="vorticite";
+    les_motcles[0] = "viscosite_turbulente";
+    les_motcles[1] = "k";
+    les_motcles[2] = "vorticite";
 
   }
   int rang = les_motcles.search(mot);
@@ -102,7 +88,6 @@ int Turbulence_hyd_sous_maille_selectif_VDF::a_pour_Champ_Fonc(const Motcle& mot
     }
 }
 
-
 void Turbulence_hyd_sous_maille_selectif_VDF::calculer_fonction_structure()
 {
 
@@ -119,7 +104,7 @@ void Turbulence_hyd_sous_maille_selectif_VDF::calculer_fonction_structure()
 void Turbulence_hyd_sous_maille_selectif_VDF::cutoff()
 {
   static const double Sin2Angl = SIN2ANGL;
-  const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,mon_equation->inconnue().valeur());
+  const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
@@ -129,134 +114,116 @@ void Turbulence_hyd_sous_maille_selectif_VDF::cutoff()
   la_vorticite.mettre_a_jour(vitesse.temps());
   vorticite.echange_espace_virtuel();
 
-  int elx0,elx1,ely0,ely1,elz0,elz1,i;
-  double norme,norme_moyen,prod;
+  int elx0, elx1, ely0, ely1, elz0, elz1, i;
+  double norme, norme_moyen, prod;
   DoubleVect vorti_moyen(3);
 
-  for (int num_elem=0; num_elem<nb_poly; num_elem++)
+  for (int num_elem = 0; num_elem < nb_poly; num_elem++)
     {
-      elx0 = face_voisins(elem_faces(num_elem,0),0);
-      elx1 = face_voisins(elem_faces(num_elem,3),1);
-      ely0 = face_voisins(elem_faces(num_elem,1),0);
-      ely1 = face_voisins(elem_faces(num_elem,4),1);
-      elz0 = face_voisins(elem_faces(num_elem,2),0);
-      elz1 = face_voisins(elem_faces(num_elem,5),1);
+      elx0 = face_voisins(elem_faces(num_elem, 0), 0);
+      elx1 = face_voisins(elem_faces(num_elem, 3), 1);
+      ely0 = face_voisins(elem_faces(num_elem, 1), 0);
+      ely1 = face_voisins(elem_faces(num_elem, 4), 1);
+      elz0 = face_voisins(elem_faces(num_elem, 2), 0);
+      elz1 = face_voisins(elem_faces(num_elem, 5), 1);
 
-
-      double dx0=0.,dx1=0.,dy0=0.,dy1=0.,dz0=0.,dz1=0.;
-      for (i=0; i<3; i++)
+      double dx0 = 0., dx1 = 0., dy0 = 0., dy1 = 0., dz0 = 0., dz1 = 0.;
+      for (i = 0; i < 3; i++)
         {
           if (elx0 != -1)
-            dx0 += domaine_VDF.dist_elem_period(num_elem,elx0,i)*domaine_VDF.dist_elem_period(num_elem,elx0,i);
+            dx0 += domaine_VDF.dist_elem_period(num_elem, elx0, i) * domaine_VDF.dist_elem_period(num_elem, elx0, i);
           if (elx1 != -1)
-            dx1 += domaine_VDF.dist_elem_period(num_elem,elx1,i)*domaine_VDF.dist_elem_period(num_elem,elx1,i);
+            dx1 += domaine_VDF.dist_elem_period(num_elem, elx1, i) * domaine_VDF.dist_elem_period(num_elem, elx1, i);
           if (ely0 != -1)
-            dy0 += domaine_VDF.dist_elem_period(num_elem,ely0,i)*domaine_VDF.dist_elem_period(num_elem,ely0,i);
+            dy0 += domaine_VDF.dist_elem_period(num_elem, ely0, i) * domaine_VDF.dist_elem_period(num_elem, ely0, i);
           if (ely1 != -1)
-            dy1 += domaine_VDF.dist_elem_period(num_elem,ely1,i)*domaine_VDF.dist_elem_period(num_elem,ely1,i);
+            dy1 += domaine_VDF.dist_elem_period(num_elem, ely1, i) * domaine_VDF.dist_elem_period(num_elem, ely1, i);
           if (elz0 != -1)
-            dz0 += domaine_VDF.dist_elem_period(num_elem,elz0,i)*domaine_VDF.dist_elem_period(num_elem,elz0,i);
+            dz0 += domaine_VDF.dist_elem_period(num_elem, elz0, i) * domaine_VDF.dist_elem_period(num_elem, elz0, i);
           if (elz1 != -1)
-            dz1 += domaine_VDF.dist_elem_period(num_elem,elz1,i)*domaine_VDF.dist_elem_period(num_elem,elz1,i);
+            dz1 += domaine_VDF.dist_elem_period(num_elem, elz1, i) * domaine_VDF.dist_elem_period(num_elem, elz1, i);
         }
 
-      if (std::fabs(dx0)>DMINFLOAT)
-        dx0 = 1./sqrt(dx0);
-      if (std::fabs(dx1)>DMINFLOAT)
-        dx1 = 1./sqrt(dx1);
-      if (std::fabs(dy0)>DMINFLOAT)
-        dy0 = 1./sqrt(dy0);
-      if (std::fabs(dy1)>DMINFLOAT)
-        dy1 = 1./sqrt(dy1);
-      if (std::fabs(dz0)>DMINFLOAT)
-        dz0 = 1./sqrt(dz0);
-      if (std::fabs(dz1)>DMINFLOAT)
-        dz1 = 1./sqrt(dz1);
+      if (std::fabs(dx0) > DMINFLOAT)
+        dx0 = 1. / sqrt(dx0);
+      if (std::fabs(dx1) > DMINFLOAT)
+        dx1 = 1. / sqrt(dx1);
+      if (std::fabs(dy0) > DMINFLOAT)
+        dy0 = 1. / sqrt(dy0);
+      if (std::fabs(dy1) > DMINFLOAT)
+        dy1 = 1. / sqrt(dy1);
+      if (std::fabs(dz0) > DMINFLOAT)
+        dz0 = 1. / sqrt(dz0);
+      if (std::fabs(dz1) > DMINFLOAT)
+        dz1 = 1. / sqrt(dz1);
 
-      if ( (elx0 != -1) && (elx1 != -1) && (ely0 != -1)
-           && (ely1 != -1) && (elz0 != -1) && (elz1 != -1) )
+      if ((elx0 != -1) && (elx1 != -1) && (ely0 != -1) && (ely1 != -1) && (elz0 != -1) && (elz1 != -1))
         // Cas d'un element interne
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) =  ( dx0*vorticite(elx0,k)+dx1*vorticite(elx1,k)
-                                + dy0*vorticite(ely0,k)+dy1*vorticite(ely1,k)
-                                + dz0*vorticite(elz0,k)+dz1*vorticite(elz1,k) )
-                              /(dx0+dx1+dy0+dy1+dz0+dz1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dx0 * vorticite(elx0, k) + dx1 * vorticite(elx1, k) + dy0 * vorticite(ely0, k) + dy1 * vorticite(ely1, k) + dz0 * vorticite(elz0, k) + dz1 * vorticite(elz1, k))
+                             / (dx0 + dx1 + dy0 + dy1 + dz0 + dz1);
         }
-      else if ( (elx0 != -1) && (elx1 != -1) && (ely0 != -1)
-                && (ely1 != -1) )
+      else if ((elx0 != -1) && (elx1 != -1) && (ely0 != -1) && (ely1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) =  ( dx0*vorticite(elx0,k)+dx1*vorticite(elx1,k)
-                                + dy0*vorticite(ely0,k)+dy1*vorticite(ely1,k) )
-                              /(dx0+dx1+dy0+dy1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dx0 * vorticite(elx0, k) + dx1 * vorticite(elx1, k) + dy0 * vorticite(ely0, k) + dy1 * vorticite(ely1, k)) / (dx0 + dx1 + dy0 + dy1);
         }
-      else if ( (elx0 != -1) && (elx1 != -1) && (elz0 != -1)
-                && (elz1 != -1) )
+      else if ((elx0 != -1) && (elx1 != -1) && (elz0 != -1) && (elz1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) =  ( dx0*vorticite(elx0,k)+dx1*vorticite(elx1,k)
-                                + dz0*vorticite(elz0,k)+dz1*vorticite(elz1,k) )
-                              /(dx0+dx1+dz0+dz1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dx0 * vorticite(elx0, k) + dx1 * vorticite(elx1, k) + dz0 * vorticite(elz0, k) + dz1 * vorticite(elz1, k)) / (dx0 + dx1 + dz0 + dz1);
         }
-      else if ( (ely0 != -1) && (ely1 != -1) && (elz0 != -1)
-                && (elz1 != -1) )
+      else if ((ely0 != -1) && (ely1 != -1) && (elz0 != -1) && (elz1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) =  ( dy0*vorticite(ely0,k)+dy1*vorticite(ely1,k)
-                                + dz0*vorticite(elz0,k)+dz1*vorticite(elz1,k) )
-                              /(dy0+dy1+dz0+dz1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dy0 * vorticite(ely0, k) + dy1 * vorticite(ely1, k) + dz0 * vorticite(elz0, k) + dz1 * vorticite(elz1, k)) / (dy0 + dy1 + dz0 + dz1);
         }
-      else if ( (elx0 != -1) && (elx1 != -1) )
+      else if ((elx0 != -1) && (elx1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) = (dx0*vorticite(elx0,k)+dx1*vorticite(elx1,k))/(dx0+dx1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dx0 * vorticite(elx0, k) + dx1 * vorticite(elx1, k)) / (dx0 + dx1);
         }
-      else if ( (ely0 != -1) && (ely1 != -1) )
+      else if ((ely0 != -1) && (ely1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) = (dy0*vorticite(ely0,k)+dy1*vorticite(ely1,k))/(dy0+dy1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dy0 * vorticite(ely0, k) + dy1 * vorticite(ely1, k)) / (dy0 + dy1);
         }
-      else if ( (elz0 != -1) && (elz1 != -1) )
+      else if ((elz0 != -1) && (elz1 != -1))
         {
-          for (int k=0; k<3; k++)
-            vorti_moyen(k) = (dz0*vorticite(elz0,k)+dz1*vorticite(elz1,k)) /(dz0+dz1);
+          for (int k = 0; k < 3; k++)
+            vorti_moyen(k) = (dz0 * vorticite(elz0, k) + dz1 * vorticite(elz1, k)) / (dz0 + dz1);
         }
       else  // Cas d'un element coin ; on met FS a zero
         // On rend nul le vecteur vorti_moyen(k) ce qui provoquera la mise a zero de FS
         {
-          for (int k=0; k<3; k++)
+          for (int k = 0; k < 3; k++)
             vorti_moyen(k) = 0;
         }
-
 
       // Calcul du produit vectoriel entre la vorticite dans l'element
       // et le vecteur des vorticites des elements voisins
 
       norme = 0;
       int k;
-      for (k=0; k<3; k++)
-        norme += carre(vorticite(num_elem,k));
+      for (k = 0; k < 3; k++)
+        norme += carre(vorticite(num_elem, k));
 
       norme_moyen = 0;
-      for (k=0; k<3; k++)
+      for (k = 0; k < 3; k++)
         norme_moyen += carre(vorti_moyen(k));
 
-      if ( (norme > 1.e-10) && (norme_moyen > 1.e-10 ) )
+      if ((norme > 1.e-10) && (norme_moyen > 1.e-10))
         {
-          prod = carre(vorti_moyen(1)*vorticite(num_elem,2)-vorti_moyen(2)*vorticite(num_elem,1))
-                 +  carre(vorti_moyen(2)*vorticite(num_elem,0)-vorti_moyen(0)*vorticite(num_elem,2))
-                 +  carre(vorti_moyen(0)*vorticite(num_elem,1)-vorti_moyen(1)*vorticite(num_elem,0));
-          prod /= (norme*norme_moyen);
-
-
-
-
+          prod = carre(vorti_moyen(1) * vorticite(num_elem, 2) - vorti_moyen(2) * vorticite(num_elem, 1)) + carre(vorti_moyen(2) * vorticite(num_elem, 0) - vorti_moyen(0) * vorticite(num_elem, 2))
+                 + carre(vorti_moyen(0) * vorticite(num_elem, 1) - vorti_moyen(1) * vorticite(num_elem, 0));
+          prod /= (norme * norme_moyen);
 
           if (prod <= Sin2Angl)
             F2(num_elem) = 0;
         }
-      else // bruit numerique ou element de coin
+      else
+        // bruit numerique ou element de coin
         F2(num_elem) = 0;
 
     }
@@ -264,8 +231,4 @@ void Turbulence_hyd_sous_maille_selectif_VDF::cutoff()
   // etait different sur un des procs !!!!
   F2.echange_espace_virtuel();
 }
-
-
-
-
 

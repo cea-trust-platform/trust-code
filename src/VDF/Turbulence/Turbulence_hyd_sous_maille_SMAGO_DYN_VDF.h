@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,20 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_SMAGO_DYN_VDF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VDF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
+
 #ifndef Turbulence_hyd_sous_maille_SMAGO_DYN_VDF_included
 #define Turbulence_hyd_sous_maille_SMAGO_DYN_VDF_included
 
 #include <Turbulence_hyd_sous_maille_Smago_VDF.h>
 #include <TRUSTTab.h>
 
-/////////////////////////////////////////////////////////////////////
-class Turbulence_hyd_sous_maille_SMAGO_DYN_VDF : public Turbulence_hyd_sous_maille_Smago_VDF
+class Turbulence_hyd_sous_maille_SMAGO_DYN_VDF: public Turbulence_hyd_sous_maille_Smago_VDF
 {
 
   Declare_instanciable_sans_constructeur(Turbulence_hyd_sous_maille_SMAGO_DYN_VDF);
@@ -35,21 +29,20 @@ public:
   Turbulence_hyd_sous_maille_SMAGO_DYN_VDF();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer(const Domaine_dis& domaine_dis,const Domaine_Cl_dis& domaine_Cl_dis) override;
+  void associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis) override;
   void mettre_a_jour(double) override;
   int preparer_calcul() override;
 
-
-  static void calculer_length_scale(DoubleVect& ,const Domaine_VDF& );
-  static void calculer_cell_cent_vel(DoubleTab& ,const Domaine_VDF& ,Champ_Inc& );
-  static void calculer_filter_field(const DoubleTab& ,DoubleTab& ,const Domaine_VDF& );
-  static void calculer_Sij( DoubleTab& ,const Domaine_VDF& ,const Domaine_Cl_VDF& ,Champ_Inc& );
-  static void calculer_Sij_vel_filt(const DoubleTab& ,DoubleTab& ,const Domaine_VDF& );
-  static void calculer_S_norme(const DoubleTab& ,DoubleVect& ,int );
-  static void interpole(const IntVect&, const DoubleVect&, const DoubleVect&, double& );
+  static void calculer_length_scale(DoubleVect&, const Domaine_VDF&);
+  static void calculer_cell_cent_vel(DoubleTab&, const Domaine_VDF&, Champ_Inc&);
+  static void calculer_filter_field(const DoubleTab&, DoubleTab&, const Domaine_VDF&);
+  static void calculer_Sij(DoubleTab&, const Domaine_VDF&, const Domaine_Cl_VDF&, Champ_Inc&);
+  static void calculer_Sij_vel_filt(const DoubleTab&, DoubleTab&, const Domaine_VDF&);
+  static void calculer_S_norme(const DoubleTab&, DoubleVect&, int);
+  static void interpole(const IntVect&, const DoubleVect&, const DoubleVect&, double&);
 
   /////////////////////////////////////////////////////
-protected :
+protected:
 
   Champ_Fonc coeff_field;
   Motcle methode_stabilise;
@@ -62,27 +55,24 @@ protected :
   DoubleTab cell_cent_vel_;
   //         DoubleTab haut_moy,bas_moy;
 
-
-
-  void calculer_filter_tensor( DoubleTab& );
-  void calculer_Lij(const DoubleTab& , const DoubleTab& , DoubleTab& );
-  void calculer_Mij(const DoubleTab& ,const DoubleTab& ,const DoubleVect& ,DoubleTab& );
-  void calculer_model_coefficient(const DoubleTab& ,const DoubleTab& );
-  Champ_Fonc& calculer_viscosite_turbulente(const DoubleVect& ,const DoubleVect& );
+  void calculer_filter_tensor(DoubleTab&);
+  void calculer_Lij(const DoubleTab&, const DoubleTab&, DoubleTab&);
+  void calculer_Mij(const DoubleTab&, const DoubleTab&, const DoubleVect&, DoubleTab&);
+  void calculer_model_coefficient(const DoubleTab&, const DoubleTab&);
+  Champ_Fonc& calculer_viscosite_turbulente(const DoubleVect&, const DoubleVect&);
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_energie_cinetique_turb() override;
-  Champ_Fonc& calculer_energie_cinetique_turb(const DoubleVect& ,const DoubleVect& );
+  Champ_Fonc& calculer_energie_cinetique_turb(const DoubleVect&, const DoubleVect&);
   void controler_grandeurs_turbulentes();
 
-  void stabilise_moyenne( const DoubleTab& ,const DoubleTab& );
-  void stabilise_moyenne_6_points( const DoubleTab& ,const DoubleTab& );
-  void stabilise_moyenne_plans_paralleles( const DoubleTab& ,const DoubleTab& );
-  void stabilise_moyenne_euler_lagrange(const DoubleTab&, const DoubleTab& );
-  void calcul_voisins(const int, IntVect& , DoubleVect& );
+  void stabilise_moyenne(const DoubleTab&, const DoubleTab&);
+  void stabilise_moyenne_6_points(const DoubleTab&, const DoubleTab&);
+  void stabilise_moyenne_plans_paralleles(const DoubleTab&, const DoubleTab&);
+  void stabilise_moyenne_euler_lagrange(const DoubleTab&, const DoubleTab&);
+  void calcul_voisins(const int, IntVect&, DoubleVect&);
   void calc_elem_elem();
-  void calcul_tableaux_correspondance(int& ,  IntVect&, IntVect& );
+  void calcul_tableaux_correspondance(int&, IntVect&, IntVect&);
 
 };
-
 
 #endif

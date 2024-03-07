@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,44 +12,19 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Mod_Turb_scal_diffturb_base.cpp
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/Common/Scal
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Mod_Turb_scal_diffturb_base.h>
 #include <Modele_turbulence_hyd_base.h>
 #include <Convection_Diffusion_std.h>
 
-Implemente_base(Mod_Turb_scal_diffturb_base,"Mod_Turb_scal_diffturb_base",Modele_turbulence_scal_base);
+Implemente_base(Mod_Turb_scal_diffturb_base, "Mod_Turb_scal_diffturb_base", Modele_turbulence_scal_base);
 
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Mod_Turb_scal_diffturb_base::printOn(Sortie& s ) const
+Sortie& Mod_Turb_scal_diffturb_base::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- *     Format:
- *       {
- *       }
- *     (il n'y a rien a lire sauf les accolades)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- * @throws accolade fermante attendue
- */
-Entree& Mod_Turb_scal_diffturb_base::readOn(Entree& is )
+Entree& Mod_Turb_scal_diffturb_base::readOn(Entree& is)
 {
   return Modele_turbulence_scal_base::readOn(is);
 }
@@ -74,7 +49,7 @@ void Mod_Turb_scal_diffturb_base::completer()
   Modele_turbulence_scal_base::completer();
   const Probleme_base& mon_pb = equation().probleme();
   const RefObjU& modele_turbulence = mon_pb.equation(0).get_modele(TURBULENCE);
-  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   const Champ_Fonc& visc_turb = mod_turb_hydr.viscosite_turbulente();
   associer_viscosite_turbulente(visc_turb);
 }
@@ -84,7 +59,7 @@ void Mod_Turb_scal_diffturb_base::completer()
  * @param (Entree&) un flot d'entree
  * @return (int) renvoie toujours 1
  */
-int Mod_Turb_scal_diffturb_base::reprendre(Entree& )
+int Mod_Turb_scal_diffturb_base::reprendre(Entree&)
 {
   return 1;
 }

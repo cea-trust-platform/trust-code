@@ -12,47 +12,26 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_scal_Schmidt.cpp
-// Directory:   $TURBULENCE_ROOT/src/ThHyd/Modeles_Turbulence/Common/Scal
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Modele_turbulence_scal_Schmidt.h>
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Param.h>
 #include <Convection_Diffusion_std.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt,"Modele_turbulence_scal_Schmidt",Mod_Turb_scal_diffturb_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt, "Modele_turbulence_scal_Schmidt", Mod_Turb_scal_diffturb_base);
 
-Modele_turbulence_scal_Schmidt::Modele_turbulence_scal_Schmidt() : LeScturb(0.7) {}
+Modele_turbulence_scal_Schmidt::Modele_turbulence_scal_Schmidt() :
+  LeScturb(0.7)
+{
+}
 
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Modele_turbulence_scal_Schmidt::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_scal_Schmidt::printOn(Sortie& s) const
 {
 
   return Mod_Turb_scal_diffturb_base::printOn(s);
 }
 
-
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- *     Format:
- *       {
- *       }
- *     (il n'y a rien a lire sauf les accolades)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- * @throws accolade fermante attendue
- */
-Entree& Modele_turbulence_scal_Schmidt::readOn(Entree& is )
+Entree& Modele_turbulence_scal_Schmidt::readOn(Entree& is)
 {
   Mod_Turb_scal_diffturb_base::readOn(is);
   Cerr << "La valeur du nombre de Schmidt turbulent est de " << LeScturb << finl;
@@ -67,10 +46,9 @@ Entree& Modele_turbulence_scal_Schmidt::readOn(Entree& is )
  */
 void Modele_turbulence_scal_Schmidt::set_param(Param& param)
 {
-  param.ajouter("ScTurb",&LeScturb);
+  param.ajouter("ScTurb", &LeScturb);
   Modele_turbulence_scal_base::set_param(param);
 }
-
 
 /*! @brief Renvoie 1 si le mot cle passe en parametre est un nom de champ de l'objet
  *
@@ -85,7 +63,6 @@ int Modele_turbulence_scal_Schmidt::comprend_champ(const Motcle& mot) const
     return 0;
 }
 
-
 /*! @brief Renvoie 1 si un champ fonction (Champ_Fonc) du nom specifie est porte par le modele de turbulence.
  *
  *     Renvoie 0 sinon.
@@ -95,7 +72,7 @@ int Modele_turbulence_scal_Schmidt::comprend_champ(const Motcle& mot) const
  * @return (int) 1 si un champ fonction du nom specifie a ete trouve 0 sinon
  */
 int Modele_turbulence_scal_Schmidt::a_pour_Champ_Fonc(const Motcle& mot,
-                                                      REF(Champ_base)& ch_ref) const
+                                                      REF(Champ_base) &ch_ref) const
 {
   if (mot == Motcle("diffusion_turbulente"))
     {
@@ -105,15 +82,14 @@ int Modele_turbulence_scal_Schmidt::a_pour_Champ_Fonc(const Motcle& mot,
   return 0;
 }
 
-
 /*! @brief Calcule le coefficient turbulent utilise dans l equation et la loi de paroi.
  *
  * @param (double)
  */
-void Modele_turbulence_scal_Schmidt::mettre_a_jour(double )
+void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
 {
   calculer_diffusion_turbulente();
-  const Milieu_base& mil=equation().probleme().milieu();
+  const Milieu_base& mil = equation().probleme().milieu();
   const Turbulence_paroi_scal& lp = loi_paroi();
   if (lp.non_nul())
     {
@@ -121,7 +97,8 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double )
     }
   DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
   lambda_t = diffusivite_turbulente_.valeurs();
-  if (equation().probleme().is_dilatable()) multiplier_par_rho_si_dilatable(lambda_t,mil);
+  if (equation().probleme().is_dilatable())
+    multiplier_par_rho_si_dilatable(lambda_t, mil);
   conductivite_turbulente_->valeurs().echange_espace_virtuel();
   diffusivite_turbulente_->valeurs().echange_espace_virtuel();
 }
@@ -139,7 +116,7 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
   DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
   const DoubleTab& nu_t = la_viscosite_turbulente->valeurs();
   double temps = la_viscosite_turbulente->temps();
-  int n= alpha_t.size();
+  int n = alpha_t.size();
   if (nu_t.size() != n)
     {
       Cerr << "Les DoubleTab des champs diffusivite_turbulente et viscosite_turbulente" << finl;
@@ -147,9 +124,10 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
       exit();
     }
 
-  for (int i=0; i<n; i++)
-    alpha_t[i] = nu_t[i]/LeScturb;
+  for (int i = 0; i < n; i++)
+    alpha_t[i] = nu_t[i] / LeScturb;
   diffusivite_turbulente_.changer_temps(temps);
-  if (equation().probleme().is_dilatable()) diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
+  if (equation().probleme().is_dilatable())
+    diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
   return diffusivite_turbulente_;
 }

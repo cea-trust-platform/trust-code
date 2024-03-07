@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,17 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_Longueur_Melange_VEF.h
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/RANS/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Modele_turbulence_Longueur_Melange_VEF_included
 #define Modele_turbulence_Longueur_Melange_VEF_included
-
-
 
 #include <Mod_turb_hyd_RANS_0_eq.h>
 #include <TRUST_Ref.h>
@@ -41,7 +33,7 @@ class Entree;
  *  Turb_hyd_RANS_0_eq
  *
  */
-class Modele_turbulence_Longueur_Melange_VEF : public Mod_turb_hyd_RANS_0_eq
+class Modele_turbulence_Longueur_Melange_VEF: public Mod_turb_hyd_RANS_0_eq
 {
 
   Declare_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VEF);
@@ -52,18 +44,18 @@ public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
-  void lire_distance_paroi( );
+  void lire_distance_paroi();
   void discretiser() override;
   int preparer_calcul() override;
 
-protected :
+protected:
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_energie_cinetique_turb() override;
   void calculer_Sij2();
   void calculer_f_amortissement();
 
-  double hauteur_,diametre_,dmax_,bidon;
+  double hauteur_, diametre_, dmax_, bidon;
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   Nom nom_fic;
@@ -75,10 +67,6 @@ protected :
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
-
-
-
 };
 
 #endif
-

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,43 +12,28 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Turbulence_hyd_sous_maille_Smago_filtre_VEF.cpp
-// Directory:   $TURBULENCE_ROOT/src/Specializations/VEF/Modeles_Turbulence/LES/Hydr
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_Smago_filtre_VEF.h>
 #include <Champ_P1NC.h>
 #include <Domaine_VEF.h>
 
-Implemente_instanciable(Turbulence_hyd_sous_maille_Smago_filtre_VEF,"Modele_turbulence_hyd_sous_maille_Smago_filtre_VEF",Turbulence_hyd_sous_maille_Smago_VEF);
+Implemente_instanciable(Turbulence_hyd_sous_maille_Smago_filtre_VEF, "Modele_turbulence_hyd_sous_maille_Smago_filtre_VEF", Turbulence_hyd_sous_maille_Smago_VEF);
 
-//// printOn
-//
-
-Sortie& Turbulence_hyd_sous_maille_Smago_filtre_VEF::printOn(Sortie& s ) const
+Sortie& Turbulence_hyd_sous_maille_Smago_filtre_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-//// readOn
-//
-
-Entree& Turbulence_hyd_sous_maille_Smago_filtre_VEF::readOn(Entree& s )
+Entree& Turbulence_hyd_sous_maille_Smago_filtre_VEF::readOn(Entree& s)
 {
-  return Turbulence_hyd_sous_maille_Smago_VEF::readOn(s) ;
+  return Turbulence_hyd_sous_maille_Smago_VEF::readOn(s);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Implementation de fonctions de la classe Turbulence_hyd_sous_maille_Smago_filtre_VEF
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 // PQ:07/09/05
 //Champ_Fonc& Turbulence_hyd_sous_maille_Smago_filtre_VEF::calculer_energie_cinetique_turb(const DoubleTab& SMA,const DoubleVect& l)
@@ -90,10 +75,10 @@ void Turbulence_hyd_sous_maille_Smago_filtre_VEF::calculer_S_barre()
 
   const DoubleVect& vol = domaine_VEF.volumes();
   //  const DoubleTab& xgravite = domaine_VEF.xp();
-  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine& domaine = domaine_VEF.domaine();
   //  const DoubleTab& xsom = domaine.domaine().coord_sommets();
   //  int nb_som_elem=domaine.nb_som_elem();
-  int nb_faces_elem=domaine.nb_faces_elem();
+  int nb_faces_elem = domaine.nb_faces_elem();
   //  const IntTab& elem_som=domaine.les_elems();
 
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -101,68 +86,67 @@ void Turbulence_hyd_sous_maille_Smago_filtre_VEF::calculer_S_barre()
   //  const int nb_face_bord = domaine_VEF.nb_faces_bord();
   const int nb_face = domaine_VEF.nb_faces();
 
-  int i,elem;
-  int fac=0;
-
+  int i, elem;
+  int fac = 0;
 
   //////////////////////////////
   //Filtrage du champ de vitesse
   //////////////////////////////
   DoubleTab vitesse(la_vitesse);
 
-  for (; fac<nb_face ; fac++)
+  for (; fac < nb_face; fac++)
     {
       int num1;
-      num1 = face_voisins(fac,0);
+      num1 = face_voisins(fac, 0);
       int num2;
-      num2 = face_voisins(fac,1);
+      num2 = face_voisins(fac, 1);
 
       //DoubleVect vit(dimension);
 
       int fac1, fac2, facel;
 
-      vitesse = 0. ;
+      vitesse = 0.;
 
-      for(facel=0; facel<nb_faces_elem; facel++)
+      for (facel = 0; facel < nb_faces_elem; facel++)
         {
-          fac1 = elem_faces(num1,facel) ;
-          for (i=0 ; i<dimension ; i++)
+          fac1 = elem_faces(num1, facel);
+          for (i = 0; i < dimension; i++)
             ////vit(i) += la_vitesse(fac1,i)/double(2*nb_faces_elem) ;
             //Correction pour avoir le champ de vitesse par face
-            vitesse(fac,i) += la_vitesse(fac1,i)/double(2*nb_faces_elem) ;
-          fac2 = elem_faces(num2,facel) ;
-          for (i=0 ; i<dimension ; i++)
+            vitesse(fac, i) += la_vitesse(fac1, i) / double(2 * nb_faces_elem);
+          fac2 = elem_faces(num2, facel);
+          for (i = 0; i < dimension; i++)
             ////vit(i) += la_vitesse(fac2,i)/double(2*nb_faces_elem) ;
-            vitesse(fac,i) += la_vitesse(fac2,i)/double(2*nb_faces_elem) ;
+            vitesse(fac, i) += la_vitesse(fac2, i) / double(2 * nb_faces_elem);
         }
 
     }
 
-  Champ_P1NC::calcul_S_barre(vitesse,SMA_barre,domaine_Cl_VEF);
+  Champ_P1NC::calcul_S_barre(vitesse, SMA_barre, domaine_Cl_VEF);
 
   // On recalcule la longueur caracteristique de l'element
 
-  for (elem=0; elem<nb_elem; elem ++)
+  for (elem = 0; elem < nb_elem; elem++)
     {
-      double voltot = vol(elem) ;
-      double eldif = 1. ;
-      int num1, facel ;
+      double voltot = vol(elem);
+      double eldif = 1.;
+      int num1, facel;
 
-      for(facel=0; facel<nb_faces_elem; facel++)
+      for (facel = 0; facel < nb_faces_elem; facel++)
         {
-          fac = elem_faces(elem,facel) ;
-          num1 = face_voisins(fac,0);
-          if (num1 == elem) num1 = face_voisins(fac,1);
+          fac = elem_faces(elem, facel);
+          num1 = face_voisins(fac, 0);
+          if (num1 == elem)
+            num1 = face_voisins(fac, 1);
 
           if (num1 != -1)
             {
-              voltot+= vol(num1) ;
-              eldif += 1. ;
+              voltot += vol(num1);
+              eldif += 1.;
             }
         }
 
-      voltot /= eldif ;
-      l_(elem) = 2.0*pow(6.*voltot,1./double(dimension)) ;
+      voltot /= eldif;
+      l_(elem) = 2.0 * pow(6. * voltot, 1. / double(dimension));
     }
-
 }
