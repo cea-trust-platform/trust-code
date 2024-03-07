@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,8 +93,7 @@ public:
   }
 
   // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe
-  static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);
-  static void Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& val, int& dim, int& old_synt);
+  static void Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& val1, const Nom& val2);
   static bool Check_if_int(const Nom& val);
 
 protected:

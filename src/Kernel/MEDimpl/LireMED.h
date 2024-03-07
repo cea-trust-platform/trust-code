@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,6 @@ protected:
   MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;
 #endif
 
-  void interp_old_syntax(Entree& is, Nom& nom_dom_trio);
   Nom type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_boundary) const;
   void prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2);
   void finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) const;

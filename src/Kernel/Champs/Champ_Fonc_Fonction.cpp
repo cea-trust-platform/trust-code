@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,9 +20,8 @@ Implemente_instanciable(Champ_Fonc_Fonction,"Champ_Fonc_Fonction",Champ_Fonc_Tab
 
 Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const { return os; }
 
-/*! @brief Lecture du Champ a partir d'un flot d'entree, (On ne sait traiter que les champs scalaires.
+/*! @brief Lecture du Champ a partir d'un flot d'entree, (On ne sait traiter que les champs scalaires.)
  *
- * )
  *      exemple:
  *      Champ_Fonc_Fonction probleme ch
  *      1 (nombre de composantes)
@@ -38,23 +37,16 @@ Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const { return os; }
  */
 Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 {
-  int nbcomp, nbcomp_tmp_ = -1, old_table_syntax_ = 0;
+  int nbcomp;
   Nom val1, val2;
   is >> val1;
   is >> val2;
   // fix if user uses the old syntax ..
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction", val2, nbcomp_tmp_, old_table_syntax_);
-  if (old_table_syntax_)
-    {
-      noms_champs_parametre_.add(val1);
-      nbcomp = nbcomp_tmp_;
-    }
-  else
-    {
-      noms_pbs_.add(val1);
-      noms_champs_parametre_.add(val2);
-      is >> nbcomp;
-    }
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction", val1, val2);
+
+  noms_pbs_.add(val1);
+  noms_champs_parametre_.add(val2);
+  is >> nbcomp;
   fixer_nb_comp(nbcomp);
   Cerr<<"We read the analytic function "<<finl;
   la_table.lire_f(is, nbcomp);

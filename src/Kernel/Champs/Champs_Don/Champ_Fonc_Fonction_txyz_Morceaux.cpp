@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,12 +40,20 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   is >> nom;
   interprete_get_domaine(nom);
 
-  Nom val1, val2;
+  Nom val1;
   is >> val1;
-  is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
+  bool isNum = Champ_Fonc_Tabule::Check_if_int(val1);
+  if (isNum)
+    {
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "Error in call to " << que_suis_je() << ":" << finl;
+      Cerr << "The syntax has changed in version 1.8.2." << finl;
+      Cerr << "You should now pass the dimension/number of components AFTER the field/parameter name." << finl;
+      Cerr << "Please update your dataset or contact TRUST support team." << finl;
+      Process::exit();
+    }
+  is >> dim;
 
-  dim = lire_dimension(dim, que_suis_je());
   creer_tabs(dim);
   is >> nom;
 
