@@ -24,6 +24,12 @@ cd $dest/XTriou
 cd $dest
 make || exit -1
 cd $project_directory
+if [ "$TRUST_WITHOUT_PDFLATEX" = "1" ]
+then
+   echo "You configured TRUST with -without-pdflatex option"
+   echo "We quit since make gui needs latex to generate the Reference manual"
+   exit -1
+fi
 mkdir -p share/doc_src
 cat build/xdata/XTriou/Keywords.txt $TRUST_ROOT/doc/TRUST/Keywords.txt | sort | uniq -u > share/doc_src/Keywords.txt.n
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' share/doc_src/Keywords.txt.n`
