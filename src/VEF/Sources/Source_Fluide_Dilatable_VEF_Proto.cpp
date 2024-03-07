@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,9 @@
 #include <TRUSTTab.h>
 #include <Domaine_VEF.h>
 #include <Symetrie.h>
-
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {
@@ -112,10 +114,21 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
             }
         }
       // Boucle faces internes
-      // ToDo OpenMP or Kokkos
-      for (int face=premiere_face_interne ; face<nb_faces; face++)
+      CDoubleArrView g_v = g.view_ro();
+      CDoubleArrView porosite_face_v = porosite_face.view_ro();
+      CDoubleArrView volumes_entrelaces_v = volumes_entrelaces.view_ro();
+      CDoubleTabView tab_rho_v = tab_rho.view_ro();
+      DoubleTabView resu_v = resu.view_rw();
+      start_timer();
+      Kokkos::parallel_for("Source_Fluide_Dilatable_VEF_Proto::ajouter_impl",
+                           Kokkos::RangePolicy<>(premiere_face_interne, nb_faces), KOKKOS_LAMBDA(
+                             const int face)
+      {
         for (int comp=0 ; comp<dimension ; comp++)
-          resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
+          resu_v(face, comp) +=
+            (tab_rho_v(face, 0) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
+      });
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Source_Fluide_Dilatable_VEF_Proto::ajouter_impl");
     }
   else
     {

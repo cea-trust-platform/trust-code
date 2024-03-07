@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,9 @@
 
 #include <Champ_implementation_sommet.h>
 #include <TRUSTTab.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 class Champ_implementation_P1: public Champ_implementation_sommet
 {
@@ -42,6 +45,107 @@ extern double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord
 // coord_barycentrique_P1_rectangle
 // coord_barycentrique_P1_tetraedre
 // coord_barycentrique_P1_hexaedre
+KOKKOS_INLINE_FUNCTION double coord_barycentrique_P1_triangle(CIntTabView polys, CDoubleTabView coord, double x, double y, int le_poly, int i)
+{
+  int som0, som1, som2;
+  switch(i)
+    {
+    case 0:
+      {
+        som0 = polys(le_poly, 0);
+        som1 = polys(le_poly, 1);
+        som2 = polys(le_poly, 2);
+        break;
+      }
+    case 1:
+      {
+        som0 = polys(le_poly, 1);
+        som1 = polys(le_poly, 2);
+        som2 = polys(le_poly, 0);
+        break;
+      }
+    case 2:
+      {
+        som0 = polys(le_poly, 2);
+        som1 = polys(le_poly, 0);
+        som2 = polys(le_poly, 1);
+        break;
+      }
+    default:
+      {
+        som0 = -1;
+        som1 = -1;
+        som2 = -1;
+        Kokkos::abort("A triangle does not have correct nodes in Champ_P1::coord_barycentrique.");
+      }
+    }
+  double den = (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 1) - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 0) - coord(som1, 0));
+
+  double num = (coord(som2, 0) - coord(som1, 0)) * (y - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (x - coord(som1, 0));
+
+  double coord_bary = num / den;
+  return coord_bary;
+}
+KOKKOS_INLINE_FUNCTION double coord_barycentrique_P1_tetraedre(CIntTabView polys, CDoubleTabView coord, double x, double y, double z, int le_poly, int i)
+{
+  int som0, som1, som2, som3;
+  switch(i)
+    {
+    case 0:
+      {
+        som0 = polys(le_poly, 0);
+        som1 = polys(le_poly, 1);
+        som2 = polys(le_poly, 2);
+        som3 = polys(le_poly, 3);
+        break;
+      }
+    case 1:
+      {
+        som0 = polys(le_poly, 1);
+        som1 = polys(le_poly, 2);
+        som2 = polys(le_poly, 3);
+        som3 = polys(le_poly, 0);
+        break;
+      }
+    case 2:
+      {
+        som0 = polys(le_poly, 2);
+        som1 = polys(le_poly, 3);
+        som2 = polys(le_poly, 0);
+        som3 = polys(le_poly, 1);
+        break;
+      }
+    case 3:
+      {
+        som0 = polys(le_poly, 3);
+        som1 = polys(le_poly, 0);
+        som2 = polys(le_poly, 1);
+        som3 = polys(le_poly, 2);
+        break;
+      }
+    default:
+      {
+        som0 = -1;
+        som1 = -1;
+        som2 = -1;
+        som3 = -1;
+        Kokkos::abort("Error in Champ_P1::coord_barycentrique : A tetrahedron does not have correct nodes ");
+      }
+    }
+
+  double xp = (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 2) - coord(som1, 2)) - (coord(som2, 2) - coord(som1, 2)) * (coord(som0, 1) - coord(som1, 1));
+  double yp = (coord(som2, 2) - coord(som1, 2)) * (coord(som0, 0) - coord(som1, 0)) - (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 2) - coord(som1, 2));
+  double zp = (coord(som2, 0) - coord(som1, 0)) * (coord(som0, 1) - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (coord(som0, 0) - coord(som1, 0));
+  double den = xp * (coord(som3, 0) - coord(som1, 0)) + yp * (coord(som3, 1) - coord(som1, 1)) + zp * (coord(som3, 2) - coord(som1, 2));
+
+  xp = (coord(som2, 1) - coord(som1, 1)) * (z - coord(som1, 2)) - (coord(som2, 2) - coord(som1, 2)) * (y - coord(som1, 1));
+  yp = (coord(som2, 2) - coord(som1, 2)) * (x - coord(som1, 0)) - (coord(som2, 0) - coord(som1, 0)) * (z - coord(som1, 2));
+  zp = (coord(som2, 0) - coord(som1, 0)) * (y - coord(som1, 1)) - (coord(som2, 1) - coord(som1, 1)) * (x - coord(som1, 0));
+  double num = xp * (coord(som3, 0) - coord(som1, 0)) + yp * (coord(som3, 1) - coord(som1, 1)) + zp * (coord(som3, 2) - coord(som1, 2));
+
+  double coord_bary = num / den;
+  return coord_bary;
+}
 inline double coord_barycentrique_P1_triangle(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i)
 {
   assert(polys.dimension(1) == 3);

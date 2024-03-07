@@ -31,6 +31,10 @@
 #include <TRUSTTab_parts.h>
 #include <Frontiere_dis_base.h>
 
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
+
 DoubleVect& Champ_P1iP1B_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   int dimension=Objet_U::dimension;
@@ -73,8 +77,6 @@ double Champ_P1iP1B_implementation::valeur_a_elem_compo(const DoubleVect& positi
 // Renvoie le tableau val contenant les valeurs du champ aux points
 DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
-  int som;
-  double xs,ys,zs=0;
   // zs bien initialise en 3D
 
   const Domaine_VEF& zvef = domaine_vef();
@@ -98,47 +100,55 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
 
   if (nb_compo_ == 1)
     {
-      for(int rang_poly=0; rang_poly<les_polys_size; rang_poly++)
-        {
-          // On initialise
-          val(rang_poly,0) = 0.;
+      CDoubleArrView champ_filtre_v = static_cast<DoubleVect&>(champ_filtre_).view_ro();
+      CIntTabView sommet_poly_v = sommet_poly.view_ro();
+      CDoubleTabView coord_v = coord.view_ro();
+      CDoubleTabView positions_v = positions.view_ro();
+      CIntArrView les_polys_v = les_polys.view_ro();
+      DoubleTabView val_v = val.view_rw();
+      start_timer();
+      Kokkos::parallel_for(les_polys_size, KOKKOS_LAMBDA(
+                             const int rang_poly)
+      {
+        // On initialise
+        val_v(rang_poly,0) = 0.;
 
-          // On prend le_poly
-          int le_poly=les_polys(rang_poly);
-          if (le_poly != -1)
-            {
-              // Contribution P0
-              if (zvef.get_alphaE())
-                val(rang_poly,0) += champ_filtre_(le_poly);
-              // Contribution P1
-              if (zvef.get_alphaS())
-                {
-                  xs = positions(rang_poly,0);
-                  ys = positions(rang_poly,1);
-                  if (dimension == 3)
-                    zs = positions(rang_poly,2);
+        // On prend le_poly
+        int le_poly=les_polys_v(rang_poly);
+        if (le_poly != -1)
+          {
+            // Contribution P0
+            if (zvef.get_alphaE())
+              val_v(rang_poly, 0) += champ_filtre_v(le_poly);
+            // Contribution P1
+            if (zvef.get_alphaS())
+              {
+                double xs = positions_v(rang_poly,0);
+                double ys = positions_v(rang_poly,1);
+                double zs = (dimension == 3) ? positions_v(rang_poly,2) : 0;
 
-                  // Calcul par les fonctions de forme P1 du champ filtre
-                  // au point (xs,yz,zs)
-                  for (int i=0; i<dimension+1; i++)
-                    {
-                      som = prs+sommet_poly(le_poly,i);
-                      double champ_filtre_som=champ_filtre_(som);
-                      double li=0.;
+                // Calcul par les fonctions de forme P1 du champ filtre
+                // au point (xs,yz,zs)
+                for (int i=0; i<dimension+1; i++)
+                  {
+                    int som = prs+sommet_poly_v(le_poly,i);
+                    double champ_filtre_som = champ_filtre_v(som);
+                    double li=0.;
 
-                      if (dimension == 2)
-                        li=coord_barycentrique_P1_triangle(sommet_poly,
-                                                           coord, xs, ys,
-                                                           le_poly, i);
-                      else if (dimension == 3)
-                        li=coord_barycentrique_P1_tetraedre(sommet_poly,
-                                                            coord, xs, ys, zs,
-                                                            le_poly, i);
-                      val(rang_poly,0) += champ_filtre_som * li;
-                    }
-                }
-            }
-        }
+                    if (dimension == 2)
+                      li=coord_barycentrique_P1_triangle(sommet_poly_v,
+                                                         coord_v, xs, ys,
+                                                         le_poly, i);
+                    else if (dimension == 3)
+                      li=coord_barycentrique_P1_tetraedre(sommet_poly_v,
+                                                          coord_v, xs, ys, zs,
+                                                          le_poly, i);
+                    val_v(rang_poly,0) += champ_filtre_som * li;
+                  }
+              }
+          }
+      });
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1iP1B_implementation::valeur_aux_elems");
     }
   else // nb_compo_ > 1
     {

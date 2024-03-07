@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,9 @@
 #include <Source_QC_Chaleur.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 Implemente_base(Source_QC_Chaleur,"Source_QC_Chaleur",Source_Chaleur_Fluide_Dilatable_base);
 
@@ -64,9 +67,17 @@ DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
   double dpth = ( Pth - Pthn ) / dt_;
   // resu+=dpth*volumes*porosites
   int nsom = resu.dimension(0);
-  for (int i=0 ; i<nsom ; i++)
-    resu(i) += dpth * volumes(i) * porosites(i);
-  // ToDo OpenMP or Kokkos : implement in TRUSTVect_tools a method ajoute_alpha_v_w (+=alpha*v*w) ?
+  CDoubleArrView volumes_v = volumes.view_ro();
+  CDoubleArrView porosites_v = porosites.view_ro();
+  // ToDo Kokkos :  DoubleArrView resu_v = resu.view_rw(); avec resu DoubleTab
+  DoubleTabView resu_v = resu.view_rw();
+  start_timer();
+  Kokkos::parallel_for(nsom, KOKKOS_LAMBDA(
+                         const int i)
+  {
+    resu_v(i, 0) += dpth * volumes_v(i) * porosites_v(i);
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Source_QC_Chaleur::ajouter_");
   /* Ne marche pas detect inf en debug: */
   /* DoubleVect vol(volumes);
   vol*=porosites;

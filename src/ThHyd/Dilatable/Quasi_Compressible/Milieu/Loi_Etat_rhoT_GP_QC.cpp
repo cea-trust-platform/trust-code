@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -152,9 +152,10 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
+  // ToDo Kokkos
   for (int som=0 ; som<n ; som++)
     {
-      tab_rho_np1(som) =  calculer_masse_volumique(Pth,tab_ICh(som,0),som);
+      tab_rho_np1(som) = calculer_masse_volumique(Pth,tab_ICh(som,0),som);
       tab_rho(som,0) = 0.5 * (tab_rho_n(som) + tab_rho_np1(som));
     }
   tab_rho.echange_espace_virtuel();

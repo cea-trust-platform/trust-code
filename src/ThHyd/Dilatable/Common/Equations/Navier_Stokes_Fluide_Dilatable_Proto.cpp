@@ -25,6 +25,8 @@
 #include <Domaine.h>
 #include <Debog.h>
 #include <Statistiques.h>
+#include <kokkos++.h>
+#include <TRUSTTab_kokkos.tpp>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
@@ -32,13 +34,21 @@ extern Stat_Counter_Id source_counter_;
 Navier_Stokes_Fluide_Dilatable_Proto::Navier_Stokes_Fluide_Dilatable_Proto() : cumulative_(0) { }
 
 // Multiply density by velocity and return density*velocity (mass flux)
-DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const
+DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTab& tab_rho, const DoubleTab& vit,
+                                                                  DoubleTab& rhovitesse) const
 {
   const int n = vit.dimension(0), ncomp = vit.line_size();
-// ToDo OpenMP or Kokkos
-  for (int i=0 ; i<n ; i++)
+  CDoubleTabView tab_rho_v = tab_rho.view_ro();
+  CDoubleTabView vit_v = vit.view_ro();
+  DoubleTabView rhovitesse_v = rhovitesse.view_rw();
+  start_timer();
+  Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl", n, KOKKOS_LAMBDA(
+                         const int i)
+  {
     for (int j=0 ; j<ncomp ; j++)
-      rhovitesse(i,j) = tab_rho(i,0)*vit(i,j);
+      rhovitesse_v(i, j) = tab_rho_v(i, 0) * vit_v(i, j);
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl");
 
   rhovitesse.echange_espace_virtuel();
   Debog::verifier("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse : ", rhovitesse);
@@ -395,9 +405,18 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       eqn.solv_masse()->set_name_of_coefficient_temporel("rho_comme_v");
       eqn.solv_masse().appliquer(secmemV);
       DoubleTrav dr(tab_rho_face_n);
-      // ToDo OpenMP or Kokkos
-      for (int i=0; i<dr.size_totale(); i++)
-        dr(i)=(tab_rho_face_n(i)/tab_rho_face_np1(i)-1.)/dt;
+
+      CDoubleTabView tab_rho_face_n_v = tab_rho_face_n.view_ro();
+      CDoubleTabView tab_rho_face_np1_v = tab_rho_face_np1.view_ro();
+      DoubleTabView dr_v = dr.view_rw();
+      start_timer();
+      Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star", dr.size_totale(),
+                           KOKKOS_LAMBDA(
+                             const int i)
+      {
+        dr_v(i, 0) = (tab_rho_face_n_v(i, 0) / tab_rho_face_np1_v(i, 0) - 1.) / dt;
+      });
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star");
 
       // on sert de vpoint pour calculer
       rho_vitesse_impl(dr,vit,vpoint);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,9 @@
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
 #include <Debog.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 Implemente_base_sans_constructeur(Loi_Etat_base,"Loi_Etat_base",Objet_U);
 // XD loi_etat_base objet_u loi_etat_base -1 Basic class for state laws used with a dilatable fluid.
@@ -170,7 +173,7 @@ void Loi_Etat_base::calculer_nu()
   Champ_Don& nu= le_fluide->viscosite_cinematique ();
   DoubleTab& tab_nu = nu.valeurs();
 
-  int i, n = tab_nu.size(), isVDF=0;
+  int n = tab_nu.size(), isVDF=0;
   if (nu.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
 
   if (isVDF)
@@ -178,36 +181,41 @@ void Loi_Etat_base::calculer_nu()
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++) tab_nu(i,0) = mu0 / tab_rho(i,0);
+          for (int i=0 ; i<n ; i++) tab_nu(i,0) = mu0 / tab_rho(i,0);
         }
       else
         {
-          for (i=0 ; i<n ; i++) tab_nu(i,0) = tab_mu(i,0) / tab_rho(i,0);
+          for (int i=0 ; i<n ; i++) tab_nu(i,0) = tab_mu(i,0) / tab_rho(i,0);
         }
     }
   else // VEF
     {
       const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
-      double rhoelem;
-      int face, nfe = elem_faces.line_size();
-      // ToDo OpenMP or Kokkos
+      int nfe = elem_faces.line_size();
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
-              rhoelem /= nfe;
-              tab_nu(i,0) = mu0 / rhoelem;
-            }
+          CIntTabView elem_faces_v = elem_faces.view_ro();
+          CDoubleTabView tab_rho_v = tab_rho.view_ro();
+          DoubleTabView tab_nu_v = tab_nu.view_rw();
+          start_timer();
+          Kokkos::parallel_for("Loi_Etat_base::calculer_nu", n, KOKKOS_LAMBDA(
+                                 const int i)
+          {
+            double rhoelem = 0;
+            for (int face = 0; face < nfe; face++)
+              rhoelem += tab_rho_v(elem_faces_v(i, face), 0);
+            rhoelem /= nfe;
+            tab_nu_v(i, 0) = mu0 / rhoelem;
+          });
+          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Loi_Etat_base::calculer_nu");
         }
       else
         {
-          for (i=0 ; i<n ; i++)
+          for (int i=0 ; i<n ; i++)
             {
-              rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
+              double rhoelem = 0;
+              for (int face = 0; face < nfe; face++) rhoelem += tab_rho(elem_faces(i, face), 0);
               rhoelem /= nfe;
               tab_nu(i,0) = tab_mu(i,0) / rhoelem;
             }

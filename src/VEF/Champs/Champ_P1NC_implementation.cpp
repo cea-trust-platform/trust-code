@@ -29,7 +29,9 @@
 #include <Domaine.h>
 #include <Debog.h>
 #include <SSOR.h>
-
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 static int methode_calcul_valeurs_sommets = 2 ;
 
@@ -1376,10 +1378,9 @@ valeur_aux_elems(const DoubleTab& positions,
                  const IntVect& les_polys,
                  DoubleTab& val) const
 {
+  if (les_polys.size() == 0) return val;
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
-  int face;
-  double xs,ys,zs;
   const DoubleTab& ch = cha.valeurs();
 
   const Domaine_VEF& domaine_VEF = domaine_vef();
@@ -1397,32 +1398,40 @@ valeur_aux_elems(const DoubleTab& positions,
   // For FT the resize should be done in its good position and not here ...
   if (val.nb_dim() == 1 ) val.resize(val.dimension_tot(0),1);
 
-  int le_poly, D = Objet_U::dimension;
-  const IntTab& elem_faces=domaine_VEF.elem_faces();
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
+  int D = Objet_U::dimension;
+  CIntTabView sommet_poly_v = sommet_poly.view_ro();
+  CDoubleTabView coord_v = coord.view_ro();
+  CDoubleTabView ch_v = ch.view_ro();
+  CIntTabView elem_faces_v = domaine_VEF.elem_faces().view_ro();
+  CDoubleTabView positions_v = positions.view_ro();
+  CIntArrView les_polys_v = les_polys.view_ro();
+  DoubleTabView val_v = val.view_rw();
+  start_timer();
+  Kokkos::parallel_for(les_polys.size(), KOKKOS_LAMBDA(
+                         const int rang_poly)
+  {
+    int le_poly=les_polys_v(rang_poly);
+    if (le_poly == -1)
+      for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+        val_v(rang_poly, ncomp) = 0;
+    else
+      {
         for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-          val(rang_poly, ncomp) = 0;
-      else
-        {
-          for(int ncomp=0; ncomp<nb_compo_; ncomp++)
-            {
-              val(rang_poly, ncomp) = 0;
-              xs = positions(rang_poly,0);
-              ys = positions(rang_poly,1);
-              zs = (D == 3) ? positions(rang_poly,2) : 0;
-              for (int i = 0; i < D + 1; i++)
-                {
-                  face = elem_faces(le_poly, i);
-                  val(rang_poly, ncomp) += ch(face, ncomp) *
-                                           ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly, coord) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly, coord));
-                }
-            }
-        }
-    }
+          {
+            val_v(rang_poly, ncomp) = 0;
+            double xs = positions_v(rang_poly,0);
+            double ys = positions_v(rang_poly,1);
+            double zs = (D == 3) ? positions_v(rang_poly,2) : 0;
+            for (int i = 0; i < D + 1; i++)
+              {
+                int face = elem_faces_v(le_poly, i);
+                val_v(rang_poly, ncomp) += ch_v(face, ncomp) *
+                                           ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly_v, coord_v) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly_v, coord_v));
+              }
+          }
+      }
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC_implementation::valeur_aux_elems");
   return val;
 }
 
@@ -1431,6 +1440,7 @@ valeur_aux_elems_compo(const DoubleTab& positions,
                        const IntVect& les_polys,
                        DoubleVect& val,int ncomp) const
 {
+  if (les_polys.size() == 0) return val;
   int les_polys_size = les_polys.size();
   const Champ_base& cha=le_champ();
   double xs,ys,zs;
