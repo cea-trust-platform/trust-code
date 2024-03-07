@@ -33,8 +33,18 @@ public:
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
   int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  /* fonctions etendues : permet de remmlir les lignes des faces virtuelles en reglant virt = 1 */
+  void dimensionner_blocs_ext(matrices_t matrices, int virt, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs_ext(matrices_t matrices, DoubleTab& secmem, int virt, const tabs_t& semi_impl = {}) const;
+  /* interface standard -> avec virt = 0 */
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override
+  {
+    dimensionner_blocs_ext(matrices, 0, semi_impl);
+  }
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
+  {
+    ajouter_blocs_ext(matrices, secmem, 0, semi_impl);
+  }
   void check_multiphase_compatibility() const override { } //ok
 };
 
