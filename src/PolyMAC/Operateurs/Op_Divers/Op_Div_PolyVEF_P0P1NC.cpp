@@ -83,8 +83,14 @@ void Op_Div_PolyVEF_P0P1NC::ajouter_blocs_ext(const DoubleTab& vit, matrices_t m
   const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = domaine.face_normales();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face();
-  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), d, D = dimension, has_f = secmem.dimension_tot(0) > ne_tot;
+  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), d, D = dimension, has_f = secmem.dimension_tot(0) > ne_tot, has_P_ref = 0;
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr; //, matv2, matp2;
+  for (i = 0; i < cls.size(); i++)
+    if (sub_type(Neumann_sortie_libre,cls[i].valeur())) has_P_ref = 1;
+  if (matp && !has_P_ref)
+    if (Process::me() == Process::mp_min(domaine.nb_elem() ? Process::me() : 1e8)) /* 1er proc possedant un element reel */
+      (*matp)(0, 0) -= 1;
+
 
   DoubleTrav w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
 
@@ -133,9 +139,9 @@ void Op_Div_PolyVEF_P0P1NC::ajouter_blocs_ext(const DoubleTab& vit, matrices_t m
             if (w2(i, j, 0))
               {
                 fb = e_f(e, j);
-                secmem(ne_tot + f) -= pf(f) * w2(i, j, 0) * (press(ne_tot + fb) - press(e));
+                secmem(ne_tot + f) += pf(f) * w2(i, j, 0) * (press(ne_tot + fb) - press(e));
                 if (matp)
-                  (*matp)(ne_tot + f, ne_tot + fb) += pf(f) * w2(i, j, 0), coeff_e += pf(f) * w2(i, j, 0);
+                  (*matp)(ne_tot + f, ne_tot + fb) -= pf(f) * w2(i, j, 0), coeff_e -= pf(f) * w2(i, j, 0);
               }
           if (matp)
             (*matp)(ne_tot + f, e) -= coeff_e;

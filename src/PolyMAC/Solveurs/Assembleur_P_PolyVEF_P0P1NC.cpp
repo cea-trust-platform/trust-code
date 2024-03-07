@@ -16,6 +16,8 @@
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Assembleur_P_PolyVEF_P0P1NC.h>
+#include <Op_Grad_PolyVEF_P0P1NC_Face.h>
+#include <Op_Div_PolyVEF_P0P1NC.h>
 #include <Champ_Face_PolyVEF.h>
 #include <Domaine_PolyVEF.h>
 #include <Neumann_sortie_libre.h>
@@ -46,77 +48,56 @@ int  Assembleur_P_PolyVEF_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
 {
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
-  Cerr << "Assemblage de la matrice de pression ... " ;
-  statistiques().begin_count(assemblage_sys_counter_);
   la_matrice.typer("Matrice_Morse");
-  Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
+  Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur()), mat_div_v, mat_div_p, mat_grad;
+  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, equation());
+  const Op_Div_PolyVEF_P0P1NC& div = ref_cast(Op_Div_PolyVEF_P0P1NC, eq.operateur_divergence().valeur());
+  const Op_Grad_PolyVEF_P0P1NC_Face& grad = ref_cast(Op_Grad_PolyVEF_P0P1NC_Face, eq.operateur_gradient().valeur());
 
-  const Domaine_PolyVEF_P0P1NC& domaine = ref_cast(Domaine_PolyVEF_P0P1NC, le_dom_PolyMAC.valeur());
-  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue());
-  const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
-  int i, j, e, f, fb, ne = domaine.nb_elem(), ne_tot = domaine.nb_elem_tot(), nf = domaine.nb_faces(), nf_tot = domaine.nb_faces_tot();
+  const Domaine_PolyVEF_P0P1NC& dom = ref_cast(Domaine_PolyVEF_P0P1NC, le_dom_PolyMAC.valeur());
+  int ne_tot = dom.nb_elem_tot(), nf_tot = dom.nb_faces_tot(), d, D = dimension, f, i;
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
 
-  DoubleTrav w2; //matrice W2 (de Domaine_PolyVEF_P0P1NC) par element
-
-  /* 1. stencil de la matrice en pression : seulement au premier passage */
-  if (!stencil_done) /* premier passage: calcul */
+  /* 1. stencil : seulement au premier passage */
+  if (!stencil_done)
     {
-      IntTrav stencil(0, 2);
-      for (e = 0; e < ne; e++)
-        for (stencil.append_line(e, e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* blocs "elem-elem" et "elem-face" */
-          stencil.append_line(e, ne_tot + f); //toutes les faces (sauf bord de Neumann)
-      for (e = 0; e < ne_tot; e++)
-        for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
-          if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
-          else if (f < nf)
-            for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
-              if (w2(i, j, 0)) stencil.append_line(ne_tot + f, ne_tot + e_f(e, j));
-
-      tableau_trier_retirer_doublons(stencil);
-      Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil, mat);
-      tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
+      //dimensionner_blocs de div et grad, puis produit
+      div.dimensionner_blocs({ { "vitesse", &mat_div_v }, { "pression", &mat_div_p } });
+      grad.dimensionner_blocs_ext({ { "pression", &mat_grad } }, 1); //avec les faces virtuelles
+      mat.affecte_prod(mat_div_v, mat_grad), mat.set_nb_columns(ne_tot + nf_tot);
+      mat += mat_div_p;
+      //stockage des stencils : pour mat, on ne peut stocker que la taille
+      tab1.resize(1), tab1(0) = mat.get_set_tab1().size(), tab2.resize(1), tab2(0) = mat.get_set_tab2().size();
+      div_v_tab1.ref_array(mat_div_v.get_set_tab1()), div_v_tab2.ref_array(mat_div_v.get_set_tab2());
+      div_p_tab1.ref_array(mat_div_p.get_set_tab1()), div_p_tab2.ref_array(mat_div_p.get_set_tab2());
+      grad_tab1.ref_array(mat_grad.get_set_tab1()), grad_tab2.ref_array(mat_grad.get_set_tab2());
       stencil_done = 1;
     }
-  else /* passages suivants : recyclage */
+  else //sinon, on recycle
     {
-      mat.get_set_tab1().ref_array(tab1);
-      mat.get_set_tab2().ref_array(tab2);
-      mat.get_set_coeff().resize(tab2.size()), mat.get_set_coeff() = 0;
-      mat.set_nb_columns(ne_tot + nf_tot);
+      mat.get_set_tab1().resize(tab1(0)), mat.get_set_tab2().resize(tab2(0)), mat.get_set_coeff().resize(tab2(0)), mat.set_nb_columns(ne_tot + nf_tot);
+      mat_div_v.get_set_tab1().ref_array(div_v_tab1), mat_div_v.get_set_tab2().ref_array(div_v_tab2), mat_div_v.get_set_coeff().resize(div_v_tab2.size()), mat_div_v.set_nb_columns(D * nf_tot);
+      mat_div_p.get_set_tab1().ref_array(div_p_tab1), mat_div_p.get_set_tab2().ref_array(div_p_tab2), mat_div_p.get_set_coeff().resize(div_p_tab2.size()), mat_div_p.set_nb_columns(ne_tot + nf_tot);
+      mat_grad.get_set_tab1().ref_array(grad_tab1), mat_grad.get_set_tab2().ref_array(grad_tab2), mat_grad.get_set_coeff().resize(grad_tab2.size()), mat_grad.set_nb_columns(ne_tot + nf_tot);
     }
 
-  /* 2. coefficients */
-  for (e = 0; e < ne_tot; e++)
-    {
-      domaine.W2(nullptr, e, w2); //calcul de W2
-      double m_ee = 0, m_fe, m_ef, coeff; //coefficients (elem, elem), (elem, face) et (face, elem)
-      for (i = 0; i < w2.dimension(0); i++, m_ee += m_ef)
-        {
-          f = e_f(e, i), coeff = diag.size_totale() ? pf(f) * vf(f) / diag(f) : 1;
-          for (m_ef = 0, m_fe = 0, j = 0; j < w2.dimension(1); j++)
-            if (w2(i, j, 0))
-              {
-                fb = e_f(e, j);
-                if (f < domaine.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += coeff * pe(e) * w2(i, j, 0); //interne ou Dirichlet
-                else if (f < domaine.nb_faces() && i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
-                m_ef += coeff * pe(e) * w2(i, j, 0),  m_fe += coeff * pe(e) * w2(i, j, 0); //accumulation dans m_ef, m_fe
-              }
-          if (e < domaine.nb_elem()) mat(e, ne_tot + f) -= m_ef;
-          if (f < domaine.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
-        }
-      if (e < domaine.nb_elem()) mat(e, e) += m_ee; //coeff (elem, elem)
-    }
+  /* gradient : par op_grad, puis produit par -1 / diag */
+  DoubleTrav sec_grad(nf_tot, D), sec_div(ne_tot + nf_tot, 1), inv_diag(D * nf_tot);
+  grad.ajouter_blocs_ext({ { "pression", &mat_grad } }, sec_grad, 1); //avec lignes virtuelles
+  div.ajouter_blocs({ { "vitesse", &mat_div_v }, { "pression", &mat_div_p } }, sec_div); //avec lignes virtuelles
+  for (f = 0, i = 0; f < nf_tot; f++)
+    for (d = 0; d < D; d++, i++) inv_diag(i) = 1. / (diag.size() ? diag(i) : pf(f) * vf(f));
+  mat_grad.diagmulmat(inv_diag);
+  mat.affecte_prod(mat_div_v, mat_grad);
+  mat_div_p *= -1;
+  mat += mat_div_p; //partie (p, p) (pressions imposees) de la divergence
 
-  //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
+  //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process premier process dont le domaine est non vide
   has_P_ref=0;
   for (int n_bord=0; n_bord<le_dom_PolyMAC->nb_front_Cl(); n_bord++)
     if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
-  if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 
-  statistiques().end_count(assemblage_sys_counter_);
-  Cerr << statistiques().last_time(assemblage_sys_counter_) << " s" << finl;
   return 1;
 }
 
