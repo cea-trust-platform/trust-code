@@ -3754,7 +3754,7 @@ then
    cp $TRUST_ROOT/doc/TRUST/Tutorial/TRUST_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/ICoCo_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/Baltik_tutorial.pdf $TRUST_ROOT/doc/TRUST/
-   #cp $TRUST_ROOT/doc/TRUST/Generic_Guide/TRUST_Generic_Guide.pdf $TRUST_ROOT/doc/TRUST/
+   cp $TRUST_ROOT/doc/TRUST/exercices/Tutorial_solutions/Tutorial_solutions.pdf $TRUST_ROOT/doc/TRUST/exercices/
    # Update the version in README.md file (displayed on github)
    sed -i "s/$old/$new/g" $TRUST_ROOT/README.md
    # Commit

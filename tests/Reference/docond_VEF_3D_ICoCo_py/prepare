@@ -2,6 +2,7 @@
 # Elie Saikali & Adrien Bruneton
 # Avril 2021
 
+# Remark: test fails if no petsc since not able to build icoco_swig...
 
 ### Decoupage
 trust docond_VEF_3D_mesh1.data 1>docond_VEF_3D_mesh1.out 2>docond_VEF_3D_mesh1.err

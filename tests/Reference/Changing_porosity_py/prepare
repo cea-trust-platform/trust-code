@@ -5,6 +5,7 @@ source $TRUST_ROOT/env_for_python.sh
 #  1. TRUST built using openmpi
 #  2. running in parallel
 # I use mpirun since test case fails on orcus and on other installs using openmpi
+# Remark: test fails if no petsc since not able to build icoco_swig...
 mpirun -np 1 python main.py > main.out
 
 if [ $? -eq 0 ]

@@ -5,22 +5,6 @@ diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils
 >       if (type_ != LataDBDataType::INT32)
 684d683
 <     case LataDBDataType::INT64:
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT/mfftov.f ./ThirdPart/src/LIBMFFT/mfftov.f
-19c19
-<         stop 'uuuu' 
----
->  
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/ipow.c ./ThirdPart/src/LIBMFFT_C/ipow.c
-1c1
-< #define INTEGER long
----
-> #define INTEGER int
-diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/jmfft.h ./ThirdPart/src/LIBMFFT_C/jmfft.h
-1c1
-< #define INTEGER long
----
-> #define INTEGER int
-Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 52c52
 < void srand48(long) ;
