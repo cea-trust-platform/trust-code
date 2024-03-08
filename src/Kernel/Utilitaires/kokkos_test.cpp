@@ -15,17 +15,17 @@
 
 #include <View_Types.h>
 #include <TRUSTTab.h>
-#include <TRUSTTab_kokkos.tpp>
-#include <TRUSTArray_kokkos.tpp>
 #include <iostream>
 #include <Device.h>
 
-// Teste les methodes de l'interface Kokkos utilisees dans TRUST:
-bool kokkos_self_tested_ = false;
+/*! Teste les methodes de l'interface Kokkos utilisees dans TRUST
+ */
 void kokkos_self_test()
 {
 #ifndef NDEBUG
 #ifdef _OPENMP
+  static bool kokkos_self_tested_ = false;
+
   if (kokkos_self_tested_) return;
   kokkos_self_tested_=true;
 

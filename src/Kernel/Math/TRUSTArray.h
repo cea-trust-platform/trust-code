@@ -93,7 +93,7 @@ public:
         // Initialize underlying std::vector<> with 0:
         mem_ = std::make_shared<Vector_>(Vector_(n, (_TYPE_)0));
         span_ = Span_(*mem_);
-        dataLocation_ = std::make_shared<DataLocation>(HostOnly);
+        data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
       }
   }
 
@@ -111,7 +111,7 @@ public:
         // We deep copy *only* the data span of A, not the full underlying A.mem_:
         mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
         span_ = Span_(*mem_);
-        dataLocation_ = std::make_shared<DataLocation>(A.get_dataLocation());
+        data_location_ = std::make_shared<DataLocation>(A.get_data_location());
         if (A.isDataOnDevice())
           {
             allocateOnDevice(*this);
@@ -200,18 +200,17 @@ public:
   inline virtual void resize_tab(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
   // Host/Device methods:
-  inline DataLocation get_dataLocation() {  return dataLocation_ == nullptr ? HostOnly : *dataLocation_;   }
-  inline DataLocation get_dataLocation() const { return dataLocation_ == nullptr ? HostOnly : *dataLocation_; }
-  inline void set_dataLocation(DataLocation flag) { if (dataLocation_ != nullptr) *dataLocation_ = flag; }
-  inline void set_dataLocation(DataLocation flag) const { if (dataLocation_ != nullptr) *dataLocation_ = flag; }
+  inline DataLocation get_data_location() {  return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_;   }
+  inline DataLocation get_data_location() const { return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_; }
+  inline void set_data_location(DataLocation flag) { if (data_location_ != nullptr) *data_location_ = flag; }
+  inline void set_data_location(DataLocation flag) const { if (data_location_ != nullptr) *data_location_ = flag; }
 
-  inline void checkDataOnHost() { checkDataOnHost(*this); }
-  inline void checkDataOnHost() const { checkDataOnHost(*this); }
-  inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
-  inline bool checkDataOnDevice(std::string kernel_name="??") { return checkDataOnDevice(*this, kernel_name); }
-  inline bool checkDataOnDevice(std::string kernel_name="??") const { return checkDataOnDevice(*this, kernel_name); }
-  inline bool checkDataOnDevice(const TRUSTArray& arr, std::string kernel_name="??") { return checkDataOnDevice(*this, arr, kernel_name); }
-
+  inline void checkDataOnHost();
+  inline void checkDataOnHost() const;
+  inline bool isDataOnDevice() const;
+  inline bool checkDataOnDevice(std::string kernel_name="??");
+  inline bool checkDataOnDevice(std::string kernel_name="??") const;
+  inline bool checkDataOnDevice(const TRUSTArray& arr, std::string kernel_name="??");
 
   inline virtual Span_ get_span() { return span_; }
   inline virtual Span_ get_span_tot() { return span_; }
@@ -219,29 +218,24 @@ public:
   inline virtual const Span_ get_span_tot() const { return span_; }
 
   // Kokkos accessors
-protected:
-  inline void init_view_arr() const;
-
-public:
-  // Kokkos view accessors:
   inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
   inline ViewArr<_TYPE_> view_wo();             // Write-only
   inline ViewArr<_TYPE_> view_rw();             // Read-write
 
   inline void sync_to_host() const;              // Synchronize back to host
-
   inline void modified_on_host() const;         // Mark data as being modified on host side
-
-protected:
-  // Kokkos members
-  mutable bool dual_view_init_ = false;
-  mutable DualViewArr<_TYPE_> dual_view_arr_;
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start=0, int size=-1);
   inline bool detach_array();
 
   void resize_array_(int n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+
+  // Kokkos members
+  inline void init_view_arr() const;
+
+  mutable bool dual_view_init_ = false;
+  mutable DualViewArr<_TYPE_> dual_view_arr_;
 
 private:
   /*! Shared pointer to the actual underlying memory block:
@@ -264,99 +258,11 @@ private:
   // HostDevice: A jour sur le host et le device
   // PartialHostDevice : Etat temporaire: certaines valeurs sont plus a jour sur le host que le device (ex: faces frontieres ou items distants)
   // In a shared_ptr because this state has the same status as mem_ (same sharing properties)
-  mutable std::shared_ptr<DataLocation> dataLocation_;
+  mutable std::shared_ptr<DataLocation> data_location_;
 
-  // Methodes de verification que le tableau est a jour sur le host:
-  // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
-  inline void checkDataOnHost(const TRUSTArray& tab) const
-  {
-#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
-    if (tab.get_dataLocation()==Device)
-      {
-        copyFromDevice(tab, "const detected with checkDataOnHost()");
-        exit_on_copy_condition(tab.size_array());
-      }
-#endif
-  }
-  inline void checkDataOnHost(TRUSTArray& tab)
-  {
-#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
-    const DataLocation& loc = tab.get_dataLocation();
-    if (loc==Host || loc==HostOnly || loc==PartialHostDevice) return;
-    else if (loc==Device)
-      {
-        copyFromDevice(tab, "non-const detected with checkDataOnHost()");
-        exit_on_copy_condition(tab.size_array());
-      }
-    // On va modifier le tableau (non const) sur le host:
-    tab.set_dataLocation(Host);
-#endif
-  }
-
-  // Fonction pour connaitre la localisation du tableau
-  inline bool isDataOnDevice(const TRUSTArray& tab) const
-  {
-    return tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
-  }
-  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
-  {
-    if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=nullptr)
-      {
-        std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
-        std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
-                  << " with a loop on array [" << toString(tab.data()).c_str() << "] of " << tab.size_array()
-                  << " elements" << std::endl ;
-      }
-  }
-  // Fonctions checkDataOnDevice pour lancement conditionnel de kernels sur le device:
-  // -Si les tableaux passes en parametre sont sur a jour sur le device
-  // -Si ce n'est pas le cas, les tableaux sont copies sur le host via checkDataOnHost
-  inline bool checkDataOnDevice(const TRUSTArray& tab, std::string kernel_name) const
-  {
-#ifdef _OPENMP
-    bool flag = tab.isDataOnDevice() && computeOnDevice;
-    if (!flag)
-      checkDataOnHost(tab);
-    //else
-    //  tab.set_dataLocation(Device); // non const array will be computed on device
-    printKernel(flag, tab, kernel_name);
-    return flag;
-#else
-    return false;
-#endif
-  }
-  inline bool checkDataOnDevice(TRUSTArray& tab, std::string kernel_name)
-  {
-#ifdef _OPENMP
-    bool flag = tab.isDataOnDevice() && computeOnDevice;
-    if (!flag)
-      checkDataOnHost(tab);
-    else
-      tab.set_dataLocation(Device); // non const array will be computed on device
-    printKernel(flag, tab, kernel_name);
-    return flag;
-#else
-    return false;
-#endif
-  }
-  inline bool checkDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name="??")
-  {
-#ifdef _OPENMP
-    bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice() && computeOnDevice;
-    // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
-    if (!flag)
-      {
-        checkDataOnHost(tab);
-        checkDataOnHost(tab_const);
-      }
-    else
-      tab.set_dataLocation(Device); // non const array will be computed on device
-    printKernel(flag, tab, kernel_name);
-    return flag;
-#else
-    return false;
-#endif
-  }
+private:
+  /*! Debug */
+  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
 };
 
 using ArrOfDouble = TRUSTArray<double>;
@@ -373,6 +279,8 @@ using ArrOfInt = TRUSTArray<int>;
  * FONCTIONS MEMBRES DE TRUSTArray *
  * ******************************* */
 
-#include <TRUSTArray.tpp> // templates specializations ici ;)
+#include <TRUSTArray_device.tpp> // OMP stuff
+#include <TRUSTArray_kokkos.tpp> // Kokkos stuff
+#include <TRUSTArray.tpp> // The rest here!
 
 #endif /* TRUSTArray_included */

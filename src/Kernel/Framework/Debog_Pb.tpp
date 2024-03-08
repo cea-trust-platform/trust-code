@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,12 +98,12 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
 {
   TRUSTVect<_TYPE_> arr(array);
   // Verification sanitaire si HostDevice (ex: le tableau a ete modifie sur le host via des pointeurs mais flag non mis a jour!)
-  if (array.get_dataLocation()==HostDevice)
+  if (array.get_data_location()==DataLocation::HostDevice)
     {
       // Force la copie sur le host:
-      arr.set_dataLocation(Device);
+      arr.set_data_location(DataLocation::Device);
       copyFromDevice(arr, "(Debog forced)");
-      assert(arr.get_dataLocation()==HostDevice);
+      assert(arr.get_data_location()==DataLocation::HostDevice);
       // Comparaison avec array:
       int size = arr.size_array();
       for (int i = 0; i < size; i++)

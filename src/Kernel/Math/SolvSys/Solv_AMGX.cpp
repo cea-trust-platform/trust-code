@@ -100,7 +100,7 @@ void Solv_AMGX::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
   const double* secmem_addr = mapToDevice(secmem, "secmem");
   double* lhs_amgx_addr = computeOnTheDevice(lhs_amgx_, "lhs_amgx_");
   double* rhs_amgx_addr = computeOnTheDevice(rhs_amgx_, "rhs_amgx_");
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
@@ -108,7 +108,7 @@ void Solv_AMGX::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
         lhs_amgx_addr[index_addr[i]] = solution_addr[i];
         rhs_amgx_addr[index_addr[i]] = secmem_addr[i];
       }
-  end_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_vectors");
+  end_gpu_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_vectors");
   if (reorder_matrix_) Process::exit("Option not supported yet for AmgX.");
 }
 
@@ -118,12 +118,12 @@ void Solv_AMGX::Update_solution(DoubleVect& solution)
   const int* index_addr = mapToDevice(index_);
   const double* lhs_amgx_addr = mapToDevice(lhs_amgx_, "lhs_amgx_");
   double* solution_addr = computeOnTheDevice(solution, "solution");
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
       solution_addr[i] = lhs_amgx_addr[index_addr[i]];
-  end_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_solution");
+  end_gpu_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_solution");
 }
 
 // Fonction de conversion Petsc ->CSR

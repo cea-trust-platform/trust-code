@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -123,7 +123,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
   const int * est_face_bord_addr = mapToDevice(domaine_VEF.est_face_bord());
   const double * variable_addr = mapToDevice(variable,"variable");
   double * gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int fac=0; fac<nb_faces_tot; fac++)
     {
@@ -142,17 +142,17 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
               gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + i] -= grad;
           }
     }
-  end_timer(Objet_U::computeOnDevice, "Face loop in Champ_P1NC::calculer_gradientP1NC");
+  end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Champ_P1NC::calculer_gradientP1NC");
   // ToDo merge in one region the 2 loops
   const double * inverse_volumes_addr = mapToDevice(domaine_VEF.inverse_volumes());
-  start_timer();
+  start_gpu_timer();
   // Parfois un crash du build avec nvc++ recent (par exemple topaze, 22.7. Marche avec 22.1). Supprimer alors le if (Objet_U::computeOnDevice)
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int elem=0; elem<nb_elem; elem++)
     for (int icomp=0; icomp<nb_comp; icomp++)
       for (int i=0; i<dimension; i++)
         gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Champ_P1NC::calculer_gradientP1NC");
+  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Champ_P1NC::calculer_gradientP1NC");
 }
 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const

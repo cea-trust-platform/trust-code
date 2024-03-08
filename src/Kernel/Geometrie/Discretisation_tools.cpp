@@ -143,7 +143,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       const double* tabHe_addr   = mapToDevice(tabHe, "", kernelOnDevice);
       double* vol_tot_addr       = computeOnTheDevice(vol_tot, "", kernelOnDevice);
       double* tabHf_addr         = computeOnTheDevice(tabHf, "", kernelOnDevice);
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int ele = 0; ele < nb_elem_tot; ele++)
         for (int s = 0; s < nb_face_elem; s++)
@@ -157,7 +157,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int face = 0; face < nb_faces; face++)
         tabHf_addr[face] /= vol_tot_addr[face];
-      end_timer(kernelOnDevice, "Discretisation_tools::cells_to_faces (2 loops)");
+      end_gpu_timer(kernelOnDevice, "Discretisation_tools::cells_to_faces (2 loops)");
     }
   else
     {

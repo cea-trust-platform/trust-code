@@ -24,19 +24,19 @@
 #include <omp.h>
 #endif
 
-enum DataLocation { HostOnly, Host, Device, HostDevice, PartialHostDevice };
-
-extern void self_test();
+// TODO - scope all this, global vars are bad.
 extern bool init_openmp_, clock_on;
-extern int copy_before_exit, size_copy_before_exit;
 extern double clock_start;
-extern void exit_on_copy_condition(int size);
-extern void set_exit_on_copy_condition(int size);
-extern void init_openmp();
-extern void init_cuda();
-extern std::string toString(const void* adr);
-// Timers GPU avec OpenMP (renommer?)
-inline void start_timer(int bytes=-1)
+
+void self_test();
+void exit_on_copy_condition(int size);
+void set_exit_on_copy_condition(int size);
+void init_openmp();
+void init_cuda();
+std::string ptrToString(const void* adr);
+
+// Timers GPU avec OpenMP
+inline void start_gpu_timer(int bytes=-1)
 {
 #ifdef _OPENMP
   if (init_openmp_)
@@ -46,7 +46,8 @@ inline void start_timer(int bytes=-1)
     }
 #endif
 }
-inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
+
+inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
   Kokkos::fence();
 #ifdef TRUST_USE_UVM
@@ -80,6 +81,7 @@ inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Ret
     }
 #endif
 }
+
 template <typename _TYPE_>
 extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab);
 
@@ -97,6 +99,7 @@ inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string
 {
   return allocateOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
 }
+
 template <typename _TYPE_>
 void allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 {
@@ -125,7 +128,7 @@ bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
     return isAllocatedOnDevice(tab.data());
   else
 #endif
-    return tab.get_dataLocation()!=HostOnly;
+    return tab.get_data_location() != DataLocation::HostOnly;
 }
 
 template <typename _TYPE_>

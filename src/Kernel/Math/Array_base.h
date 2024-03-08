@@ -19,21 +19,24 @@
 #include <Objet_U.h>
 class MD_Vector;
 
-// Options de resize:
-//  RESIZE_OPTIONS::NOCOPY_NOINIT: ne pas copier les anciennes valeurs, ne pas initialiser les nouvelles
-//  RESIZE_OPTIONS::COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
-//  RESIZE_OPTIONS::COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
-// TODO: this is probably deprecated with std::vector<> in TRUSTArray (but careful GPU ...):
+/*! Options de resize:
+*  RESIZE_OPTIONS::NOCOPY_NOINIT: ne pas copier les anciennes valeurs, ne pas initialiser les nouvelles
+*  RESIZE_OPTIONS::COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
+*  RESIZE_OPTIONS::COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
+* TODO: this is probably deprecated with std::vector<> in TRUSTArray (but careful GPU ...):
+*/
 enum class RESIZE_OPTIONS { NOCOPY_NOINIT, COPY_NOINIT, COPY_INIT };
 
-// Options de stockage
+/*! Options de stockage */
 enum class STORAGE { STANDARD, TEMP_STORAGE };
 
-/*! @brief : classe vide servant de base a tous les tableaux.
+/*! GPU Data location */
+enum class DataLocation { HostOnly, Host, Device, HostDevice, PartialHostDevice };
+
+/*! @brief Empty class used as a base for all the arrays.
  *
- * (permet de passer un type generique sans template quel que soit le sous-type du tableau,
- * par exemple Domaine::creer_tableau_sommets())
- *
+ * Allows to pass a generic type, whatever the real derived nature of the array.
+ * (e.g. Domaine::creer_tableau_sommets())
  */
 class Array_base : public Objet_U
 {

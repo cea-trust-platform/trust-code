@@ -35,9 +35,6 @@
 #include <Debog.h>
 #include <Device.h>
 
-#include <View_Types.h>   // Kokkos
-#include <TRUSTTab_kokkos.tpp>  // ABN TODO : to be merged with TRUSTTab.tpp later
-
 Implemente_instanciable(Op_Div_VEFP1B_Elem, "Op_Div_VEFPreP1B_P1NC|Op_Div_VEF_P1NC", Operateur_Div_base);
 
 Sortie& Op_Div_VEFP1B_Elem::printOn(Sortie& s) const { return s << que_suis_je() ; }
@@ -113,7 +110,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
       const int *elem_faces_addr = mapToDevice(elem_faces);
       const double *vit_addr = mapToDevice(vit, "vit");
       double *div_addr = computeOnTheDevice(div, "div");
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int elem = 0; elem < nb_elem; elem++)
         {
@@ -127,7 +124,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
             }
           div_addr[elem] += pscf;
         }
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
     }
   else
     {
@@ -153,9 +150,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
         div_v(elem, 0) += pscf;
       };
 
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
 
     }
   assert_invalide_items_non_calcules(div);
@@ -362,7 +359,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   const int *som_addr = mapToDevice(som_);
   const double *vit_addr = mapToDevice(vit, "vit");
   double *div_addr = computeOnTheDevice(div);
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int elem = 0; elem < nb_elem_tot; elem++)
     {
@@ -405,7 +402,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
           div_addr[som] += signe * coeff_som * psc;
         }
     }
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
+  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
 
   copyPartialFromDevice(div, nps, nps+domaine.nb_som_tot(), "div on som");
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();

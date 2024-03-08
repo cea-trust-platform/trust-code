@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   double* resu_addr = computeOnTheDevice(resu);
   // Boucle sur toutes les faces
   int nb_faces = domaine_VEF.nb_faces();
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int face=0; face<nb_faces; face++)
     {
@@ -89,7 +89,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
             resu_addr[face*nbcomp+compo] += delta_param*delta_coord*face_normales_addr[face*nbcomp+compo]*g_addr[comp]*porosite_surf_addr[face];
         }
     }
-  end_timer(Objet_U::computeOnDevice, "Face loop in Terme_Boussinesq_VEF_Face::ajouter\n");
+  end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Terme_Boussinesq_VEF_Face::ajouter\n");
   return resu;
 }
 

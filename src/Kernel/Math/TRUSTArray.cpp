@@ -16,7 +16,7 @@
 #include <TRUSTArray.h>
 #include <string.h>
 
-// Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
+// Ajout d'un flag par appel a end_gpu_timer peut etre couteux (creation d'une string)
 #ifdef _OPENMP
 static bool timer=true;
 #else
@@ -97,7 +97,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
           if (isDataOnDevice()) allocateOnDevice(*this);
         }
       span_ = Span_(*mem_);
-      dataLocation_ = std::make_shared<DataLocation>(HostOnly);
+      data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
     }
   else
     {
@@ -179,15 +179,15 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
   if (nb_elements > 0)
     {
       _TYPE_ * addr_dest = span_.data() + first_element_dest;
-      bool kernelOnDevice = checkDataOnDevice(*this, source);
+      bool kernelOnDevice = checkDataOnDevice(source);
       const _TYPE_ * addr_source = (mapToDevice(source, "", kernelOnDevice)) + first_element_source;
       if (kernelOnDevice)
         {
-          start_timer();
+          start_gpu_timer();
           #pragma omp target teams distribute parallel for if (computeOnDevice)
           for (int i = 0; i < nb_elements; i++)
             addr_dest[i] = addr_source[i];
-          if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::inject_array");
+          if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::inject_array");
         }
       else
         {
@@ -205,11 +205,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 {
   const int n = size_array();
   _TYPE_ *data = span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int i = 0; i < n; i++) data[i] = x;
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator=(_TYPE_ x)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator=(_TYPE_ x)");
   return *this;
 }
 
@@ -221,11 +221,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
   assert(size_array()==y.size_array());
   _TYPE_* dx = span_.data();
   const _TYPE_* dy = y.span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this, y);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice(y);
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int i = 0; i < size_array(); i++) dx[i] += dy[i];
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)");
   return *this;
 }
 
@@ -235,11 +235,11 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 {
   _TYPE_ * data = span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i = 0; i < size_array(); i++) data[i] += dy;
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)");
   return *this;
 }
 
@@ -251,11 +251,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
   assert(size_array() == y.size_array());
   _TYPE_ * data = span_.data();
   const _TYPE_ * data_y = y.span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this, y);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice(y);
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int i = 0; i < size_array(); i++) data[i] -= data_y[i];
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)");
   return *this;
 }
 
@@ -265,11 +265,11 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 {
   _TYPE_ * data = span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i = 0; i < size_array(); i++) data[i] -= dy;
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)");
   return *this;
 }
 
@@ -279,11 +279,11 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 {
   _TYPE_ * data = span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i=0; i < size_array(); i++) data[i] *= dy;
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)");
   return *this;
 }
 
@@ -295,11 +295,11 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
   if (std::is_same<_TYPE_,int>::value) throw;
   const _TYPE_ i_dy = 1 / dy;
   _TYPE_ * data = span_.data();
-  bool kernelOnDevice = checkDataOnDevice(*this);
-  start_timer();
+  bool kernelOnDevice = checkDataOnDevice();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i=0; i < size_array(); i++) data[i] *= i_dy;
-  if (timer) end_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)");
+  if (timer) end_gpu_timer(kernelOnDevice, "TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)");
   return *this;
 }
 

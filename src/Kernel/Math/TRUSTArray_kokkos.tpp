@@ -16,9 +16,7 @@
 #ifndef TRUSTArr_kokkos_TPP_included
 #define TRUSTArr_kokkos_TPP_included
 
-// TODO: this file should ultimately be moved / merged with TRUSTArr.tpp?
-
-#include <View_Types.h>
+#include <TRUSTArray.h>
 
 // Create internal DualView member, and populate it with current host data
 template<typename _TYPE_>

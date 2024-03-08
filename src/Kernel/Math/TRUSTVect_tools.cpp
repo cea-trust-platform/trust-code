@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -79,7 +79,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
           if (IS_CARRE) p_resu += alpha * x * x;
         }
     }
-  if (timer) end_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
+  if (timer) end_gpu_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -129,7 +129,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -156,7 +156,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
           //printf("After resu %p %p %f\n,",(void*)&x, (void*)&p_resu, p_resu);
         }
     }
-  if (timer) end_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
+  if (timer) end_gpu_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -217,7 +217,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
 
   bool kernelOnDevice = resu.checkDataOnDevice();
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -258,7 +258,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
             }
         }
     }
-  if (timer) end_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
+  if (timer) end_gpu_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -338,7 +338,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -442,7 +442,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
           }
         } */
     }
-  if (timer) end_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
+  if (timer) end_gpu_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
   return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 }
 // Explicit instanciation for templates:
@@ -503,7 +503,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -530,7 +530,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
             }
         }
     }
-  if (timer) end_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
+  if (timer) end_gpu_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
   return sum;
 }
 // Explicit instanciation for templates:
@@ -560,7 +560,7 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   int i = 0;
   bool kernelOnDevice = resu.checkDataOnDevice();
   _TYPE_ *resu_ptr = computeOnTheDevice(resu, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
     {
       const int bloc_end = line_size * items_blocs[blocs_idx];
@@ -571,7 +571,7 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   const int bloc_end = resu.size_array(); // Process until end of vector
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
-  if (timer) end_timer(kernelOnDevice, "invalidate_data(x)");
+  if (timer) end_gpu_timer(kernelOnDevice, "invalidate_data(x)");
 }
 // FIN code pour debug
 // ==================================================================================================================================
@@ -618,7 +618,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
   bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_>&>(vx).checkDataOnDevice(vy);
   const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);
   const _TYPE_ *vy_ptr = mapToDevice(vy, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -633,7 +633,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
         for (int i=begin_bloc; i<end_bloc; i++)
           sum += vx_ptr[i] * vy_ptr[i];
     }
-  if (timer) end_timer(kernelOnDevice, "local_prodscal(vx,vy)");
+  if (timer) end_gpu_timer(kernelOnDevice, "local_prodscal(vx,vy)");
   return sum;
 }
 // Explicit instanciation for templates:

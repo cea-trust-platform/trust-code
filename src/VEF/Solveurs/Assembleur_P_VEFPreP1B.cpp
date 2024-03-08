@@ -1210,7 +1210,7 @@ void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& v)
   const int* les_elems_addr = mapToDevice(domaine_Vef().domaine().les_elems());
   const int* renum_som_perio_addr = mapToDevice(domaine_Vef().domaine().get_renum_som_perio());
   double* v_addr = computeOnTheDevice(v);
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int k=0; k<nb_elem_tot; k++)
     {
@@ -1231,5 +1231,5 @@ void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& v)
       if (_v_==vecteur::pression_inverse) v_addr[k] = alpha * v_addr[k] - beta * somme;
       if (_v_==vecteur::second_membre)    v_addr[k] *= alpha;
     }
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Assembleur_P_VEFPreP1B::changer_base");
+  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Assembleur_P_VEFPreP1B::changer_base");
 }

@@ -285,7 +285,7 @@ static True_int fonction_compare_arrofint_ordonner(const void * data1, const voi
 template <typename _TYPE_ /* double ou float */ >
 inline void TRUSTArray<_TYPE_>::ordonne_array()
 {
-  checkDataOnHost(*this);
+  checkDataOnHost();
   const int size = size_array();
   if (size > 1)
     {
@@ -298,7 +298,7 @@ inline void TRUSTArray<_TYPE_>::ordonne_array()
 template <>
 inline void TRUSTArray<int>::ordonne_array()
 {
-  checkDataOnHost(*this);
+  checkDataOnHost();
   const int size = size_array();
   if (size > 1)
     {
@@ -313,7 +313,7 @@ inline void TRUSTArray<int>::ordonne_array()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 {
-  checkDataOnHost(*this);
+  checkDataOnHost();
   const int size_ = size_array();
   if (size_ <= 0) return;
 
@@ -354,7 +354,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
   mem_ = m.mem_;
 
   // Copy (shared) data location from m - locations will be synchronized automatically between ref arrays
-  dataLocation_ = m.dataLocation_;
+  data_location_ = m.data_location_;
 
   // stupid enough, but we might have ref'ed a detached array ...
   if (mem_ != nullptr)

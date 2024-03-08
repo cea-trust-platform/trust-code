@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
   bool kernelOnDevice = vect.checkDataOnDevice();
   const _T_* vect_addr = mapToDevice(vect, "", kernelOnDevice);
   _T_* max_colonne_addr = computeOnTheDevice(max_colonne, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   for (int ibloc = 0; ibloc < nblocs; ibloc++)
     {
       const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
@@ -156,7 +156,7 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
           }
       copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
     }
-  end_timer(kernelOnDevice, "local_max_abs_tab(x)");
+  end_gpu_timer(kernelOnDevice, "local_max_abs_tab(x)");
 }
 
 template void local_carre_norme_tab<double>(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne);

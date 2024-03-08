@@ -30,11 +30,6 @@
 #include <Device.h>
 #include <Debog.h>
 
-// Kokkos stuff:
-#include <View_Types.h>
-#include <TRUSTArray_kokkos.tpp>  // ABN TODO : to be merged with TRUSTVect.tpp later
-#include <TRUSTTab_kokkos.tpp>  // ABN TODO : to be merged with TRUSTTab.tpp later
-
 Implemente_instanciable(Op_Grad_VEF_P1B_Face, "Op_Grad_VEFPreP1B_P1NC|Op_Grad_VEF_P1NC", Operateur_Grad_base);
 
 Sortie& Op_Grad_VEF_P1B_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
@@ -181,7 +176,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_bords = les_cl.size();
   copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-  start_timer();
+  start_gpu_timer();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -237,7 +232,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
           }
       }
     }
-  end_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl\n");
+  end_gpu_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl\n");
   copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
   return grad;
 }
@@ -259,7 +254,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       int nb_bords = les_cl.size();
       copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-      start_timer();
+      start_gpu_timer();
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -278,7 +273,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      end_gpu_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
   if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
@@ -289,7 +284,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       const int *elem_faces_addr = mapToDevice(elem_faces);
       const double *pre_addr = mapToDevice(pre, "pre");
       double *grad_addr = computeOnTheDevice(grad, "grad");
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int elem = 0; elem < nb_elem_tot; elem++)
         {
@@ -308,7 +303,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
   else
     {
@@ -337,9 +332,9 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
           }
       };
 
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
   return grad;
 }
@@ -381,7 +376,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
   const int *som_addr = mapToDevice(som_);
   const double *pre_addr = mapToDevice(pre, "pre");
   double *grad_addr = computeOnTheDevice(grad, "grad");
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int elem = 0; elem < nb_elem_tot; elem++)
     {
@@ -407,7 +402,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
             }
         }
     }
-  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
+  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
 
   bool has_sortie_libre = false;
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -700,7 +695,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
       const double *face_normales_addr = mapToDevice(face_normales);
       const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
       double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
       for (int face = 0; face < nb_faces_bord; face++)
         {
@@ -721,8 +716,8 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
           for (int i = 0; i < dimension; i++)
             flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
         }
-      end_timer(Objet_U::computeOnDevice,
-                "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+      end_gpu_timer(Objet_U::computeOnDevice,
+                    "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
     }
   else
     {
@@ -753,10 +748,10 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
           flux_bords_v(face, i) = pres_tot * face_normales_v(face, i);
       };
 
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
-      end_timer(Objet_U::computeOnDevice,
-                "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+      end_gpu_timer(Objet_U::computeOnDevice,
+                    "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 
     }
 }

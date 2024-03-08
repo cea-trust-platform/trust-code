@@ -27,13 +27,7 @@
 #include <Device.h>
 #include <Tetra_VEF.h>
 
-// Kokkos stuff:
-#include <View_Types.h>
-#include <TRUSTArray_kokkos.tpp>  // ABN TODO : to be merged with TRUSTVect.tpp later
-#include <TRUSTTab_kokkos.tpp>  // ABN TODO : to be merged with TRUSTTab.tpp later
-
 Implemente_instanciable_sans_constructeur(Op_Conv_VEF_Face,"Op_Conv_Generic_VEF_P1NC",Op_Conv_VEF_base);
-
 
 //// printOn
 //
@@ -368,7 +362,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               domaine_VEF.creer_tableau_faces(gradient_face);
             }
           // ToDo OpenMP copyPartial ? Pas facile car boucle sur face et gradient aux elems. Fusionner plutot boucle interne et bord...
-          start_timer();
+          start_gpu_timer();
           for (int n_bord = 0; n_bord < nb_bord; n_bord++)
             {
               const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -423,14 +417,14 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 }
               gradient.ref(gradient_face);
             }
-          end_timer(0, "Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
+          end_gpu_timer(0, "Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
           // Need offload
           const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
           const int *face_voisins_addr = mapToDevice(face_voisins);
           const int *faces_doubles_addr = mapToDevice(domaine_VEF.faces_doubles());
           const double *gradient_elem_addr = mapToDevice(gradient_elem, "gradient_elem");
           double *gradient_addr = computeOnTheDevice(gradient, "gradient");
-          start_timer();
+          start_gpu_timer();
           #pragma omp target teams distribute parallel for if (computeOnDevice)
           for (int fac = 0; fac < nb_faces_; fac++)
             {
@@ -452,7 +446,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       }
                 }
             } // fin du for faces
-          end_timer(Objet_U::computeOnDevice, "Face loop in Op_Conv_VEF_Face::ajouter\n");
+          end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Op_Conv_VEF_Face::ajouter\n");
           gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
@@ -520,7 +514,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               // Provisoire crash sur compilateur offload clang++ non Cray:
 //              Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;
 //#else
-              start_timer();
+              start_gpu_timer();
               #pragma omp target teams if (computeOnDevice)
 //#endif
               {
@@ -817,7 +811,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       }
                   } // fin de la boucle
               }
-              end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::ajouter");
+              end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::ajouter");
             }
           else
             {
@@ -1076,9 +1070,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 } // fin de la boucle
               };
 
-              start_timer();
+              start_gpu_timer();
               Kokkos::parallel_for("[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter", nb_elem_tot, kern_conv_aj);
-              end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
+              end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Conv_VEF_Face::ajouter");
 
             }
         }
@@ -1333,7 +1327,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
-  start_timer();
+  start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1420,7 +1414,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             }
         }
     }
-  end_timer(0, "Boundary condition on resu in Op_Conv_VEF_Face::ajouter\n");
+  end_gpu_timer(0, "Boundary condition on resu in Op_Conv_VEF_Face::ajouter\n");
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   copyPartialToDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
   copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
@@ -1876,7 +1870,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const double *vitesse_face_addr = mapToDevice(vitesse_face,"vitesse_face");
       const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
       double *fluent_addr = computeOnTheDevice(fluent_, "fluent_");
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams if (computeOnDevice)
       {
         int face[4] {};
@@ -1981,7 +1975,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               } // fin de la boucle sur les facettes
           } // fin de la boucle
       }
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::remplir_fluent");
+      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Conv_VEF_Face::remplir_fluent");
     }
   else
     {
@@ -2110,7 +2104,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   int nb_bord = domaine_VEF.nb_front_Cl();
   copyPartialFromDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
   copyPartialFromDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
-  start_timer();
+  start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -2130,7 +2124,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
             }
         }
     }
-  end_timer(0, "Boundary face loop for fluent_");
+  end_gpu_timer(0, "Boundary face loop for fluent_");
   copyPartialToDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
   copyPartialToDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
 }

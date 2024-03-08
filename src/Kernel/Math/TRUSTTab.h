@@ -336,6 +336,7 @@ using IntTab = TRUSTTab<int>;
  * FONCTIONS MEMBRES DE TRUSTTab *
  * ***************************** */
 
-#include <TRUSTTab.tpp> // templates specializations ici ;)
+#include <TRUSTTab_kokkos.tpp> // Kokkos stuff
+#include <TRUSTTab.tpp> // The rest here!
 
 #endif /* TRUSTTab_included */

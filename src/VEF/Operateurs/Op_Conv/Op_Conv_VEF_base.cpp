@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   // Si une face porte une condition de Dirichlet on n'en tient pas compte
   // dans le calcul de dt_stab
   copyPartialFromDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
-  start_timer();
+  start_gpu_timer();
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -103,7 +103,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
       double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
       dt_stab =(dt_face < dt_stab) ? dt_face : dt_stab;
     }
-  end_timer(0, "Boundary face loop for dt_stab");
+  end_gpu_timer(0, "Boundary face loop for dt_stab");
   copyPartialToDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
 
   // On traite les faces internes standard
@@ -114,7 +114,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   const double* fluent_addr = mapToDevice(fluent, "", kernelOnDevice);
   const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
   // ToDo bug nvc++ compiler recent bouh
-  start_timer();
+  start_gpu_timer();
   if (kernelOnDevice)
     {
       #pragma omp target teams distribute parallel for reduction(min:dt_stab)
@@ -132,7 +132,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
           dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
         }
     }
-  end_timer(kernelOnDevice, "Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
+  end_gpu_timer(kernelOnDevice, "Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
   dt_stab = Process::mp_min(dt_stab);
   // astuce pour contourner le type const de la methode
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);

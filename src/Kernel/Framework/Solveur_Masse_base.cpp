@@ -341,14 +341,14 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
   const double* diag_addr = mapToDevice(diag, "", kernelOnDevice);
   const double* y_addr    = mapToDevice(y, "", kernelOnDevice);
   double* x_addr          = computeOnTheDevice(x, "", kernelOnDevice);
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i=0; i<sz; i++)
     {
       if (diag_addr[i]<1.e-12)
         x_addr[i] = y_addr[i];
     }
-  end_timer(kernelOnDevice, "Solveur_Masse_base::corriger_solution");
+  end_gpu_timer(kernelOnDevice, "Solveur_Masse_base::corriger_solution");
   return x;
 }
 

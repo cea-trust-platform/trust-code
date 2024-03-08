@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
       const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces);
       const double* porosite_face_addr = mapToDevice(porosite_face);
       double* resu_addr = computeOnTheDevice(resu);
-      start_timer();
+      start_gpu_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int num_face = 0; num_face<nb_faces; num_face++)
         {
@@ -96,7 +96,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
           for (int i=0; i<dimension; i++)
             resu_addr[num_face*dimension+i]+= s_addr[i]*vol;
         }
-      end_timer(Objet_U::computeOnDevice, "Face loop in Terme_Source_Canal_perio_VEF_P1NC::ajouter");
+      end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Terme_Source_Canal_perio_VEF_P1NC::ajouter");
     }
   else
     {

@@ -362,7 +362,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   DoubleTab& ch_tab = ch->valeurs(temps);
   copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
-  start_timer();
+  start_gpu_timer();
   if (sub_type(Champ_P0_VEF, ch.valeur())) { /* Don nothing */ }
   else if (sub_type(Champ_P1NC,ch.valeur()) || sub_type(Champ_Q1NC, ch.valeur()))
     {
@@ -679,7 +679,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 
       exit();
     }
-  end_timer(0, "Boundary condition on Champ_Inc in Domaine_Cl_VEF::imposer_cond_lim");
+  end_gpu_timer(0, "Boundary condition on Champ_Inc in Domaine_Cl_VEF::imposer_cond_lim");
   copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 

@@ -611,7 +611,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   const int * index_addr       = keepDataOnDevice ? mapToDevice(index_)          : index_.addr();
   double * sol_host_addr       = keepDataOnDevice ? computeOnTheDevice(sol_host) : sol_host.addr();
   double * rhs_host_addr       = keepDataOnDevice ? computeOnTheDevice(rhs_host) : rhs_host.addr();
-  start_timer();
+  start_gpu_timer();
   #pragma omp target teams distribute parallel for if (keepDataOnDevice)
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
@@ -619,7 +619,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
         sol_host_addr[index_addr[i]] = x_addr[i];
         rhs_host_addr[index_addr[i]] = b_addr[i];
       }
-  end_timer(keepDataOnDevice, "Solv_rocALUTION::Update_vectors");
+  end_gpu_timer(keepDataOnDevice, "Solv_rocALUTION::Update_vectors");
 
   if (keepDataOnDevice)
     {
@@ -721,14 +721,14 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       sol.GetInterior().CopyToData(sol_host_addr);
     }
   double * xx_addr = keepDataOnDevice ? computeOnTheDevice(x) : x.addr();
-  start_timer();
+  start_gpu_timer();
 #ifndef TRUST_USE_CUDA
   #pragma omp target teams distribute parallel for if (keepDataOnDevice)
 #endif
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
       xx_addr[i] = sol_host_addr[index_addr[i]];
-  end_timer(keepDataOnDevice, "Solv_rocALUTION::Update_solution");
+  end_gpu_timer(keepDataOnDevice, "Solv_rocALUTION::Update_solution");
   x.echange_espace_virtuel();
   if (first_solve_) res_final = residual(a, b, x); // Securite a la premiere resolution
 #ifndef NDEBUG
