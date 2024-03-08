@@ -1,0 +1,33 @@
+#!/bin/bash
+# Check several partition
+[ "$TRUST_DISABLE_MPI" = 1 ] && exit 0
+for PARTITION in 2,3,2@3 2,4,2@4 3,3,3@9
+do
+   NODES=`echo $PARTITION | awk -F"@" '{gsub(","," ",$1);print $1}'`
+   CORES=`echo $PARTITION | awk -F"@" '{print $2}'`
+   sed "s?3 3 3?$NODES?" THI_VEF.data > tmp.data
+   echo $ECHO_OPTS "1,$ s?nb_parts 9?nb_parts $CORES?g\nw" | ed tmp.data 1>/dev/null 2>&1
+   make_PAR.data tmp 1>/dev/null 2>&1
+   CORES=$?
+   echo $NODES on $CORES
+   if [ $CORES = 1 ]
+   then 
+      trust tmp 1>PAR_tmp.out 2>PAR_tmp.err
+      if [ $? = 0 ]
+      then
+         echo OK         
+      else
+         echo KO
+	 exit -1
+      fi
+   else
+      trust PAR_tmp $CORES 1>PAR_tmp.out 2>PAR_tmp.err
+      if [ $? = 0 ]
+      then
+         echo OK         
+      else
+         echo KO
+	 exit -1
+      fi
+   fi
+done

@@ -1,0 +1,115 @@
+# SIMULATION D UN CANAL 3D NON TOURNANT #
+# PARALLEL OK #
+# Test de reprise Traitement_particulier pour le canal #
+dimension 3
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 10 30 10
+		Longueurs 6.283185307 2.0 3.141592653
+	}
+	{
+		Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+		Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
+		Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+		Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+                Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
+		Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+	Periodique 2 periox perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+        tinit 0.
+	tmax 400.
+	dt_min 1.e-7
+	dt_max 1.e-1
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+	nb_pas_dt_max 5
+}
+
+
+Associate pb dom
+Associate pb sch
+
+Discretize pb dis
+
+Lire pb
+{
+   
+   fluide_incompressible {
+    	mu Champ_Uniforme 1 5.e-3
+    	rho Champ_Uniforme 1 1.0
+   }
+   
+   	Navier_Stokes_Turbulent
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
+		convection { Centre  }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_init_canal_sinal 3 { Ucent 25.0 h 1.0  ampli_bruit 0.0 ampli_sin 2. omega  2. }
+			}
+		boundary_conditions {
+			periox  periodique 
+			perioz periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+		Sources {  }
+                Modele_turbulence sous_maille_WALE { Turbulence_paroi  negligeable }
+		Traitement_particulier { Canal {
+						dt_impr_moy_spat 0.03
+						dt_impr_moy_temp 0.03
+						debut_stat       0.01
+						fin_stat          400.
+						
+						}
+					}
+        }	      
+	Postraitement
+	{
+	     Sondes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 3.14 
+	        }
+		Champs dt_post 4.0
+		{
+			pression elem			
+			vitesse som
+			viscosite_turbulente elem
+			}
+	}
+	sauvegarde formatte calc.sauv
+	
+
+}
+
+Solve pb
+Fin
+ 

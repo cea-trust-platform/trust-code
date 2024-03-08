@@ -1,0 +1,262 @@
+# ThermoHydraulique 1D-3D : conduite chauffee #
+# quasi compressible gaz parfait VDF #
+# chauffage puissance volumique , perte de charge reguliere #
+
+# PARALLEL OK #
+        
+dimension 3
+
+Domaine dom_boite
+Domaine dom_tube
+
+# maillage boite de recirculation #
+# maillage boite de recirculationtuyau #
+# BEGIN MESH #
+Mailler dom_boite
+{
+Pave Cavite1
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 6 3 3
+                Longueurs 0.154 2. 2.
+        }
+        {
+                Bord periox  X = 0.            0. <= Y <= 2.0           	0. <= Z <= 2.
+                Bord periox  X = 0.154         0. <= Y <= 2.0           	0. <= Z <= 2.
+                Bord paroi   Y = 0.            0. <= X <= 0.154            	0. <= Z <= 2.
+                Bord paroi   Y = 2.            0. <= X <= 0.154            	0. <= Z <= 2.
+                Bord paroi   Z = 0.            0. <= X <= 0.154            	0. <= Y <= 2.0
+                Bord paroi   Z = 2.            0. <= X <= 0.154            	0. <= Y <= 2.0
+                }
+}
+
+Tetraedriser_homogene dom_boite
+Corriger_frontiere_periodique { Domaine dom_boite Bord periox }
+Mailler dom_tube
+{
+Pave Cavite2
+        {
+                Origine 0.154 0. 0.
+                Nombre_de_Noeuds 6 3 3
+                Longueurs 1.846 2. 2.
+        }
+        {	
+                Bord entr	X = 0.154	0. <= Y <= 2.0			0. <= Z <= 2.
+                Bord sort  	X = 2 		0. <= Y <= 2.0			0. <= Z <= 2.
+                Bord paroi     	Y = 0.		0.154 <= X <= 2.0		0. <= Z <= 2.
+                Bord paroi    	Y = 2.		0.154 <= X <= 2.0		0. <= Z <= 2.
+                Bord paroi  	Z = 0.		0.154 <= X <= 2.0		0. <= Y <= 2.
+                Bord paroi  	Z = 2.		0.154 <= X <= 2.0		0. <= Y <= 2.
+	}
+}
+Tetraedriser_homogene dom_tube
+# END MESH #
+
+
+# BEGIN PARTITION 
+Partition dom_boite
+{
+	Partitionneur tranche { tranches 1 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM_BOITE
+	Nb_parts_tot 4
+	Periodique 1 periox
+}
+Partition dom_tube
+{
+	Partitionneur tranche { tranches 2 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM_TUBE
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM_BOITE.Zones dom_boite
+Scatter DOM_TUBE.Zones dom_tube
+END SCATTER #
+
+Pb_hydraulique_turbulent pb_boite 
+Pb_thermohydraulique_turbulent_QC pb_tube 
+VEFPreP1B dis 
+
+Runge_Kutta_Rationnel_ordre_2 sch 
+Lire sch 
+{ 
+  	nb_pas_dt_max 10
+        tinit 2.500000e-04
+        tmax 20.0005
+        dt_min 1.e-9
+        dt_max 1.e-1 
+        dt_impr 1e-10 
+        dt_sauv 0.02
+        seuil_statio 1.e-8 
+        facsec 1.
+} 
+
+Associate pb_boite dom_boite
+Associate pb_tube dom_tube
+
+Probleme_couple pb_couplage
+Associate pb_couplage pb_boite
+Associate pb_couplage pb_tube
+Associate pb_couplage sch
+Discretize pb_couplage dis
+
+
+# probleme boite #
+Lire pb_boite 
+{ 
+Fluide_Incompressible
+{ 
+        rho    Champ_Uniforme 1  1.083895079
+        mu     Champ_Uniforme 1  0.95e-5
+        lambda Champ_Uniforme 1  0.02591622
+        Cp     Champ_Uniforme 1  1006.
+        beta_th Champ_Uniforme 1 3.33e-3
+}
+
+ Navier_Stokes_turbulent 
+ { 
+     solveur_pression Gcp { precond ssor { omega 1.5 } 
+                                             seuil 1.e-7 }
+     convection { EF defaut_bar }
+     diffusion  { standard defaut_bar }
+     Sources {
+              Canal_perio { bord periox } ,
+              Source_qdm_lambdaup  { lambda 2. }
+     }
+     conditions_initiales {  vitesse champ_fonc_xyz dom_boite  3  3.73024 60.*(1.-rnd(1))  60.*(1.-rnd(1)) }
+
+     boundary_conditions { 
+      periox periodique 
+      paroi   paroi_fixe
+                        } 
+      Modele_turbulence sous_maille_wale
+                        {
+                        Cw 0.5
+			longueur_maille volume_sans_lissage
+                        turbulence_paroi negligeable
+                        }
+
+  }
+  Postraitement
+    {
+     Sondes {
+
+  	    point_vit_b vitesse periode 			1.e-8 point 1  -0.1  0.0  0.0
+ 	}
+      
+     Champs dt_post 0.01
+            {
+             pression elem
+             vitesse elem
+             y_plus elem
+             }
+     statistiques dt_post 0.01
+         {
+            t_deb 6.2 t_fin 10.
+            Moyenne vitesse elem
+            Moyenne pression elem
+          }     
+	     
+     }
+     reprise xyz prepare_pb_boite.xyz
+}
+
+# probleme tube #
+Lire pb_tube
+{ 
+# Parametres de la loi de Sutherland recuperes sur Internet #
+# ref: White F.M., Viscous Fluid flow, Mc Graw Hill, 1974 #
+# (Ou 2nd edition 1991) pages 28-29 et 32-33 #
+# T0 273.15,P0= 101325.  Pr = 0.72 #
+# mu0 1.716e-5      C = 110.6 #
+# lambda0= 2.414e-2 Slambda 194.4 #
+Fluide_Quasi_Compressible
+{
+        pression   92665.5
+        sutherland pb_tube mu0 1.716e-5 T0 273.15  Slambda 194.4 C 110.6
+
+        loi_etat gaz_parfait_qc {
+                Prandtl 0.72
+                Cp 1006.
+                gamma 1.4
+        }
+	traitement_pth constant
+	gravite Champ_Uniforme 3  -9.81 0. 0. 
+}
+ Navier_Stokes_turbulent_QC
+ { 
+    solveur_pression Gcp { precond ssor { omega 1.5 } 
+                                             seuil 1.e-7 }
+    convection { muscl }
+    diffusion  {  }
+    conditions_initiales { vitesse Champ_fonc_reprise prepare_pb_tube.xyz pb_tube vitesse last_time }
+
+    boundary_conditions { 
+     sort frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+     entr frontiere_ouverte_vitesse_imposee Champ_front_recyclage { pb_champ_evaluateur pb_boite vitesse 3 }
+     paroi paroi_fixe		   
+                        } 
+    Modele_turbulence sous_maille_wale
+                        {
+                        Cw 0.5
+			longueur_maille volume_sans_lissage
+                        turbulence_paroi negligeable
+                        }
+
+  }
+ 
+  Convection_Diffusion_Chaleur_Turbulent_QC
+    {
+      diffusion { }
+      convection { muscl }
+      conditions_initiales { temperature Champ_Fonc_reprise prepare_pb_tube.xyz pb_tube moyenne_temperature last_time }
+      boundary_conditions {
+       sort frontiere_ouverte T_ext champ_front_uniforme 1 450.
+       entr   frontiere_ouverte_temperature_imposee  champ_front_uniforme 1 296.7
+       paroi    Paroi_flux_impose champ_front_uniforme 1 4233.72
+			 }
+      modele_turbulence Prandtl
+         {
+         turbulence_paroi negligeable_scalaire
+         }
+
+
+     }
+
+  Postraitement
+    {
+     Sondes {
+
+            point_vit vitesse periode 			1.e-6 point 1  0.2 0.  0.
+	    point_pression pression periode     	1.e-6 point 1  0.2 0.  0.
+	    point_temp temperature periode      	1.e-6 point 1  0.2 0.  0.
+	    point_mas_vol masse_volumique  periode      1.e-6 point 1  0.2 0.  0.								        
+             }
+                  
+     Champs dt_post 0.01
+            {
+             pression elem
+             vitesse elem
+             temperature elem
+             masse_volumique elem
+	     y_plus elem
+             }
+     statistiques dt_post 0.01
+           {
+             t_deb 6.2 t_fin 10.
+             Moyenne vitesse elem
+             Moyenne pression elem
+             Moyenne temperature elem
+             Moyenne masse_volumique elem
+           }     
+	     
+     }
+     reprise xyz prepare_pb_tube.xyz
+}
+
+Solve pb_couplage
+Fin
+

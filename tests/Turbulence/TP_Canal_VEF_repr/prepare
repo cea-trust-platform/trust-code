@@ -1,0 +1,4 @@
+[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data TP_Canal_VEF.data
+trust TP_Canal_VEF
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_TP_Canal_VEF 3
+exit 0
