@@ -56,7 +56,7 @@ then
          if [ "$TRUST_DISABLE_MPI" = 1 ]
          then
             PETSC=$PETSC" -lmpiseq"
-	    SYSLIBS=$SYSLIBS" -lpthread"
+	    [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lpthread"
          else
             for libfort in lmpifort lmpi_f77
             do
@@ -67,7 +67,7 @@ then
             done
          fi
          [ "`grep lssl     $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lssl -lcrypto"
-         [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lpthread"
+         [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lpthread"
       fi
    fi
    \cd - 1>/dev/null 2>&1
