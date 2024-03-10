@@ -1,0 +1,8 @@
+#!/bin/bash
+err=0
+for sonde in *.son.ref
+do
+   compare_sonde $sonde ${sonde%.ref}
+   [ $? != 0 ] && err=1 && sdiff $sonde ${sonde%.ref}
+done 1>verifie.log 2>&1
+exit $err
