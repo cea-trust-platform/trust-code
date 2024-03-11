@@ -18,9 +18,12 @@
 #endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
-#pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+#if __GNUC__ > 5 || __clang_major__ > 10
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
 
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>

@@ -67,6 +67,8 @@ AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https:/
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 AmgX,AmgX_4d1bda0016.tar.gz,,PL,,,https://github.com/NVIDIA/AMGX/archive/4d1bda0016.tar.gz,
 AmgX,libcusparse.so.11.gz,,PL,,,,
+kokkos,kokkos-3.7.02.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/3.7.02.tar.gz,
+kokkos,kokkos-4.2.00.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/4.2.00.tar.gz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
 SALOME,medcoupling-9.12.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
