@@ -20,6 +20,7 @@
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
 
 #if __GNUC__ > 5 || __clang_major__ > 10
 #pragma GCC diagnostic ignored "-Wsuggest-override"
