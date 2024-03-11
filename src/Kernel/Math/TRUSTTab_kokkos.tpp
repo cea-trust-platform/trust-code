@@ -429,7 +429,7 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
   int size = max_size;
   if (size==-1) size = (int)view_tab.extent(0);
   int nb_compo = (int)view_tab.extent(1);
-  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
+  Kokkos::parallel_for(size, KOKKOS_LAMBDA(const True_int i)
   {
     for (True_int j=0; j<nb_compo; j++)
       printf("[Kokkos]: %p [%2d,%2d]=%e\n", (void*)view_tab.data(), i, j, view_tab(i,j));
