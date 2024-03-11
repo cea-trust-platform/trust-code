@@ -8,7 +8,6 @@ linux   rsync_ssh	non	is212958-intel.intra.cea.fr 	-all		-TrioCFD -C3D  -FLICA5 
 linux   rsync_ssh	non	pegasi5-intel-build64.intra.cea.fr 	-all		-TrioCFD    			-intel19 -build_64_bit -disable-plot2d  -without-pdflatex -force_system_mpi -disable-mpi4py -without-visit  						# CentOS 7.9 
 linux	rsync_ssh	cible	is245198.intra.cea.fr		-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK  				-force_provided_mpich 		# Ubuntu 20 titania TMA TRUST
 linux	rsync_ssh		tache	is241479.intra.cea.fr		-all 		 -TrioCFD  	-g 				-force_provided_mpich -disable-valgrind -disable-plot2d -without-pdflatex -disable-vc 	# CentOS 7.9 salle de formation titania
-linux	rsync_ssh	tache	is242981-gpu.intra.cea.fr	-all 		-TrioCFD  			-cuda 		-without-pdflatex								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD  -GENEPI3  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 					-semi_opt 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is241762-clang.intra.cea.fr			-TrioCFD -GENEPI3 -C3D                				-clang -force_provided_openmpi -without-pdflatex  					# Fedora 34	Bat 451 LMSF titania 
@@ -19,7 +18,6 @@ linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdfl
 linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
 linux	rsync_ssh	tache	is247255.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex    							# Ubuntu 22 	Bat 451 LMSF titania  MF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD  -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
-linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-gcc8 -cuda=download -without-pdflatex -without-visit
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda -disable-hwloc  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD 						-build_64_bit -without-doc -disable-plot2d -without-conda -disable-hwloc  						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD 					-benchmark	-without-doc -disable-plot2d -without-conda -disable-hwloc -without-visit   									# RedHat 7.6	CEA CCRT
@@ -28,11 +26,11 @@ linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD  				-c
 linux	rsync_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD  				-benchmark	-without-doc -disable-plot2d -build_64_bit -without-conda -disable-hwloc   									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		  				-cuda  	-openmp -build_64_bit -without-doc -disable-plot2d -without-visit -disable-mpi4py -without-conda -disable-hwloc   									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD            						-benchmark -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
-linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-cuda  		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
+linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-pdflatex -disable-hwloc  -without-conda  
 linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-rocm   -openmp -build_64_bit -without-pdflatex -disable-hwloc 
-linux	rsync_ssh	tache	desactive_orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda  				-disable-hwloc 							# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	desactive_orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda -openmp 				-disable-hwloc 							# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc  		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD  -FLICA5   					  -disable-plot2d -disable-hwloc  	-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD    				-build_64_bit -without-doc -disable-hwloc -disable-plot2d		 								# CentOS 7.6	CEA Saclay
