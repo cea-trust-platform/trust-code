@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@ public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                    const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
                    const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const override;
+  void completer() override;
+
 protected:
   double C_d_ = -123.;
   int n_l = -1; //phase liquide

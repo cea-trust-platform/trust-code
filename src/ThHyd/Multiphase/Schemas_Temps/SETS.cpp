@@ -16,6 +16,7 @@
 #include <Discretisation_base.h>
 #include <Operateur_Diff_base.h>
 #include <Schema_Temps_base.h>
+#include <Aire_interfaciale.h>
 #include <Masse_Multiphase.h>
 #include <Neumann_val_ext.h>
 #include <MD_Vector_tools.h>
@@ -269,10 +270,8 @@ bool SETS::iterer_eqn(Equation_base& eqn,
     Process::exit(que_suis_je() + " cannot be applied to the problem "
                   + eqn.probleme().le_nom() + " of type " + eqn.probleme().que_suis_je() + "!");
 
-  /* equations non resolues directement : Masse_Multiphase (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
-  if (sub_type(Masse_Multiphase, eqn) ||
-      (!sets_ && sub_type(Energie_Multiphase, eqn)) ||
-      (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
+  /* equations non resolues directement : Masse_Multiphase et Aire Interfaciale (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
+  if (sub_type(Masse_Multiphase, eqn) || sub_type(Aire_interfaciale, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn))|| (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
     {
       if (eqn.positive_unkown() == 1)
         {
@@ -297,9 +296,10 @@ bool SETS::iterer_eqn(Equation_base& eqn,
       return cv;
     }
 
-  /* cas restant : equation thermique d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
+  /* cas restant : equation thermique ou turblente d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
   const std::string& nom_inco = eqn.inconnue().le_nom().getString();
   const std::string nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
+
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
 

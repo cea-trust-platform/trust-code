@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,10 +39,15 @@ Entree& Frottement_interfacial_bulles_constant::readOn(Entree& is)
     if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
-  if ((r_bulle_<0.) && (!pbm->has_champ("diametre_bulles"))) Process::exit(que_suis_je() + " : there must be a bubble diameter defined in the problem or a bubble radius defined in the force !");
-
   return is;
 }
+
+void Frottement_interfacial_bulles_constant::completer()
+{
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : nullptr;
+  if ((r_bulle_<0.) && (!pbm->has_champ("diametre_bulles"))) Process::exit(que_suis_je() + " : there must be a bubble diameter defined in the problem or a bubble radius defined in the force !");
+}
+
 
 void Frottement_interfacial_bulles_constant::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                          const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
