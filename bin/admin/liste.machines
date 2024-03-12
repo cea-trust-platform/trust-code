@@ -52,7 +52,7 @@ linux	rsync_ssh	non	is154710-xdata.intra.cea.fr									-xdata  -without-pdflate
 linux	rsync_ssh	non	is154711.intra.cea.fr				-TrioCFD  -TrioMC   			-g 		-without-pdflatex						# CentOS 7.9	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non	is154726.intra.cea.fr		-all 		 			-g 		-enable-petsc-debug -without-pdflatex			# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	tache   is240933.intra.cea.fr				        	                     -check-valgrind -without-pdflatex -force_provided_mpich 				# CentOS 7.9 Salle de formation titania
-linux	rsync_ssh	tache	is241480.intra.cea.fr		-all 		-TrioCFD  				-platform -without-pdflatex				# CentOS 7.9	Bat 451	LMSF	Salle de formation titania
+linux	rsync_ssh	tache	is241480.intra.cea.fr		-all 		-TrioCFD  				-platform -disable-mpi -build_64_bit -disable-mpi4py -without-visit -without-pdflatex 				# CentOS 7.9	Bat 451	LMSF	Salle de formation titania
 linux	rsync_ssh	tache	is241478-build64.intra.cea.fr			-TrioCFD   				-build_64_bit -force_provided_mpich -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania
 linux	rsync_ssh	tache	is245183-build64.intra.cea.fr			-TrioCFD  -STT -PEMFC 				-build_64_bit -force_provided_mpich -without-pdflatex 						# Ub 20	Bat 451	Gabriel titania
 linux	rsync_ssh	tache	is244274-build64.intra.cea.fr			 							-build_64_bit -force-provided-mpich 							# Fedora 32	Bat 451	LGLS bureau Gilles

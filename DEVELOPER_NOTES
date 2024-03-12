@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
-XX/03/24 (TRUST) Tools        : Kokkos (portability performance library) may be used for GPU acceleration and SIMD vectorization (use ./configure -kokkos_simd for the last case). In both cases, C++17 compiler is mandatory.
+12/03/24 (TRUST) Tools        : Kokkos (portability performance library) may be used for GPU acceleration and SIMD vectorization (use ./configure -kokkos_simd for the last case). In both cases, C++17 compiler is mandatory.
 27/02/24 (TRUST) New feature  : make ctest_optim and debug shows now skipped test cases as make check_optim and debug
 18/12/23 (TRUST) Baltiks      : project_directory is now determined from the location of env_BALTIK.sh, first step to make baltiks relocatables.
 -------------------------------------------------------------

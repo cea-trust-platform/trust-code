@@ -30,16 +30,18 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char *nom_class, co
   if (isNum)
     {
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "Error: you are using an old syntax for the keyword " << nom_class << " :" << finl;
+      Cerr << "Error: you are using an obsolete syntax for the keyword " << nom_class << " :" << finl;
       Cerr << "Your should specify the problem name first instead of " << val1 << finl;
+      Cerr << "New syntax is: " << nom_class << " problem_name field_name ncomp expression" << finl;
       Process::exit();
     }
   isNum = Check_if_int(val2);
   if (isNum)
     {
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "Error: you are using an old syntax for the keyword " << nom_class << " :" << finl;
+      Cerr << "Error: you are using an obsolete syntax for the keyword " << nom_class << " :" << finl;
       Cerr << "Your should specify the field name instead of " << val2 << finl;
+      Cerr << "New syntax is: " << nom_class << " problem_name field_name ncomp expression" << finl;
       Process::exit();
     }
 }

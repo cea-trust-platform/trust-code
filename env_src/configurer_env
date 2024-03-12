@@ -919,7 +919,7 @@ then
 fi
 
 # We touch all conda files, otherwise it will be deleted from SCRATCH of clusters (e.g. jean-zay)
-[ "${TRUST_ROOT#*scratch/}" != "$TRUST_ROOT" ] && find $TRUST_ROOT/exec/python -exec touch {} +
+[ "${TRUST_ROOT#*scratch/}" != "$TRUST_ROOT" ] && [ "$TRUST_WITHOUT_CONDA" != "1" ] && find $TRUST_ROOT/exec/python -exec touch {} +
 # export PATH
 echo "export PYTHONLIBS_ROOT_DIR=\$TRUST_ROOT/exec/python" >> $env
 echo "export PYTHONINTERP_ROOT_DIR=\$PYTHONLIBS_ROOT_DIR/bin" >> $env
