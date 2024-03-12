@@ -1739,7 +1739,7 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
 
 #ifndef PETSC_HAVE_HYPRE
 // Pour que le code puisse compiler/tourner si on prend PETSc sans aucun autre package externe:
-int PCHYPRESetType(PC,const char[])
+PetscErrorCode PCHYPRESetType(PC,const char[])
 {
   Cerr << "HYPRE preconditioners are not available in this TRUST version." << finl;
   Cerr << "May be, HYPRE library has been deactivated during the PETSc build process." << finl;
