@@ -63,6 +63,7 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization " << finl;
   dis.temperature(schema_temps(), domaine_dis(), l_inco_ch);
+  if (le_fluide->type_fluide()=="Gaz_Reel") l_inco_ch->add_synonymous("enthalpie");
   champs_compris_.ajoute_champ(l_inco_ch);
   Equation_base::discretiser();
   Cerr << "Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser() ok" << finl;

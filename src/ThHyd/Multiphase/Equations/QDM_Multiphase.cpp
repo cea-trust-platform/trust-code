@@ -97,7 +97,13 @@ Entree& QDM_Multiphase::readOn(Entree& is)
 
   /* champs de vitesse par phase pour le postpro */
   noms_vit_phases_.dimensionner(pb.nb_phases()), vit_phases_.resize(pb.nb_phases());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_vit_phases_[i] = Nom("vitesse_") + pb.nom_phase(i);
+
   noms_grad_vit_phases_.dimensionner(pb.nb_phases()), grad_vit_phases_.resize(pb.nb_phases());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_grad_vit_phases_[i] = Nom("gradient_vitesse_") + pb.nom_phase(i);
+
   return is;
 }
 
@@ -275,6 +281,18 @@ void QDM_Multiphase::completer()
   /* liste des choses qui doivent etre compatibles avec le multiphase */
   std::vector<const MorEqn*> morceaux = { &solveur_masse.valeur(), &les_sources, &terme_convectif.valeur(), &terme_diffusif.valeur(), &gradient.valeur() };
   for (auto mor : morceaux) mor->check_multiphase_compatibility();
+}
+
+void QDM_Multiphase::get_noms_champs_postraitables(Noms& noms,Option opt) const
+{
+  Navier_Stokes_std::get_noms_champs_postraitables(noms,opt);
+
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    {
+      noms.add(noms_grad_vit_phases_[i]);
+      noms.add(noms_vit_phases_[i]);
+    }
 }
 
 void QDM_Multiphase::creer_champ(const Motcle& motlu)

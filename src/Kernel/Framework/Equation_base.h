@@ -284,6 +284,8 @@ public :
   void set_residuals(const DoubleTab& residual);
   virtual int positive_unkown() {return 0;};
 
+  inline void add_champs_compris(const Champ_base& ch) { champs_compris_.ajoute_champ(ch); };
+
 protected :
 
   Nom nom_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,10 +60,11 @@ Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
       nom+=nume;
       Cerr<<"The unknown name is modified : new name "<<nom<<finl;
       Eqn.inconnue().valeur().nommer(nom);
+      Eqn.add_champs_compris(Eqn.inconnue());
+
       nom_eq+=nume;
       Cerr<<"The equation name is modified : new name "<<nom_eq<<finl;
       Eqn.nommer(nom_eq);
-
       // enfin on lit
       is >> Eqn;
       is >> motlu;

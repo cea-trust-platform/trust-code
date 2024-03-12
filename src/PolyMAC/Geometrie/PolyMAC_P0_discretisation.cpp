@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,8 +87,13 @@ void PolyMAC_P0_discretisation::taux_cisaillement(const Domaine_dis& z, const Do
   ch_grad_u.associer_domaine_dis_base(domaine);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("Taux_cisaillement");
-  ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
-
+  int N = vit.valeurs().line_size();
+  ch_grad_u.fixer_nb_comp(N);
+  for (int n = 0; n < N; n++)
+    {
+      Nom phase = Nom(n);
+      ch_grad_u.fixer_nom_compo(n, Nom("Taux_cisaillement_") + phase);
+    }
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
   ch_grad_u.fixer_nb_valeurs_nodales(domaine.nb_elem());
   ch_grad_u.fixer_unite("s-1");
@@ -110,13 +115,31 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
 
   if (dimension == 2)
     {
-      ch_rot_u.fixer_nb_comp(N);
       ch_rot_u.fixer_nature_du_champ(scalaire);
+      ch_rot_u.fixer_nb_comp(N);
     }
   else if (dimension == 3)
     {
-      ch_rot_u.fixer_nb_comp(dimension * N);
       ch_rot_u.fixer_nature_du_champ(vectoriel);
+      ch_rot_u.fixer_nb_comp(dimension * N);
+      std::string nom_compo = "vorticite";
+      if(N==1)
+        {
+          std::vector<std::string> dir = {"x","y","z"};
+          for(int d=0; d<dimension; d++)
+            ch_rot_u.fixer_nom_compo(d, nom_compo + dir[d]);
+        }
+      else
+        {
+          for(int n=0; n<N; n++)
+            {
+              for(int d=0; d<dimension; d++)
+                {
+                  int offset = dimension * n + d;
+                  ch_rot_u.fixer_nom_compo(offset, nom_compo + "_" + std::to_string(offset));
+                }
+            }
+        }
     }
   else
     abort();

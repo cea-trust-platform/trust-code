@@ -30,6 +30,8 @@ Entree& Op_Dift_Multiphase_VDF_Face::readOn(Entree& is)
 
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   noms_nu_t_post_.dimensionner(pb.nb_phases()), nu_t_post_.resize(pb.nb_phases());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_nu_t_post_[i] = Nom("viscosite_turbulente_") + pb.nom_phase(i);
   return is;
 }
 

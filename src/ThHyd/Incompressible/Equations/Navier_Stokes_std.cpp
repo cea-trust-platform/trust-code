@@ -358,17 +358,17 @@ void Navier_Stokes_std::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
 
   discretiser_vitesse();
-  champs_compris_.ajoute_champ(la_vitesse);
   la_vitesse.valeur().add_synonymous(Nom("velocity"));
+  champs_compris_.ajoute_champ(la_vitesse);
 
   dis.pression(schema_temps(), domaine_dis(), la_pression);
-  champs_compris_.ajoute_champ(la_pression);
   la_pression.valeur().add_synonymous(Nom("P_star"));
+  champs_compris_.ajoute_champ(la_pression);
 
   dis.pression_en_pa(schema_temps(), domaine_dis(), la_pression_en_pa);
+  la_pression_en_pa.valeur().add_synonymous(Nom("Pressure"));
   champs_compris_.ajoute_champ(la_pression_en_pa);
 
-  la_pression_en_pa.valeur().add_synonymous(Nom("Pressure"));
 
   dis.divergence_U(schema_temps(), domaine_dis(), divergence_U);
   discretiser_grad_p();
@@ -1531,6 +1531,17 @@ void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) cons
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
+
+  nom.add("vorticite");
+  nom.add("critere_Q");
+  nom.add("porosite_volumique");
+  nom.add("y_plus");
+  nom.add("reynolds_maille");
+  nom.add("courant_maille");
+  nom.add("taux_cisaillement");
+  nom.add("pression_hydrostatique");
+  nom.add("gradient_vitesse");
+  nom.add("vitesse_residu");
 }
 
 /*! @brief Effectue quelques impressions sur un flot de sortie: - maximum de div U

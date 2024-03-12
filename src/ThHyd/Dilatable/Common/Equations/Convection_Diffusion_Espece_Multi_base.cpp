@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,8 @@ Entree& Convection_Diffusion_Espece_Multi_base::readOn(Entree& is)
   terme_convectif.set_description((Nom)"Convective flux =Integral(-rho*Y*u*ndS) [kg/s] if SI units used");
   terme_diffusif.set_fichier(diff);
   terme_diffusif.set_description((Nom)"Diffusive flux=Integral(rho*D*grad(Y)*ndS) [kg/s] if SI units used");
-  champs_compris_.ajoute_champ(l_inco_ch);
   l_inco_ch.valeur().add_synonymous(alias_);
+  champs_compris_.ajoute_champ(l_inco_ch);
   return is;
 }
 

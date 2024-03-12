@@ -24,8 +24,9 @@ Entree& Champs_compris::readOn(Entree& is) { return is; }
 
 const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
 {
-  REF(Champ_base) ref_champ;
-  if (has_champ(motcle, ref_champ)) return ref_champ;
+  assert(motcle!="??");
+  auto item = liste_champs_.find(motcle.getString());
+  if (item != liste_champs_.end()) return item->second;
   throw Champs_compris_erreur();
 }
 
@@ -51,18 +52,31 @@ const Noms Champs_compris::liste_noms_compris() const
 
 void Champs_compris::ajoute_champ(const Champ_base& champ)
 {
-  // Ajout du champ avec son nom et ses synonymes:
-  std::string nom_champ = champ.le_nom().getString();
-  std::transform(nom_champ.begin(), nom_champ.end(), nom_champ.begin(), ::toupper);
-  liste_champs_.insert({nom_champ, champ});
+  // Adding a field name referring to champ inside liste_champs_ dictionnary
+  auto add_key = [&](const Nom& n)
+  {
+    std::string nom_champ = n.getString();
+    std::string upperCase = nom_champ, lowerCase = nom_champ;
+    std::transform(nom_champ.begin(), nom_champ.end(), upperCase.begin(), ::toupper);
+    std::transform(nom_champ.begin(), nom_champ.end(), lowerCase.begin(), ::tolower);
+    liste_champs_[upperCase] = champ;
+    liste_champs_[lowerCase] = champ;
+  };
+
+  // Adding field with its name...
+  add_key(champ.le_nom());
+
+  // ...its synonyms...
   const Noms& syno = champ.get_synonyms();
   int nb_syno = syno.size();
   for (int s = 0; s < nb_syno; s++)
-    {
-      std::string nom_syno = syno[s].getString();
-      std::transform(nom_syno.begin(), nom_syno.end(), nom_syno.begin(), ::toupper);
-      liste_champs_.insert({nom_syno, champ});
-    }
-  Cerr<<"Champs_compris::ajoute_champ " << nom_champ <<finl;
+    add_key(syno[s]);
+
+  // ...and its components
+  int nb_composantes = champ.nb_comp();
+  for (int i = 0; i < nb_composantes; i++)
+    add_key(champ.nom_compo(i));
+
+  Cerr<<"Champs_compris::ajoute_champ " << champ.le_nom() <<finl;
 }
 

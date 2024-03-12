@@ -67,8 +67,13 @@ Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn(Entree& is)
       noms_cc_phases_.dimensionner(pb.nb_phases()), cc_phases_.resize(pb.nb_phases());
       noms_vd_phases_.dimensionner(pb.nb_phases()), vd_phases_.resize(pb.nb_phases());
       noms_x_phases_.dimensionner(pb.nb_phases()), x_phases_.resize(pb.nb_phases());
+      for (int i = 0; i < pb.nb_phases(); i++)
+        {
+          noms_cc_phases_[i] = Nom("debit_") + pb.nom_phase(i);
+          noms_vd_phases_[i] = Nom("vitesse_debitante_") + pb.nom_phase(i);
+          noms_x_phases_[i] = Nom("titre_") + pb.nom_phase(i);
+        }
     }
-
   return is;
 }
 

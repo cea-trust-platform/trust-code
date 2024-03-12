@@ -154,8 +154,6 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
  */
 void Convection_Diffusion_Temperature::discretiser()
 {
-
-
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization" << finl;
   dis.temperature(schema_temps(), domaine_dis(), la_temperature);
