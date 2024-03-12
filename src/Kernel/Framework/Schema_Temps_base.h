@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,6 +146,7 @@ public :
     assert(stationnaire_atteint_!=-1);
     return stationnaire_atteint_;
   };
+  inline int stationnaire_atteint_safe() const { return stationnaire_atteint_; }
   int stop_lu() const;
   inline int diffusion_implicite() const;
   inline double seuil_diffusion_implicite() const
