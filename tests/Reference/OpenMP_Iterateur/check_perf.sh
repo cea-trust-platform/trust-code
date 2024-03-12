@@ -6,24 +6,24 @@ check()
       echo "==================================================="
       echo "Performance is KO for $1 on $2 : case does not run!"
       echo "==================================================="
-   else
-      ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
-      new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU`
-      echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
-      err=$?
-
-      if [ $err != 0 ]
-      then
-         sdiff $1.TU.ref_$2 $1.TU
-         echo "================================"
-         echo "Performance is KO for $1 on $2 !"
-         echo "================================"
-      else
-         ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-         echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
-      fi
+      exit -1
    fi
-
+   TU=$1.TU_OpenMP && [ "$TRUST_DISABLE_KOKKOS" != 1 ] && TU=$1.TU_Kokkos
+   mv $1.TU $TU
+   ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
+   new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $TU`
+   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
+   err=$?
+   if [ $err != 0 ]
+   then
+      sdiff $1.TU.ref_$2 $TU
+      echo "================================"
+      echo "Performance is KO for $1 on $2 !"
+      echo "================================"
+   else
+      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
+      echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
+   fi
 }
 run()
 {
@@ -43,7 +43,8 @@ run()
       check PAR_$jdd $gpu
    fi
 }
-
+# Kokkos
+[ "$TRUST_DISABLE_KOKKOS" != 1 ] && echo "Kokkos is enabled. To disable Kokkos, use TRUST_DISABLE_KOKKOS=1"
 # Liste des machines:
 [ $HOST = is157091 ] && run a6000 && run 1xa6000 2
 [ "`hostname`" = petra ] && run a5000 && run 2xa5000 2
