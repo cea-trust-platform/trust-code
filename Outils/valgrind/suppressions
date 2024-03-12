@@ -5,6 +5,23 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ######
+###### Tous les cas avec Kokkos 3.x ou 4.x
+######
+{
+   Kokkos_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN6Kokkos4Impl14SerialInternal9singletonEv
+   fun:_ZN6Kokkos6Serial15impl_initializeERKNS_22InitializationSettingsE
+   fun:_ZN6Kokkos4Impl16ExecSpaceManager17initialize_spacesERKNS_22InitializationSettingsE
+   fun:_ZN6Kokkos10initializeERiPPc
+   fun:_ZN8mon_main13init_parallelEiPPciii
+   fun:_Z10main_TRUSTiPPcRP8mon_maini
+   fun:main
+}
+
+######
 ###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair
 ######
 {
