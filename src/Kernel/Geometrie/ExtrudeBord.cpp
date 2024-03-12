@@ -58,13 +58,13 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   Param param(que_suis_je());
   param.ajouter("domaine_init",&nom_dom_volumique,Param::REQUIRED);// XD_ADD_P ref_domaine Initial domain with hexaedras or tetrahedras.
   param.ajouter_arr_size_predefinie("direction",&vect_dir,Param::REQUIRED);// XD_ADD_P  listf Directions for the extrusion.
-  param.ajouter("nb_tranches",&nbpas,Param::REQUIRED);// XD_ADD_P  int Number of elements in the extrusion direction.
+  param.ajouter("nb_tranches",&nbpas,Param::REQUIRED);// XD_ADD_P  entier Number of elements in the extrusion direction.
   param.ajouter("domaine_final",&nom_dom_surfacique,Param::REQUIRED);// XD_ADD_P  chaine Extruded domain.
   param.ajouter("nom_bord",&nom_front,Param::REQUIRED);// XD_ADD_P  chaine Name of the boundary of the initial domain where extrusion will be applied.
   param.ajouter_flag("hexa_old",&hexa_old);// XD_ADD_P  rien Old algorithm for boundary extrusion from a hexahedral mesh.
   param.ajouter_flag("Trois_Tetra",&Trois_Tetra);// XD_ADD_P  rien To extrude in 3 tetrahedras instead of 14 tetrahedras.
   param.ajouter_flag("Vingt_Tetra",&Vingt_Tetra);// XD_ADD_P  rien To extrude in 20 tetrahedras instead of 14 tetrahedras.
-  param.ajouter("sans_passer_par_le2D",&en3D_);// XD_ADD_P  int Only for non-regression
+  param.ajouter("sans_passer_par_le2D",&en3D_);// XD_ADD_P  entier Only for non-regression
   param.lire_avec_accolades_depuis(is);
 
   associer_domaine(nom_dom_volumique);

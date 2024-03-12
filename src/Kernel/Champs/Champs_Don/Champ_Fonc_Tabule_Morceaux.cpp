@@ -22,7 +22,7 @@
 Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>);
 // XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-domaine. It makes possible the definition of a field which is a function of other fields.
 // XD   attr domain_name ref_domaine domain_name 0 Name of the domain.
-// XD   attr nb_comp int nb_comp 0 Number of field components.
+// XD   attr nb_comp entier nb_comp 0 Number of field components.
 // XD   attr data bloc_lecture data 0 { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i } By default, the value val_def is assigned to the field. It takes the sous_domaine_i identifier Sous_Domaine (sub_area) type object function, val_i. Sous_Domaine (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_tabule_morceaux type object.
 
 Sortie& Champ_Fonc_Tabule_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }

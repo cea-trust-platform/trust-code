@@ -23,7 +23,7 @@
 
 Implemente_instanciable(Champ_front_debit_QC_fonc_t,"Champ_front_debit_QC_VDF_fonc_t",Ch_front_var_instationnaire_indep);
 // XD Champ_front_debit_QC_VDF_fonc_t front_field_base Champ_front_debit_QC_VDF_fonc_t 0 This keyword is used to define a flow rate field for quasi-compressible fluids in VDF discretization. The flow rate could be constant or time-dependent.
-// XD attr dimension int  dim 0 Problem dimension
+// XD attr dimension entier dim 0 Problem dimension
 // XD attr liste bloc_lecture liste 0 List of the mass flow rate values [kg/s/m2] with the following syntaxe: { val1 ... valdim } where val1 ... valdim are constant or function of time.
 // XD attr moyen chaine moyen 1 Option to use rho mean value
 // XD attr pb_name chaine pb_name 0 Problem name

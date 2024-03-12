@@ -36,7 +36,7 @@ Sortie& Loi_Etat_Multi_GP_WC::printOn(Sortie& os) const
 Entree& Loi_Etat_Multi_GP_WC::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("Species_number",&num_espece_,Param::REQUIRED); // XD_ADD_P int Number of species you are considering in your problem.
+  param.ajouter("Species_number",&num_espece_,Param::REQUIRED); // XD_ADD_P entier Number of species you are considering in your problem.
   param.ajouter("Diffusion_coeff",&diffusion_coeff_,Param::REQUIRED); // XD_ADD_P field_base Diffusion coefficient of each species, defined with a Champ_uniforme of dimension equals to the species_number.
   param.ajouter("Molar_mass",&molar_mass_,Param::REQUIRED); // XD_ADD_P field_base Molar mass of each species, defined with a Champ_uniforme of dimension equals to the species_number.
   param.ajouter("Mu",&mu_,Param::REQUIRED); // XD_ADD_P field_base Dynamic viscosity of each species, defined with a Champ_uniforme of dimension equals to the species_number.
