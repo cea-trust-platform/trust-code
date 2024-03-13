@@ -43,6 +43,38 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                 dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i + is, j + js, k + ks);
 
         }
+      // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && offset <0.)
+        {
+          for (int i = 0; i < isz; i++)
+            {
+              prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
+              for (int k = 0; k < ksz; k++)
+                for (int j = 0; j < jsz; j++)
+                  {
+                    _TYPE_ interpIsigkappazmin= 0.;
+                    _TYPE_ interpIsigkappazmax= 0.;
+                    interpolation_for_shear_periodicity_I_sig_kappa(j + js, k+2, k+2, interpIsigkappazmin, interpIsigkappazmax);
+                    dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = interpolation_for_shear_periodicity_IJK_Field(j + js, k + ks) + interpIsigkappazmin-(_TYPE_) I_sig_kappa_zmax_(i+is , j+js , k+2);
+                  }
+            }
+        }
+      // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && offset >0.)
+        {
+          for (int i = 0; i < isz; i++)
+            {
+              prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
+              for (int k = 0; k < ksz; k++)
+                for (int j = 0; j < jsz; j++)
+                  {
+                    _TYPE_ interpIsigkappazmin= 0.;
+                    _TYPE_ interpIsigkappazmax= 0.;
+                    interpolation_for_shear_periodicity_I_sig_kappa(j + js, k+2-nb_ghost, k+2-nb_ghost, interpIsigkappazmin, interpIsigkappazmax);
+                    dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = interpolation_for_shear_periodicity_IJK_Field(j + js, k + ks) + interpIsigkappazmax-(_TYPE_) I_sig_kappa_zmin_(i+is , j+js , k+2-nb_ghost);
+                  }
+            }
+        }
       // for physical properties in case of shear periodicity (zmax)--> ghost value reconstructed from phase indicator function
       else if (monofluide_variable_==2 && offset <0.)
         {
@@ -106,6 +138,38 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               for (int j = 0; j < jsz; j++, buf++)
                 *buf= IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i + is, j + js, k + ks);
         }
+      // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && offset <0.)
+        {
+          for (int i = 0; i < isz; i++)
+            {
+              prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
+              for (int k = 0; k < ksz; k++)
+                for (int j = 0; j < jsz; j++)
+                  {
+                    _TYPE_ interpIsigkappazmin= 0.;
+                    _TYPE_ interpIsigkappazmax= 0.;
+                    interpolation_for_shear_periodicity_I_sig_kappa(j + js, k+2, k+2, interpIsigkappazmin, interpIsigkappazmax);
+                    *buf = interpolation_for_shear_periodicity_IJK_Field(j + js, k + ks) + interpIsigkappazmin;
+                  }
+            }
+        }
+      // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && offset >0.)
+        {
+          for (int i = 0; i < isz; i++)
+            {
+              prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
+              for (int k = 0; k < ksz; k++)
+                for (int j = 0; j < jsz; j++)
+                  {
+                    _TYPE_ interpIsigkappazmin= 0.;
+                    _TYPE_ interpIsigkappazmax= 0.;
+                    interpolation_for_shear_periodicity_I_sig_kappa(j + js, k+2-nb_ghost, k+2-nb_ghost, interpIsigkappazmin, interpIsigkappazmax);
+                    *buf = interpolation_for_shear_periodicity_IJK_Field(j + js, k + ks) + interpIsigkappazmax;
+                  }
+            }
+        }
       // for physical properties in case of shear periodicity --> ghost value reconstructed from phase indicator function
       else if (monofluide_variable_==2)
         {
@@ -150,6 +214,27 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             for (int k = 0; k < ksz; k++)
               for (int j = 0; j < jsz; j++, buf++)
                 dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf;
+        }
+      // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && *buf_offset <0.)
+        {
+          for (int i = 0; i < isz; i++)
+            for (int k = 0; k < ksz; k++)
+              for (int j = 0; j < jsz; j++)
+                {
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = *buf - (_TYPE_) I_sig_kappa_zmax_(i+is , j+js , k+2);
+                }
+        }
+      // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
+      else if (monofluide_variable_==1 && *buf_offset >0.)
+        {
+          for (int i = 0; i < isz; i++)
+            for (int k = 0; k < ksz; k++)
+              for (int j = 0; j < jsz; j++)
+                {
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = *buf - (_TYPE_) I_sig_kappa_zmin_(i+is , j+js , k+2-nb_ghost);
+                }
+
         }
       // for physical properties in case of shear periodicity (zmax) --> ghost value reconstructed from phase indicator function
       else if (monofluide_variable_==2 && *buf_offset <0.)
@@ -324,6 +409,22 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
 
   return resu;
 }
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodicity_I_sig_kappa(const int send_j, const int send_k_zmin, const int send_k_zmax, _TYPE_ Isigkappazmin, _TYPE_ Isigkappazmax)
+{
+  // execute the shear-periodicity interpolation.
+  // prepare_interpolation_for_shear_periodicity has to be called before
+  Isigkappazmin = (_TYPE_)0. ;
+  Isigkappazmax = (_TYPE_)0. ;
+  int nb_points = order_interpolation_+1;
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      Isigkappazmin += (_TYPE_)(res_[pt]/denum_[pt]*I_sig_kappa_zmin_(send_i_real_[pt], send_j, send_k_zmin));
+      Isigkappazmax += (_TYPE_)(res_[pt]/denum_[pt]*I_sig_kappa_zmax_(send_i_real_[pt], send_j, send_k_zmax));
+    }
+
+  return;
+}
 
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
@@ -381,6 +482,104 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft
   return;
 }
 
+
+
+// ajout au second membre de pressure_rhs un terme correctif
+// ce terme compense l erreur commise par l interpolation sur le bord perio z de la pression monofluide dans le cas de conditions shear periodique
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio(IJK_Field_double& resu)
+{
+  if (monofluide_variable_==1)
+    {
+      const IJK_Splitting& splitting = splitting_ref_.valeur();
+      const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+      const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+      const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+      const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+      const double dxk = geom.get_constant_delta(2);
+      const double dxj = geom.get_constant_delta(1);
+      const double dxi = geom.get_constant_delta(0);
+      double Shear_x_time = IJK_Splitting::shear_x_time_;
+      double offset = Shear_x_time/dxi;
+
+      // Les coeffs de la matrice de pression sont multiplies par V/h^2
+      // ici on parle d'un voisin sur dz donc h = dz
+      // coef = dx*dy*dz/dz*dz = dx*dy/dz
+      // on ajoute le terme a pressure_rhs juste avant l'appel du solveur de pression
+      // pressure_rhs a deja integre d_velocity sur le volume et divise par rho
+      // Le coeff a appliquer est donc dx*dy/dz/rho
+
+      double coeff_matrice = dxi * dxj / dxk;
+      int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2);
+
+      // EQUIVALENCE GHOST_MIN_MAX ARRAY AVEC INDICE Z REEL POUR SPLITTING_NS_
+      // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
+      // I_sigma_kappa_ghost_zmin_[ghost-1] --> -1 (premiere maille ghost)
+      // I_sigma_kappa_ghost_zmin_[ghost] --> 0 (premiere maille reelle)
+      // I_sigma_kappa_ghost_zmin_[2*ghost] --> +ghost (derniere maille reelle)
+//		I_sigma_kappa_ghost_zmax_[0] --> nk-1-ghost(derniere maille reelle)
+//		I_sigma_kappa_ghost_zmax_[ghost] --> nk-1 (premiere maille reelle)
+//		I_sigma_kappa_ghost_zmax_[ghost+1] --> nk (premiere maille ghost)
+//		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
+
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              prepare_interpolation_for_shear_periodicity((int) round((double) i +  offset), ((double) i +  offset), ni);
+
+              // for k=0 --> pression voisine problematique en k=-1 (qui renvoie a une interpolation sur k=nk-1)
+              // I_sigma_kappa interpole en k=nk-1
+              // I_sigma_kappa reel en k=-1
+              // for k=0 (z_index_min --> + offset)
+              if(splitting.get_offset_local(2)==0)
+                {
+                  double rho_minus_1 = rho_l_*indicatrice_ghost_zmin_(i,j,1)+rho_v_*(1.-indicatrice_ghost_zmin_(i,j,1));
+                  double rho_0 = rho_l_*indicatrice_ghost_zmin_(i,j,2)+rho_v_*(1.-indicatrice_ghost_zmin_(i,j,2));
+                  double rho;
+                  if (use_inv_rho_in_pressure_solver_==1.)
+                    {
+                      rho =2./((1./rho_minus_1)+(1./rho_0));
+                    }
+                  else
+                    {
+                      rho =(rho_minus_1+rho_0)/2.;
+                    }
+                  _TYPE_ interpIsigkappazmin = 0.;
+                  _TYPE_ interpIsigkappazmax = 0.;
+                  interpolation_for_shear_periodicity_I_sig_kappa(j, 1, 1, interpIsigkappazmin, interpIsigkappazmax);
+                  _TYPE_ erreur = interpIsigkappazmax-(_TYPE_)I_sig_kappa_zmin_(i , j , 1);
+                  resu(i,j,0)+=(coeff_matrice/rho)*erreur;
+                }
+
+              // for k=nk-1 --> pression voisine problematique en k=nk (qui renvoie a une interpolation sur k=0)
+              // I_sigma_kappa interpole en k=0
+              // I_sigma_kappa reel en k=nk
+              // for k=nk-1 (z_index_max --> - offset)
+              if(splitting.get_offset_local(2)+nk==last_global_k)
+                {
+                  double rho_nk_plus_1 = rho_l_*indicatrice_ghost_zmax_(i,j,2)+rho_v_*(1.-indicatrice_ghost_zmax_(i,j,2));
+                  double rho_nk = rho_l_*indicatrice_ghost_zmax_(i,j,1)+rho_v_*(1.-indicatrice_ghost_zmax_(i,j,1));
+                  double rho;
+                  if (use_inv_rho_in_pressure_solver_==1.)
+                    {
+                      rho =2./((1./rho_nk_plus_1)+(1./rho_nk));
+                    }
+                  else
+                    {
+                      rho =(rho_nk_plus_1+rho_nk)/2.;
+                    }
+                  _TYPE_ interpIsigkappazmin= 0.;
+                  _TYPE_ interpIsigkappazmax= 0.;
+                  interpolation_for_shear_periodicity_I_sig_kappa(j, 2, 2, interpIsigkappazmin, interpIsigkappazmax);
+                  _TYPE_ erreur = interpIsigkappazmin-(_TYPE_)I_sig_kappa_zmax_(i , j , 2);
+                  resu(i,j,nk-1)+=(coeff_matrice/rho)*erreur;
+                }
+            }
+        }
+    }
+}
+
 // Initializes the field and allocates memory
 // splitting: reference to the geometry of the IJK mesh and how the mesh is split on processors.
 //   The field stores a reference to this IJK_Splitting object so do not delete it.
@@ -415,10 +614,19 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
 
   // monofluide_variable_==1 is for pressure field in case of shear periodicity
   // monofluide_variable_==2 is for physical proerties (rho, mu, nu etc.) in case of shear periodicity
-  if (monofluide_variable_==1 || monofluide_variable_==2)
+  if (monofluide_variable_==2)
     {
       indicatrice_ghost_zmin_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
       indicatrice_ghost_zmax_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
+      I_sig_kappa_zmin_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
+      I_sig_kappa_zmax_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
+      rho_v_ = rov;
+      rho_l_ = rol;
+    }
+  else if (monofluide_variable_==1)
+    {
+      I_sig_kappa_zmin_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
+      I_sig_kappa_zmax_.allocate(ni_local, nj_local, 4, ghost_size, 0, ncompo);
       rho_v_ = rov;
       rho_l_ = rol;
     }

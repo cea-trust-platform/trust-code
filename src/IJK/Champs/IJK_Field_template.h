@@ -63,7 +63,9 @@ public:
   void prepare_interpolation_for_shear_periodicity(const int send_i, const double istmp, const int real_size_i);
   //_TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_j, const int send_k);
   _TYPE_ interpolation_for_shear_periodicity_IJK_Field(const int send_j, const int send_k);
+  void interpolation_for_shear_periodicity_I_sig_kappa(const int send_j, const int send_k_zmin, const int send_k_zmax, _TYPE_ Isigkappazmin, _TYPE_ Isigkappazmax);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio, const int ft_extension);
+  void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
 
 
   int monofluide_variable_ = -123, order_interpolation_ = -123;
@@ -78,6 +80,8 @@ public:
   double rho_v_ = -123., rho_l_ = -123.;
   IJK_Field_local_template<double,ArrOfDouble> indicatrice_ghost_zmin_ ;
   IJK_Field_local_template<double,ArrOfDouble> indicatrice_ghost_zmax_ ;
+  IJK_Field_local_template<double,ArrOfDouble> I_sig_kappa_zmin_;
+  IJK_Field_local_template<double,ArrOfDouble> I_sig_kappa_zmax_;
   //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
   //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
   double DU_ ;
@@ -88,6 +92,14 @@ public:
   const IJK_Field_local_template<double,ArrOfDouble>& get_indicatrice_ghost_zmax_() const
   {
     return indicatrice_ghost_zmax_;
+  }
+  const IJK_Field_local_template<double,ArrOfDouble>& get_I_kappa_ghost_zmin_() const
+  {
+    return I_sig_kappa_zmin_;
+  }
+  const IJK_Field_local_template<double,ArrOfDouble>& get_I_kappa_ghost_zmax_() const
+  {
+    return I_sig_kappa_zmax_;
   }
 
   void show_indicatrice_ghost_() const
@@ -124,6 +136,28 @@ public:
       for (int j = 0; j < indicatrice_ghost_zmax_.nj() ; j++)
         for (int i = 0; i < indicatrice_ghost_zmax_.ni(); i++)
           indicatrice_ghost_zmax_(i,j,k)=indic_z_max(i,j,k+decallage);
+
+  }
+
+  void set_I_sig_kappa_zmin_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_min, const IJK_Field_local_template<double,TRUSTArray<double>>& kappa_z_min, const double sigma, const int decallage = 0)
+  {
+    if (monofluide_variable_==1)
+      {
+        for (int k = 0; k < I_sig_kappa_zmin_.nk() ; k++)
+          for (int j = 0; j < I_sig_kappa_zmin_.nj() ; j++)
+            for (int i = 0; i < I_sig_kappa_zmin_.ni(); i++)
+              I_sig_kappa_zmin_(i,j,k)=indic_z_min(i,j,k+decallage)*kappa_z_min(i,j,k+decallage)*sigma;
+      }
+  }
+  void set_I_sig_kappa_zmax_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_max, const IJK_Field_local_template<double,TRUSTArray<double>>& kappa_z_max, const double sigma, const int decallage = 0)
+  {
+    if (monofluide_variable_==1)
+      {
+        for (int k = 0; k < I_sig_kappa_zmax_.nk() ; k++)
+          for (int j = 0; j < I_sig_kappa_zmax_.nj() ; j++)
+            for (int i = 0; i < I_sig_kappa_zmax_.ni(); i++)
+              I_sig_kappa_zmax_(i,j,k)=indic_z_max(i,j,k+decallage)*kappa_z_max(i,j,k+decallage)*sigma;
+      }
 
   }
   void set_dU_(double DU)

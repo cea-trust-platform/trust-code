@@ -531,8 +531,12 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
 
+  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  if (IJK_Splitting::defilement_ == 1)
+    {
+      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+    }
   double divergence_before = 0.;
   if (check_divergence)
     {
@@ -581,6 +585,10 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  if (IJK_Splitting::defilement_ == 1)
+    {
+      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+    }
   double divergence_before = 0.;
   if (check_divergence)
     {
