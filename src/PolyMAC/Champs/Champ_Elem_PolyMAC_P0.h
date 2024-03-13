@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ public:
 
   void init_auxiliary_variables() override { }
   Champ_base& affecter_(const Champ_base& ch) override { return Champ_Inc_P0_base::affecter_(ch); }
+  int reprendre(Entree& fich) override;
 
   // Fonctions pour le calcul des coefficients du gradient
   mutable IntTab fgrad_d, fgrad_e;             // Tables used in domaine_PolyMAC_P0::fgrad

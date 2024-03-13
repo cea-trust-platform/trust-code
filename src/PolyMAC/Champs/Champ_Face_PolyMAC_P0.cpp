@@ -33,6 +33,7 @@
 #include <Champ_Fonc_reprise.h>
 #include <array>
 #include <cmath>
+#include <Pb_Multiphase.h>
 
 Implemente_instanciable(Champ_Face_PolyMAC_P0,"Champ_Face_PolyMAC_P0",Champ_Face_PolyMAC_P0P1NC) ;
 
@@ -68,6 +69,23 @@ void Champ_Face_PolyMAC_P0::init_auxiliary_variables()
       vals.set_md_vector(domaine_PolyMAC_P0().mdv_ch_face); //...et on remet le bon MD_Vector
       update_ve(vals);
     }
+}
+
+int Champ_Face_PolyMAC_P0::reprendre(Entree& fich)
+{
+  if (! via_ch_fonc_reprise()) return Champ_Inc_base::reprendre(fich); /* ie: resume last time ! */
+
+  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
+  if (pbm) return Champ_Inc_base::reprendre(fich);
+
+  // sinon on fait ca ...
+  const Domaine_PolyMAC_P0* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0,le_dom_VF.valeur()) : nullptr;
+  valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
+  valeurs().resize(0);
+  int ret = Champ_Inc_base::reprendre(fich);
+  //et on remet le bon si on peut
+  if (domaine) valeurs().set_md_vector(valeurs().dimension_tot(0) > domaine->nb_faces_tot() ? domaine->mdv_faces_aretes : domaine->md_vector_faces());
+  return ret;
 }
 
 Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)

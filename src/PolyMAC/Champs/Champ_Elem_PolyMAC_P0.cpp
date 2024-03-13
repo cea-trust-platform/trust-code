@@ -17,6 +17,7 @@
 #include <Connectivite_som_elem.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Pb_Multiphase.h>
 
 Implemente_instanciable(Champ_Elem_PolyMAC_P0,"Champ_Elem_PolyMAC_P0",Champ_Elem_PolyMAC_P0P1NC);
 
@@ -33,6 +34,23 @@ inline void Champ_Elem_PolyMAC_P0::mettre_a_jour(double tps)
 {
   if (tps_last_calc_grad_ != tps) grad_a_jour = 0;
   Champ_Inc_P0_base::mettre_a_jour(tps);
+}
+
+int Champ_Elem_PolyMAC_P0::reprendre(Entree& fich)
+{
+  if (! via_ch_fonc_reprise()) return Champ_Inc_base::reprendre(fich); /* ie: resume last time ! */
+
+  const Pb_Multiphase * pbm = mon_equation_non_nul() ? (sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr) : nullptr;
+  if (pbm) return Champ_Inc_base::reprendre(fich);
+
+  // sinon on fait ca ...
+  const Domaine_PolyMAC_P0* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC_P0,le_dom_VF.valeur()) : nullptr;
+  valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
+  valeurs().resize(0);
+  int ret = Champ_Inc_base::reprendre(fich);
+  //et on remet le bon si on peut
+  if (domaine) valeurs().set_md_vector(valeurs().dimension_tot(0) > domaine->nb_elem_tot() ? domaine->mdv_elems_faces : domaine->domaine().md_vector_elements());
+  return ret;
 }
 
 void Champ_Elem_PolyMAC_P0::init_grad(int full_stencil) const
