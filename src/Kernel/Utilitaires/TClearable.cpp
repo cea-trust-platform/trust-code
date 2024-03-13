@@ -12,50 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+#include <TClearable.h>
 
-#ifndef mon_main_included
-#define mon_main_included
-
-
-#include <Process.h>
-#include <Interprete_bloc.h>
-#include <Comm_Group.h>
-#include <list>
-
-/*! @brief Classe creee et executee par main() et lors d'une execution TRUST a travers Python.
- *
- * Il faut
- *    - creer une instance mon_main
- *    - initialiser le parallele
- *    - appeler dowork(nom_du_cas) (lecture et interpretation du jdd)
- *    A cet instant on peut jouer avec les objets crees en python
- *    (voir Interprete_bloc::objet_global(nom))
- *    - detruire l'instance mon_main
- *    L'interprete principal conserve ses objets jusqu'a la destruction
- *    de l'instance mon_main
- *
- */
-class mon_main
-{
-public:
-  mon_main(int verbose_level = 9, int journal_master = 0, int journal_shared = 0, Nom log_directory = "",  bool apply_verification=true, int disable_stop = 0);
-  ~mon_main();
-  void init_parallel(const int argc, char **argv,
-                     int with_mpi, int check_enabled = 0, int with_petsc = 1);
-  void finalize();
-  void dowork(const Nom& nom_du_cas);
-
-private:
-  int verbose_level_;
-  int journal_master_;
-  int journal_shared_;
-  Nom log_directory_;
-  int trio_began_mpi_;
-  bool apply_verification_;
-  int disable_stop_;
-  DERIV(Comm_Group) groupe_trio_;
-  Interprete_bloc interprete_principal_;
-};
-extern bool error_handlers;
-
-#endif
+std::list<TClearable *> TClearable::to_clear_;

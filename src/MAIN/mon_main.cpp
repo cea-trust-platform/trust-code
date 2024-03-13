@@ -15,7 +15,7 @@
 
 #include <mon_main.h>
 #include <LecFicDiffuse_JDD.h>
-#include <Domaine_dis_cache.h> // To clear cache before exiting
+#include <TClearable.h> // To clear caches before exiting, notably Domaine_dis_cache
 #include <instancie_appel.h>
 #include <SFichier.h>
 #include <Comm_Group_MPI.h>
@@ -209,9 +209,9 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 
 void mon_main::finalize()
 {
-  // Make sure all Kokkos views are de-allocated before Kokkos finalize:
-  Domaine_dis_cache::Clear();
-
+  // Clear all things that were registered by Register_clearable() method (typically the Domaine_dis_cache instance
+  // to make sure all Kokkos views are freed before doing Kokkos finalize):
+  TClearable::Clear_all();
 
 #ifdef MPI_
   // MPI_Group_free before MPI_Finalize

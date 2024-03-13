@@ -13,49 +13,41 @@
 *
 *****************************************************************************/
 
-#ifndef mon_main_included
-#define mon_main_included
+#ifndef TClearable_included
+#define TClearable_included
 
-
-#include <Process.h>
-#include <Interprete_bloc.h>
-#include <Comm_Group.h>
 #include <list>
 
-/*! @brief Classe creee et executee par main() et lors d'une execution TRUST a travers Python.
+/*! @brief A small class representing any object with a "clear()" method.
  *
- * Il faut
- *    - creer une instance mon_main
- *    - initialiser le parallele
- *    - appeler dowork(nom_du_cas) (lecture et interpretation du jdd)
- *    A cet instant on peut jouer avec les objets crees en python
- *    (voir Interprete_bloc::objet_global(nom))
- *    - detruire l'instance mon_main
- *    L'interprete principal conserve ses objets jusqu'a la destruction
- *    de l'instance mon_main
+ * Used notably to invoke Domaine_dis_cache::clear() properly at the end of TRUST, but without
+ * having to refer to the Domaine_dis_cache class in the MAIN of TRUST, since Domaine_dis_cache is not
+ * part of TRUST numerical kernel.
  *
  */
-class mon_main
+class TClearable
 {
 public:
-  mon_main(int verbose_level = 9, int journal_master = 0, int journal_shared = 0, Nom log_directory = "",  bool apply_verification=true, int disable_stop = 0);
-  ~mon_main();
-  void init_parallel(const int argc, char **argv,
-                     int with_mpi, int check_enabled = 0, int with_petsc = 1);
-  void finalize();
-  void dowork(const Nom& nom_du_cas);
+  virtual ~TClearable() { }
+  virtual void clear() = 0;
+
+  /*! Register an object to be cleared */
+  static inline void Register_clearable(TClearable * c)
+  {
+    to_clear_.push_back(c);
+  }
+
+  /*! Clean all registered objects.
+   * Typically invoked from TRUST main.
+   */
+  static inline void Clear_all()
+  {
+    for(auto& c: to_clear_)
+      c->clear();
+  }
 
 private:
-  int verbose_level_;
-  int journal_master_;
-  int journal_shared_;
-  Nom log_directory_;
-  int trio_began_mpi_;
-  bool apply_verification_;
-  int disable_stop_;
-  DERIV(Comm_Group) groupe_trio_;
-  Interprete_bloc interprete_principal_;
+  static std::list<TClearable *> to_clear_; ///< list of objects to be cleared when exiting TRUST
 };
-extern bool error_handlers;
 
 #endif

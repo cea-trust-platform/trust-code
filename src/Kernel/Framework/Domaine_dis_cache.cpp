@@ -17,6 +17,7 @@
 #include <Domaine_dis.h>
 #include <Domaine.h>
 #include <Interprete_bloc.h>
+#include <TClearable.h>
 #include <sstream>
 
 /*! @brief Get the unique instance of the cache.
@@ -24,6 +25,13 @@
 Domaine_dis_cache& Domaine_dis_cache::Get_instance()
 {
   static Domaine_dis_cache instance_;
+  static bool is_first_time = true; // will remain true only once!
+
+  // Register unique instance for clearing when TRUST will exit:
+  if (is_first_time)
+    TClearable::Register_clearable(&instance_);
+
+  is_first_time = false;
   return instance_;
 }
 
