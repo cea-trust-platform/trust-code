@@ -562,7 +562,7 @@ void print_statistics_analyse(const char * message, int mode_append)
               ratio_copy += write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
               double ratio_comm = 100. * (comm_sendrecv.avg_time + comm_allreduce.avg_time) / pas_de_temps.max_time;
               double ratio_cpu = 100 - ratio_gpu - ratio_copy - ratio_comm;
-              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% Comm: " << 0.1*int(10*ratio_comm) << "% CPU & I/O: " << 0.1*int(10*ratio_cpu) << "%" << finl;
+              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% Comm: " << 0.1*int(10*ratio_comm) << "% CPU & Others: " << 0.1*int(10*ratio_cpu) << "%" << finl;
               if (0.1*int(10*ratio_gpu)<50)
                 {
                   Cerr << "==============================================================================================" << finl;
