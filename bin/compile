@@ -636,7 +636,7 @@ then
 	    \cd $TRUST_ROOT
 	 fi
       done
-      python $TRUST_ROOT/bin/KSH/Createcmakefile.py
+      python $TRUST_ROOT/bin/KSH/Createcmakefile.py || exit -1
       MonoDir_base=${MonoDir%$OPT}
       opt=$OPT
       compile_opt=0

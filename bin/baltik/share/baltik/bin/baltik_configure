@@ -289,7 +289,7 @@ kernel_name=`extract_field "$project_description" kernel`
 
 # extraction des cpp_flags
 cpp_flags_name=`extract_field "$project_description" cpp_flags`
-[ "$cpp_flags_name" != ""  ] && cmake_flags=$cmake_flags"  SET(cpp_flags $cpp_flags_name) %%add_definitions(\${cpp_flags}) %% message(\"\${cpp_flags} added to CPP_FLAGS \")"
+[ "$cpp_flags_name" != ""  ] && cmake_flags=$cmake_flags"  SET(cpp_flags $cpp_flags_name) %%add_definitions(\${cpp_flags}) %% message(STATUS \"\${cpp_flags} added to CPP_FLAGS \")"
 
 # extraction des ld_flags
 ld_flags_name=`extract_field "$project_description" ld_flags`

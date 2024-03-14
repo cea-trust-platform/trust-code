@@ -1,18 +1,32 @@
+""" Generate CMakeLists.txt used to compile TRUST
+
+One day we will have pure CMake rather than this ...
+"""
+
+import sys
+import os
+
+# Common header for all CMakeLists.txt (i.e. TRUST & Baltiks)
+common_hdr = '''# 
+# This file was generated automatically by bin/KSH/Createcmakefile.py
+# !!Do not edit directly!! - changes will be overwritten!
+#
+
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+'''
+
 def read_libs_from_makeliba():
-    import os
+    """ From the make.liba file, generate Cmake.libs
+    """
     f1=open(os.getenv("TRUST_ENV")+"/make.liba")
     a=' '.join(f1.readlines()).replace('\\','')
-    # a+=syslibs
-    libtrio=[]
-    listL=[]
+    libtrio, listL = [], []
     for mot in a.split():
         # Commence par chercher -L car parfois -l present dans le chemin (ex: /x86_64-linux/) provoque un bon bug pour -l
         if (mot.find('-L')>-1):
             P=mot[2:]
             if not P in listL:
                 listL.append(P)
-                pass
-            pass
         elif (mot.find('-l')>-1):
             libtrio.append(mot.replace('-l',''))
         elif (mot.find('/lib')>-1)and(mot[0]!='-'):
@@ -20,221 +34,203 @@ def read_libs_from_makeliba():
             P=(mot[:mot.rfind('/lib')])
             if not P in listL:
                 listL.append(P)
-                pass
-            pass
-
-        pass
-    list1=[]
-    list2=[]
+    list1, list2 = [], []
     for L in listL:
         if (L.rfind("$")>-1):
             list1.append(L.replace('$(','$ENV{').replace(')','}').replace('ENV{OPT','{OPT'))
         else:
             list2.append(L)
-            pass
-        pass
-    print("libdeptrio ",libtrio)
-    out=open(os.getenv("TRUST_ENV")+"/Cmake.libs","w")
-
-    out.write('SET (list_path_libs '+' '.join(list1)+')\n')
-    out.write('SET (list_path_sys '+' '.join(list2)+')\n')
-    out.write('SET (list_libs '+' '.join(libtrio)+')\n')
-    for var in ['list_path_libs','list_path_sys','list_libs']:
-        out.write('MARK_AS_ADVANCED('+var+')\n')
-        pass
-    pass
-
+    with open(os.getenv("TRUST_ENV")+"/Cmake.libs","w") as out:
+        out.write('set(list_path_libs ' + '\n'.join(list1)+'\n)\n')
+        out.write('set(list_path_sys ' + '\n'.join(list2)+'\n)\n')
+        out.write('set(list_libs ' + '\n'.join(libtrio)+'\n)\n')
+        for var in ['list_path_libs','list_path_sys','list_libs']:
+            out.write('MARK_AS_ADVANCED('+var+')\n')
 
 def add_library_for_dir(s2):
-    import os
+    """ Produce the small CMake piece for a sub_directory """
     tgt_nam = f"obj_{s2}"
-    strout = f"add_library({tgt_nam} OBJECT  ${{srcs}} )\n"
-#    if os.environ["TRUST_USE_KOKKOS"]:
-#        strout += f"target_link_libraries({tgt_nam} Kokkos::kokkos )\n"
-    strout += "set(listlibs ${listlibs} " +s2 +" PARENT_SCOPE    )\n"
-    strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
-    strout+="add_DEPENDENCIES(obj_"+s2+" check_sources_"+s2+")\n"
-    # strout += "  set(listobj ${listobj}  $<TARGET_OBJECTS:obj_"+s2[1] +"> PARENT_SCOPE    )\n"
-    strout +="if(COMPIL_DYN)\n"
-    strout += "  add_library("+s2 +" SHARED   $<TARGET_OBJECTS:obj_"+s2+"> )\n"
-    strout+="  install(TARGETS "+s2+"  DESTINATION lib)\n"
-    strout +="endif(COMPIL_DYN)\n"
+    # Caution: double '{{' and '}}' just to escape from Python format string:
+    strout = f'''add_library({tgt_nam} OBJECT  ${{srcs}} )
+set(listlibs ${{listlibs}} {s2} PARENT_SCOPE)
+add_custom_target(check_sources_{s2} COMMAND check_sources.sh ${{CMAKE_CURRENT_SOURCE_DIR}} )
+add_dependencies(obj_{s2} check_sources_{s2})
+if(COMPIL_DYN)
+    add_library({s2} SHARED $<TARGET_OBJECTS:obj_{s2}>)
+    install(TARGETS {s2} DESTINATION lib)
+endif(COMPIL_DYN)
+'''
     return strout
 
-# ecrit les fichiers CmakeFile a partir des fichiers make.include
-
-
 def lire_make_include(file,listlib):
-    f=open(file)
-    g=f.readlines()
-    #g=replace(g,'\\\n','')
+    """ Write CMakeLists.txt files from make.include files """
+    f = open(file)
+    g = f.readlines()
     t=""
     for s in g:
         t+=s.replace('\\\n','').replace('\t',' ')
-    t=t.split('\n')
-    if  1:
-        strout="file(GLOB srcs [A-Z|a-z]*.cpp [A-Z|a-z]*.c [A-Z|a-z]*.f)\n"
-    else:
-        import os
-        strout="file(GLOB srcs "
+    t = t.split('\n')
 
-        l1=os.listdir(os.path.dirname(file))
-        for l in l1:
-            if ((l[-4:]==".cpp")or (l[-2:]==".c") or (l[-2:]==".f")):
-                strout+=l+" "
-                pass
+    strout = "file(GLOB srcs [A-Z|a-z]*.cpp [A-Z|a-z]*.c [A-Z|a-z]*.f)\n"
 
-            pass
-        strout+=" )\n"
-        pass
-
-    #  strout+="add_definitions(${ADD_CPPFLAGS})\n"
-
-    # print t,type(t)
     for s in t:
-        #print s
         if s.find("Includes")>=0:
-            #print s,s.find("Includes") ,s.split('-I')
-            s=s.replace('-I.','-I${CMAKE_CURRENT_SOURCE_DIR}')
-            s2=s.split('-I')
+            s = s.replace('-I.','-I${CMAKE_CURRENT_SOURCE_DIR}')
+            s2 = s.split('-I')
             inc_dir = " ".join(s2[1:])
-            strout += "include_directories(" + inc_dir.replace('(','{').replace(')','}')+ ")\n" # .replace('TRUST_ROOT','Trio_SOURCE_DIR')+")\n"
-            pass
+            strout += "include_directories(" + inc_dir.replace('(','{').replace(')','}')+ ")\n" 
         elif s.find("Lib")>=0:
             s2=s.split("/lib")
             listlib.append(s2[1])
-            strout+=add_library_for_dir(s2[1])
-
-            pass
-        pass
+            strout += add_library_for_dir(s2[1])
     return strout,listlib
-    pass
+
 def ajoute_subdir(dirmake,dirsdict):
+    """ Add a sub-directory from main CMakeLists.txt file """
     strout=""
     for d in dirsdict[dirmake]:
         strout+="add_subdirectory("+d+")\n"
-        pass
     return strout
 
-
-
-def generate_cmake(listdirorg,sans_subdir,atelier):
+def generate_main_cmake(listdirorg, sans_subdir, atelier):
+    """ Generate the main CMakeLists.txt file and all sub CMakeLists.txt files 
+    """
     listlib=[]
-    #listinclude=""
-    import os
-    if ((sans_subdir==1)):
+    if sans_subdir:
         for dirmake in listdirorg:
-
-            cmake=os.path.join(dirmake,'CMakeLists.txt')
+            cmake = os.path.join(dirmake,'CMakeLists.txt')
             if os.path.exists(cmake):
                 os.remove(cmake)
-                pass
-            pass
-        pass
 
-    if ((sans_subdir==0)):
+    if not sans_subdir:
         for dirmake in listdirorg:
             strout=""
             make=os.path.join(dirmake,'make.include')
             if os.path.exists(make):
                 strout,listlib=lire_make_include(make,listlib)
-                pass
             cmake=make.replace('make.include','CMakeLists.txt')
-            out=open(cmake,'w')
-            out.write(strout)
-            pass
-        # listinclude+=dirmake.replace('.','${Trio_SOURCE_DIR}')+" "
+            with open(cmake,'w') as out:
+                out.write(strout)
 
-        if 1:
-            out=open(os.path.join('src/MAIN','CMakeLists.txt'),'a')
+        with open(os.path.join('src/MAIN','CMakeLists.txt'),'a') as out:
             out.write(add_library_for_dir("main"))
-            out.close()
-        pass
-        # global
 
-        pass
-
-    if (atelier) :
-        out=open('CMakeLists.txt.trio','w')
+    if atelier:
+        out = open('CMakeLists.txt.trust','w')
     else:
-        out=open('src/CMakeLists.txt','w')
+        out = open('src/CMakeLists.txt','w')
+
+    out.write(common_hdr)
 
     if (os.getenv("TRUST_ARCH_CC")=="linux_nvc++"):
-        out.write('# Pour cmake 3.22 et NVidia:\n')
-        out.write('SET(CMAKE_C_ABI_COMPILED 1)\n')
-        out.write('SET(CMAKE_Fortran_COMPILER_WORKS 1)\n\n')
+        out.write('# For cmake 3.22 and NVidia:\n')
+        out.write('set(CMAKE_C_ABI_COMPILED 1)\n')
+        out.write('set(CMAKE_Fortran_COMPILER_WORKS 1)\n\n')
 
     out.write('''# Tell the CMake makefile generator to not have rules depend on
 # themselves.  This causes extra rebuilds when the include path
 # changes from turning a kit on or off.
-SET(CMAKE_SKIP_RULE_DEPENDENCY 0 )
+set(CMAKE_SKIP_RULE_DEPENDENCY 0 )
 
-# Tell cmake to create compile_commands.json for clang-tidy
-SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+if(NOT VISUAL)
+    # on prend les compilos choisis par configure pour retirer des blancs inutils
+    set(pathcc $ENV{TRUST_CC})
+    string(STRIP ${pathcc} CMAKE_CXX_COMPILER)
+    set(CMAKE_C_COMPILER $ENV{TRUST_cc})
+    set(CMAKE_Fortran_COMPILER $ENV{TRUST_F77})
+endif(NOT VISUAL)
 
-#OPTION(kernelonly "kernel only" OFF)
-#OPTION(microkernel "micro kernel only" OFF)
-#OPTION(microAL "micro kernel + AL" OFF)
-set(kernel "full" CACHE STRING "full,standard,numeric,micro" )
-
-OPTION(VISUAL "pour MSVC" OFF)
-
-IF(NOT VISUAL)
- # on prend les compilos choisis par configure
- # pour retirer des blancs inutils
- set (pathcc $ENV{TRUST_CC})
- string(STRIP ${pathcc} CMAKE_CXX_COMPILER)
- set (CMAKE_C_COMPILER $ENV{TRUST_cc})
- set (CMAKE_Fortran_COMPILER $ENV{TRUST_F77})
-ENDIF(NOT VISUAL)
-
+#
+# Use a specified linker (typically mold) if provided - this greatly increase debug linking time:
+#
 set(TRUST_LINKER "$ENV{TRUST_LINKER}")
 if(NOT TRUST_LINKER STREQUAL "")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=${TRUST_LINKER}")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=${TRUST_LINKER}")
 endif()
 
+#
+# Project definition! Compile flags tweaks must be put before this line.
+#
+project(TRUST CXX)
 
-project(TRUST)
+enable_testing()
 
+if(NOT VISUAL)
+    enable_language(Fortran OPTIONAL)
+endif()
+
+# Tell cmake to create compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
+#
+# Options
+#
+option(VISUAL "pour MSVC" OFF)
+
+
+#
+# Potential extra dependencies (baltik?)
+#
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
    include(cmake.deps)
 endif()
 
 
+#
+# Source directories
+# 
 ''')
-#    if os.environ["TRUST_USE_KOKKOS"]:
-#       out.write('''
-#
-#cmake_policy(SET CMP0011 NEW)
-#cmake_policy(SET CMP0012 NEW)
-#cmake_policy(SET CMP0074 NEW)
-#list(APPEND CMAKE_PREFIX_PATH $ENV{TRUST_KOKKOS_ROOT})
-#find_package(Kokkos REQUIRED)
-    #if(Kokkos_ENABLE_CUDA)
-#  kokkos_check(OPTIONS CUDA_LAMBDA)
-#endif()
-#
-    #''')
 
-    out.write('set(listdir '+' '.join(listdirorg)+')\n')
+    out.write('set(listdir \n'+'\n'.join(listdirorg)+')\n')
     out.write('''
 
+# Micro kernel
+set(listdir_micro 
+    src/Kernel/Math 
+    src/Kernel/Utilitaires  
+    src/MAIN
+)
 
-set(listdir_standard src/Kernel/Champs src/Kernel/Champs_dis src/Kernel/Cond_Lim src/Kernel/Framework src/Kernel/Geometrie src/Kernel/Geometrie/Decoupeur src/Kernel/ICoCo src/Kernel/MEDimpl src/Kernel/Math src/Kernel/Math/Matrices src/Kernel/Math/SolvSys src/Kernel/Operateurs src/Kernel/Schemas_Temps src/Kernel/Solveurs src/Kernel/Statistiques_temps src/Kernel/Utilitaires src/Kernel/VF/Champs src/Kernel/VF/Geometrie  src/MAIN)
+# Numeric kernel = micro + more
+set(listdir_numeric ${listdir_micro} )
+list(APPEND listdir_numeric 
+    src/Kernel/Math/Matrices  
+    src/Kernel/Math/SolvSys 
+)
 
-set(listdir_micro src/Kernel/Math src/Kernel/Utilitaires  src/MAIN)
-set(listdir_numeric src/Kernel/Math src/Kernel/Math/Matrices  src/Kernel/Math/SolvSys src/Kernel/Utilitaires src/MAIN  )
+# Standard kernel = Numeric + more
+set(listdir_standard ${listdir_numeric} )
+list(APPEND listdir_standard 
+    src/Kernel/Champs 
+    src/Kernel/Champs_dis 
+    src/Kernel/Cond_Lim 
+    src/Kernel/Framework 
+    src/Kernel/Geometrie 
+    src/Kernel/Geometrie/Decoupeur 
+    src/Kernel/ICoCo 
+    src/Kernel/MEDimpl 
+    src/Kernel/Operateurs 
+    src/Kernel/Schemas_Temps 
+    src/Kernel/Solveurs 
+    src/Kernel/Statistiques_temps 
+    src/Kernel/VF/Champs 
+    src/Kernel/VF/Geometrie  
+)
 
+#
+# Generate appel_c_mod_xxx.cpp file
+# TODO: still necessary??
+#
+set(kernel "full" CACHE STRING "full,standard,numeric,micro" )
 
 if (NOT ${kernel} STREQUAL "full")
-  MESSAGE("Kernel ${kernel}")
-  set (listdirmod ${listdir_${kernel}})
+  message(STATUS "Kernel variant: ${kernel}")
+  set(listdirmod ${listdir_${kernel}})
   set(ajout _${kernel}_kernel)
   set(special_srcs ${CMAKE_CURRENT_BINARY_DIR}/appel_c_mod_${kernel}.cpp)
-  message("special srs ${special_srcs}")
-  set (oo "")
+  set(oo "")
   foreach(d ${listdir})
-    LIST(FIND  listdirmod ${d} trouve)
+    list(FIND  listdirmod ${d} trouve)
     if (${trouve} EQUAL -1)
       STRING(REPLACE "/" "_" d2 ${d})
       set(oo "${oo} void instancie_${d2}() { } ")
@@ -242,362 +238,287 @@ if (NOT ${kernel} STREQUAL "full")
   endforeach(d)
   set(oo "${oo} \n")
   if (EXISTS  ${special_srcs})
-    FILE(READ  ${special_srcs} org)
+    file(READ  ${special_srcs} org)
     string(COMPARE NOTEQUAL ${org} ${oo} update_src)
   else()
     set(update_src 1)
   endif()
   if (update_src)
-    message( "update ${special_srcs}")
-    FILE(WRITE ${special_srcs} "${oo}")
+    message(STATUS "Updating ${special_srcs}")
+    file(WRITE ${special_srcs} "${oo}")
   endif(update_src)
 
   set(listdir ${listdirmod})
 endif()
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
+#
+# Linux compilation (Win treated below)
+#
+if(NOT VISUAL)
+    enable_language(Fortran OPTIONAL)
+
+    set(MPI_INCLUDE $ENV{MPI_INCLUDE})
+    set(CUDA_INC_PATH $ENV{CUDA_INC_PATH})
+    set(TRUST_ARCH $ENV{TRUST_ARCH})
+    set(TRUST_ROOT $ENV{TRUST_ROOT})
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(OPT "_opt")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(OPT "")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "Profil")
+        set(OPT "_opt_pg")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "Coverage")
+        set(OPT "_opt_gcov")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "semi_opt")
+        set(OPT "_semi_opt")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "custom")
+        set(OPT "_custom")
+        include (${TRUST_ROOT}/env/Cmake.custom)
+    else(CMAKE_BUILD_TYPE STREQUAL "Release")
+       message(FATAL_ERROR  "Unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,custom")
+    endif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Build mode: ${OPT}")
 
 
+    set(COMM $ENV{COMM})
+    set(PETSC_ROOT $ENV{PETSC_ROOT} )
+    set(METIS_ROOT $ENV{METIS_ROOT} )
+    set(TRUST_LATAFILTER $ENV{TRUST_LATAFILTER})
+    set(TRUST_ICOCOAPI $ENV{TRUST_ICOCOAPI})
+    set(TRUST_MED_ROOT $ENV{TRUST_MED_ROOT})
+    set(TRUST_CGNS_ROOT $ENV{TRUST_CGNS_ROOT})
+    set(TRUST_MEDCOUPLING_ROOT $ENV{TRUST_MEDCOUPLING_ROOT})
+    set(TRUST_KOKKOS_ROOT $ENV{TRUST_KOKKOS_ROOT})
 
+    set(LIBRARY_OUTPUT_PATH ${TRUST_ROOT}/lib)
+    set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
 
-IF(NOT VISUAL)
+    #
+    # Compilation flags
+    #
+    include (${TRUST_ROOT}/env/Cmake.env)
 
-enable_language(Fortran OPTIONAL)
+    #
+    # Libraries
+    #
+    include (${TRUST_ROOT}/env/Cmake.libs)
 
-SET (MPI_INCLUDE $ENV{MPI_INCLUDE})
-SET (CUDA_INC_PATH $ENV{CUDA_INC_PATH})
-SET (TRUST_ARCH $ENV{TRUST_ARCH})
-SET (TRUST_ROOT $ENV{TRUST_ROOT})
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(OPT "_opt")
-elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(OPT "")
-elseif (CMAKE_BUILD_TYPE STREQUAL "Profil")
-    set(OPT "_opt_pg")
-elseif (CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    set(OPT "_opt_gcov")
-elseif (CMAKE_BUILD_TYPE STREQUAL "semi_opt")
-    set(OPT "_semi_opt")
-elseif (CMAKE_BUILD_TYPE STREQUAL "custom")
-    set(OPT "_custom")
-    include (${TRUST_ROOT}/env/Cmake.custom)
-else(CMAKE_BUILD_TYPE STREQUAL "Release")
-   message(FATAL_ERROR  "unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,custom")
-endif(CMAKE_BUILD_TYPE STREQUAL "Release")
-message("Mode: ${OPT}")
-
-
-SET(COMM $ENV{COMM})
-SET (PETSC_ROOT $ENV{PETSC_ROOT} )
-SET (METIS_ROOT $ENV{METIS_ROOT} )
-SET (TRUST_LATAFILTER $ENV{TRUST_LATAFILTER})
-SET (TRUST_ICOCOAPI $ENV{TRUST_ICOCOAPI})
-SET (TRUST_MED_ROOT $ENV{TRUST_MED_ROOT})
-SET (TRUST_CGNS_ROOT $ENV{TRUST_CGNS_ROOT})
-SET (TRUST_MEDCOUPLING_ROOT $ENV{TRUST_MEDCOUPLING_ROOT})
-SET (TRUST_KOKKOS_ROOT $ENV{TRUST_KOKKOS_ROOT})
-
-
-#set(COMPIL_DYN FALSE)
-
-set(LIBRARY_OUTPUT_PATH ${TRUST_ROOT}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
-
-
-''')
-
-    # fait maintenant au configure et mis dans Cmake.env
-    f0=open(os.getenv("TRUST_ENV")+"/make."+os.getenv("TRUST_ARCH_CC"))
-    lignes=f0.readlines()
-    for line in lignes:
-        ligne=line.split()
-        if (ligne[0]=="SYSLIBS"):
-            syslibs=' '.join(ligne[2:])
-        elif (ligne[0]== "Defines"):
-            defines= ' '.join(line.replace('(','{').replace(')','}').split()[2:])
-            # out.write('# SET(ADD_CPPFLAGS '+ defines +' )\n')
-        elif (ligne[0]=="CppFlags"):
-            liste_f=[]
-            for m in ligne[2:]:
-                if (m!="-g")and (m!="-fPICuuuuuuuu") and (m.find('$')<0):
-                    liste_f.append(m)
-                    pass
-                pass
-            #print liste_f
-            # out.write('# SET( CMAKE_CXX_FLAGS "'+' '.join(liste_f)+'" CACHE STRING "comme dans trio" FORCE )\n')
-            pass
-    out.write('include (${TRUST_ROOT}/env/Cmake.env)\n')
-    # out.write('# set (CMAKE_CONFIGURATION_TYPES "Release Debug Profil Coverage semi_opt"  CACHE STRING "comme dans trio" FORCE )\n')
-
-    out.write('include (${TRUST_ROOT}/env/Cmake.libs)\n')
-    out.write('\n')
-    
-    # nvcc_wrapper does not want -std=c++14:
-#    if os.environ["TRUST_USE_KOKKOS"]:
-#        out.write('''
-#cmake_policy(SET CMP0007 NEW)
-#foreach(v DEBUG MINSIZEREL RELEASE PROFIL SEMI_OPT)
-#    set(_tmp_flgs)
-#    string(REPLACE " " ";" flags_list ${CMAKE_CXX_FLAGS_${v}})
-#    list(REMOVE_ITEM flags_list "-std=c++14")
-#    string(REPLACE ";" " " _tmp_flgs "${flags_list}")
-#    set(CMAKE_CXX_FLAGS_${v} ${_tmp_flgs} CACHE STRING "" FORCE)
-#endforeach()
-#''')
-
-    out.write('FOREACH (liba ${list_libs})\n')
-    out.write('''        set (staticlib lib${liba}.a )
-         find_library( lib${liba} NAMES ${staticlib} ${liba} PATHS ${list_path_libs} NO_DEFAULT_PATH )
+    #
+    # Find external (pre-requisite) libraries
+    #
+    foreach(liba ${list_libs})
+        set(staticlib lib${liba}.a)
+        find_library( lib${liba} NAMES ${staticlib} ${liba} PATHS ${list_path_libs} NO_DEFAULT_PATH )
         if (${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
-           message("${liba} librairie systeme ?")
-           find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} )
+           find_library( lib${liba} NAMES ${liba} PATHS ${list_path_sys} REQUIRED)
         endif(${lib${liba}} STREQUAL lib${liba}-NOTFOUND)
         # pour supermuc on cherche ligfortran.so.3  en dur
         if (${liba} STREQUAL gfortran)
           if (${lib${liba}} STREQUAL libgfortran-NOTFOUND)
-           find_library( lib${liba} NAMES  libgfortran.so.3 PATHS ${list_path_sys} )
+            find_library( lib${liba} NAMES  libgfortran.so.3 PATHS ${list_path_sys} )
           endif()
         endif()
-        MARK_AS_ADVANCED( lib${liba})
-        SET(libs ${libs} ${lib${liba}})
-ENDFOREACH (liba )
+        mark_as_advanced(lib${liba})
+        set(libs ${libs} ${lib${liba}})
+    endforeach()
+
+else(NOT VISUAL)
+    include(windows/CMake.win)
+endif(NOT VISUAL)
+
+string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)
+string(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )
+set(syslib ${libs} ${linker_flag} )
+
+#
+# Include directories and extra flags:
+#
+
+# PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:
+include_directories(SYSTEM 
+    ${METIS_ROOT}/include 
+    ${TRUST_MED_ROOT}/include 
+    ${TRUST_CGNS_ROOT}/include 
+    ${TRUST_MEDCOUPLING_ROOT}/include 
+    ${MPI_INCLUDE} 
+    ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include 
+    ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include 
+    ${CUDA_INC_PATH} 
+    ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include 
+    ${TRUST_ROOT}/lib/src/LIBROCALUTION/include 
+    ${TRUST_LATAFILTER}/include 
+    ${TRUST_ICOCOAPI}/include 
+    ${TRUST_ROOT}/lib/src/LIBOSQP/include 
+    ${TRUST_ROOT}/lib/src/LIBVC/include 
+    ${TRUST_KOKKOS_ROOT}/${TRUST_ARCH}${OPT}/include
+)
+
+#
+# Extra compiler flags - coming from env/Cmake.env:
+#
+add_definitions(${ADD_CPPFLAGS})
+
+set(trio TRUST${COMM}${OPT})
+set(libtrio_name TRUST${COMM}${ajout}${OPT})
+set(libtrio lib${libtrio_name})
+
+if(NOT ATELIER) # Not a Baltik, TRUST itself
+    foreach(dir ${listdir})
+        add_subdirectory(../${dir})
+    endforeach()
+
+    #
+    # The main TRUST library file generated here:
+    #
+    if(NOT COMPIL_DYN)
+        set(my_listobj)
+        foreach(_obj IN LISTS listlibs)
+            list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
+        endforeach()
+        add_library(${libtrio} STATIC  ${special_srcs} ${my_listobj} )
+        set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
+        install(TARGETS ${libtrio} DESTINATION lib)
+    else()
+        set(libtrio ${listlibs})
+    endif()
+
+    #
+    # Main executable generated here:
+    #
+    # (no exec produced in partial mode)
+    if(("${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
+        include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
+        add_executable (${trio} 
+            MAIN/the_main.cpp 
+            MAIN/mon_main.cpp 
+            ${special_srcs}  
+        )
+        target_link_libraries(${trio} ${libtrio} ${syslib})
+        install (TARGETS ${trio} DESTINATION exec)
+
+        #
+        # Tests generated here:
+        #
+        set(TRUST_TESTS $ENV{TRUST_TESTS})
+        file(GLOB_RECURSE LML   FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z|0-9]*.lml.gz )
+        list(LENGTH  LML NN)
+        message(STATUS "TRUST: Found ${NN} tests!")
+        foreach(f ${LML})
+            string(REPLACE .lml.gz "" l2 ${f} )
+            string(FIND ${f} /  ii  REVERSE )
+            string(SUBSTRING ${l2} ${ii} -1 l3 )
+            string(SUBSTRING ${l3} 1 -1 l3 )
+            add_test(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:${trio}> -check ${l3}  )
+            set_property(TEST ${l3}  PROPERTY SKIP_RETURN_CODE 200 )
+        endforeach()
+    endif()
+
+else(NOT ATELIER)
+
+    #
+    # For a Baltik we still include the sub-dirs of TRUST, but executable and lib will be 
+    # generated from another CMakeLists.txt file
+    #
+    foreach(dir ${listdir})
+        include_directories(${TRUST_ROOT}/${dir})
+    endforeach(dir)
+
+endif(NOT ATELIER)
+
+
 ''')
+    out.close()
 
-    # out.write('find_library( gfortran lib gfortran)\n')
-    # out.write('SET (gfortran gfortran)\n')
-
-    #    out.write('# MESSAGE("Monosrc ${Monosrc} ")\n')
+def generate_baltik_cmake():
+    """ Generate CMakeLists.txt for a baltik
+    """
+    out = open('CMakeLists.txt','w')
     out.write('''
-
-ELSE(NOT VISUAL)
-  include(windows/CMake.win)
-ENDIF(NOT VISUAL)
-
-
-''')
-    out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
-    out.write('# PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:\n')
-    out.write('include_directories(SYSTEM ${METIS_ROOT}/include \
-    ${TRUST_MED_ROOT}/include ${TRUST_CGNS_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include \
-    ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include \
-    ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} \
-    ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include \
-    ${TRUST_ROOT}/lib/src/LIBROCALUTION/include \
-    ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include \
-    ${TRUST_ROOT}/lib/src/LIBOSQP/include \
-    ${TRUST_ROOT}/lib/src/LIBVC/include \
-    ${TRUST_KOKKOS_ROOT}/${TRUST_ARCH}${OPT}/include )\n')
-    out.write('add_definitions(${ADD_CPPFLAGS})\n')
-
-    out.write('''
-
-
- set(trio TRUST${COMM}${OPT})
- set(libtrio_name TRUST${COMM}${ajout}${OPT})
- set(libtrio lib${libtrio_name})
-
-IF(NOT ATELIER)
-FOREACH(dir ${listdir})
-   add_subdirectory(../${dir})
- ENDFOREACH(dir)
-
-if(NOT COMPIL_DYN)
-  set(my_listobj)
-  foreach(_obj IN LISTS listlibs)
-    LIST (APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
-  endforeach()
-
- add_library(${libtrio} STATIC  ${special_srcs} ${my_listobj} )
- set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
- install(TARGETS ${libtrio} DESTINATION lib)
-else(NOT COMPIL_DYN)
- set(libtrio ${listlibs})
-
-endif(NOT COMPIL_DYN)
-
- # on ne produit pas d executable en mode partiel
- IF((  "${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
-   add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
-   include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
-   target_link_libraries(${trio} ${libtrio} ${syslib})
-#   if($ENV{TRUST_USE_KOKKOS})
-#     target_link_libraries(${trio} Kokkos::kokkos)
-#   endif()
-   install (TARGETS ${trio} DESTINATION exec)
-
-
-   ENABLE_TESTING()
-   SET (TRUST_TESTS $ENV{TRUST_TESTS})
-   #file(GLOB_RECURSE LML  RELATIVE ${TRUST_TESTS} FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z]*.lml.gz )
-   file(GLOB_RECURSE LML   FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z|0-9]*.lml.gz )
-#message("${ajout} iiiii ${LML} oooo")
-LIST (LENGTH  LML NN)
-message("go ${NN} tests")
-foreach(f ${LML})
-string(REPLACE .lml.gz "" l2 ${f} )
-string(FIND ${f} /  ii  REVERSE )
-string(SUBSTRING ${l2} ${ii} -1 l3 )
-string(SUBSTRING ${l3} 1 -1 l3 )
-ADD_TEST(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:${trio}> -check ${l3}  )
-set_property(TEST ${l3}  PROPERTY SKIP_RETURN_CODE 200 )
-endforeach(f )
-
- ENDIF()
-
-
-ELSE(NOT ATELIER)
-FOREACH(dir ${listdir})
-   include_directories(${TRUST_ROOT}/${dir})
- ENDFOREACH(dir)
-ENDIF(NOT ATELIER)
-
-
-''')
-
-
-    print("libtrio ",listlib)
-    pass
-
-
-#lire_make_include(file)
-import sys
-
-if  __name__ == '__main__':
-    listdirorg=[]
-    args=sys.argv[1:]
-    sans_subdir=0
-    atelier=0
-    if (len(args)>0) and (args[0]=="-atelier"):
-        import os
-        sans_subdir=1
-        rep_dev=os.getenv("rep_dev")
-        os.chdir(rep_dev)
-        # g=open("dummy.f","a"); g.close()
-        #g=open("dummy.cpp","a"); g.close()
-        # os.system("cree_info_atelier.sh")
-        atelier=1
-        args=args[1:]
-        pass
-    if (len(args)>0) and (args[0]=="-avec_subdir"):
-        sans_subdir=0
-        args=args[1:]
-        pass
-    if (len(args)>0) and (args[0]=="-sans_subdir"):
-        sans_subdir=1
-        args=args[1:]
-        pass
-    if len(args)==0: # on lit dans rep.TRUST
-        import os
-        ENV=os.getenv("TRUST_ROOT")
-        f=open(ENV+"/env/rep.TRUST","r")
-
-        titi=1
-        while (titi):
-            titi=f.readline().strip()
-            if (titi!=''):
-                args.append(titi)
-                pass
-            pass
-        pass
-
-
-    for make in args:
-        from os.path import dirname,basename
-        if (basename(make)=='make.include'):
-            s=dirname(make)
-        else:
-            s=make
-            pass
-        s2=s.replace('./','')
-        listdirorg.append(s2)
-
-        pass
-    # print listdir
-    generate_cmake(listdirorg,sans_subdir,atelier)
-    if (atelier):
-        out=open('CMakeLists.txt','w')
-        out.write('''
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 include_directories(.)
-set(ATELIER  ON)
+set(ATELIER ON)
 
-include(CMakeLists.txt.trio)
+# Include main CMakeLists.txt
+include(CMakeLists.txt.trust)
 
-include_directories(${TRUST_ROOT}/include/backward ${TRUST_ROOT}/include/EOS ${TRUST_ROOT}/include/CoolProp)
+include_directories(
+    ${TRUST_ROOT}/include/backward 
+    ${TRUST_ROOT}/include/EOS 
+    ${TRUST_ROOT}/include/CoolProp
+)
 
+project(atelier CXX)
 
-Project(atelier)
-SET(CMAKE_SKIP_RULE_DEPENDENCY 0)
+set(CMAKE_SKIP_RULE_DEPENDENCY 0)
 
+#
 # Tell cmake to create compile_commands.json for clang-tidy
-SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+#
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
+# Find all sources
 file(GLOB srcs [A-Z|a-z]*.cpp  [A-Z|a-z]*.cxx [A-Z|a-z]*.f [A-Z|a-z]*.c [A-Z|a-z]*.h  [A-Z|a-z]*.hpp  [A-Z|a-z]*.hxx  [A-Z|a-z]*.tpp)
-if (srcs_atelier)
-  # set(srcs_atelier "")
-else()
- set(srcs_atelier "not_init")
+
+#
+# Extract baltik source files and dependant TRUST files:
+#
+set(srcs_atelier ${srcs}  CACHE STRING "fichiers atelier" FORCE )
+# GF bidouille importante pour forcer les dependances si ajout d un fichier .h
+execute_process(COMMAND find . -name depend.internal -exec rm {} \; RESULT_VARIABLE toto ERROR_VARIABLE err )
+
+set(LATACOMMON Outils/lata_tools/src/trust_commun)
+if ((${kernel} STREQUAL "micro") OR (${kernel} STREQUAL "numeric"))
+    set(LATACOMMON "")
 endif()
-if ("${srcs}" STREQUAL "${srcs_atelier}")
-else()
-  set(srcs_atelier ${srcs}  CACHE STRING "fichiers atelier" FORCE )
-  #execute_process(COMMAND "${CMAKE_MAKE_PROGRAM} depend" )
-  # GF bidouille importante pour forcer les dependances si ajout d un fichier .h
-  execute_process(COMMAND find . -name depend.internal -exec rm {} \; RESULT_VARIABLE toto ERROR_VARIABLE err )
-  message("New files in rep_dev"  )
-  set(LATACOMMON Outils/lata_tools/src/trust_commun)
-  if ((${kernel} STREQUAL "micro") OR (${kernel} STREQUAL "numeric"))
-  set(LATACOMMON "")
-  endif()
-  execute_process(COMMAND env rep_dev=${CMAKE_SOURCE_DIR} ${TRUST_ROOT}/bin/KSH/cree_info_atelier.sh RESULT_VARIABLE toto OUTPUT_VARIABLE toto2 ERROR_VARIABLE error )
-  message( ${toto2} ${error} "status " ${toto} )
-  execute_process(COMMAND python ${TRUST_ROOT}/bin/KSH/Cherchefileatelier.py ${listdir} ${LATACOMMON} %% ${srcs} RESULT_VARIABLE toto OUTPUT_VARIABLE srcdeps_new ERROR_VARIABLE error )
-  message(  ${error} "status " ${toto} )
-  if (${toto})
+execute_process(COMMAND env rep_dev=${CMAKE_SOURCE_DIR} ${TRUST_ROOT}/bin/KSH/cree_info_atelier.sh RESULT_VARIABLE toto OUTPUT_VARIABLE toto2 ERROR_VARIABLE error )
+execute_process(COMMAND python ${TRUST_ROOT}/bin/KSH/Cherchefileatelier.py ${listdir} ${LATACOMMON} %% ${srcs} RESULT_VARIABLE toto OUTPUT_VARIABLE srcdeps_new ERROR_VARIABLE error )
+if (${toto})
     message(FATAL_ERROR "contact trust@cea.fr")
-  endif()
-  set(srcdeps ${srcdeps_new} CACHE STRING "ficher de trio dependant de l atelier " FORCE )
 endif()
+set(srcdeps ${srcdeps_new} CACHE STRING "ficher de trio dependant de l atelier " FORCE )
 list(LENGTH srcs_atelier l1)
 list(LENGTH srcdeps l2)
+message(STATUS "${l1} file(s) to compile in baltik source directories, ${l2} file(s) of TRUST depending on it")
 
-message("${l1} file(s) in rep_dev, ${l2} file(s) of TRUST depends of rep_dev")
-#message("yes ${error} toto ${toto} titi ${srcdeps}")
-message("Utilisation de la librairie : ${libtrio_name} " )
-find_library( libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH )
+#
+# Baltik library, based on TRUST main library
+#
+message(STATUS "Using library: ${libtrio_name} " )
+find_library( libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH REQUIRED)
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
-include(cmake.deps)
+    include(cmake.deps)
 endif()
 
 add_library(list_obj  OBJECT ${srcs} ${srcdeps} ${CMAKE_SOURCE_DIR}/exec${OPT}/info_atelier.cpp )
 
-#add_executable(exe ${srcs} ${srcdeps})
+#
+# Baltik executable generation
+#
 add_executable(exe  $<TARGET_OBJECTS:list_obj>)
-
 target_link_libraries(exe ${libdeps} ${libTrio}  ${syslib})
 
-#set(PROGRAM $ENV{PROGRAM})
 ''')
-        prog= os.getenv("PROGRAM")
-        # print "ici",prog
+    prog = os.getenv("PROGRAM")
 
-        if (prog):
-            out.write('set(EXECUTABLE_OUTPUT_PATH %s) \n' % os.path.dirname(prog))
-            out.write('set(PROGRAM %s${OPT})\n '% os.path.basename(prog))
-        else:
-            out.write('''
+    if (prog):
+        out.write('set(EXECUTABLE_OUTPUT_PATH %s) \n' % os.path.dirname(prog))
+        out.write('set(PROGRAM %s${OPT})\n '% os.path.basename(prog))
+    else:
+        out.write('''
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/exec${OPT})
 set(PROGRAM ${trio})
 ''')
-            pass
-        out.write('''
+
+    out.write('''
+
 install(TARGETS exe DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 set_target_properties(exe PROPERTIES  OUTPUT_NAME  ${PROGRAM} )
 
+#
+# Shared library generation
+#
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/exec${OPT} )
-
-
 add_library(module SHARED EXCLUDE_FROM_ALL $<TARGET_OBJECTS:list_obj>  )
 target_link_libraries(module ${libdeps} ${libTrio} ${syslib})
 set_target_properties(module PROPERTIES OUTPUT_NAME _TRUSTModule${OPT} PREFIX "" )
@@ -610,22 +531,65 @@ add_executable(dyn EXCLUDE_FROM_ALL ${TRUST_ROOT}/src/MAIN/the_main.cpp )
 target_link_libraries(dyn lib ${libdeps} ${libTrio}  ${syslib})
 set_target_properties(dyn PROPERTIES OUTPUT_NAME ${PROGRAM}_dyn PREFIX "" EXECUTABLE_OUTPUT_PATH "" )
 
-
-ENABLE_TESTING()
-SET (TRUST_TESTS $ENV{TRUST_TESTS})
-   # file(GLOB_RECURSE LML  RELATIVE ${TRUST_TESTS} FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z]*.lml.gz )
-   file(GLOB_RECURSE LML   FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z|0-9]*.lml.gz )
-# message("iiiii ${LML} oooo ${TRUST_TESTS}")
-LIST (LENGTH  LML NN)
-message("go ${NN} tests")
+#
+# Test generation
+#
+enable_testing()
+set(TRUST_TESTS $ENV{TRUST_TESTS})
+file(GLOB_RECURSE LML   FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z|0-9]*.lml.gz )
+list(LENGTH  LML NN)
 foreach(f ${LML})
-string(REPLACE .lml.gz "" l2 ${f} )
-string(FIND ${f} /  ii  REVERSE )
-string(SUBSTRING ${l2} ${ii} -1 l3 )
-string(SUBSTRING ${l3} 1 -1 l3 )
-ADD_TEST(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:exe> -check ${l3}  )
-set_property(TEST ${l3}  PROPERTY SKIP_RETURN_CODE 200 )
+    string(REPLACE .lml.gz "" l2 ${f} )
+    string(FIND ${f} /  ii  REVERSE )
+    string(SUBSTRING ${l2} ${ii} -1 l3 )
+    string(SUBSTRING ${l3} 1 -1 l3 )
+    add_test(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:exe> -check ${l3}  )
+    set_property(TEST ${l3}  PROPERTY SKIP_RETURN_CODE 200 )
 endforeach(f )
 ''')
-        out.close()
-    pass
+    out.close()
+
+
+############################
+# Main
+############################
+if  __name__ == '__main__':
+    args = sys.argv[1:]
+    sans_subdir, atelier = False, False
+    
+        
+    # TODO should use optparse:
+    if len(args)>0 and args[0]=="-atelier":
+        sans_subdir, atelier = True, True
+        rep_dev = os.getenv("rep_dev")
+        os.chdir(rep_dev)
+        args = args[1:]
+    if len(args)>0 and args[0]=="-avec_subdir":
+        sans_subdir = False
+        args = args[1:]
+    if len(args)>0 and args[0]=="-sans_subdir":
+        sans_subdir = True
+        args = args[1:]
+            
+    dirs = []
+    if len(args) == 0: # on lit dans rep.TRUST
+        tr = os.getenv("TRUST_ROOT")
+        with open(tr+"/env/rep.TRUST","r") as f:
+            for lin in f.readlines():
+                if lin.strip():
+                    dirs.append(lin.strip())
+    
+    listdirorg=[]
+    for make in dirs:
+        if os.path.basename(make) == 'make.include':
+            s = os.path.dirname(make)
+        else:
+            s = make
+        s2 = s.replace('./','')
+        listdirorg.append(s2)
+
+    generate_main_cmake(listdirorg, sans_subdir, atelier)
+
+    if atelier:
+        generate_baltik_cmake()
+
