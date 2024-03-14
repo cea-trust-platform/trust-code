@@ -13,21 +13,53 @@
 *
 *****************************************************************************/
 
-#include <Mod_turb_hyd_RANS_2eq.h>
+#ifndef Modele_turbulence_hyd_ss_maille_base_included
+#define Modele_turbulence_hyd_ss_maille_base_included
 
-Implemente_base_sans_constructeur(Mod_turb_hyd_RANS_2eq, "Mod_turb_hyd_RANS_2eq", Modele_turbulence_hyd_base);
-// X_D mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for Navier-Stokes equations.
+#define CSM1 0.063        // Constante viscosite turbulente modele sous maille
+#define CSMS1 0.112        // Constante viscosite turbulente modele sous maille selectif
+#define CSM2 0.37       // Constante energie cinetique turbulente modele sous maille
 
-Mod_turb_hyd_RANS_2eq::Mod_turb_hyd_RANS_2eq()
+#include <Modele_turbulence_hyd_base.h>
+
+/*! @brief Classe Modele_turbulence_hyd_ss_maille_base Classe representant le modele de turbulence sous maille pour les
+ *
+ *     equations de Navier-Stokes.
+ *
+ * @sa Modele_turbulence_hyd_base Modele_turbulence_hyd_K_Eps
+ */
+class Modele_turbulence_hyd_ss_maille_base: public Modele_turbulence_hyd_base
 {
 
-}
-Sortie& Mod_turb_hyd_RANS_2eq::printOn(Sortie& is) const
-{
-  return Modele_turbulence_hyd_base::printOn(is);
-}
+  Declare_base_sans_constructeur(Modele_turbulence_hyd_ss_maille_base);
 
-Entree& Mod_turb_hyd_RANS_2eq::readOn(Entree& is)
-{
-  return Modele_turbulence_hyd_base::readOn(is);
-}
+public:
+
+  Modele_turbulence_hyd_ss_maille_base();
+  void set_param(Param& param) override;
+  void discretiser() override;
+  void verifie_loi_paroi_diphasique();
+  int preparer_calcul() override;
+  void completer() override;
+  void mettre_a_jour(double) override;
+  inline virtual Champ_Fonc& energie_cinetique_turbulente()
+  {
+    return energie_cinetique_turb_;
+  }
+  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const
+  {
+    return energie_cinetique_turb_;
+  }
+  virtual void calculer_longueurs_caracteristiques()=0;
+  virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
+  virtual void calculer_energie_cinetique_turb();
+
+protected:
+
+  Champ_Fonc energie_cinetique_turb_;
+  DoubleVect l_;
+  Motcle methode;
+
+};
+
+#endif /* Modele_turbulence_hyd_ss_maille_base_included */

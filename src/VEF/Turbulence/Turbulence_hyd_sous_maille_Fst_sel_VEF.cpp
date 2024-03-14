@@ -52,7 +52,7 @@ void Turbulence_hyd_sous_maille_Fst_sel_VEF::discretiser()
       exit();
 
     }
-  Mod_turb_hyd_ss_maille::discretiser();
+  Modele_turbulence_hyd_ss_maille_base::discretiser();
   const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
   dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }

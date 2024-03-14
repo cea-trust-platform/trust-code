@@ -22,7 +22,7 @@
 #include <Parser_U.h>
 #include <Domaine_VF.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl, "Modele_turbulence_scal_Prandtl", Mod_Turb_scal_diffturb_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl, "Modele_turbulence_scal_Prandtl", Modele_turbulence_scal_diffturb_base);
 
 Modele_turbulence_scal_Prandtl::Modele_turbulence_scal_Prandtl() :
   LePrdt(0.9)
@@ -32,12 +32,12 @@ Modele_turbulence_scal_Prandtl::Modele_turbulence_scal_Prandtl() :
 Sortie& Modele_turbulence_scal_Prandtl::printOn(Sortie& s) const
 {
 
-  return Mod_Turb_scal_diffturb_base::printOn(s);
+  return Modele_turbulence_scal_diffturb_base::printOn(s);
 }
 
 Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is)
 {
-  Mod_Turb_scal_diffturb_base::readOn(is);
+  Modele_turbulence_scal_diffturb_base::readOn(is);
   /*
    // GF on  peut forcer le modele a toujours utilise le parser
    //pour l'instant c'est bloquant pour les constituants

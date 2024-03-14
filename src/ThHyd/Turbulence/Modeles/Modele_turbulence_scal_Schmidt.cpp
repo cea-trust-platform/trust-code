@@ -18,7 +18,7 @@
 #include <Param.h>
 #include <Convection_Diffusion_std.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt, "Modele_turbulence_scal_Schmidt", Mod_Turb_scal_diffturb_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt, "Modele_turbulence_scal_Schmidt", Modele_turbulence_scal_diffturb_base);
 
 Modele_turbulence_scal_Schmidt::Modele_turbulence_scal_Schmidt() :
   LeScturb(0.7)
@@ -28,12 +28,12 @@ Modele_turbulence_scal_Schmidt::Modele_turbulence_scal_Schmidt() :
 Sortie& Modele_turbulence_scal_Schmidt::printOn(Sortie& s) const
 {
 
-  return Mod_Turb_scal_diffturb_base::printOn(s);
+  return Modele_turbulence_scal_diffturb_base::printOn(s);
 }
 
 Entree& Modele_turbulence_scal_Schmidt::readOn(Entree& is)
 {
-  Mod_Turb_scal_diffturb_base::readOn(is);
+  Modele_turbulence_scal_diffturb_base::readOn(is);
   Cerr << "La valeur du nombre de Schmidt turbulent est de " << LeScturb << finl;
   return is;
 }

@@ -81,7 +81,7 @@ void Turbulence_hyd_sous_maille_1elt_selectif_mod_VEF::discretiser()
       Cerr << "The model sous_maille_1elt_selectif_mod has no sense if dimension is not 3." << finl;
       exit();
     }
-  Mod_turb_hyd_ss_maille::discretiser();
+  Modele_turbulence_hyd_ss_maille_base::discretiser();
   const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
   dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }

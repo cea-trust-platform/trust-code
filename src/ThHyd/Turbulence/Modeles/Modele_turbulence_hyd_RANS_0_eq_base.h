@@ -13,24 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Mod_turb_hyd_RANS_0_eq_included
-#define Mod_turb_hyd_RANS_0_eq_included
+#ifndef Modele_turbulence_hyd_RANS_0_eq_base_included
+#define Modele_turbulence_hyd_RANS_0_eq_base_included
 
 #include <Modele_turbulence_hyd_base.h>
 class Equation_base;
 
-/*! @brief Classe Mod_turb_hyd_RANS_0_eq Classe de base des modeles de type RANS a 0 equation
+/*! @brief Classe Modele_turbulence_hyd_RANS_0_eq_base Classe de base des modeles de type RANS a 0 equation
  *
  * @sa Modele_turbulence_hyd_base
  */
-class Mod_turb_hyd_RANS_0_eq: public Modele_turbulence_hyd_base
+class Modele_turbulence_hyd_RANS_0_eq_base: public Modele_turbulence_hyd_base
 {
 
-  Declare_base_sans_constructeur(Mod_turb_hyd_RANS_0_eq);
+  Declare_base_sans_constructeur(Modele_turbulence_hyd_RANS_0_eq_base);
 
 public:
 
-  Mod_turb_hyd_RANS_0_eq();
+  Modele_turbulence_hyd_RANS_0_eq_base();
   void set_param(Param& param) override;
   int reprendre(Entree& is) override;
   int comprend_mot(const Motcle& mot) const;
@@ -55,12 +55,12 @@ protected:
   Nom fichier_K_eps_sortie_;
 };
 
-inline Champ_Fonc& Mod_turb_hyd_RANS_0_eq::energie_cinetique_turbulente()
+inline Champ_Fonc& Modele_turbulence_hyd_RANS_0_eq_base::energie_cinetique_turbulente()
 {
   return energie_cinetique_turb_;
 }
-inline const Champ_Fonc& Mod_turb_hyd_RANS_0_eq::energie_cinetique_turbulente() const
+inline const Champ_Fonc& Modele_turbulence_hyd_RANS_0_eq_base::energie_cinetique_turbulente() const
 {
   return energie_cinetique_turb_;
 }
-#endif
+#endif /* Modele_turbulence_hyd_RANS_0_eq_base_included */

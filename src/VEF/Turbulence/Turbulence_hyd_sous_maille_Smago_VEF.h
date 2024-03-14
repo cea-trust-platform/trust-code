@@ -23,7 +23,7 @@
  *  maille smagorinsky en VEF
  *
  *  .SECTION  voir aussi
- *  Mod_turb_hyd_ss_maille
+ *  Modele_turbulence_hyd_ss_maille_base
  *
  */
 class Turbulence_hyd_sous_maille_Smago_VEF: public Mod_turb_hyd_ss_maille_VEF

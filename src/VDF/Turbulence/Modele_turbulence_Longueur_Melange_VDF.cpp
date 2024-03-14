@@ -25,7 +25,7 @@
 #include <Equation_base.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VDF, "Modele_turbulence_hyd_Longueur_Melange_VDF", Mod_turb_hyd_RANS_0_eq);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_Longueur_Melange_VDF, "Modele_turbulence_hyd_Longueur_Melange_VDF", Modele_turbulence_hyd_RANS_0_eq_base);
 
 Modele_turbulence_Longueur_Melange_VDF::Modele_turbulence_Longueur_Melange_VDF()
 {
@@ -44,19 +44,19 @@ Sortie& Modele_turbulence_Longueur_Melange_VDF::printOn(Sortie& s) const
   return s << que_suis_je() << " " << le_nom();
 }
 
-/*! @brief Simple appel a Mod_turb_hyd_RANS_0_eq::readOn(Entree&)
+/*! @brief Simple appel a Modele_turbulence_hyd_RANS_0_eq_base::readOn(Entree&)
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
 Entree& Modele_turbulence_Longueur_Melange_VDF::readOn(Entree& s)
 {
-  return Mod_turb_hyd_RANS_0_eq::readOn(s);
+  return Modele_turbulence_hyd_RANS_0_eq_base::readOn(s);
 }
 
 void Modele_turbulence_Longueur_Melange_VDF::set_param(Param& param)
 {
-  Mod_turb_hyd_RANS_0_eq::set_param(param);
+  Modele_turbulence_hyd_RANS_0_eq_base::set_param(param);
   param.ajouter("canal_hmin", &alt_min);
   param.ajouter("canal_hmax", &alt_max);
   param.ajouter("direction_normale_canal", &direction);

@@ -79,7 +79,7 @@ Entree& Turbulence_hyd_sous_maille_selectif_mod_VEF::readOn(Entree& s)
 void Turbulence_hyd_sous_maille_selectif_mod_VEF::discretiser()
 {
   // Cerr << "Turbulence_hyd_sous_maille_selectif_mod_VEF::discretiser()" << finl;
-  Mod_turb_hyd_ss_maille::discretiser();
+  Modele_turbulence_hyd_ss_maille_base::discretiser();
   const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
   dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }

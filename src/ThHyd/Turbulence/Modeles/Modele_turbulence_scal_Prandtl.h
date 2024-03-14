@@ -16,7 +16,7 @@
 #ifndef Modele_turbulence_scal_Prandtl_included
 #define Modele_turbulence_scal_Prandtl_included
 
-#include <Mod_Turb_scal_diffturb_base.h>
+#include <Modele_turbulence_scal_diffturb_base.h>
 #include <Parser_U.h>
 
 /*! @brief Classe Modele_turbulence_scal_Prandtl Cette classe represente le modele de calcul suivant
@@ -26,7 +26,7 @@
  *
  * @sa Mod_Turb_scal_diffuturb_base
  */
-class Modele_turbulence_scal_Prandtl: public Mod_Turb_scal_diffturb_base
+class Modele_turbulence_scal_Prandtl: public Modele_turbulence_scal_diffturb_base
 {
 
   Declare_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl);

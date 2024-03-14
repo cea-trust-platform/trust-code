@@ -78,7 +78,7 @@ int Turbulence_hyd_sous_maille_selectif_mod_VDF::lire_motcle_non_standard(const 
 void Turbulence_hyd_sous_maille_selectif_mod_VDF::discretiser()
 {
   // Cerr << "Turbulence_hyd_sous_maille_selectif_mod_VDF::discretiser()" << finl;
-  Mod_turb_hyd_ss_maille::discretiser();
+  Modele_turbulence_hyd_ss_maille_base::discretiser();
   const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation->discretisation());
   dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
 }

@@ -19,7 +19,7 @@
 #include <Domaine_Cl_VEF.h>
 #include <Domaine_Cl_dis.h>
 
-Implemente_base(Mod_turb_hyd_ss_maille_VEF, "Mod_turb_hyd_ss_maille_VEF", Mod_turb_hyd_ss_maille);
+Implemente_base(Mod_turb_hyd_ss_maille_VEF, "Mod_turb_hyd_ss_maille_VEF", Modele_turbulence_hyd_ss_maille_base);
 
 Sortie& Mod_turb_hyd_ss_maille_VEF::printOn(Sortie& s) const
 {
@@ -28,7 +28,7 @@ Sortie& Mod_turb_hyd_ss_maille_VEF::printOn(Sortie& s) const
 
 Entree& Mod_turb_hyd_ss_maille_VEF::readOn(Entree& is)
 {
-  return Mod_turb_hyd_ss_maille::readOn(is);
+  return Modele_turbulence_hyd_ss_maille_base::readOn(is);
 }
 
 void Mod_turb_hyd_ss_maille_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)

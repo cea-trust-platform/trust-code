@@ -16,7 +16,7 @@
 #ifndef Mod_turb_hyd_ss_maille_VEF_included
 #define Mod_turb_hyd_ss_maille_VEF_included
 
-#include <Mod_turb_hyd_ss_maille.h>
+#include <Modele_turbulence_hyd_ss_maille_base.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_dis;
@@ -28,10 +28,10 @@ class Domaine_VEF;
  *  maille en VEF
  *
  *  .SECTION  voir aussi
- *  Mod_turb_hyd_ss_maille
+ *  Modele_turbulence_hyd_ss_maille_base
  *
  */
-class Mod_turb_hyd_ss_maille_VEF: public Mod_turb_hyd_ss_maille
+class Mod_turb_hyd_ss_maille_VEF: public Modele_turbulence_hyd_ss_maille_base
 {
 
   Declare_base(Mod_turb_hyd_ss_maille_VEF);

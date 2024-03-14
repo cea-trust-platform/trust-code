@@ -144,7 +144,7 @@ void Turbulence_hyd_sous_maille_SMAGO_DYN_VDF::associer(const Domaine_dis& domai
 //////////////////////////////////////////////////////////////////////
 int Turbulence_hyd_sous_maille_SMAGO_DYN_VDF::preparer_calcul()
 {
-  Mod_turb_hyd_ss_maille::preparer_calcul();
+  Modele_turbulence_hyd_ss_maille_base::preparer_calcul();
   mettre_a_jour(0.);
   return 1;
 }

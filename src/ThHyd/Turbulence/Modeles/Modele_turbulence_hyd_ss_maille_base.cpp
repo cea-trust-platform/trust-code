@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Mod_turb_hyd_ss_maille.h>
+#include <Modele_turbulence_hyd_ss_maille_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Param.h>
@@ -23,30 +23,30 @@
 #include <stat_counters.h>
 #include <Milieu_base.h>
 
-Implemente_base_sans_constructeur(Mod_turb_hyd_ss_maille, "Mod_turb_hyd_ss_maille", Modele_turbulence_hyd_base);
+Implemente_base_sans_constructeur(Modele_turbulence_hyd_ss_maille_base, "Modele_turbulence_hyd_ss_maille_base", Modele_turbulence_hyd_base);
 
-Mod_turb_hyd_ss_maille::Mod_turb_hyd_ss_maille()
+Modele_turbulence_hyd_ss_maille_base::Modele_turbulence_hyd_ss_maille_base()
 {
   methode = "volume"; // Parametre par defaut pour calculer la longueur caracteristique
 }
 
-Sortie& Mod_turb_hyd_ss_maille::printOn(Sortie& is) const
+Sortie& Modele_turbulence_hyd_ss_maille_base::printOn(Sortie& is) const
 {
   return Modele_turbulence_hyd_base::printOn(is);
 }
 
-Entree& Mod_turb_hyd_ss_maille::readOn(Entree& is)
+Entree& Modele_turbulence_hyd_ss_maille_base::readOn(Entree& is)
 {
   return Modele_turbulence_hyd_base::readOn(is);
 }
 
-void Mod_turb_hyd_ss_maille::set_param(Param& param)
+void Modele_turbulence_hyd_ss_maille_base::set_param(Param& param)
 {
   Modele_turbulence_hyd_base::set_param(param);
   param.ajouter("longueur_maille", &methode);
 }
 
-int Mod_turb_hyd_ss_maille::preparer_calcul()
+int Modele_turbulence_hyd_ss_maille_base::preparer_calcul()
 {
   Modele_turbulence_hyd_base::preparer_calcul();
   if (methode != "??")
@@ -62,7 +62,7 @@ int Mod_turb_hyd_ss_maille::preparer_calcul()
  *     Initialise les integrales statistiques.
  *
  */
-void Mod_turb_hyd_ss_maille::discretiser()
+void Modele_turbulence_hyd_ss_maille_base::discretiser()
 {
   Modele_turbulence_hyd_base::discretiser();
   discretiser_K(mon_equation->schema_temps(), mon_equation->domaine_dis(), energie_cinetique_turb_);
@@ -71,10 +71,10 @@ void Mod_turb_hyd_ss_maille::discretiser()
 
 // E.Saikali
 // In the current version of TrioCFD and the FT part in particular, it is possible only to use LES WALE (Smagorinsky,1963,Mon.Weather Rev. 91,99)
-// For this reason, associating the wall laws of multi-phase flows is done in this method Mod_turb_hyd_ss_maille::completer()
+// For this reason, associating the wall laws of multi-phase flows is done in this method Modele_turbulence_hyd_ss_maille_base::completer()
 // We only go inside if the user defines the wall law as loi_standard_hydr, for both discretizations VEF and VDF
 // Otherwise, in the case of negligeable, the multiphase wall law is not used
-void Mod_turb_hyd_ss_maille::verifie_loi_paroi_diphasique()
+void Modele_turbulence_hyd_ss_maille_base::verifie_loi_paroi_diphasique()
 {
   const Milieu_base& mil = equation().milieu(); // returns Fluide_Diphasique or Fluide_Incompressible
   const Nom& nom_mil = mil.que_suis_je();
@@ -104,13 +104,13 @@ void Mod_turb_hyd_ss_maille::verifie_loi_paroi_diphasique()
     }
 }
 
-void Mod_turb_hyd_ss_maille::completer()
+void Modele_turbulence_hyd_ss_maille_base::completer()
 {
-  Cerr << "Mod_turb_hyd_ss_maille::completer()" << finl;
+  Cerr << "Modele_turbulence_hyd_ss_maille_base::completer()" << finl;
   verifie_loi_paroi_diphasique();
 }
 
-void Mod_turb_hyd_ss_maille::mettre_a_jour(double)
+void Modele_turbulence_hyd_ss_maille_base::mettre_a_jour(double)
 {
   statistiques().begin_count(nut_counter_);
   calculer_viscosite_turbulente();
@@ -124,7 +124,7 @@ void Mod_turb_hyd_ss_maille::mettre_a_jour(double)
   statistiques().end_count(nut_counter_);
 }
 
-void Mod_turb_hyd_ss_maille::calculer_energie_cinetique_turb()
+void Modele_turbulence_hyd_ss_maille_base::calculer_energie_cinetique_turb()
 {
   DoubleVect& k = energie_cinetique_turb_.valeurs();
   DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();

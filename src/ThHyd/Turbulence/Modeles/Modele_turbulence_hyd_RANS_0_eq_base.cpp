@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Mod_turb_hyd_RANS_0_eq.h>
+#include <Modele_turbulence_hyd_RANS_0_eq_base.h>
 #include <Discretisation_base.h>
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Motcle.h>
@@ -25,9 +25,9 @@
 #include <stat_counters.h>
 #include <Param.h>
 
-Implemente_base_sans_constructeur(Mod_turb_hyd_RANS_0_eq, "Mod_turb_hyd_RANS_0_eq", Modele_turbulence_hyd_base);
+Implemente_base_sans_constructeur(Modele_turbulence_hyd_RANS_0_eq_base, "Modele_turbulence_hyd_RANS_0_eq_base", Modele_turbulence_hyd_base);
 
-Mod_turb_hyd_RANS_0_eq::Mod_turb_hyd_RANS_0_eq()
+Modele_turbulence_hyd_RANS_0_eq_base::Modele_turbulence_hyd_RANS_0_eq_base()
 {
   /*
    Noms& nom=champs_compris_.liste_noms_compris();
@@ -38,31 +38,31 @@ Mod_turb_hyd_RANS_0_eq::Mod_turb_hyd_RANS_0_eq()
    */
 }
 
-Sortie& Mod_turb_hyd_RANS_0_eq::printOn(Sortie& is) const
+Sortie& Modele_turbulence_hyd_RANS_0_eq_base::printOn(Sortie& is) const
 {
   return Modele_turbulence_hyd_base::printOn(is);
 }
 
-Entree& Mod_turb_hyd_RANS_0_eq::readOn(Entree& is)
+Entree& Modele_turbulence_hyd_RANS_0_eq_base::readOn(Entree& is)
 {
   return Modele_turbulence_hyd_base::readOn(is);
 }
 
-void Mod_turb_hyd_RANS_0_eq::set_param(Param& param)
+void Modele_turbulence_hyd_RANS_0_eq_base::set_param(Param& param)
 {
   Modele_turbulence_hyd_base::set_param(param);
   param.ajouter("fichier_ecriture_K_eps", &fichier_K_eps_sortie_);
 }
 
-void Mod_turb_hyd_RANS_0_eq::discretiser()
+void Modele_turbulence_hyd_RANS_0_eq_base::discretiser()
 {
   Modele_turbulence_hyd_base::discretiser();
   discretiser_K(mon_equation->schema_temps(), mon_equation->domaine_dis(), energie_cinetique_turb_);
   champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
-int Mod_turb_hyd_RANS_0_eq::a_pour_Champ_Fonc(const Motcle& mot,
-                                              REF(Champ_base) &ch_ref) const
+int Modele_turbulence_hyd_RANS_0_eq_base::a_pour_Champ_Fonc(const Motcle& mot,
+                                                            REF(Champ_base) &ch_ref) const
 {
   Motcles les_motcles(3);
   {
@@ -97,12 +97,12 @@ int Mod_turb_hyd_RANS_0_eq::a_pour_Champ_Fonc(const Motcle& mot,
       return 0;
     }
 }
-int Mod_turb_hyd_RANS_0_eq::comprend_mot(const Motcle& mot) const
+int Modele_turbulence_hyd_RANS_0_eq_base::comprend_mot(const Motcle& mot) const
 {
   return comprend_champ(mot);
 }
 
-int Mod_turb_hyd_RANS_0_eq::comprend_champ(const Motcle& mot) const
+int Modele_turbulence_hyd_RANS_0_eq_base::comprend_champ(const Motcle& mot) const
 {
   Motcles les_motcles(3);
   {
@@ -131,12 +131,12 @@ int Mod_turb_hyd_RANS_0_eq::comprend_champ(const Motcle& mot) const
     return 0;
 }
 
-int Mod_turb_hyd_RANS_0_eq::reprendre(Entree& is)
+int Modele_turbulence_hyd_RANS_0_eq_base::reprendre(Entree& is)
 {
   return 1;
 }
 
-void Mod_turb_hyd_RANS_0_eq::completer()
+void Modele_turbulence_hyd_RANS_0_eq_base::completer()
 {
   // creation de K_eps_sortie et du fichier med si on a demande ecrire_K_eps
   if (fichier_K_eps_sortie_ != Nom())
@@ -163,7 +163,7 @@ void Mod_turb_hyd_RANS_0_eq::completer()
     }
 }
 
-void Mod_turb_hyd_RANS_0_eq::mettre_a_jour(double)
+void Modele_turbulence_hyd_RANS_0_eq_base::mettre_a_jour(double)
 {
   statistiques().begin_count(nut_counter_);
   calculer_viscosite_turbulente();
@@ -177,7 +177,7 @@ void Mod_turb_hyd_RANS_0_eq::mettre_a_jour(double)
   statistiques().end_count(nut_counter_);
 }
 
-void Mod_turb_hyd_RANS_0_eq::imprimer(Sortie& os) const
+void Modele_turbulence_hyd_RANS_0_eq_base::imprimer(Sortie& os) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();

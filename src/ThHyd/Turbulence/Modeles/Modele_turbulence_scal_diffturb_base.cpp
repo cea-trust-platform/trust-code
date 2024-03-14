@@ -13,38 +13,53 @@
 *
 *****************************************************************************/
 
-#ifndef Mod_Turb_scal_diffturb_base_included
-#define Mod_Turb_scal_diffturb_base_included
+#include <Modele_turbulence_scal_diffturb_base.h>
+#include <Modele_turbulence_hyd_base.h>
+#include <Convection_Diffusion_std.h>
 
-#include <Modele_turbulence_scal_base.h>
-#include <Probleme_base.h>
-#include <Milieu_base.h>
-#include <TRUST_Ref.h>
+Implemente_base(Modele_turbulence_scal_diffturb_base, "Modele_turbulence_scal_diffturb_base", Modele_turbulence_scal_base);
 
-class Champ_Fonc;
-
-/*! @brief Classe Mod_Turb_scal_diffuturb_base Cette classe represente la classe de base pour le modele de calcul suivant
- *
- *     pour la diffusivite turbulente:
- *                   alpha_turb = visco_turb / coeff_turb;
- *
- * @sa Modele_turbulence_scal_base
- */
-class Mod_Turb_scal_diffturb_base: public Modele_turbulence_scal_base
+Sortie& Modele_turbulence_scal_diffturb_base::printOn(Sortie& s) const
 {
+  return s << que_suis_je() << " " << le_nom();
+}
 
-  Declare_base(Mod_Turb_scal_diffturb_base);
+Entree& Modele_turbulence_scal_diffturb_base::readOn(Entree& is)
+{
+  return Modele_turbulence_scal_base::readOn(is);
+}
 
-public:
+/*! @brief Associe une viscosite turbulente au modele de turbulence.
+ *
+ * @param (Champ_Fonc& visc_turb) le champ fonction representant la viscosite turbulente a associer.
+ */
+void Modele_turbulence_scal_diffturb_base::associer_viscosite_turbulente(const Champ_Fonc& visc_turb)
+{
+  la_viscosite_turbulente = visc_turb;
+}
 
-  //virtual int comprend_mot(const Motcle& ) const;
-  void associer_viscosite_turbulente(const Champ_Fonc&);
-  void completer() override;
-  int reprendre(Entree&) override;
+/*! @brief Complete le modele de turbulence: Appelle Modele_turbulence_scal_base::completer()
+ *
+ *     associe la viscosite turbulente du probleme
+ *     au modele de turbulence.
+ *
+ */
+void Modele_turbulence_scal_diffturb_base::completer()
+{
+  Modele_turbulence_scal_base::completer();
+  const Probleme_base& mon_pb = equation().probleme();
+  const RefObjU& modele_turbulence = mon_pb.equation(0).get_modele(TURBULENCE);
+  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
+  const Champ_Fonc& visc_turb = mod_turb_hydr.viscosite_turbulente();
+  associer_viscosite_turbulente(visc_turb);
+}
 
-protected:
-
-  REF(Champ_Fonc) la_viscosite_turbulente;
-};
-
-#endif
+/*! @brief NE FAIT RIEN
+ *
+ * @param (Entree&) un flot d'entree
+ * @return (int) renvoie toujours 1
+ */
+int Modele_turbulence_scal_diffturb_base::reprendre(Entree&)
+{
+  return 1;
+}
