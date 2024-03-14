@@ -18,7 +18,9 @@
 #include <petscis.h>
 #include <petscdmshell.h>
 #include <petscsection.h>
+#ifdef PETSC_HAVE_HYPRE
 #include <HYPRE_config.h>
+#endif
 #include <tuple>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
