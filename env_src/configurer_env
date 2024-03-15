@@ -2453,8 +2453,18 @@ echo "SET( CMAKE_BUILD_TYPE \"\${CMAKE_BUILD_TYPE}\" CACHE STRING \"Choose the t
 echo "File Cmake.env created."
 
 cd $TRUST_ROOT/bin
-# Mise a jour du fichier rep.TRUST
-./mkrep
+
+# Update/create instancie_xxx files - MAIN must be done last!!
+echo -n "Updating instancie_xxx files... "
+for ze_dir in `find $TRUST_ROOT/src -type d`; do
+    if [ "$ze_dir" != "$TRUST_ROOT/src/MAIN" ]; then
+        (cd $ze_dir; mk_Instancie) &   # Go parallel!
+    fi
+done
+wait $(jobs -rp)
+(cd $TRUST_ROOT/src/MAIN; mk_Instancie)
+echo "done."
+
 # Mise a jour des fichiers make.lib$SO_EXTENSION
 ./mklibs
 # Cree le repertoire $TRUST_ROOT/include pour l'atelier
@@ -2503,6 +2513,7 @@ then
 fi
 # Menage
 rm -f $TRUST_ENV/.rep $TRUST_ENV/.path
+
 
 # Edit sources for 64 bit integers build :
 if [ "$TRUST_INT64" = "1" ]

@@ -7,13 +7,19 @@ import sys
 import os
 
 # Common header for all CMakeLists.txt (i.e. TRUST & Baltiks)
-common_hdr = '''# 
+COMMON_HDR = '''# 
 # This file was generated automatically by bin/KSH/Createcmakefile.py
 # !!Do not edit directly!! - changes will be overwritten!
 #
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 '''
+
+#
+# Definitions of the various TRUST modules
+#
+SPATIAL_DISCRET = ['src/EF', 'src/IJK', 'src/PolyMAC', 'src/VDF', 'src/VEF']
+PHYSICAL_MODULES = ['src/ThHyd', 'src/ThSol']
 
 def read_libs_from_makeliba():
     """ From the make.liba file, generate Cmake.libs
@@ -47,80 +53,157 @@ def read_libs_from_makeliba():
         for var in ['list_path_libs','list_path_sys','list_libs']:
             out.write('MARK_AS_ADVANCED('+var+')\n')
 
-def add_library_for_dir(s2):
-    """ Produce the small CMake piece for a sub_directory """
-    tgt_nam = f"obj_{s2}"
+def add_library_for_dir(libnam):
+    """ Produce the the library part of the CMakeLists.txt for a sub_directory """
+    tgt_nam = f"obj_{libnam}"
     # Caution: double '{{' and '}}' just to escape from Python format string:
     strout = f'''add_library({tgt_nam} OBJECT  ${{srcs}} )
-set(listlibs ${{listlibs}} {s2} PARENT_SCOPE)
-add_custom_target(check_sources_{s2} COMMAND check_sources.sh ${{CMAKE_CURRENT_SOURCE_DIR}} )
-add_dependencies(obj_{s2} check_sources_{s2})
+set(listlibs ${{listlibs}} {libnam} PARENT_SCOPE)
+add_custom_target(check_sources_{libnam} COMMAND check_sources.sh ${{CMAKE_CURRENT_SOURCE_DIR}} )
+add_dependencies(obj_{libnam} check_sources_{libnam})
 if(COMPIL_DYN)
-    add_library({s2} SHARED $<TARGET_OBJECTS:obj_{s2}>)
-    install(TARGETS {s2} DESTINATION lib)
+    add_library({libnam} SHARED $<TARGET_OBJECTS:obj_{libnam}>)
+    install(TARGETS {libnam} DESTINATION lib)
 endif(COMPIL_DYN)
 '''
     return strout
 
-def lire_make_include(file,listlib):
-    """ Write CMakeLists.txt files from make.include files """
-    f = open(file)
-    g = f.readlines()
-    t=""
-    for s in g:
-        t+=s.replace('\\\n','').replace('\t',' ')
-    t = t.split('\n')
+#
+# Path manipulation ...
+#
+def full_path(root_dir, ze_dir):
+    """ From src/titi -> /a/b/c/TRUST/src/titi """
+    return os.path.join(root_dir, ze_dir)
+    
+def short_path(root_dir, ze_dir):
+    """ Opposite of full_path() above """
+    return ze_dir.replace(os.path.join(root_dir, ""), "")
 
+def get_module_dir(ze_dir):
+    """ From src/IJK/toto/tiit returns src/IJK 
+    """
+    arr = os.path.normpath(ze_dir).split(os.sep)
+    return os.sep.join(arr[:2])
+
+def is_sub_dir_of(ze_dir, top_dir_lst):
+    """ Return whehter 'ze_dir' is a sub-directory of one of the entry found in the list 'top_dir_lst'
+    @param ze_dir is a relative short path (src/toto)
+    """
+    for top in top_dir_lst:
+      if ze_dir.startswith(top):
+        return True
+    return False
+
+def all_sub_dirs(root_dir, ze_dir):
+    """ List all sub-directories of a given top directory which contains at least one file 
+    @param ze_dir must be a relative (short) path
+    @return a list of relative (short) paths
+    """
+    dr = full_path(root_dir, ze_dir)
+    lst = []
+    for dirpath, dirnames, filenames in os.walk(dr):
+      if filenames:
+        lst.append(short_path(root_dir, dirpath))
+    return lst
+
+# All include directories for kernel and physical module - computed in 'generate_main_cmake'
+_full_kern_inc = []
+_full_physic_inc = []
+
+def generate_subdir_cmake(root_dir, ze_dir, fname):
+    """ Generate CMakeLists.txt for a sub-directory of the TRUST soruces.
+    For the 'include_directories' directive, the rule is as follows:
+      - spatial discretisation depend only on Kernel, and not on other discretisations
+      - physical modules (ThHyd, ThSol) depends only on Kernel, and not on discretisations
+    Last but not least, beware that sources used to compile the micro/numeric/std kernels do NOT correspond 
+    to include that are needed. For example Probleme_base 
+        1) is in src/Kernel/Framework (so in kernel_standard)
+        2) but needs Postraitements.h (located in src/Kernel/Postraitement, so **not** in kernel_standard library) to compile
+        ... !
+    """
+    # Sources to compile - a GLOB:
     strout = "file(GLOB srcs [A-Z|a-z]*.cpp [A-Z|a-z]*.c [A-Z|a-z]*.f)\n"
 
-    for s in t:
-        if s.find("Includes")>=0:
-            s = s.replace('-I.','-I${CMAKE_CURRENT_SOURCE_DIR}')
-            s2 = s.split('-I')
-            inc_dir = " ".join(s2[1:])
-            strout += "include_directories(" + inc_dir.replace('(','{').replace(')','}')+ ")\n" 
-        elif s.find("Lib")>=0:
-            s2=s.split("/lib")
-            listlib.append(s2[1])
-            strout += add_library_for_dir(s2[1])
-    return strout,listlib
+    # Include directories - see rule above:
+    if is_sub_dir_of(ze_dir, PHYSICAL_MODULES):
+      # include all sub-dir of the given physical module
+      rd = get_module_dir(ze_dir)
+      inc = _full_kern_inc + all_sub_dirs(root_dir, rd)
+      # [ABN] HACK HACK HACK: ThHyd needs ThSol ... pfff:
+      if rd == "src/ThHyd":
+        inc.extend(all_sub_dirs(root_dir, "src/ThSol"))
+    elif is_sub_dir_of(ze_dir, SPATIAL_DISCRET):
+      # include all sub-dir physical modules, plus all sub-dir of the discretisation:
+      mod_dir = get_module_dir(ze_dir)
+      inc = _full_kern_inc + _full_physic_inc + all_sub_dirs(root_dir, mod_dir)
+    elif is_sub_dir_of(ze_dir, ["src/Kernel"]) or ze_dir == "src/MAIN":
+      inc = _full_kern_inc
+    else:
+      raise ValueError(f"The sub-directory '{ze_dir}' is not properly declared at the top of bin/KSH/Createcmakefile.py as being a spatial discretisation or a physical module!! Check this.")
+    inc2 = '\n'.join(['${TRUST_ROOT}/%s' % s for s in inc])
+    strout += f'''include_directories(
+${{CMAKE_CURRENT_SOURCE_DIR}}
+{inc2}
+)
+'''
+    # Library name is of the form lib<rep1>_<rep2>_<rep3>... for a source directory like src/rep1/rep2/rep3:
+    arr = os.path.normpath(ze_dir).split(os.sep)
+    lib_nam = '_'.join(arr[1:])
+    strout += add_library_for_dir(lib_nam)
 
-def ajoute_subdir(dirmake,dirsdict):
-    """ Add a sub-directory from main CMakeLists.txt file """
-    strout=""
-    for d in dirsdict[dirmake]:
-        strout+="add_subdirectory("+d+")\n"
     return strout
 
-def generate_main_cmake(listdirorg, sans_subdir, atelier):
+def list_dir_containing_compilable(root_dir):
+    """ Generate list of all sub-directories containing sources to be compiled
+    """
+    def is_compilable(f):
+        ext = [".cpp", ".f", ".c"]
+        for e in ext:
+            if f.endswith(e):
+                return True
+        return False
+        
+    listdirorg = []
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        if filenames:
+            for f in filenames:
+                if is_compilable(f):
+                    listdirorg.append(dirpath)
+                    break
+    return listdirorg
+
+def generate_cmake_files(root_dir, atelier):
     """ Generate the main CMakeLists.txt file and all sub CMakeLists.txt files 
     """
-    listlib=[]
-    if sans_subdir:
-        for dirmake in listdirorg:
-            cmake = os.path.join(dirmake,'CMakeLists.txt')
-            if os.path.exists(cmake):
-                os.remove(cmake)
+    # Get all directories containing sources to be compiled:
+    src_dir = os.path.join(root_dir, "src")
+    listdirorg = list_dir_containing_compilable(src_dir)
 
-    if not sans_subdir:
-        for dirmake in listdirorg:
-            strout=""
-            make=os.path.join(dirmake,'make.include')
-            if os.path.exists(make):
-                strout,listlib=lire_make_include(make,listlib)
-            cmake=make.replace('make.include','CMakeLists.txt')
-            with open(cmake,'w') as out:
-                out.write(strout)
-
-        with open(os.path.join('src/MAIN','CMakeLists.txt'),'a') as out:
-            out.write(add_library_for_dir("main"))
+    # Generate include directories lists:
+    global _full_kern_inc, _full_physic_inc
+    _full_kern_inc = all_sub_dirs(root_dir, 'src/Kernel') # warning, not the same as KERNEL_STANDARD!!
+    _full_kern_inc.append("src/MAIN")  # because of ICoCo/ProblemTrio.cpp ...
+    _full_physic_inc = []
+    for d in PHYSICAL_MODULES:
+      _full_physic_inc.extend(all_sub_dirs(root_dir, d))
+    
+    # Generate sub CMakeLists.txt for each sub-directory in the TRUST sources:
+    #
+    for d in listdirorg:
+        d_short = short_path(root_dir, d)
+        cmake_fnam = os.path.join(d, 'CMakeLists.txt')
+        with open(cmake_fnam, "w") as f:
+            d_short = short_path(root_dir, d)          
+            s = generate_subdir_cmake(root_dir, d_short, cmake_fnam)
+            f.write(s)
 
     if atelier:
         out = open('CMakeLists.txt.trust','w')
     else:
         out = open('src/CMakeLists.txt','w')
 
-    out.write(common_hdr)
+    # Now the big central CMakeLists.txt:
+    out.write(COMMON_HDR)
 
     if (os.getenv("TRUST_ARCH_CC")=="linux_nvc++"):
         out.write('# For cmake 3.22 and NVidia:\n')
@@ -180,14 +263,15 @@ endif()
 # Source directories
 # 
 ''')
-
-    out.write('set(listdir \n'+'\n'.join(listdirorg)+')\n')
+    listdir_short = [s.replace(root_dir + "/", "") for s in listdirorg]  # strip TRUST_ROOT to keep only src/titi/toto
+    out.write('set(listdir \n'+'\n'.join(listdir_short)+')\n')
     out.write('''
+set(listdir_full ${listdir})
 
 # Micro kernel
 set(listdir_micro 
     src/Kernel/Math 
-    src/Kernel/Utilitaires  
+    src/Kernel/Utilitaires
     src/MAIN
 )
 
@@ -218,37 +302,13 @@ list(APPEND listdir_standard
 )
 
 #
-# Generate appel_c_mod_xxx.cpp file
-# TODO: still necessary??
+# Set Kernel type
 #
 set(kernel "full" CACHE STRING "full,standard,numeric,micro" )
-
 if (NOT ${kernel} STREQUAL "full")
   message(STATUS "Kernel variant: ${kernel}")
-  set(listdirmod ${listdir_${kernel}})
   set(ajout _${kernel}_kernel)
-  set(special_srcs ${CMAKE_CURRENT_BINARY_DIR}/appel_c_mod_${kernel}.cpp)
-  set(oo "")
-  foreach(d ${listdir})
-    list(FIND  listdirmod ${d} trouve)
-    if (${trouve} EQUAL -1)
-      STRING(REPLACE "/" "_" d2 ${d})
-      set(oo "${oo} void instancie_${d2}() { } ")
-    endif()
-  endforeach(d)
-  set(oo "${oo} \n")
-  if (EXISTS  ${special_srcs})
-    file(READ  ${special_srcs} org)
-    string(COMPARE NOTEQUAL ${org} ${oo} update_src)
-  else()
-    set(update_src 1)
-  endif()
-  if (update_src)
-    message(STATUS "Updating ${special_srcs}")
-    file(WRITE ${special_srcs} "${oo}")
-  endif(update_src)
-
-  set(listdir ${listdirmod})
+  set(listdir ${listdir_${kernel}})
 endif()
 
 #
@@ -277,7 +337,7 @@ if(NOT VISUAL)
     else(CMAKE_BUILD_TYPE STREQUAL "Release")
        message(FATAL_ERROR  "Unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,custom")
     endif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(STATUS "Build mode: ${OPT}")
+    message(STATUS "Build mode (OPT variable): '${OPT}'")
 
 
     set(COMM $ENV{COMM})
@@ -351,6 +411,8 @@ include_directories(SYSTEM
     ${TRUST_ROOT}/lib/src/LIBOSQP/include 
     ${TRUST_ROOT}/lib/src/LIBVC/include 
     ${TRUST_KOKKOS_ROOT}/${TRUST_ARCH}${OPT}/include
+    ${TRUST_ROOT}/include/EOS 
+    ${TRUST_ROOT}/include/CoolProp
 )
 
 #
@@ -363,9 +425,45 @@ set(libtrio_name TRUST${COMM}${ajout}${OPT})
 set(libtrio lib${libtrio_name})
 
 if(NOT ATELIER) # Not a Baltik, TRUST itself
+    #
+    # Include all TRUST (or specialized kernel) sub-directories
+    #
     foreach(dir ${listdir})
         add_subdirectory(../${dir})
     endforeach()
+
+    #
+    # Update "instancie_complement_xxx.h" which contains all the *complementary* calls to the instancie methods
+    # which otherwise won't be found when MAIN is including 'instancie_appel_c.h' file.
+    # 
+    # Recall: 
+    #   - instancie_src_xxx_yyy.cpp make sure all classes derived from Objet_U are instanciated once in the code
+    #   - src/MAIN/instancie_appel.h contains all the signatures for those methods
+    #   - src/MAIN/instancie_appel_c.h contains all the *calls* to those methods (what the main does when it starts TRUST)
+    #   - when just compiling a kernel (micro, numeric or standard) we want those calls to be valid, but some instancie_src_xx_yy.cpp are not there!
+    #     -> instancie_complement_xxx.cpp contains dummy implementation to fix this.
+    # Note: we could just generate a correct instancie_appel_c.h for each kernel we compile, but this would change this file over and over
+    # triggering a recompile every time.
+    #
+    set(inst_compl "${CMAKE_BINARY_DIR}/instancie_complement_${kernel}.cpp") 
+    set(new_inst "// THIS FILE IS CREATED AUTOMATICALLY BY bin/KSH/Createcmakefile.py - DO NOT EDIT\\n// TRUST_NO_INDENT\\n")
+    foreach(d ${listdir_full})
+        list(FIND listdir ${d} found)
+            if (${found} EQUAL -1)
+                string(REPLACE "/" "_" d2 ${d})
+                set(new_inst "${new_inst}void instancie_${d2}() { }\\n")
+            endif()
+    endforeach() 
+    if (EXISTS  ${inst_compl})
+        file(READ  ${inst_compl} org)
+        string(COMPARE NOTEQUAL ${org} ${new_inst} update_src)
+    else()
+        set(update_src 1)
+    endif()
+    if (update_src)
+        message(STATUS "Updating ${inst_compl}")
+        file(WRITE ${inst_compl} "${new_inst}")
+    endif()    
 
     #
     # The main TRUST library file generated here:
@@ -375,7 +473,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
         foreach(_obj IN LISTS listlibs)
             list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
         endforeach()
-        add_library(${libtrio} STATIC  ${special_srcs} ${my_listobj} )
+        add_library(${libtrio} STATIC ${my_listobj} )
         set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
         install(TARGETS ${libtrio} DESTINATION lib)
     else()
@@ -391,7 +489,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
         add_executable (${trio} 
             MAIN/the_main.cpp 
             MAIN/mon_main.cpp 
-            ${special_srcs}  
+            ${inst_compl}
         )
         target_link_libraries(${trio} ${libtrio} ${syslib})
         install (TARGETS ${trio} DESTINATION exec)
@@ -485,7 +583,10 @@ message(STATUS "${l1} file(s) to compile in baltik source directories, ${l2} fil
 # Baltik library, based on TRUST main library
 #
 message(STATUS "Using library: ${libtrio_name} " )
-find_library( libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH REQUIRED)
+find_library( libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH)
+if (NOT libTrio)
+    message(FATAL_ERROR "Could not find TRUST library: ${libtrio_name}.a - did you compile TRUST correctly (potentially in debug)??")
+endif()
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
     include(cmake.deps)
 endif()
@@ -555,40 +656,21 @@ endforeach(f )
 ############################
 if  __name__ == '__main__':
     args = sys.argv[1:]
-    sans_subdir, atelier = False, False
-    
-        
+    atelier = False
+
     # TODO should use optparse:
     if len(args)>0 and args[0]=="-atelier":
-        sans_subdir, atelier = True, True
+        atelier = True
         rep_dev = os.getenv("rep_dev")
         os.chdir(rep_dev)
         args = args[1:]
-    if len(args)>0 and args[0]=="-avec_subdir":
-        sans_subdir = False
-        args = args[1:]
-    if len(args)>0 and args[0]=="-sans_subdir":
-        sans_subdir = True
-        args = args[1:]
-            
-    dirs = []
-    if len(args) == 0: # on lit dans rep.TRUST
-        tr = os.getenv("TRUST_ROOT")
-        with open(tr+"/env/rep.TRUST","r") as f:
-            for lin in f.readlines():
-                if lin.strip():
-                    dirs.append(lin.strip())
-    
-    listdirorg=[]
-    for make in dirs:
-        if os.path.basename(make) == 'make.include':
-            s = os.path.dirname(make)
-        else:
-            s = make
-        s2 = s.replace('./','')
-        listdirorg.append(s2)
 
-    generate_main_cmake(listdirorg, sans_subdir, atelier)
+    dirs = []
+    if len(args) != 0:
+        raise ValueError("Unexpected command line argument(s): %s" % ' '.join(args))
+        
+    root_dir = os.environ.get("TRUST_ROOT")
+    generate_cmake_files(root_dir, atelier)
 
     if atelier:
         generate_baltik_cmake()

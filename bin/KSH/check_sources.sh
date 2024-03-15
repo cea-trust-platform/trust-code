@@ -5,6 +5,7 @@ erreur()
    [ "$1" != 0 ] && err=1
 }
 
+# [ABN] not used anymore?
 check_dependancy()
 {
       file=`pwd`/make.include
@@ -309,7 +310,8 @@ then
    org=`pwd`
    reffile=".check_sources.ok"
    [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
-   if [ -f make.include ]
+   ls *.cpp *.f *.tpp *.h 1>/dev/null 2>&1
+   if [ $? -eq 0 ]
    then
       err=0
       ############################################
@@ -322,10 +324,10 @@ then
       # Build a list of newer files than ${reffile} or this script to speed up some tests (eg: french check)
       if [ ! -f ${reffile} ] || [ $0 -nt ${reffile} ]
       then
-         newer_files=`\ls make.include *.cpp *.h *.tpp *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
+         newer_files=`\ls *.cpp *.h *.tpp *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
          new_newer_files=$newer_files
       else
-         newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.tpp -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
+         newer_files=`find * -type f  \( -name -o -name '*'.cpp -o -name '*'.h -o -name '*'.tpp -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
          new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
       [ "$new_newer_files" = "" ] && exit 0
@@ -341,13 +343,7 @@ then
       rep=`pwd`
       for file in $newer_files
       do
-         # Interdiction de briser la dependance des modules
-         if [ $file = make.include ]
-         then
-            check_dependancy || exit 1
-         else
-            check_recent_src $file
-         fi
+        check_recent_src $file
       done   
 
       ##################

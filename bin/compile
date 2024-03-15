@@ -616,26 +616,6 @@ then
       ##########################################
       # On met a jour les fichiers CMakelist.txt
       ##########################################
-      #echo "Verify mk_Instancie"
-      list_make=""
-       # GF a priori plus necessaire de faire mk_Instancie
-      #for dir in `cat $TRUST_ENV/rep.TRUST`
-      for dir in bidon 
-      do
-	 list_make=$list_make" "$dir/make.include
-	 makefile=`\ls $dir/*akefile $dir/make.include 2>/dev/null`
-	 lcpp=`\ls $dir/*.cpp 2>/dev/null`
-	 if [ ${#makefile} != 0 ] && [ ${#lcpp} != 0 ]
-	    then
-	  #  echo $dir 
-	    \cd $dir ;
-	    # Verifie les sources
-	   # $TRUST_ROOT/bin/KSH/check_sources.sh;[ $? != 0 ] && exit
-	    # Met a jour le fichier instancie (mk_Instancie a reporter dans check.sh? au lieu de make depend ?)
-	    mk_Instancie
-	    \cd $TRUST_ROOT
-	 fi
-      done
       python $TRUST_ROOT/bin/KSH/Createcmakefile.py || exit -1
       MonoDir_base=${MonoDir%$OPT}
       opt=$OPT

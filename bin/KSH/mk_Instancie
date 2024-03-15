@@ -12,12 +12,16 @@ en_tete()
 tmp=`mktemp_ -d`
 org=`pwd`
 export LC_ALL=C # Pour eviter d'avoir des fichiers instancie_src differents selon la variable LANG ou LC_ALL
-# On ne cree pas de fichier instancie dans le MAIN et les ateliers ou il y'a pourtant un make.include 
-if [ -f make.include ] && [ "`basename $org`" != MAIN ] && [ ${org#$rep_dev} = $org ]
+# On ne cree pas de fichier instancie dans le MAIN et les ateliers
+if [ "`basename $org`" != MAIN ] && [ ${org#$rep_dev} = $org ]
 then
 #######################
 # Repertoire non MAIN #
+# (main is handled in Createcmakefile.py #
 #######################
+   # No .h file, nothing to do, exit:
+   ls *.h 1>/dev/null 2>&1 || exit 0
+
    ROOT=$org
    while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
    do
@@ -59,16 +63,18 @@ then
       # le touch est important pour recompiler mon_main !!!!!
       touch $TRUST_ROOT/src/MAIN/instancie_appel.h
    fi
-elif [ "`basename $org`" = MAIN ] && [ -f make.include ]
+elif [ "`basename $org`" = MAIN ] 
 then
 ###################
 # Repertoire MAIN #
 ###################
    en_tete > $tmp/instancie_appel.h
    en_tete > $tmp/instancie_appel_c.h
-   for dir in `cat $TRUST_ENV/rep.TRUST`
+   for dir0 in `find $TRUST_ROOT/src -type d`
    do
+
       # Construit le nom de la fonction instancie: instancie_rep_rep_rep
+      dir=${dir0/$TRUST_ROOT/}  # /tut/tata/TRUST/src/Kernel/Math becomes Kernel/Math
       name=instancie`echo $dir | sed "s?/?_?g" | sed "s/\.//"`  
       if [ -f $TRUST_ROOT/$dir/$name.cpp ]
       then
