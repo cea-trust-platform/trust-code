@@ -60,7 +60,6 @@ Equation_base::Equation_base()
   equation_non_resolue_.addVar("t");
   equation_non_resolue_.parseString();
   set_calculate_time_derivative(0);
-
 }
 
 int Equation_base::equation_non_resolue() const
@@ -259,9 +258,7 @@ void Equation_base::set_param(Param& param)
   param.ajouter_non_std("conditions_limites|boundary_conditions",(this),Param::REQUIRED);  // XD attr conditions_limites|boundary_conditions condlims conditions_limites 1 Boundary conditions.
   param.ajouter_non_std("conditions_initiales|initial_conditions",(this),Param::REQUIRED); // XD attr conditions_initiales|initial_conditions condinits conditions_initiales 1 Initial conditions.
   param.ajouter_non_std("sources",(this)); // XD attr sources sources sources 1 To introduce a source term into an equation (in case of several source terms into the same equation, the blocks corresponding to the various terms need to be separated by a comma)
-  param.ajouter_non_std("ecrire_fichier_xyz_valeur_bin",(this)); // XD attr ecrire_fichier_xyz_valeur_bin ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur_bin 1 This keyword is used to write the values of a field only for some boundaries in a binary file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
   param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this)); // XD attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
-  param.ajouter_non_std("bords",(this));
   param.ajouter("parametre_equation",&parametre_equation_); // XD attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
   param.ajouter_non_std("equation_non_resolue",(this)); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
 }
@@ -284,43 +281,46 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       lire_cond_init(is);
       return 1;
     }
-  else if ((mot=="ecrire_fichier_xyz_valeur") || (mot=="ecrire_fichier_xyz_valeur_bin"))
+  else if (mot=="ecrire_fichier_xyz_valeur")
     {
-      if (mot=="ecrire_fichier_xyz_valeur_bin")
-        ecrit_champ_xyz_bin=1;
-      dt_ecrire_fic_xyz.resize_array(nombre_champ_xyz+1);
-      nb_bords_post_xyz.resize(nombre_champ_xyz+1);
-      nb_bords_post_xyz[nombre_champ_xyz]=0;
-      Motcle nom_champ;
-      is >> nom_champ;
-      // il faut creer les champs associes au mot clef ecrire_fichier_xyz_valeur ICI
-      // car dans methode ecrire_fichier_xyz()
-      //seuls les champs definis via equation ou post-traiment sont creer
-      mon_probleme.valeur().creer_champ(nom_champ);
-
-      nom_champ_xyz.add(nom_champ);
-      is >> dt_ecrire_fic_xyz[nombre_champ_xyz];
-      nombre_champ_xyz++;
+      xyz_field_values_file_.associer_eqn(*this);
+      is >> xyz_field_values_file_;
       return 1;
-    }
-  else if (mot=="bords")
-    {
-      int nb_bords_post;
-      is >> nb_bords_post;
-      nb_bords_post_xyz[nombre_champ_xyz-1] = nb_bords_post;
-      if (nb_bords_post<=0)
-        {
-          Cerr << " ecrire_fichier_xyz_valeur - bords : the number of boundary on which you want to postprocess must be positive !! " << finl;
-          exit();
-        }
-      Noms noms_bord;
-      noms_bord.dimensionner(nb_bords_post);
-      for (int i=0; i<nb_bords_post; i++)
-        {
-          is >> noms_bord[i];
-        }
-      noms_bord_xyz.add(noms_bord);
-      return 1;
+//      if (mot=="ecrire_fichier_xyz_valeur_bin")
+//        ecrit_champ_xyz_bin=1;
+//      dt_ecrire_fic_xyz.resize_array(nombre_champ_xyz+1);
+//      nb_bords_post_xyz.resize(nombre_champ_xyz+1);
+//      nb_bords_post_xyz[nombre_champ_xyz]=0;
+//      Motcle nom_champ;
+//      is >> nom_champ;
+//      // il faut creer les champs associes au mot clef ecrire_fichier_xyz_valeur ICI
+//      // car dans methode ecrire_fichier_xyz()
+//      //seuls les champs definis via equation ou post-traiment sont creer
+//      mon_probleme.valeur().creer_champ(nom_champ);
+//
+//      nom_champ_xyz.add(nom_champ);
+//      is >> dt_ecrire_fic_xyz[nombre_champ_xyz];
+//      nombre_champ_xyz++;
+//      return 1;
+//    }
+//  else if (mot=="bords")
+//    {
+//      int nb_bords_post;
+//      is >> nb_bords_post;
+//      nb_bords_post_xyz[nombre_champ_xyz-1] = nb_bords_post;
+//      if (nb_bords_post<=0)
+//        {
+//          Cerr << " ecrire_fichier_xyz_valeur - bords : the number of boundary on which you want to postprocess must be positive !! " << finl;
+//          exit();
+//        }
+//      Noms noms_bord;
+//      noms_bord.dimensionner(nb_bords_post);
+//      for (int i=0; i<nb_bords_post; i++)
+//        {
+//          is >> noms_bord[i];
+//        }
+//      noms_bord_xyz.add(noms_bord);
+//      return 1;
     }
   else if (mot=="equation_non_resolue")
     {
@@ -673,7 +673,7 @@ int Equation_base::impr(Sortie& os) const
  */
 void Equation_base::imprimer(Sortie& os) const
 {
-  ecrire_fichier_xyz();
+  xyz_field_values_file_.write_fields();
   if (limpr() )
     impr(os);
 }

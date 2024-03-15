@@ -16,6 +16,7 @@
 #ifndef Equation_base_included
 #define Equation_base_included
 
+#include <Ecrire_fichier_xyz_valeur.h>
 #include <Parametre_equation.h>
 #include <MD_Vector_tools.h>
 #include <Interface_blocs.h>
@@ -330,6 +331,7 @@ protected :
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
 
+  Ecrire_fichier_xyz_valeur xyz_field_values_file_;
   void ecrire_fichier_xyz() const;
   ArrOfDouble dt_ecrire_fic_xyz;
   Motcles nom_champ_xyz;

@@ -133,7 +133,12 @@ Read pbF1
             DroiteF 	paroi_adiabatique
             interface   	paroi_contact pbG interface
         }
-        ecrire_fichier_xyz_valeur temperature 1  bords 2 interface BasF
+        ecrire_fichier_xyz_valeur
+	{
+	    dt 1
+	    fields { temperature }
+	    boundaries { interface BasF }
+	}
     }
 
     Post_processing
