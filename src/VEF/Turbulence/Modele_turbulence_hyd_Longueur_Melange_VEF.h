@@ -16,7 +16,7 @@
 #ifndef Modele_turbulence_hyd_Longueur_Melange_VEF_included
 #define Modele_turbulence_hyd_Longueur_Melange_VEF_included
 
-#include <Modele_turbulence_hyd_RANS_0_eq_base.h>
+#include <Modele_turbulence_hyd_0_eq_base.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;
@@ -33,7 +33,7 @@ class Entree;
  *  Turb_hyd_RANS_0_eq
  *
  */
-class Modele_turbulence_hyd_Longueur_Melange_VEF: public Modele_turbulence_hyd_RANS_0_eq_base
+class Modele_turbulence_hyd_Longueur_Melange_VEF: public Modele_turbulence_hyd_0_eq_base
 {
 
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VEF);

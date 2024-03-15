@@ -13,26 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Modele_turbulence_hyd_RANS_2eq_base_included
-#define Modele_turbulence_hyd_RANS_2eq_base_included
+#include <Modele_turbulence_hyd_2_eq_base.h>
 
-#include <Modele_turbulence_hyd_base.h>
+Implemente_base_sans_constructeur(Modele_turbulence_hyd_2_eq_base, "Modele_turbulence_hyd_2_eq_base", Modele_turbulence_hyd_base);
+// X_D mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for Navier-Stokes equations.
 
-class Equation_base;
-
-/*! @brief Classe Modele_turbulence_hyd_RANS_2eq_base Classe de base des modeles de type RANS à deux equations
- *
- * @sa Modele_turbulence_hyd_base
- */
-class Modele_turbulence_hyd_RANS_2eq_base: public Modele_turbulence_hyd_base
+Sortie& Modele_turbulence_hyd_2_eq_base::printOn(Sortie& is) const
 {
+  return Modele_turbulence_hyd_base::printOn(is);
+}
 
-  Declare_base_sans_constructeur(Modele_turbulence_hyd_RANS_2eq_base);
-
-public:
-
-  Modele_turbulence_hyd_RANS_2eq_base();
-
-};
-
-#endif /* Modele_turbulence_hyd_RANS_2eq_base_included */
+Entree& Modele_turbulence_hyd_2_eq_base::readOn(Entree& is)
+{
+  return Modele_turbulence_hyd_base::readOn(is);
+}

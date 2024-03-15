@@ -26,7 +26,7 @@
 #include <Param.h>
 #include <Postraitement.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VEF, "Modele_turbulence_hyd_Longueur_Melange_VEF", Modele_turbulence_hyd_RANS_0_eq_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VEF, "Modele_turbulence_hyd_Longueur_Melange_VEF", Modele_turbulence_hyd_0_eq_base);
 
 Modele_turbulence_hyd_Longueur_Melange_VEF::Modele_turbulence_hyd_Longueur_Melange_VEF()
 {
@@ -70,7 +70,7 @@ Entree& Modele_turbulence_hyd_Longueur_Melange_VEF::readOn(Entree& is)
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::set_param(Param& param)
 {
-  Modele_turbulence_hyd_RANS_0_eq_base::set_param(param);
+  Modele_turbulence_hyd_0_eq_base::set_param(param);
   param.ajouter("canalx", &hauteur_);
   param.ajouter_condition("value_of_canalx_eq_2", " canalx has been coded presently only for h=2.");
   param.ajouter("tuyauz", &diametre_);
@@ -94,7 +94,7 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const M
       return 1;
     }
   else
-    return Modele_turbulence_hyd_RANS_0_eq_base::lire_motcle_non_standard(mot, is);
+    return Modele_turbulence_hyd_0_eq_base::lire_motcle_non_standard(mot, is);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
@@ -434,5 +434,5 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::preparer_calcul()
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::discretiser()
 {
-  Modele_turbulence_hyd_RANS_0_eq_base::discretiser();
+  Modele_turbulence_hyd_0_eq_base::discretiser();
 }

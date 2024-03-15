@@ -13,49 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Modele_turbulence_hyd_Longueur_Melange_VDF_included
-#define Modele_turbulence_hyd_Longueur_Melange_VDF_included
+#ifndef Modele_turbulence_hyd_2_eq_base_included
+#define Modele_turbulence_hyd_2_eq_base_included
 
-#include <Modele_turbulence_hyd_0_eq_base.h>
-#include <TRUST_Ref.h>
+#include <Modele_turbulence_hyd_base.h>
 
-class Domaine_Cl_dis;
-class Domaine_Cl_VDF;
-class Domaine_VDF;
 
-/*! @brief Classe Modele_turbulence_hyd_Longueur_Melange_VDF Cette classe represente le modele de turbulence de longueur de melange de Prandtl.
- *
- *     ATTENTION : modele code que pour un canal 2D horizontal !!!!
+/*! @brief Classe Modele_turbulence_hyd_2_eq_base Classe de base des modeles de type RANS à deux equations
  *
  * @sa Modele_turbulence_hyd_base
  */
-class Modele_turbulence_hyd_Longueur_Melange_VDF: public Modele_turbulence_hyd_0_eq_base
+class Modele_turbulence_hyd_2_eq_base: public Modele_turbulence_hyd_base
 {
 
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VDF);
+  Declare_base_sans_constructeur(Modele_turbulence_hyd_2_eq_base);
 
 public:
-  void set_param(Param& param) override;
-  Modele_turbulence_hyd_Longueur_Melange_VDF();
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
 
-protected:
-
-  Champ_Fonc& calculer_viscosite_turbulente() override;
-  void calculer_energie_cinetique_turb() override;
-  void calculer_Sij2();
-  int preparer_calcul() override;
-
-  DoubleVect Sij2;
-
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-
-private:
-
-  int direction;
-  double alt_min, alt_max;
 
 };
 
-#endif /* Modele_turbulence_hyd_Longueur_Melange_VDF_included */
+#endif /* Modele_turbulence_hyd_2_eq_base_included */
