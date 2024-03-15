@@ -1,7 +1,8 @@
+
 SRC_DIR=$(TRUST_ROOT)/ThirdPart/src/LIBLATAFILTER/src
 BUILD_DIR=$(TRUST_ROOT)/build/lib/LIBLATAFILTER
 INSTALL_DIR=$(TRUST_ROOT)/lib/src/LIBLATAFILTER
-LIB=$(INSTALL_DIR)/liblatafilter.a
+LIB=$(INSTALL_DIR)/lib/liblatafilter.a
 
 OPT=_opt
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)

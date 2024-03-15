@@ -393,18 +393,16 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
               }
             corres_l = -1;
           }
-      // si on a pas trouve par l amethode optimisee on essaye toutes les mailles , mais avant on essaye le suivant du precedent
+      // si on a pas trouve par l amethode optimisee on essaye toutes les mailles , mais avant on essaye le suivant du precedent (s'il existe!!!)
       if (corres_l == -1)
         {
           //cerr<<"on cherche l'elt a la main"<<endl;
           int k = j;
           if (j > 0)
             k = ielem[j - 1] + 1;
-
-          if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
-            {
-              corres_l = k;
-            }
+          if (k<xp.dimension(0))
+             if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
+                 corres_l = k;
         }
       if (corres_l == -1)
         {
