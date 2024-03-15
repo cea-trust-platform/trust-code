@@ -41,7 +41,7 @@ public:
 
 protected:
 
-  Champ_Fonc la_vorticite;
+  Champ_Fonc la_vorticite_;
   void cutoff();
 };
 

@@ -43,8 +43,8 @@ public:
 
 protected:
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF_;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_VDF_base_included */

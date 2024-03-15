@@ -43,11 +43,11 @@ protected:
   void calculer_energie_cinetique_turb() override;
   virtual void calculer_fonction_structure();
 
-  int nb_points;    // nb_points=4 ou 6 selon que nous utilisons la formulation de la FST en 4 ou 6 points!!
-  int dir1, dir2; // direction du plan dans lequel on veut calculer la FST en 4 points
-  int dir3; // 3eme direction!!
+  int nb_points_;    // nb_points=4 ou 6 selon que nous utilisons la formulation de la FST en 4 ou 6 points!!
+  int dir1_, dir2_; // direction du plan dans lequel on veut calculer la FST en 4 points
+  int dir3_; // 3eme direction!!
 
-  DoubleVect F2;
+  DoubleVect F2_;
 
   double Csm1_; // constante du modele (differente d'une classe fille a l'autre)
   double Csm2_; // constante pour calcul de l'energie ( idem )
@@ -55,7 +55,7 @@ protected:
 
 inline Modele_turbulence_hyd_LES_VDF::Modele_turbulence_hyd_LES_VDF()
 {
-  nb_points = 6;
+  nb_points_ = 6;
   Csm1_ = CSM1;
   Csm2_ = CSM2;
 }

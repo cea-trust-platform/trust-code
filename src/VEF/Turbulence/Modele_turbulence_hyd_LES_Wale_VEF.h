@@ -40,7 +40,7 @@ protected:
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
 
-  double cw;
+  double cw_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Wale_VEF_included */

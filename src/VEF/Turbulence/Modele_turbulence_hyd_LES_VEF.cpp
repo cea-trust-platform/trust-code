@@ -42,10 +42,10 @@ Entree& Modele_turbulence_hyd_LES_VEF::readOn(Entree& s)
 Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
 {
   static const double Csm1 = CSM1;
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_face = domaine_VEF.nb_faces();
   const int nb_face_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem();
@@ -53,8 +53,8 @@ Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
   int elem1, elem2, fac = 0, i;
   double temp;
 
-  F2.resize(nb_face_tot);
-  r.resize(nb_face_tot);
+  F2_.resize(nb_face_tot);
+  r_.resize(nb_face_tot);
 
   calculer_fonction_structure();
 
@@ -81,7 +81,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
           {
             elem1 = face_voisins(fac, 0);
             elem2 = face_voisins(fac, 1);
-            temp = Csm1 * r(fac) * sqrt(F2(fac));
+            temp = Csm1 * r_(fac) * sqrt(F2_(fac));
             visco_turb(elem1) += 0.5 * temp;
             visco_turb(elem2) += 0.5 * temp;
           }
@@ -89,7 +89,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
         for (fac = ndeb; fac < nfin; fac++)
           {
             elem1 = face_voisins(fac, 0);
-            temp = Csm1 * r(fac) * sqrt(F2(fac));
+            temp = Csm1 * r_(fac) * sqrt(F2_(fac));
             visco_turb(elem1) += temp;
           }
     }
@@ -99,22 +99,22 @@ Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
     {
       elem1 = face_voisins(fac, 0);
       elem2 = face_voisins(fac, 1);
-      temp = Csm1 * r(fac) * sqrt(F2(fac));
+      temp = Csm1 * r_(fac) * sqrt(F2_(fac));
       visco_turb(elem1) += temp;
       visco_turb(elem2) += temp;
     }
 
   visco_turb /= (domaine_VEF.domaine().nb_faces_elem());
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
 {
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
 
   const int nb_face = domaine_VEF.nb_faces();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -199,7 +199,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                           petit = std::min(petit, temp);
                       }
                 }
-              r(fac) = petit;
+              r_(fac) = petit;
 
               if (petit < 0.)
                 {
@@ -223,7 +223,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                         {
                           for (j = 0; j < dimension; j++)
                             {
-                              dv(j) = (la_vitesse(elem_faces(num(i), z), j) - la_vitesse(fac, j)) * r(fac) / dd2(z, i);
+                              dv(j) = (la_vitesse(elem_faces(num(i), z), j) - la_vitesse(fac, j)) * r_(fac) / dd2(z, i);
                               F1 += dv(j) * dv(j);
                             }
 
@@ -237,7 +237,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                         }
                     }
                 }
-              F2(fac) = F1b / (2 * dimension);
+              F2_(fac) = F1b / (2 * dimension);
             }
         }
       else
@@ -259,7 +259,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                   if (temp > 1.e-24)
                     petit = std::min(petit, temp);
                 }
-              r(fac) = petit;
+              r_(fac) = petit;
               if (petit < 0.)
                 {
                   Cerr << "pb avec r(fac) negatif dans Modele_turbulence_hyd_LES_VEF" << finl;
@@ -275,7 +275,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                     {
                       for (j = 0; j < dimension; j++)
                         {
-                          dv(j) = (la_vitesse(elem_faces(num1, z), j) - la_vitesse(fac, j)) * r(fac) / d2(z);
+                          dv(j) = (la_vitesse(elem_faces(num1, z), j) - la_vitesse(fac, j)) * r_(fac) / d2(z);
                           F1 += dv(j) * dv(j);
                         }
                       F1b += F1;
@@ -287,7 +287,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                       F1 = 0;
                     }
                 }
-              F2(fac) = F1b / (dimension);
+              F2_(fac) = F1b / (dimension);
 
             }
         }
@@ -322,7 +322,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
             }
         }
 
-      r(fac) = petit;
+      r_(fac) = petit;
       if (petit < 0.)
         {
           Cerr << "pb avec r(fac) negatif dans Modele_turbulence_hyd_LES_VEF" << finl;
@@ -345,7 +345,7 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
                 {
                   for (j = 0; j < dimension; j++)
                     {
-                      dv(j) = (la_vitesse(elem_faces(num(i), z), j) - la_vitesse(fac, j)) * r(fac) / dd2(z, i);
+                      dv(j) = (la_vitesse(elem_faces(num(i), z), j) - la_vitesse(fac, j)) * r_(fac) / dd2(z, i);
                       F1 += dv(j) * dv(j);
                     }
                   F1b += F1;
@@ -359,6 +359,6 @@ void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
             }
 
         }
-      F2(fac) = F1b / (2 * dimension);
+      F2_(fac) = F1b / (2 * dimension);
     }
 }

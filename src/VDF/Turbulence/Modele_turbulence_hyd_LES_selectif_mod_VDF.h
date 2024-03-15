@@ -46,16 +46,16 @@ public:
 
 protected:
 
-  Champ_Fonc la_vorticite;
+  Champ_Fonc la_vorticite_;
   void cutoff();
-  double demi_h;
-  int kc, ki, thi, canal, dir_par;
+  double demi_h_;
+  int kc_, ki_, thi_, canal_, dir_par_;
 };
 
 inline Modele_turbulence_hyd_LES_selectif_mod_VDF::Modele_turbulence_hyd_LES_selectif_mod_VDF()
 {
-  thi = 0;
-  canal = 0;
+  thi_ = 0;
+  canal_ = 0;
   Csm1_ = 0.086;  // nelle cste pour 64^3
   Csm2_ = 0.676;  // si CSM1 = 0.086 pour 64^3
 }

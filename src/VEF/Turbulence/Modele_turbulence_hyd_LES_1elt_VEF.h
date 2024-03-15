@@ -32,8 +32,8 @@ protected:
   virtual void calculer_fonction_structure();
   void calculer_delta_c(DoubleTab&);
 
-  DoubleVect F2;
-  double Csm1, Csm2;
+  DoubleVect F2_;
+  double Csm1_, Csm2_;
 
 };
 

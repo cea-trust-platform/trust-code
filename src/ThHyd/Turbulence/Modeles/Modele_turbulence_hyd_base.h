@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,9 +51,9 @@ public:
   inline const Champ_Fonc& viscosite_turbulente() const;
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
-  inline const Turbulence_paroi& loi_paroi() const { return loipar; }
-  inline Turbulence_paroi& loi_paroi() { return loipar; }
-  bool utiliser_loi_paroi() const { return loi_paroi().non_nul() ? loipar->use_shear() : false; }
+  inline const Turbulence_paroi& loi_paroi() const { return loipar_; }
+  inline Turbulence_paroi& loi_paroi() { return loipar_; }
+  bool utiliser_loi_paroi() const { return loi_paroi().non_nul() ? loipar_->use_shear() : false; }
   virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const { return false; }
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -84,36 +84,36 @@ public:
   void lire_distance_paroi();
 
 protected:
-  double LeCmu;
-  Champ_Fonc la_viscosite_turbulente;
+  double LeCmu_;
+  Champ_Fonc la_viscosite_turbulente_;
   Champ_Fonc wall_length_;
-  REF(Equation_base) mon_equation;
-  Turbulence_paroi loipar;
-  double dt_impr_ustar;
-  double dt_impr_ustar_mean_only;
+  REF(Equation_base) mon_equation_;
+  Turbulence_paroi loipar_;
+  double dt_impr_ustar_;
+  double dt_impr_ustar_mean_only_;
   int boundaries_;
-  LIST(Nom) boundaries_list;
+  LIST(Nom) boundaries_list_;
   Nom nom_fichier_;
   void limiter_viscosite_turbulente();
 
   Champs_compris champs_compris_;
 private:
 
-  double XNUTM;
+  double XNUTM_;
   int calcul_borne_locale_visco_turb_;
   double dt_diff_sur_dt_conv_;
-  Champ_Fonc corr_visco_turb;
-  DoubleVect borne_visco_turb;
+  Champ_Fonc corr_visco_turb_;
+  DoubleVect borne_visco_turb_;
 };
 
 inline Modele_turbulence_hyd_base::Modele_turbulence_hyd_base()
 {
-  LeCmu = CMU;
-  dt_impr_ustar = 1.e20;
-  dt_impr_ustar_mean_only = 1.e20;
+  LeCmu_ = CMU;
+  dt_impr_ustar_ = 1.e20;
+  dt_impr_ustar_mean_only_ = 1.e20;
   boundaries_ = 0;
   nom_fichier_ = "";
-  XNUTM = 1.E8;
+  XNUTM_ = 1.E8;
   calcul_borne_locale_visco_turb_ = 0;
   dt_diff_sur_dt_conv_ = -1;
 }
@@ -123,7 +123,7 @@ inline Modele_turbulence_hyd_base::Modele_turbulence_hyd_base()
  */
 inline const Champ_Fonc& Modele_turbulence_hyd_base::viscosite_turbulente() const
 {
-  return la_viscosite_turbulente;
+  return la_viscosite_turbulente_;
 }
 
 /*! @brief Renvoie l'equation associee au modele de turbulence.
@@ -134,22 +134,22 @@ inline const Champ_Fonc& Modele_turbulence_hyd_base::viscosite_turbulente() cons
  */
 inline Equation_base& Modele_turbulence_hyd_base::equation()
 {
-  if (mon_equation.non_nul() == 0)
+  if (mon_equation_.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
-  return mon_equation.valeur();
+  return mon_equation_.valeur();
 }
 
 inline const Equation_base& Modele_turbulence_hyd_base::equation() const
 {
-  if (mon_equation.non_nul() == 0)
+  if (mon_equation_.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
-  return mon_equation.valeur();
+  return mon_equation_.valeur();
 }
 
 /*! @brief Renvoie de la valeur de Cmu
@@ -158,7 +158,7 @@ inline const Equation_base& Modele_turbulence_hyd_base::equation() const
  */
 inline double Modele_turbulence_hyd_base::get_Cmu() const
 {
-  return LeCmu;
+  return LeCmu_;
 }
 
 inline Champs_compris& Modele_turbulence_hyd_base::champs_compris()

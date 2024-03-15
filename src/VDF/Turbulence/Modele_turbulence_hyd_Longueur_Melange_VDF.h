@@ -48,13 +48,13 @@ protected:
 
   DoubleVect Sij2;
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF_;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
 
 private:
 
-  int direction;
-  double alt_min, alt_max;
+  int direction_;
+  double alt_min_, alt_max_;
 
 };
 

@@ -80,8 +80,8 @@ void Modele_turbulence_hyd_LES_selectif_mod_VEF::discretiser()
 {
   // Cerr << "Modele_turbulence_hyd_LES_selectif_mod_VEF::discretiser()" << finl;
   Modele_turbulence_hyd_LES_base::discretiser();
-  const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
-  dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
+  const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation_->discretisation());
+  dis.vorticite(mon_equation_->domaine_dis(), mon_equation_->inconnue(), la_vorticite_);
 }
 
 int Modele_turbulence_hyd_LES_selectif_mod_VEF::a_pour_Champ_Fonc(const Motcle& mot,
@@ -99,7 +99,7 @@ int Modele_turbulence_hyd_LES_selectif_mod_VEF::a_pour_Champ_Fonc(const Motcle& 
     {
     case 0:
       {
-        ch_ref = la_viscosite_turbulente.valeur();
+        ch_ref = la_viscosite_turbulente_.valeur();
         return 1;
       }
     case 1:
@@ -109,7 +109,7 @@ int Modele_turbulence_hyd_LES_selectif_mod_VEF::a_pour_Champ_Fonc(const Motcle& 
       }
     case 2:
       {
-        ch_ref = la_vorticite.valeur();
+        ch_ref = la_vorticite_.valeur();
         return 1;
       }
     default:
@@ -120,15 +120,15 @@ int Modele_turbulence_hyd_LES_selectif_mod_VEF::a_pour_Champ_Fonc(const Motcle& 
 Champ_Fonc& Modele_turbulence_hyd_LES_selectif_mod_VEF::calculer_viscosite_turbulente()
 {
   static const double Csm1 = 0.086;
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   //DoubleVect volume = domaine_VEF.volumes();
   int num_elem;
 
-  F2.resize(nb_elem_tot);
+  F2_.resize(nb_elem_tot);
 
   calculer_fonction_structure();
 
@@ -142,13 +142,13 @@ Champ_Fonc& Modele_turbulence_hyd_LES_selectif_mod_VEF::calculer_viscosite_turbu
   Debog::verifier("Modele_turbulence_hyd_LES_selectif_mod_VEF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
   for (num_elem = 0; num_elem < nb_elem; num_elem++)
-    visco_turb(num_elem) = Csm1 * l_[num_elem] * sqrt(F2(num_elem));
+    visco_turb(num_elem) = Csm1 * l_[num_elem] * sqrt(F2_(num_elem));
 
   Debog::verifier("Modele_turbulence_hyd_LES_selectif_mod_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
+  la_viscosite_turbulente_.changer_temps(temps);
 
-  return la_viscosite_turbulente;
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_selectif_mod_VEF::calculer_fonction_structure()
@@ -181,18 +181,18 @@ void Modele_turbulence_hyd_LES_selectif_mod_VEF::cutoff()
 {
   //  static const double Sin2Angl = SIN2ANGL_new2;
   double Sin2Angl;
-  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation->inconnue().valeur());
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   //  const Domaine& domaine = domaine_VEF.domaine();
   //  int nfac = domaine.nb_faces_elem();
   //  int nfac = 4; // en 3D 4 faces!!!
-  DoubleTab& vorticite = la_vorticite.valeurs();
+  DoubleTab& vorticite = la_vorticite_.valeurs();
   // const DoubleTab& xp = domaine_VEF.xp();
 
-  la_vorticite.mettre_a_jour(vitesse.temps());
+  la_vorticite_.mettre_a_jour(vitesse.temps());
   vorticite.echange_espace_virtuel();
 
   int el0, el1, el2, el3;
@@ -324,12 +324,12 @@ void Modele_turbulence_hyd_LES_selectif_mod_VEF::cutoff()
           prod /= (norme * norme_moyen);
 
           if (prod <= Sin2Angl)
-            F2(num_elem) = 0;
+            F2_(num_elem) = 0;
         }
       else
         // bruit numerique ou element de coin
-        F2(num_elem) = 0;
-      F2.echange_espace_virtuel();
+        F2_(num_elem) = 0;
+      F2_.echange_espace_virtuel();
 
     }
 }

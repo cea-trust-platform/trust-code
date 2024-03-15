@@ -33,15 +33,15 @@ Entree& Modele_turbulence_hyd_LES_VEF_base::readOn(Entree& is)
 
 void Modele_turbulence_hyd_LES_VEF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  le_dom_VEF_ = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 void Modele_turbulence_hyd_LES_VEF_base::calculer_longueurs_caracteristiques()
 {
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem_tot();
   l_.resize(nb_elem);
 
-  calcul_longueur_filtre(l_, methode, domaine_VEF);
+  calcul_longueur_filtre(l_, methode_, domaine_VEF);
 }

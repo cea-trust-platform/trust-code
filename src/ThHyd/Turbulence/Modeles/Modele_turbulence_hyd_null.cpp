@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,10 +35,10 @@ Entree& Modele_turbulence_hyd_null::readOn(Entree& is)
   // Creation d'une loi de paroi nulle:
   const Equation_base& eqn = equation();
   const Nom& discr = eqn.discretisation().que_suis_je();
-  loipar.associer_modele(*this);
-  if (discr == "VEF" || discr == "VEFPreP1B") loipar.typer("negligeable_VEF");
-  else if (discr == "VDF") loipar.typer("negligeable_VDF");
-  else if (discr == "EF") loipar.typer("negligeable_EF");
+  loipar_.associer_modele(*this);
+  if (discr == "VEF" || discr == "VEFPreP1B") loipar_.typer("negligeable_VEF");
+  else if (discr == "VDF") loipar_.typer("negligeable_VDF");
+  else if (discr == "EF") loipar_.typer("negligeable_EF");
   else
     {
       Cerr << "Erreur dans Modele_turbulence_hyd_null::readOn\n";
@@ -46,8 +46,8 @@ Entree& Modele_turbulence_hyd_null::readOn(Entree& is)
       Cerr << finl;
       exit();
     }
-  loipar.valeur().associer_modele(*this);
-  loipar.valeur().associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
+  loipar_.valeur().associer_modele(*this);
+  loipar_.valeur().associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
 
   // Pas envie de debugger XDATA ... je penalise tt le monde alors
   Param param(que_suis_je());

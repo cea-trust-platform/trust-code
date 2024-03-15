@@ -55,17 +55,17 @@ protected:
   void calculer_Sij2();
   void calculer_f_amortissement();
 
-  double hauteur_, diametre_, dmax_, bidon;
+  double hauteur_, diametre_, dmax_, bidon_;
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  Nom nom_fic;
-  int cas;
+  Nom nom_fic_;
+  int cas_;
 
-  DoubleVect Sij2;
-  DoubleVect f_amortissement;
+  DoubleVect Sij2_;
+  DoubleVect f_amortissement_;
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF_;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF_;
 
 };
 

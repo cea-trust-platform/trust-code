@@ -30,7 +30,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange
 
 Modele_turbulence_hyd_Longueur_Melange_VEF::Modele_turbulence_hyd_Longueur_Melange_VEF()
 {
-  cas = 0;
+  cas_ = 0;
   diametre_ = 2.;
   hauteur_ = 2.;
   dmax_ = -1.;
@@ -48,15 +48,15 @@ Entree& Modele_turbulence_hyd_Longueur_Melange_VEF::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
   const LIST(Nom) &params_lu = param.get_list_mots_lus();
   if (params_lu.contient(Motcle("canalx")))
-    cas = 1;
+    cas_ = 1;
   else if (params_lu.contient(Motcle("tuyauz")))
-    cas = 2;
+    cas_ = 2;
   else if (params_lu.contient(Motcle("tuyaux")))
-    cas = 21;
+    cas_ = 21;
   else if (params_lu.contient(Motcle("tuyauy")))
-    cas = 22;
+    cas_ = 22;
   else if ((params_lu.contient(Motcle("dmax"))) || (params_lu.contient(Motcle("fichier"))))
-    cas = 4;
+    cas_ = 4;
   else
     {
       Cerr << " Error while reading the Longueur_Melange turbulence model. " << finl;
@@ -81,7 +81,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::set_param(Param& param)
   param.ajouter_condition("value_of_tuyauy_eq_2", " tuyauy has been coded presently only for d=2.");
   param.ajouter("dmax", &dmax_);
   param.ajouter_non_std("verif_dparoi", (this));
-  param.ajouter("fichier", &nom_fic);
+  param.ajouter("fichier", &nom_fic_);
 }
 
 int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -99,8 +99,8 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const M
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  le_dom_VEF_ = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbulente()
@@ -108,15 +108,15 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
   const double Kappa = 0.415;
   double Cmu = CMU;
 
-  double temps = mon_equation->inconnue().temps();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  double temps = mon_equation_->inconnue().temps();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   DoubleVect& k = energie_cinetique_turb_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const DoubleTab& xp = domaine_VEF.xp();
 
-  Sij2.resize(nb_elem_tot);
+  Sij2_.resize(nb_elem_tot);
 
   calculer_Sij2();
 
@@ -135,7 +135,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
     }
 
   //    CANAL PLAN suivant (Ox - h=2) **********************************
-  if (cas == 1)
+  if (cas_ == 1)
     {
       for (int elem = 0; elem < nb_elem; elem++)
         {
@@ -143,24 +143,24 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
           if (y > 1.)
             y = 2. - y;
 
-          visco_turb(elem) = Kappa * Kappa * y * y * (1. - y) * sqrt(2. * Sij2[elem]);
+          visco_turb(elem) = Kappa * Kappa * y * y * (1. - y) * sqrt(2. * Sij2_[elem]);
           k(elem) = pow(visco_turb(elem) / (Cmu * y), 2);
         }
     }
   else
     //    CYLINDRE suivant (D=2) ************************************
 
-    if ((cas == 2) || (cas == 21) || (cas == 22))
+    if ((cas_ == 2) || (cas_ == 21) || (cas_ == 22))
       {
         int dir1;
         int dir2;
 
-        if (cas == 2)
+        if (cas_ == 2)
           {
             dir1 = 0;  //Tuyau suivant z
             dir2 = 1;
           }
-        else if (cas == 21)
+        else if (cas_ == 21)
           {
             dir1 = 1;  //Tuyau suivant x
             dir2 = 2;
@@ -177,12 +177,12 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
             double y = xp(elem, dir2);
             double r = sqrt(x * x + y * y);
 
-            visco_turb(elem) = Kappa * Kappa * (1. - r) * (1. - r) * (1. - r) * sqrt(2. * Sij2[elem]);
+            visco_turb(elem) = Kappa * Kappa * (1. - r) * (1. - r) * (1. - r) * sqrt(2. * Sij2_[elem]);
             k(elem) = pow(visco_turb(elem) / (Cmu * (1. - r)), 2);
           }
       }
   //    CAS NON TYPE ***************************************************
-    else if (cas == 4)
+    else if (cas_ == 4)
       {
         calculer_f_amortissement();
 
@@ -190,27 +190,27 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
 
         for (int elem = 0; elem < nb_elem; elem++)
           {
-            double f_vd = f_amortissement(elem);
+            double f_vd = f_amortissement_(elem);
             double wl = wall_length(elem);
             double lm = (wl <= dmax_) ? wl : dmax_ * exp(-2. * (wl - dmax_) / dmax_);
 
-            visco_turb(elem) = pow(f_vd * f_vd * Kappa * lm, 2) * sqrt(2. * Sij2[elem]);
+            visco_turb(elem) = pow(f_vd * f_vd * Kappa * lm, 2) * sqrt(2. * Sij2_[elem]);
             k(elem) = pow(visco_turb(elem) / (Cmu * lm), 2);
           }
       }
     else
       {
-        Cerr << cas << " non prevu " << que_suis_je() << finl;
-        Cerr << que_suis_je() << " Case " << cas << " not known." << finl;
+        Cerr << cas_ << " non prevu " << que_suis_je() << finl;
+        Cerr << que_suis_je() << " Case " << cas_ << " not known." << finl;
         exit();
       }
 
   Debog::verifier("Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
+  la_viscosite_turbulente_.changer_temps(temps);
 
   wall_length_.changer_temps(temps);
-  return la_viscosite_turbulente;
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_energie_cinetique_turb()
@@ -224,24 +224,24 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_energie_cinetique_turb
   // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation_->inconnue().temps();
 
   energie_cinetique_turb_.changer_temps(temps);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_Sij2()
 {
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
-  const Champ_P1NC& ch = ref_cast(Champ_P1NC, mon_equation->inconnue().valeur());
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const Champ_P1NC& ch = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem_tot();
 
   DoubleTab duidxj(nb_elem, dimension, dimension);
   int i, j;
   double Sij;
 
-  Sij2 = 0.;
+  Sij2_ = 0.;
 
   DoubleTab ubar(la_vitesse);
   //  ch.filtrer_L2(ubar);                // Patrick : on travaille sur le champ filtre.
@@ -255,7 +255,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_Sij2()
           {
             //Deplacement du calcul de Sij
             Sij = 0.5 * (duidxj(elem, i, j) + duidxj(elem, j, i));
-            Sij2(elem) += Sij * Sij;
+            Sij2_(elem) += Sij * Sij;
           }
     }
 }
@@ -265,15 +265,15 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::lire_distance_paroi()
 
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
 
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   DoubleTab& wall_length = wall_length_.valeurs();
   wall_length = -1.;
 
   LecFicDiffuse fic;
   fic.set_bin(1);
-  if (!fic.ouvrir(nom_fic))
+  if (!fic.ouvrir(nom_fic_))
     {
-      Cerr << " File " << nom_fic << " doesn't exist. To generate it, please, refer to html.doc (Distance_paroi) " << finl;
+      Cerr << " File " << nom_fic_ << " doesn't exist. To generate it, please, refer to html.doc (Distance_paroi) " << finl;
       exit();
     }
 
@@ -284,7 +284,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::lire_distance_paroi()
   if (je_suis_maitre())
     {
 
-      Cerr << "Recall : " << nom_fic << " obtained from boundaries nammed : " << finl;
+      Cerr << "Recall : " << nom_fic_ << " obtained from boundaries nammed : " << finl;
       for (int b = 0; b < nom_paroi.size(); b++)
         {
           Cerr << nom_paroi[b] << finl;
@@ -314,19 +314,19 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
   //                 f_vd^4 < 0.99          =>   u+.y+ < 2784
   //
 
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   DoubleTab& wall_length = wall_length_.valeurs();
   int nb_face_elem = domaine_VEF.domaine().nb_faces_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
 
-  const Fluide_base& le_fluide = ref_cast(Fluide_base, mon_equation->milieu());
+  const Fluide_base& le_fluide = ref_cast(Fluide_base, mon_equation_->milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ch_visco_cin->valeurs();
-  const DoubleTab& vit = mon_equation->inconnue().valeurs();
+  const DoubleTab& vit = mon_equation_->inconnue().valeurs();
 
-  f_amortissement.resize(nb_elem);
-  f_amortissement = 1.;
+  f_amortissement_.resize(nb_elem);
+  f_amortissement_ = 1.;
 
   ArrOfDouble vc(dimension);
   double dist, d_visco, norm_v, u_plus_d_plus, dp, up1, up2, r, y_plus;
@@ -379,7 +379,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
       if (u_plus_d_plus < 1.) // pour eviter de faire tourner la procedure iterative
         {
           y_plus = sqrt(u_plus_d_plus);
-          f_amortissement(elem) -= exp(-y_plus / A_plus);
+          f_amortissement_(elem) -= exp(-y_plus / A_plus);
         }
       else if (u_plus_d_plus < 2784.) // cf. explication plus haut
         {
@@ -398,7 +398,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
             erreur_non_convergence();
 
           y_plus = u_plus_d_plus / up1;
-          f_amortissement(elem) -= exp(-y_plus / A_plus);
+          f_amortissement_(elem) -= exp(-y_plus / A_plus);
         }
     }
 }
@@ -424,7 +424,7 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::preparer_calcul()
               }
           }
       }
-  if (!contient_distance_paroi && cas == 4)
+  if (!contient_distance_paroi && cas_ == 4)
     lire_distance_paroi();
   Modele_turbulence_hyd_base::preparer_calcul();
   mettre_a_jour(0.);

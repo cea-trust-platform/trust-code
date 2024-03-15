@@ -57,7 +57,7 @@ void Modele_turbulence_hyd_0_eq_base::set_param(Param& param)
 void Modele_turbulence_hyd_0_eq_base::discretiser()
 {
   Modele_turbulence_hyd_base::discretiser();
-  discretiser_K(mon_equation->schema_temps(), mon_equation->domaine_dis(), energie_cinetique_turb_);
+  discretiser_K(mon_equation_->schema_temps(), mon_equation_->domaine_dis(), energie_cinetique_turb_);
   champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
@@ -75,7 +75,7 @@ int Modele_turbulence_hyd_0_eq_base::a_pour_Champ_Fonc(const Motcle& mot,
     {
     case 0:
       {
-        ch_ref = la_viscosite_turbulente.valeur();
+        ch_ref = la_viscosite_turbulente_.valeur();
         return 1;
       }
     case 1:
@@ -142,11 +142,11 @@ void Modele_turbulence_hyd_0_eq_base::completer()
   if (fichier_K_eps_sortie_ != Nom())
     {
       // 1) on cree le fichier med et on postraite le domaine
-      const Domaine& dom = mon_equation->domaine_dis().domaine();
+      const Domaine& dom = mon_equation_->domaine_dis().domaine();
       Ecrire_MED ecr_med(fichier_K_eps_sortie_.nom_me(me()), dom);
       ecr_med.ecrire_domaine(false);
       //2 on discretise le champ K_eps_pour_la_sortie
-      const Discretisation_base& dis = mon_equation->discretisation();
+      const Discretisation_base& dis = mon_equation_->discretisation();
       Noms noms(2);
       Noms unit(2);
       noms[0] = "K";
@@ -154,8 +154,8 @@ void Modele_turbulence_hyd_0_eq_base::completer()
       unit[0] = "m2/s2";
       unit[1] = "m2/s3";
       int nb_case_tempo = 1;
-      double temps = mon_equation->schema_temps().temps_courant();
-      dis.discretiser_champ("CHAMP_ELEM", mon_equation->domaine_dis().valeur(), scalaire, noms, unit, 2, nb_case_tempo, temps, K_eps_sortie_);
+      double temps = mon_equation_->schema_temps().temps_courant();
+      dis.discretiser_champ("CHAMP_ELEM", mon_equation_->domaine_dis().valeur(), scalaire, noms, unit, 2, nb_case_tempo, temps, K_eps_sortie_);
       K_eps_sortie_.nommer("K_eps_from_nut");
       K_eps_sortie_.valeur().nommer("K_eps_from_nut");
       K_eps_sortie_->fixer_unites(unit);
@@ -168,30 +168,30 @@ void Modele_turbulence_hyd_0_eq_base::mettre_a_jour(double)
   statistiques().begin_count(nut_counter_);
   calculer_viscosite_turbulente();
   calculer_energie_cinetique_turb();
-  loipar.calculer_hyd(la_viscosite_turbulente, energie_cinetique_turbulente());
+  loipar_.calculer_hyd(la_viscosite_turbulente_, energie_cinetique_turbulente());
   limiter_viscosite_turbulente();
-  if (mon_equation->probleme().is_dilatable())
+  if (mon_equation_->probleme().is_dilatable())
     correction_nut_et_cisaillement_paroi_si_qc(*this);
   energie_cinetique_turb_.valeurs().echange_espace_virtuel();
-  la_viscosite_turbulente.valeurs().echange_espace_virtuel();
+  la_viscosite_turbulente_.valeurs().echange_espace_virtuel();
   statistiques().end_count(nut_counter_);
 }
 
 void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
 {
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
-  if (limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar) || limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_mean_only))
+  if (limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_) || limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_mean_only_))
     if (K_eps_sortie_.non_nul())
       {
-        double temps = mon_equation->schema_temps().temps_courant();
+        double temps = mon_equation_->schema_temps().temps_courant();
         K_eps_sortie_->mettre_a_jour(temps);
 
         //  calcul de K_eps
 
         DoubleTab& K_Eps = K_eps_sortie_.valeurs();
-        const DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+        const DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
         const DoubleTab& wall_length = wall_length_.valeurs();
         const int nb_elem = K_Eps.dimension(0);
 
@@ -222,7 +222,7 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
           }
 
         // enfin ecriture du champ aux elems (il y est deja)
-        const Domaine& dom = mon_equation->domaine_dis().domaine();
+        const Domaine& dom = mon_equation_->domaine_dis().domaine();
         Nom fic = fichier_K_eps_sortie_.nom_me(me());
 
         Nom nom_post = K_eps_sortie_.le_nom();

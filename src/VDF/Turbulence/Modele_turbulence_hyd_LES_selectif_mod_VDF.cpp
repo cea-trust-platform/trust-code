@@ -47,20 +47,20 @@ int Modele_turbulence_hyd_LES_selectif_mod_VDF::lire_motcle_non_standard(const M
 {
   if (mot == "Canal")
     {
-      is >> demi_h;
-      is >> dir_par;
-      canal = 1;
-      Cerr << "The half height of the chanel is :" << demi_h << " m" << finl;
-      Cerr << "Orientation of the walls is : " << dir_par << finl;
+      is >> demi_h_;
+      is >> dir_par_;
+      canal_ = 1;
+      Cerr << "The half height of the chanel is :" << demi_h_ << " m" << finl;
+      Cerr << "Orientation of the walls is : " << dir_par_ << finl;
       return 1;
     }
   else if (mot == "THI")
     {
-      is >> ki;
-      is >> kc;
-      thi = 1;
-      Cerr << "At initial time, the spectrum peak is located at : " << ki << " m-1" << finl;
-      Cerr << "The spectrum cut-off is located at : " << kc << " m-1" << finl;
+      is >> ki_;
+      is >> kc_;
+      thi_ = 1;
+      Cerr << "At initial time, the spectrum peak is located at : " << ki_ << " m-1" << finl;
+      Cerr << "The spectrum cut-off is located at : " << kc_ << " m-1" << finl;
       return 1;
     }
   else
@@ -79,8 +79,8 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::discretiser()
 {
   // Cerr << "Modele_turbulence_hyd_LES_selectif_mod_VDF::discretiser()" << finl;
   Modele_turbulence_hyd_LES_base::discretiser();
-  const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation->discretisation());
-  dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
+  const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation_->discretisation());
+  dis.vorticite(mon_equation_->domaine_dis(), mon_equation_->inconnue(), la_vorticite_);
 }
 
 int Modele_turbulence_hyd_LES_selectif_mod_VDF::a_pour_Champ_Fonc(const Motcle& mot,
@@ -98,7 +98,7 @@ int Modele_turbulence_hyd_LES_selectif_mod_VDF::a_pour_Champ_Fonc(const Motcle& 
     {
     case 0:
       {
-        ch_ref = la_viscosite_turbulente.valeur();
+        ch_ref = la_viscosite_turbulente_.valeur();
         return 1;
       }
     case 1:
@@ -108,7 +108,7 @@ int Modele_turbulence_hyd_LES_selectif_mod_VDF::a_pour_Champ_Fonc(const Motcle& 
       }
     case 2:
       {
-        ch_ref = la_vorticite.valeur();
+        ch_ref = la_vorticite_.valeur();
         return 1;
       }
     default:
@@ -133,15 +133,15 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::calculer_fonction_structure()
 void Modele_turbulence_hyd_LES_selectif_mod_VDF::cutoff()
 {
   double Sin2Angl;
-  const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleTab& xp = domaine_VDF.xp();
   int nb_poly = domaine_VDF.domaine().nb_elem();
-  DoubleTab& vorticite = la_vorticite.valeurs();
+  DoubleTab& vorticite = la_vorticite_.valeurs();
 
-  la_vorticite.mettre_a_jour(vitesse.temps());
+  la_vorticite_.mettre_a_jour(vitesse.temps());
   vorticite.echange_espace_virtuel();
 
   int elx0, elx1, ely0, ely1, elz0, elz1;
@@ -156,22 +156,22 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::cutoff()
   static double a = 23. * M_PI / 180.;
   static double b = -0.4;
   static double borne_y;
-  if (canal != 0)
-    borne_y = 0.2 * demi_h;
+  if (canal_ != 0)
+    borne_y = 0.2 * demi_h_;
 
-  if ((thi == 0) && (canal == 0))
+  if ((thi_ == 0) && (canal_ == 0))
     {
       Cerr << "Problem with the input data of the sous_maille_selectif_mod model." << finl;
       Cerr << "A necessary parameter : THI or Canal has not been specified." << finl;
       exit();
     }
 
-  if ((nb_points == 4) && (dir_par != dir3))
+  if ((nb_points_ == 4) && (dir_par_ != dir3_))
     {
       Cerr << "WARNING!!! WARNING!!! Modele_turbulence_hyd_LES_selectif_mod_VDF" << finl;
       Cerr << "A 4 points formulation is used." << finl;
-      Cerr << "Your planes are orthogonal to the direction : " << dir3 << finl;
-      Cerr << "while the given direction for the walls is :" << dir_par << finl;
+      Cerr << "Your planes are orthogonal to the direction : " << dir3_ << finl;
+      Cerr << "while the given direction for the walls is :" << dir_par_ << finl;
       Cerr << "Check that you really wish these directions to be different ..." << finl;
       Cerr << "WARNING!!! WARNING!!! dans Modele_turbulence_hyd_LES_selectif_mod_VDF" << finl;
     }
@@ -179,25 +179,25 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::cutoff()
   for (num_elem = 0; num_elem < nb_poly; num_elem++)
     {
 
-      if (thi != 0)
+      if (thi_ != 0)
         {
-          rapport = 2. * kc / ki;
+          rapport = 2. * kc_ / ki_;
         }
       else
         {
           // y_elem : distance entre le centre de l element et la paroi!!
-          y_elem = xp(num_elem, dir_par);
-          if (y_elem >= demi_h)
-            y_elem = 2. * demi_h - y_elem;
+          y_elem = xp(num_elem, dir_par_);
+          if (y_elem >= demi_h_)
+            y_elem = 2. * demi_h_ - y_elem;
 
           // lm : longueur de melange dans le canal
           if (y_elem < borne_y)
             lm = kappa * y_elem;
           else
-            lm = 0.2 * kappa * demi_h;
+            lm = 0.2 * kappa * demi_h_;
 
           // dy : pas de maillage local en y (largeur de filtre local)
-          dy = domaine_VDF.dim_elem(num_elem, dir_par);
+          dy = domaine_VDF.dim_elem(num_elem, dir_par_);
 
           // rapport pour la dependance de l angle
           rapport = lm / (2. * dy);
@@ -314,12 +314,12 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::cutoff()
           prod /= (norme * norme_moyen);
 
           if (prod <= Sin2Angl)
-            F2(num_elem) = 0;
+            F2_(num_elem) = 0;
         }
       else
         // bruit numerique ou element de coin
-        F2(num_elem) = 0;
+        F2_(num_elem) = 0;
 
     }
-  F2.echange_espace_virtuel();
+  F2_.echange_espace_virtuel();
 }

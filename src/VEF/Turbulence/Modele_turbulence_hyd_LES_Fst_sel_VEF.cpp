@@ -23,7 +23,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Fst_sel_VEF,
 
 Modele_turbulence_hyd_LES_Fst_sel_VEF::Modele_turbulence_hyd_LES_Fst_sel_VEF()
 {
-  C1 = 0.777 * 0.18247 * 0.18247 * 1.356;  // C_Fst_sel=C_Fst*1.356 car modele selectif
+  C1_ = 0.777 * 0.18247 * 0.18247 * 1.356;  // C_Fst_sel=C_Fst*1.356 car modele selectif
 }
 
 Sortie& Modele_turbulence_hyd_LES_Fst_sel_VEF::printOn(Sortie& s) const
@@ -53,8 +53,8 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::discretiser()
 
     }
   Modele_turbulence_hyd_LES_base::discretiser();
-  const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation->discretisation());
-  dis.vorticite(mon_equation->domaine_dis(), mon_equation->inconnue(), la_vorticite);
+  const VEF_discretisation& dis = ref_cast(VEF_discretisation, mon_equation_->discretisation());
+  dis.vorticite(mon_equation_->domaine_dis(), mon_equation_->inconnue(), la_vorticite_);
 }
 
 int Modele_turbulence_hyd_LES_Fst_sel_VEF::a_pour_Champ_Fonc(const Motcle& mot,
@@ -72,7 +72,7 @@ int Modele_turbulence_hyd_LES_Fst_sel_VEF::a_pour_Champ_Fonc(const Motcle& mot,
     {
     case 0:
       {
-        ch_ref = la_viscosite_turbulente.valeur();
+        ch_ref = la_viscosite_turbulente_.valeur();
         return 1;
       }
     case 1:
@@ -82,7 +82,7 @@ int Modele_turbulence_hyd_LES_Fst_sel_VEF::a_pour_Champ_Fonc(const Motcle& mot,
       }
     case 2:
       {
-        ch_ref = la_vorticite.valeur();
+        ch_ref = la_vorticite_.valeur();
         return 1;
       }
     default:
@@ -107,18 +107,18 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::cutoff()
 {
   //  static const double Sin2Angl = SIN2ANGL_new2;
   double Sin2Angl;
-  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation->inconnue().valeur());
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   //  const Domaine& domaine = domaine_VEF.domaine();
   //  int nfac = domaine.nb_faces_elem();
   //  int nfac = 4; // en 3D 4 faces!!!
-  DoubleTab& vorticite = la_vorticite.valeurs();
+  DoubleTab& vorticite = la_vorticite_.valeurs();
   const DoubleTab& xp = domaine_VEF.xp();
 
-  la_vorticite.mettre_a_jour(vitesse.temps());
+  la_vorticite_.mettre_a_jour(vitesse.temps());
   vorticite.echange_espace_virtuel();
 
   //  int el0,el1,el2,el3;
@@ -211,12 +211,12 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::cutoff()
           prod /= (norme * norme_moyen);
 
           if (prod <= Sin2Angl)
-            Racine(num_elem) = 0;
+            Racine_(num_elem) = 0;
         }
       else
         // bruit numerique ou element de coin
-        Racine(num_elem) = 0;
-      Racine.echange_espace_virtuel();
+        Racine_(num_elem) = 0;
+      Racine_.echange_espace_virtuel();
 
     }
 }

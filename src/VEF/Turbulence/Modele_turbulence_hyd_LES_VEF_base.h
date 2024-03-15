@@ -43,8 +43,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF_;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_VEF_base_included */

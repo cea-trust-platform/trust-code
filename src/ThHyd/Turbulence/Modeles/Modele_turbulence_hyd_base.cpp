@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ void Modele_turbulence_hyd_base::set_param(Param& param)
   param.ajouter_non_std("turbulence_paroi", (this), Param::REQUIRED);
   param.ajouter_non_std("dt_impr_ustar", (this));
   param.ajouter_non_std("dt_impr_ustar_mean_only", (this));
-  param.ajouter("nut_max", &XNUTM);
+  param.ajouter("nut_max", &XNUTM_);
   param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps", &calcul_borne_locale_visco_turb_);
   param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre", &dt_diff_sur_dt_conv_);
   //param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
@@ -90,16 +90,16 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
   int retval = 1;
   if (mot == "turbulence_paroi")
     {
-      loipar.associer_modele(*this);
-      is >> loipar;
-      is >> loipar.valeur();
+      loipar_.associer_modele(*this);
+      is >> loipar_;
+      is >> loipar_.valeur();
     }
-  else if (loipar.valeur().que_suis_je() != "negligeable_VDF" && loipar.valeur().que_suis_je() != "negligeable_VEF" && !loipar.valeur().que_suis_je().debute_par("negligeable_PolyMAC_P0P1NC"))
+  else if (loipar_.valeur().que_suis_je() != "negligeable_VDF" && loipar_.valeur().que_suis_je() != "negligeable_VEF" && !loipar_.valeur().que_suis_je().debute_par("negligeable_PolyMAC_P0P1NC"))
     {
       if (mot == "dt_impr_ustar")
         {
 //          nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar";
-          is >> dt_impr_ustar;
+          is >> dt_impr_ustar_;
         }
       else if (mot == "dt_impr_ustar_mean_only")
         {
@@ -127,7 +127,7 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
               Cerr << "We expected dt_impr..." << finl;
               exit();
             }
-          is >> dt_impr_ustar_mean_only;
+          is >> dt_impr_ustar_mean_only_;
 
           is >> motlu; // boundaries ou accolade_fermee ou pasbon
           if (motlu != accolade_fermee)
@@ -146,12 +146,12 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
                       for (int i = 0; i < nb_bords; i++)
                         {
                           is >> nom_bord_lu;
-                          boundaries_list.add(Nom(nom_bord_lu));
+                          boundaries_list_.add(Nom(nom_bord_lu));
                           //  verif nom bords
-                          if (!nlistbord_dom.contient(boundaries_list[i]))
+                          if (!nlistbord_dom.contient(boundaries_list_[i]))
                             {
                               Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
-                              Cerr << "The boundary named '" << boundaries_list[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
+                              Cerr << "The boundary named '" << boundaries_list_[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
                               exit();
                             }
                         }
@@ -192,7 +192,7 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
  */
 void Modele_turbulence_hyd_base::associer_eqn(const Equation_base& eqn)
 {
-  mon_equation = eqn;
+  mon_equation_ = eqn;
 }
 
 /*! @brief NE FAIT RIEN a surcharger dans les classes derivees.
@@ -252,13 +252,13 @@ void Modele_turbulence_hyd_base::lire_distance_paroi()
 void Modele_turbulence_hyd_base::discretiser()
 {
   Cerr << "Turbulence hydraulic model discretization" << finl;
-  discretiser_visc_turb(mon_equation->schema_temps(), mon_equation->domaine_dis(), la_viscosite_turbulente);
-  champs_compris_.ajoute_champ(la_viscosite_turbulente);
+  discretiser_visc_turb(mon_equation_->schema_temps(), mon_equation_->domaine_dis(), la_viscosite_turbulente_);
+  champs_compris_.ajoute_champ(la_viscosite_turbulente_);
 
-  discretiser_corr_visc_turb(mon_equation->schema_temps(), mon_equation->domaine_dis(), corr_visco_turb);
-  champs_compris_.ajoute_champ(corr_visco_turb);
-  const Discretisation_base& dis = ref_cast(Discretisation_base, mon_equation->discretisation());
-  dis.discretiser_champ("champ_elem", mon_equation->domaine_dis().valeur(), "distance_paroi", "m", 1, mon_equation->schema_temps().temps_courant(), wall_length_);
+  discretiser_corr_visc_turb(mon_equation_->schema_temps(), mon_equation_->domaine_dis(), corr_visco_turb_);
+  champs_compris_.ajoute_champ(corr_visco_turb_);
+  const Discretisation_base& dis = ref_cast(Discretisation_base, mon_equation_->discretisation());
+  dis.discretiser_champ("champ_elem", mon_equation_->domaine_dis().valeur(), "distance_paroi", "m", 1, mon_equation_->schema_temps().temps_courant(), wall_length_);
   champs_compris_.ajoute_champ(wall_length_);
 }
 
@@ -271,21 +271,21 @@ void Modele_turbulence_hyd_base::discretiser_visc_turb(const Schema_Temps_base& 
     Cerr << "Turbulent dynamic viscosity field discretization" << finl;
   Nom nom = (is_dilat == 1) ? "viscosite_dynamique_turbulente" : "viscosite_turbulente";
   Nom unite = (is_dilat == 1) ? "kg/(m.s)" : "m2/s";
-  const Discretisation_base& dis = mon_equation->discretisation();
+  const Discretisation_base& dis = mon_equation_->discretisation();
   dis.discretiser_champ("champ_elem", z.valeur(), nom, unite, 1, sch.temps_courant(), ch);
 }
 
 void Modele_turbulence_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Turbulent viscosity correction field discretization" << finl;
-  const Discretisation_base& dis = mon_equation->discretisation();
+  const Discretisation_base& dis = mon_equation_->discretisation();
   dis.discretiser_champ("champ_elem", z.valeur(), "corr_visco_turb", "adimensionnel", 1, sch.temps_courant(), ch);
 }
 
 void Modele_turbulence_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Kinetic turbulent energy field discretisation" << finl;
-  const Discretisation_base& dis = mon_equation->discretisation();
+  const Discretisation_base& dis = mon_equation_->discretisation();
   dis.discretiser_champ("champ_elem", z.valeur(), "K", "m2/s2", 1, sch.temps_courant(), ch);
 }
 
@@ -299,8 +299,8 @@ void Modele_turbulence_hyd_base::discretiser_K(const Schema_Temps_base& sch, Dom
 int Modele_turbulence_hyd_base::preparer_calcul()
 {
   int res = 1;
-  if (loipar.non_nul())
-    res = loipar.init_lois_paroi();
+  if (loipar_.non_nul())
+    res = loipar_.init_lois_paroi();
 
   bool contient_distance_paroi = false;
 
@@ -321,7 +321,7 @@ int Modele_turbulence_hyd_base::preparer_calcul()
                 }
             }
         }
-  loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
+  loipar_.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list_, nom_fichier_);
   return res;
 }
 
@@ -332,9 +332,9 @@ bool Modele_turbulence_hyd_base::initTimeStep(double dt)
 
 void Modele_turbulence_hyd_base::creer_champ(const Motcle& motlu)
 {
-  if (loipar.non_nul())
+  if (loipar_.non_nul())
     {
-      loipar->creer_champ(motlu);
+      loipar_->creer_champ(motlu);
     }
 }
 
@@ -348,11 +348,11 @@ const Champ_base& Modele_turbulence_hyd_base::get_champ(const Motcle& nom) const
     {
     }
 
-  if (loipar.non_nul())
+  if (loipar_.non_nul())
     {
       try
         {
-          return loipar->get_champ(nom);
+          return loipar_->get_champ(nom);
         }
       catch (Champs_compris_erreur&)
         {
@@ -367,8 +367,8 @@ void Modele_turbulence_hyd_base::get_noms_champs_postraitables(Noms& nom, Option
   else
     nom.add(champs_compris_.liste_noms_compris());
 
-  if (loipar.non_nul())
-    loipar->get_noms_champs_postraitables(nom, opt);
+  if (loipar_.non_nul())
+    loipar_->get_noms_champs_postraitables(nom, opt);
 }
 
 /*! @brief Effectue l'impression si cela est necessaire.
@@ -377,18 +377,18 @@ void Modele_turbulence_hyd_base::get_noms_champs_postraitables(Noms& nom, Option
  */
 void Modele_turbulence_hyd_base::imprimer(Sortie& os) const
 {
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
-  if (loipar.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar))
-    loipar.imprimer_ustar(os);
-  if (loipar.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_mean_only))
-    loipar.imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
+  if (loipar_.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_))
+    loipar_.imprimer_ustar(os);
+  if (loipar_.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_mean_only_))
+    loipar_.imprimer_ustar_mean_only(os, boundaries_, boundaries_list_, nom_fichier_);
 }
 
 int Modele_turbulence_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt, double dt_ustar) const
 {
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
   if (sch.nb_pas_dt() == 0)
     return 0;
   if (dt_ustar <= dt
@@ -415,20 +415,20 @@ int Modele_turbulence_hyd_base::limpr_ustar(double temps_courant, double temps_p
 int Modele_turbulence_hyd_base::sauvegarder(Sortie& os) const
 {
   a_faire(os);
-  if (loipar.non_nul())
+  if (loipar_.non_nul())
     {
-      loipar->sauvegarder(os);
+      loipar_->sauvegarder(os);
     }
   else  // OC: pour le bas Re, on ecrit negligeable => pas de pb a faire ceci ?
     {
-      const Discretisation_base& discr = mon_equation->discretisation();
+      const Discretisation_base& discr = mon_equation_->discretisation();
       Nom nom_discr = discr.que_suis_je();
       Nom type = "negligeable_";
       type += nom_discr.substr_old(1, 3);
       os << type << finl;
     }
   // Verification que l'appel a bien ete fait a Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
-  assert(mp_sum(borne_visco_turb.size()) != 0);
+  assert(mp_sum(borne_visco_turb_.size()) != 0);
   return 0;
 }
 /*! @brief Reprend la loi de paroi
@@ -438,8 +438,8 @@ int Modele_turbulence_hyd_base::sauvegarder(Sortie& os) const
  */
 int Modele_turbulence_hyd_base::reprendre(Entree& is)
 {
-  if (loipar.non_nul())
-    loipar->reprendre(is);
+  if (loipar_.non_nul())
+    loipar_->reprendre(is);
   return 0;
 }
 
@@ -467,56 +467,56 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
 {
   // On initial
   int size = viscosite_turbulente().valeurs().size();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
-  if (borne_visco_turb.size() == 0)
-    borne_visco_turb = visco_turb; //.resize(size);
-  borne_visco_turb = XNUTM;
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+  if (borne_visco_turb_.size() == 0)
+    borne_visco_turb_ = visco_turb; //.resize(size);
+  borne_visco_turb_ = XNUTM_;
   if (calcul_borne_locale_visco_turb_ && (equation().schema_temps().nb_pas_dt() != 0 || equation().probleme().reprise_effectuee()))
     {
       // On recalcule les bornes de la viscosite turbulente apres le premier pas de temps
       const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base());
       const Operateur_Conv_base& op_conv = ref_cast(Operateur_Conv_base, equation().operateur(1).l_op_base());
-      op_diff.calculer_borne_locale(borne_visco_turb, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
+      op_diff.calculer_borne_locale(borne_visco_turb_, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
     }
   // On borne la viscosite turbulente
   int nb_elem = equation().domaine_dis().domaine().nb_elem();
   assert(nb_elem == size);
   int compt = 0;
-  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente.valeurs());
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());
   // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
   // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
   // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      if (visco_turb(elem) > borne_visco_turb(elem))
+      if (visco_turb(elem) > borne_visco_turb_(elem))
         {
           compt++;
-          corr_visco_turb.valeurs()(elem) = borne_visco_turb(elem) / visco_turb(elem);
-          visco_turb(elem) = borne_visco_turb(elem);
+          corr_visco_turb_.valeurs()(elem) = borne_visco_turb_(elem) / visco_turb(elem);
+          visco_turb(elem) = borne_visco_turb_(elem);
         }
       else
-        corr_visco_turb.valeurs()(elem) = 1.;
+        corr_visco_turb_.valeurs()(elem) = 1.;
     }
-  corr_visco_turb.changer_temps(mon_equation->inconnue().temps());
+  corr_visco_turb_.changer_temps(mon_equation_->inconnue().temps());
   visco_turb.echange_espace_virtuel();
   // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb after",corr_visco_turb);
   // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb after",visco_turb);
-  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente.valeurs());
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_.valeurs());
 
   // On imprime
   int imprimer_compt = 0;
-  if (mon_equation->schema_temps().temps_impr() <= mon_equation->schema_temps().pas_de_temps())
+  if (mon_equation_->schema_temps().temps_impr() <= mon_equation_->schema_temps().pas_de_temps())
     imprimer_compt = 1;
   else
     {
-      if (mon_equation->schema_temps().nb_pas_dt() == 0)
+      if (mon_equation_->schema_temps().nb_pas_dt() == 0)
         imprimer_compt = 0;
       else
         {
           // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
           double i, j, epsilon = 1.e-8;
-          modf(mon_equation->schema_temps().temps_courant() / mon_equation->schema_temps().temps_impr() + epsilon, &i);
-          modf((mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().pas_de_temps()) / mon_equation->schema_temps().temps_impr() + epsilon, &j);
+          modf(mon_equation_->schema_temps().temps_courant() / mon_equation_->schema_temps().temps_impr() + epsilon, &i);
+          modf((mon_equation_->schema_temps().temps_courant() - mon_equation_->schema_temps().pas_de_temps()) / mon_equation_->schema_temps().temps_impr() + epsilon, &j);
           if (i > j)
             imprimer_compt = 1;
         }

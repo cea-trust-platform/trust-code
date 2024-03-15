@@ -27,7 +27,7 @@ Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbul
 
 Modele_turbulence_hyd_LES_base::Modele_turbulence_hyd_LES_base()
 {
-  methode = "volume"; // Parametre par defaut pour calculer la longueur caracteristique
+  methode_ = "volume"; // Parametre par defaut pour calculer la longueur caracteristique
 }
 
 Sortie& Modele_turbulence_hyd_LES_base::printOn(Sortie& is) const
@@ -43,14 +43,14 @@ Entree& Modele_turbulence_hyd_LES_base::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_base::set_param(Param& param)
 {
   Modele_turbulence_hyd_base::set_param(param);
-  param.ajouter("longueur_maille", &methode);
+  param.ajouter("longueur_maille", &methode_);
 }
 
 int Modele_turbulence_hyd_LES_base::preparer_calcul()
 {
   Modele_turbulence_hyd_base::preparer_calcul();
-  if (methode != "??")
-    Cerr << "The characteristic length of the subgrid scale model is calculated with the method : " << methode << finl;
+  if (methode_ != "??")
+    Cerr << "The characteristic length of the subgrid scale model is calculated with the method : " << methode_ << finl;
   calculer_longueurs_caracteristiques();
   mettre_a_jour(0.);
   return 1;
@@ -65,7 +65,7 @@ int Modele_turbulence_hyd_LES_base::preparer_calcul()
 void Modele_turbulence_hyd_LES_base::discretiser()
 {
   Modele_turbulence_hyd_base::discretiser();
-  discretiser_K(mon_equation->schema_temps(), mon_equation->domaine_dis(), energie_cinetique_turb_);
+  discretiser_K(mon_equation_->schema_temps(), mon_equation_->domaine_dis(), energie_cinetique_turb_);
   champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
@@ -78,7 +78,7 @@ void Modele_turbulence_hyd_LES_base::verifie_loi_paroi_diphasique()
 {
   const Milieu_base& mil = equation().milieu(); // returns Fluide_Diphasique or Fluide_Incompressible
   const Nom& nom_mil = mil.que_suis_je();
-  const Nom& nom_loipar = loipar.valeur().que_suis_je();
+  const Nom& nom_loipar = loipar_.valeur().que_suis_je();
   const Nom& nom_eq = equation().que_suis_je();
 
   if ((nom_loipar == "loi_standard_hydr_VEF" || nom_loipar == "loi_standard_hydr_VDF") && nom_eq == "Navier_Stokes_FT_Disc" && nom_mil == "Fluide_Diphasique")
@@ -86,12 +86,12 @@ void Modele_turbulence_hyd_LES_base::verifie_loi_paroi_diphasique()
       const Nom& discr = equation().discretisation().que_suis_je();
       if (discr == "VEF" || discr == "VEFPreP1B")
         {
-          loipar.typer("loi_standard_hydr_diphasique_VEF");
+          loipar_.typer("loi_standard_hydr_diphasique_VEF");
           Cerr << "Associating the two-phase hydraulic wall turbulence model : loi_standard_hydr_diphasique_VEF ..." << finl;
         }
       else if (discr == "VDF")
         {
-          loipar.typer("loi_standard_hydr_diphasique_VDF");
+          loipar_.typer("loi_standard_hydr_diphasique_VDF");
           Cerr << "Associating the two-phase hydraulic wall turbulence model : loi_standard_hydr_diphasique_VDF ..." << finl;
         }
       else
@@ -99,8 +99,8 @@ void Modele_turbulence_hyd_LES_base::verifie_loi_paroi_diphasique()
           Cerr << "Unknown discretization type !!!";
           Process::exit();
         }
-      loipar.valeur().associer_modele(*this);
-      loipar.valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
+      loipar_.valeur().associer_modele(*this);
+      loipar_.valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
     }
 }
 
@@ -115,19 +115,19 @@ void Modele_turbulence_hyd_LES_base::mettre_a_jour(double)
   statistiques().begin_count(nut_counter_);
   calculer_viscosite_turbulente();
   calculer_energie_cinetique_turb();
-  loipar->calculer_hyd(la_viscosite_turbulente, energie_cinetique_turbulente());
+  loipar_->calculer_hyd(la_viscosite_turbulente_, energie_cinetique_turbulente());
   limiter_viscosite_turbulente();
   if (equation().probleme().is_dilatable())
     correction_nut_et_cisaillement_paroi_si_qc(*this);
   energie_cinetique_turb_.valeurs().echange_espace_virtuel();
-  la_viscosite_turbulente->valeurs().echange_espace_virtuel();
+  la_viscosite_turbulente_->valeurs().echange_espace_virtuel();
   statistiques().end_count(nut_counter_);
 }
 
 void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
 {
   DoubleVect& k = energie_cinetique_turb_.valeurs();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   double Cq = 0.094;
 
   // PQ : 10/08/06 : on utilise ici la formule de Schuman : q_sm = (nu_t)^2 / (Cq.l)^2
@@ -142,7 +142,7 @@ void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
   for (int elem = 0; elem < nb_elem; elem++)
     k(elem) = visco_turb[elem] * visco_turb[elem] / (Cq * Cq * l_(elem) * l_(elem));
 
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation_->inconnue().temps();
   energie_cinetique_turb_.changer_temps(temps);
 }
 

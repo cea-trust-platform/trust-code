@@ -68,9 +68,9 @@ Entree& Modele_turbulence_hyd_LES_Smago_filtre_VEF::readOn(Entree& s)
 
 void Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_S_barre()
 {
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
 
   const DoubleVect& vol = domaine_VEF.volumes();
@@ -122,7 +122,7 @@ void Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_S_barre()
 
     }
 
-  Champ_P1NC::calcul_S_barre(vitesse, SMA_barre, domaine_Cl_VEF);
+  Champ_P1NC::calcul_S_barre(vitesse, SMA_barre_, domaine_Cl_VEF);
 
   // On recalcule la longueur caracteristique de l'element
 

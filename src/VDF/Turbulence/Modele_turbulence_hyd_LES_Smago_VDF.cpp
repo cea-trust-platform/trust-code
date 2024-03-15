@@ -25,7 +25,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Smago_VDF, "
 
 Modele_turbulence_hyd_LES_Smago_VDF::Modele_turbulence_hyd_LES_Smago_VDF()
 {
-  cs = 0.18;
+  cs_ = 0.18;
 }
 
 Sortie& Modele_turbulence_hyd_LES_Smago_VDF::printOn(Sortie& s) const
@@ -42,7 +42,7 @@ Entree& Modele_turbulence_hyd_LES_Smago_VDF::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_Smago_VDF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VDF_base::set_param(param);
-  param.ajouter("cs", &cs);
+  param.ajouter("cs", &cs_);
   param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 
@@ -54,9 +54,9 @@ void Modele_turbulence_hyd_LES_Smago_VDF::set_param(Param& param)
 
 Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   int nb_elem = domaine_VDF.domaine().nb_elem();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
@@ -71,20 +71,20 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
   Debog::verifier("Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
   for (int elem = 0; elem < nb_elem; elem++)
-    visco_turb[elem] = cs * cs * l_(elem) * l_(elem) * sqrt(SMA_barre_(elem));
+    visco_turb[elem] = cs_ * cs_ * l_(elem) * l_(elem) * sqrt(SMA_barre_(elem));
 
   Debog::verifier("Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_Smago_VDF::calculer_S_barre()
 {
-  Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
+  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
   int i, j;

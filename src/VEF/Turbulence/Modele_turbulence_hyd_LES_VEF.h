@@ -36,8 +36,8 @@ protected:
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_fonction_structure();
 
-  DoubleVect F2;
-  DoubleVect r;
+  DoubleVect F2_;
+  DoubleVect r_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_VEF_included */

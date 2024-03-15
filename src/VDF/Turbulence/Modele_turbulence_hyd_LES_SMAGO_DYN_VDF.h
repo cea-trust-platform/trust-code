@@ -44,8 +44,8 @@ public:
   /////////////////////////////////////////////////////
 protected:
 
-  Champ_Fonc coeff_field;
-  Motcle methode_stabilise;
+  Champ_Fonc coeff_field_;
+  Motcle methode_stabilise_;
   // variable qui vaut 6_points ou plans_parallele suivant
   // la methode choisie pour stabiliser la constante dynamique
   int N_c_;

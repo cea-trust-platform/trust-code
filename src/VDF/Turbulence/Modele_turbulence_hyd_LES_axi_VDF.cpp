@@ -46,19 +46,19 @@ Entree& Modele_turbulence_hyd_LES_axi_VDF::readOn(Entree& s)
 
 Champ_Fonc& Modele_turbulence_hyd_LES_axi_VDF::calculer_viscosite_turbulente()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   static const double Csm1 = CSM1;
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   int nb_poly = domaine_VDF.domaine().nb_elem();
-  int nb_poly_tot = le_dom_VDF->domaine().nb_elem_tot();
+  int nb_poly_tot = le_dom_VDF_->domaine().nb_elem_tot();
   int numfa[6];
   double delta_C_axi;
   double h_x, h_y, h_z;
   double un_tiers = 1. / 3.;
 
-  F2.resize(nb_poly_tot);
+  F2_.resize(nb_poly_tot);
   calculer_fonction_structure();
 
   if (visco_turb.size() != nb_poly)
@@ -80,19 +80,19 @@ Champ_Fonc& Modele_turbulence_hyd_LES_axi_VDF::calculer_viscosite_turbulente()
       // delta_C_axi = sqrt(h_x*h_x + h_y*h_y + h_z*h_z) ;
       // filter lesieur
       delta_C_axi = pow(h_x * h_y * h_z, un_tiers);
-      visco_turb[elem] = Csm1 * delta_C_axi * sqrt(F2[elem]);
+      visco_turb[elem] = Csm1 * delta_C_axi * sqrt(F2_[elem]);
     }
 
   Debog::verifier("Modele_turbulence_hyd_LES_axi_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
 {
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   int nb_poly = domaine_VDF.domaine().nb_elem();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
@@ -212,12 +212,12 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
       // Les aretes bords sont considerees comme des faces internes
       // par modification du tableau Qdm ( dans Domaine_VDF.cpp )
 
-      const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
+      const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
       const int nb_cond_lim = domaine_Cl_VDF.nb_cond_lim();
 
       for (int i = 0; i < nb_cond_lim; i++)
         {
-          const Cond_lim_base& cl = le_dom_Cl_VDF->les_conditions_limites(i).valeur();
+          const Cond_lim_base& cl = le_dom_Cl_VDF_->les_conditions_limites(i).valeur();
 
           // Cerr << "les_conditions_limites(i).valeur() : " << cl << finl;
 
@@ -283,8 +283,8 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
           // delta_C_axi = sqrt(h_x*h_x + h_y*h_y + h_z*h_z) ;
           // filter lesieur
           delta_C_axi = pow(h_x * h_y * h_z, un_tiers);
-          F2[num_elem] = un_tiers
-                         * (F_Elem(num_elem, 0) * pow(delta_C_axi / h_x, deux_tiers) + F_Elem(num_elem, 1) * pow(delta_C_axi / h_y, deux_tiers) + F_Elem(num_elem, 2) * pow(delta_C_axi / h_z, deux_tiers));
+          F2_[num_elem] = un_tiers
+                          * (F_Elem(num_elem, 0) * pow(delta_C_axi / h_x, deux_tiers) + F_Elem(num_elem, 1) * pow(delta_C_axi / h_y, deux_tiers) + F_Elem(num_elem, 2) * pow(delta_C_axi / h_z, deux_tiers));
         }
 
       // On traite les bords pour completer la fonction de structure
@@ -303,7 +303,7 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
 
           // pour chaque Condition Limite on regarde son type
 
-          const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl_VDF_->les_conditions_limites(n_bord);
           if (sub_type(Dirichlet_entree_fluide, la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
@@ -313,13 +313,13 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
                 if ((n0 = face_voisins(num_face, 0)) != -1)
                   {
                     elem = domaine_VDF.elem_voisin(n0, num_face, 0);
-                    F2[n0] = F2[elem];
+                    F2_[n0] = F2_[elem];
                   }
                 else
                   {
                     n1 = face_voisins(num_face, 1);
                     elem = domaine_VDF.elem_voisin(n1, num_face, 1);
-                    F2[n1] = F2[elem];
+                    F2_[n1] = F2_[elem];
                   }
             }
           else if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
@@ -331,13 +331,13 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
                 if ((n0 = face_voisins(num_face, 0)) != -1)
                   {
                     elem = domaine_VDF.elem_voisin(n0, num_face, 0);
-                    F2[n0] = F2[elem];
+                    F2_[n0] = F2_[elem];
                   }
                 else
                   {
                     n1 = face_voisins(num_face, 1);
                     elem = domaine_VDF.elem_voisin(n1, num_face, 1);
-                    F2[n1] = F2[elem];
+                    F2_[n1] = F2_[elem];
                   }
             }
           else if (sub_type(Symetrie, la_cl.valeur()))
@@ -351,11 +351,11 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
               nfin0 = ndeb0 + le_bord.nb_faces();
               for (num_face = ndeb0; num_face < nfin0; num_face++)
                 if ((n0 = face_voisins(num_face, 0)) != -1)
-                  F2[n0] = 0;
+                  F2_[n0] = 0;
                 else
                   {
                     n1 = face_voisins(num_face, 1);
-                    F2[n1] = 0;
+                    F2_[n1] = 0;
                   }
             }
         }

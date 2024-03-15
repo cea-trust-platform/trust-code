@@ -27,7 +27,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VEF, "M
 Modele_turbulence_hyd_LES_Wale_VEF::Modele_turbulence_hyd_LES_Wale_VEF()
 {
   declare_support_masse_volumique(1);
-  cw = 0.5;
+  cw_ = 0.5;
 }
 
 Sortie& Modele_turbulence_hyd_LES_Wale_VEF::printOn(Sortie& s) const
@@ -44,7 +44,7 @@ Entree& Modele_turbulence_hyd_LES_Wale_VEF::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_Wale_VEF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VEF_base::set_param(param);
-  param.ajouter("cw", &cw);
+  param.ajouter("cw", &cw_);
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale model constant must be positive.");
 }
 
@@ -58,12 +58,12 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
 {
   // cw est la constante du modele WALE qui correspond a une correction
   //  de la constante Cs du modele de Smagorinsky.
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
 
   if (visco_turb.size() != nb_elem)
     {
@@ -139,7 +139,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
         double OP2 = Sij2 * Sij2 * sqrt(Sij2) + sd2 * sqrt(sqrt(sd2));
 
         if (OP1 != 0.) // donc sd2 et OP2 par voie de consequence sont differents de zero
-          visco_turb_addr[elem] = cw * cw * l_addr[elem] * l_addr[elem] * OP1 / OP2;
+          visco_turb_addr[elem] = cw_ * cw_ * l_addr[elem] * l_addr[elem] * OP1 / OP2;
         else
           visco_turb_addr[elem] = 0;
       } // fin de la boucle sur les elements
@@ -147,6 +147,6 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
 
   Debog::verifier("Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }

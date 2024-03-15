@@ -29,9 +29,9 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange
 
 Modele_turbulence_hyd_Longueur_Melange_VDF::Modele_turbulence_hyd_Longueur_Melange_VDF()
 {
-  alt_min = 0.;
-  alt_max = 2.;
-  direction = 1;
+  alt_min_ = 0.;
+  alt_max_ = 2.;
+  direction_ = 1;
 }
 
 /*! @brief Ecrit le type de l'objet sur un flot de sortie.
@@ -57,9 +57,9 @@ Entree& Modele_turbulence_hyd_Longueur_Melange_VDF::readOn(Entree& s)
 void Modele_turbulence_hyd_Longueur_Melange_VDF::set_param(Param& param)
 {
   Modele_turbulence_hyd_0_eq_base::set_param(param);
-  param.ajouter("canal_hmin", &alt_min);
-  param.ajouter("canal_hmax", &alt_max);
-  param.ajouter("direction_normale_canal", &direction);
+  param.ajouter("canal_hmin", &alt_min_);
+  param.ajouter("canal_hmax", &alt_max_);
+  param.ajouter("direction_normale_canal", &direction_);
 }
 
 int Modele_turbulence_hyd_Longueur_Melange_VDF::preparer_calcul()
@@ -71,20 +71,20 @@ int Modele_turbulence_hyd_Longueur_Melange_VDF::preparer_calcul()
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_VDF_ = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbulente()
 {
-  double hauteur = std::fabs(alt_max - alt_min); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
+  double hauteur = std::fabs(alt_max_ - alt_min_); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
   //Attention, ici "hauteur" est la hauteur reelle du canal (pas la demi-hauteur)
   const double Kappa = 0.415;
   double Cmu = CMU;
 
-  double temps = mon_equation->inconnue().temps();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  double temps = mon_equation_->inconnue().temps();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   DoubleVect& k = energie_cinetique_turb_.valeurs();
   const int nb_elem = domaine_VDF.nb_elem();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
@@ -112,10 +112,10 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      double y = xp(elem, direction);
-      y = std::fabs(y - alt_min);
+      double y = xp(elem, direction_);
+      y = std::fabs(y - alt_min_);
       if (y > (hauteur / 2.))
-        y = std::fabs(alt_max - y);
+        y = std::fabs(alt_max_ - y);
 
       visco_turb(elem) = Kappa * Kappa * y * y * (1. - 2 * y / hauteur) * sqrt(2. * Sij2(elem));
       k(elem) = pow(visco_turb(elem) / (Cmu * y), 2);
@@ -123,8 +123,8 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
 
   Debog::verifier("Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_energie_cinetique_turb()
@@ -138,17 +138,17 @@ void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_energie_cinetique_turb
   // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation_->inconnue().temps();
 
   energie_cinetique_turb_.changer_temps(temps);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
 {
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
+  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   const int nb_elem = domaine_VDF.nb_elem_tot();
 
   assert(vitesse.line_size() == 1);

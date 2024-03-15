@@ -32,13 +32,13 @@ Entree& Modele_turbulence_hyd_LES_VDF_base::readOn(Entree& is)
 
 void Modele_turbulence_hyd_LES_VDF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_VDF_ = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 void Modele_turbulence_hyd_LES_VDF_base::calculer_longueurs_caracteristiques()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
   int nb_elem = domaine_VDF.domaine().nb_elem();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const IntVect& orientation = domaine_VDF.orientation();
@@ -49,7 +49,7 @@ void Modele_turbulence_hyd_LES_VDF_base::calculer_longueurs_caracteristiques()
   double dist_tot, dist_min, dist_max, dist_moy;
   double a1, a2, f_scotti;
 
-  const int modele_scotti = (methode == Motcle("Scotti"));
+  const int modele_scotti = (methode_ == Motcle("Scotti"));
   if (modele_scotti && (dimension == 2))
     {
       Cerr << "The Scotti correction can be used only for dimension 3." << finl;

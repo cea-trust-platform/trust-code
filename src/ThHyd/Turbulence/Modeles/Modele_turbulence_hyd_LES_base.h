@@ -58,7 +58,7 @@ protected:
 
   Champ_Fonc energie_cinetique_turb_;
   DoubleVect l_;
-  Motcle methode;
+  Motcle methode_;
 
 };
 

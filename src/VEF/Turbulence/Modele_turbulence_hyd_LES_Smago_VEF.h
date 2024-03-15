@@ -41,8 +41,8 @@ protected:
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_S_barre();
 
-  double cs;
-  DoubleVect SMA_barre;
+  double cs_;
+  DoubleVect SMA_barre_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Smago_VEF_included */

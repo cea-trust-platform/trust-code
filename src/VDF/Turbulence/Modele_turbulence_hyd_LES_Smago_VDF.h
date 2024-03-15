@@ -41,7 +41,7 @@ protected:
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_S_barre();
 
-  double cs;
+  double cs_;
   DoubleVect SMA_barre_;
 };
 

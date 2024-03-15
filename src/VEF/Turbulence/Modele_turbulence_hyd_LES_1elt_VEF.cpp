@@ -23,8 +23,8 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_1elt_VEF, "M
 
 Modele_turbulence_hyd_LES_1elt_VEF::Modele_turbulence_hyd_LES_1elt_VEF()
 {
-  Csm1 = CSM1;
-  Csm2 = CSM2;
+  Csm1_ = CSM1;
+  Csm2_ = CSM2;
 }
 
 Sortie& Modele_turbulence_hyd_LES_1elt_VEF::printOn(Sortie& s) const
@@ -45,14 +45,14 @@ Entree& Modele_turbulence_hyd_LES_1elt_VEF::readOn(Entree& s)
 
 Champ_Fonc& Modele_turbulence_hyd_LES_1elt_VEF::calculer_viscosite_turbulente()
 {
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
   //DoubleVect volume = domaine_VEF.volumes();
   int num_elem;
 
-  F2.resize(nb_elem);
+  F2_.resize(nb_elem);
 
   calculer_fonction_structure();
 
@@ -65,18 +65,18 @@ Champ_Fonc& Modele_turbulence_hyd_LES_1elt_VEF::calculer_viscosite_turbulente()
 
   Debog::verifier("Modele_turbulence_hyd_LES_1elt_VEF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
   for (num_elem = 0; num_elem < nb_elem; num_elem++)
-    visco_turb(num_elem) = Csm1 * l_[num_elem] * sqrt(F2(num_elem));
+    visco_turb(num_elem) = Csm1_ * l_[num_elem] * sqrt(F2_(num_elem));
 
   Debog::verifier("Modele_turbulence_hyd_LES_1elt_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_1elt_VEF::calculer_fonction_structure()
 {
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const DoubleTab& xv = domaine_VEF.xv();
@@ -134,6 +134,6 @@ void Modele_turbulence_hyd_LES_1elt_VEF::calculer_fonction_structure()
           F2_int1 += (vit_z_elem - la_vitesse(num_face, 2)) * (vit_z_elem - la_vitesse(num_face, 2));
           F2_int2 += F2_int1 * dist;
         }
-      F2(num_elem) = F2_int2 / nfac;
+      F2_(num_elem) = F2_int2 / nfac;
     }
 }

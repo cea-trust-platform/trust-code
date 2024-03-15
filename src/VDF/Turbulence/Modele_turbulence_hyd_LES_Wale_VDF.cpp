@@ -26,7 +26,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VDF, "M
 Modele_turbulence_hyd_LES_Wale_VDF::Modele_turbulence_hyd_LES_Wale_VDF()
 {
   declare_support_masse_volumique(1);
-  cw = 0.5;
+  cw_ = 0.5;
 }
 
 Sortie& Modele_turbulence_hyd_LES_Wale_VDF::printOn(Sortie& s) const
@@ -43,7 +43,7 @@ Entree& Modele_turbulence_hyd_LES_Wale_VDF::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VDF_base::set_param(param);
-  param.ajouter("cw", &cw);
+  param.ajouter("cw", &cw_);
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale_VDF model constant must be positive.");
 }
 
@@ -55,10 +55,10 @@ void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
 
 Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
-  double temps = mon_equation->inconnue().temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
-  if (est_egal(cw, 0., 1.e-15))
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  double temps = mon_equation_->inconnue().temps();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+  if (est_egal(cw_, 0., 1.e-15))
     {
       visco_turb = 0.;
     }
@@ -67,8 +67,8 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
       int nb_elem = domaine_VDF.domaine().nb_elem();
       const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
-      OP1.resize(nb_elem_tot);  // OP1 est le premier operateur spatial du modele WALE.
-      OP2.resize(nb_elem_tot);  // OP2 est le deuxieme operateur spatial du modele WALE.
+      OP1_.resize(nb_elem_tot);  // OP1 est le premier operateur spatial du modele WALE.
+      OP2_.resize(nb_elem_tot);  // OP2 est le deuxieme operateur spatial du modele WALE.
 
       calculer_OP1_OP2();
 
@@ -80,25 +80,25 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 
       for (int elem = 0; elem < nb_elem; elem++)
         {
-          if (OP1[elem] != 0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
-            visco_turb[elem] = cw * cw * l_(elem) * l_(elem) * OP1[elem] / OP2[elem];
+          if (OP1_[elem] != 0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
+            visco_turb[elem] = cw_ * cw_ * l_(elem) * l_(elem) * OP1_[elem] / OP2_[elem];
           else
             visco_turb[elem] = 0;
         }
     }
 
-  la_viscosite_turbulente.changer_temps(temps);
+  la_viscosite_turbulente_.changer_temps(temps);
 
-  return la_viscosite_turbulente;
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_Wale_VDF::calculer_OP1_OP2()
 {
 
-  Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
-  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
+  Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
+  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
   int nb_elem = domaine_VDF.domaine().nb_elem_tot();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
@@ -200,8 +200,8 @@ void Modele_turbulence_hyd_LES_Wale_VDF::calculer_OP1_OP2()
           }
 
       // Calcul de OP1 et OP2
-      OP1(elem) = pow(sd2, 1.5);
-      OP2(elem) = pow(Sij2, 2.5) + pow(sd2, 1.25);
+      OP1_(elem) = pow(sd2, 1.5);
+      OP2_(elem) = pow(Sij2, 2.5) + pow(sd2, 1.25);
 
     }                // fin de la boucle sur les elements
 }

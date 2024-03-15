@@ -24,7 +24,7 @@ Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Smago_VEF, "
 
 Modele_turbulence_hyd_LES_Smago_VEF::Modele_turbulence_hyd_LES_Smago_VEF()
 {
-  cs = 0.18;
+  cs_ = 0.18;
 }
 
 Sortie& Modele_turbulence_hyd_LES_Smago_VEF::printOn(Sortie& s) const
@@ -41,7 +41,7 @@ Entree& Modele_turbulence_hyd_LES_Smago_VEF::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_Smago_VEF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VEF_base::set_param(param);
-  param.ajouter("cs", &cs);
+  param.ajouter("cs", &cs_);
   param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 
@@ -53,31 +53,31 @@ void Modele_turbulence_hyd_LES_Smago_VEF::set_param(Param& param)
 
 Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 {
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
-  SMA_barre.resize(nb_elem_tot);
+  SMA_barre_.resize(nb_elem_tot);
 
   calculer_S_barre();
 
-  DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   if (visco_turb.size() != nb_elem)
     {
       Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
       exit();
     }
   for (int elem = 0; elem < nb_elem; elem++)
-    visco_turb(elem) = cs * cs * l_(elem) * l_(elem) * sqrt(SMA_barre[elem]);
+    visco_turb(elem) = cs_ * cs_ * l_(elem) * l_(elem) * sqrt(SMA_barre_[elem]);
 
-  double temps = mon_equation->inconnue().temps();
-  la_viscosite_turbulente.changer_temps(temps);
-  return la_viscosite_turbulente;
+  double temps = mon_equation_->inconnue().temps();
+  la_viscosite_turbulente_.changer_temps(temps);
+  return la_viscosite_turbulente_;
 }
 
 void Modele_turbulence_hyd_LES_Smago_VEF::calculer_S_barre()
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
-  const DoubleTab& la_vitesse = mon_equation->inconnue().valeurs();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
 
-  Champ_P1NC::calcul_S_barre(la_vitesse, SMA_barre, domaine_Cl_VEF);
+  Champ_P1NC::calcul_S_barre(la_vitesse, SMA_barre_, domaine_Cl_VEF);
 }

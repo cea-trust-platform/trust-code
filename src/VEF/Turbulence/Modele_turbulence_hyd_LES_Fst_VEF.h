@@ -40,8 +40,8 @@ protected:
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_racine();
 
-  double C1;
-  DoubleVect Racine;
+  double C1_;
+  DoubleVect Racine_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Fst_VEF_included */

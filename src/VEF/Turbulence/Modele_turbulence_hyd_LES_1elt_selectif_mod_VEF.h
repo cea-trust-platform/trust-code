@@ -45,7 +45,7 @@ public:
 
 protected:
 
-  Champ_Fonc la_vorticite;
+  Champ_Fonc la_vorticite_;
   void cutoff();
   void calculer_angle_limite(const double, double&);
 
