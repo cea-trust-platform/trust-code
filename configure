@@ -1039,6 +1039,7 @@ then
    do
      echo $ECHO_OPTS "${cible}:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_${cible} numeric_kernel_${cible} standard_kernel_${cible} ${cible}\" monodir)" >> $TRUST_ROOT/Makefile
    done
+   echo $ECHO_OPTS "unit:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_debug\" monodir)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "opt_avx:\n\t@echo opt_avx target not available since TRUST v1.9.2" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile

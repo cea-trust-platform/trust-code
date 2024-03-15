@@ -426,6 +426,13 @@ set(libtrio lib${libtrio_name})
 
 if(NOT ATELIER) # Not a Baltik, TRUST itself
     #
+    # Unit tests - only with micro kernel:
+    #
+    if(${kernel} STREQUAL "micro")
+        add_subdirectory(${CMAKE_SOURCE_DIR}/../tests/UnitTests ${CMAKE_BINARY_DIR}/UnitTests) # Must specify binary dir cause out of tree source
+    endif()
+    
+    #
     # Include all TRUST (or specialized kernel) sub-directories
     #
     foreach(dir ${listdir})
@@ -484,7 +491,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
     # Main executable generated here:
     #
     # (no exec produced in partial mode)
-    if(("${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
+    if((${kernel} STREQUAL "full") OR ($ENV{FORCE_LINK}))
         include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
         add_executable (${trio} 
             MAIN/the_main.cpp 
