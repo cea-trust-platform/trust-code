@@ -16,17 +16,17 @@
 #ifndef Modele_turbulence_hyd_base_included
 #define Modele_turbulence_hyd_base_included
 
-#define CMU 0.09
-
 #include <Support_Champ_Masse_Volumique.h>
 #include <Turbulence_paroi.h>
 
-class Motcle;
-class Domaine_dis;
+class Schema_Temps_base;
 class Domaine_Cl_dis;
 class Equation_base;
-class Schema_Temps_base;
+class Domaine_dis;
+class Motcle;
 class Param;
+
+static constexpr double CMU = 0.09;
 
 /*! @brief Classe Modele_turbulence_hyd_base Cette classe sert de base a la hierarchie des classes
  *
@@ -43,12 +43,9 @@ class Param;
  */
 class Modele_turbulence_hyd_base: public Objet_U, public Support_Champ_Masse_Volumique, public Champs_compris_interface
 {
-
-  Declare_base_sans_constructeur(Modele_turbulence_hyd_base);
-
+  Declare_base(Modele_turbulence_hyd_base);
 public:
-  inline Modele_turbulence_hyd_base();
-  inline const Champ_Fonc& viscosite_turbulente() const;
+  inline const Champ_Fonc& viscosite_turbulente() const { return la_viscosite_turbulente_; }
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
   inline const Turbulence_paroi& loi_paroi() const { return loipar_; }
@@ -73,58 +70,36 @@ public:
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
-  inline Champs_compris& champs_compris();
+  inline Champs_compris& champs_compris() { return champs_compris_; }
 
   virtual void imprimer(Sortie&) const;
   void a_faire(Sortie&) const;
   int sauvegarder(Sortie&) const override;
 
   int limpr_ustar(double, double, double, double) const;
-  inline double get_Cmu() const;
+  inline double get_Cmu() const { return LeCmu_; }
   void lire_distance_paroi();
 
 protected:
-  double LeCmu_;
+  double LeCmu_ = CMU;
   Champ_Fonc la_viscosite_turbulente_;
   Champ_Fonc wall_length_;
   REF(Equation_base) mon_equation_;
   Turbulence_paroi loipar_;
-  double dt_impr_ustar_;
-  double dt_impr_ustar_mean_only_;
-  int boundaries_;
+  double dt_impr_ustar_  = 1.e20, dt_impr_ustar_mean_only_  = 1.e20;
+  int boundaries_ = 0;
   LIST(Nom) boundaries_list_;
-  Nom nom_fichier_;
+  Nom nom_fichier_ = "";
   void limiter_viscosite_turbulente();
 
   Champs_compris champs_compris_;
 private:
 
-  double XNUTM_;
-  int calcul_borne_locale_visco_turb_;
-  double dt_diff_sur_dt_conv_;
+  double XNUTM_ = 1.E8, dt_diff_sur_dt_conv_ = -1;
+  int calcul_borne_locale_visco_turb_ = 0;
   Champ_Fonc corr_visco_turb_;
   DoubleVect borne_visco_turb_;
 };
-
-inline Modele_turbulence_hyd_base::Modele_turbulence_hyd_base()
-{
-  LeCmu_ = CMU;
-  dt_impr_ustar_ = 1.e20;
-  dt_impr_ustar_mean_only_ = 1.e20;
-  boundaries_ = 0;
-  nom_fichier_ = "";
-  XNUTM_ = 1.E8;
-  calcul_borne_locale_visco_turb_ = 0;
-  dt_diff_sur_dt_conv_ = -1;
-}
-/*! @brief Renvoie la viscosite turbulente.
- *
- * @return (Champ_Fonc&) le champ representant la viscosite turbulente
- */
-inline const Champ_Fonc& Modele_turbulence_hyd_base::viscosite_turbulente() const
-{
-  return la_viscosite_turbulente_;
-}
 
 /*! @brief Renvoie l'equation associee au modele de turbulence.
  *
@@ -136,7 +111,7 @@ inline Equation_base& Modele_turbulence_hyd_base::equation()
 {
   if (mon_equation_.non_nul() == 0)
     {
-      Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "Error in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation_.valeur();
@@ -146,24 +121,10 @@ inline const Equation_base& Modele_turbulence_hyd_base::equation() const
 {
   if (mon_equation_.non_nul() == 0)
     {
-      Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "Error in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation_.valeur();
 }
 
-/*! @brief Renvoie de la valeur de Cmu
- *
- * @return (la valeur Cmu)
- */
-inline double Modele_turbulence_hyd_base::get_Cmu() const
-{
-  return LeCmu_;
-}
-
-inline Champs_compris& Modele_turbulence_hyd_base::champs_compris()
-{
-  return champs_compris_;
-}
-#endif
-
+#endif /* Modele_turbulence_hyd_base_included */

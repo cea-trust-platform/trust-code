@@ -14,39 +14,22 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_0_eq_base.h>
-#include <Discretisation_base.h>
 #include <Modifier_pour_fluide_dilatable.h>
-#include <Motcle.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <stat_counters.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Ecrire_MED.h>
 #include <Domaine.h>
-#include <Schema_Temps_base.h>
-#include <stat_counters.h>
+#include <Motcle.h>
 #include <Param.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_hyd_0_eq_base, "Modele_turbulence_hyd_0_eq_base", Modele_turbulence_hyd_base);
+Implemente_base(Modele_turbulence_hyd_0_eq_base, "Modele_turbulence_hyd_0_eq_base", Modele_turbulence_hyd_base);
 
-Modele_turbulence_hyd_0_eq_base::Modele_turbulence_hyd_0_eq_base()
-{
-  /*
-   Noms& nom=champs_compris_.liste_noms_compris();
-   nom.dimensionner(1);
-   // L energie cinetique ne peut etre postraitee pour le modele longueur de melange
-   //A coder
-   nom[0]="k";
-   */
-}
+Sortie& Modele_turbulence_hyd_0_eq_base::printOn(Sortie& is) const { return Modele_turbulence_hyd_base::printOn(is); }
 
-Sortie& Modele_turbulence_hyd_0_eq_base::printOn(Sortie& is) const
-{
-  return Modele_turbulence_hyd_base::printOn(is);
-}
-
-Entree& Modele_turbulence_hyd_0_eq_base::readOn(Entree& is)
-{
-  return Modele_turbulence_hyd_base::readOn(is);
-}
+Entree& Modele_turbulence_hyd_0_eq_base::readOn(Entree& is) { return Modele_turbulence_hyd_base::readOn(is); }
 
 void Modele_turbulence_hyd_0_eq_base::set_param(Param& param)
 {
@@ -80,16 +63,12 @@ int Modele_turbulence_hyd_0_eq_base::a_pour_Champ_Fonc(const Motcle& mot,
       }
     case 1:
       {
-        ////ch_ref = energie_cinetique_turb_.valeur();
-        ////return 1;
-
         Cerr << "The kinetic energy cannot be post-processed for the mixing length model." << finl;
         //A coder
         return 0;
       }
     case 2:
       {
-
         exit();
         return 0;
       }
@@ -129,11 +108,6 @@ int Modele_turbulence_hyd_0_eq_base::comprend_champ(const Motcle& mot) const
     }
   else
     return 0;
-}
-
-int Modele_turbulence_hyd_0_eq_base::reprendre(Entree& is)
-{
-  return 1;
 }
 
 void Modele_turbulence_hyd_0_eq_base::completer()
@@ -225,10 +199,8 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
         const Domaine& dom = mon_equation_->domaine_dis().domaine();
         Nom fic = fichier_K_eps_sortie_.nom_me(me());
 
-        Nom nom_post = K_eps_sortie_.le_nom();
-        //Nom nom_dom=dom.le_nom();
-        //Nom nom_dom_inc= dom.le_nom();
-        Nom type_elem = dom.type_elem()->que_suis_je();
+        const Nom& nom_post = K_eps_sortie_.le_nom();
+        const Nom& type_elem = dom.type_elem()->que_suis_je();
         assert(K_eps_sortie_.valeurs().dimension(0) == dom.nb_elem());
         Ecrire_MED ecr_med(fic, dom);
         ecr_med.ecrire_champ("CHAMPMAILLE", nom_post, K_eps_sortie_.valeurs(), K_eps_sortie_->unites(), K_eps_sortie_->noms_compo(), type_elem, temps);

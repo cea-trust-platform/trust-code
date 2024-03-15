@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd_base.h>
 #include <EcritureLectureSpecial.h>
 #include <Operateur_Diff_base.h>
 #include <Operateur_Conv_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Modele_turbulence_hyd_base.h>
 #include <communications.h>
 #include <LecFicDiffuse.h>
 #include <EcrFicPartage.h>
@@ -30,12 +30,9 @@
 #include <Param.h>
 #include <Debog.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_hyd_base, "Modele_turbulence_hyd_base", Objet_U);
+Implemente_base(Modele_turbulence_hyd_base, "Modele_turbulence_hyd_base", Objet_U);
 
-Sortie& Modele_turbulence_hyd_base::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 /*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
  *

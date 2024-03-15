@@ -17,27 +17,20 @@
 #define Modele_turbulence_hyd_0_eq_base_included
 
 #include <Modele_turbulence_hyd_base.h>
-class Equation_base;
 
-/*! @brief Classe Modele_turbulence_hyd_0_eq_base Classe de base des modeles de type RANS a 0 equation
+/*! @brief Classe Modele_turbulence_hyd_0_eq_base Classe de base des modeles a 0 equation
  *
  * @sa Modele_turbulence_hyd_base
  */
 class Modele_turbulence_hyd_0_eq_base: public Modele_turbulence_hyd_base
 {
-
-  Declare_base_sans_constructeur(Modele_turbulence_hyd_0_eq_base);
-
+  Declare_base(Modele_turbulence_hyd_0_eq_base);
 public:
-
-  Modele_turbulence_hyd_0_eq_base();
   void set_param(Param& param) override;
-  int reprendre(Entree& is) override;
+  int reprendre(Entree& is) override { return 1; }
   int comprend_mot(const Motcle& mot) const;
   int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
-
-  /////////////////////////////////////////////////////
 
   void completer() override;
   void mettre_a_jour(double) override;
@@ -45,22 +38,13 @@ public:
   virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
   virtual void calculer_energie_cinetique_turb()=0;
   void imprimer(Sortie&) const override;
-  inline virtual Champ_Fonc& energie_cinetique_turbulente();
-  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const;
+  inline virtual Champ_Fonc& energie_cinetique_turbulente() { return energie_cinetique_turb_; }
+  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const { return energie_cinetique_turb_; }
 
 protected:
-
   Champ_Fonc energie_cinetique_turb_;
   mutable Champ_Inc K_eps_sortie_;
   Nom fichier_K_eps_sortie_;
 };
 
-inline Champ_Fonc& Modele_turbulence_hyd_0_eq_base::energie_cinetique_turbulente()
-{
-  return energie_cinetique_turb_;
-}
-inline const Champ_Fonc& Modele_turbulence_hyd_0_eq_base::energie_cinetique_turbulente() const
-{
-  return energie_cinetique_turb_;
-}
 #endif /* Modele_turbulence_hyd_0_eq_base_included */

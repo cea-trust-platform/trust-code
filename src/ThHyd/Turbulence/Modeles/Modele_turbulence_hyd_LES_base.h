@@ -16,50 +16,36 @@
 #ifndef Modele_turbulence_hyd_LES_base_included
 #define Modele_turbulence_hyd_LES_base_included
 
-#define CSM1 0.063        // Constante viscosite turbulente modele sous maille
-#define CSMS1 0.112        // Constante viscosite turbulente modele sous maille selectif
-#define CSM2 0.37       // Constante energie cinetique turbulente modele sous maille
-
-#include <Modele_turbulence_hyd_base.h>
+#include <Modele_turbulence_hyd_0_eq_base.h>
 
 /*! @brief Classe Modele_turbulence_hyd_LES_base Classe representant le modele de turbulence sous maille pour les
  *
  *     equations de Navier-Stokes.
  *
- * @sa Modele_turbulence_hyd_base Modele_turbulence_hyd_K_Eps
+ * @sa Modele_turbulence_hyd_0_eq_base
  */
-class Modele_turbulence_hyd_LES_base: public Modele_turbulence_hyd_base
+class Modele_turbulence_hyd_LES_base: public Modele_turbulence_hyd_0_eq_base
 {
-
   Declare_base_sans_constructeur(Modele_turbulence_hyd_LES_base);
-
 public:
-
   Modele_turbulence_hyd_LES_base();
   void set_param(Param& param) override;
-  void discretiser() override;
   void verifie_loi_paroi_diphasique();
   int preparer_calcul() override;
   void completer() override;
-  void mettre_a_jour(double) override;
-  inline virtual Champ_Fonc& energie_cinetique_turbulente()
-  {
-    return energie_cinetique_turb_;
-  }
-  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const
-  {
-    return energie_cinetique_turb_;
-  }
   virtual void calculer_longueurs_caracteristiques()=0;
-  virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
-  virtual void calculer_energie_cinetique_turb();
+  void calculer_energie_cinetique_turb() override;
+
+  // sauter la classe mere
+  int reprendre(Entree& is) override { return Modele_turbulence_hyd_base::reprendre(is); }
+  void imprimer(Sortie& is) const override { return Modele_turbulence_hyd_base::imprimer(is); }
 
 protected:
-
-  Champ_Fonc energie_cinetique_turb_;
   DoubleVect l_;
   Motcle methode_;
 
+  static constexpr double CSM1 = 0.063, CSMS1 = 0.112; // Constante viscosite turbulente modele sous maille, sous maille selectif
+  static constexpr double CSM2 = 0.37; // Constante energie cinetique turbulente modele sous maille
 };
 
 #endif /* Modele_turbulence_hyd_LES_base_included */

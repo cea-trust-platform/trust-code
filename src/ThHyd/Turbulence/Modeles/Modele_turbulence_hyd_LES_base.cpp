@@ -14,16 +14,15 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_base.h>
+#include <Modifier_pour_fluide_dilatable.h>
+#include <Discretisation_base.h>
+#include <stat_counters.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Param.h>
-#include <Discretisation_base.h>
-#include <Modifier_pour_fluide_dilatable.h>
-#include <Debog.h>
-#include <stat_counters.h>
 #include <Milieu_base.h>
+#include <Param.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbulence_hyd_LES_base", Modele_turbulence_hyd_base);
+Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbulence_hyd_LES_base", Modele_turbulence_hyd_0_eq_base);
 
 Modele_turbulence_hyd_LES_base::Modele_turbulence_hyd_LES_base()
 {
@@ -32,12 +31,12 @@ Modele_turbulence_hyd_LES_base::Modele_turbulence_hyd_LES_base()
 
 Sortie& Modele_turbulence_hyd_LES_base::printOn(Sortie& is) const
 {
-  return Modele_turbulence_hyd_base::printOn(is);
+  return Modele_turbulence_hyd_0_eq_base::printOn(is);
 }
 
 Entree& Modele_turbulence_hyd_LES_base::readOn(Entree& is)
 {
-  return Modele_turbulence_hyd_base::readOn(is);
+  return Modele_turbulence_hyd_0_eq_base::readOn(is);
 }
 
 void Modele_turbulence_hyd_LES_base::set_param(Param& param)
@@ -54,19 +53,6 @@ int Modele_turbulence_hyd_LES_base::preparer_calcul()
   calculer_longueurs_caracteristiques();
   mettre_a_jour(0.);
   return 1;
-}
-
-/*! @brief Discretise le modele de turbulence.
- *
- * Appelle Modele_turbulence_hyd_base::discretiser()
- *     Initialise les integrales statistiques.
- *
- */
-void Modele_turbulence_hyd_LES_base::discretiser()
-{
-  Modele_turbulence_hyd_base::discretiser();
-  discretiser_K(mon_equation_->schema_temps(), mon_equation_->domaine_dis(), energie_cinetique_turb_);
-  champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
 // E.Saikali
@@ -108,20 +94,6 @@ void Modele_turbulence_hyd_LES_base::completer()
 {
   Cerr << "Modele_turbulence_hyd_LES_base::completer()" << finl;
   verifie_loi_paroi_diphasique();
-}
-
-void Modele_turbulence_hyd_LES_base::mettre_a_jour(double)
-{
-  statistiques().begin_count(nut_counter_);
-  calculer_viscosite_turbulente();
-  calculer_energie_cinetique_turb();
-  loipar_->calculer_hyd(la_viscosite_turbulente_, energie_cinetique_turbulente());
-  limiter_viscosite_turbulente();
-  if (equation().probleme().is_dilatable())
-    correction_nut_et_cisaillement_paroi_si_qc(*this);
-  energie_cinetique_turb_.valeurs().echange_espace_virtuel();
-  la_viscosite_turbulente_->valeurs().echange_espace_virtuel();
-  statistiques().end_count(nut_counter_);
 }
 
 void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
