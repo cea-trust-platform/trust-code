@@ -13,20 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Loi_Etat_CoolProp_QC_included
+#define Loi_Etat_CoolProp_QC_included
 
-#include <Loi_Etat_base.h>
-#include <TRUST_Deriv.h>
+#include <Loi_Etat_TPPI_base.h>
 
-/*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
- *
- */
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Loi_Etat_CoolProp_QC : public Loi_Etat_TPPI_base
 {
-  Declare_instanciable(Loi_Etat);
-public:
-  void typer(const Nom&);
+  Declare_instanciable(Loi_Etat_CoolProp_QC);
+
+public :
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Loi_Etat_CoolProp_QC_included */

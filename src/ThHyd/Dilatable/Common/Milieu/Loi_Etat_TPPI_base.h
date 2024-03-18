@@ -13,20 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Loi_Etat_TPPI_base_included
+#define Loi_Etat_TPPI_base_included
 
-#include <Loi_Etat_base.h>
-#include <TRUST_Deriv.h>
+#include <Loi_Etat_Mono_GP_base.h>
+#include <TPPI.h>
 
-/*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
- *
- */
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Loi_Etat_TPPI_base : public Loi_Etat_Mono_GP_base
 {
-  Declare_instanciable(Loi_Etat);
-public:
-  void typer(const Nom&);
+  Declare_base(Loi_Etat_TPPI_base);
+public :
+
+protected:
+  std::shared_ptr<TPPI> TPPI_ = nullptr;
+  Motcle model_name_, fluid_name_;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Loi_Etat_TPPI_base_included */

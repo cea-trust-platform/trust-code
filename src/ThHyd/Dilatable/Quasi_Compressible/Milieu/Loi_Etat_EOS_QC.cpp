@@ -13,20 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#include <Loi_Etat_EOS_QC.h>
 
-#include <Loi_Etat_base.h>
-#include <TRUST_Deriv.h>
+Implemente_instanciable(Loi_Etat_EOS_QC, "Loi_Etat_EOS_QC", Loi_Etat_TPPI_base);
 
-/*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
- *
- */
-class Loi_Etat : public DERIV(Loi_Etat_base)
+Sortie& Loi_Etat_EOS_QC::printOn(Sortie& os) const
 {
-  Declare_instanciable(Loi_Etat);
-public:
-  void typer(const Nom&);
-};
+  return os << que_suis_je() << finl;
+}
 
-#endif /* Loi_Etat_included */
+Entree& Loi_Etat_EOS_QC::readOn(Entree& is)
+{
+  Cerr << "Lecture de la loi d'etat EOS_QC ... " << finl;
+  return Loi_Etat_TPPI_base::readOn(is);
+}

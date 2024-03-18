@@ -12,6 +12,9 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/EOS_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/CoolProp_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 	
 
 Lib = $(TRUST_LIB)/libthhyd_wc_milieu

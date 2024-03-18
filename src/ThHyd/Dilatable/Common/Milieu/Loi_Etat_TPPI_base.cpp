@@ -13,20 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#include <Loi_Etat_TPPI_base.h>
 
-#include <Loi_Etat_base.h>
-#include <TRUST_Deriv.h>
-
-/*! @brief class Loi_Etat Cette classe est la derivee de la classe Loi_Etat_base
- *
- */
-class Loi_Etat : public DERIV(Loi_Etat_base)
-{
-  Declare_instanciable(Loi_Etat);
-public:
-  void typer(const Nom&);
-};
-
-#endif /* Loi_Etat_included */
+Implemente_base(Loi_Etat_TPPI_base, "Loi_Etat_TPPI_base", Loi_Etat_Mono_GP_base);
+Sortie& Loi_Etat_TPPI_base::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
+Entree& Loi_Etat_TPPI_base::readOn(Entree& is) { return is; }

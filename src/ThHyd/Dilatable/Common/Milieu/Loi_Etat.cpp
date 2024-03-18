@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,20 +16,17 @@
 #include <Loi_Etat.h>
 #include <Motcle.h>
 
-Implemente_instanciable(Loi_Etat,"Loi_Etat",DERIV(Loi_Etat_base));
+Implemente_instanciable(Loi_Etat, "Loi_Etat", DERIV(Loi_Etat_base));
 
-Sortie& Loi_Etat::printOn(Sortie& os) const
-{
-  return DERIV(Loi_Etat_base)::printOn(os);
-}
+Sortie& Loi_Etat::printOn(Sortie& os) const { return DERIV(Loi_Etat_base)::printOn(os); }
 
 Entree& Loi_Etat::readOn(Entree& is)
 {
-  Cerr<<"Lecture et typage de la loi d'etat :"<<finl;
+  Cerr << "Lecture et typage de la loi d'etat :" << finl;
   Motcle motlu;
-  is>>motlu;
+  is >> motlu;
   Nom type = "Loi_Etat_";
-  Motcles les_mots_loi(8);
+  Motcles les_mots_loi(12);
   {
     les_mots_loi[0] = "gaz_parfait_QC";
     les_mots_loi[1] = "gaz_parfait_WC";
@@ -39,54 +36,80 @@ Entree& Loi_Etat::readOn(Entree& is)
     les_mots_loi[5] = "multi_gaz_parfait_WC";
     les_mots_loi[6] = "rhoT_gaz_parfait_QC";
     les_mots_loi[7] = "rhoT_gaz_reel_QC";
+
+    // TPPI
+    les_mots_loi[8] = "EOS_QC";
+    les_mots_loi[9] = "EOS_WC";
+    les_mots_loi[10] = "CoolProp_QC";
+    les_mots_loi[11] = "CoolProp_WC";
   }
   int rang_loi = les_mots_loi.search(motlu);
   switch(rang_loi)
     {
-    case 0 :
+    case 0:
       {
         type += "Gaz_Parfait_QC";
         break;
       }
-    case 1 :
+    case 1:
       {
         type += "Gaz_Parfait_WC";
         break;
       }
-    case 2 :
+    case 2:
       {
         type += "Binaire_Gaz_Parfait_QC";
         break;
       }
-    case 3 :
+    case 3:
       {
         type += "Binaire_Gaz_Parfait_WC";
         break;
       }
-    case 4 :
+    case 4:
       {
         type += "Multi_Gaz_Parfait_QC";
         break;
       }
-    case 5 :
+    case 5:
       {
         type += "Multi_Gaz_Parfait_WC";
         break;
       }
-    case 6 :
+    case 6:
       {
         type += "rhoT_Gaz_Parfait_QC";
         break;
       }
-    case 7 :
+    case 7:
       {
         type += "rhoT_Gaz_Reel_QC";
         break;
       }
-    default :
+    case 8:
       {
-        Cerr<<"ERREUR : Les lois d'etat actuellement implementees sont :"<<finl;
-        Cerr<<les_mots_loi<<finl;
+        type += "EOS_QC";
+        break;
+      }
+    case 9:
+      {
+        type += "EOS_WC";
+        break;
+      }
+    case 10:
+      {
+        type += "CoolProp_QC";
+        break;
+      }
+    case 11:
+      {
+        type += "CoolProp_WC";
+        break;
+      }
+    default:
+      {
+        Cerr << "ERROR : The state laws currently available for a dilatable problem are :" << finl;
+        Cerr << les_mots_loi << finl;
         abort();
       }
     }
@@ -96,12 +119,8 @@ Entree& Loi_Etat::readOn(Entree& is)
   return is;
 }
 
-/*! @brief Type la loi d'etat
- *
- * @param (Nom& typ) le nom de type a donner a la loi d'etat
- */
 void Loi_Etat::typer(const Nom& type)
 {
   DERIV(Loi_Etat_base)::typer(type);
-  Cerr<<" "<<valeur().que_suis_je()<<finl;
+  Cerr << " " << valeur().que_suis_je() << finl;
 }
