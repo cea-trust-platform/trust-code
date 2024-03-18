@@ -533,7 +533,7 @@ double Statistiques::last_time(const Stat_Counter_Id& counter_id)
 /// static => do not export this function ; used in dum
 static void print_stat(Sortie& perfs,
                        Sortie& perfs_globales,
-		       const char * message,
+                       const char * message,
                        const char * description,
                        int level,
                        double time,
@@ -541,7 +541,7 @@ static void print_stat(Sortie& perfs,
                        double quantity,
                        double temps_total_max,
                        int skip_globals,
-		       int skip_local,
+                       int skip_local,
                        double avg_time_per_step = 0,
                        double min_time_per_step = 0,
                        double max_time_per_step = 0,
@@ -549,17 +549,17 @@ static void print_stat(Sortie& perfs,
 {
   char tampon[BUFLEN+200];
   if (! skip_local)
-      {
-  if (Process::is_parallel())
     {
-      double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
+  if (Process::is_parallel())
+        {
+          double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
 
-      snprintf(tampon, BUFLEN + 200, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
-               message, Process::me(), description, (True_int)level, time, percent_time, 0.0, 0.0, 0.0,
-               nb, 0.0, 0.0, 0.0, avg_time_per_step, min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step);
-      perfs << tampon << finl;
+          snprintf(tampon, BUFLEN + 300, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
+                   message, Process::me(), description, (True_int)level, time, percent_time, 0.0, 0.0, 0.0,
+                   nb, 0.0, 0.0, 0.0, avg_time_per_step, min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step, quantity, 0.0 , 0.0, 0.0);
+          perfs << tampon << finl;
+        }
     }
-      }
   if (! skip_globals )
     {
       ArrOfDouble tmp(7);
@@ -628,63 +628,47 @@ static void print_stat(Sortie& perfs,
       tmp[5]=max_time_per_step;
       tmp[6]=var_time_per_step;
 
-      double time_offset_[Process::nproc()];
-      double nb_offset_[Process::nproc()];
-      double quantity_offset_[Process::nproc()];
-//      double avg_time_per_step_offset_[Process::nproc()];
-//      double min_time_per_step_offset_[Process::nproc()];
-//      double max_time_per_step_offset_[Process::nproc()];
-//      double var_time_per_step_offset_[Process::nproc()];
+      double * time_offset_ = new double[Process::nproc()];
+      double * nb_offset_ = new double [Process::nproc()];
+      double * quantity_offset_ = new double[Process::nproc()];
+
 
 #ifdef MPI_
       MPI_Gather(&tmp[0], 1,MPI_DOUBLE, time_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
       MPI_Gather(&tmp[1], 1,MPI_DOUBLE, nb_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
       MPI_Gather(&tmp[2], 1,MPI_DOUBLE, quantity_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//      MPI_Gather(&tmp[3], 1,MPI_DOUBLE, avg_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//      MPI_Gather(&tmp[4], 1,MPI_DOUBLE, min_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//      MPI_Gather(&tmp[5], 1,MPI_DOUBLE, max_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//     MPI_Gather(&tmp[6], 1,MPI_DOUBLE, var_time_per_step_offset_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 #endif
 
       if (Process::je_suis_maitre())
-	{
-	  double percent_time = (temps_total_max==0 ? 0 : avg_time / temps_total_max * 100.);
+        {
+          double percent_time = (temps_total_max==0 ? 0 : avg_time / temps_total_max * 100.);
 
-	  double SD_time = 0.0;
-	  double SD_nb = 0.0;
-	  double SD_quantity = 0.0;
-//	  double SD_avg_time_per_step = 0.0;
-//	  double SD_min_time_per_step = 0.0;
-//	  double SD_max_time_per_step = 0.0;
-//	  double SD_var_time_per_step = 0.0;
+          double SD_time = 0.0;
+          double SD_nb = 0.0;
+          double SD_quantity = 0.0;
 
-	  for (int proc_i =0 ; proc_i< Process::nproc(); proc_i ++)
-	    {
-	      SD_time += (time_offset_[proc_i]-avg_time)*(time_offset_[proc_i]-avg_time);
-	      SD_nb += (nb_offset_[proc_i]-avg_nb)*(nb_offset_[proc_i]-avg_nb);
-	      SD_quantity += (quantity_offset_[proc_i]-avg_quantity)*(quantity_offset_[proc_i]-avg_quantity);
-//	      SD_avg_time_per_step += (avg_time_per_step_offset_[proc_i]-avg_avg_time_per_step)*(avg_time_per_step_offset_[proc_i]-avg_avg_time_per_step);
-//	      SD_min_time_per_step += (min_time_per_step_offset_[proc_i]-avg_min_time_per_step)*(min_time_per_step_offset_[proc_i]-avg_min_time_per_step);
-//	      SD_max_time_per_step += (max_time_per_step_offset_[proc_i]-avg_max_time_per_step)*(max_time_per_step_offset_[proc_i]-avg_max_time_per_step);
-//	      SD_var_time_per_step += (var_time_per_step_offset_[proc_i]-avg_var_time_per_step)*(var_time_per_step_offset_[proc_i]-avg_var_time_per_step);
-	    }
-	  SD_time = sqrt(SD_time/Process::nproc());
-	  SD_nb = sqrt(SD_nb/Process::nproc());
-	  SD_quantity = sqrt(SD_quantity/Process::nproc());
-//	  SD_avg_time_per_step = sqrt(SD_avg_time_per_step/Process::nproc());
-//	  SD_min_time_per_step = sqrt(SD_min_time_per_step/Process::nproc());
-//	  SD_max_time_per_step = sqrt(SD_max_time_per_step/Process::nproc());
-//	  SD_var_time_per_step = sqrt(SD_var_time_per_step/Process::nproc());
+          for (int proc_i =0 ; proc_i< Process::nproc(); proc_i ++)
+            {
+              SD_time += (time_offset_[proc_i]-avg_time)*(time_offset_[proc_i]-avg_time);
+              SD_nb += (nb_offset_[proc_i]-avg_nb)*(nb_offset_[proc_i]-avg_nb);
+              SD_quantity += (quantity_offset_[proc_i]-avg_quantity)*(quantity_offset_[proc_i]-avg_quantity);
+            }
+          SD_time = sqrt(SD_time/Process::nproc());
+          SD_nb = sqrt(SD_nb/Process::nproc());
+          SD_quantity = sqrt(SD_quantity/Process::nproc());
 
-	  snprintf(tampon, BUFLEN + 200, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
-		   message, Process::me(), description, (True_int)level, avg_time, percent_time, min_time, max_time, SD_time,
-		   avg_nb, min_nb, max_nb, SD_nb, avg_avg_time_per_step, avg_min_time_per_step, avg_max_time_per_step, avg_var_time_per_step);
+          snprintf(tampon, BUFLEN + 300, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
+                   message, Process::me(), description, (True_int)level, time, percent_time, min_time, max_time, SD_time,
+                   nb, min_nb, max_nb, SD_nb, avg_time_per_step, avg_min_time_per_step == INITIAL_MIN? 0.0 : avg_min_time_per_step, avg_max_time_per_step, avg_var_time_per_step, avg_quantity, min_quantity , max_quantity, SD_quantity);
 
-	  perfs_globales << tampon << finl;
-	}
+          perfs_globales << tampon << finl;
+        }
+      delete[] time_offset_;
+      delete[] nb_offset_;
+      delete[] quantity_offset_ ;
     }
 }
-/// This function construct a .csv file in which counter stats are saved
+/// This function construct a .csv file in which counter stats are printed
 void Statistiques::dump(const char * message, int mode_append)
 {
   assert(message);
@@ -699,18 +683,19 @@ void Statistiques::dump(const char * message, int mode_append)
   SChaine File_header;      ///< String at the start of the file
 
   if ( (Process::je_suis_maitre()) && (message == "Statistiques d'initialisation du calcul") )
-  {
-	  File_header << "Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
-	  File_header << "The time was measured by the following method :" << Time::description << finl;
-	  File_header << "Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << finl;
-	  File_header << "If a counter does not belong in any particular family, then counter family equal to 0" << finl;
-	  File_header << "Count means the number of time the counter is called during the overall calculation step." << finl;
-	  File_header << "Min, max and SD accounts respectively for the minimum, maximum and Standard Deviation of the quantity of the previous row" << finl;
-	  File_header << finl << finl;
-	  snprintf(tampon, BUFLEN + 150, "%22s \t %10s \t %30s \t %30s \t %5s \t %10s \t %10s \t %10s \t %10s \t %20s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s", "Overall simulation step", "Processor Number", "Counter family",
-	                 "Counter name", "Counter level", "Percentage of total time", "time (s)", "min", "max", "SD", "count", "min", "max", "SD", "time_per_step", "min", "max", "SD", "");
-	  File_header << tampon << finl;
-  }
+    {
+      File_header << "# Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
+      File_header << "# The time was measured by the following method :" << Time::description << finl;
+      File_header << "# Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << finl;
+      File_header << "# If a counter does not belong in any particular family, then counter family equal to 0" << finl;
+      File_header << "# Count means the number of time the counter is called during the overall calculation step." << finl;
+      File_header << "# Min, max and SD accounts respectively for the minimum, maximum and Standard Deviation of the quantity of the previous row." << finl;
+      File_header << "# Quantity is a custom variable that depends on the counter. It is used to compute bandwidth for communication counters for example." << finl;
+      File_header << "#" << finl << "#" << finl;
+      snprintf(tampon, BUFLEN + 150, "%22s \t %10s \t %30s \t %30s \t %5s \t %10s \t %10s \t %10s \t %10s \t %20s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s", "Overall simulation step", "Processor Number", "Counter family",
+               "Counter name", "Counter level", "Percentage of total time", "time (s)", "min", "max", "SD", "count", "min", "max", "SD", "time_per_step", "min", "max", "SD", "Quantity", "min", "max", "SD");
+      File_header << tampon << finl;
+    }
 
 
   if (Process::is_parallel())
@@ -774,7 +759,7 @@ void Statistiques::dump(const char * message, int mode_append)
 
       double time;
       double nb; ///< number of time the counter is open and closed
-      double quantity; ///< A custom quantity which depends on the counter
+      double quantity; ///< A custom quantity which depends on the counter. Used for example to compute the bandwidth
 
       /// Update the time statistics of communication counters using the table communication_tracking_info as if GET_COMM_DETAILS is equal to 1, the stats in stat_internals are not up to date
       if(GET_COMM_DETAILS && si.counter_comm[i] && si.communication_tracking_info )
@@ -797,13 +782,13 @@ void Statistiques::dump(const char * message, int mode_append)
       double max_time_per_step = si.counters_avg_min_max_var_per_step[i][3];
       double var_time_per_step = si.counters_avg_min_max_var_per_step[i][4];
 
-      if (i == 0)
+      if (i == 0) ///< Counter with id == 0 corresponds to the total time
         {
           temps_total_max = time;
           total_time_+=time;     ///< Update total_time_
         }
 
-      if( JUMP_3_FIRST_STEPS && i == 2 ) ///< The first three time steps are disregard
+      if( JUMP_3_FIRST_STEPS && i == 2 ) ///< The first three time steps are disregard , id==2 corresponds to the counter associated with the loop that compute the time step
         temps_total_max = time;
 
       assert(var_time_per_step >= 0.);
@@ -879,7 +864,7 @@ void Statistiques::dump(const char * message, int mode_append)
 
 
       char name_family_description[BUFLEN];
-      snprintf(name_family_description, BUFLEN, "%10s \t %10s", si.family[next], "Aggregated by family"); ///< name_description is a string that give the family and the description of a counter
+      snprintf(name_family_description, BUFLEN, "%10s \t %10s", si.family[next], "Aggregated over the family"); ///< name_description is a string that give the family and the description of a counter
 
       assert(var_time_per_step >= 0.);
       print_stat(perfs,perfs_globales,message,name_family_description,
@@ -902,7 +887,7 @@ void Statistiques::dump(const char * message, int mode_append)
     CSV+="_log_perf.csv";
     EcrFicPartage file(CSV, mode_append ? (ios::out | ios::app) : (ios::out));
     if (Process::je_suis_maitre())
-    file << File_header.get_str();
+      file << File_header.get_str();
     file << perfs_globales.get_str();
     file << perfs.get_str();
     file.syncfile();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,10 +37,10 @@ class Statistiques
   //static std::unordered_map<std::string, StatCntObject> ze_map_;
 
 public:
- // static void CreateCounter(std::string short_name, std::string long_name, int lvl)
- // {
- //   ze_map_[short_name] = StatCntObject();
- // }
+// static void CreateCounter(std::string short_name, std::string long_name, int lvl)
+// {
+//   ze_map_[short_name] = StatCntObject();
+// }
 
   /*!@brief Function that change the debug level
    *
