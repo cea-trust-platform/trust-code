@@ -96,7 +96,7 @@ void Schema_Euler_Implicite::set_param(Param& param)
 {
   // XD schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicit scheme.
   param.ajouter("max_iter_implicite",&nb_ite_max);
-  param.ajouter_non_std("facsec_max", (this)); // for old syntax
+  param.ajouter_non_std("facsec_max", (this)); // XD_ADD_P floattant For old syntax, see the complete parameters of facsec for details
   param.ajouter_non_std("resolution_monolithique", (this)); // XD_ADD_P bloc_lecture Activate monolithic resolution for coupled problems. Solves together the equations corresponding to the application domains in the given order. All aplication domains of the coupled equations must be given to determine the order of resolution. If the monolithic solving is not wanted for a specific application domain, an underscore can be added as prefix. For example, resolution_monolithique { dom1 { dom2 dom3 } _dom4 } will solve in a single matrix the equations having dom1 as application domain, then the equations having dom2 or dom3 as application domain in a single matrix, then the equations having dom4 as application domain in a sequential way (not in a single matrix).
   Schema_Implicite_base::set_param(param);
 
