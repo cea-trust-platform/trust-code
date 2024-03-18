@@ -26,6 +26,7 @@
 
 bool init_openmp_ = false;
 bool clock_on = false;
+bool timer_on = false;
 double clock_start;
 
 #ifndef NDEBUG
@@ -345,6 +346,8 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
+      if (!timer_on && size > 300000)
+        timer_on = true; // Enable timer only if large case (10K data) to speed-up non regression test
       assert(isAllocatedOnDevice(ptr) || size==0);
       int bytes = sizeof(_TYPE_) * size;
       start_gpu_timer(bytes);

@@ -29,7 +29,7 @@
 #endif
 
 // TODO - scope all this, global vars are bad.
-extern bool init_openmp_, clock_on;
+extern bool init_openmp_, clock_on, timer_on;
 extern double clock_start;
 
 void self_test();
@@ -43,7 +43,7 @@ std::string ptrToString(const void* adr);
 inline void start_gpu_timer(int bytes=-1)
 {
 #ifdef _OPENMP
-  if (init_openmp_)
+  if (init_openmp_ && timer_on)
     {
       if (clock_on) clock_start = Statistiques::get_time_now();
       if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_);
@@ -60,8 +60,9 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
   cudaDeviceSynchronize();
 #endif
 #ifdef _OPENMP
-  if (init_openmp_)
+  if (init_openmp_ && timer_on)
     {
+      Kokkos::fence(); // Barrier for real time
       if (bytes == -1) statistiques().end_count(gpu_kernel_counter_, 0, onDevice);
       if (clock_on) // Affichage
         {

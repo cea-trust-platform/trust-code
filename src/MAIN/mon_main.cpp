@@ -143,10 +143,13 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
-  // Kokkos initialisation
-  True_int argc2 = argc;
-  Kokkos::initialize( argc2, argv );
-
+    bool init_kokkos_before_mpi = true; // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
+    if (init_kokkos_before_mpi)
+    {
+        // Kokkos initialisation
+        True_int argc2 = argc;
+        Kokkos::initialize( argc2, argv );
+   }
   Nom arguments_info="";
   arguments_info +="Kokkos initialized!\n";
 
@@ -207,6 +210,16 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
 
+  if (!init_kokkos_before_mpi)
+    {
+      // Kokkos initialisation
+      True_int argc2 = argc;
+      Kokkos::initialize(argc2, argv);
+      if (Process::je_suis_maitre())
+        Cerr << "Kokkos initialized after MPI !" << finl;
+    }
+  if (Process::je_suis_maitre())
+    Cerr << "You can run --kokkos-help option." << finl;
 }
 
 void mon_main::finalize()
