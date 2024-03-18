@@ -29,7 +29,7 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
   DoubleTab& present = eqn.inconnue().valeurs(); // Un
   DoubleTab& futur = eqn.inconnue().futur();   // Un+1
-  DoubleTab dudt(futur); // just for initializing the array structure ...
+  DoubleTrav dudt(futur); // just for initializing the array structure ... Trav is highly recommanded!! Otherwise we allocate at each time step!!
 
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
