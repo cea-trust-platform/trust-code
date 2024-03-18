@@ -16,21 +16,156 @@
 #include <TRUSTArray.h>
 #include <TRUSTVect.h>
 #include <TRUSTTab.h>
+#include <TRUSTTrav.h>
+
+#include <assert.h>
+
+// We have a lot of asserts so a lot of unused vars:
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 /*! Unit tests for arrays - To be run in debug mode!!
  */
-void test_arr()
+
+struct TestTRUSTArray
 {
-  ArrOfInt a;
-  a.resize(10);
-  a = -1;
-  assert(a[0] == -12);
+  void test_ctor();
+  void test_resize();
+  void test_ref_arr();
+  void test_ref_data();
+  void test_trav();
+
+};
+
+
+void TestTRUSTArray::test_ctor()
+{
+  // Int ctor
+  ArrOfInt a1;
+  assert(a1.storage_type_ == STORAGE::STANDARD);
+  assert(a1.mem_ == nullptr);
+  assert(a1.span_.empty());
+  assert(a1.data_location_ == nullptr);
+
+  ArrOfInt a2(0);
+  assert(a2.mem_ == nullptr);
+  assert(a2.span_.empty());
+  assert(a2.data_location_ == nullptr);
+
+  ArrOfInt a3(10);
+  assert(a3.mem_ != nullptr);
+  assert(a3.span_.data() == a3.mem_->data());
+  assert(*a3.data_location_ == DataLocation::HostOnly);
+
+  // Copy ctor
+  ArrOfInt a4(a1);
+  assert(a4.mem_ == nullptr);
+  assert(a4.span_.empty());
+  assert(a4.data_location_ == nullptr);
+
+  a3 = 24;
+  ArrOfInt a5(a3);
+  assert(a5.mem_ != nullptr);
+  assert(a5.span_.data() == a5.mem_->data());
+  assert(*a5.data_location_ == DataLocation::HostOnly);
+  assert(a5.span_.data() != a3.span_.data());
+  assert(a5[5] == 24);
+}
+
+void TestTRUSTArray::test_resize()
+{
+  ArrOfInt a1;
+  a1.resize(0);  // Do nothing!
+  assert(a1.mem_ == nullptr);
+  assert(a1.span_.empty());
+  assert(a1.data_location_ == nullptr);
+
+  ArrOfInt a3;
+  a3.resize(10);
+  assert(a3.mem_ != nullptr);
+  assert(a3.span_.data() == a3.mem_->data());
+  assert(*a3.data_location_ == DataLocation::HostOnly);
+  assert(a3.size_array() == 10);
+  const int * ptr = a3.addr();
+
+  // Resize down does not reallocate:
+  a3.resize(5);
+  assert(a3.addr() == ptr);
+}
+
+void TestTRUSTArray::test_ref_arr()
+{
+  ArrOfInt a(10);
+  {
+    ArrOfInt b;
+    b.ref_array(a);
+    assert(b.mem_->data() == a.mem_->data());
+    assert(a.ref_count() == 2);
+    assert(b.ref_count() == 2);
+    assert(b.size_array() == 10);
+  }
+  assert(a.ref_count() == 1);
+
+  {
+    ArrOfInt b;
+    b.ref_array(a, 2 , 4);
+    assert(a.ref_count() == 2);
+    assert(b.ref_count() == 2);
+    assert(b.size_array() == 4);
+  }
+  assert(a.ref_count() == 1);
+}
+
+void TestTRUSTArray::test_ref_data()
+{
+  int * pt_int = new int[10];
+  std::fill(pt_int, pt_int + 10, 24);
+  {
+    ArrOfInt a;
+    a.ref_data(pt_int, 10);
+    assert(a.mem_ == nullptr);
+    assert(a.span_.data() == pt_int);
+  }
+  delete [] pt_int;
+}
+
+void TestTRUSTArray::test_trav()
+{
+  IntTrav a1;
+  assert(a1.storage_type_ == STORAGE::TEMP_STORAGE);
+  assert(a1.mem_ == nullptr);
+  assert(a1.span_.empty());
+  assert(a1.data_location_ == nullptr);
+
+  int * ptr;
+  {
+    IntTrav a2;
+    assert(a2.storage_type_ == STORAGE::TEMP_STORAGE);
+    a2.resize(10);
+    ptr = a2.mem_->data();
+  }
+  { // Same block re-used for Trav
+    IntTrav a2(10);
+    assert(ptr == a2.mem_->data());
+  }
 }
 
 
+/*! Not great, we just rely on 'assert' for now ... one day Google Test or something
+ * similar ...
+ */
 int main()
 {
-  test_arr();
+  TestTRUSTArray tta;
+
+  tta.test_ctor();
+  tta.test_resize();
+  tta.test_ref_arr();
+  tta.test_ref_data();
+  tta.test_trav();
+
   return 0;
 }
 
+#pragma GCC diagnostic pop

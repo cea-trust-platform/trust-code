@@ -9,6 +9,7 @@ include_directories(
 set(src_unit_arr 
      unit_array.cpp
      ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTArray.cpp
+     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTTravPool.cpp
 )
 add_executable(unit_array${OPT} ${src_unit_arr})
 # Here libtrio will be the micro kernel:

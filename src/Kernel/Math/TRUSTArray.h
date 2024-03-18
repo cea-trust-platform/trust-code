@@ -78,6 +78,9 @@ public:
   using Vector_ = std::vector<_TYPE_, TVAlloc<_TYPE_> >;
   using Span_ = tcb::span<_TYPE_>;
 
+  // Tests can inspect whatever they want:
+  friend class TestTRUSTArray;
+
   // Iterators
   inline Iterator begin() { return span_.begin(); }
   inline Iterator end() { return span_.end(); }
