@@ -1,0 +1,131 @@
+# PARALLEL OK #
+dimension 2
+pb_thermohydraulique_qc   pb_fluide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 35  82
+        Longueurs 0.4  2.3
+        Facteurs 1.01 1
+    }
+    {
+        Bord axis	X = 0.              0.  <= Y <= 0.1
+        Bord wallheat   X = 0.              0.1 <= Y <= 0.8
+        Bord wallleft   X = 0               0.8 <= Y <= 2.3
+        Bord wallright  X = 0.4             0. <= Y <= 2.3
+        bord bas        Y = 0.              0. <= X <= 0.4
+        Bord haut  	Y = 2.3             0. <= X <= 0.4
+    }
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+
+Partition dom_fluide
+{
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0
+    tmax 10
+    dt_max 1E-2
+    dt_start dt_fixe 1E-6
+    diffusion_implicite 1
+    Facsec 1
+    nb_pas_dt_max 10
+}
+
+Associate pb_fluide dom_fluide
+Associate  pb_fluide sch
+Discretize pb_fluide dis
+
+Read pb_fluide
+{
+    fluide_quasi_compressible
+    {
+        pression 2.4e5
+        
+        mu Champ_Fonc_xyz dom_fluide 1 4.71169e-05 
+        lambda Champ_Fonc_xyz dom_fluide 1 4.71169e-05 
+        loi_etat CoolProp_QC 
+        {
+        	fluid water
+        	model HEOS
+            cp 123
+        } 
+        traitement_pth constant /* conservation_masse */
+        gravite Champ_Uniforme 2  0. -9.81
+    }
+
+    Navier_Stokes_qc
+    {
+
+        solveur_pression petsc Cholesky { }
+        convection { quick }
+        diffusion { }
+        initial_conditions { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions
+        {
+            axis paroi_fixe
+            haut paroi_fixe
+            bas  paroi_fixe
+            wallleft paroi_fixe
+            wallright paroi_fixe
+            wallheat paroi_fixe
+        }
+    }
+
+    Convection_Diffusion_chaleur_qc
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            axis          Paroi_adiabatique
+            haut          Paroi_temperature_imposee champ_front_uniforme 1 277.15
+            bas           Paroi_temperature_imposee champ_front_uniforme 1 277.15
+            wallleft      Paroi_adiabatique
+            wallright     Paroi_temperature_imposee champ_front_uniforme 1 277.15
+            wallheat      Paroi_temperature_imposee champ_front_uniforme 1 278.35
+        }
+        initial_conditions { temperature champ_uniforme  1 277.15 }
+    }
+
+    Post_processing
+    {
+
+        format lml
+        Champs dt_post 1
+        {
+            temperature elem
+            vitesse elem
+            masse_volumique elem
+            viscosite_cinematique elem
+            viscosite_dynamique elem
+            capacite_calorifique elem
+            conductivite  elem
+            diffusivite_thermique elem            
+        }
+    }
+}
+Solve pb_fluide
+End
