@@ -65,7 +65,7 @@ echo "#define HAS_CGNS" > $install_dir/include/cgns++.h
 
 # some tools to exec
 echo "Adding CGNS tools to $TRUST_ROOT/exec !"
-ln -nsf $install_dir/bin/cgns* $TRUST_ROOT/exec/.
+(cd $TRUST_ROOT/exec; ln -nsf ../lib/src/LIBCGNS/bin/cgns* .)
 
 echo ""
 echo "@@@@@@@@@@"
