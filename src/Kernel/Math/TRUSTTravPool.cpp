@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <TRUSTTravPool.h>
+#include <TRUSTArray.h>
 #include <unordered_map>
 #include <list>
 #include <iostream>
@@ -30,7 +31,7 @@
 template<typename _TYPE_>
 struct PoolImpl_
 {
-  using ptr_t = std::shared_ptr<std::vector<_TYPE_>>;
+  using ptr_t = std::shared_ptr<typename TRUSTArray<_TYPE_>::Vector_>;
   using list_t = std::list<ptr_t>;
   using pool_t = std::unordered_map<size_t, list_t>;
 
@@ -95,7 +96,7 @@ typename PoolImpl_<_TYPE_>::list_t& GetOrCreateList(size_t sz)
 template<typename _TYPE_>
 typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::GetFreeBlock(int sz)
 {
-  using vec_t = std::vector<_TYPE_>;
+  using vec_t = typename TRUSTArray<_TYPE_>::Vector_;
   using ptr_t = typename PoolImpl_<_TYPE_>::ptr_t;
   using lst_t = typename PoolImpl_<_TYPE_>::list_t;
 

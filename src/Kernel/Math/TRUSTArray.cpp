@@ -93,6 +93,9 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
       else
         {
           mem_ = std::make_shared<Vector_>(Vector_(new_size));
+          // Initialize to 0 if needed:
+          if (!isDataOnDevice() && opt == RESIZE_OPTIONS::COPY_INIT)
+            std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
           // Allocate on GPU if needed:
           if (isDataOnDevice()) allocateOnDevice(*this);
         }
@@ -138,6 +141,9 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               _TYPE_ * prev_ad = span_.data(); // before resize!
               mem_->resize(new_size);
               span_ = Span_(*mem_);
+              // Possibly set to 0 extended part, since we have a custom Vector not doing it by default (TVAlloc):
+              if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT && !isDataOnDevice())
+                std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
               if(isDataOnDevice())
                 {
                   // Allocate new (bigger) block on device:

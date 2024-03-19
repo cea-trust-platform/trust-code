@@ -13,34 +13,46 @@
 *
 *****************************************************************************/
 
-#ifndef TRUSTTravPool_included
-#define TRUSTTravPool_included
+#ifndef TVAlloc_included
+#define TVAlloc_included
 
-#include <memory>
-#include <vector>
-
-#include <TVAlloc.h>
-
-/*! Pool of memory blocks used when requesting temporary storage (Trav arrays)
+/*! Allocator adaptor that intercepts the 'construct' calls to convert value initialization into default initialization
+ * Written by Casey Carter (@codercasey)
+ * Taken from https://hackingcpp.com/cpp/recipe/uninitialized_numeric_array.html
  *
- * Purely static methods. One pool per base type (int, double, etc...).
- *
- * The implementation details are in the .cpp file.
+ * This allows "std::vector<T>(30)" to only allocate, not initialize, the data.
  */
-template<typename _TYPE_>
-class TRUSTTravPool
+template< typename T, typename Alloc = std::allocator<T> >
+class TVAlloc : public Alloc
 {
+  using a_t = std::allocator_traits<Alloc>;
 public:
-  using block_ptr_t = std::shared_ptr<std::vector<_TYPE_, TVAlloc<_TYPE_> > >;
+  // Obtain alloc<U> where U ≠ T
+  template<typename U>
+  struct rebind
+  {
+    using other = TVAlloc<U, typename a_t::template rebind_alloc<U> >;
+  };
 
-  TRUSTTravPool() = delete;
+  // Make inherited ctors visible
+  using Alloc::Alloc;
 
-  static block_ptr_t GetFreeBlock(int sz);
-  static block_ptr_t ResizeBlock(block_ptr_t p, int new_sz);
-  static void ReleaseBlock(block_ptr_t);
+  // Ddefault-construct objects - WITHOUT initialisation!
+  template<typename U>
+  void construct (U* ptr)     noexcept(    std::is_nothrow_default_constructible<      U>::value)
+  {
+    ::new(static_cast<void*>(ptr)) U; // 'placement new':
+  }
 
-  static void PrintStats();
+  // Construct with ctor arguments
+  template<typename U, typename... Args>
+  void construct (U* ptr, Args&& ... args)
+  {
+    a_t::construct(
+      static_cast<Alloc&>(*this),
+      ptr, std::forward<Args>(args)...);
+  }
+
 };
 
-
-#endif  // TRUSTTravPool_included
+#endif /* TVAlloc_included */

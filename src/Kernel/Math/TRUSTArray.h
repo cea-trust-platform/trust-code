@@ -17,13 +17,13 @@
 #define TRUSTArray_included
 
 #include <Array_base.h>
+#include <TVAlloc.h>     // Custom allocator
 #include <Double.h>
 #include <span.hpp>
 #include <memory>
 #include <climits>
 #include <vector>
 #include <Device.h>
-
 #include <View_Types.h>  // Kokkos stuff
 
 /*! @brief Represents a an array of int/int64/double/... values.
@@ -75,7 +75,7 @@ protected:
 public:
   using value_type = _TYPE_; // return int, double ou float
   using Iterator = typename tcb::span<_TYPE_>::iterator;
-  using Vector_ = std::vector<_TYPE_>;
+  using Vector_ = std::vector<_TYPE_, TVAlloc<_TYPE_> >;
   using Span_ = tcb::span<_TYPE_>;
 
   // Iterators
@@ -109,7 +109,12 @@ public:
     if (size > 0)
       {
         // We deep copy *only* the data span of A, not the full underlying A.mem_:
-        mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
+        if (A.isDataOnDevice())
+          // Just allocate (no init.)
+          mem_ = std::make_shared<Vector_>(Vector_(A.span_.size()));
+        else
+          // Allocate and copy:
+          mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
         span_ = Span_(*mem_);
         data_location_ = std::make_shared<DataLocation>(A.get_data_location());
         if (A.isDataOnDevice())
