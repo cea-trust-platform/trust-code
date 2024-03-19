@@ -16,7 +16,6 @@
 #include <Fluide_Dilatable_base.h>
 #include <Loi_Etat_TPPI_base.h>
 #include <Champ_Uniforme.h>
-#include <Domaine_VF.h>
 #include <Champ_Don.h>
 #include <Param.h>
 
@@ -84,85 +83,6 @@ void Loi_Etat_TPPI_base::preparer_calcul()
 {
   Loi_Etat_Mono_GP_base::preparer_calcul();
   verify_fields();
-
-  if (!vec_press_filled_) init_vec_press();
-}
-
-void Loi_Etat_TPPI_base::init_vec_press()
-{
-  const double Pth = le_fluide->pression_th();
-  vec_press_.resize(le_fluide->inco_chaleur().valeurs().dimension(0));
-  for (auto &itr : vec_press_) itr = Pth;
-  vec_press_filled_ = true;
-}
-
-// Dans l'ordre on fait ca
-//
-//    calculer_Cp();
-//    calculer_mu();
-//    calculer_lambda();
-//    calculer_nu();
-//    calculer_alpha();
-//    calculer_mu_sur_Sc();
-//    calculer_nu_sur_Sc();
-void Loi_Etat_TPPI_base::calculer_Cp()
-{
-  if (!vec_press_filled_) init_vec_press();
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
-  SpanD temp_span = tab_ICh.get_span(), p_span = SpanD(vec_press_);
-
-  /* Step 2 : Mu */
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  DoubleTab& tab_mu = mu.valeurs();
-  TPPI_->tppi_get_mu_pT(p_span, temp_span, tab_mu.get_span());
-  tab_mu.echange_espace_virtuel();
-  mu.mettre_a_jour(temperature_->temps());
-
-  /* Step 3 : Lambda */
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda.valeurs();
-  TPPI_->tppi_get_lambda_pT(p_span, temp_span, tab_lambda.get_span());
-  tab_lambda.echange_espace_virtuel();
-
-  /* Step 4 : Alpha */
-  Champ_Don& alpha = le_fluide->diffusivite();
-  DoubleTab& tab_alpha = alpha.valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-
-  const bool isVDF = (alpha.valeur().que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
-
-  if (isVDF)
-    for (int i = 0; i < tab_alpha.dimension(0); i++)
-      tab_alpha(i, 0) = tab_lambda(i, 0) / (tab_rho(i, 0) * Cp_);
-  else
-    {
-      const IntTab& elem_faces = ref_cast(Domaine_VF, le_fluide->vitesse().domaine_dis_base()).elem_faces();
-      const int nfe = elem_faces.line_size();
-      for (int i = 0; i < tab_alpha.dimension(0); i++)
-        {
-          double rhoelem = 0.;
-          for (int face = 0; face < nfe; face++)
-            rhoelem += tab_rho(elem_faces(i, face), 0);
-          rhoelem /= nfe;
-          tab_alpha(i, 0) = tab_lambda(i, 0) / (rhoelem * Cp_);
-        }
-    }
-  tab_alpha.echange_espace_virtuel();
-}
-
-void Loi_Etat_TPPI_base::calculer_masse_volumique()
-{
-  if (!vec_press_filled_) init_vec_press();
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  SpanD temp_span = tab_ICh.get_span(),  p_span = SpanD(vec_press_), rho_span = tab_rho_np1.get_span();
-  TPPI_->tppi_get_rho_pT(p_span, temp_span, rho_span);
-
-  for (int som = 0; som < tab_rho.size(); som++) tab_rho(som, 0) = 0.5 * (tab_rho_n(som) + tab_rho_np1(som));
-
-  tab_rho.echange_espace_virtuel();
-  tab_rho_np1.echange_espace_virtuel();
-  le_fluide->calculer_rho_face(tab_rho_np1);
 }
 
 double Loi_Etat_TPPI_base::calculer_masse_volumique(double, double) const

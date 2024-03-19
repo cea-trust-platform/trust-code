@@ -16,17 +16,14 @@
 #include <CoolProp_to_TRUST_generique.h>
 #include <Loi_Etat_CoolProp_QC.h>
 
-Implemente_instanciable(Loi_Etat_CoolProp_QC, "Loi_Etat_CoolProp_QC", Loi_Etat_TPPI_base);
+Implemente_instanciable(Loi_Etat_CoolProp_QC, "Loi_Etat_CoolProp_QC", Loi_Etat_TPPI_QC_base);
 
-Sortie& Loi_Etat_CoolProp_QC::printOn(Sortie& os) const
-{
-  return os << que_suis_je() << finl;
-}
+Sortie& Loi_Etat_CoolProp_QC::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 
 Entree& Loi_Etat_CoolProp_QC::readOn(Entree& is)
 {
   Cerr << "Lecture de la loi d'etat CoolProp_QC ... " << finl;
-  Loi_Etat_TPPI_base::readOn(is);
+  Loi_Etat_TPPI_QC_base::readOn(is);
 
   TPPI_ = std::make_shared<CoolProp_to_TRUST_generique>();
 

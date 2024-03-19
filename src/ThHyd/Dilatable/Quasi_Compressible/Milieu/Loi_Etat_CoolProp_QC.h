@@ -16,13 +16,11 @@
 #ifndef Loi_Etat_CoolProp_QC_included
 #define Loi_Etat_CoolProp_QC_included
 
-#include <Loi_Etat_TPPI_base.h>
+#include <Loi_Etat_TPPI_QC_base.h>
 
-class Loi_Etat_CoolProp_QC : public Loi_Etat_TPPI_base
+class Loi_Etat_CoolProp_QC : public Loi_Etat_TPPI_QC_base
 {
   Declare_instanciable(Loi_Etat_CoolProp_QC);
-
-public :
 };
 
 #endif /* Loi_Etat_CoolProp_QC_included */

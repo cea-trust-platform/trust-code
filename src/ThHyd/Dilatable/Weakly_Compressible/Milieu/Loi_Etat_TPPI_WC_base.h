@@ -13,23 +13,19 @@
 *
 *****************************************************************************/
 
-#include <CoolProp_to_TRUST_generique.h>
-#include <Loi_Etat_CoolProp_WC.h>
+#ifndef Loi_Etat_TPPI_WC_base_included
+#define Loi_Etat_TPPI_WC_base_included
 
-Implemente_instanciable(Loi_Etat_CoolProp_WC, "Loi_Etat_CoolProp_WC", Loi_Etat_TPPI_WC_base);
+#include <Loi_Etat_TPPI_base.h>
 
-Sortie& Loi_Etat_CoolProp_WC::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
-
-Entree& Loi_Etat_CoolProp_WC::readOn(Entree& is)
+class Loi_Etat_TPPI_WC_base: public Loi_Etat_TPPI_base
 {
-  Cerr << "Lecture de la loi d'etat CoolProp_WC ... " << finl;
-  Loi_Etat_TPPI_WC_base::readOn(is);
+  Declare_base(Loi_Etat_TPPI_WC_base);
+public:
+  using Loi_Etat_TPPI_base::calculer_masse_volumique;
+  void calculer_masse_volumique() override;
 
-  TPPI_ = std::make_shared<CoolProp_to_TRUST_generique>();
+  void calculer_Cp() override;
+};
 
-  if (model_name_ == "REFPROP") TPPI_->set_path_refprop();
-  TPPI_->set_fluide_generique(model_name_, fluid_name_);
-//  CoolProptT.desactivate_handler(false); // throw on error
-
-  return is;
-}
+#endif /* Loi_Etat_TPPI_WC_base_included */
