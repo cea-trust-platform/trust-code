@@ -260,13 +260,13 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_rw()
   // Init if necessary
   init_view_tab3();
 #ifdef _OPENMP
-  Process::exit("ToDo");
-#endif
-
+  computeOnTheDevice(*this, "Kokkos view3_rw()");
+#else
   // Copy to device (if needed) ...
   dual_view_tab3_.template sync<memory_space>();
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
+#endif
   // return *device* view:
   return dual_view_tab3_.view_device();
 }

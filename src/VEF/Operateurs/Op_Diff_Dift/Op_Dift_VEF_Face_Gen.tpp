@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,9 @@
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 #include <Symetrie.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& inconnue, const DoubleTab& resu, const DoubleTab& nu, const DoubleTab& nu_turb) const
@@ -62,20 +65,36 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& inconnue, co
         }
       Re_ = 0.;
 
-      if (z_class->get_modele_turbulence().calcul_tenseur_Re(nu_turb, grad_, Re_))
+      bool flag = z_class->get_modele_turbulence().calcul_tenseur_Re(nu_turb, grad_, Re_);
+      CDoubleTabView nu_turb_v = nu_turb.view_ro();
+      DoubleTabView3 Re_v = Re_.view3_rw();
+      if (flag)
         {
-          Cerr << "On utilise une diffusion turbulente non linaire dans NS" << finl;
-          for (int elem = 0; elem < nb_elem; elem++)
+          Cerr << "On utilise une diffusion turbulente non lineaire dans NS" << finl;
+          start_timer();
+          Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re",
+                               Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                                 const int elem)
+          {
             for (int i = 0; i < nbr_comp; i++)
               for (int j = 0; j < nbr_comp; j++)
-                Re_(elem, i, j) *= nu_turb[elem];
+                Re_v(elem, i, j) *= nu_turb_v(elem, 0);
+          });
         }
       else
-        for (int elem = 0; elem < nb_elem; elem++)
-          for (int i = 0; i < nbr_comp; i++)
-            for (int j = 0; j < nbr_comp; j++)
-              Re_(elem, i, j) = nu_turb[elem] * (grad_(elem, i, j) + grad_(elem, j, i));
-
+        {
+          CDoubleTabView3 grad_v = grad_.view3_ro();
+          start_timer();
+          Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re",
+                               Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                                 const int elem)
+          {
+            for (int i = 0; i < nbr_comp; i++)
+              for (int j = 0; j < nbr_comp; j++)
+                Re_v(elem, i, j) = nu_turb_v(elem,0) * (grad_v(elem, i, j) + grad_v(elem, j, i));
+          });
+        }
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re");
       Re_.echange_espace_virtuel();
     }
 }
@@ -140,20 +159,30 @@ std::enable_if_t<_TYPE_ == Type_Champ::VECTORIEL, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
   const Domaine_VEF& domaine_VEF = static_cast<const DERIVED_T*>(this)->domaine_vef();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces(), nbr_comp = resu.line_size();
 
   // Boucle sur les faces internes
   const int nint = domaine_VEF.premiere_face_int();
-  for (int num_face = nint; num_face < nb_faces; num_face++)
+  CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
+  CDoubleTabView face_normale_v = domaine_VEF.face_normales().view_ro();
+  CDoubleTabView nu_v = nu.view_ro();
+  CDoubleTabView3 grad_v = grad_.view3_ro();
+  CDoubleTabView3 Re_v = Re_.view3_ro();
+  DoubleTabView resu_v = resu.view_rw();
+  start_timer();
+  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen",
+                       Kokkos::RangePolicy<>(nint, nb_faces), KOKKOS_LAMBDA(
+                         const int num_face)
+  {
     for (int kk = 0; kk < 2; kk++)
       {
-        const int elem = face_voisins(num_face, kk), ori = 1 - 2 * kk;
+        const int elem = face_voisins_v(num_face, kk), ori = 1 - 2 * kk;
         for (int i = 0; i < nbr_comp; i++)
           for (int j = 0; j < nbr_comp; j++)
-            resu(num_face, i) -= ori * face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re_(elem, i, j));
+            resu_v(num_face, i) -= ori * face_normale_v(num_face, j) * (nu_v(elem,0) * grad_v(elem, i, j) + Re_v(elem, i, j));
       }
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen");
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
