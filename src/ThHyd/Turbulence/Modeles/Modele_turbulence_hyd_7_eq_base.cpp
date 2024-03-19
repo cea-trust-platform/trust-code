@@ -15,14 +15,7 @@
 
 #include <Modele_turbulence_hyd_7_eq_base.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_hyd_7_eq_base, "Modele_turbulence_hyd_7_eq_base", Modele_turbulence_hyd_base);
+Implemente_base(Modele_turbulence_hyd_7_eq_base, "Modele_turbulence_hyd_7_eq_base", Modele_turbulence_hyd_base);
 
-Sortie& Modele_turbulence_hyd_7_eq_base::printOn(Sortie& is) const
-{
-  return Modele_turbulence_hyd_base::printOn(is);
-}
-
-Entree& Modele_turbulence_hyd_7_eq_base::readOn(Entree& is)
-{
-  return Modele_turbulence_hyd_base::readOn(is);
-}
+Sortie& Modele_turbulence_hyd_7_eq_base::printOn(Sortie& is) const { return Modele_turbulence_hyd_base::printOn(is); }
+Entree& Modele_turbulence_hyd_7_eq_base::readOn(Entree& is) { return Modele_turbulence_hyd_base::readOn(is); }

@@ -14,16 +14,41 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_2_eq_base.h>
+#include <TRUSTTrav.h>
+#include <Param.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_hyd_2_eq_base, "Modele_turbulence_hyd_2_eq_base", Modele_turbulence_hyd_base);
+Implemente_base(Modele_turbulence_hyd_2_eq_base, "Modele_turbulence_hyd_2_eq_base", Modele_turbulence_hyd_base);
 // X_D mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for Navier-Stokes equations.
 
-Sortie& Modele_turbulence_hyd_2_eq_base::printOn(Sortie& is) const
+Sortie& Modele_turbulence_hyd_2_eq_base::printOn(Sortie& is) const { return Modele_turbulence_hyd_base::printOn(is); }
+Entree& Modele_turbulence_hyd_2_eq_base::readOn(Entree& is) { return Modele_turbulence_hyd_base::readOn(is); }
+
+void Modele_turbulence_hyd_2_eq_base::set_param(Param& param)
 {
-  return Modele_turbulence_hyd_base::printOn(is);
+  Modele_turbulence_hyd_base::set_param(param);
+  param.ajouter("k_min", &K_MIN_); // XD_ADD_P double Lower limitation of k (default value 1.e-10).
+  param.ajouter_flag("quiet", &lquiet_); // XD_ADD_P flag To disable printing of information about K and Epsilon/Omega.
 }
 
-Entree& Modele_turbulence_hyd_2_eq_base::readOn(Entree& is)
+void Modele_turbulence_hyd_2_eq_base::verifie_loi_paroi()
 {
-  return Modele_turbulence_hyd_base::readOn(is);
+  Nom lp = loipar_->que_suis_je();
+  if (lp == "negligeable_VEF" || lp == "negligeable_VDF")
+    {
+      Cerr << "The turbulence model of type " << que_suis_je() << finl;
+      Cerr << "must not be used with a wall law of type negligeable." << finl;
+      Cerr << "Another wall law must be selected with this kind of turbulence model." << finl;
+      Process::exit();
+    }
+}
+
+int Modele_turbulence_hyd_2_eq_base::reprendre_generique(Entree& is)
+{
+  double dbidon;
+  Nom bidon;
+  DoubleTrav tab_bidon;
+  is >> bidon >> bidon;
+  is >> dbidon;
+  tab_bidon.jump(is);
+  return 1;
 }

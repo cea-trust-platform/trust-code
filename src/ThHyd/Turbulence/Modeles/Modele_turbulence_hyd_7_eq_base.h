@@ -18,19 +18,13 @@
 
 #include <Modele_turbulence_hyd_base.h>
 
-
 /*! @brief Classe Modele_turbulence_hyd_7_eq_base Classe de base des modeles de type RANS à sept equations
  *
  * @sa Modele_turbulence_hyd_base
  */
 class Modele_turbulence_hyd_7_eq_base: public Modele_turbulence_hyd_base
 {
-
-  Declare_base_sans_constructeur(Modele_turbulence_hyd_7_eq_base);
-
-public:
-
-
+  Declare_base(Modele_turbulence_hyd_7_eq_base);
 };
 
 #endif /* Modele_turbulence_hyd_7_eq_base_included */
