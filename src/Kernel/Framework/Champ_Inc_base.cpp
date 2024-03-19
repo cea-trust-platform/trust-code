@@ -535,14 +535,22 @@ Champ_base& Champ_Inc_base::affecter_(const Champ_base& ch)
   DoubleTab noeuds;
   remplir_coord_noeuds(noeuds);
 
-  // Modif B.M. pour ne pas faire d'interpolation sur les cases virtuelles
   if (valeurs().size_reelle_ok())
     {
+#ifdef _OPENMP
+      // Modif P.L. on fait l'interpolation sur les cases virtuelles
+      // car ref_tab/ref_array sur un morceau de tableau pas supporte encore sur GPU (voir Device_test.cpp)
+      // Si le tableau ref est copie sur le device, le tableau pointe l'est partiellement !!!!
+      // Il faut attendre les vues Kokkos ou corriger l'implementation actuelle
+      ch.valeur_aux(noeuds, valeurs());
+#else
+      // Modif B.M. pour ne pas faire d'interpolation sur les cases virtuelles
       const int n = valeurs().dimension(0);
       DoubleTab pos, val;
       pos.ref_tab(noeuds, 0, n);
       val.ref_tab(valeurs(), 0, n);
       ch.valeur_aux(pos, val);
+#endif
       //copie dans toutes les cases
       valeurs().echange_espace_virtuel();
       for (int i = 1; i < les_valeurs->nb_cases(); i++)
