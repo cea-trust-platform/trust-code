@@ -19,14 +19,30 @@
 #include <Loi_Etat_Mono_GP_base.h>
 #include <TPPI.h>
 
-class Loi_Etat_TPPI_base : public Loi_Etat_Mono_GP_base
+class Loi_Etat_TPPI_base: public Loi_Etat_Mono_GP_base
 {
   Declare_base(Loi_Etat_TPPI_base);
-public :
+public:
+  void preparer_calcul() override;
+
+  double inverser_Pth(double, double) override;
+  double calculer_masse_volumique(double,double) const override;
+  void calculer_masse_volumique() override;
+
+  void calculer_Cp() override;
+  void calculer_mu() override { /* Do nothing */ }
+  void calculer_lambda() override { /* Do nothing */ }
+  void calculer_alpha() override { /* Do nothing */ }
 
 protected:
   std::shared_ptr<TPPI> TPPI_ = nullptr;
   Motcle model_name_, fluid_name_;
+
+private:
+  std::vector<double> vec_press_;
+  bool vec_press_filled_ = false;
+  void verify_fields();
+  void init_vec_press();
 };
 
 #endif /* Loi_Etat_TPPI_base_included */
