@@ -20,6 +20,7 @@
 #include <Champ_Don.h>
 
 Implemente_base(Loi_Etat_TPPI_QC_base, "Loi_Etat_TPPI_QC_base", Loi_Etat_TPPI_base);
+// XD loi_etat_tppi_base loi_etat_base loi_etat_tppi_base -1 Basic class for thermo-physical properties interface (TPPI) used for dilatable problems
 
 Sortie& Loi_Etat_TPPI_QC_base::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 Entree& Loi_Etat_TPPI_QC_base::readOn(Entree& is) { return Loi_Etat_TPPI_base::readOn(is); }

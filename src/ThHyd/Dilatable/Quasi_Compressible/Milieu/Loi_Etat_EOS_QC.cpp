@@ -17,6 +17,10 @@
 #include <Loi_Etat_EOS_QC.h>
 
 Implemente_instanciable(Loi_Etat_EOS_QC, "Loi_Etat_EOS_QC", Loi_Etat_TPPI_QC_base);
+// XD EOS_QC loi_etat_tppi_base EOS_QC 1 Class for using EOS with QC problem
+// XD attr Cp double Cp 0 Specific heat at constant pressure (J/kg/K).
+// XD attr fluid chaine fluid 0 Fluid name in the EOS model
+// XD attr model chaine model 0 EOS model name
 
 Sortie& Loi_Etat_EOS_QC::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 

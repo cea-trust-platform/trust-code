@@ -17,6 +17,10 @@
 #include <Loi_Etat_CoolProp_QC.h>
 
 Implemente_instanciable(Loi_Etat_CoolProp_QC, "Loi_Etat_CoolProp_QC", Loi_Etat_TPPI_QC_base);
+// XD coolprop_QC loi_etat_tppi_base coolprop_QC 1 Class for using CoolProp with QC problem
+// XD attr Cp double Cp 0 Specific heat at constant pressure (J/kg/K).
+// XD attr fluid chaine fluid 0 Fluid name in the CoolProp model
+// XD attr model chaine model 0 CoolProp model name
 
 Sortie& Loi_Etat_CoolProp_QC::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 
