@@ -27,7 +27,7 @@
 #if __GNUC__ > 5 || __clang_major__ > 10
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
-#include <pcgnslib.h>
+#include <cgnslib.h>
 #pragma GCC diagnostic pop
 #endif
 

@@ -157,6 +157,7 @@ void TRUST_2_CGNS::clear_vectors()
 
 void TRUST_2_CGNS::fill_global_infos()
 {
+#ifdef MPI_
   assert (sommets_.non_nul() && elems_.non_nul());
 
   const int nb_som = sommets_->dimension(0), nb_elem = elems_->dimension(0);
@@ -167,11 +168,10 @@ void TRUST_2_CGNS::fill_global_infos()
   global_nb_elem_.assign(nb_procs, -123 /* default */);
   global_nb_som_.assign(nb_procs, -123 /* default */);
 
-#ifdef MPI_
 //  grp.all_gather(&nb_elem, global_nb_elem_.data(), 1); // Elie : pas MPI_CHAR desole
   MPI_Allgather(&nb_elem, 1, MPI_ENTIER, global_nb_elem_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
   MPI_Allgather(&nb_som, 1, MPI_ENTIER, global_nb_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
+
 
   if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
     {
@@ -210,10 +210,12 @@ void TRUST_2_CGNS::fill_global_infos()
       nb_procs_writing_ = static_cast<int>(proc_non_zero_elem_.size());
       all_procs_write_ = false;
     }
+#endif
 }
 
 void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
 {
+#ifdef MPI_
   assert(dom_trust_.non_nul());
 
   int decal = 0; // a modifier plus tard !!!
@@ -232,10 +234,10 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       global_nb_face_som_.assign(nb_procs, -123 /* default */);
       global_nb_elem_face_.assign(nb_procs, -123 /* default */);
 
-#ifdef MPI_
+
       MPI_Allgather(&nb_fs, 1, MPI_ENTIER, global_nb_face_som_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
       MPI_Allgather(&nb_ef, 1, MPI_ENTIER, global_nb_elem_face_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
+
 
       if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
@@ -282,10 +284,8 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       global_nb_face_som_offset_.assign(nb_procs, -123 /* default */);
       global_nb_elem_face_offset_.assign(nb_procs, -123 /* default */);
 
-#ifdef MPI_
       MPI_Allgather(&nb_fs_offset, 1, MPI_ENTIER, global_nb_face_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
       MPI_Allgather(&nb_ef_offset, 1, MPI_ENTIER, global_nb_elem_face_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
 
       if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
@@ -326,9 +326,7 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
       // incr sur nb_elem tot offset
       global_nb_elem_som_offset_.assign(nb_procs, -123 /* default */);
 
-#ifdef MPI_
       MPI_Allgather(&nb_es_offset, 1, MPI_ENTIER, global_nb_elem_som_offset_.data(), 1, MPI_ENTIER, MPI_COMM_WORLD);
-#endif
 
       if (!Option_CGNS::PARALLEL_OVER_ZONE && !postraiter_domaine_)
         {
@@ -347,10 +345,12 @@ void TRUST_2_CGNS::fill_global_infos_poly(const bool is_polyedre)
           for (auto &itr : local_es_offset_) itr += decal;
         }
     }
+#endif
 }
 
 int TRUST_2_CGNS::compute_shift(const std::vector<int>& vect_incr_max)
 {
+#ifdef MPI_
   assert(par_in_zone_);
   const int proc_me = Process::me();
   int decal = 0;
@@ -370,6 +370,9 @@ int TRUST_2_CGNS::compute_shift(const std::vector<int>& vect_incr_max)
             }
     }
   return decal;
+#else
+  return 0;
+#endif
 }
 
 int TRUST_2_CGNS::convert_connectivity(const CGNS_TYPE type , std::vector<cgsize_t>& elems)
