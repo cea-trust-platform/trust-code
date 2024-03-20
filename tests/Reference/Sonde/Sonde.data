@@ -5,7 +5,12 @@ Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
 Read_file upwind.geo ;
-
+Postraiter_domaine
+{
+    fichier mesh
+    format cgns
+    domaine dom
+}
 # END MESH #
 # BEGIN PARTITION
 Postraiter_domaine
@@ -86,6 +91,21 @@ Read pb
         fields dt_post 1
         {
             pression elem
+        }
+    }
+    Post_processings
+    {
+        cgns
+        {
+            format cgns
+            fichier Sonde
+            fields dt_post 1
+            {
+                pression elem
+                pression som
+                vitesse elem
+                vitesse som
+            }
         }
     }
     sauvegarde formatte sonde.sauv

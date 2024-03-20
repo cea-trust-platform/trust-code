@@ -20,7 +20,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Postraiter_domaine, "Postraiter_domaine", Interprete_geometrique_base);
-// XD postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA,SINGLE_LATA).
+// XD postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA,SINGLE_LATA,CGNS).
 
 Sortie& Postraiter_domaine::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -178,7 +178,7 @@ Entree& Postraiter_domaine::interpreter_(Entree& is)
   Nom nom_pdb;
   Nom un_dom;
   Param param(que_suis_je());
-  param.ajouter("format", &format_post_, Param::REQUIRED); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med"]) File format.
+  param.ajouter("format", &format_post_, Param::REQUIRED); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med","cgns"]) File format.
   format_binaire_ = 1;
   param.ajouter("binaire", &format_binaire_); // XD_ADD_P entier(into=[0,1]) Binary (binaire 1) or ASCII (binaire 0) may be used. By default, it is 0 for LATA and only ASCII is available for LML and only binary is available for MED.
   ecrire_frontiere_ = 1;

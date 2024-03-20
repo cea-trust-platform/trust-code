@@ -1019,6 +1019,14 @@ then
 	    liste_skipped=$liste_skipped" $i"
 	    i=""
 	fi
+
+	# Discard test case with GCNS if LIBCGNS disabled:
+	if [ "$TRUST_DISABLE_CGNS" = 1 ] && [ "`grep -i cgns $REP/* 2>/dev/null`" != "" ]
+	then
+	    echo "Test $i skipped (TRUST is not built with CGNS support)"
+	    liste_skipped=$liste_skipped" $i"
+	    i=""
+	fi
 	
 	# Discard ICoCo test cases if ICoCo baltik is not built with TRUST
 	ICoCo_exec=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/`basename $exec` && ICoCo_exec=`echo $ICoCo_exec | sed "1,$ s?TRUST_mpi?ICoCo?g"`

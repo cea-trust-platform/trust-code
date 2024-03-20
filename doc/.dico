@@ -549,6 +549,10 @@
  Loi_Etat_Binaire_Gaz_Parfait_base Loi_Etat_Binaire_GP_base Loi_Etat_Binaire_GP_base.h
  Loi_Etat_Binaire_Gaz_Parfait_QC Loi_Etat_Binaire_GP_QC Loi_Etat_Binaire_GP_QC.h
  Loi_Etat_Binaire_Gaz_Parfait_WC Loi_Etat_Binaire_GP_WC Loi_Etat_Binaire_GP_WC.h
+ Loi_Etat_CoolProp_QC Loi_Etat_CoolProp_QC Loi_Etat_CoolProp_QC.h
+ Loi_Etat_CoolProp_WC Loi_Etat_CoolProp_WC Loi_Etat_CoolProp_WC.h
+ Loi_Etat_EOS_QC Loi_Etat_EOS_QC Loi_Etat_EOS_QC.h
+ Loi_Etat_EOS_WC Loi_Etat_EOS_WC Loi_Etat_EOS_WC.h
  Loi_Etat_Gaz_Parfait_base Loi_Etat_GP_base Loi_Etat_GP_base.h
  Loi_Etat_Gaz_Parfait_QC Loi_Etat_GP_QC Loi_Etat_GP_QC.h
  Loi_Etat_Gaz_Parfait_WC Loi_Etat_GP_WC Loi_Etat_GP_WC.h
@@ -560,6 +564,9 @@
  Loi_Etat_Multi_Gaz_Parfait_WC Loi_Etat_Multi_GP_WC Loi_Etat_Multi_GP_WC.h
  Loi_Etat_rhoT_Gaz_Parfait_QC Loi_Etat_rhoT_GP_QC Loi_Etat_rhoT_GP_QC.h
  Loi_Etat_rhoT_Gaz_Reel_QC Loi_Etat_rhoT_GR_QC Loi_Etat_rhoT_GR_QC.h
+ Loi_Etat_TPPI_base Loi_Etat_TPPI_base Loi_Etat_TPPI_base.h
+ Loi_Etat_TPPI_QC_base Loi_Etat_TPPI_QC_base Loi_Etat_TPPI_QC_base.h
+ Loi_Etat_TPPI_WC_base Loi_Etat_TPPI_WC_base Loi_Etat_TPPI_WC_base.h
  Loi_Fermeture_base Loi_Fermeture_base Loi_Fermeture_base.h
  Loi_Fermeture_Test Loi_Fermeture_Test Loi_Fermeture_Test.h
  Loi_horaire Loi_horaire Loi_horaire.h
