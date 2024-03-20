@@ -129,6 +129,17 @@ check_src()
       erreur 1
    fi     
 
+   #######################
+   # Verification des NULL
+   #######################
+   res=`grep "NULL" *.cpp *.h 2>/dev/null | grep -v "_NULL" | grep -v "NULL_" | grep -v "NULLE" | grep -v "\"NULL\""`
+   if [ "$res" != "" ]
+   then
+      echo $res
+      echo "Regle de programmation c++:"
+      echo "Utiliser nullptr au lieu de NULL"
+      erreur 1
+   fi
    #######################################
    # Verification des declare_instanciable
    #######################################

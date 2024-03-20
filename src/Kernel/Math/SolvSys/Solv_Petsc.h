@@ -191,7 +191,7 @@ protected :
   int nb_it_previous_=-1;  // Previous number of iterations
   int reuse_preconditioner_nb_it_max_=-1; // Upper limit of iterations to reuse preconditioner
 #ifdef PETSCKSP_H
-  IS rowperm = NULL, colperm = NULL;
+  IS rowperm = nullptr, colperm = nullptr;
 #endif
 };
 
@@ -216,17 +216,17 @@ inline Solv_Petsc::~Solv_Petsc()
 inline void Solv_Petsc::reset()
 {
 #ifdef PETSCKSP_H
-  if (SolveurPetsc_!=NULL)
+  if (SolveurPetsc_!=nullptr)
     {
       KSPDestroy(&SolveurPetsc_);
       finalize();
     }
-  if (MatricePetsc_!=NULL)
+  if (MatricePetsc_!=nullptr)
     {
       // Destruction des vecteurs
       VecDestroy(&SecondMembrePetsc_);
       VecDestroy(&SolutionPetsc_);
-      if (LocalSolutionPetsc_!=NULL)
+      if (LocalSolutionPetsc_!=nullptr)
         {
           VecDestroy(&LocalSolutionPetsc_);
           VecScatterDestroy(&VecScatter_);
@@ -234,12 +234,12 @@ inline void Solv_Petsc::reset()
       // Destruction matrice
       MatDestroy(&MatricePetsc_);
       // Destruction DM
-      if (dm_!=NULL)
+      if (dm_!=nullptr)
         DMDestroy(&dm_);
       // Destruction IS
-      if (rowperm!=NULL)
+      if (rowperm!=nullptr)
         ISDestroy(&rowperm);
-      if (colperm!=NULL)
+      if (colperm!=nullptr)
         ISDestroy(&colperm);
     }
   initialize();
@@ -272,13 +272,13 @@ inline void Solv_Petsc::initialize()
   amgx_initialized_=false;
   block_size_=1;
   option_prefix_="??";
-  dm_=NULL;
-  MatricePetsc_ = NULL;
-  SecondMembrePetsc_ = NULL;
-  SolutionPetsc_ = NULL;
-  SolveurPetsc_ = NULL;
-  LocalSolutionPetsc_ = NULL;
-  VecScatter_ = NULL;
+  dm_=nullptr;
+  MatricePetsc_ = nullptr;
+  SecondMembrePetsc_ = nullptr;
+  SolutionPetsc_ = nullptr;
+  SolveurPetsc_ = nullptr;
+  LocalSolutionPetsc_ = nullptr;
+  VecScatter_ = nullptr;
   // Dev:
   ignore_new_nonzero_ = false;
   rebuild_matrix_ = false;

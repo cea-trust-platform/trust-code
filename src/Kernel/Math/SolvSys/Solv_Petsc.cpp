@@ -1520,7 +1520,7 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
       PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
       MatView(MatricePetsc_, viewer);
       // Save also the RHS if on the host:
-      if (SecondMembrePetsc_!=NULL)
+      if (SecondMembrePetsc_!=nullptr)
         {
           Cerr << "Writing also the RHS in the file " << filename << finl;
           VecView(SecondMembrePetsc_, viewer);
@@ -1586,7 +1586,7 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
       for (int row=0; row<rows; row++)
         rhs_mtx << secmem(row) << finl;
       // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
-      if (SecondMembrePetsc_!=NULL)
+      if (SecondMembrePetsc_!=nullptr)
         {
           PetscViewer viewer;
           Nom rhs_filename(Objet_U::nom_du_cas());
@@ -1776,33 +1776,33 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     {
       // Changement de la taille de matrice, on detruit les objets dont la taille change:
       int hasChanged = mp_max((int)(secmem_sz_!=secmem.size_array()));
-      if (MatricePetsc_!=NULL && hasChanged != 0)
+      if (MatricePetsc_!=nullptr && hasChanged != 0)
         {
           // Destruction de la matrice de preconditionnement:
-          KSPSetOperators(SolveurPetsc_, MatricePetsc_, NULL);
+          KSPSetOperators(SolveurPetsc_, MatricePetsc_, PETSC_NULLPTR);
           // Destruction des vecteurs
           VecDestroy(&SecondMembrePetsc_);
-          SecondMembrePetsc_ = NULL;
+          SecondMembrePetsc_ = nullptr;
           VecDestroy(&SolutionPetsc_);
-          SolutionPetsc_ = NULL;
-          if (LocalSolutionPetsc_!=NULL)
+          SolutionPetsc_ = nullptr;
+          if (LocalSolutionPetsc_!=nullptr)
             {
               VecDestroy(&LocalSolutionPetsc_);
-              LocalSolutionPetsc_ = NULL;
+              LocalSolutionPetsc_ = nullptr;
               VecScatterDestroy(&VecScatter_);
             }
           // Destruction matrice
           MatDestroy(&MatricePetsc_);
-          MatricePetsc_ = NULL;
+          MatricePetsc_ = nullptr;
           // Destruction DM
-          if (dm_!=NULL)
+          if (dm_!=nullptr)
             DMDestroy(&dm_);
         }
 
       matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
 
       // Construction de la numerotation globale:
-      if (MatricePetsc_==NULL)
+      if (MatricePetsc_==nullptr)
         construit_renum(secmem);
 
       // Matrice morse intermedaire de conversion
@@ -1831,7 +1831,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                                            : matrice_morse_intermediaire;
 
       // Verification stencil de la matrice
-      nouveau_stencil_ = (MatricePetsc_ == NULL ? true : check_stencil(matrice_morse));
+      nouveau_stencil_ = (MatricePetsc_ == nullptr ? true : check_stencil(matrice_morse));
 
       // Build x and b if necessary
       Create_vectors(secmem);
@@ -1937,7 +1937,7 @@ void setupSignalHandlers(bool on)
   sa_fpe.sa_flags = 0;
 
   // Install the signal handler for SIGFPE
-  if (sigaction(SIGFPE, &sa_fpe, NULL) == -1)
+  if (sigaction(SIGFPE, &sa_fpe, nullptr) == -1)
     {
       fprintf(stderr, "Error installing signal handler for SIGFPE.\n");
       Process::exit(EXIT_FAILURE);
@@ -1950,7 +1950,7 @@ void setupSignalHandlers(bool on)
   sa_segv.sa_flags = 0;
 
   // Install the signal handler for SIGSEGV
-  if (sigaction(SIGSEGV, &sa_segv, NULL) == -1)
+  if (sigaction(SIGSEGV, &sa_segv, nullptr) == -1)
     {
       fprintf(stderr, "Error installing signal handler for SIGSEGV.\n");
       Process::exit(EXIT_FAILURE);
@@ -2229,7 +2229,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
   // Creation de la matrice Petsc si necessaire
   if (!read_matrix_)
     {
-      if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
+      if (MatricePetsc_!=nullptr) MatDestroy(&MatricePetsc_);
       Create_MatricePetsc(MatricePetsc_, mataij_, mat);
     }
   MatSetBlockSize(MatricePetsc_, blocksize);
@@ -2482,7 +2482,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
 {
-  if (SecondMembrePetsc_!=NULL) return; // Deja construit
+  if (SecondMembrePetsc_!=nullptr) return; // Deja construit
   // Build x
   VecCreate(PETSC_COMM_WORLD,&SecondMembrePetsc_);
   // Set sizes:
@@ -2522,7 +2522,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
         from[i]=decalage_local_global_+i; // Global indices in SolutionPetsc_
       IS fromis;
       ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), (PetscInt*)from.addr(), PETSC_COPY_VALUES, &fromis);
-      VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, NULL, &VecScatter_);
+      VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, PETSC_NULLPTR, &VecScatter_);
       ISDestroy(&fromis);
       // Will permit later with VecScatterBegin/VecScatterEnd something like:
       // LocalSolutionPetsc_[tois[i]]=SolutionPetsc_[fromis[i]]
@@ -2531,7 +2531,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
 
 void Solv_Petsc::Create_DM(const DoubleVect& b)
 {
-  if (dm_!=NULL) return; // Deja construit
+  if (dm_!=nullptr) return; // Deja construit
   /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()))
     {

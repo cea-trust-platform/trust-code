@@ -64,7 +64,7 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
       Process::exit();
     }
   // Creation de la matrice Petsc (CSR pointeurs dessus)
-  if (MatricePetsc_ != NULL) MatDestroy(&MatricePetsc_);
+  if (MatricePetsc_ != nullptr) MatDestroy(&MatricePetsc_);
 
   Create_MatricePetsc(MatricePetsc_, mataij_, mat_morse);
   double start = Statistiques::get_time_now();
@@ -146,7 +146,7 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
   else if (std::strcmp(type, MATMPIAIJ) == 0)
     {
       // Get local matrix from redistributed matrix
-      if (localA!=NULL) MatDestroy(&localA); // Suite accroissement memoire !
+      if (localA!=nullptr) MatDestroy(&localA); // Suite accroissement memoire !
       ierr = MatMPIAIJGetLocalMat(A, MAT_INITIAL_MATRIX, &localA);
       CHKERRQ(ierr);
     }
