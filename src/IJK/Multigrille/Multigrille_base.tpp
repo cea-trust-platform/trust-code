@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,32 +132,8 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
       copy_x_for_post.data() = x.data();
 #endif
 
-      if (IJK_Splitting::defilement_ == 1)
-        {
-          int z_index = b.get_splitting().get_local_slice_index(2);
-          int z_index_min = 0;
-          int z_index_max = b.get_splitting().get_nprocessor_per_direction(2) - 1;
-          if (z_index == z_index_min && z_index == z_index_max)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-            }
-          else if (z_index == z_index_min)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, 0);
-            }
-          else if (z_index == z_index_max)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, 0, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-            }
-          else
-            {
-              norme_residu_final = norme_ijk(residu);
-            }
-        }
-      else
-        {
-          norme_residu_final = norme_ijk(residu);
-        }
+      norme_residu_final = norme_ijk(residu);
+
       if (impr_)
         Cout << "level=" << grid_level << " residu(pre)=" << norme_residu_final << finl;
 
@@ -266,32 +242,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
           }
 #endif
 
-          if (IJK_Splitting::defilement_ == 1)
-            {
-              int z_index = b.get_splitting().get_local_slice_index(2);
-              int z_index_min = 0;
-              int z_index_max = b.get_splitting().get_nprocessor_per_direction(2) - 1;
-              if (z_index == z_index_min && z_index == z_index_max)
-                {
-                  norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-                }
-              else if (z_index == z_index_min)
-                {
-                  norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, 0);
-                }
-              else if (z_index == z_index_max)
-                {
-                  norme_residu_final = norme_ijk_moins_bord(residu, 0, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-                }
-              else
-                {
-                  norme_residu_final = norme_ijk(residu);
-                }
-            }
-          else
-            {
-              norme_residu_final = norme_ijk(residu);
-            }
+          norme_residu_final = norme_ijk(residu);
           if (impr_)
             Cout << "level=" << grid_level << " residu=" << norme_residu_final << finl;
           // use threshold criteria only if pure multigrid (not gcp with mg preconditionning)
@@ -318,32 +269,9 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
       // dump_x_b_residue_in_file(x,b,residu, grid_level, global_count_dump_in_file, Nom("apres jacobi-residu"));
 #endif
 
-      if (IJK_Splitting::defilement_ == 1)
-        {
-          int z_index = b.get_splitting().get_local_slice_index(2);
-          int z_index_min = 0;
-          int z_index_max = b.get_splitting().get_nprocessor_per_direction(2) - 1;
-          if (z_index == z_index_min && z_index == z_index_max)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-            }
-          else if (z_index == z_index_min)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_, 0);
-            }
-          else if (z_index == z_index_max)
-            {
-              norme_residu_final = norme_ijk_moins_bord(residu, 0, IJK_Splitting::nb_maille_bord_a_exclure_pour_residu_solverP_);
-            }
-          else
-            {
-              norme_residu_final = norme_ijk(residu);
-            }
-        }
-      else
-        {
-          norme_residu_final = norme_ijk(residu);
-        }
+
+      norme_residu_final = norme_ijk(residu);
+
       if (impr_)
         Cout << finl << "level=" << grid_level << " residu=" << norme_residu_final
              << " (coarse solver)" << finl;

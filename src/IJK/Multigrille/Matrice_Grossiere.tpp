@@ -167,52 +167,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
   }
 
-
-  /*int jcible = (int) round((double)nj/2.) ;
-
-  for (int proc=0; proc<Process::nproc(); proc++)
-    {
-      if (proc==Process::me())
-        {
-          std::cout << "renum on the processor " << proc << " : " << std::endl;
-          std::cout << "renum" << std::endl;
-          for (k = -1; k < nk+1; k++)
-            {
-              for (i = -1; i < ni+1; i++)
-                {
-                  std::cout << renum(i,jcible,k) << " ";
-                }
-              std::cout << std::endl;
-            }
-          std::cout << std::endl;
-          std::cout << std::endl;
-
-          for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
-            {
-              std::cout << "renum_interp =" << interp << std::endl;
-              for (k = -1; k < nk+1; k++)
-                {
-                  for (i = -1; i < ni+1; i++)
-                    {
-                      std::cout << renum_shear(i,jcible,k, interp) << " ";
-                    }
-                  std::cout << std::endl;
-                }
-              std::cout << std::endl;
-              std::cout << std::endl;
-            }
-        }
-
-      Process::barrier();
-    }
-  for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
-    {
-      std::cout << "ponderation_shear" << interp << " : " << ponderation_shear_[interp] << std::endl;
-    }
-  */
-
-
-
   {
     const int n_reels = md_.valeur().get_nb_items_reels();
     voisins_.dimensionner(n_reels);
@@ -223,21 +177,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     int z_index_min = 0;
     int z_index = splitting.get_local_slice_index(2);
     int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
-    /*
-    if (z_index == z_index_min)
-      {
-        std::cout << "coefficient aux faces " << 2 << std::endl;
-        for (int i2= 0; i2 < ni; i2++)
-          {
-            std::cout << coeffs_face(i2,jcible,0,2) << " ";
-            std::cout << coeffs_face(i2,jcible,1,2) << " ";
-            std::cout << coeffs_face(i2,jcible,2,2) << " ";
-            std::cout << " .....  ";
-            std::cout << coeffs_face(i2,jcible,nk-2,2) << " ";
-            std::cout << coeffs_face(i2,jcible,nk-1,2) << " ";
-            std::cout << coeffs_face(i2,jcible,nk,2) <<  std::endl;
-          }
-      }*/
 
     for (i = 0; i < ni; i++)
       {
@@ -279,8 +218,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           }
       }
 
-
-
     for (i = 0; i < n_reels; i++)
       {
         if (coeff_diag_[i] == 0.)
@@ -307,46 +244,14 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     rect.dimensionner(n_reels, md_.valeur().get_nb_items_tot() - n_reels, nnz_virt);
     rect.remplir(voisins_virt_, coeffs_virt_);
 
-    /*    if (z_index == z_index_min)
-          {
-            int nvoisin_virt = voisins_virt_.size();
-
-            std::cout << "( voisins_virt_  , coeff_virt )" << std::endl;
-            std::cout << "[ voisins_  , coeff_ ]" << std::endl;
-            for (i = 0; i < nvoisin_virt; i++)
-              {
-                int nvoisin_virt_cell = voisins_virt_[i].size();
-                int nvoisin_cell = voisins_[i].size();
-                std::cout << "element  " << i << std::endl;
-                for (j = 0; j < nvoisin_virt_cell; j++)
-                  {
-                    std::cout << " ( "<< voisins_virt_[i][j] << "," << coeffs_virt_[i][j] <<" ); " ;
-                  }
-                for (j = 0; j < nvoisin_cell; j++)
-                  {
-                    std::cout << " [ "<< voisins_[i][j] << "," << coeffs_[i][j] <<" ]; " ;
-                  }
-                std::cout << std::endl;
-              }
-          }*/
-
     voisins_ = IntLists();
     coeffs_ = DoubleLists();
     coeff_diag_.reset();
     voisins_virt_ = IntLists();
     coeffs_virt_ = DoubleLists();
     // pour voir la matrice lisiblement
-    //int z_index_min = 0;
-    //int z_index = splitting.get_local_slice_index(2);
-    //int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
-    //if (z_index == z_index_min)
-    //{
-
     // carre.imprimer_formatte(Cout);
     // rect.imprimer_formatte(Cout);
-    //}
-
-
   }
 
 }

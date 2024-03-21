@@ -201,11 +201,14 @@ void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting&
   v[2].set_dU_(0.);
 }
 
-void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost)
+void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, double DU)
 {
   v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
   v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
   v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+  v[0].set_dU_(DU);
+  v[1].set_dU_(0.);
+  v[2].set_dU_(0.);
 }
 
 // Interpolate the "field" at the requested "coordinates" (array with 3 columns), and stores into "result"

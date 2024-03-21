@@ -86,7 +86,7 @@ Sortie& Matrice_Morse::imprimer_formatte(Sortie& s, int symetrie) const
     {
       if (proc==Process::me())
         {
-          std::cout << "Matrix morse on the processor " << proc << " : " << std::endl;
+          s << "Matrix morse on the processor " << proc << " : " << finl;
           int n=nb_lignes();
           Noms tab_imp;
           tab_imp.dimensionner(nb_colonnes());
@@ -127,8 +127,8 @@ Sortie& Matrice_Morse::imprimer_formatte(Sortie& s, int symetrie) const
                     tab_imp[tab2_(k)-numerotation_fortran] += (Nom)coeff_(k);
                   }
               for(int k=0; k<nb_colonnes(); k++)
-                std::cout<<tab_imp[k];
-              std::cout << std::endl;//<<finl;
+                s<<tab_imp[k];
+              s<<finl;
             }
         }
       Process::barrier();

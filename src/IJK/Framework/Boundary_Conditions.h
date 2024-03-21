@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,6 @@ protected:
   double dU_perio_;
   double t0_shear_;
   int defilement_;
-  int nb_maille_bord_a_exclure_pour_residu_solverP_;
   int order_interpolation_poisson_solver_;
   int interp_monofluide_;
   int conserv_qdm_;
