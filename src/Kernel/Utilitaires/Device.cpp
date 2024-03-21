@@ -198,6 +198,7 @@ template <typename _TYPE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab)
 {
 #ifdef _OPENMP
+  if (tab.get_dataLocation()==HostOnly) return tab.data();
   _TYPE_ *device_ptr = nullptr;
   _TYPE_ *ptr = tab.data();
   #pragma omp target data use_device_ptr(ptr)
