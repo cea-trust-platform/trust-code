@@ -392,6 +392,7 @@ void Process::imprimer_ram_totale(int all_process)
         double max_memoire=Process::mp_max(memoire);
         double total_memoire=Process::mp_sum(memoire);
         Cout << (int)(total_memoire/Mo) << " MBytes of RAM taken by the calculation (max on a rank: "<<(int)(max_memoire/Mo)<<" MB)." << finl;
+        if (allocatedBytesOnDevice()>0) Cout << (int)(allocatedBytesOnDevice()/Mo) << " MB allocated on the GPU 0 through OpenMP allocations." << finl;
       }
     }
 }

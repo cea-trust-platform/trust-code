@@ -28,6 +28,7 @@ bool init_openmp_ = false;
 bool clock_on = false;
 bool timer_on = false;
 double clock_start;
+int allocated_bytes = 0;
 
 #ifndef NDEBUG
 static int copy_before_exit = -1;
@@ -220,7 +221,7 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
   if (Objet_U::computeOnDevice)
     {
       if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
-      allocateOnDevice(tab_addr, tab.size_array(), "an array "+arrayName);
+      allocateOnDevice(tab_addr, tab.p()->get_size(), "an array "+arrayName);
       tab.set_data_location(DataLocation::Device);
     }
 #endif
@@ -247,6 +248,12 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
         }
 #endif
       #pragma omp target enter data map(alloc:ptr[0:size])
+#ifndef NDEBUG
+      static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
+      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+      for (int i = 0; i < size; i++) ptr[i] = INVALIDE_;
+#endif
+      allocated_bytes += bytes;
       if (clock_on)
         {
           std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
@@ -268,7 +275,7 @@ void deleteOnDevice(TRUSTArray<_TYPE_>& tab)
       _TYPE_ *tab_addr = tab.data();
       if (init_openmp_ && tab_addr && isAllocatedOnDevice(tab))
         {
-          deleteOnDevice(tab_addr, tab.size_array());
+          deleteOnDevice(tab_addr, tab.p()->get_size());
           tab.set_data_location(DataLocation::HostOnly);
         }
     }
@@ -289,9 +296,12 @@ void deleteOnDevice(_TYPE_* ptr, int size)
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes" << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
+      allocated_bytes -= bytes;
     }
 #endif
 }
+// Activity on GPU may be asked with:
+int allocatedBytesOnDevice() { return allocated_bytes; }
 
 // Update const array on device if necessary
 // Before		After		Copy ?
@@ -325,6 +335,8 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       self_test();
       DataLocation currentLocation = tab.get_data_location();
       tab.set_data_location(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
+      // Important for ref_array/ref_tab support, we take the size of the memory allocated, not the size of the array (tab.size_array()):
+      int memory_size = tab.p()==nullptr ? 0 : tab.p()->get_size();
       if (currentLocation==DataLocation::HostOnly)
         {
           // Not a Trav which is already allocated on device:
@@ -333,7 +345,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
           copyToDevice(tab_addr, tab.size_array(), "array "+arrayName);
         }
       else if (currentLocation==DataLocation::Host)
-        copyToDevice(tab_addr, tab.size_array(), "array "+arrayName);
+        copyToDevice(tab_addr, memory_size, "array "+arrayName);
       else if (currentLocation==DataLocation::PartialHostDevice)
         Process::exit("Error, can't map on device an array with PartialHostDevice status!");
     }
@@ -347,8 +359,8 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
-      if (!timer_on && size > 300000)
-        timer_on = true; // Enable timer only if large case (10K data) to speed-up non regression test
+      if (!timer_on && size > 300000) timer_on = true; // Enable timer only if large case (10K data) to speed-up non regression test
+      if (clock_on) timer_on = true;
       assert(isAllocatedOnDevice(ptr) || size==0);
       int bytes = sizeof(_TYPE_) * size;
       start_gpu_timer(bytes);
@@ -384,7 +396,7 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice && tab.get_data_location() == DataLocation::Device)
     {
-      copyFromDevice(tab.data(), tab.size_array(), " array " + arrayName);
+      copyFromDevice(tab.data(), tab.p()->get_size(), " array " + arrayName);
       tab.set_data_location(DataLocation::HostDevice);
     }
 #endif

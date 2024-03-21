@@ -349,9 +349,8 @@ void self_test()
         b.ref_array(a);
         assert(b.get_data_location()==DataLocation::HostDevice); // b doit etre sur le device
       }
-      // ref_tab on a chunk
+      // ref_tab/ref_array on a chunk array
       {
-        /* ToDo OpenMP attendre std::vector comme container
         DoubleTab a(2*N);
         a=1;
         DoubleTab b;
@@ -362,13 +361,12 @@ void self_test()
         double* a_ptr = computeOnTheDevice(a);
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
         for (int i=0; i<2*N; i++)
-        a_ptr[i]=2;
+          a_ptr[i]=2;
         // Retour sur le device et verification que a etait completement sur le device:
         assert(a.get_dataLocation()==Device);
         assert(a(0)==2);
-        assert(a.get_dataLocation()==HostDevice);
+        assert(a.get_dataLocation()==Host);
         assert(a(2*N-1)==2);
-         */
       }
       double * ptr_host;
       {

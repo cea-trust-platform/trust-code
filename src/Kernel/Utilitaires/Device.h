@@ -37,6 +37,7 @@ void exit_on_copy_condition(int size);
 void set_exit_on_copy_condition(int size);
 void init_openmp();
 void init_cuda();
+int allocatedBytesOnDevice();
 std::string ptrToString(const void* adr);
 
 // Timers GPU avec OpenMP

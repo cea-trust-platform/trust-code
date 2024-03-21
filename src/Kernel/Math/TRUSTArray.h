@@ -207,6 +207,7 @@ public:
   inline DataLocation get_data_location() const { return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_; }
   inline void set_data_location(DataLocation flag) { if (data_location_ != nullptr) *data_location_ = flag; }
   inline void set_data_location(DataLocation flag) const { if (data_location_ != nullptr) *data_location_ = flag; }
+  inline VTRUSTdata<_TYPE_>* p() { return p_; };
 
   inline void checkDataOnHost();
   inline void checkDataOnHost() const;
