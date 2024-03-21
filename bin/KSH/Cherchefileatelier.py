@@ -1,16 +1,13 @@
 import os
 ENV=os.getenv("TRUST_ROOT")
 
+def short_path(root_dir, ze_dir):
+    return ze_dir.replace(os.path.join(root_dir, ""), "")
+
 dirs=[]
-f=open(ENV+"/env/rep.TRUST","r")
-titi=1
-
-while (titi):
-    titi=f.readline().strip()
-    if (titi!=''):    dirs.append(titi)
-    pass
-
-
+for dirpath, dirnames, filenames in os.walk(ENV):
+    if filenames:
+        dirs.append(short_path(ENV, dirpath))
 
 import sys
 

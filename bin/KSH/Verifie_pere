@@ -66,7 +66,7 @@ ana_base()
     
 }
 
-for d in `cat $TRUST_ENV/rep.TRUST`
+for d in `find $TRUST_ROOT/src -type d`
   do
   
   files=`grep -l Implemente_base $TRUST_ROOT/$d/*.cpp`

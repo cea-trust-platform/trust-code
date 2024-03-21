@@ -6,15 +6,13 @@ cat /dev/null > $TRUST_TMP/st2
 list_code="TRUST"
 for code in $list_code
 do
-    rep=`cat $TRUST_ROOT/env/rep.TRUST`
+    rep=`cd $TRUST_ROOT;find src -type d`
     base=$TRUST_ROOT
     if [ "$code" = "TRUST" ]
     then
-	rep=`cat $TRUST_ENV/rep.TRUST`
-
-	base=$TRUST_ROOT
+    	base=$TRUST_ROOT
     else
-	echo "problem code " 
+    	echo "problem code " 
 	exit
     fi
     listmot="instanciable base"

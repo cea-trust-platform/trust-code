@@ -24,8 +24,6 @@ echo "Extraction of $paquet with $kind..."
 tar xvfz $paquet
 
 # On applique un traitement selon l'option
-# Ne pas utiliser env/rep.TRUST qui n'est plus
-# gere en configuration
 cd $rep/TRUST-$version
 echo "  we modify `pwd`"
 

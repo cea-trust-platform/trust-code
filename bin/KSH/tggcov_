@@ -26,14 +26,14 @@ then
    $0 					1>>index.html	# Code complet	
    $0 -short -module all 		1>>index.html 	# Suivi des modules
    # Repertoires par module (eg: VDF.html)
-   for module in `cat $TRUST_ROOT/env/rep.TRUST | awk -F/ '{print $2}' | sort -u`
+   for module in `cd $TRUST_ROOT;find src -type d | awk -F/ '{print $2}' | sort -u`
    do
       echo "$NO_ROBOT<pre>" 		1>$module.html
       echo $0 -module $module -directory ...
       $0 -module $module -directory 	1>>$module.html
    done
    # Ajouts des fichiers par repertoire
-   for directory in `cat $TRUST_ROOT/env/rep.TRUST`
+   for directory in `cd $TRUST_ROOT;find src -type d`
    do
       directory=${directory#./}
       dir=`echo $directory | $TRUST_Awk '{gsub("/","_",$0);print $0}'`
@@ -84,7 +84,7 @@ elif [ "$type" = -directory ]
 then
    if [ "$nom" = all ]
    then
-      for directory in `cat $TRUST_ROOT/env/rep.TRUST`
+      for directory in `cd $TRUST_ROOT;find src -type d`
       do
          $0 -short -directory ${directory#./}
       done | sort -n   
@@ -113,7 +113,7 @@ elif [ "$type" = -module ]
 then
    if [ "$nom" = all ]
    then
-      for module in `cat $TRUST_ROOT/env/rep.TRUST | awk -F/ '{print $2}' | sort -u`
+      for module in `cd $TRUST_ROOT;find src -type d | awk -F/ '{print $2}' | sort -u`
       do
          $0 -short -module $module
       done | sort -n
@@ -123,7 +123,7 @@ then
       # Taux du module complet
       $0 -short -module $nom
       # Taux des sous repertoires du module
-      for directory in `grep -e \\\./$nom/ -e \\\./$nom$ $TRUST_ROOT/env/rep.TRUST`
+      for directory in `cd $TRUST_ROOT;find src -type d | grep -e \\\./$nom/ -e \\\./$nom$`
       do
          $0 -short -directory ${directory#./}
       done | sort -n

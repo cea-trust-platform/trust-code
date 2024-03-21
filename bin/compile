@@ -329,15 +329,13 @@ then
    # Compilation de TRUST
    #######################
    \cd $TRUST_ROOT
-   repertoires=$TRUST_ROOT/env/rep.TRUST
-   [ ! -f $repertoires ] && mkrep=`ls $TRUST_ROOT/bin/mkrep* 2>/dev/null` && $mkrep
    echo "=============="
    echo "$MESSAGE code:"
    echo "=============="
-   for dir in `cat $repertoires`
+   for dir in `cd $TRUST_ROOT;find src -type d`
    do 
    #
-   # Pour MAIN (en dernier dans rep.TRUST) on cree le fichier
+   # Pour MAIN  on cree le fichier
    # make.lib? avec la commande mklibs
    #
       [ `basename $dir` = MAIN ] && mklibs=`ls $TRUST_ROOT/bin/mklibs* 2>/dev/null` && $mklibs 1>/dev/null
@@ -543,7 +541,7 @@ then
       # On met a jour les liens vers les sources
       ##########################################
       echo "Update links to files..."
-      for dir in `cat $TRUST_ENV/rep.TRUST`
+      for dir in `cd $TRUST_ROOT;find src -type d`
       do
          dir=${dir#./}
 	 \cd $dir

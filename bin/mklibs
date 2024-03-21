@@ -203,34 +203,16 @@ SYSLIBS=$SYSLIBS" $lz"
 [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -ldl"
 
 #################################################
-# Construction des fichiers $TRUST_ENV/make.lib?
+# Construction du fichier $TRUST_ENV/make.liba
+# utilise dans bin/KSH/Createcmakefile.py
 #################################################
 cd $TRUST_ENV
-for fic in make.libsl make.libso make.liba make.libdll
+for fic in make.liba 
 do
    suffixe=${fic#make.lib}
    if [ $suffixe = a ]
    then
       echo $ECHO_OPTS "Libs = \$(LIB)\\"    > $fic
-   else
-      echo $ECHO_OPTS "Libs = \\"      > $fic
-      # On ne se base plus sur le contenu de lib mais sur les make.include !
-      # C'est mieux en cas d'une lib en trop ou en moins.
-      END=hydturbspe
-      for rep in `cat $TRUST_ENV/rep.TRUST | grep -v MAIN`
-      do
-         [ ! -f $TRUST_ROOT/$rep/make.include ] && echo "No make.include file find in $rep !" && exit -1
-         NOM=`cat $TRUST_ROOT/$rep/make.include | $TRUST_Awk -F'/' '/Lib =/ {print $2}'`
-         NOM=${NOM#lib}
-         [ ${#NOM} = 0 ] && echo "No 'Lib =' in $rep/make.include !" && exit -1
-         [ $NOM != $END ] && echo $ECHO_OPTS "\$(TRUST_LIB)/lib$NOM.$suffixe\\" >> $fic
-      done
-      # Problem seen on Ubuntu 13.x:
-      # We put the library given by END at the end:
-      if [ -f $TRUST_LIB/lib$END.$suffixe ]
-      then
-         echo $ECHO_OPTS "\$(TRUST_LIB)/lib$END.$suffixe\\" >> $fic
-      fi
    fi
    # NB: 1.5.6: MED est place APRES PETSC car seg fault sinon avec -lz si place avant la librairie lcudart !
    echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"            >> $fic

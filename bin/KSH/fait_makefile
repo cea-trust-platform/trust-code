@@ -1,7 +1,7 @@
 #!/bin/bash
 #Refait l'ensemble des makefile de TRUST en share libs
 [ "$TRUST_ENV" = "" ] && echo "Initialize TRUST environment." && exit -1
-dirs=`cat $TRUST_ENV/rep.TRUST`
+dirs=`cd $TRUST_ROOT;find src -type d`
 [ ${#1} != 0 ] && dirs=$1
 cd $TRUST_ROOT
 trace=$TRUST_ROOT/.fait_makefile

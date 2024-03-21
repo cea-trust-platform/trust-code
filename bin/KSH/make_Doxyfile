@@ -33,15 +33,15 @@ do
          TAGFILES="$TRUST_ROOT/src/Kernel/doc/Kernel.tag=$TRUST_ROOT/src/Kernel/doc/html $TRUST_ROOT/doc/TRUST.tag=$TRUST_ROOT/doc/html"
          # Doc dans un endroit particulier (sous share):
          PROJECT_DOC=$PROJECT_ROOT/share/doc
-      elif [ -f $PROJECT_ROOT/env/rep.TRUST ]
+      elif [ -f $PROJECT_ROOT/env/configure.env ]  # TRUST
       then
          # TRUST project (without Kernel)
          if [ $GENERATE_TAGFILES = 0 ]
          then
-            PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST` 
+            PROJECT_DIRECTORIES=`cd $PROJECT_ROOT;find src -type d` 
             TAGFILES=""
          else
-            PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST | grep -v /src/Kernel`
+            PROJECT_DIRECTORIES=`cd $PROJECT_ROOT;find src -type d | grep -v /src/Kernel`
             TAGFILES="../../TRUST/src/Kernel/doc/Kernel.tag=../../../TRUST/src/Kernel/doc/html"
          fi
       else

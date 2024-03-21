@@ -5,7 +5,7 @@
 prepare_sources()
 {
    echo $ECHO_OPTS "Linking sources in $TRUST_TMP/TRUST_dox...\c"
-   dirs=`cat $TRUST_ROOT/env/rep.TRUST`
+   dirs=`cd $TRUST_ROOT;find src -type d`
    rm -r -f $TRUST_TMP/TRUST_dox
    mkdir -p $TRUST_TMP/TRUST_dox
    cd $TRUST_TMP/TRUST_dox
@@ -68,7 +68,7 @@ else
    [ "$GUI" = 1 ] && echo "Please wait (do not close this window)..."
    cat $TRUST_ROOT/bin/KSH/Doxyfile > $TRUST_TMP/Doxyfile
    # Construction de la liste des repertoires
-   ch=`cat $TRUST_ROOT/env/rep.TRUST | $TRUST_Awk '{gsub("\\\./","",$1);ch=ch"$(TRUST_TMP)/TRUST_dox/"$1" "} END {print ch " $(TRUST_TMP)/TRUST_dox/baltik/"}'`
+   ch=`cd $TRUST_ROOT;find src -type d | $TRUST_Awk '{gsub("\\\./","",$1);ch=ch"$(TRUST_TMP)/TRUST_dox/"$1" "} END {print ch " $(TRUST_TMP)/TRUST_dox/baltik/"}'`
    echo "Changing $TRUST_TMP/Doxyfile..."
    echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $ch?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
    echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1

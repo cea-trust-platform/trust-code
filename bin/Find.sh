@@ -24,7 +24,7 @@ nomfichier=nontrouve
 if [ ! -f $nomfichier ]  
 then
    #nomfichier=`find $TRUST_ROOT -name $nom -print`
-   for dir in `cat $TRUST_ENV/rep.TRUST`
+   for dir in `cd $TRUST_ROOT;find src -type d`
    do 
       rep=$TRUST_ROOT/$dir
       if [ -f $rep/$nom ] && nomfichier=$rep/$nom 

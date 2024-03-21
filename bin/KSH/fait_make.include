@@ -3,7 +3,7 @@
 echo "Ne plus utiliser..."
 exit
 [ ${#TRUST_ROOT} = 0 ] && echo "TRUST_ROOT non initialise." && exit
-dirs=`cat $TRUST_ENV/rep.TRUST`
+dirs=`find $TRUST_ROOT/src -type d`
 if [ ${#1} != 0 ] 
 then
  dirs=$1
