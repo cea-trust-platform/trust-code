@@ -14,27 +14,18 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_Longueur_Melange_VEF.h>
-#include <Champ_P1NC.h>
-#include <LecFicDiffuse.h>
 #include <EcritureLectureSpecial.h>
 #include <VEF_discretisation.h>
+#include <Champ_Uniforme.h>
+#include <Postraitement.h>
+#include <LecFicDiffuse.h>
+#include <Fluide_base.h>
+#include <Champ_P1NC.h>
 #include <Motcle.h>
 #include <Debog.h>
-#include <Schema_Temps_base.h>
-#include <Fluide_base.h>
-#include <Champ_Uniforme.h>
 #include <Param.h>
-#include <Postraitement.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VEF, "Modele_turbulence_hyd_Longueur_Melange_VEF", Modele_turbulence_hyd_0_eq_base);
-
-Modele_turbulence_hyd_Longueur_Melange_VEF::Modele_turbulence_hyd_Longueur_Melange_VEF()
-{
-  cas_ = 0;
-  diametre_ = 2.;
-  hauteur_ = 2.;
-  dmax_ = -1.;
-}
+Implemente_instanciable(Modele_turbulence_hyd_Longueur_Melange_VEF, "Modele_turbulence_hyd_Longueur_Melange_VEF", Modele_turbulence_hyd_Longueur_Melange_base);
 
 Sortie& Modele_turbulence_hyd_Longueur_Melange_VEF::printOn(Sortie& s) const
 {
@@ -70,7 +61,7 @@ Entree& Modele_turbulence_hyd_Longueur_Melange_VEF::readOn(Entree& is)
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::set_param(Param& param)
 {
-  Modele_turbulence_hyd_0_eq_base::set_param(param);
+  Modele_turbulence_hyd_Longueur_Melange_base::set_param(param);
   param.ajouter("canalx", &hauteur_);
   param.ajouter_condition("value_of_canalx_eq_2", " canalx has been coded presently only for h=2.");
   param.ajouter("tuyauz", &diametre_);
@@ -94,7 +85,7 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const M
       return 1;
     }
   else
-    return Modele_turbulence_hyd_0_eq_base::lire_motcle_non_standard(mot, is);
+    return Modele_turbulence_hyd_Longueur_Melange_base::lire_motcle_non_standard(mot, is);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
@@ -211,22 +202,6 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
 
   wall_length_.changer_temps(temps);
   return la_viscosite_turbulente_;
-}
-
-void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_energie_cinetique_turb()
-{
-  // PQ : 11/08/06 :    L'estimation de k repose sur les expressions :
-  //                                 - nu_t = C_mu * k^2 / eps
-  //                                - eps = k^(3/2) / l
-  //
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-  double temps = mon_equation_->inconnue().temps();
-
-  energie_cinetique_turb_.changer_temps(temps);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_Sij2()
@@ -430,9 +405,4 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::preparer_calcul()
   mettre_a_jour(0.);
 
   return 1;
-}
-
-void Modele_turbulence_hyd_Longueur_Melange_VEF::discretiser()
-{
-  Modele_turbulence_hyd_0_eq_base::discretiser();
 }

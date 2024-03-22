@@ -14,49 +14,31 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_Longueur_Melange_VDF.h>
-#include <Probleme_base.h>
-#include <Debog.h>
-#include <TRUSTTrav.h>
-#include <Domaine_VDF.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_VDF.h>
 #include <Champ_Face_VDF.h>
-#include <Schema_Temps_base.h>
-#include <Domaine_Cl_dis.h>
 #include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Domaine_VDF.h>
+#include <TRUSTTrav.h>
+#include <Debog.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VDF, "Modele_turbulence_hyd_Longueur_Melange_VDF", Modele_turbulence_hyd_0_eq_base);
+Implemente_instanciable(Modele_turbulence_hyd_Longueur_Melange_VDF, "Modele_turbulence_hyd_Longueur_Melange_VDF", Modele_turbulence_hyd_Longueur_Melange_base);
 
-Modele_turbulence_hyd_Longueur_Melange_VDF::Modele_turbulence_hyd_Longueur_Melange_VDF()
-{
-  alt_min_ = 0.;
-  alt_max_ = 2.;
-  direction_ = 1;
-}
-
-/*! @brief Ecrit le type de l'objet sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Modele_turbulence_hyd_Longueur_Melange_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-/*! @brief Simple appel a Modele_turbulence_hyd_0_eq_base::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Modele_turbulence_hyd_Longueur_Melange_VDF::readOn(Entree& s)
 {
-  return Modele_turbulence_hyd_0_eq_base::readOn(s);
+  return Modele_turbulence_hyd_Longueur_Melange_base::readOn(s);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::set_param(Param& param)
 {
-  Modele_turbulence_hyd_0_eq_base::set_param(param);
+  Modele_turbulence_hyd_Longueur_Melange_base::set_param(param);
   param.ajouter("canal_hmin", &alt_min_);
   param.ajouter("canal_hmax", &alt_max_);
   param.ajouter("direction_normale_canal", &direction_);
@@ -90,7 +72,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
   const DoubleTab& xp = domaine_VDF.xp();
 
-  Sij2.resize(nb_elem_tot);
+  Sij2_.resize(nb_elem_tot);
 
   calculer_Sij2();
 
@@ -117,7 +99,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
       if (y > (hauteur / 2.))
         y = std::fabs(alt_max_ - y);
 
-      visco_turb(elem) = Kappa * Kappa * y * y * (1. - 2 * y / hauteur) * sqrt(2. * Sij2(elem));
+      visco_turb(elem) = Kappa * Kappa * y * y * (1. - 2 * y / hauteur) * sqrt(2. * Sij2_(elem));
       k(elem) = pow(visco_turb(elem) / (Cmu * y), 2);
     }
 
@@ -125,22 +107,6 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
 
   la_viscosite_turbulente_.changer_temps(temps);
   return la_viscosite_turbulente_;
-}
-
-void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_energie_cinetique_turb()
-{
-  // PQ : 11/08/06 :    L'estimation de k repose sur les expressions :
-  //                                 - nu_t = C_mu * k^2 / eps
-  //                                - eps = k^(3/2) / l
-  //
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-  double temps = mon_equation_->inconnue().temps();
-
-  energie_cinetique_turb_.changer_temps(temps);
 }
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
@@ -156,7 +122,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
   int i, j;
   double Sij;
 
-  Sij2 = 0.;
+  Sij2_ = 0.;
 
   ch.calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
@@ -167,7 +133,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
           {
             //Deplacement du calcul de Sij
             Sij = 0.5 * (duidxj(elem, i, j, 0) + duidxj(elem, j, i, 0));
-            Sij2(elem) += Sij * Sij;
+            Sij2_(elem) += Sij * Sij;
           }
     }
 }

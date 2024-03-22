@@ -13,37 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Modele_turbulence_hyd_Longueur_Melange_VDF_included
-#define Modele_turbulence_hyd_Longueur_Melange_VDF_included
-
 #include <Modele_turbulence_hyd_Longueur_Melange_base.h>
+#include <Schema_Temps_base.h>
+#include <Equation_base.h>
 
-class Domaine_Cl_dis;
-class Domaine_Cl_VDF;
-class Domaine_VDF;
+Implemente_base(Modele_turbulence_hyd_Longueur_Melange_base, "Modele_turbulence_hyd_Longueur_Melange_base", Modele_turbulence_hyd_0_eq_base);
 
-/*! @brief Classe Modele_turbulence_hyd_Longueur_Melange_VDF Cette classe represente le modele de turbulence de longueur de melange de Prandtl.
- *     ATTENTION : modele code que pour un canal 2D horizontal !!!!
- *
- * @sa Modele_turbulence_hyd_Longueur_Melange_base
- */
-class Modele_turbulence_hyd_Longueur_Melange_VDF: public Modele_turbulence_hyd_Longueur_Melange_base
+Sortie& Modele_turbulence_hyd_Longueur_Melange_base::printOn(Sortie& is) const
 {
-  Declare_instanciable(Modele_turbulence_hyd_Longueur_Melange_VDF);
-public:
-  void set_param(Param& param) override;
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  return Modele_turbulence_hyd_0_eq_base::printOn(is);
+}
 
-  Champ_Fonc& calculer_viscosite_turbulente() override;
-  void calculer_Sij2();
-  int preparer_calcul() override;
+Entree& Modele_turbulence_hyd_Longueur_Melange_base::readOn(Entree& is)
+{
+  return Modele_turbulence_hyd_0_eq_base::readOn(is);
+}
 
-protected:
-  REF(Domaine_VDF) le_dom_VDF_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
+void Modele_turbulence_hyd_Longueur_Melange_base::calculer_energie_cinetique_turb()
+{
+  // PQ : 11/08/06 :    L'estimation de k repose sur les expressions :
+  //                                 - nu_t = C_mu * k^2 / eps
+  //                                - eps = k^(3/2) / l
+  //
 
-  int direction_ = 1;
-  double alt_min_ = 0., alt_max_ = 2.;
-};
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-#endif /* Modele_turbulence_hyd_Longueur_Melange_VDF_included */
+  double temps = mon_equation_->inconnue().temps();
+
+  energie_cinetique_turb_.changer_temps(temps);
+}

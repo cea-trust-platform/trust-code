@@ -16,57 +16,39 @@
 #ifndef Modele_turbulence_hyd_Longueur_Melange_VEF_included
 #define Modele_turbulence_hyd_Longueur_Melange_VEF_included
 
-#include <Modele_turbulence_hyd_0_eq_base.h>
-#include <TRUST_Ref.h>
+#include <Modele_turbulence_hyd_Longueur_Melange_base.h>
 
+class Domaine_Cl_dis;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
 class Domaine_dis;
-class Domaine_Cl_dis;
-class Entree;
 
 /*! @brief classe Turbulence_hyd_Longueur_Melange_VEF Cette classe correspond a la mise en oeuvre du modele
- *
  *  de longueur de melange en VEF
  *
- *  .SECTION  voir aussi
- *  Turb_hyd_RANS_0_eq
+ *  @sa Modele_turbulence_hyd_Longueur_Melange_base
  *
  */
-class Modele_turbulence_hyd_Longueur_Melange_VEF: public Modele_turbulence_hyd_0_eq_base
+class Modele_turbulence_hyd_Longueur_Melange_VEF: public Modele_turbulence_hyd_Longueur_Melange_base
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_Longueur_Melange_VEF);
-
+  Declare_instanciable(Modele_turbulence_hyd_Longueur_Melange_VEF);
 public:
-
-  Modele_turbulence_hyd_Longueur_Melange_VEF();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void lire_distance_paroi();
-  void discretiser() override;
   int preparer_calcul() override;
-
-protected:
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
-  void calculer_energie_cinetique_turb() override;
   void calculer_Sij2();
   void calculer_f_amortissement();
 
-  double hauteur_, diametre_, dmax_, bidon_;
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
+protected:
   Nom nom_fic_;
-  int cas_;
-
-  DoubleVect Sij2_;
+  double hauteur_ = 2., diametre_ = 2., dmax_ = -1.;
+  int cas_ = 0;
   DoubleVect f_amortissement_;
-
   REF(Domaine_VEF) le_dom_VEF_;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF_;
-
 };
 
 #endif /* Modele_turbulence_hyd_Longueur_Melange_VEF_included */
