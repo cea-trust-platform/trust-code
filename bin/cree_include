@@ -2,7 +2,7 @@
 # Depuis 11/01 les includes hors gestion de conf
 # Creation d'un sous repertoire contenant un lien vers tous les includes
 [ "$TRUST_ROOT" = "" ] && echo "Initialize TRUST environment" && exit -1
-echo "Updating $TRUST_ROOT/include directory..."
+echo "-- Updating $TRUST_ROOT/include directory..."
 # Creation de ce qui n'existe peut etre pas :
 cd $TRUST_ROOT
 INC=$TRUST_ROOT/include && [ ! -d $INC ] && mkdir $INC 2>/dev/null
@@ -45,10 +45,10 @@ then
     ln -nsf $TRUST_EOS_HOME_DIR/include/Common EOS/.
     ln -nsf $TRUST_EOS_HOME_DIR/include/Language EOS/.
     echo "#define HAS_EOS" > EOS/eos++.h
-    echo "TRUST configured with the EOS library found in $TRUST_EOS_HOME_DIR"
-    echo "EOS header files added in $TRUST_ROOT/include/EOS !"
+    echo "  TRUST configured with the EOS library found in $TRUST_EOS_HOME_DIR"
+    echo "  EOS header files added in $TRUST_ROOT/include/EOS !"
 else
-    echo "TRUST not configured with EOS. Cleaning include/EOS ..."
+    echo "  TRUST not configured with EOS. Cleaning include/EOS ..."
     #rm -rf EOS/*
     echo "#undef HAS_EOS" > $TRUST_TMP/eos++.h.tmp
     [ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf EOS/* && cp $TRUST_TMP/eos++.h.tmp EOS/eos++.h
@@ -71,10 +71,10 @@ then
       echo "fmtlib is no more a prerequis for CoolProp?"
     fi
     echo "#define HAS_COOLPROP" > CoolProp/coolprop++.h
-    echo "TRUST configured with the CoolProp library found in $TRUST_COOLPROP_HOME_DIR"
-    echo "CoolProp header files added in $TRUST_ROOT/include/CoolProp !"
+    echo "  TRUST configured with the CoolProp library found in $TRUST_COOLPROP_HOME_DIR"
+    echo "  CoolProp header files added in $TRUST_ROOT/include/CoolProp !"
 else
-    echo "TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
+    echo "  TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
     #rm -rf CoolProp/*
     echo "#undef HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
     [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CoolProp/* && cp $TRUST_TMP/coolprop++.h.tmp CoolProp/coolprop++.h
@@ -92,40 +92,17 @@ if [ ! -f $kokkos_hdr ] || diff $kokkos_hdr $TRUST_TMP/kokkos++.h 1>/dev/null; t
     cp $TRUST_TMP/kokkos++.h $kokkos_hdr
 fi
 
-# Ouverture de $INC
-echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
-echo "s?$METIS_ROOT/include/metis\.h?\$(METIS_ROOT)/include/metis\.h?g">>.tmp
-echo "s?$TRUST_LATAFILTER/include/?\$(TRUST_LATAFILTER)/include/?g">>.tmp
-echo "s?$TRUST_ICOCOAPI/include/?\$(TRUST_ICOCOAPI)/include/?g">>.tmp
-echo "s?$TRUST_MED_ROOT/include/?\$(TRUST_MED_ROOT)/include/?g">>.tmp
-echo "s?$TRUST_MEDCOUPLING_ROOT/include/?\$(TRUST_MEDCOUPLING_ROOT)/include/?g">>.tmp
-echo "s?$TRUST_OSQP_ROOT/include/?\$(TRUST_OSQP_ROOT)/include/?g">>.tmp
-echo "s?$PETSC_ROOT/$TRUST_ARCH$OPT/include/?\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/include/?g">>.tmp
-echo > .tmp1
-num=""
-for dir in `cd $TRUST_ROOT; find src -type d`; do
- for ext in .h .tpp .hpp; do
-   dir=${dir#./}
-   lh=`cd $TRUST_ROOT/$dir;ls *$ext 2>/dev/null`
-   if [ ${#lh} != 0 ]
-   then
-      [ "`cat .tmp$num | wc -l`" -gt 900 ] && num=1
-      for file in $lh
-      do
-         ff=${file%$ext}
-         echo "s?include/$ff\$ext?$dir/$ff\$ext?g" >> .tmp$num
-         if [ ! -L $file ] || [ "`ls -la $file | $TRUST_Awk '{print $NF}'`" != "../$dir/$file" ]
-         then
-            ln -sf ../$dir/$file $file 2>/dev/null
-         fi
-      done
-   fi
- done
+# current dir is $TRUST_ROOT/include:
+for finc in `find ../src -type f -name "*.h" -or -name "*.tpp"`; do
+    ln -nsf $finc .
 done
+
 
 # Supprime les liens inutiles
 for file in `find . -name '*'.h -print -o -name '*'.tpp -print -o -name '*'.hpp -print`
 do
    [ ! -f $file ] && rm -f $file
 done
+
+echo "-- Done updating include."
 
