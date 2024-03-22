@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 #
 # Definitions of the various TRUST modules
 #
-SPATIAL_DISCRET = ['src/EF', 'src/IJK', 'src/PolyMAC', 'src/VDF', 'src/VEF']
+SPATIAL_DISCRET = ['src/EF', 'src/IJK', 'src/P1NCP1B', 'src/PolyMAC', 'src/VDF', 'src/VEF']
 PHYSICAL_MODULES = ['src/ThHyd', 'src/ThSol']
 
 def add_library_for_dir(libnam):

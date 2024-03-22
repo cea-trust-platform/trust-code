@@ -30,7 +30,10 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-        CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_CXX_FLAGS=-fPIC"
+        fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
+        echo $fic_env
+        export CXXFLAGS=`$TRUST_Awk '/CppFlags =/ {gsub("CppFlags =","",$0);gsub("-Werror","",$0);gsub(/\\$(.*)/,"",$0);print $0}' $fic_env`
+        CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
