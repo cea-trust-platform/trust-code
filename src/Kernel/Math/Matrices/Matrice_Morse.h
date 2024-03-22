@@ -227,11 +227,14 @@ inline double Matrice_Morse::operator()(int i, int j) const
   return(0);
 }
 
-inline double& Matrice_Morse::operator()(int i, int j)
+KOKKOS_INLINE_FUNCTION
+double& Matrice_Morse::operator()(int i, int j)
 {
+#ifndef _OPENMP // Pas de test sur GPU
   assert( (symetrique_==0 && que_suis_je()=="Matrice_Morse")
           || (symetrique_==1 && que_suis_je()=="Matrice_Morse_Sym")
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
+#endif
   //if (symetrique_==1 && j<i) std::swap(i,j); // Do not use, possible error during compile: "signed overflow does not occur when assuming that (X + c) < X is always false"
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
@@ -246,6 +249,7 @@ inline double& Matrice_Morse::operator()(int i, int j)
     for (int k=k1; k<k2; k++)
       if (tab2_[k]-1 == j) return(coeff_[k]);
   if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
+#ifndef _OPENMP // Pas d'impression sur GPU
 #ifndef NDEBUG
   // Uniquement en debug afin de permettre l'inline en optimise
   Cerr << "i or j are not suitable " << finl;
@@ -258,6 +262,9 @@ inline double& Matrice_Morse::operator()(int i, int j)
   // If it is a symmetric matrix, it -may- be a parallelism default. Check it by running a PETSc solver
   // in debug mode: there is a test to check the parallelism of the symmetric matrix...
   Cerr << "Error Matrice_Morse::operator("<< i << "," << j << ") not defined!" << finl;
+#else
+  printf("Error Matrice_Morse::operator(%d, %d) not defined!\n", (True_int)i, (True_int)j);
+#endif
   exit();
   return coeff_[0];     // On ne passe jamais ici
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,8 @@ public:
 
   template <typename _TYPE_>
   double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu) const;
+  template <typename _TYPE_>
+  KOKKOS_INLINE_FUNCTION double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu, CIntTabView face_voisins_v, CDoubleTabView face_normales_v, CDoubleArrView inverse_volumes_v) const;
 
   double calculer_dt_stab() const override;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
@@ -105,4 +107,27 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, const _TYPE_ &
     return DSiSj * inverse_volumes(num_elem);
 }
 
+template<typename _TYPE_>
+KOKKOS_INLINE_FUNCTION double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, const _TYPE_ &diffu, CIntTabView face_voisins_v, CDoubleTabView face_normales_v, CDoubleArrView inverse_volumes_v) const
+{
+  constexpr bool is_double = std::is_same<_TYPE_, double>::value;
+  int dim = (int)face_normales_v.extent(1);
+  double DSiSj = 0.;
+  if (is_double)
+    {
+      for (int k = 0; k < dim; k++)
+        DSiSj += diffu__(k, k, num_elem, diffu) * face_normales_v(i, k) * face_normales_v(j, k);
+    }
+  else
+    {
+      for (int k = 0; k < dim; k++)
+        for (int l = 0; l < dim; l++)
+          DSiSj += diffu__(k, l, num_elem, diffu) * face_normales_v(i, k) * face_normales_v(j, l);
+    }
+
+  if ((face_voisins_v(i, 0) == face_voisins_v(j, 0)) || (face_voisins_v(i, 1) == face_voisins_v(j, 1)))
+    return -DSiSj * inverse_volumes_v(num_elem);
+  else
+    return DSiSj * inverse_volumes_v(num_elem);
+}
 #endif /* Op_Diff_VEF_base_included */

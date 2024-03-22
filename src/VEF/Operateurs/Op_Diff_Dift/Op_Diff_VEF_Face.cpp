@@ -822,6 +822,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
             }
         }
     }
+  // ToDo Kokkos
   int n0 = domaine_VEF.premiere_face_int();
   for (num_face=n0; num_face<n1; num_face++)
     {

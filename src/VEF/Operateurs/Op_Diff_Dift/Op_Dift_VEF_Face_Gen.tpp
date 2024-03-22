@@ -724,10 +724,13 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
   const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
 
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
+  const int premiere_face_int = domaine_VEF.premiere_face_int(), nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size();
+
+#define kokkos_variant
+#ifndef kokkos_variant
   const IntTab& face_voisins = domaine_VEF.face_voisins(), &elem_faces = domaine_VEF.elem_faces();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
-  const int premiere_face_int = domaine_VEF.premiere_face_int(), nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size();
 
   ToDo_Kokkos("");
   for (int num_face0 = premiere_face_int; num_face0 < nb_faces; num_face0++)
@@ -816,6 +819,125 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
               }
           }
       }
+#else
+  // ToDo Kokkos matrice sur GPU (a reflechir) et viscA sur GPU (facile)
+  // ToDo Kokkos CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro(memory_space=device); view_ro() retourne vue host ou device, device par defaut
+  // is_EXPLICIT -> device, is_IMPLICIT -> host pour le moment... Un code Kokkos unique qui tourne sur host ou device en fonction du schema
+  // ToDo: tester dans kokkos_test.cpp le RangePolicy host ou device... pour faire des kernels conditionnels...
+  CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
+  CIntTabView elem_faces_v = domaine_VEF.elem_faces().view_ro();
+  CDoubleTabView face_normale_v = domaine_VEF.face_normales().view_ro();
+  CDoubleArrView volumes_v =  domaine_VEF.volumes().view_ro();
+  CDoubleArrView inverse_volumes_v = domaine_VEF.inverse_volumes().view_ro();
+  CDoubleArrView porosite_eventuelle_v = porosite_eventuelle.view_ro();
+  CDoubleTabView nu_v = nu.view_ro();
+  //CDoubleTabView nu_turb_v = nu_turb.view_ro();
+  CDoubleArrView nu_turb_v = static_cast<const DoubleVect&>(nu_turb).view_ro();
+  CDoubleTabView inconnue_v = inconnue.view_ro();
+  DoubleTabView resu_v;
+  if (is_EXPLICIT)
+    {
+      assert(resu != nullptr);
+      resu_v = resu->view_rw();
+    }
+  else
+    {
+      assert(matrice != nullptr);
+      // ToDo Kokkos (faire dans classe Matrice?)
+      // Copie eventuelle de la matrice sur device:
+      mapToDevice(matrice->get_tab1());
+      mapToDevice(matrice->get_tab2());
+      computeOnTheDevice(matrice->get_set_coeff());
+    }
+  start_timer();
+  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__",
+                       Kokkos::RangePolicy<>(premiere_face_int, nb_faces), KOKKOS_LAMBDA(
+                         const int num_face0)
+  {
+    for (int kk = 0; kk < 2; kk++)
+      {
+        int elem0 = face_voisins_v(num_face0, kk);
+        for (int i0 = 0; i0 < nb_faces_elem; i0++)
+          {
+            int j = elem_faces_v(elem0, i0);
+            if (j > num_face0)
+              {
+                int contrib = 1;
+                if (j >= nb_faces) // C'est une face virtuelle
+                  {
+                    const int el1 = face_voisins_v(j, 0), el2 = face_voisins_v(j, 1);
+                    if ((el1 == -1) || (el2 == -1))
+                      contrib = 0;
+                  }
+
+                if (contrib)
+                  {
+                    double tmp = 0.;
+                    // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                    if (!is_EXPLICIT && is_VECT)
+                      {
+                        int orientation = 1;
+                        if ((elem0 == face_voisins_v(j, kk)) ||
+                            (face_voisins_v(num_face0, 1 - kk) == face_voisins_v(j, 1 - kk)))
+                          orientation = -1;
+
+                        tmp = orientation * nu_turb_v(elem0) / volumes_v(elem0);
+                      }
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        double d_nu = nu_v(elem0, is_VECT ? 0 : nc) + nu_turb_v(elem0);
+                        double valA = z_class->viscA(num_face0, j, elem0, d_nu, face_voisins_v, face_normale_v, inverse_volumes_v);
+
+                        if (is_STAB && valA < 0.) valA = 0.;
+
+                        if (is_EXPLICIT)
+                          {
+                            const double flux = valA * inconnue_v(j, nc) - valA * inconnue_v(num_face0, nc);
+                            resu_v(num_face0, nc) += flux;
+                            if (j < nb_faces) // On traite les faces reelles
+                              resu_v(j, nc) -= flux;
+                          }
+                        else     // METHODE IMPLICITE
+                          {
+                            double contrib_num_face = valA * porosite_eventuelle_v(num_face0);
+                            double contrib_j = valA * porosite_eventuelle_v(j);
+                            const int n0 = num_face0 * nb_comp + nc, j0 = j * nb_comp + nc;
+                            (*matrice)(n0, n0) += contrib_num_face;
+                            (*matrice)(n0, j0) -= contrib_j;
+                            if (j < nb_faces) // On traite les faces reelles
+                              {
+                                (*matrice)(j0, n0) -= contrib_num_face;
+                                (*matrice)(j0, j0) += contrib_j;
+                              }
+
+                            // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                            if (is_VECT)
+                              for (int nc2 = 0; nc2 < nb_comp; nc2++)
+                                {
+                                  const int n1 = num_face0 * nb_comp + nc2, j1 = j * nb_comp + nc2;
+                                  double coeff_s = is_STAB ? 0. : tmp * face_normale_v(num_face0, nc2) *
+                                                   face_normale_v(j, nc);
+
+                                  (*matrice)(n0, n1) += coeff_s * porosite_eventuelle_v(num_face0);
+                                  (*matrice)(n0, j1) -= coeff_s * porosite_eventuelle_v(j);
+
+                                  if (j < nb_faces) // On traite les faces reelles
+                                    {
+                                      double coeff_s2 = is_STAB ? 0. : tmp * face_normale_v(num_face0, nc) *
+                                                        face_normale_v(j, nc2);
+                                      (*matrice)(j0, n1) -= coeff_s2 * porosite_eventuelle_v(num_face0);
+                                      (*matrice)(j0, j1) += coeff_s2 * porosite_eventuelle_v(j);
+                                    }
+                                }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__");
+#endif
 }
 
 #endif /* Op_Dift_VEF_Face_Gen_TPP_included */
