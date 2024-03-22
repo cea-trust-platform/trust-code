@@ -138,24 +138,3 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
     }
 }
 
-<<<<<<< HEAD
-=======
-  void Perte_Charge_PolyMAC::completer()
-{
-  Source_base::completer();
-  if (sous_domaine)
-    le_sous_domaine = equation().probleme().domaine().ss_domaine(nom_sous_domaine);
-}
-
-void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
-{
-  la_vitesse = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
-  le_fluide = ref_cast(Fluide_base, equation().milieu());
-}
-
-void Perte_Charge_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
-{
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
-}
->>>>>>> 0c236479b ([PolyMAC] Change & re-write PDC inheritance !)

@@ -73,7 +73,7 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
         int e = f_e(f, c);
 
         double u_orth = 0.;
-        const double yloc = y_loc(f, n);
+        double yloc = y_loc(f, n);
         DoubleTrav u_parallel(D);
         if (is_VDF) // VDF case : vitesse au centre de l'element
           {
