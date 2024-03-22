@@ -29,9 +29,13 @@
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 #include <Operateur.h>
+#include <TRUSTTab.h>
 #include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <Device.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 Implemente_instanciable(Champ_P1NC,"Champ_P1NC",Champ_Inc_base);
 
@@ -830,21 +834,28 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
 
-  DoubleTab duidxj(nb_elem_tot, dimension, dimension);
+  DoubleTrav duidxj(nb_elem_tot, dimension, dimension);
 
   Champ_P1NC::calcul_gradient(la_vitesse, duidxj, domaine_Cl_VEF);
 
-  for (int elem = 0; elem < nb_elem; elem++)
-    {
-      double temp = 0.;
-      for (int i = 0; i < dimension; i++)
-        for (int j = 0; j < dimension; j++)
-          {
-            double Sij = 0.5 * (duidxj(elem, i, j) + duidxj(elem, j, i));
-            temp += Sij * Sij;
-          }
-      SMA_barre(elem) = 2. * temp;
-    }
+  int dimension = Objet_U::dimension;
+  CDoubleTabView3 duidxj_v = duidxj.view3_ro();
+  DoubleArrView SMA_barre_v = SMA_barre.view_wo();
+  start_timer();
+  Kokkos::parallel_for("Champ_P1NC::calcul_S_barre", nb_elem, KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    double temp = 0.;
+    for (int i = 0; i < dimension; i++)
+      for (int j = 0; j < dimension; j++)
+        {
+          double Sij = 0.5 * (duidxj_v(elem, i, j) + duidxj_v(elem, j, i));
+          temp += Sij * Sij;
+        }
+    SMA_barre_v(elem) = 2. * temp;
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC::calcul_S_barre");
+
   return SMA_barre;
 }
 

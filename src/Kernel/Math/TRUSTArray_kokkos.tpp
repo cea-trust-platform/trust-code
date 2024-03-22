@@ -83,9 +83,10 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
   init_view_arr();
 #ifdef _OPENMP
   computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_>::view_wo()"); // ToDo allouer sans copie ?
-#endif
+#else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_arr_.template modify<memory_space>();
+#endif
   // return *device* view:
   return dual_view_arr_.view_device();
 }

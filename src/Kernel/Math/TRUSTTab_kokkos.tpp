@@ -246,10 +246,10 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_>::view3_wo()
   init_view_tab3();
 #ifdef _OPENMP
   Process::exit("ToDo");
-#endif
-
+#else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
+#endif
   // return *device* view:
   return dual_view_tab3_.view_device();
 }
@@ -374,9 +374,10 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
   init_view_tab4();
 #ifdef _OPENMP
   Process::exit("ToDo");
-#endif
+#else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
+#endif
   // return *device* view:
   return dual_view_tab4_.view_device();
 }
@@ -388,11 +389,12 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
   init_view_tab4();
 #ifdef _OPENMP
   Process::exit("ToDo");
-#endif
+#else
   // Copy to device (if needed) ...
   dual_view_tab4_.template sync<memory_space>();
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
+#endif
   // return *device* view:
   return dual_view_tab4_.view_device();
 }

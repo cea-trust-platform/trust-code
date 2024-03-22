@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,9 @@
 #include <Domaine_Cl_VEF.h>
 #include <Champ_P1NC.h>
 #include <Domaine_VF.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 Implemente_instanciable(Taux_cisaillement_P0_VEF, "Taux_cisaillement_P0_VEF", Champ_Fonc_P0_VEF);
 
@@ -33,10 +36,17 @@ void Taux_cisaillement_P0_VEF::associer_champ(const Champ_P1NC& la_vitesse, cons
 void Taux_cisaillement_P0_VEF::mettre_a_jour(double tps)
 {
   int nb_elem = le_dom_VF->nb_elem();
-  DoubleVect tmp(nb_elem);
-  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), tmp, le_dom_Cl_VEF.valeur());
-  DoubleTab& S = valeurs(); // Shear rate
-  for (int i = 0; i < nb_elem; i++) S(i) = sqrt(tmp(i));
+  DoubleTrav S_barre(nb_elem);
+  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), S_barre, le_dom_Cl_VEF.valeur());
+  CDoubleArrView S_barre_v = static_cast<const DoubleVect&>(S_barre).view_ro();
+  DoubleTabView S_v = valeurs().view_wo(); // Shear rate
+  start_timer();
+  Kokkos::parallel_for("Taux_cisaillement_P0_VEF::mettre_a_jour", nb_elem, KOKKOS_LAMBDA(
+                         const int i)
+  {
+    S_v(i,0) = sqrt(S_barre_v(i));
+  });
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Taux_cisaillement_P0_VEF::mettre_a_jour");
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }
