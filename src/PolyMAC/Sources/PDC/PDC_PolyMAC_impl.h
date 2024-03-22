@@ -33,7 +33,7 @@ protected:
   int lire_motcle_non_standard_impl(const Motcle&, Entree&);
 
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
 
   mutable Parser_U lambda_ortho;
   Champ_Don v; //!< Vecteur directeur de la perte de charge.
@@ -46,7 +46,7 @@ protected:
   int lire_motcle_non_standard_impl(const Motcle&, Entree&);
 
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
 
   Champ_Don diam_hydr_ortho, v; //!< Vecteur directeur de la perte de charge.
   mutable Parser_U lambda_ortho;
@@ -58,7 +58,7 @@ class PDC_Directionnelle_PolyMAC
 {
 protected:
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
 
   Champ_Don v; //!< Vecteur directeur de la perte de charge.
 };
@@ -67,7 +67,7 @@ protected:
 class PDC_Isotrope_PolyMAC
 {
 protected:
-  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
 };
 
 #endif /* PDC_PolyMAC_impl_included */
