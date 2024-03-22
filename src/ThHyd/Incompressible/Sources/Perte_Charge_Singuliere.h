@@ -38,15 +38,17 @@ class Perte_Charge_Singuliere : public Perte_Charge
 public :
 
   virtual ~Perte_Charge_Singuliere() {}
+  Entree& lire_regul(Entree&);
   Entree& lire_donnees(Entree&);
-  virtual void lire_surfaces(Entree&, const Domaine&, const Domaine_dis_base&, IntVect&, IntVect&);
+  /* by default, reads one { and two } */
+  virtual void lire_surfaces(Entree&, const Domaine&, const Domaine_dis_base&, IntVect&, IntVect&, int lire_derniere_accolade = 1);
   inline double K() const;
   double calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const; //met a jour le debit a travers la surface et le renvoie
   void update_K(const Equation_base& eqn, double deb, DoubleVect& bilan);                  //regule K_ a partir du debit calcule par update_Q
 
 protected :
 
-  double K_;
+  double K_ = 1; //default value if K is used as a regulation factor (for instance in Perte_Charge_Regulieres)
 
   //pour la regulation de K;
   Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui du sous-domaine et de la coupe

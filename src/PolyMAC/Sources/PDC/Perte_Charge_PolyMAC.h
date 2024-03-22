@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_PolyMAC_included
 #define Perte_Charge_PolyMAC_included
 
-#include <Terme_Source_Qdm.h>
+#include <Perte_Charge_Singuliere.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
@@ -40,7 +40,7 @@ class Param;
    et Perte_Charge_PolyMAC_P1NC.
 */
 
-class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
+class Perte_Charge_PolyMAC : public Source_base, public Perte_Charge_Singuliere
 {
   Declare_base(Perte_Charge_PolyMAC);
 public:
@@ -49,11 +49,13 @@ public:
 
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;
+  void mettre_a_jour(double t) override;
 
 protected:
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis_base&) override;   //!< associe le_dom_PolyMAC et le_dom_Cl_PolyMAC
+  IntVect num_faces, sgn; //if the pressure drop is regulated
 
   //! Appele pour chaque face par ajouter()
   /**
