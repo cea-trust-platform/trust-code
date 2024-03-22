@@ -537,7 +537,7 @@ static int fonction_compare_arrofentier_ordonner(const void * data1, const void 
 template <typename _TYPE_>
 inline _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i)
 {
-  assert(!span.empty() && i >= 0 && i < span.size());
+  assert(span_ != nullptr && i >= 0 && i < size_array_);
   assert((smart_resize_==1)|| (span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT));
   return span_[i];
 }
@@ -545,14 +545,14 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i)
 template <>
 inline entier& TRUSTArray<entier>::operator[](entier i)
 {
-  assert(i >= 0 && i < size_array_);
+  assert(span_ != nullptr && i >= 0 && i < size_array_);
   return span_[i];
 }
 
 template <typename _TYPE_>
 inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i) const
 {
-  assert(i >= 0 && i < size_array_);
+  assert(span_ != nullptr && i >= 0 && i < size_array_);
   assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
   return span_[i];
 }
@@ -560,7 +560,7 @@ inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](entier i) const
 template <>
 inline const entier& TRUSTArray<entier>::operator[](entier i) const
 {
-  assert(i >= 0 && i < size_array_);
+  assert(span_ != nullptr && i >= 0 && i < size_array_);
   return span_[i];
 }
 
