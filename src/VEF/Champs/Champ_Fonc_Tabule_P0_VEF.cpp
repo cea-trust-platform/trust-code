@@ -29,7 +29,7 @@ void Champ_Fonc_Tabule_P0_VEF::associer_param(const VECT(REF(Champ_base)) &les_c
   les_ch_param = les_champs;
   la_table = une_table;
 }
-// ToDo Kokkos
+
 void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
 {
   const Domaine_VF& domaine_VF = le_dom_VF.valeur();
@@ -44,6 +44,7 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
     }
   const DoubleTab& centres_de_gravites = domaine_VF.xp();
   IntVect les_polys(nb_elem_tot);
+  ToDo_Kokkos("");
   for (int elem = 0; elem < nb_elem_tot; elem++)
     les_polys(elem) = elem;
 

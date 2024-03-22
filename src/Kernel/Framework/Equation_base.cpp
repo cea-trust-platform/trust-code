@@ -1503,7 +1503,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (precond_diag)
         {
 #ifdef _OPENMP
-          // ToDo Kokkos precond_diag
+          ToDo_Kokkos("critical");
           Cerr
               << "For performance, disable diagonal preconditioning for diffusion-implicited scheme cause not ported on the GPU yet."
               << finl;

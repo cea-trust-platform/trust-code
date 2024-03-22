@@ -117,6 +117,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nbr_comp = resu.line_size();
 
+  ToDo_Kokkos("CopyPartial");
   // boucle sur les CL
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const int nb_cl = les_cl.size();
@@ -223,6 +224,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
   const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size();
+  ToDo_Kokkos("CopyPartial");
 
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
@@ -343,6 +345,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
 
   // on ne parcourt que la moitie des faces volontairement ... GF il ne faut pas s'occuper des faces virtuelles
   num2 = is_EXPLICIT ? num2 : nb_faces_bord_reel / 2; // XXX : attention si ecarts car version multicompo, num2 /= 2 .... et aussi je garde l'explicite comme num2
+  ToDo_Kokkos("CopyPartial");
 
   for (int ind_face = num1; ind_face < num2; ind_face++)
     {
@@ -470,6 +473,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
 
   const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size(), size_flux_bords = domaine_VEF.nb_faces_bord();
   int num1 = 0, num2 = le_bord.nb_faces_tot();
+  ToDo_Kokkos("CopyPartial");
 
   if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
     {
@@ -631,6 +635,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
 
   const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord).frontiere_dis());
   const int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
+  ToDo_Kokkos("CopyPartial");
 
   for (int ind_face = num1; ind_face < num2; ind_face++)
     {
@@ -724,6 +729,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int premiere_face_int = domaine_VEF.premiere_face_int(), nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size();
 
+  ToDo_Kokkos("");
   for (int num_face0 = premiere_face_int; num_face0 < nb_faces; num_face0++)
     for (int kk = 0; kk < 2; kk++)
       {

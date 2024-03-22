@@ -100,7 +100,8 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
     }
   else
     {
-      // Case Energy, s is non uniform (ToDo OpenMP mais rarement utilise)
+      // Case Energy, s is non uniform
+      ToDo_Kokkos("");
       bilan_=0;
       const ArrOfInt& fd=domaine_VF.faces_doubles();
       for (int num_face = 0; num_face<nb_faces; num_face++)

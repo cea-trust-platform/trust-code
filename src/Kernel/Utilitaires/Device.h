@@ -27,6 +27,11 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#ifdef TRUST_USE_CUDA
+#include <nvtx3/nvToolsExt.h>
+// See https://nvidia.github.io/NVTX/
+// See https://stackoverflow.com/questions/23230003/something-between-func-and-pretty-function/29856690#29856690
+#endif
 
 // TODO - scope all this, global vars are bad.
 extern bool init_openmp_, clock_on, timer_on;
@@ -40,14 +45,34 @@ void init_cuda();
 int allocatedBytesOnDevice();
 std::string ptrToString(const void* adr);
 
+#ifdef _OPENMP
+#define ToDo_Kokkos(str)                              \
+        printf("[Kokkos %s] Warning, code running slow cause not ported yet: line %d in %s \n", str, __LINE__, __FILE__);
+#else
+#define ToDo_Kokkos(str)
+#endif
+
+// Macro Kernel_Name
+inline const std::string methodName(const std::string& prettyFunction, const int line)
+{
+  size_t colons = prettyFunction.find("::");
+  size_t begin = prettyFunction.substr(0,colons).rfind(" ") + 1;
+  size_t end = prettyFunction.rfind("(") - begin;
+  return prettyFunction.substr(begin,end)+":"+std::to_string(line);
+}
+#define __KERNEL_NAME__ methodName(__PRETTY_FUNCTION__,__LINE__)
+
 // Timers GPU avec OpenMP
-inline void start_gpu_timer(int bytes=-1)
+inline void start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
 #ifdef _OPENMP
   if (init_openmp_ && timer_on)
     {
       if (clock_on) clock_start = Statistiques::get_time_now();
       if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_);
+#ifdef TRUST_USE_CUDA
+      nvtxRangePush(str.c_str());
+#endif
     }
 #endif
 }
@@ -86,6 +111,9 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
             }
           fflush(stdout);
         }
+#ifdef TRUST_USE_CUDA
+      nvtxRangePop();
+#endif
     }
 #endif
 }

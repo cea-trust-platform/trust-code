@@ -456,6 +456,10 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   assert(nb_elem == size);
   int compt = 0;
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
+  ToDo_Kokkos("");
   for (int elem = 0; elem < nb_elem; elem++)
     {
       if (visco_turb(elem) > borne_visco_turb_(elem))

@@ -69,7 +69,7 @@ DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
   int nsom = resu.dimension(0);
   CDoubleArrView volumes_v = volumes.view_ro();
   CDoubleArrView porosites_v = porosites.view_ro();
-  // ToDo Kokkos :  DoubleArrView resu_v = resu.view_rw(); avec resu DoubleTab
+  // ToDo_Kokkos :  DoubleArrView resu_v = resu.view_rw(); avec resu DoubleTab
   DoubleTabView resu_v = resu.view_rw();
   start_timer();
   Kokkos::parallel_for(nsom, KOKKOS_LAMBDA(

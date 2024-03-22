@@ -235,7 +235,7 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
   // Si l'inconnue est sur le device, on copie les donnees aussi:
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
-      // ToDo Kokkos deplacer tout cela dans Milieu_base::initialiser ?
+      // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
       mapToDevice(rho.valeurs(), "rho");
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
@@ -369,7 +369,7 @@ int Fluide_Dilatable_base::initialiser(const double temps)
 
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
-      // ToDo Kokkos deplacer tout cela dans Milieu_base::initialiser ?
+      // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
       mapToDevice(rho.valeurs(), "rho");
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");

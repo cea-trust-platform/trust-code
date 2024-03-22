@@ -287,12 +287,20 @@ void self_test()
       }
       // DoubleTrav
       {
-        DoubleTrav a(N);
+        DoubleTrav a(10*N);
         a = 1;
         mapToDevice(a, "a"); // copy
         assert(a.get_data_location() == DataLocation::HostDevice);
         assert(a.ref_count() == 1);
       }
+      /*
+      // Second DoubleTrav
+      {
+        // ToDo OpenMP:
+        DoubleTrav a(10*N);
+        assert(a.get_data_location() != HostOnly); // Should have aleady GPU allocated memory by the first DoubleTrav !
+      }
+       */
       {
         DoubleTrav b(N);
         assert(b.get_data_location() == DataLocation::HostOnly); // ToDo: devrait etre en Host (recupere la zone memoire precedente)
@@ -356,16 +364,16 @@ void self_test()
         DoubleTab b;
         b.ref_tab(a, 0, N); // reference partielle sur a
         mapToDevice(b, "b"); // Sur le device
-        assert(b.get_dataLocation()==HostDevice); // b doit etre sur le device
-        assert(a.get_dataLocation()==HostDevice); // a doit etre sur le device
+        assert(b.get_data_location()==DataLocation::HostDevice); // b doit etre sur le device
+        assert(a.get_data_location()==DataLocation::HostDevice); // a doit etre sur le device
         double* a_ptr = computeOnTheDevice(a);
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
         for (int i=0; i<2*N; i++)
           a_ptr[i]=2;
         // Retour sur le device et verification que a etait completement sur le device:
-        assert(a.get_dataLocation()==Device);
+        assert(a.get_data_location()==DataLocation::Device);
         assert(a(0)==2);
-        assert(a.get_dataLocation()==Host);
+        assert(a.get_data_location()==DataLocation::Host);
         assert(a(2*N-1)==2);
       }
       double * ptr_host;

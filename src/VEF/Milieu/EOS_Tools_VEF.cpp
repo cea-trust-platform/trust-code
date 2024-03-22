@@ -227,7 +227,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   int p_has_arrete=zp1b.get_alphaA();
   int nb_ar_tot = le_dom->domaine().nb_aretes_tot();
 
-  // ToDo Kokkos, try to merge all theses kernels for efficiency:
+  // ToDo_Kokkos, try to merge all theses kernels for efficiency:
   int decal=0;
   DoubleArrView tab_dZ_v = tab_dZ.view_rw();
   if (p_has_elem)

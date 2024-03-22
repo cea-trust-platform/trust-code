@@ -152,7 +152,7 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
-  // ToDo Kokkos
+  ToDo_Kokkos("");
   for (int som=0 ; som<n ; som++)
     {
       tab_rho_np1(som) = calculer_masse_volumique(Pth,tab_ICh(som,0),som);

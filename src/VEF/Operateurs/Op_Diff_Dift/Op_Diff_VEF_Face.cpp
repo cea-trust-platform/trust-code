@@ -93,7 +93,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
 
   const int premiere_face_int=domaine_VEF.premiere_face_int();
 
-  // ToDo OpenMP Fusionner avec boucle faces interne
+  ToDo_Kokkos("CopyPartial");
   // On traite les faces bord
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
