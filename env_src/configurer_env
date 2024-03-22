@@ -2465,7 +2465,7 @@ wait $(jobs -rp)
 (cd $TRUST_ROOT/src/MAIN; mk_Instancie)
 echo "done."
 
-# Mise a jour des fichiers make.lib$SO_EXTENSION
+# Mise a jour du fichier $TRUST_ENV/Cmake.libs
 ./mklibs
 # Cree le repertoire $TRUST_ROOT/include pour l'atelier
 ./cree_include

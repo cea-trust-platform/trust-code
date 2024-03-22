@@ -1,6 +1,5 @@
 OPT=_opt
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
-include $(TRUST_ENV)/make.lib$(LIB_EXTENSION)
 include $(TRUST_ENV)/make.all_Includes.TRUST
 
 LIB=$(TRUST_ROOT)/lib/libmfft.a

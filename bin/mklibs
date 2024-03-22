@@ -1,39 +1,66 @@
 #!/bin/bash
+
+# This script updates the list of external libraries to create the file 
+# Cmake.libs which will register the 3 following variables
+#   list_path_libs : the (non-system) paths to libraries
+#   list_path_sys: the extra system paths to libraries (never used??)
+#   list_libs: the actual list of libraries
+#
+# In the rest of the script 'xxx_P' variable denotes a list of Paths, whereas 'xxx_L' denotes a list of Libs
+
+#################
+# Initialisation
+#################
 [ "$TRUST_ROOT" = "" ] && echo "TRUST environment not initialized." && exit -1
 
 cd $TRUST_ROOT
+
+# List of all lib paths - will be extended:
+ALL_P="\$ENV{TRUST_LIB} \$ENV{TRUST_LATAFILTER}/lib \$ENV{TRUST_ICOCOAPI}/lib "
+
+# List of all lib names - will be extended
+ALL_L="mfft mfft_c skit latafilter icocoapi "
+ 
+# Same for system libs
+SYSLIBS_P=""  
+SYSLIBS_L=""
+
 ########
 # PETSC
 #######
-PETSC=""
+PETSC_P="" # paths
+PETSC_L="" # libs
 PETSC_LIB=$PETSC_ROOT/$TRUST_ARCH$OPT/lib
-MPIFORT=""
+MPIFORT_P=""
+MPIFORT_L=""
 petscmachineinfo=""
-SYSLIBS=""
 if [ -d $PETSC_LIB ]
 then
    cd $PETSC_LIB
    if [ -f libpetsc.a ]
    then
-      PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib -lpetsc"
-      # -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
-      [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -ldl"
-      superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC=$PETSC" -l${superlu%.a}"
-      [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
-      [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
-      [ -f libml.a ] && PETSC=$PETSC" -lml"
+      PETSC_P="\$ENV{PETSC_ROOT}/\$ENV{TRUST_ARCH}\$ENV{OPT}/lib"
+      PETSC_L="petsc"
+      superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC_L=$PETSC_L" ${superlu%.a}"
+      [ -f libcmumps.a ] && PETSC_L=$PETSC_L" cmumps dmumps mumps_common smumps zmumps pord"
+      [ -f libpastix.a ] && PETSC_L=$PETSC_L" pastix"
+      [ -f libml.a ] && PETSC_L=$PETSC_L" ml"
       for lib in HYPRE strumpack sbutterflypack dbutterflypack cbutterflypack zbutterflypack zfp slate blaspp lapackpp scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetisv3 ptscotch scotch scotcherr scotcherrexit Vc
       do
-         [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
+         [ -f lib$lib.a ] && PETSC_L=$PETSC_L" $lib"
       done
-      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lspqr -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig" && [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lrt"
+      [ -f libumfpack.a ] && PETSC_L=$PETSC_L" umfpack klu spqr cholmod btf ccolamd colamd camd amd suitesparseconfig" && [ `uname -s` != Darwin ] && SYSLIBS_L=$SYSLIBS_L" rt"
       # Link avec les librairies statiques de CUDA:
       # Pros: Portability ?
       # Cons: Binary size 74Mo -> 900Mo ! Crash possible sur orcus (Caught amgx exception: Cannot allocate pinned memory) si on utilise la librairie statique AmgX avec -lamgx !
       LINK_CUDA=_static
       LINK_CUDA=""
-      #[ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper -lomp" # -lomp necessaire sur portable mais echec sur petra ?
-      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper"
+      #[ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$ENV{TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper -lomp" # -lomp necessaire sur portable mais echec sur petra ?
+      if [ "$TRUST_USE_CUDA" = 1 ]; then
+          AMGX_ROOT="\$ENV{TRUST_ROOT}/lib/src/LIBAMGX" 
+          PETSC_P=$PETSC_P" $AMGX_ROOT/AmgX/lib $AMGX_ROOT/AmgXWrapper/lib64"
+          PETSC_L=$PETSC_L"amgx`[ "$LINK_CUDA" != _static ] && echo sh` AmgXWrapper"
+      fi
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
       petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h
@@ -43,86 +70,153 @@ then
          if [ "$TRUST_USE_CUDA" = 1 ]
          then
             # ToDo comme dans install de AmgX et PETSc, factoriser dans configure_env la recherche de CUDA_MATH
-            PETSC=$PETSC" -L\$(CUDA_ROOT)/lib64 -L\$(CUDA_ROOT)/stubs -L`echo $CUDA_ROOT | sed '1,$ s?/cuda?/math_libs?g'`/lib64 -lcudart -lcublas -lcublasLt -lcufft -lcusparse -lcusolver -lcurand"
+            PETSC_P=$PETSC_P" \$ENV{CUDA_ROOT}/lib64 \$ENV{CUDA_ROOT}/stubs `echo $CUDA_ROOT | sed '1,$ s?/cuda?/math_libs?g'`/lib64"
+            PETSC_L=$PETSC_L" cudart cublas cublasLt cufft cusparse cusolver curand"
             # -lnvToolsExt: ajoute suite undefined reference sur cobalt:
-            PETSC=$PETSC" -lnvToolsExt"
+            PETSC_L=$PETSC_L" nvToolsExt"
             # En statique:
-            [ "$LINK_CUDA" = _static ] && PETSC=$PETSC" -lcublasLt_static -lculibos -lrt"
+            [ "$LINK_CUDA" = _static ] && PETSC_L=$PETSC_L" cublasLt_static culibos rt"
          fi
          # PETSc with X11:
-         [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lX11"
+         [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS_L=$SYSLIBS_L" X11"
 
          # PETSc without MPI:
          if [ "$TRUST_DISABLE_MPI" = 1 ]
          then
-            PETSC=$PETSC" -lmpiseq"
-	    [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lpthread"
+            PETSC_L=$PETSC_L" mpiseq"
+    	    [ `uname -s` != Darwin ] && SYSLIBS_L=$SYSLIBS_L" pthread"
          else
-            for libfort in lmpifort lmpi_f77
+            for libfort in mpifort mpi_f77
             do
-               if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+               if [ "`grep l$libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
                then
-                  MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
+                  # Those will be appended after all the rest - see last section below in the script
+                  MPIFORT_P=$MPIFORT_P" \$ENV{MPI_ROOT}/lib"
+                  MPIFORT_L=$MPIFORT_L" ${libfort}"
                fi
             done
          fi
-         [ "`grep lssl     $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS=$SYSLIBS" -lssl -lcrypto"
-         [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && [ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -lpthread"
+         [ "`grep lssl     $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS_L=$SYSLIBS_L" ssl crypto"
+         [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && [ `uname -s` != Darwin ] && SYSLIBS_L=$SYSLIBS_L" pthread"
       fi
    fi
    \cd - 1>/dev/null 2>&1
+   ALL_P=$ALL_P" "$PETSC_P
+   ALL_L=$ALL_L" "$PETSC_L
 else
    #######
-   # METIS
+   # METIS (standalone, not from PETSc)
    #######
+   METIS_P=""
+   METIS_L=""
    if [ -f $METIS_ROOT/lib/libmetis.a ]
    then
-      METIS="-L\$(METIS_ROOT)/lib -lmetis"
-   else
-      METIS=""
+      METIS_P="\$ENV{METIS_ROOT}/lib"
+      METIS_L="metis"
    fi
+   ALL_P=$ALL_P" "$METIS_P
+   ALL_L=$ALL_L" "$METIS_L
 fi
+
 
 #############
 # Lapack/Blas
 #############
+LAPACK_P=""
+LAPACK_L=""
 if [ "$TRUST_BLAS_LAPACK" = "" ]
 then
-    LAPACK="-L\$(TRUST_LIB)/src/LIBLAPACK -llapack -lblas"
+    LAPACK_P="\$ENV{TRUST_LIB}/src/LIBLAPACK"
+    LAPACK_L="lapack blas"
 else
-    #LAPACK="\$(TRUST_BLAS_LAPACK)/liblapack.a \$(TRUST_BLAS_LAPACK)/libblas.a"
+    #LAPACK="\$ENV{TRUST_BLAS_LAPACK)/liblapack.a \$ENV{TRUST_BLAS_LAPACK)/libblas.a"
     # Don't use static libraries cause problem when linking module for Baltik (not -fPIC compiled)
     if [ -f $TRUST_BLAS_LAPACK/libopenblas.so ]
     then
        # Prefer openblas if founded:
-       LAPACK="-L\$(TRUST_BLAS_LAPACK) -lopenblas"
+       LAPACK_P="\$ENV{TRUST_BLAS_LAPACK}"
+       LAPACK_L="openblas"
     elif [ -f $TRUST_BLAS_LAPACK/libsci_cray.a ]
     then
-       LAPACK="-L\$(TRUST_BLAS_LAPACK) -lsci_cray"
+       LAPACK_P="\$ENV{TRUST_BLAS_LAPACK}"
+       LAPACK_L="sci_cray"
     else
-       LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
+       LAPACK_P="\$ENV{TRUST_BLAS_LAPACK}"
+       LAPACK_L="lapack blas"
     fi
     # BLAS/LAPACK Intel (mkl) libraries have different names so try to find it thanks to PETSc
     if [ "$petscmachineinfo" != "" ] && [ "`grep mkl_ $petscmachineinfo`" != "" ]
     then
         # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
-        LAPACK="-L$TRUST_BLAS_LAPACK  `awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"-lmkl") || index($i,"/mkl/lib") || index($i,"/mkl/latest/lib") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
+        LAPACK_P=$TRUST_BLAS_LAPACK
+        tmp="`awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"-lmkl") || index($i,"/mkl/lib") || index($i,"/mkl/latest/lib") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
+        LAPACK_L=${tmp/-l/}  # remove all '-l'
     fi
+fi
+ALL_P=$ALL_P" "$LAPACK_P
+ALL_L=$ALL_L" "$LAPACK_L
+
+####
+# VC
+####
+if [ "$TRUST_DISABLE_VC" != 1 ]; then
+    ALL_P=$ALL_P" \$ENV{TRUST_ROOT}/lib/src/LIBVC/lib"
+    ALL_L=$ALL_L" Vc"
+fi
+
+######
+# CGNS
+######
+if [ "$TRUST_DISABLE_CGNS" != 1 ]; then
+    ALL_P=$ALL_P" \$ENV{TRUST_CGNS_ROOT}/lib"
+    ALL_L=$ALL_L" cgns"
+fi
+
+
+########
+# Kokkos
+########
+if [ $TRUST_USE_KOKKOS = 1 ] ; then
+   KOKKOS_P="\$ENV{TRUST_KOKKOS_ROOT}/\$ENV{TRUST_ARCH}\$ENV{OPT}/lib64"
+   KOKKOS_L="kokkoscontainers kokkoscore"
+   [ -f $TRUST_KOKKOS_ROOT/$TRUST_ARCH$OPT/libkokkossimd.a ] && KOKKOS_L=$KOKKOS_L" kokkossimd"
+fi
+ALL_P=$ALL_P" "$KOKKOS_P
+ALL_L=$ALL_L" "$KOKKOS_L
+
+######
+# rocalution
+######
+if [ "`ls ${TRUST_ROCALUTION}/lib/librocalution.* 2>/dev/null`" != "" ]; then
+    ALL_P=$ALL_P" \$ENV{TRUST_ROCALUTION}/lib"
+    ALL_L=$ALL_L" rocalution"
+fi
+
+######
+# OSQP
+######
+if [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ]; then
+    ALL_P=$ALL_P" \$ENV{TRUST_OSQP_ROOT}/lib"
+    ALL_L=$ALL_L" osqp"
+fi
+if [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ]; then
+    ALL_P=$ALL_P" \$ENV{TRUST_OSQP_ROOT}/lib64"
+    ALL_L=$ALL_L" osqp"
 fi
 
 #####
 # MED
 #####
-MEDLDFLAGS=""
 # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
-lz=""
+lz_L=""
+lz_P=""
 if [ -f $TRUST_MED_ROOT/bin/h5cc ]
 then
    # Meilleur moyen: si MED est compile on regarde dans h5cc
-   [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz="-lz "
+   [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz_L="z "
 else
    # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
-   [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz="-lz "
+   [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz_L="z "
 fi
 
 # Ajout des flags -lsvml et -lintlc necessaires avec certains compilateurs intel... vu sur jean-zay et plafrim
@@ -131,119 +225,79 @@ then
    svmlpath=""
    if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ]
    then
-      lz=$lz"-lsvml "
+      lz_L=$lz_L" svml "
       svmlso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so | cut -d' ' -f 3`
       svmlpath=`dirname $svmlso`
-      lz=" -L$svmlpath "$lz
+      lz_P=$lz_P" $svmlpath "
    fi
 
    intlcpath=""
    if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ]
    then
-      lz=$lz"-lintlc "
+      lz_L=$lz_L" intlc "
       intlcso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
       intlcpath=`dirname $intlcso`
-      [ "$svmlpath" != "$intlcpath" ] && lz=" -L$intlcpath "$lz
+      [ "$svmlpath" != "$intlcpath" ] && lz_P=" $intlcpath "
    fi
 fi
-MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a"
+ALL_P=$ALL_P" \$ENV{TRUST_MED_ROOT}/lib"
+ALL_L=$ALL_L" med medimport medC hdf5 hdf5_hl"
 
 #############
 # MEDCoupling
 #############
 LISTP="" && [ "$TRUST_DISABLE_MPI" != 1 ] && LISTP="paramedmem paramedloader" 
-LIBS_MEDC=""
-for ll in medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel
-do
-    LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
-done
-
-####
-# VC
-####
-VC="" && [ "$TRUST_DISABLE_VC" != 1 ] && VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
-
-######
-# CGNS
-######
-CGNS="" && [ "$TRUST_DISABLE_CGNS" != 1 ] && CGNS="-L\$(TRUST_CGNS_ROOT)/lib -lcgns"
+ALL_P=$ALL_P" \$ENV{TRUST_MEDCOUPLING_ROOT}/lib"
+ALL_L=$ALL_L" medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel"
 
 #####
 # EOS
 #####
 if [ $TRUST_USE_EOS = 1 ] ; then
-  EOS="\$(TRUST_EOS_HOME_DIR)/lib/libeos.a"
-else
-  EOS=""
+    ALL_P=$ALL_P" \$ENV{TRUST_EOS_HOME_DIR}/lib"
+    ALL_L=$ALL_L" eos"
 fi
 
 ##########
 # CoolProp
 ##########
 if [ $TRUST_USE_COOLPROP = 1 ] ; then
-  COOLPROP="\$(TRUST_COOLPROP_HOME_DIR)/build/libCoolProp.a"
-else
-  COOLPROP=""
+    ALL_P=$ALL_P" \$ENV{TRUST_COOLPROP_HOME_DIR}/build"
+    ALL_L=$ALL_L" CoolProp"
 fi
 
-########
-# Kokkos
-########
-if [ $TRUST_USE_KOKKOS = 1 ] ; then
-   KOKKOS="-L\$(TRUST_KOKKOS_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib64 -lkokkoscontainers -lkokkoscore"
-   [ -f $TRUST_KOKKOS_ROOT/$TRUST_ARCH$OPT/libkokkossimd.a ] && KOKKOS=$KOKKOS" -lkokkossimd"
-else
-   KOKKOS=""
-fi
+############
+# mpifortran - [ABN] must be put last! Don't know why. See PETSc section above
+############
+ALL_P=$ALL_P" "$MPIFORT_P
+ALL_L=$ALL_L" "$MPIFORT_L
+
+##########
+# System libs
+##########
 # Cela m'a fait transpirer: si -lm alors -L/usr/lib/x86_64-linux-gnu ajoute et conflit entre MPI systeme et MPI livre si mix nvc++/g++:
 # Si TRUST_CC_BAXE_EXTP GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
-[ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS=" -L/usr/lib/x86_64-linux-gnu "$SYSLIBS
-#SYSLIBS=$SYSLIBS" $lz-lm -ldl"
-SYSLIBS=$SYSLIBS" $lz"
-[ `uname -s` != Darwin ] && SYSLIBS=$SYSLIBS" -ldl"
+[ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS_P=" /usr/lib/x86_64-linux-gnu "$SYSLIBS_P
+SYSLIBS_L=$SYSLIBS_L" $lz_L"
+# -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
+[ `uname -s` != Darwin ] && SYSLIBS_L=$SYSLIBS_L" dl"
+
 
 #################################################
-# Construction du fichier $TRUST_ENV/make.liba
-# utilise dans bin/KSH/Createcmakefile.py
+# Building file $TRUST_ENV/Cmake.libs
 #################################################
 cd $TRUST_ENV
-for fic in make.liba 
-do
-   suffixe=${fic#make.lib}
-   if [ $suffixe = a ]
-   then
-      echo $ECHO_OPTS "Libs = \$(LIB)\\"    > $fic
-   fi
-   # NB: 1.5.6: MED est place APRES PETSC car seg fault sinon avec -lz si place avant la librairie lcudart !
-   echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"            >> $fic
-   echo $ECHO_OPTS "-lskit $METIS -L\$(TRUST_LATAFILTER)/lib -llatafilter\\"   >> $fic
-   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"      >> $fic
-   [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"            >> $fic
-   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"          >> $fic
-   [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                  >> $fic
-   [ "$CGNS" != "" ] && echo $ECHO_OPTS "$CGNS \\"              >> $fic
-   [ "$EOS" != "" ] && echo $ECHO_OPTS "$EOS \\"                >> $fic
-   [ "$COOLPROP" != "" ] && echo $ECHO_OPTS "$COOLPROP \\"      >> $fic
-   [ "$KOKKOS" != "" ] && echo $ECHO_OPTS "$KOKKOS \\"          >> $fic
-   [ "`ls ${TRUST_ROCALUTION}/lib/librocalution.* 2>/dev/null`" != "" ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
-   [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
-   [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic
-   [ "$LIBS_MEDC" != "" ]  && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
-   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  >> $fic
-   [ "$MPIFORT" != "" ]    && echo $ECHO_OPTS "$MPIFORT \\"     >> $fic
-   # Ecriture de SYSLIBS desormais a la fin:
-   [ "$SYSLIBS" != "" ]    && echo $ECHO_OPTS $SYSLIBS >> $fic
-   
-   # Verification qu'une librairie n'est pas en double
-   a=`cat $fic | sort | uniq -c | grep -v 1`
-   if [ ${#a} != 0 ]
-   then
-      echo "Error. Several make.include have the same library: $a"
-      echo "You must fix it."
-      exit -1
-   fi
-   echo "$TRUST_ENV/$fic updated."
-done
 
-$TRUST_ROOT/exec/python/bin/python -c "import sys;sys.path.insert(0,'$TRUST_ROOT/bin/KSH');sys.dont_write_bytecode = True;from Createcmakefile import read_libs_from_makeliba;read_libs_from_makeliba()"
+fic=$TRUST_ENV/Cmake.libs
+echo "set(list_path_libs $ALL_P)" > $fic
+echo "set(list_path_sys $SYSLIBS_P)" >> $fic
+# System libraries written last:
+echo "set(list_libs $ALL_L $SYSLIBS_L)" >> $fic  
+echo "
+mark_as_advanced(list_path_libs)
+mark_as_advanced(list_path_sys)
+mark_as_advanced(list_libs)
+" >> $fic
+
+echo "File $fic updated."
 
