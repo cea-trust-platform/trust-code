@@ -136,11 +136,6 @@ public:
   inline void resize(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(int new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-  //
-  //  WARNING : kept here only for lata_tools compatibility !!! DO NOT USE
-  //
-  inline void set_smart_resize(int flag) {}
-
   /*! Memory allocation type - TEMP arrays (i.e. Trav) have a different allocation mechanism - see TRUSTTravPool.h) */
   inline void set_mem_storage(const STORAGE storage);
   inline STORAGE get_mem_storage() const { return storage_type_; }
