@@ -38,7 +38,7 @@ int PDC_Anisotrope_PolyMAC::lire_motcle_non_standard_impl(const Motcle& mot, Ent
 }
 
 void PDC_Anisotrope_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                      double dh, double nu, double reynolds, double& coeff_ortho,
+                                                      double dh, double nu, double reynolds, double K, double& coeff_ortho,
                                                       double& coeff_long, double& u_l, DoubleVect& v_valeur, Parser_U& lambda) const
 {
   // Calcul de lambda
@@ -78,8 +78,8 @@ void PDC_Anisotrope_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const
    p_charge[dim] = -l_ortho*norme_u/2./dh*u[dim]
    -(lambda.eval()-l_ortho)*scal*v_valeur[dim]*norme_u/2./dh;
    */
-  coeff_ortho = l_ortho * norme_u / 2. / dh;
-  coeff_long = lambda.eval() * norme_u / 2. / dh;
+  coeff_ortho = K * l_ortho * norme_u / 2. / dh;
+  coeff_long = K * lambda.eval() * norme_u / 2. / dh;
   u_l = scal;
 }
 
@@ -104,7 +104,7 @@ int PDC_Circulaire_PolyMAC::lire_motcle_non_standard_impl(const Motcle& mot, Ent
 }
 
 void PDC_Circulaire_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const DoubleVect& pos, double t,
-                                                      double norme_u, double dh, double nu, double reynolds, double& coeff_ortho,
+                                                      double norme_u, double dh, double nu, double reynolds, double K, double& coeff_ortho,
                                                       double& coeff_long, double& u_l, DoubleVect& av_valeur, Parser_U& lambda) const
 {
   // calcul de dh_ortho
@@ -165,12 +165,12 @@ void PDC_Circulaire_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const
     lambda_ortho.setVar(5, pos[2]);
   double l_ortho = lambda_ortho.eval(); // Pour ne pas evaluer 2 fois le parser
   double l_long = lambda.eval();
-  coeff_ortho = l_ortho * u_ortho / 2. / dh_ortho;
-  coeff_long = l_long * std::fabs(u_l) / 2. / dh;
+  coeff_ortho = K * l_ortho * u_ortho / 2. / dh_ortho;
+  coeff_long = K * l_long * std::fabs(u_l) / 2. / dh;
 }
 
 void PDC_Directionnelle_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                          double dh, double nu, double reynolds, double& coeff_ortho,
+                                                          double dh, double nu, double reynolds, double K, double& coeff_ortho,
                                                           double& coeff_long, double& u_l, DoubleVect& v_valeur, Parser_U& lambda) const
 {
   // Calcul de lambda
@@ -199,12 +199,12 @@ void PDC_Directionnelle_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, c
    p_charge[dim] = -lambda.eval()*scal*v_valeur[dim]*norme_u/2./dh;
    */
   u_l = scal;
-  coeff_long = lambda.eval() * norme_u / 2. / dh;
+  coeff_long = K * lambda.eval() * norme_u / 2. / dh;
   coeff_ortho = 0;
 }
 
 void PDC_Isotrope_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                    double dh, double nu, double reynolds, double& coeff_ortho,
+                                                    double dh, double nu, double reynolds, double K, double& coeff_ortho,
                                                     double& coeff_long, double& u_l, DoubleVect& v_valeur, Parser_U& lambda) const
 {
   // Calcul de lambda
@@ -217,7 +217,7 @@ void PDC_Isotrope_PolyMAC::coeffs_perte_charge_impl(const DoubleVect& u, const D
     lambda.setVar(4, pos[2]);
 
   // Calcul du resultat
-  coeff_ortho = lambda.eval() * norme_u / 2. / dh;
+  coeff_ortho = K * lambda.eval() * norme_u / 2. / dh;
   coeff_long = coeff_ortho;
   // v ne sert pas, car coeff_ortho=coeff_long
   //  for (int dim=0;dim<dimension;dim++)
