@@ -23,7 +23,7 @@ cd $Build
 SWIG_EXECUTABLE=`type -p swig`
 # PL inutile de specifier swig (dans PATH normalement):
 build_mode="Release"
-if [ "x$exec" == "x$exec_debug" ] || [ "x$OPT" == "x" ]; then 
+if [ "x$exec" == "x$exec_debug" ]; then 
    echo "lata_tools will be built in DEBUG mode!!"
    build_mode="Debug" 
 fi
