@@ -34,6 +34,8 @@ Entree& Perte_Charge_PolyMAC::readOn(Entree& is)
   Param param(que_suis_je());
   Cerr << que_suis_je() << "::readOn " << finl;
   lambda.setNbVar(4 + dimension);
+  direction_perte_charge_ = -1;
+  regul_ = 0;
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";
@@ -53,6 +55,7 @@ void Perte_Charge_PolyMAC::set_param(Param& param)
   param.ajouter("diam_hydr", &diam_hydr, Param::REQUIRED);
   param.ajouter_non_std("sous_domaine|sous_zone", (this));
   param.ajouter("implicite", &implicite_);
+  param.ajouter_non_std("regul", (this));
 }
 
 int Perte_Charge_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -75,6 +78,13 @@ int Perte_Charge_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is
     {
       is >> nom_sous_domaine;
       sous_domaine = true;
+      return 1;
+    }
+  else if (mot == "regul")
+    {
+      lire_regul(is);
+      num_faces.resize(ref_cast(Domaine_VF, equation().domaine_dis()).nb_elem());
+      lire_surfaces(is, equation().domaine_dis().domaine(), equation().domaine_dis(), num_faces, sgn, 0);
       return 1;
     }
   else // non compris
@@ -195,8 +205,26 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 void Perte_Charge_PolyMAC::completer()
 {
   Source_base::completer();
+  if (regul_) //fichier de sortie si regulation
+    {
+      bilan().resize(3); //K deb cible
+      identifiant_ = sous_domaine ? nom_sous_domaine : le_dom_PolyMAC->domaine().le_nom();
+      set_fichier(Nom("DP_") + identifiant_);
+      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_);
+      Noms col_names;
+      col_names.add("K");
+      col_names.add("Flow_rate");
+      col_names.add("Target_Flow_rate");
+      set_col_names(col_names);
+    }
   if (sous_domaine)
     le_sous_domaine = equation().probleme().domaine().ss_domaine(nom_sous_domaine);
+}
+
+void Perte_Charge_PolyMAC::mettre_a_jour(double t)
+{
+  if (regul_)
+    update_K(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
 }
 
 void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
