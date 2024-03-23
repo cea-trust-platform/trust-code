@@ -18,13 +18,13 @@
 
 #include <Operateur_Diff_base.h>
 #include <Domaine_Cl_VEF.h>
-#include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Domaine_VEF.h>
 #include <Op_VEF_Face.h>
 #include <TRUST_Ref.h>
 
 class Champ_Uniforme;
+class Matrice_Morse;
 
 class Op_Diff_P1NC_barprim: public Operateur_Diff_base, public Op_VEF_Face
 {

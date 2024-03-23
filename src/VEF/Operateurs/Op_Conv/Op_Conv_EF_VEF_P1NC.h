@@ -17,9 +17,8 @@
 #ifndef Op_Conv_EF_VEF_P1NC_included
 #define Op_Conv_EF_VEF_P1NC_included
 
-#include <Matrice_Morse.h>
 #include <Op_Conv_VEF_base.h>
-
+class Matrice_Morse;
 /*! @brief class Op_Conv_EF_VEF_P1NC
  *
  *   Cette classe represente l'operateur de convection associe a une equation de

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Op_Grad_VDF_Face_included
 
 #include <Op_Grad_VDF_Face_base.h>
-#include <Matrice_Morse.h>
 #include <SFichier.h>
+
+class Matrice_Morse;
 
 /*! @brief class Op_Grad_VDF_Face Cette classe represente l'operateur de gradient
  *

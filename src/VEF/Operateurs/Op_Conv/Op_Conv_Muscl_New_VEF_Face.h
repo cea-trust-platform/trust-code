@@ -17,11 +17,10 @@
 #define Op_Conv_Muscl_New_VEF_Face_included
 
 #include <Op_Conv_VEF_Face.h>
-#include <Matrice_Morse.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
 #include <TRUST_Ref.h>
-
+class Matrice_Morse;
 class Sous_domaine_VF;
 
 /*! @brief class Op_Conv_Muscl_New_VEF_Face

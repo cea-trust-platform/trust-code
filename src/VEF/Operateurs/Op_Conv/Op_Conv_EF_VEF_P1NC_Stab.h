@@ -18,13 +18,12 @@
 
 #include <Op_Conv_VEF_Face.h>
 #include <Equation_base.h>
-#include <Matrice_Morse.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
 #include <TRUST_Ref.h>
 
 class Sous_domaine_VF;
-
+class Matrice_Morse;
 /*! @brief class Op_Conv_EF_VEF_P1NC_Stab
  *
  *   Cette classe represente l'operateur de convection associe a une equation de

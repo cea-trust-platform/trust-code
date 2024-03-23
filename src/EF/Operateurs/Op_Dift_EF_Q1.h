@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,6 @@
 #define Op_Dift_EF_Q1_included
 
 #include <Op_Dift_EF_base.h>
-#include <Matrice_Morse.h>
 #include <Op_EF_base.h>
 #include <TRUST_Ref.h>
 #include <Champ_Don.h>
@@ -26,6 +25,7 @@ class Champ_Uniforme;
 class Domaine_Cl_EF;
 class Domaine_EF;
 class Champ_Inc;
+class Matrice_Morse;
 
 /*! @brief class Op_Dift_EF_Q1 Cette classe represente l'operateur de diffusion
  *

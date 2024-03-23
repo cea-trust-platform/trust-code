@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 
 
 #include <Op_Conv_VEF_base.h>
-#include <Matrice_Morse.h>
 
 
 /*! @brief class Op_Conv_AmontNew_VEF_Face

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Op_Diff_PolyMAC_P0P1NC_Elem_included
 
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
-#include <Matrice_Morse.h>
+class Matrice_Morse;
 
 class Op_Diff_PolyMAC_P0P1NC_Elem: public Op_Diff_PolyMAC_P0P1NC_base
 {

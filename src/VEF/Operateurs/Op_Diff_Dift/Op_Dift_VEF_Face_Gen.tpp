@@ -835,6 +835,9 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
   CDoubleArrView nu_turb_v = static_cast<const DoubleVect&>(nu_turb).view_ro();
   CDoubleTabView inconnue_v = inconnue.view_ro();
   DoubleTabView resu_v;
+  CIntArrView tab1_v;
+  CIntArrView tab2_v;
+  CDoubleArrView coeff_v;
   if (is_EXPLICIT)
     {
       assert(resu != nullptr);
@@ -844,10 +847,9 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
     {
       assert(matrice != nullptr);
       // ToDo Kokkos (faire dans classe Matrice?)
-      // Copie eventuelle de la matrice sur device:
-      mapToDevice(matrice->get_tab1());
-      mapToDevice(matrice->get_tab2());
-      computeOnTheDevice(matrice->get_set_coeff());
+      tab1_v = matrice->get_tab1().view_ro();
+      tab2_v = matrice->get_tab2().view_ro();
+      coeff_v = matrice->get_set_coeff().view_rw();
     }
   start_timer();
   Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__",
@@ -902,12 +904,12 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
                             double contrib_num_face = valA * porosite_eventuelle_v(num_face0);
                             double contrib_j = valA * porosite_eventuelle_v(j);
                             const int n0 = num_face0 * nb_comp + nc, j0 = j * nb_comp + nc;
-                            (*matrice)(n0, n0) += contrib_num_face;
-                            (*matrice)(n0, j0) -= contrib_j;
+                            (*matrice)(n0, n0, tab1_v, tab2_v, coeff_v) += contrib_num_face;
+                            (*matrice)(n0, j0, tab1_v, tab2_v, coeff_v) -= contrib_j;
                             if (j < nb_faces) // On traite les faces reelles
                               {
-                                (*matrice)(j0, n0) -= contrib_num_face;
-                                (*matrice)(j0, j0) += contrib_j;
+                                (*matrice)(j0, n0, tab1_v, tab2_v, coeff_v) -= contrib_num_face;
+                                (*matrice)(j0, j0, tab1_v, tab2_v, coeff_v) += contrib_j;
                               }
 
                             // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
@@ -918,15 +920,15 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
                                   double coeff_s = is_STAB ? 0. : tmp * face_normale_v(num_face0, nc2) *
                                                    face_normale_v(j, nc);
 
-                                  (*matrice)(n0, n1) += coeff_s * porosite_eventuelle_v(num_face0);
-                                  (*matrice)(n0, j1) -= coeff_s * porosite_eventuelle_v(j);
+                                  (*matrice)(n0, n1, tab1_v, tab2_v, coeff_v) += coeff_s * porosite_eventuelle_v(num_face0);
+                                  (*matrice)(n0, j1, tab1_v, tab2_v, coeff_v) -= coeff_s * porosite_eventuelle_v(j);
 
                                   if (j < nb_faces) // On traite les faces reelles
                                     {
                                       double coeff_s2 = is_STAB ? 0. : tmp * face_normale_v(num_face0, nc) *
                                                         face_normale_v(j, nc2);
-                                      (*matrice)(j0, n1) -= coeff_s2 * porosite_eventuelle_v(num_face0);
-                                      (*matrice)(j0, j1) += coeff_s2 * porosite_eventuelle_v(j);
+                                      (*matrice)(j0, n1, tab1_v, tab2_v, coeff_v) -= coeff_s2 * porosite_eventuelle_v(num_face0);
+                                      (*matrice)(j0, j1, tab1_v, tab2_v, coeff_v) += coeff_s2 * porosite_eventuelle_v(j);
                                     }
                                 }
                           }

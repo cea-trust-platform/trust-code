@@ -17,7 +17,7 @@
 #define Op_Dift_VEF_Face_Q1_included
 
 #include <Op_Dift_VEF_base.h>
-#include <Matrice_Morse.h>
+class Matrice_Morse;
 
 class Op_Dift_VEF_Face_Q1 : public Op_Dift_VEF_base
 {

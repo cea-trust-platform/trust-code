@@ -17,7 +17,7 @@
 #define Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem_included
 
 #include <Op_Conv_PolyMAC_base.h>
-#include <Matrice_Morse.h>
+class Matrice_Morse;
 
 /*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem
  *

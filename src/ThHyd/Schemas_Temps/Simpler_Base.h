@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <Solveur_non_lineaire.h>
 #include <Parametre_implicite.h>
 #include <TRUSTTabs_forward.h>
-#include <Matrice_Morse.h>
 #include <Nom.h>
 
 class Solveur_Implicite_Base;
@@ -29,6 +28,7 @@ class Equation;
 class Matrice;
 class Sources;
 class Motcle;
+class Matrice_Morse;
 
 //Description
 //

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,6 @@
 #include <Champ_Face_VDF.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Matrice_Morse.h>
 #include <Domaine_Cl_VDF.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_VDF.h>
@@ -33,6 +32,7 @@
 class Champ_Inc_base;
 class Operateur_base;
 class Champ_base;
+class Matrice_Morse;
 
 enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE , Op_DIFT_MULTIPHASE_FACE , Op_DIFT_MULTIPHASE_ELEM } ; // ne touche pas !
 

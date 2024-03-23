@@ -17,12 +17,11 @@
 #define Op_Diff_VEF_Anisotrope_Face_included
 
 #include <Op_Diff_VEF_base.h>
-#include <Matrice_Morse.h>
 #include <Champ_base.h>
 #include <TRUST_Ref.h>
 
 class Champ_Inc;
-
+class Matrice_Morse;
 /*! @brief : class Op_Diff_VEF_Anisotrope_Face
  *
  *  <Description of class Op_Diff_VEF_Anisotrope_Face>

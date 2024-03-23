@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Source_QC_QDM_Gen.h>
-#include <Matrice_Morse.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
+class Matrice_Morse;
 
 template <typename DERIVED_T>
 class Source_Fluide_Dilatable_Face
