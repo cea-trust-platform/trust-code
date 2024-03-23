@@ -21,6 +21,9 @@
 #include <TRUSTLists.h>
 #include <TRUSTTab.h>
 #include <algorithm>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 /*! @brief Classe Matrice_Morse Represente une matrice M (creuse), non necessairement carree
  *
@@ -227,14 +230,11 @@ inline double Matrice_Morse::operator()(int i, int j) const
   return(0);
 }
 
-KOKKOS_INLINE_FUNCTION
-double& Matrice_Morse::operator()(int i, int j)
+inline double& Matrice_Morse::operator()(int i, int j)
 {
-#ifndef _OPENMP // Pas de test sur GPU
   assert( (symetrique_==0 && que_suis_je()=="Matrice_Morse")
           || (symetrique_==1 && que_suis_je()=="Matrice_Morse_Sym")
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
-#endif
   //if (symetrique_==1 && j<i) std::swap(i,j); // Do not use, possible error during compile: "signed overflow does not occur when assuming that (X + c) < X is always false"
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
@@ -249,7 +249,6 @@ double& Matrice_Morse::operator()(int i, int j)
     for (int k=k1; k<k2; k++)
       if (tab2_[k]-1 == j) return(coeff_[k]);
   if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
-#ifndef _OPENMP // Pas d'impression sur GPU
 #ifndef NDEBUG
   // Uniquement en debug afin de permettre l'inline en optimise
   Cerr << "i or j are not suitable " << finl;
@@ -262,12 +261,53 @@ double& Matrice_Morse::operator()(int i, int j)
   // If it is a symmetric matrix, it -may- be a parallelism default. Check it by running a PETSc solver
   // in debug mode: there is a test to check the parallelism of the symmetric matrix...
   Cerr << "Error Matrice_Morse::operator("<< i << "," << j << ") not defined!" << finl;
-#else
-  printf("Error Matrice_Morse::operator(%d, %d) not defined!\n", (True_int)i, (True_int)j);
-#endif
   exit();
   return coeff_[0];     // On ne passe jamais ici
 }
+
+// Kokkos: First (and quick) implementation of a Matrix view. Future: Kokkos kernels ?
+struct Matrice_Morse_View
+{
+  CIntArrView tab1_v;
+  CIntArrView tab2_v;
+  mutable DoubleArrView coeff_v;
+  int symetrique_;
+  int sorted_;
+  mutable double zero_ = 0;
+  void set(Matrice_Morse& matrice)
+  {
+    tab1_v = matrice.get_tab1().view_ro();
+    tab2_v = matrice.get_tab2().view_ro();
+    coeff_v = matrice.get_set_coeff().view_rw();
+    symetrique_ = matrice.get_symmetric();
+    sorted_ = matrice.sorted_;
+  }
+  KOKKOS_INLINE_FUNCTION
+  double& operator()(int i, int j) const
+  {
+    if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
+    int k1=tab1_v(i)-1;
+    int k2=tab1_v(i+1)-1;
+    // ToDo Kokkos for faster access:
+    /*
+    if (sorted_)
+      {
+        int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
+        if (k < k2 && tab2_v[k] == j + 1)
+          return coeff_v[k];
+      }
+    else */
+    for (int k=k1; k<k2; k++)
+      if (tab2_v(k)-1 == j) return(coeff_v(k));
+    if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
+    printf("Error Matrice_Morse::operator(%d, %d) not defined!\n", (True_int)i, (True_int)j);
+#ifdef _OPENMP
+    Kokkos::abort("Error");
+#else
+    abort();
+#endif
+  }
+};
 
 #endif
 

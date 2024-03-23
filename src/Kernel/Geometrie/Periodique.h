@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ class Periodique: public Cond_lim_base
 public:
   void mettre_a_jour(double temps) override { }
   int face_associee(int i) const { return face_front_associee_[i]; }
+  inline const ArrOfInt& face_associee() const { return face_front_associee_; }
   double distance() const { return distance_; }
   inline const ArrOfDouble& direction_perio() const { return direction_perio_; }
   int direction_periodicite() const;

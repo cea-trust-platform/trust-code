@@ -18,6 +18,9 @@
 
 #include <Domaine_VF.h>
 #include <Elem_VEF.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 class VEF_discretisation;
 class Geometrie;
@@ -83,6 +86,7 @@ public:
   inline const DoubleTab& facette_normales() const { return facette_normales_; }
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
+  KOKKOS_INLINE_FUNCTION int oriente_normale(int face_opp, int elem2, CIntTabView face_voisins_v) const { return (face_voisins_v(face_opp, 0) == elem2) ? 1 : -1; }
   inline int oriente_normale(int face_opp, int elem2) const { return (face_voisins(face_opp, 0) == elem2) ? 1 : -1; }
   inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
 

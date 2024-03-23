@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,9 +43,9 @@ public :
   inline int num_premiere_face() const;        // Numero de la premiere face du bord dans la liste des faces
   inline int num_face(const int) const;        // Renvoie le numero de face de la ieme face du bord
   inline int num_local_face(const int) const; //Renvoie le numero local de la face (inverse de num_face())
-
+  inline const ArrOfInt& num_face() const;
 protected:
-
+  mutable ArrOfInt num_face_;
 };
 
 // Fonctions inline
@@ -71,6 +71,17 @@ inline int Front_VF::num_face(const int ind_face) const
     return num_premiere_face()+ind_face;
   else                                        // Face de bord virtuelle
     return frontiere().get_faces_virt()[ind_face-nb_faces()];
+}
+
+inline const ArrOfInt& Front_VF::num_face() const
+{
+  if (num_face_.size_array()==0)
+    {
+      num_face_.resize(nb_faces_tot());
+      for(int ind_face=0; ind_face<nb_faces_tot(); ind_face++)
+        num_face_(ind_face) = num_face(ind_face);
+    }
+  return num_face_;
 }
 
 inline int Front_VF::num_local_face(const int ind_global_face) const
