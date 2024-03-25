@@ -7,6 +7,11 @@
 #   list_libs: the actual list of libraries
 #
 # In the rest of the script 'xxx_P' variable denotes a list of Paths, whereas 'xxx_L' denotes a list of Libs
+#
+# WARNING: the order of the libraries detection is !!IMPORTANT!! For example, MEDCoupling relies on medfile, which itself
+# relies on HDF5, so in the final list_libs list, the order must be: MEDCoupling, med-file, HDF5.
+#
+
 
 #################
 # Initialisation
@@ -204,6 +209,13 @@ if [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ]; then
     ALL_L=$ALL_L" osqp"
 fi
 
+#############
+# MEDCoupling (before MED!!)
+#############
+LISTP="" && [ "$TRUST_DISABLE_MPI" != 1 ] && LISTP="paramedmem paramedloader"
+ALL_P=$ALL_P" \$ENV{TRUST_MEDCOUPLING_ROOT}/lib"
+ALL_L=$ALL_L" medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel"
+
 #####
 # MED
 #####
@@ -243,13 +255,6 @@ fi
 ALL_P=$ALL_P" \$ENV{TRUST_MED_ROOT}/lib"
 ALL_L=$ALL_L" med medimport medC hdf5 hdf5_hl"
 
-#############
-# MEDCoupling
-#############
-LISTP="" && [ "$TRUST_DISABLE_MPI" != 1 ] && LISTP="paramedmem paramedloader" 
-ALL_P=$ALL_P" \$ENV{TRUST_MEDCOUPLING_ROOT}/lib"
-ALL_L=$ALL_L" medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel"
-
 #####
 # EOS
 #####
@@ -280,7 +285,7 @@ ALL_L=$ALL_L" "$MPIFORT_L
 [ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS_P=" /usr/lib/x86_64-linux-gnu "$SYSLIBS_P
 SYSLIBS_L=$SYSLIBS_L" $lz_L"
 # -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
-[ `uname -s` != Darwin ] && SYSLIBS_L=$SYSLIBS_L" dl"
+[ `uname -s` != Darwin ] && SYSLIBS_L="dl "$SYSLIBS_L
 
 
 #################################################
