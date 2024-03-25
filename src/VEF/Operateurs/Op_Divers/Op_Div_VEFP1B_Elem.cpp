@@ -404,6 +404,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
     }
   end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
 
+  ToDo_Kokkos("critical");
   // ToDo OpenMP check, it seems there is an expensive copyToDevice here !!! See test case GPU
   copyPartialFromDevice(div, nps, nps+domaine.nb_som_tot(), "div on som");
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,6 +84,7 @@ void Loi_Etat_GP_base::remplir_T()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
   int i, ntot=tab_Temp.size_totale();
+  ToDo_Kokkos("critical");
   DoubleTab& tab_T = temperature_.valeurs();
   for (i=0 ; i<ntot ; i++) tab_T(i,0) = tab_Temp(i,0);
 }
@@ -107,7 +108,7 @@ void Loi_Etat_GP_base::calculer_lambda()
   DoubleTab& tab_lambda =lambda.valeurs();
 
   int i, n=tab_lambda.size();
-
+  ToDo_Kokkos("critical");
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
@@ -173,6 +174,7 @@ void Loi_Etat_GP_base::calculer_alpha()
     }
   else
     {
+      ToDo_Kokkos("critical");
       const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       double rhoelem;
       int face, nfe = elem_faces.line_size();

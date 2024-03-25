@@ -23,6 +23,7 @@
 
 void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
+  ToDo_Kokkos("critical");
   const DoubleTab& tabHn=Hn.valeurs();
   DoubleTab& tabHe=He.valeurs();
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
@@ -49,7 +50,7 @@ void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 }
 void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
 {
-
+  ToDo_Kokkos("critical");
   DoubleTab& tabHn=Hn.valeurs();
   const DoubleTab& tabHe=He.valeurs();
   Debog::verifier("elno entreee",tabHe);
@@ -85,6 +86,7 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
 }
 void Discretisation_tools::faces_to_cells(const Champ_base& Hf,  Champ_base& He)
 {
+  ToDo_Kokkos("critical");
   const DoubleTab& tabHf=Hf.valeurs();
   DoubleTab& tabHe=He.valeurs();
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
@@ -212,6 +214,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
 
 void Discretisation_tools::cells_to_faces(const Domaine_VF& dom_vf, const DoubleTab& tab_elem, DoubleTab& tab_face)
 {
+  ToDo_Kokkos("critical");
   const DoubleVect& vol = dom_vf.volumes(), &volumes_entrelaces = dom_vf.volumes_entrelaces();
   const IntTab& elem_faces = dom_vf.elem_faces();
   const int nb_face_elem = elem_faces.line_size(), nb_comp = tab_face.line_size();
@@ -237,6 +240,7 @@ void Discretisation_tools::cells_to_faces(const Domaine_VF& dom_vf, const Double
 
 void Discretisation_tools::faces_to_cells(const Domaine_VF& domaine_vf, const DoubleTab& tab_face, DoubleTab& tab_elem)
 {
+  ToDo_Kokkos("critical");
   const IntTab& elem_faces = domaine_vf.elem_faces();
   const int nb_face_elem = elem_faces.dimension(1), nb_elem = domaine_vf.nb_elem(), nb_comp = tab_face.line_size();;
   assert(tab_elem.dimension_tot(0) == domaine_vf.nb_elem_tot() && tab_face.dimension_tot(0) == domaine_vf.nb_faces_tot());

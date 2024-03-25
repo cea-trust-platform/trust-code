@@ -621,6 +621,7 @@ inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYP
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
+      ToDo_Kokkos("critical");
       const _TYPE_ x = vx[0];
       operator_multiply(resu, x, opt);
     }
@@ -638,6 +639,7 @@ inline void tab_divide_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // division par une constante
     {
+      ToDo_Kokkos("critical");
       if (vx[0] == 0) error_divide(__func__);
       const _TYPE_ x = 1. / vx[0];
       operator_multiply(resu, x, opt);

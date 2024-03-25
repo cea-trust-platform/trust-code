@@ -858,6 +858,7 @@ Matrice_Morse& Matrice_Morse::partie_sup(const Matrice_Morse& a)
  */
 DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& x,DoubleVect& resu) const
 {
+    ToDo_Kokkos("critical");
   assert_check_morse_matrix_structure( );
   const int n = tab1_.size_array() - 1;
 
@@ -890,6 +891,7 @@ DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& x,DoubleVect& res
 // Multiplication de la matrice par un vecteur x en prenant uniquement les items reels non communs pour x
 ArrOfDouble& Matrice_Morse::ajouter_multvect_(const ArrOfDouble& x,ArrOfDouble& resu,ArrOfInt& est_reel_pas_com) const
 {
+    ToDo_Kokkos("critical ?");
   assert_check_morse_matrix_structure( );
   int n = nb_lignes();
 

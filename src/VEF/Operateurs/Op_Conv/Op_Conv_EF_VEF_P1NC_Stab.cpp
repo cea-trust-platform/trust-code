@@ -253,6 +253,7 @@ double formule_3D(int n)
 
 void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,const IntList& faces, const DoubleTabs& valeurs_faces, const DoubleTab& tab_vitesse, DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const DoubleTab& face_normales=domaine_VEF.face_normales();
@@ -295,6 +296,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
 
 void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab& Kij,const int nb_comp, const DoubleTab& tab_vitesse) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const DoubleTab& face_normales=domaine_VEF.face_normales();
@@ -510,6 +512,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
 }
 void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& tab_vitesse=la_vitesse.valeurs();
@@ -534,6 +537,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
 DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
                                              DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   DoubleTab sauv(resu);
   resu=0;
 
@@ -616,6 +620,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
 DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab& transporte,
                                                                  DoubleTab& resu, const DoubleTab& vitesse_2) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -684,7 +689,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
 
 void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const DoubleTab& tab_vitesse, const DoubleTab& transporte) const
 {
-
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 #ifndef NDEBUG
@@ -744,6 +749,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=domaine_VEF.elem_faces();
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
@@ -782,6 +788,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const D
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=domaine_VEF.elem_faces();
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
@@ -827,6 +834,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
 
   const IntTab& elem_faces=domaine_VEF.elem_faces();
@@ -927,6 +935,7 @@ Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(const DoubleTab& Kij, const DoubleVec
                                            ArrOfDouble& P_plus, ArrOfDouble& P_moins,
                                            ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const
 {
+  ToDo_Kokkos("critical");
   assert(P_plus.size_array()==nb_comp);
   assert(Q_plus.size_array()==nb_comp);
   assert(P_moins.size_array()==nb_comp);
@@ -1541,6 +1550,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
 void Op_Conv_EF_VEF_P1NC_Stab::mettre_a_jour_pour_periodicite(DoubleTab& resu) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
   const int nb_comp = (resu.nb_dim()==1) ? 1 : resu.dimension(1);

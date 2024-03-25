@@ -95,7 +95,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
   // La diffusivite est constante dans le domaine donc
   //
   //          dt_diff = h*h/diffusivite
-
+  ToDo_Kokkos("critical");
   double dt_stab = DMAXFLOAT;
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   if (! has_champ_masse_volumique())
