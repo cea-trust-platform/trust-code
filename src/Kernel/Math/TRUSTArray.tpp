@@ -157,7 +157,9 @@ inline double& TRUSTArray<double>::operator[](int i)
   this->checkDataOnHost();
 #endif
   assert(i >= 0 && i < size_array());
-  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
+  // [ABN] We can not perform this check here, since we might be *setting* the value from an un-initialized state.
+  //       And an uninitialized state might well be completly off the bounds!
+  //  assert(span_[i] > -DMAXFLOAT && span_[i] < DMAXFLOAT);
   return span_[i];
 }
 /// \endcond
