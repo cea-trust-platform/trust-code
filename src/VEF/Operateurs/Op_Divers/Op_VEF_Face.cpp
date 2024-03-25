@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -696,12 +696,12 @@ void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, cons
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nb_faces_elem = elem_faces.dimension(1);
-
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique, la_cl.valeur()))
         {
+          ToDo_Kokkos("Critical");
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           // on ne parcourt que la moitie des faces periodiques
           // on copiera a la fin le resultat dans la face associe..

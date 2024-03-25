@@ -66,35 +66,31 @@ const Champ_base& Op_Diff_VEF_Face::diffusivite() const
   return diffusivite_.valeur();
 }
 
-void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
-                                            DoubleTab& resu, DoubleTab& tab_flux_bords,
-                                            DoubleTab& nu,
+void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
+                                            DoubleTab& tab_resu, DoubleTab& tab_flux_bords,
+                                            DoubleTab& tab_nu,
                                             const Domaine_Cl_VEF& domaine_Cl_VEF,
                                             const Domaine_VEF& domaine_VEF ) const
 {
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nb_faces = domaine_VEF.nb_faces();
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   int nb_bords=domaine_VEF.nb_front_Cl();
-  // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
-  tab_flux_bords=0.;
-
-  // Construction du tableau grad_ si necessaire
-  /*
-  if(!grad_.get_md_vector().non_nul())
-    {
-      grad_.resize(0, Objet_U::dimension);
-      domaine_VEF.domaine().creer_tableau_elements(grad_);
-    }
-  Champ_P1NC::calcul_gradient(inconnue,grad_,domaine_Cl_VEF);
-   */
-
   const int premiere_face_int=domaine_VEF.premiere_face_int();
 
-  ToDo_Kokkos("CopyPartial");
+  // On dimensionne et initialise le tableau des bilans de flux:
+  if (tab_flux_bords.size_array()==0) tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
+  tab_flux_bords=0.;
+
+  CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+  CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+  CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
+  CDoubleTabView nu = tab_nu.view_ro();
+  CDoubleTabView inconnue = tab_inconnue.view_ro();
+  DoubleTabView flux_bords = tab_flux_bords.view_rw();
+  DoubleTabView resu = tab_resu.view_rw();
   // On traite les faces bord
+  start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -102,73 +98,80 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
       int num1=0;
       int num2=le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
+      CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          for (int ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
-            {
-              int num_face = le_bord.num_face(ind_face);
-              int fac_asso = la_cl_perio.face_associee(ind_face);
-              fac_asso = le_bord.num_face(fac_asso);
-              for (int kk=0; kk<2; kk++)
-                {
-                  int elem = face_voisins(num_face,kk);
-                  for (int i=0; i<nb_faces_elem; i++)
-                    {
-                      int j = elem_faces(elem,i);
-                      if ( j > num_face  && j != fac_asso )
-                        {
-                          double valA = viscA(num_face,j,elem,nu(elem));
-                          double flux = valA*(inconnue(j)-inconnue(num_face));
-                          resu(num_face)+=flux;
-                          if(j<nb_faces) // face reelle
-                            resu(j)-=+0.5*flux;
-                        }
-                    }
-                }
-            }
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_cas_scalaire bord periodique",
+                               Kokkos::RangePolicy<>(num1, nb_faces_bord_reel), KOKKOS_LAMBDA(
+                                 const int ind_face)
+          {
+            int num_face = le_bord_num_face(ind_face);
+            int fac_asso = face_associee(ind_face);
+            fac_asso = le_bord_num_face(fac_asso);
+            for (int kk=0; kk<2; kk++)
+              {
+                int elem = face_voisins(num_face,kk);
+                for (int i=0; i<nb_faces_elem; i++)
+                  {
+                    int j = elem_faces(elem,i);
+                    if ( j > num_face  && j != fac_asso )
+                      {
+                        double valA = viscA(num_face,j,elem, nu(elem,0), face_voisins, face_normale, inverse_volumes);
+                        double flux = valA*(inconnue(j,0)-inconnue(num_face,0));
+                        Kokkos::atomic_add(&resu(num_face,0), +flux);
+                        if(j<nb_faces) // face reelle
+                          Kokkos::atomic_add(&resu(j,0), -0.5*flux);
+                      }
+                  }
+              }
+          });
         }
       else   // Il n'y a qu'une seule composante, donc on traite
         // une equation scalaire (pas la vitesse) on a pas a utiliser
         // le tau tangentiel (les lois de paroi thermiques ne calculent pas
         // d'echange turbulent a la paroi pour l'instant
         {
-          for (int ind_face=num1; ind_face<num2; ind_face++)
-            {
-              int num_face = le_bord.num_face(ind_face);
-              int elem = face_voisins(num_face,0);
-              for (int i=0; i<nb_faces_elem; i++)
-                {
-                  int j = elem_faces(elem,i);
-                  if (j > num_face || num_face>=nb_faces)
-                    {
-                      double valA = viscA(num_face,j,elem,nu(elem));
-                      double flux=valA*(inconnue(j)-inconnue(num_face));
-                      if (num_face<nb_faces) // face reelle
-                        {
-                          resu(num_face)+=flux;
-                          tab_flux_bords(num_face,0)-=flux;
-                        }
-                      if(j<nb_faces) // face reelle
-                        {
-                          resu(j)-=flux;
-                          if (j<premiere_face_int)
-                            tab_flux_bords(j,0)+=flux;
-                        }
-                    }
-                }
-            }
+          Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_cas_scalaire bord quelconque",
+                               Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
+                                 const int ind_face)
+          {
+            int num_face = le_bord_num_face(ind_face);
+            int elem = face_voisins(num_face,0);
+            for (int i=0; i<nb_faces_elem; i++)
+              {
+                int j = elem_faces(elem,i);
+                if (j > num_face || num_face>=nb_faces)
+                  {
+                    double valA = viscA(num_face,j,elem,nu(elem,0), face_voisins, face_normale, inverse_volumes);
+                    double flux=valA*(inconnue(j,0)-inconnue(num_face,0));
+                    if (num_face<nb_faces) // face reelle
+                      {
+                        Kokkos::atomic_add(&resu(num_face,0), +flux);
+                        Kokkos::atomic_add(&flux_bords(num_face,0), -flux);
+                      }
+                    if(j<nb_faces) // face reelle
+                      {
+                        Kokkos::atomic_add(&resu(j,0), -flux);
+                        if (j<premiere_face_int)
+                          Kokkos::atomic_add(&flux_bords(j,0), +flux);
+                      }
+                  }
+              }
+          });
         }
     }
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_cas_scalaire bords");
 
   // Faces internes :
   const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
   const int* elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
   const double* face_normales_addr = mapToDevice(domaine_VEF.face_normales());
   const double* inverse_volumes_addr = mapToDevice(domaine_VEF.inverse_volumes());
-  const double* inconnue_addr = mapToDevice(inconnue, "inconnue");
-  const double* nu_addr = mapToDevice(nu, "nu");
-  double* resu_addr = computeOnTheDevice(resu, "resu");
+  const double* inconnue_addr = mapToDevice(tab_inconnue, "inconnue");
+  const double* nu_addr = mapToDevice(tab_nu, "nu");
+  double* resu_addr = computeOnTheDevice(tab_resu, "resu");
   start_gpu_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
@@ -231,8 +234,8 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   } // Fin de la boucle sur les faces */
 
   // Neumann :
-  copyPartialFromDevice(resu, 0, premiere_face_int, "resu on boundary");
-  copyPartialFromDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
+  copyPartialFromDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
+  copyPartialFromDevice(tab_inconnue, 0, premiere_face_int, "inconnue on boundary");
   start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
@@ -246,7 +249,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
           for (int face=ndeb; face<nfin; face++)
             {
               double flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.surface(face);
-              resu[face] += flux;
+              tab_resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
         }
@@ -255,8 +258,8 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
           for (int face=ndeb; face<nfin; face++)
             {
-              double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.surface(face);
-              resu[face] += flux;
+              double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-tab_inconnue(face))*domaine_VEF.surface(face);
+              tab_resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
         }
@@ -268,8 +271,8 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
               double h=la_cl_paroi.h_imp(face-ndeb);
               double Text=la_cl_paroi.T_ext(face-ndeb);
               double phiext=la_cl_paroi.flux_exterieur_impose(face-ndeb);
-              double flux=(phiext+h*(Text-inconnue(face)))*domaine_VEF.surface(face);
-              resu[face] += flux;
+              double flux=(phiext+h*(Text-tab_inconnue(face)))*domaine_VEF.surface(face);
+              tab_resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
         }
@@ -282,8 +285,8 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
         }
     }
   end_gpu_timer(0, "Boundary condition on resu in Op_Diff_VEF_Face::ajouter_cas_scalaire\n");
-  copyPartialToDevice(resu, 0, premiere_face_int, "resu on boundary");
-  copyPartialToDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
+  copyPartialToDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
+  copyPartialToDevice(tab_inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
 
 void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
@@ -701,45 +704,37 @@ DoubleTab& Op_Diff_VEF_Face::calculer(const DoubleTab& inconnue, DoubleTab& resu
 
 
 
-void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse& matrice) const
+void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Matrice_Morse& matrice_morse) const
 {
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
 
-  modifier_matrice_pour_periodique_avant_contribuer(matrice,equation());
+  modifier_matrice_pour_periodique_avant_contribuer(matrice_morse,equation());
   // On remplit le tableau nu car l'assemblage d'une
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-
-  int n1 = domaine_VEF.nb_faces();
-  int nb_comp = 1;
-  int nb_dim = transporte.nb_dim();
-
-  DoubleTab nu;
+  DoubleTab tab_nu;
   int marq=phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
   // cela depend si on diffuse phi_psi ou psi
-  modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
-  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
-  if (!marq)
-    porosite_eventuelle=1;
+  modif_par_porosite_si_flag(nu_,tab_nu,!marq,equation().milieu().porosite_elem());
 
-
-  if(nb_dim==2)
-    nb_comp=transporte.dimension(1);
-
-  int i,j,num_face;
-  int elem1,elem2;
+  int nb_dim = tab_transporte.nb_dim();
+  int nb_comp = (nb_dim==2 ? tab_transporte.dimension(1) : 1);
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-  double val;
-
   int nb_bords=domaine_VEF.nb_front_Cl();
+
+  CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+  CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
+  CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+  CDoubleTabView nu = tab_nu.view_ro();
+  Matrice_Morse_View matrice;
+  matrice.set(matrice_morse);
+  start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -750,120 +745,139 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          int fac_asso;
           // on ne parcourt que la moitie des faces periodiques
           // on copiera a la fin le resultat dans la face associe..
           int num2b=num1+le_bord.nb_faces()/2;
-          for (num_face=num1; num_face<num2b; num_face++)
-            {
-              elem1 = face_voisins(num_face,0);
-              elem2 = face_voisins(num_face,1);
-              fac_asso = la_cl_perio.face_associee(num_face-num1)+num1;
-              for (i=0; i<nb_faces_elem; i++)
-                {
-                  if ( (j=elem_faces(elem1,i)) > num_face )
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_contribution CL periodique",
+                               Kokkos::RangePolicy<>(num1, num2b), KOKKOS_LAMBDA(
+                                 const int num_face)
+          {
+            int elem1 = face_voisins(num_face,0);
+            int elem2 = face_voisins(num_face,1);
+            int j;
+            int fac_asso = face_associee(num_face-num1)+num1;
+            for (int i=0; i<nb_faces_elem; i++)
+              {
+                if ( (j=elem_faces(elem1,i)) > num_face )
+                  {
+                    double val = viscA(num_face,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
+                    double coeff_face1 = val * (marq ? porosite_face(num_face) : 1);
+                    double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+                    for (int nc=0; nc<nb_comp; nc++)
+                      {
+                        int n0=num_face*nb_comp+nc;
+                        int j0=j*nb_comp+nc;
+                        Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                        Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                        Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
+                        Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
+                      }
+                  }
+                if (elem2!=-1)
+                  if ( (j=elem_faces(elem2,i)) > num_face )
                     {
-                      val = viscA(num_face,j,elem1,nu(elem1));
+                      double val = viscA(num_face,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
+                      double coeff_face1 = val * (marq ? porosite_face(num_face) : 1);
+                      double coeff_face2 = val * (marq ? porosite_face(j) : 1);
                       for (int nc=0; nc<nb_comp; nc++)
                         {
                           int n0=num_face*nb_comp+nc;
                           int j0=j*nb_comp+nc;
-
-                          matrice(n0,n0)+=val*porosite_eventuelle(num_face);
-                          matrice(n0,j0)-=val*porosite_eventuelle(j);
-                          matrice(j0,n0)-=val*porosite_eventuelle(num_face);
-                          matrice(j0,j0)+=val*porosite_eventuelle(j);
-
+                          int n1=fac_asso*nb_comp+nc;
+                          Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                          Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                          Kokkos::atomic_add(&matrice(j0,n1), -coeff_face1);
+                          Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
                         }
                     }
-                  if (elem2!=-1)
-                    if ( (j=elem_faces(elem2,i)) > num_face )
-                      {
-                        val= viscA(num_face,j,elem2,nu(elem2));
-                        for (int nc=0; nc<nb_comp; nc++)
-                          {
-                            int n0=num_face*nb_comp+nc;
-                            int j0=j*nb_comp+nc;
-                            int  n0perio=fac_asso*nb_comp+nc;
-                            matrice(n0,n0)+=val*porosite_eventuelle(num_face);
-                            matrice(n0,j0)-=val*porosite_eventuelle(j);
-                            matrice(j0,n0perio)-=val*porosite_eventuelle(num_face);
-                            matrice(j0,j0)+=val*porosite_eventuelle(j);
-
-                          }
-                      }
-                }
-            }
-
+              }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_contribution CL periodique");
         }
       else
         {
-          for (num_face=num1; num_face<num2; num_face++)
-            {
-              elem1 = face_voisins(num_face,0);
-              for (i=0; i<nb_faces_elem; i++)
-                {
-                  if ( (j= elem_faces(elem1,i)) > num_face )
-                    {
-                      val = viscA(num_face,j,elem1,nu(elem1));
-                      for (int nc=0; nc<nb_comp; nc++)
-                        {
-                          int n0=num_face*nb_comp+nc;
-                          int j0=j*nb_comp+nc;
-
-                          matrice(n0,n0)+=val*porosite_eventuelle(num_face);
-                          matrice(n0,j0)-=val*porosite_eventuelle(j);
-                          matrice(j0,n0)-=val*porosite_eventuelle(num_face);
-                          matrice(j0,j0)+=val*porosite_eventuelle(j);
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-  // ToDo Kokkos
-  int n0 = domaine_VEF.premiere_face_int();
-  for (num_face=n0; num_face<n1; num_face++)
-    {
-      elem1 = face_voisins(num_face,0);
-      elem2 = face_voisins(num_face,1);
-
-      for (i=0; i<nb_faces_elem; i++)
-        {
-          if ( (j=elem_faces(elem1,i)) > num_face )
-            {
-              val = viscA(num_face,j,elem1,nu(elem1));
-              for (int nc=0; nc<nb_comp; nc++)
-                {
-                  int nn0=num_face*nb_comp+nc;
-                  int j0=j*nb_comp+nc;
-
-                  matrice(nn0,nn0)+=val*porosite_eventuelle(num_face);
-                  matrice(nn0,j0)-=val*porosite_eventuelle(j);
-                  matrice(j0,nn0)-=val*porosite_eventuelle(num_face);
-                  matrice(j0,j0)+=val*porosite_eventuelle(j);
-
-                }
-            }
-          if (elem2!=-1)
-            if ( (j=elem_faces(elem2,i)) > num_face )
+          Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_contribution CL autre",
+                               Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
+                                 const int num_face)
+          {
+            int elem1 = face_voisins(num_face,0);
+            int j;
+            for (int i=0; i<nb_faces_elem; i++)
               {
-                val= viscA(num_face,j,elem2,nu(elem2));
-                for (int nc=0; nc<nb_comp; nc++)
+                if ( (j= elem_faces(elem1,i)) > num_face )
                   {
-                    int nn0=num_face*nb_comp+nc;
-                    int j0=j*nb_comp+nc;
+                    double val = viscA(num_face,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
+                    double coeff_face1 = val * (marq ? porosite_face(num_face) : 1);
+                    double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+                    for (int nc=0; nc<nb_comp; nc++)
+                      {
+                        int n0=num_face*nb_comp+nc;
+                        int j0=j*nb_comp+nc;
 
-                    matrice(nn0,nn0)+=val*porosite_eventuelle(num_face);
-                    matrice(nn0,j0)-=val*porosite_eventuelle(j);
-                    matrice(j0,nn0)-=val*porosite_eventuelle(num_face);
-                    matrice(j0,j0)+=val*porosite_eventuelle(j);
+                        Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                        Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                        Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
+                        Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
 
+                      }
                   }
               }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_contribution CL autre");
         }
     }
+  int num0 = domaine_VEF.premiere_face_int();
+  int num1 = domaine_VEF.nb_faces();
+  start_gpu_timer();
+  Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_contribution",
+                       Kokkos::RangePolicy<>(num0, num1), KOKKOS_LAMBDA(
+                         const int num_face)
+  {
+    int elem1 = face_voisins(num_face,0);
+    int elem2 = face_voisins(num_face,1);
+    int j;
+    for (int i=0; i<nb_faces_elem; i++)
+      {
+        if ( (j=elem_faces(elem1,i)) > num_face )
+          {
+            double val = viscA(num_face,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
+            double coeff_face1 = val * (marq ? porosite_face(num_face) : 1);
+            double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+            for (int nc=0; nc<nb_comp; nc++)
+              {
+                int n0=num_face*nb_comp+nc;
+                int j0=j*nb_comp+nc;
+
+                Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
+                Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
+
+              }
+          }
+        if (elem2!=-1)
+          if ( (j=elem_faces(elem2,i)) > num_face )
+            {
+              double val = viscA(num_face,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
+              double coeff_face1 = val * (marq ? porosite_face(num_face) : 1);
+              double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+              for (int nc=0; nc<nb_comp; nc++)
+                {
+                  int n0=num_face*nb_comp+nc;
+                  int j0=j*nb_comp+nc;
+
+                  Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                  Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                  Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
+                  Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
+
+                }
+            }
+      }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_contribution");
+
   // Neumann :
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
@@ -874,13 +888,14 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
         }
       else if (sub_type(Echange_externe_impose,la_cl.valeur()))
         {
+          ToDo_Kokkos("Boundary");
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
+              matrice_morse(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
             }
         }
       // [ABN]: a finir il faut encore corriger le dimensionnement de la matrice ...
@@ -895,12 +910,13 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 //          for (int face=ndeb; face<nfin; face++)
 //            {
 //              int opp_face = fmap(face-ndeb)+ndeb;
-//              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
-//              matrice(opp_face,face) -= la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
+//              matrice_morse(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
+//              matrice_morse(opp_face,face) -= la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
 //            }
 //        }
       else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
         {
+          ToDo_Kokkos("Boundary");
           const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
 
@@ -910,7 +926,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
               double dphi_dT=la_cl_paroi.derivee_flux_exterieur_imposee(face-ndeb);
-              matrice(face,face) += (h+dphi_dT)*domaine_VEF.face_surfaces(face);
+              matrice_morse(face,face) += (h+dphi_dT)*domaine_VEF.face_surfaces(face);
             }
 
         }
@@ -920,11 +936,12 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
         {
         }
     }
-  modifier_matrice_pour_periodique_apres_contribuer(matrice,equation());
+  modifier_matrice_pour_periodique_apres_contribuer(matrice_morse,equation());
 }
 
 void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& transporte, Matrice_Morse& matrice) const
 {
+  ToDo_Kokkos("Critical");
   modifier_matrice_pour_periodique_avant_contribuer(matrice,equation());
   // On remplit le tableau nu car l'assemblage d'une
   // matrice avec ajouter_contribution peut se faire
