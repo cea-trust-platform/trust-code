@@ -95,7 +95,6 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
     {
       if (mot == "dt_impr_ustar")
         {
-//          nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar";
           is >> dt_impr_ustar_;
         }
       else if (mot == "dt_impr_ustar_mean_only")
@@ -192,27 +191,6 @@ void Modele_turbulence_hyd_base::associer_eqn(const Equation_base& eqn)
   mon_equation_ = eqn;
 }
 
-/*! @brief NE FAIT RIEN a surcharger dans les classes derivees.
- *
- *     Associe le domaine discretisee et le domaine des conditions
- *     aux limites discretisees au modele de turbulence.
- *
- * @param (Domaine_dis&) un domaine discretisee
- * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
- */
-void Modele_turbulence_hyd_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
-{
-  ;
-}
-
-/*! @brief NE FAIT RIEN
- *
- */
-void Modele_turbulence_hyd_base::completer()
-{
-  ;
-}
-
 /*! @brief Lit le fichier dom_Wall_length.
  *
  * xyz pour remplir le champs wall_length en vue d'un post-traitement de distance_paroi
@@ -220,9 +198,7 @@ void Modele_turbulence_hyd_base::completer()
  */
 void Modele_turbulence_hyd_base::lire_distance_paroi()
 {
-
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
-
   DoubleTab& wall_length = wall_length_.valeurs();
   wall_length = -1.;
 
@@ -480,9 +456,6 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   assert(nb_elem == size);
   int compt = 0;
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
   for (int elem = 0; elem < nb_elem; elem++)
     {
       if (visco_turb(elem) > borne_visco_turb_(elem))
@@ -496,8 +469,6 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
     }
   corr_visco_turb_.changer_temps(mon_equation_->inconnue().temps());
   visco_turb.echange_espace_virtuel();
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb after",corr_visco_turb);
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb after",visco_turb);
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_.valeurs());
 
   // On imprime

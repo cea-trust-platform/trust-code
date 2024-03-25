@@ -46,6 +46,7 @@ class Modele_turbulence_hyd_base: public Objet_U, public Support_Champ_Masse_Vol
   Declare_base(Modele_turbulence_hyd_base);
 public:
   inline const Champ_Fonc& viscosite_turbulente() const { return la_viscosite_turbulente_; }
+  inline Champ_Fonc& viscosite_turbulente() { return la_viscosite_turbulente_; }
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
   inline const Turbulence_paroi& loi_paroi() const { return loipar_; }
@@ -61,9 +62,9 @@ public:
   void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
   void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
   void discretiser_K(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
-  virtual void completer();
+  virtual void completer() { /* Do nothing */ }
   void associer_eqn(const Equation_base&);
-  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&);
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&) { /* Do nothing */ }
   int reprendre(Entree&) override;
 
   void creer_champ(const Motcle& motlu) override;
@@ -80,21 +81,20 @@ public:
   inline double get_Cmu() const { return LeCmu_; }
   void lire_distance_paroi();
 
+  void limiter_viscosite_turbulente();
+
 protected:
   double LeCmu_ = CMU;
-  Champ_Fonc la_viscosite_turbulente_;
-  Champ_Fonc wall_length_;
+  Champ_Fonc la_viscosite_turbulente_, wall_length_;
   REF(Equation_base) mon_equation_;
   Turbulence_paroi loipar_;
   double dt_impr_ustar_  = 1.e20, dt_impr_ustar_mean_only_  = 1.e20;
   int boundaries_ = 0;
   LIST(Nom) boundaries_list_;
   Nom nom_fichier_ = "";
-  void limiter_viscosite_turbulente();
-
   Champs_compris champs_compris_;
-private:
 
+private:
   double XNUTM_ = 1.E8, dt_diff_sur_dt_conv_ = -1;
   int calcul_borne_locale_visco_turb_ = 0;
   Champ_Fonc corr_visco_turb_;
@@ -109,7 +109,7 @@ private:
  */
 inline Equation_base& Modele_turbulence_hyd_base::equation()
 {
-  if (mon_equation_.non_nul() == 0)
+  if (mon_equation_.est_nul())
     {
       Cerr << "Error in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
@@ -119,7 +119,7 @@ inline Equation_base& Modele_turbulence_hyd_base::equation()
 
 inline const Equation_base& Modele_turbulence_hyd_base::equation() const
 {
-  if (mon_equation_.non_nul() == 0)
+  if (mon_equation_.est_nul())
     {
       Cerr << "Error in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
