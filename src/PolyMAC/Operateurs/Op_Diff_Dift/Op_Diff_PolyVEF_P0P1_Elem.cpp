@@ -225,9 +225,10 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
       /* Gf : gradient non stabilise dans le diamant */
       for (Gf = 0, i = 0; i < n_sf; i++)
         for (j = 0; j < D; j++)
-          if (j < 2)
+          if (j == 2) //partie s -> sb (3D)
+            for (ib = i + 1 < n_sf ? i + 1 : 0, d = 0; d < D; d++) Gf(2 + ib, d) += Sa(i, j, d), Gf(2 + i, d) -= Sa(i, j, d);
+          else if (f_e[0](f, j) >= 0)
             for (d = 0; d < D; d++) Gf(j, d) += Sa(i, j, d), Gf(2 + i, d) -= Sa(i, j, d); //parties s -> e
-          else for (ib = i + 1 < n_sf ? i + 1 : 0, d = 0; d < D; d++) Gf(2 + ib, d) += Sa(i, j, d), Gf(2 + i, d) -= Sa(i, j, d); //partie s -> sb (3D)
       Gf /= vf[0](f);
 
       /* Gfa : gradient stabilise pour chaque arete du diamant */
@@ -258,7 +259,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
       /* contributions */
       for (i = 0; i < nt; i++)
         if (i < 2 ? !aux_only && (e = f_e[0](f, i)) >= 0 && e < dom[0].get().nb_elem() : (s = f_s[0](f, i - 2)) >= 0 && s < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
-          for (j = 0; j < 2 + n_sf; j++)
+          for (j = 0; j < nt; j++)
             if (j < 2 ? (eb = f_e[0](f, j)) >= 0 : (sb = f_s[0](f, j - 2)) >= 0)
               for (n = 0; n < N[0]; n++)
                 {
@@ -266,7 +267,21 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                   if (mat[0] && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
                     (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n) += A(i, j, n);
                 }
+
+      /* flux de Neumann -> injection aux sommets */
+
+
     }
+
+  /* autres equations : sommets de Dirichlet */
+  if (!semi && mat[0])
+    for (s = 0; s < dom[0].get().nb_som(); s++)
+      for (i = scl_d[0](s); i < scl_d[0](s + 1); s++)
+        for (n = 0; n < N[0]; n++)
+          {
+            secmem(!aux_only * ne_tot[0] + s, n) += (sub_type(Dirichlet, cls[0].get()[scl_c[0](i, 0)].valeur()) ? ref_cast(Dirichlet, cls[0].get()[scl_c[0](i, 0)].valeur()).val_imp(scl_c[0](i, 1), n) : 0) - v_aux[0](s, n);
+            (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n)++;
+          }
 
   /* equations triviales aux aretes si semi-implicite */
   if (!aux_only && semi && mat[0])
