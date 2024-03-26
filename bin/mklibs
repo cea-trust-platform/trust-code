@@ -64,7 +64,7 @@ then
       if [ "$TRUST_USE_CUDA" = 1 ]; then
           AMGX_ROOT="\$ENV{TRUST_ROOT}/lib/src/LIBAMGX" 
           PETSC_P=$PETSC_P" $AMGX_ROOT/AmgX/lib $AMGX_ROOT/AmgXWrapper/lib64"
-          PETSC_L=$PETSC_L"amgx`[ "$LINK_CUDA" != _static ] && echo sh` AmgXWrapper"
+          PETSC_L=$PETSC_L" amgx`[ "$LINK_CUDA" != _static ] && echo sh` AmgXWrapper"
       fi
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
