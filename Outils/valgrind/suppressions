@@ -18,6 +18,7 @@
    fun:_ZN6Kokkos10initializeERiPPc
    fun:_ZN8mon_main13init_parallelEiPPciii
    fun:_Z10main_TRUSTiPPcRP8mon_maini
+   ...
    fun:main
 }
 
