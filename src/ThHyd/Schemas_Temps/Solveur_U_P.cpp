@@ -175,7 +175,6 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
           Matrice_Morse& mat_div_p = ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,1).valeur());
           divergence.dimensionner_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}});
           divergence.ajouter_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}}, residu_parts[1]);
-          if (!has_P_ref && !Process::me()) mat_div_p(0, 0) += 1; //revient a imposer P(0) = 0
         }
       else /* sinon : l'operateur remplit mat_div_v, on construit a la main mat_div_p = 0 */
         {
