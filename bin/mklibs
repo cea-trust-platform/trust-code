@@ -44,7 +44,7 @@ then
    cd $PETSC_LIB
    if [ -f libpetsc.a ]
    then
-      PETSC_P="\$ENV{PETSC_ROOT}/\$ENV{TRUST_ARCH}\$ENV{OPT}/lib"
+      PETSC_P="\$ENV{PETSC_ROOT}/\$ENV{TRUST_ARCH}\${OPT}/lib"
       PETSC_L="petsc"
       superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC_L=$PETSC_L" ${superlu%.a}"
       [ -f libcmumps.a ] && PETSC_L=$PETSC_L" cmumps dmumps mumps_common smumps zmumps pord"
@@ -129,6 +129,7 @@ fi
 #############
 LAPACK_P=""
 LAPACK_L=""
+sys=0
 if [ "$TRUST_BLAS_LAPACK" = "" ]
 then
     LAPACK_P="\$ENV{TRUST_LIB}/src/LIBLAPACK"
@@ -155,10 +156,13 @@ else
         # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
         LAPACK_P=$TRUST_BLAS_LAPACK
         tmp="`awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"-lmkl") || index($i,"/mkl/lib") || index($i,"/mkl/latest/lib") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
-        LAPACK_L=${tmp/-l/}  # remove all '-l'
+        LAPACK_L=`echo $tmp | sed "s/ /\n/g" | grep "\-l" | sed "s/\-l/ /" | tr '\n' ' '`  #${tmp/-l/}  # remove all '-l'
+        #LAPACK_P=$LAPACK_P" "`echo $LAPACK_L | sed "s/ /\n/g" | grep "\-L" | sed "s/\-L//"`
+        SYSLIBS_P=$SYSLIBS_P" "$LAPACK_P
+        sys=1
     fi
 fi
-ALL_P=$ALL_P" "$LAPACK_P
+[ "$sys" -eq 0 ] && ALL_P=$ALL_P" "$LAPACK_P
 ALL_L=$ALL_L" "$LAPACK_L
 
 ####
@@ -182,7 +186,7 @@ fi
 # Kokkos
 ########
 if [ $TRUST_USE_KOKKOS = 1 ] ; then
-   KOKKOS_P="\$ENV{TRUST_KOKKOS_ROOT}/\$ENV{TRUST_ARCH}\$ENV{OPT}/lib64"
+   KOKKOS_P="\$ENV{TRUST_KOKKOS_ROOT}/\$ENV{TRUST_ARCH}\${OPT}/lib64"
    KOKKOS_L="kokkoscontainers kokkoscore"
    [ -f $TRUST_KOKKOS_ROOT/$TRUST_ARCH$OPT/libkokkossimd.a ] && KOKKOS_L=$KOKKOS_L" kokkossimd"
 fi
