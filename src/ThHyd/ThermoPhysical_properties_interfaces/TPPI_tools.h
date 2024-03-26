@@ -104,8 +104,8 @@ enum class SAT
   CPL_SAT, CPL_SAT_DP,
   CPV_SAT, CPV_SAT_DP,
   SIGMA, SIGMA_DP, /* pour coco seulement */
-  /* juste dans l'enum mais pas dans prop directe */
-  LV_SAT, LV_SAT_DP
+  LV_SAT, LV_SAT_DP,
+  LAMBDA, MU
 };
 
 static constexpr std::array<PairCharArray, 18> EOS_prop_sat =

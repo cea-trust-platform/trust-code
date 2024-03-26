@@ -30,6 +30,26 @@ class CoolProp_to_TRUST_Sat_generique : public CoolProp_to_TRUST
 public :
   void set_saturation_generique(const char *const model_name, const char *const fluid_name) override;
 
+  int tppi_get_lambda_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    return tppi_get_single_sat_p_(SAT::LAMBDA, P, res, 1, 0, true);
+  }
+
+  int tppi_get_lambda_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    return tppi_get_single_sat_p_(SAT::LAMBDA, P, res, 1, 0, false);
+  }
+
+  int tppi_get_mu_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    return tppi_get_single_sat_p_(SAT::MU, P, res, 1, 0, true);
+  }
+
+  int tppi_get_mu_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    return tppi_get_single_sat_p_(SAT::MU, P, res, 1, 0, false);
+  }
+
   // pour les gens qui cherchent sigma de l'objet saturation
   int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD res, int ncomp, int ind) const override
   {

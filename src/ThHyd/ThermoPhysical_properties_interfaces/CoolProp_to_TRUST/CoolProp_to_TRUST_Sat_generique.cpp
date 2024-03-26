@@ -103,6 +103,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
       if (enum_prop == SAT::HL_SAT || enum_prop == SAT::HV_SAT) res[i] = fluide->hmass();
       if (enum_prop == SAT::RHOL_SAT || enum_prop == SAT::RHOV_SAT) res[i] = fluide->rhomass();
       if (enum_prop == SAT::CPL_SAT || enum_prop == SAT::CPV_SAT) res[i] = fluide->cpmass();
+      if (enum_prop == SAT::LAMBDA) res[i] = fluide->conductivity();
+      if (enum_prop == SAT::MU) res[i] = fluide->viscosity();
       if (enum_prop == SAT::SIGMA  && sigma_mano_<=0.)
         {
           // soucis la avec plusieurs instance de factory abstract_state
