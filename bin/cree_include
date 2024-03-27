@@ -93,7 +93,7 @@ if [ ! -f $kokkos_hdr ] || diff $kokkos_hdr $TRUST_TMP/kokkos++.h 1>/dev/null; t
 fi
 
 # current dir is $TRUST_ROOT/include:
-for finc in `find ../src -type f -name "*.h" -or -name "*.tpp"`; do
+for finc in `find ../src -type f -name "*.h" -or -name "*.tpp" -or -name "*.hpp"`; do
     ln -nsf $finc .
 done
 
