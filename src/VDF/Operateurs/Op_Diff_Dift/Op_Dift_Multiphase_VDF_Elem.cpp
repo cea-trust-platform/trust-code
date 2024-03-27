@@ -39,6 +39,21 @@ Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
 
 Op_Dift_Multiphase_VDF_Elem::Op_Dift_Multiphase_VDF_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_Multiphase_VDF_Elem>()) { }
 
+void Op_Dift_Multiphase_VDF_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Op_Dift_VDF_Elem_base::get_noms_champs_postraitables(nom,opt);
+
+  Noms noms_compris;
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_compris.add(noms_d_t_post_[i]);
+
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Dift_Multiphase_VDF_Elem : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
+
 void Op_Dift_Multiphase_VDF_Elem::creer_champ(const Motcle& motlu)
 {
   Op_Dift_VDF_Elem_base::creer_champ(motlu);

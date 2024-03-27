@@ -40,6 +40,21 @@ Op_Dift_Multiphase_VDF_Face::Op_Dift_Multiphase_VDF_Face() : Op_Dift_VDF_Face_ba
   // declare_support_masse_volumique(1); // poubelle
 }
 
+void Op_Dift_Multiphase_VDF_Face::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Op_Dift_VDF_Face_base::get_noms_champs_postraitables(nom,opt);
+
+  Noms noms_compris;
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_compris.add(noms_nu_t_post_[i]);
+
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Dift_Multiphase_VDF_Face : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
+
 void Op_Dift_Multiphase_VDF_Face::creer_champ(const Motcle& motlu)
 {
   Op_Dift_VDF_Face_base::creer_champ(motlu);

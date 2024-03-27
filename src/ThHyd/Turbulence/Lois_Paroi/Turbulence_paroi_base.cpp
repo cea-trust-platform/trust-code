@@ -106,12 +106,14 @@ const Champ_base& Turbulence_paroi_base::get_champ(const Motcle& nom) const
 
 void Turbulence_paroi_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  noms_compris.add("u_star");
   if (opt == DESCRIPTION)
-    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
+    Cerr << que_suis_je() << " : " << noms_compris << finl;
   else
-    nom.add(champs_compris_.liste_noms_compris());
-
+    nom.add(noms_compris);
 }
+
 /*! @brief Ouverture/creation d'un fichier d'impression de Face, uplus_, dplus_, tab_u_star, Cisaillement_paroi_
  *
  */

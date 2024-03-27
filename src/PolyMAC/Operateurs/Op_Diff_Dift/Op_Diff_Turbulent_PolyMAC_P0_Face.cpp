@@ -62,6 +62,20 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
     }
 }
 
+void Op_Diff_Turbulent_PolyMAC_P0_Face::get_noms_champs_postraitables(Noms& noms,Option opt) const
+{
+  Op_Diff_PolyMAC_P0_Face::get_noms_champs_postraitables(noms,opt);
+
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  Noms noms_compris;
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_compris.add(noms_nu_t_post_[i]);
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Diff_Turbulent_PolyMAC_P0_Face : "<< noms_compris <<finl;
+  else
+    noms.add(noms_compris);
+}
+
 void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
 {
   Op_Diff_PolyMAC_P0_Face::mettre_a_jour(temps);

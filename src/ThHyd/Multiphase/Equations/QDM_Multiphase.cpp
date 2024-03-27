@@ -287,12 +287,17 @@ void QDM_Multiphase::get_noms_champs_postraitables(Noms& noms,Option opt) const
 {
   Navier_Stokes_std::get_noms_champs_postraitables(noms,opt);
 
+  Noms noms_compris;
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   for (int i = 0; i < pb.nb_phases(); i++)
     {
-      noms.add(noms_grad_vit_phases_[i]);
-      noms.add(noms_vit_phases_[i]);
+      noms_compris.add(noms_grad_vit_phases_[i]);
+      noms_compris.add(noms_vit_phases_[i]);
     }
+  if (opt==DESCRIPTION)
+    Cerr<<" QDM_Multiphase : "<< noms_compris <<finl;
+  else
+    noms.add(noms_compris);
 }
 
 void QDM_Multiphase::creer_champ(const Motcle& motlu)

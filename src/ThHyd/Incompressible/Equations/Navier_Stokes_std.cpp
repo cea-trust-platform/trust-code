@@ -1532,16 +1532,20 @@ void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) cons
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
 
-  nom.add("vorticite");
-  nom.add("critere_Q");
-  nom.add("porosite_volumique");
-  nom.add("y_plus");
-  nom.add("reynolds_maille");
-  nom.add("courant_maille");
-  nom.add("taux_cisaillement");
-  nom.add("pression_hydrostatique");
-  nom.add("gradient_vitesse");
-  nom.add("vitesse_residu");
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  noms_compris.add("vorticite");
+  noms_compris.add("critere_Q");
+  noms_compris.add("porosite_volumique");
+  noms_compris.add("y_plus");
+  noms_compris.add("reynolds_maille");
+  noms_compris.add("courant_maille");
+  noms_compris.add("taux_cisaillement");
+  noms_compris.add("pression_hydrostatique");
+  noms_compris.add("gradient_vitesse");
+  if (opt==DESCRIPTION)
+    Cerr<<" Navier_Stokes_std : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
 }
 
 /*! @brief Effectue quelques impressions sur un flot de sortie: - maximum de div U

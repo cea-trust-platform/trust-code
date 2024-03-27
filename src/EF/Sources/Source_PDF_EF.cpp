@@ -134,6 +134,14 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
 void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Source_base::get_noms_champs_postraitables(nom,opt);
+
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  noms_compris.add("u_star_ibm");
+  noms_compris.add("y_plus_ibm");
+  if (opt==DESCRIPTION)
+    Cerr<<" Source_PDF_EF : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
 }
 
 

@@ -166,10 +166,10 @@ void Masse_Multiphase::discretiser()
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   dis.discretiser_champ("temperature",domaine_dis(),"alpha","sans_dimension", pb.nb_phases(),nb_valeurs_temp,temps,l_inco_ch);
   l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
-  champs_compris_.ajoute_champ(l_inco_ch);
-  Equation_base::discretiser();
   for (int i = 0; i < pb.nb_phases(); i++)
     l_inco_ch.valeur().fixer_nom_compo(i, Nom("alpha_") + pb.nom_phase(i));
+  champs_compris_.ajoute_champ(l_inco_ch);
+  Equation_base::discretiser();
 
   Cerr << "Masse_Multiphase::discretiser() ok" << finl;
 }

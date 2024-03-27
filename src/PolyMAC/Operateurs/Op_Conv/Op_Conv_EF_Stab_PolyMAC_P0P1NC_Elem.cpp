@@ -212,6 +212,28 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
       }
 }
 
+void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Op_Conv_PolyMAC_base::get_noms_champs_postraitables(nom,opt);
+  Noms noms_compris;
+
+  if (sub_type(Masse_Multiphase, equation()))
+    {
+      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+
+      for (int i = 0; i < pb.nb_phases(); i++)
+        {
+          noms_compris.add(noms_cc_phases_[i]);
+          noms_compris.add(noms_vd_phases_[i]);
+          noms_compris.add(noms_x_phases_[i]);
+        }
+    }
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
+
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::creer_champ(const Motcle& motlu)
 {
   Op_Conv_PolyMAC_base::creer_champ(motlu);

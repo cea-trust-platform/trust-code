@@ -211,9 +211,12 @@ const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
 
 void Domaine_dis_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  noms_compris.add("VOLUME_MAILLE");
+  noms_compris.add("MESH_NUMBERING");
   if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+    Cerr<<que_suis_je()<<" : "<< noms_compris <<finl;
   else
-    nom.add(champs_compris_.liste_noms_compris());
+    nom.add(noms_compris);
 }
 

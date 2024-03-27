@@ -234,6 +234,20 @@ inline int string2int(const char* digit, int& result)
   return 1;
 }
 
+void Convection_Diffusion_Temperature::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Convection_Diffusion_std::get_noms_champs_postraitables(nom,opt);
+
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  noms_compris.add("gradient_temperature");
+  noms_compris.add("h_echange_");
+  if (opt==DESCRIPTION)
+    Cerr<<" Convection_Diffusion_Temperature : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
+
+
 void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
 {
   Convection_Diffusion_std::creer_champ(motlu);

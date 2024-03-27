@@ -428,6 +428,27 @@ Motcle Op_Conv_VDF_base::get_localisation_pour_post(const Nom& option) const
   return loc;
 }
 
+void Op_Conv_VDF_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Operateur_Conv_base::get_noms_champs_postraitables(nom,opt);
+  Noms noms_compris;
+
+  if (sub_type(Masse_Multiphase, equation()))
+    {
+      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+
+      for (int i = 0; i < pb.nb_phases(); i++)
+        {
+          noms_compris.add(noms_cc_phases_[i]);
+          noms_compris.add(noms_vd_phases_[i]);
+          noms_compris.add(noms_x_phases_[i]);
+        }
+    }
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Conv_VDF_base : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}
 void Op_Conv_VDF_base::creer_champ(const Motcle& motlu)
 {
   Operateur_Conv_base::creer_champ(motlu); // Do nothing mais bon :-) Maybe some day it will

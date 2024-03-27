@@ -90,6 +90,7 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
            << "\n Old name : " << inconnue().valeur().le_nom()
            << "\n New name : " << nom << finl;
       inconnue().valeur().nommer(nom);
+      champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }
   else if (mot=="alias")
@@ -100,6 +101,7 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
            << "\n Ancien nom : " << inconnue().valeur().le_nom()
            << "\n Nouveau nom : " << nom << finl;
       inconnue().valeur().nommer(nom);
+      champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }
   else

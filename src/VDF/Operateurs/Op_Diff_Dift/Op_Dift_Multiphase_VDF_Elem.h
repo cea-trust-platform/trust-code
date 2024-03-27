@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ public:
   Op_Dift_Multiphase_VDF_Elem();
 
   void creer_champ(const Motcle& motlu) override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
   double calculer_dt_stab() const override;
 

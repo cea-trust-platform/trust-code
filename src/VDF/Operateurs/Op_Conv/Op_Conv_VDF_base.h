@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ public:
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   void creer_champ(const Motcle& ) override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   void mettre_a_jour(double ) override;
 
   double calculer_dt_stab() const override;
