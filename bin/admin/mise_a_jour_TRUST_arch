@@ -784,41 +784,38 @@ do
 	    # On relance les tests de l'atelier et on le met comme condition de livraison
             echo "--------------------------------------------------------" 
 	    echo "Test atelier operation at "`date '+%H:%M:%S'`
-	    export rep_dev=$TRUST_TMP/atelier_test_$HOST_BUILD
-	    rm -r -f $rep_dev
-	    mkdir $rep_dev
-	    # $TRUST_ROOT/bin/HTML/cree_Atelier.html
-	    cd $rep_dev
+	    export dev_dir=$TRUST_TMP/atelier_test_$HOST_BUILD
+	    rm -r -f $dev_dir
+	    mkdir $dev_dir
+	    cd $dev_dir
+	    cp -r $TRUST_ROOT/bin/baltik/share/self_test/basic_with_prerequisite/* .
 	    # Modication d'un .cpp du Kernel:
-	    sed "s?Construction of?TEST_ATELIER_OK Construction of?g" $TRUST_ROOT/src/Kernel/Geometrie/Octree.cpp > Octree.cpp
-	    chmod +w Octree.cpp
-	    # On desactive MED pour tester correctement "make module"
-	    # touch med++.h
+	    sed "s?Construction of?TEST_ATELIER_OK Construction of?g" $TRUST_ROOT/src/Kernel/Geometrie/Octree.cpp > src/Octree.cpp
+	    chmod +w src/Octree.cpp
 	    # Modification d'un .h du Kernel:
-	    cp $TRUST_ROOT/src/Kernel/Postraitement/Postraitement.h .
-	    chmod +w Postraitement.h
-	    echo " " >> Postraitement.h
+	    cp $TRUST_ROOT/src/Kernel/Postraitement/Postraitement.h src
+	    chmod +w src/Postraitement.h
+	    echo " " >> src/Postraitement.h
 	    # On efface le repertoire
-	    rm -r -f $rep_dev/exec_opt
-	    echo 2 | Makeatelier.sccs 1>Makeatelier.sccs.log 2>&1
-	    cd $rep_dev/exec_opt
+	    baltik_build_configure -execute 1>Makeatelier.log 2>&1
+	    make optim 1>Makeatelier.log 2>&1
 	    # Passage d'un cas test du Kernel:
 	    cp $TRUST_TESTS/Reference/Kernel/Kernel.data exec_opt.data
-	    exec=$rep_dev/exec_opt/TRUST$COMM$OPT
+	    exec=$dev_dir/basic_opt
 	    OK="KO" && rm -f err && [ -f $exec ] && trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
 	    # On verifie qu'il est alle jusqu'a la fin aussi...
 	    [ "`grep 'Arret des processes.' atelier.log`" = "" ] && OK=KO
-	    # Nouveau test pour l'atelier, il doit etre capable de creer un objet partage pour certains projets Baltik
+	    # Construction d'un module
   	    if [ $OK = OK ]
 	    then
 	       echo "Test shared object creation in the atelier..."
-	       make module
+	       make module_optim 1>Makeatelier.log 2>&1
 	       [ $? != 0 ] && OK="KO"
 	    fi
 	    # Affichage
 	    echo "ATELIER="$OK
 	    cd $TRUST_ROOT
-	    [ $OK != "KO" ] && rm -r -f $rep_dev	
+	    [ $OK != "KO" ] && rm -r -f $dev_dir
          )	 
 	 #############################
 	 # On lance un test Valgrind #

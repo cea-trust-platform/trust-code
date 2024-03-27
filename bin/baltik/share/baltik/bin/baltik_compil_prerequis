@@ -21,10 +21,10 @@ baltik_environnement_error() {
 
 baltik_environnement_init()
 {
-        script=$0
-        bindir=`dirname $script`
-        cd `dirname $bindir`
-        pwd
+    script=$0
+    bindir=`dirname $script`
+    cd `dirname $bindir`
+    pwd
 }
 
 # initialisation de l'etat de la variable BALTIK_ROOT
@@ -35,90 +35,87 @@ then
     baltik_environnement_error
 fi
 
-
 # chargement des fonctions de gestion des dependances
 . ${BALTIK_ROOT}/bin/baltik_dependencies_management
 
 
-
-
 test_execution()
 {
-	test_dep=test_dep_$nom_prerequis
-        mkdir $test_dep
-	cd $test_dep
-	[ ! -f $prog_test ] && echo $prog_test doesnt exist&& exit 1
-	cp $prog_test .
-	add_dependencies_to_makefile make.include.atelier
-	rep_dev=`pwd`
-	export rep_dev
-	comp_old=0 
-	[ "$TRUST_ATELIER_CMAKE" = "0" ] && comp_old=1
-	if [ $comp_old -eq  1 ] 
-	    then
-        # PL: PATH set into quotes for WSL2 (some windows directories with spaces...)
-	env PATH="$BALTIK_ROOT/bin:${PATH}" Makeatelier.sccs NO_IHM 2 depend
+    test_dep=test_dep_$nom_prerequis
+    mkdir $test_dep
+    cd $test_dep
+    [ ! -f $prog_test ] && echo $prog_test doesnt exist&& exit 1
+    cp $prog_test .
+    add_dependencies_to_makefile make.include.atelier
+    rep_dev=`pwd`
+    export rep_dev
+    comp_old=0
+    [ "$TRUST_ATELIER_CMAKE" = "0" ] && comp_old=1
+    if [ $comp_old -eq  1 ]
+    then
+       # PL: PATH set into quotes for WSL2 (some windows directories with spaces...)
+       env PATH="$BALTIK_ROOT/bin:${PATH}" Makeatelier.sccs NO_IHM 2 depend
+
+       cd exec_opt
+       make PROGRAM=../../test_prog_opt #LIB=
+       #$CC -o test_prog $prog_test $includes_add $librairies_add
+       status=$?
+    else
+       rm -f exec_opt/CMakeCache.txt
+       env OPT=_opt PATH="$BALTIK_ROOT/bin:${PATH}" PROGRAM=`pwd`/../test_prog Makeatelier.sccs  -2 exe
+
+       # make PROGRAM=../../test_prog #LIB=
+       # $CC -o test_prog $prog_test $includes_add $librairies_add
+       status=$?
+       cd exec_opt
+    fi
+    cd ../..
+    if [ $status -eq  0 ]
+    then
+       LDD=`grep LD_LIBRARY_PATH $test_dep/make.include.atelier  | sed "s/#//"`
+       eval $LDD
+       [ "$DEBUG_COMPIL" = "" ] && rm -rf $test_dep
+       if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
+       then
+          # On ne teste pas le prerequis sur les clusters avec GPU : generalement erreur sur libcuda.so.1 not found
+          # Ou alors il faudrait faire: exec=`pwd`/test_prog_opt trust -gpu dummy
+          status=0
+       else
+          ./test_prog_opt
+          status=$?
+       fi
+    fi
 	
-	cd exec_opt
-	make PROGRAM=../../test_prog_opt #LIB=
-	#$CC -o test_prog $prog_test $includes_add $librairies_add
-	status=$?
-	else
-	    rm -f exec_opt/CMakeCache.txt
-	    env OPT=_opt PATH="$BALTIK_ROOT/bin:${PATH}" PROGRAM=`pwd`/../test_prog Makeatelier.sccs  -2 exe
-	
-	# make PROGRAM=../../test_prog #LIB=
-	# $CC -o test_prog $prog_test $includes_add $librairies_add
-	status=$?
-	cd exec_opt
-	fi
-	cd ../..
-	if [ $status -eq  0 ] 
-	then
-	 LDD=`grep LD_LIBRARY_PATH $test_dep/make.include.atelier  | sed "s/#//"`
-	 eval $LDD 
-	 rm -rf $test_dep
-         if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
-         then
-            # On ne teste pas le prerequis sur les clusters avec GPU : generalement erreur sur libcuda.so.1 not found
-            # Ou alors il faudrait faire: exec=`pwd`/test_prog_opt trust -gpu dummy
-            status=0
-         else
-	    ./test_prog_opt
-	    status=$?
-         fi
-        fi
-	
-	status_tot=$status 
-	export status_tot
-        rm -f ./test_prog_opt
+    status_tot=$status
+    export status_tot
+    rm -f ./test_prog_opt
 }
 
 install_arch()
 {
-   arch=$1
-   dir=$2
-   name=$3
-   mkdir prov
-   cd prov
-   [ ! -f $1 ] && echo $1 doesnt exist && exit 1
-   gunzip -c $1 > prov$3.tar
-   tar xf prov$3.tar
-   cd  $3
-   DIR=`pwd`
-   # On prend les compilos de TRUST
-   CXX=$TRUST_CC_BASE  && [ "$TRUST_CC_BASE_EXTP" != "" ]  && CXX=$TRUST_CC_BASE_EXTP  && MPICH_CXX=$CXX && OMPI_CXX=$CXX
-   CC=$TRUST_cc_BASE   && [ "$TRUST_cc_BASE_EXTP" != "" ]  && CC=$TRUST_cc_BASE_EXTP   && MPICH_CC=$CC   && OMPI_CC=$CC
-   F77=$TRUST_F77_BASE && [ "$TRUST_F77_BASE_EXTP" != "" ] && F77=$TRUST_F77_BASE_EXTP && MPICH_FC=$F77  && OMPI_FC=$F77
-   env CXX=$CXX CC=$CC F77=$F77 $DIR/configure --prefix=$dir ${configure_flag}
-   $TRUST_MAKE || make
-   make install	
-   status=$?
-   cd ../..
-   [ $status -eq 0 ] && [ "$DEBUG_COMPIL" = "" ] && rm -rf prov
-   echo "To keep the prov dir, set DEBUG_COMPIL to 1"
-   status_tot=$status
-   export status_tot
+    arch=$1
+    dir=$2
+    name=$3
+    mkdir prov
+    cd prov
+    [ ! -f $1 ] && echo $1 doesnt exist && exit 1
+    gunzip -c $1 > prov$3.tar
+    tar xf prov$3.tar
+    cd  $3
+    DIR=`pwd`
+    # On prend les compilos de TRUST
+    CXX=$TRUST_CC_BASE  && [ "$TRUST_CC_BASE_EXTP" != "" ]  && CXX=$TRUST_CC_BASE_EXTP  && MPICH_CXX=$CXX && OMPI_CXX=$CXX
+    CC=$TRUST_cc_BASE   && [ "$TRUST_cc_BASE_EXTP" != "" ]  && CC=$TRUST_cc_BASE_EXTP   && MPICH_CC=$CC   && OMPI_CC=$CC
+    F77=$TRUST_F77_BASE && [ "$TRUST_F77_BASE_EXTP" != "" ] && F77=$TRUST_F77_BASE_EXTP && MPICH_FC=$F77  && OMPI_FC=$F77
+    env CXX=$CXX CC=$CC F77=$F77 $DIR/configure --prefix=$dir ${configure_flag}
+    $TRUST_MAKE || make
+    make install
+    status=$?
+    cd ../..
+    [ $status -eq 0 ] && [ "$DEBUG_COMPIL" = "" ] && rm -rf prov
+    echo "To keep the prov dir, set DEBUG_COMPIL to 1"
+    status_tot=$status
+    export status_tot
 }
 
 ### on ajoute des chemins par defaut

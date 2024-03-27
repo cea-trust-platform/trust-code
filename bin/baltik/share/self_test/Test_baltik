@@ -14,7 +14,6 @@ environnement_init()
 ./Clean
 DIR=`environnement_init`
 cd $DIR
-BALTIK_BUILD_CONFIGURE_PATH=$DIR/../../bin
 
 ORG=`pwd`
 # Optim ou debug ? debug par defaut
@@ -42,7 +41,7 @@ test_basic()
  echo Test de $1 \(mode : $MODE \)
  cd $ORG/$1
  status_tot=0
- ${BALTIK_BUILD_CONFIGURE_PATH}/baltik_build_configure -execute >LOG_CONFIG 2>&1
+ baltik_build_configure -execute >LOG_CONFIG 2>&1
 
  make $MODE >LOG_COMP 2>&1
  status=$?
@@ -155,8 +154,6 @@ export TESTVALGRIND=0
 # on efface le resultat des  runs d'avant
 rm -rf basic_rapport/tests/Reference/Validation/*_jdd*
 mkdir -p basic_rapport/tests/Reference/Validation
-TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS_SA=${TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS}
-export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=0
 
 test_basic basic_rapport 0
 status_basic_rapport=$status_tot
@@ -168,7 +165,6 @@ status_basic_rapport=$status_tot
 #  git rm -f  basic_rapport/tests/Reference/Validation/test_rapport_jdd1/$file
 #done
 rm -rf basic_rapport/build/tests/all/Validation/*_jdd*  
-export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=${TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS_SA}
 
 #err=0 
 
@@ -190,6 +186,10 @@ status_basic_kernel=$status_tot
 
 test_basic basic_kernel_faux 2
 status_basic_kernel_faux=$status_tot
+
+# test de prerequis
+test_basic basic_with_prerequisite 0
+status_basic_with_prerequisite=$status_tot
 
 [ $err = 0 ] && echo "OK" && rm -f */src/Version_kernel */liste_pb.all
 [ $err != 0 ] && echo "KO"

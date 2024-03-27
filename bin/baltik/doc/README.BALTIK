@@ -252,6 +252,8 @@ A common example is fftw in TrioCFD - the project.cfg of TrioCFD contains this s
     librairies_flag : -lfftw3_mpi -lfftw3
     configure_flag : --enable-mpi --enable-shared --with-pic
 
+An example may be found in $TRUST_ROOT/bin/baltik/share/self_test/basic_with_prerequisite
+
 ==================================================
 12. Available environment variables
 ==================================================

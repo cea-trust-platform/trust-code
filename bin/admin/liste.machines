@@ -38,7 +38,7 @@ linux	rsync_ssh	tache	orcus-amd-rocky9.intra.cea.fr		-limited	-TrioCFD  -FLICA5 
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -disable-hwloc  	 				# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD   				 		     -force_provided_mpich -without-pdflatex			# CentOS 7.9 serveur rackable pour validation TrioCFD titania
 linux	ssh_pass	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -FLICA5   	 		     -force_system_mpi -without-pdflatex  			# Redhat 8.2 serveur rackable titania
-linux	rsync_ssh	tache	pegasi5.intra.cea.fr				-TrioCFD  -SIDES -SCORPIO -TRUST_NK -FLICA5 -C3D 	-gcc8 							-prof -force_provided_mpich -without-pdflatex 								# CentOS 7.9	pilote dm2s titania 
+linux	rsync_ssh	tache	pegasi5.intra.cea.fr				 -SIDES -SCORPIO -TRUST_NK -FLICA5 -C3D 	-gcc8 							-prof -force_provided_mpich -without-pdflatex 								# CentOS 7.9	pilote dm2s titania 
 linux	rsync_ssh	tache	pegasi6-coolprop-eos.intra.cea.fr		-all 		-TrioCFD -FLICA5  						-force_latest_openmpi -coolprop -eos   						# Ubuntu 20 pilote titania 
 linux	rsync_ssh	cible	is246145.intra.cea.fr		-all	 -GENEPI3 -FLICA5 -C3D   						 -without-pdflatex -force_provided_openmpi    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is246145-wopetsc.intra.cea.fr		-all	-TrioCFD -GENEPI3 -C3D  					-disable-petsc -without-pdflatex					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
