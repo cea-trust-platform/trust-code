@@ -220,8 +220,9 @@ option(VISUAL "pour MSVC" OFF)
 
 
 #
-# Potential extra dependencies (baltik?)
+# Potential extra dependencies - WARNING, this is also where we set the kernel variant! 
 #
+set(kernel "full" CACHE STRING "full,standard,numeric,micro" )
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
    include(cmake.deps)
 endif()
@@ -272,7 +273,6 @@ list(APPEND listdir_standard
 #
 # Set Kernel type
 #
-set(kernel "full" CACHE STRING "full,standard,numeric,micro" )
 if (NOT ${kernel} STREQUAL "full")
   message(STATUS "Kernel variant: ${kernel}")
   set(ajout _${kernel}_kernel)
@@ -448,7 +448,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
         foreach(_obj IN LISTS listlibs)
             list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
         endforeach()
-        add_library(${libtrio} STATIC ${my_listobj} )
+        add_library(${libtrio} STATIC ${inst_compl} ${my_listobj} )
         set_target_properties(${libtrio} PROPERTIES OUTPUT_NAME ${libtrio_name} PREFIX "" )
         install(TARGETS ${libtrio} DESTINATION lib)
     else()
