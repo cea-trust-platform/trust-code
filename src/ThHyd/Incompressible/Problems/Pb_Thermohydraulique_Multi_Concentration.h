@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Thermohydraulique_Concentration_included
-#define Pb_Thermohydraulique_Concentration_included
+#ifndef Pb_Thermohydraulique_Multi_Concentration_included
+#define Pb_Thermohydraulique_Multi_Concentration_included
 
 #include <Convection_Diffusion_Concentration.h>
 #include <Pb_Thermohydraulique.h>
 
-/*! @brief classe Pb_Thermohydraulique_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
+/*! @brief classe Pb_Thermohydraulique_Multi_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
  *
  *      - Equations de Navier_Stokes en regime laminaire pour un fluide incompressible
  *      - Equation d'energie en regime laminaire
@@ -30,18 +30,26 @@
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_Concentration: public Pb_Thermohydraulique
+class Pb_Thermohydraulique_Multi_Concentration: public Pb_Thermohydraulique
 {
-  Declare_instanciable(Pb_Thermohydraulique_Concentration);
+  Declare_instanciable(Pb_Thermohydraulique_Multi_Concentration);
 public:
-  int nombre_d_equations() const override { return 3; }
+  int nombre_d_equations() const override { return (2 + nb_equations_multi()); }
+
+  inline int nb_equations_multi() { return list_eq_concentration_.size(); }
+  inline int nb_equations_multi() const { return list_eq_concentration_.size(); }
+
   const Equation_base& equation(int) const override;
-  void associer_milieu_base(const Milieu_base&) override;
   Equation_base& equation(int) override;
+
+  void associer_milieu_base(const Milieu_base&) override;
   int verifier() override;
 
+  void typer_lire_milieu(Entree& ) override;
+  Entree& lire_equations(Entree& , Motcle& ) override;
+
 protected:
-  Convection_Diffusion_Concentration eq_concentration;
+  LIST(Convection_Diffusion_Concentration) list_eq_concentration_;
 };
 
-#endif /* Pb_Thermohydraulique_Concentration_included */
+#endif /* Pb_Thermohydraulique_Multi_Concentration_included */
