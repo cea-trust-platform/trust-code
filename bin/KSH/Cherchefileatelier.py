@@ -1,19 +1,27 @@
+#!/usr/bin/env python
+"""
+This script takes as a input a list of header files (.h, .tpp), and will return all the
+TRUST cpp files using this include.
+Thus, when a header is overloaded in a BALTIK, the corresponding impacted TRUST cpp files 
+will also be recompiled.
+"""
+
 import os
+import sys
+
 ENV=os.getenv("TRUST_ROOT")
 
 def short_path(root_dir, ze_dir):
     return ze_dir.replace(os.path.join(root_dir, ""), "")
 
+# Get list of TRUST source directories:
 dirs=[]
-for dirpath, dirnames, filenames in os.walk(ENV):
-    if filenames:
+src_dir = os.path.join(ENV, "src")
+for dirpath, dirnames, filenames in os.walk(src_dir):
+    if dirnames:
         dirs.append(short_path(ENV, dirpath))
 
-import sys
-
 argv=sys.argv[1:]
-# print argv
-# sys.stderr.write(' '.join(argv))
 
 i=-1
 for j in range(len(argv)):
@@ -26,8 +34,6 @@ if (i>0):
     dirs=argv[:i]
     argv=argv[i+1:]
     pass
-#print dirs,"oooo", argv
-
 
 
 def create_dico(dirs):
@@ -85,59 +91,6 @@ def create_dico(dirs):
                 dico[titi][r]=[f]
 
     return [dico_tpp,dico_h,dico_cpp]
-
-def create_dico_old(dirs):
-    import os
-    f=open('deps','w')
-    f.close()
-    for d0 in dirs:
-
-        d=ENV+"/"+d0
-        # d=d0
-        cmd="egrep  '^#include' "+d+"/*.cpp "+d+"/*.h >>deps 2>/dev/null"
-        # print cmd
-        res=os.system(cmd)
-        # print "res",res
-        # print dir(res)
-
-
-
-        pass
-
-
-
-    f=open("deps","r")
-    titi=f.readline()
-    dico_h={}
-    dico_cpp={}
-    dico=[dico_h,dico_cpp]
-    while (titi):
-
-
-        r=titi.split(':')
-        r2=r[1].split('<')[1].split('>')[0].strip()
-        file=r[0]
-        ind=0
-        if (file[-4:]==".cpp"):
-            ind=1
-        else:
-            file=file.split('/')[-1]
-            pass
-        # print file2 , " iiiiiii",r2
-        try:
-            dico[ind][r2].append(file)
-        except KeyError:
-            dico[ind][r2]=[file]
-            pass
-
-        titi=f.readline()
-        pass
-
-    os.remove("deps")
-    # print dico
-    return dico
-
-
 
 
 #print "IIIII",sys.argv
