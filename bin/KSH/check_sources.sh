@@ -306,12 +306,11 @@ check_all()
 if [ "`basename $0`" != "bash" ] && [ "`basename $0`" != "baltik_check_sources" ] && [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
    [ $TRUST_ARCH != linux ] && [ $TRUST_ARCH != darwin ] && exit 0
-   # make.include detectes we are in a TRUST source directory
    org=`pwd`
    reffile=".check_sources.ok"
    [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
-   ls *.cpp *.f *.tpp *.h 1>/dev/null 2>&1
-   if [ $? -eq 0 ]
+   res=`ls *.cpp *.f *.tpp *.h 2>/dev/null`
+   if [ "x$res" != "x" ]
    then
       err=0
       ############################################

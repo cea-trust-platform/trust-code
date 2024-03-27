@@ -42,13 +42,13 @@ echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTMo
 	echo end >>  couplage.data
 	@echo Linking.. 
 	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
-	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-rpath $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-rpath $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(SYSLIBS) -ldl
 $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION): $lib_dyn
 dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
 	touch dynamique.data
 	@echo Linking.. 
 
-	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-rpath $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-rpath $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(SYSLIBS) -ldl
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
 	(cd $build; [ -O . ] && (cd ../..;$flock \$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ; echo \$OPT) ||( [ ! -O . ] && echo  No Compilation  ))
