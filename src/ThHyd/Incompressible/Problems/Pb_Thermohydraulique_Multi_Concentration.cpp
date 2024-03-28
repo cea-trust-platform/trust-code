@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,7 @@
 #include <Pb_Thermohydraulique_Multi_Concentration.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
+#include <Operateur_Diff.h>
 #include <Constituant.h>
 #include <Verif_Cl.h>
 #include <EChaine.h>
@@ -31,14 +32,15 @@ Implemente_instanciable(Pb_Thermohydraulique_Multi_Concentration, "Pb_Thermohydr
 // XD   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 
 Sortie& Pb_Thermohydraulique_Multi_Concentration::printOn(Sortie& os) const { return Pb_Thermohydraulique::printOn(os); }
-Entree& Pb_Thermohydraulique_Multi_Concentration::readOn(Entree &is)
+Entree& Pb_Thermohydraulique_Multi_Concentration::readOn(Entree& is)
 {
   /* Step 1 : Add first equation to list ! */
   Cerr << "Adding the first Convection_Diffusion_Concentration to the list ... " << finl;
   list_eq_concentration_.add(Convection_Diffusion_Concentration());
-  list_eq_concentration_.dernier().associer_pb_base(*this);
-  list_eq_concentration_.dernier().associer_sch_tps_base(le_schema_en_temps_);
-  list_eq_concentration_.dernier().associer_domaine_dis(domaine_dis());
+  Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+  eqn.associer_pb_base(*this);
+  eqn.associer_sch_tps_base(le_schema_en_temps_);
+  eqn.associer_domaine_dis(domaine_dis());
 
   /* Step 2 : Go to Probleme_base::readOn !! */
   return Pb_Thermohydraulique::readOn(is);
@@ -57,9 +59,9 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
    *  - mil_constituants_ contient le milieu associe a chaque equation
    */
   const Constituant& les_consts = ref_cast(Constituant, le_milieu_.back().valeur());
-  const DoubleTab &vals = les_consts.diffusivite_constituant()->valeurs();
-  const int nb_consts = les_consts.nb_constituants();
-  mil_constituants_.resize(nb_consts);
+  const DoubleTab& vals = les_consts.diffusivite_constituant()->valeurs();
+  nb_consts_ = les_consts.nb_constituants();
+  mil_constituants_.resize(nb_consts_);
 
   if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
     {
@@ -68,7 +70,7 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
       Process::exit();
     }
 
-  for (int i = 0; i < nb_consts; i++)
+  for (int i = 0; i < nb_consts_; i++)
     {
       std::ostringstream oss;
       oss << std::scientific << std::setprecision(15) << vals(0, i); // Setting precision to 3 decimal places
@@ -80,6 +82,7 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
       EChaine const1(str);
       const1 >> mil_constituants_[i];
     }
+
   associer_milieu_base(mil_constituants_[0].valeur()); // 1er eq concentration pour le moment
 
   // Milieu(x) lu(s) ... Lets go ! On discretise les equations
@@ -90,23 +93,66 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
     equation(i).associer_milieu_equation();
 
   equation(0).milieu().discretiser((*this), la_discretisation_.valeur()); // NS
-  list_eq_concentration_.dernier().milieu().discretiser((*this), la_discretisation_.valeur()); // Conc
+
+  const Nom nom_const = nb_consts_ > 1 ? "coefficient_diffusion0" : "coefficient_diffusion";
+  ref_cast(Constituant, list_eq_concentration_.dernier().milieu()).discretiser_multi_concentration(nom_const, (*this), la_discretisation_.valeur()); // Conc
 }
 
 Entree& Pb_Thermohydraulique_Multi_Concentration::lire_equations(Entree& is, Motcle& dernier_mot)
 {
-  Nom un_nom;
-  const int nb_eq = nombre_d_equations();
-  Cerr << "Reading of the equations" << finl;
-
-  for (int i = 0; i < nb_eq; i++)
-    {
-      is >> un_nom;
-      is >> getset_equation_by_name(un_nom);
-    }
-
-  is >> dernier_mot;
+  rename_equation_unknown(0);
+  Pb_Thermohydraulique::lire_equations(is, dernier_mot);
+  clone_equations();
   return is;
+}
+
+void Pb_Thermohydraulique_Multi_Concentration::rename_equation_unknown(const int i)
+{
+  if (nb_consts_ > 1)
+    {
+      Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+      Nom nom_inco = "concentration", nom_eq = "Convection_Diffusion_Concentration";
+      nom_inco += Nom(i), nom_eq += Nom(i);
+      Cerr << "The unknown name of the Convection_Diffusion_Concentration equation " << i << " is modified => " << nom_inco << finl;
+      eqn.inconnue()->nommer(nom_inco);
+      Cerr << "The Convection_Diffusion_Concentration equation name, of number " << i << ", is modified => " << nom_eq << finl;
+      eqn.nommer(nom_eq);
+    }
+}
+
+void Pb_Thermohydraulique_Multi_Concentration::clone_equations()
+{
+  if (nb_consts_ > 1)
+    {
+      Cerr << "Cloning " << nb_consts_ << " concentration equations in progress ..." << finl;
+      for (int i = 1; i < nb_consts_; i++)
+        {
+          Cerr << "Adding another Convection_Diffusion_Concentration to the list ... " << finl;
+          list_eq_concentration_.add(list_eq_concentration_.front());
+          Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+          eqn.associer_pb_base(*this);
+          eqn.associer_sch_tps_base(le_schema_en_temps_);
+          eqn.associer_domaine_dis(domaine_dis());
+
+          associer_milieu_base(mil_constituants_[i].valeur()); // 1er eq concentration pour le moment
+          eqn.associer_milieu_equation();
+          const Nom nom_const = Nom("coefficient_diffusion") + Nom(i);
+          ref_cast(Constituant, eqn.milieu()).discretiser_multi_concentration(nom_const, (*this), la_discretisation_.valeur()); // Conc
+
+          rename_equation_unknown(i);
+          eqn.get_champ_compris().clear_champs_compris();
+          eqn.get_champ_compris().ajoute_champ(eqn.inconnue());
+
+          Operateur_Diff& op_diff = dynamic_cast<Operateur_Diff&>(eqn.operateur(0));
+          op_diff.associer_diffusivite(eqn.diffusivite_pour_transport());
+          op_diff.associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
+
+          Nom nom = "Diffusion_";
+          nom += eqn.inconnue().le_nom();
+          op_diff.set_fichier(nom);
+          op_diff.set_description((Nom) "Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m" + (Nom) (dimension + bidim_axi) + ".Mol.s-1]");
+        }
+    }
 }
 
 const Equation_base& Pb_Thermohydraulique_Multi_Concentration::equation(int i) const
@@ -165,6 +211,3 @@ int Pb_Thermohydraulique_Multi_Concentration::verifier()
   const Domaine_Cl_dis& domaine_Cl_co = list_eq_concentration_.front().domaine_Cl_dis();
   return tester_compatibilite_hydr_concentration(domaine_Cl_hydr, domaine_Cl_co);
 }
-
-
-
