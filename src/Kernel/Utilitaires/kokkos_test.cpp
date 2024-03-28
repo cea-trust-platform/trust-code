@@ -93,6 +93,27 @@ void kokkos_self_test()
     Kokkos::fence();
     assert(est_egal(v(0), 5)); // Retour sur le host et verification
   }
+  // Check DoubleVect built as a DoubleTab
+  {
+    DoubleTab tab(nb_elem);
+    DoubleArrView vect_v = static_cast<DoubleVect&>(tab).view_rw(); // It works but ToDo Kokkos, try to do better ? DoubleArrView vect_v = tab.view_rw(); ?
+    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
+    {
+      vect_v(i) = 2;
+    });
+  }
+  // Check DoubleTab aliased by a DoubleVect
+  {
+    int dim = 3;
+    DoubleTab tab(nb_elem, dim);
+    DoubleVect& vect = tab;
+    DoubleArrView vect_v = vect.view_rw();
+    int size = vect.size_array();
+    Kokkos::parallel_for(size, KOKKOS_LAMBDA(const int i)
+    {
+      vect_v(i) = 2;
+    });
+  }
   // Verification des adresses memoire:
   {
     DoubleTab tab(nb_elem,2);
