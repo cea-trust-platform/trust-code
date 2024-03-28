@@ -15,8 +15,12 @@
 
 #include <Pb_Thermohydraulique_Multi_Concentration.h>
 #include <Fluide_Incompressible.h>
+#include <Champ_Uniforme.h>
 #include <Constituant.h>
 #include <Verif_Cl.h>
+#include <EChaine.h>
+#include <sstream>
+#include <iomanip>
 
 Implemente_instanciable(Pb_Thermohydraulique_Multi_Concentration, "Pb_Thermohydraulique_Multi_Concentration", Pb_Thermohydraulique);
 // XD Pb_Thermohydraulique_Multi_Concentration Pb_base Pb_Thermohydraulique_Multi_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
@@ -43,12 +47,40 @@ Entree& Pb_Thermohydraulique_Multi_Concentration::readOn(Entree &is)
 void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
 {
   le_milieu_.resize(2);
+  for (int i = 0; i < 2; i++) is >> le_milieu_[i];
+  associer_milieu_base(le_milieu_.front().valeur()); // NS : On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
 
-  for (int i = 0; i < 2; i++)
+  /*
+   * XXX : Elie Saikali :
+   *  - le_milieu_[0] => Fluide incompressible et le_milieu_[1] => constituants (n compos).
+   *  - le_milieu_[1] pas associe a l'equation car n compos
+   *  - mil_constituants_ contient le milieu associe a chaque equation
+   */
+  const Constituant& les_consts = ref_cast(Constituant, le_milieu_.back().valeur());
+  const DoubleTab &vals = les_consts.diffusivite_constituant()->valeurs();
+  const int nb_consts = les_consts.nb_constituants();
+  mil_constituants_.resize(nb_consts);
+
+  if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
     {
-      is >> le_milieu_[i]; // On commence par la lecture du milieu
-      associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
+      Cerr << "Error in Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
+      Cerr << "We only accept uniform fields for the moment ... Fix your data set !!!" << finl;
+      Process::exit();
     }
+
+  for (int i = 0; i < nb_consts; i++)
+    {
+      std::ostringstream oss;
+      oss << std::scientific << std::setprecision(15) << vals(0, i); // Setting precision to 3 decimal places
+
+      Nom str = "Constituant { coefficient_diffusion Champ_Uniforme 1 ";
+      str += oss.str().c_str();
+      str += " }";
+
+      EChaine const1(str);
+      const1 >> mil_constituants_[i];
+    }
+  associer_milieu_base(mil_constituants_[0].valeur()); // 1er eq concentration pour le moment
 
   // Milieu(x) lu(s) ... Lets go ! On discretise les equations
   discretiser_equations();
@@ -72,12 +104,6 @@ Entree& Pb_Thermohydraulique_Multi_Concentration::lire_equations(Entree& is, Mot
       is >> un_nom;
       is >> getset_equation_by_name(un_nom);
     }
-
-  const int nb_const = ref_cast(Constituant, le_milieu_.back().valeur()).nb_constituants();
-
-  Cerr << "@@@@@@@@@@@@@@@@@@@@@@@   " << nb_const << finl;
-
-
 
   is >> dernier_mot;
   return is;

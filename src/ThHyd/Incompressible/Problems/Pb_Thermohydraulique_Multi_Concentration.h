@@ -50,6 +50,8 @@ public:
 
 protected:
   LIST(Convection_Diffusion_Concentration) list_eq_concentration_;
+//  Milieu mil_const_, mil_const_multi_;
+  std::vector<Milieu> mil_constituants_;
 };
 
 #endif /* Pb_Thermohydraulique_Multi_Concentration_included */
