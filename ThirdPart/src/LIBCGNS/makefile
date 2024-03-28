@@ -8,4 +8,4 @@ $(lib) : makefile $(pkg) install
 	@./install
 
 clean:
-	rm -rf $(TRUST_ROOT)/lib/src/LIBCGNS $(TRUST_ROOT)/include/CGNS
+	rm -rf $(TRUST_ROOT)/lib/src/LIBCGNS $(TRUST_ROOT)/include/CGNS $(TRUST_ROOT)/exec/cgns*

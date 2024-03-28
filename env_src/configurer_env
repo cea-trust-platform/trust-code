@@ -2482,6 +2482,7 @@ $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LmlReader.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataFilter.h
 $MPI_INCLUDE/mpi.h
 $TRUST_ROOT/lib/src/LIBVC/include/Vc/Vc
+$TRUST_ROOT/lib/src/LIBCGNS/include/cgns++.h
 "
 for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx _custom
 do
@@ -2512,7 +2513,7 @@ then
    fi
 fi
 # Menage
-rm -f $TRUST_ENV/.rep $TRUST_ENV/.path
+rm -f $TRUST_ENV/.path
 
 
 # Edit sources for 64 bit integers build :

@@ -418,9 +418,9 @@ unset CUDA_NVCC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
-unset EOS_HOME
-unset COOLPROP_HOME
-unset REFPROP_HOME
+unset TRUST_EOS_HOME_DIR
+unset TRUST_COOLPROP_HOME_DIR
+unset TRUST_REFPROP_HOME_DIR
 unset TRUST_CC_BASE_EXTP
 unset TRUST_F77_BASE_EXTP
 unset TRUST_cc_BASE_EXTP
@@ -534,23 +534,41 @@ do
    then
       export TRUST_USE_CUDA=1
       [ "${1#-cuda=}" != "$1" ] && CUDA_NVCC=${1#-cuda=}
+
    elif [ "${1#-rocm}" != "$1" ]
    then
       export TRUST_USE_ROCM=1
+
    elif [ "${1#-with-eos}" != "$1" ]
    then
       # Proper include files for EOS are managed by script bin/cree_include
       export TRUST_USE_EOS=1
-      export EOS_HOME=${1#-with-eos=}
+      export TRUST_EOS_HOME_DIR=${1#-with-eos=}
+      if [ ! -f $TRUST_EOS_HOME_DIR/lib/libeos.a ]
+      then
+         echo ""
+         echo "You specified to use the EOS library in your TRUST configuration. However, we can not find the static library (libeos.a) in the path $TRUST_EOS_HOME_DIR/lib !!"
+         echo "Either verify your EOS installation or re-configure TRUST without the option -with-eos=$TRUST_EOS_HOME_DIR ... "
+         exit -1
+      fi
+
    elif [ "${1#-with-coolprop}" != "$1" ]
    then
       # Proper include files for CoolProp are managed by script bin/cree_include
       export TRUST_USE_COOLPROP=1
-      export COOLPROP_HOME=${1#-with-coolprop=}
+      export TRUST_COOLPROP_HOME_DIR=${1#-with-coolprop=}
+      if [ ! -f $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a ]
+      then
+         echo "You specified to use the CoolProp library in your TRUST configuration. However, we can not find the static library (libCoolProp.a) in the path $TRUST_COOLPROP_HOME_DIR/build !!"
+         echo "Either verify your CoolProp installation or re-configure TRUST without the option -with-coolprop=$TRUST_COOLPROP_HOME_DIR ... "
+         exit -1
+      fi
+
    elif [ "${1#-with-refprop}" != "$1" ]
    then
       export TRUST_USE_REFPROP=1
-      export REFPROP_HOME=${1#-with-refprop=}
+      export TRUST_REFPROP_HOME_DIR=${1#-with-refprop=}
+
    elif [ "${1#-rocalution}" != "$1" ]
    then
       export TRUST_ROCALUTION=${1#-rocalution=}
@@ -616,10 +634,6 @@ do
    then
       export TRUST_DISABLE_MPIIO=1
 
-   elif [ "${1#-disable-cgns}" != "$1" ]
-   then
-      export TRUST_DISABLE_CGNS=1
-
    elif [ "${1#-disable-check_sources}" != "$1" ]
    then
       export TRUST_DISABLE_CHECK_SRC=1
@@ -647,15 +661,15 @@ do
       if [ ! -d $REP_THIRD_PARTY ]
       then
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."
-	 exit -1
+         exit -1
       fi
 
       testv="echo \$TRUST_DISABLE_$THIRD_PARTY"
       res=`eval $testv`
       if [ "$res" = "" ]
       then
-	  echo "$1 option not available cause $THIRD_PARTY is not in list"
-	  exit -1
+         echo "$1 option not available cause $THIRD_PARTY is not in list"
+         exit -1
       fi
 
       (cd $REP_THIRD_PARTY && [ $first -eq 0 ] && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
@@ -803,31 +817,28 @@ else
     #echo "unset HDF5_ROOT_DIR" >> $var
 fi
 
-if [ "$EOS_HOME" != "" ]
+echo "TRUST_USE_EOS=$TRUST_USE_EOS && export TRUST_USE_EOS    	# TRUST built with EOS" >> $var
+if [ "$TRUST_EOS_HOME_DIR" != "" ]
 then
-    echo "export TRUST_USE_EOS=1" >> $var
-    echo "export TRUST_EOS_HOME_DIR=$EOS_HOME" >> $var
+    echo "export TRUST_EOS_HOME_DIR=$TRUST_EOS_HOME_DIR" >> $var
 else
-    echo "export TRUST_USE_EOS=0" >> $var
-    echo "unset EOS_HOME" >> $var
+    echo "unset TRUST_EOS_HOME_DIR" >> $var
 fi
 
-if [ "$COOLPROP_HOME" != "" ]
+echo "TRUST_USE_COOLPROP=$TRUST_USE_COOLPROP && export TRUST_USE_COOLPROP    	# TRUST built with CoolProp" >> $var
+if [ "$TRUST_COOLPROP_HOME_DIR" != "" ]
 then
-    echo "export TRUST_USE_COOLPROP=1" >> $var
-    echo "export TRUST_COOLPROP_HOME_DIR=$COOLPROP_HOME" >> $var
+    echo "export TRUST_COOLPROP_HOME_DIR=$TRUST_COOLPROP_HOME_DIR" >> $var
 else
-    echo "export TRUST_USE_COOLPROP=0" >> $var
-    echo "unset COOLPROP_HOME" >> $var
+    echo "unset TRUST_COOLPROP_HOME_DIR" >> $var
 fi
 
-if [ "$REFPROP_HOME" != "" ]
+echo "TRUST_USE_REFPROP=$TRUST_USE_REFPROP && export TRUST_USE_REFPROP    	# TRUST built with REFPROP" >> $var
+if [ "$TRUST_REFPROP_HOME_DIR" != "" ]
 then
-    echo "export TRUST_USE_REFPROP=1" >> $var
-    echo "export TRUST_REFPROP_HOME_DIR=$REFPROP_HOME" >> $var
+    echo "export TRUST_REFPROP_HOME_DIR=$TRUST_REFPROP_HOME_DIR" >> $var
 else
-    echo "export TRUST_USE_REFPROP=0" >> $var
-    echo "unset REFPROP_HOME" >> $var
+    echo "unset TRUST_REFPROP_HOME_DIR" >> $var
 fi
 
 # IF HDF5 tools are not installed, detect h5dump version mismatch
@@ -1045,7 +1056,6 @@ then
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && env TRUST_ENABLE_DOC_DOXYGEN=1 make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "validation:\n\t(source ./env_TRUST.sh && cd Validation/Rapports_automatiques && ./lance_tout)" >> $TRUST_ROOT/Makefile
-   #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_semi_opt:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_semi_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
@@ -1060,7 +1070,6 @@ then
    ##################################
    # Desormais on recree les makefile
    ##################################
-   #make depend
    echo $ECHO_OPTS "File Makefile created."
    echo $ECHO_OPTS "File configure.log created."
    echo

@@ -268,25 +268,6 @@ then
 fi
 echo>>$COMPILE
 
-######
-# CGNS
-######
-if [ "$TRUST_DISABLE_CGNS" = 1 ]
-then
-   if [ -d "$TRUST_CGNS_ROOT/include" ]
-   then
-      echo "#undef HAS_CGNS" > $TRUST_TMP/cgns++.h.tmp
-      [ "`diff $TRUST_CGNS_ROOT/include/cgns++.h $TRUST_TMP/cgns++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf $TRUST_CGNS_ROOT/* && mkdir -p $TRUST_CGNS_ROOT/include && cp $TRUST_TMP/cgns++.h.tmp $TRUST_CGNS_ROOT/include/cgns++.h
-      rm $TRUST_TMP/cgns++.h.tmp
-   else
-     mkdir -p $TRUST_CGNS_ROOT/include
-     echo "#undef HAS_CGNS" > $TRUST_CGNS_ROOT/include/cgns++.h
-   fi
-
-   # if execs ..
-   rm -rf $TRUST_ROOT/exec/cgns*
-fi
-
 #####
 # EOS
 #####
@@ -295,13 +276,11 @@ then
   LEOS=$TRUST_EOS_HOME_DIR/lib/libeos.a
   if [ -f $LEOS ]
   then
-    echo "LIBEOS:OK"
+    echo "LIBEOS:OK" | tee -a $COMPILE
   else
-    echo "LIBEOS:KO !!!"
-    echo ""
-    echo "You specified to use the EOS library in your TRUST configuration. However, we can not find the static library (libeos.a) in the path $TRUST_EOS_HOME_DIR/lib !!"
-    echo "Either verify your EOS installation or re-configure TRUST without the option -with-eos=$TRUST_EOS_HOME_DIR ... " 
-    echo "BUILD_EXEC=KO" && exit -1 
+    echo "LIBEOS:KO !!!" | tee -a $COMPILE
+    echo "BUILD_EXEC=KO" | tee -a $COMPILE
+    exit -1
   fi
 fi
 
@@ -313,13 +292,11 @@ then
   LCOOLPROP=$TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a
   if [ -f $LCOOLPROP ]
   then
-    echo "LIBCOOLPROP:OK"
+    echo "LIBCOOLPROP:OK" | tee -a $COMPILE
   else
-    echo "LIBCOOLPROP:KO !!!"
-    echo ""
-    echo "You specified to use the CoolProp library in your TRUST configuration. However, we can not find the static library (libCoolProp.a) in the path $TRUST_COOLPROP_HOME_DIR/build !!"
-    echo "Either verify your CoolProp installation or re-configure TRUST without the option -with-coolprop=$TRUST_COOLPROP_HOME_DIR ... " 
-    echo "BUILD_EXEC=KO" && exit -1 
+    echo "LIBCOOLPROP:KO !!!" | tee -a $COMPILE
+    echo "BUILD_EXEC=KO" | tee -a $COMPILE
+    exit -1
   fi
 fi
 
