@@ -20,6 +20,8 @@
 #include <Option_CGNS.h>
 #include <TRUSTTab.h>
 #include <cgns++.h>
+#include <sstream>
+#include <iomanip>
 
 #ifdef HAS_CGNS
 
@@ -80,6 +82,14 @@ struct Ecrire_CGNS_helper
   template<TYPE_ECRITURE _TYPE_>
   inline void cgns_write_iters(const bool, const int, const True_int , const True_int, const int, const std::vector<True_int>&,
                                const std::string&, const std::string&, const std::string&, const std::vector<double>&);
+
+  std::string convert_double_to_string(const double t)
+  {
+    /* KEEP GOOD PRECISION */
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(15) << t;
+    return ss.str();
+  }
 };
 
 template<TYPE_ECRITURE _TYPE_>
@@ -152,7 +162,7 @@ inline void Ecrire_CGNS_helper::cgns_sol_write(const int nb_zones_to_write, cons
 
   if (!solname_som_written && LOC == "SOM")
     {
-      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+      std::string solname = "FlowSolution" + convert_double_to_string(temps) + "_" + LOC;
       solname.resize(CGNS_STR_SIZE, ' ');
       solname_som += solname;
 
@@ -173,7 +183,7 @@ inline void Ecrire_CGNS_helper::cgns_sol_write(const int nb_zones_to_write, cons
 
   if (!solname_elem_written && LOC == "ELEM")
     {
-      std::string solname = "FlowSolution" + std::to_string(temps) + "_" + LOC;
+      std::string solname = "FlowSolution" + convert_double_to_string(temps) + "_" + LOC;
       solname.resize(CGNS_STR_SIZE, ' ');
       solname_elem += solname;
 

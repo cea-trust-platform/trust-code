@@ -1001,7 +1001,7 @@ void Ecrire_CGNS::cgns_open_solution_link_file(const int ind, const std::string&
   if (is_link)
     fn = !mult_loc ? baseFile_name_ + ".cgns" : baseFile_name_ + "_" + LOC + ".cgns"; // file name
   else
-    fn = baseFile_name_ + "_" + LOC + ".solution." + std::to_string(t) + ".cgns"; // file name
+    fn = baseFile_name_ + "_" + LOC + ".solution." + cgns_helper_.convert_double_to_string(t) + ".cgns"; // file name
 
   unlink(fn.c_str());
 
@@ -1098,9 +1098,9 @@ void Ecrire_CGNS::cgns_write_final_link_file()
       // link solutions
       for (auto& itr_t : time_post_)
         {
-          std::string solname = "FlowSolution" + std::to_string(itr_t) + "_" + LOC;
+          std::string solname = "FlowSolution" + cgns_helper_.convert_double_to_string(itr_t) + "_" + LOC;
 
-          std::string linkfile = baseFile_name_ + "_" + LOC + ".solution." + std::to_string(itr_t) + ".cgns"; // file name
+          std::string linkfile = baseFile_name_ + "_" + LOC + ".solution." + cgns_helper_.convert_double_to_string(itr_t) + ".cgns"; // file name
           linkfile = TRUST_2_CGNS::remove_slash_linkfile(linkfile);
 
           std::string linkpath = "/" + baseZone_name_ + "/" + baseZone_name_ + "/" + solname + "/";
