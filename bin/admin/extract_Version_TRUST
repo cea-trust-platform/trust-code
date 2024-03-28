@@ -33,10 +33,7 @@ echo "  we modify `pwd`"
 if [ $kind = -without_source ]
 then
    # On efface les sources de TRUST
-   for dir in `find . -name make.include`
-   do
-      rm -r -f `dirname $dir`
-   done
+   rm -r -f src
    
    # On efface la documentation qui est relative a TRUST
    rm -f doc/html.tar.gz doc/doxygen*
@@ -48,9 +45,9 @@ then
 elif [ $kind = -kernel_only ]
 then
    # On efface les sources autres que celles du Kernel et de MAIN pour construire la version
-   for dir in `find . -name make.include | grep -v ./src/Kernel | grep -v ./src/MAIN`
+   for dir in `find src -type d -not -path src | grep -v src/Kernel | grep -v src/MAIN`
    do
-      rm -r -f `dirname $dir`
+      rm -r -f $dir
    done
   
    # On efface les fiches de validation qui ne sont pas Kernel
