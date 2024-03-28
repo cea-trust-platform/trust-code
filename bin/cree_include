@@ -49,7 +49,6 @@ then
     echo "  EOS header files added in $TRUST_ROOT/include/EOS !"
 else
     echo "  TRUST not configured with EOS. Cleaning include/EOS ..."
-    #rm -rf EOS/*
     echo "#undef HAS_EOS" > $TRUST_TMP/eos++.h.tmp
     [ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf EOS/* && cp $TRUST_TMP/eos++.h.tmp EOS/eos++.h
     rm $TRUST_TMP/eos++.h.tmp
@@ -75,7 +74,6 @@ then
     echo "  CoolProp header files added in $TRUST_ROOT/include/CoolProp !"
 else
     echo "  TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
-    #rm -rf CoolProp/*
     echo "#undef HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
     [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CoolProp/* && cp $TRUST_TMP/coolprop++.h.tmp CoolProp/coolprop++.h
 fi
