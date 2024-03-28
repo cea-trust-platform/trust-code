@@ -624,13 +624,14 @@ then
           *) echo $opt not for cmake in $0; echo "BUILD_EXEC=KO" | tee -a $COMPILE; exit -1 ;;
          esac;
 
-         if [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && [ "$build_type" = "Debug" ]
-         then
-            export OPT="" && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
-         else
-            export OPT="_opt" && [ "$build_type" = "Debug" ] && OPT=""
-            [ "$TRUST_DISABLE_PETSC" != 1 ] && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
-         fi
+         # 28/03/24 : Attention: test inutile et c'est dangereux d'exporter OPT ici, elle est sensee etre detectee par CMake (cf Createcmakefile.py)
+         #if [ "$TRUST_ENABLE_PETSC_DEBUG" = 1 ] && [ "$build_type" = "Debug" ]
+         #then
+         #   export OPT="" && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
+         #else
+         #   export OPT="_opt" && [ "$build_type" = "Debug" ] && OPT=""
+         #   [ "$TRUST_DISABLE_PETSC" != 1 ] && export METIS_ROOT=$PETSC_ROOT/$TRUST_ARCH$OPT
+         #fi
 
          CHOIX_MAKE multiple
          [ $depend = 1 ] && rm -f CMakeCache.txt
