@@ -440,9 +440,7 @@ void Milieu_base::verifier_coherence_champs(int& err,Nom& msg)
 
 void Milieu_base::preparer_calcul()
 {
-  int err=0;
-  Nom msg;
-  verifier_coherence_champs(err,msg);
+  // ne fait rien!!!
 }
 
 void Milieu_base::check_gravity_vector() const
@@ -751,6 +749,11 @@ int Milieu_base::initialiser(const double temps)
     }
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
+
+
+  int err=0;
+  Nom msg;
+  verifier_coherence_champs(err,msg);
 
   return initialiser_porosite(temps);
 }

@@ -156,7 +156,6 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
  */
 void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
 {
-  msg="";
   if (rho.non_nul())
     {
       if (mp_min_vect(rho.valeurs()) <= 0)
@@ -209,19 +208,19 @@ void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the conductivity lambda has not been specified. \n";
-      err = 2;
+      if (err == 0) err = 2; // if err=1 we keep it since err=1 exits while err=2 displays warning!
     }
   if  ( ( (lambda.non_nul()) || (beta_th.non_nul()) ) && (Cp.est_nul()) )
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the heat capacity Cp has not been specified. \n";
-      err = 2;
+      if (err == 0) err = 2;
     }
   if ( ( (lambda.non_nul()) || (Cp.non_nul()) ) && (beta_th.est_nul()) )
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the thermal expansion coefficient beta_th has not been specified. \n";
-      err = 2;
+      if (err == 0) err = 2;
     }
 
   // Test de la coherence des proprietees radiatives du fluide incompressible

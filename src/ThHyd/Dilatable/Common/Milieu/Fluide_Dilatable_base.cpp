@@ -460,7 +460,7 @@ void Fluide_Dilatable_base::mettre_a_jour(double temps)
 void Fluide_Dilatable_base::preparer_calcul()
 {
   Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
-  Milieu_base::preparer_calcul();
+  //Milieu_base::preparer_calcul(); // Ne fait rien!!
   Fluide_Dilatable_base::update_pressure_fields(le_probleme_->schema_temps().temps_courant()); // Child can have an overload
   loi_etat_->preparer_calcul();
   prepare_pressure_edo(); // si besoin (i.e. QC)
