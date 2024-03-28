@@ -79,7 +79,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       done
       )
       # Clean build:
-      rm -rf $build_dir
+      rm -rf $build_dir $log_file
     )   
     #echo "# Kokkos OK! Path to Kokkos is: $KOKKOS_ROOT_DIR"
 else
