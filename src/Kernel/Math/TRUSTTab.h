@@ -257,11 +257,6 @@ public:
   inline void reset() override;
   inline void resize_tab(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) override;
 
-protected:
-  inline void init_view_tab2() const;
-  inline void init_view_tab3() const;
-  inline void init_view_tab4() const;
-
 public:
 #ifndef LATATOOLS
   // Kokkos view accessors:
@@ -303,6 +298,11 @@ private:
 
 #ifndef LATATOOLS
   // Kokkos members
+protected:
+
+  inline void init_view_tab2() const;
+  inline void init_view_tab3() const;
+  inline void init_view_tab4() const;
   mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
   mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
   mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)

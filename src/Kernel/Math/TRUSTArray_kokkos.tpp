@@ -24,16 +24,12 @@ inline void TRUSTArray<_TYPE_>::init_view_arr() const
 {
   long ze_dim = this->size_array();
 
-  // Do we need to re-init?
-  bool is_init = dual_view_init_;
-  if(is_init && dual_view_arr_.h_view.is_allocated())
-    // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_arr_.h_view.data() != this->data() || dual_view_arr_.view_device().data() != addrOnDevice(*this) ||
-        (long) dual_view_arr_.extent(0) != ze_dim)
-      is_init = false;
-
-  if (is_init) return;
-  dual_view_init_ = true;
+  // change of alloc or resize triggers re-init (for now - resize could be done better)
+  if(dual_view_arr_.h_view.is_allocated() &&
+      dual_view_arr_.h_view.data() == this->data() &&
+      dual_view_arr_.view_device().data() == addrOnDevice(*this) &&
+      (long) dual_view_arr_.extent(0) == ze_dim)
+    return ;
 
   using t_host = typename DualViewArr<_TYPE_>::t_host;  // Host type
   using t_dev = typename DualViewArr<_TYPE_>::t_dev;    // Device type
@@ -125,7 +121,7 @@ inline void TRUSTArray<_TYPE_>::modified_on_host() const
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
-  if(dual_view_init_)
+  if(dual_view_arr_.h_view.is_allocated())
     dual_view_arr_.template modify<host_mirror_space>();
 }
 

@@ -207,7 +207,7 @@ public:
   inline DataLocation get_data_location() const { return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_; }
   inline void set_data_location(DataLocation flag) { if (data_location_ != nullptr) *data_location_ = flag; }
   inline void set_data_location(DataLocation flag) const { if (data_location_ != nullptr) *data_location_ = flag; }
-  inline VTRUSTdata<_TYPE_>* p() { return p_; };
+  inline int size_mem() { return mem_ == nullptr ? 0 : mem_->size(); };
 
   inline void checkDataOnHost();
   inline void checkDataOnHost() const;
@@ -240,7 +240,7 @@ protected:
   // Kokkos members
   inline void init_view_arr() const;
 
-  mutable bool dual_view_init_ = false;
+
 #ifndef LATATOOLS  // Lata tools without Kokkos
   mutable DualViewArr<_TYPE_> dual_view_arr_;
 #endif

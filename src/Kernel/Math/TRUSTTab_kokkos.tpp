@@ -34,17 +34,13 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
     trail_dim *= this->dimension_tot(d);
   long dims[2] = {this->dimension_tot(0), trail_dim};
 
-  // Do we need to re-init?
-  bool is_init = this->dual_view_init_;
-  if(is_init && dual_view_tab2_.h_view.is_allocated())
-    // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab2_.h_view.data() != this->data() ||
-        dual_view_tab2_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab2_.extent(0) != dims[0] ||
-        (long) dual_view_tab2_.extent(1) != dims[1])
-      is_init = false;
-
-  if (is_init) return;
-  this->dual_view_init_ = true;
+  // change of alloc or resize triggers re-init (for now - resize could be done better)
+  if(dual_view_tab2_.h_view.is_allocated() &&
+      dual_view_tab2_.h_view.data() == this->data() &&
+      dual_view_tab2_.view_device().data() == addrOnDevice(*this) &&
+      (long) dual_view_tab2_.extent(0) == dims[0] &&
+      (long) dual_view_tab2_.extent(1) == dims[1])
+    return;
 
 //  if(nb_dim() != 2)
 //    Process::exit("Wrong dim number in view init!");
@@ -161,7 +157,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host() const
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
-  if(this->dual_view_init_)
+  if(dual_view_tab2_.h_view.is_allocated())
     dual_view_tab2_.template modify<host_mirror_space>();
 }
 
@@ -178,16 +174,14 @@ inline void TRUSTTab<_TYPE_>::init_view_tab3() const
 {
   long dims[3] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0};
 
-  bool is_init = this->dual_view_init_;
-  if(is_init && dual_view_tab3_.h_view.is_allocated())
-    // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab3_.h_view.data() != this->data() ||
-        dual_view_tab3_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab3_.extent(0) != dims[0] ||
-        (long) dual_view_tab3_.extent(1) != dims[1] || (long) dual_view_tab3_.extent(2) != dims[2])
-      is_init = false;
-
-  if (is_init) return;
-  this->dual_view_init_ = true;
+  // change of alloc or resize triggers re-init (for now - resize could be done better)
+  if(dual_view_tab3_.h_view.is_allocated() &&
+      dual_view_tab3_.h_view.data() == this->data() &&
+      dual_view_tab3_.view_device().data() == addrOnDevice(*this) &&
+      (long) dual_view_tab3_.extent(0) == dims[0] &&
+      (long) dual_view_tab3_.extent(1) == dims[1] &&
+      (long) dual_view_tab3_.extent(2) == dims[2])
+    return;
 
   //if(nb_dim() != 3)
   //  Process::exit("Wrong dim number in view init!");
@@ -288,7 +282,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host3() const
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
-  if(this->dual_view_init_)
+  if(dual_view_tab3_.h_view.is_allocated())
     dual_view_tab3_.template modify<host_mirror_space>();
 }
 
@@ -306,17 +300,15 @@ inline void TRUSTTab<_TYPE_>::init_view_tab4() const
 {
   long dims[4] = {this->dimension_tot(0), nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0 , nb_dim_>3 ? this->dimension_tot(3) : 0};
 
-  bool is_init = this->dual_view_init_;
-  if(is_init && dual_view_tab4_.h_view.is_allocated())
-    // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab4_.h_view.data() != this->data() ||
-        dual_view_tab4_.view_device().data() != addrOnDevice(*this) || (long) dual_view_tab4_.extent(0) != dims[0] ||
-        (long) dual_view_tab4_.extent(1) != dims[1]
-        || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
-      is_init = false;
-
-  if (is_init) return;
-  this->dual_view_init_ = true;
+  // change of alloc or resize triggers re-init (for now - resize could be done better)
+  if(dual_view_tab4_.h_view.is_allocated() &&
+      dual_view_tab4_.h_view.data() == this->data() &&
+      dual_view_tab4_.view_device().data() == addrOnDevice(*this) &&
+      (long)dual_view_tab4_.extent(0) == dims[0] &&
+      (long)dual_view_tab4_.extent(1) == dims[1] &&
+      (long)dual_view_tab4_.extent(2) == dims[2] &&
+      (long)dual_view_tab4_.extent(3) == dims[3])
+    return;
 
   //if(nb_dim() != 4)
   //  Process::exit("Wrong dim number in view init!");
@@ -416,7 +408,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host4() const
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
-  if(this->dual_view_init_)
+  if(dual_view_tab4_.h_view.is_allocated())
     dual_view_tab4_.template modify<host_mirror_space>();
 }
 
