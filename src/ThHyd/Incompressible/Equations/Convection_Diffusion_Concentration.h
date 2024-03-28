@@ -54,6 +54,7 @@ public :
   const Champ_Don& diffusivite_pour_transport() const override;
   const Motcle& domaine_application() const override;
   const double& masse_molaire() const;
+  Champs_compris& get_champ_compris() { return champs_compris_; }
 
 protected :
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,50 +13,33 @@
 *
 *****************************************************************************/
 
-#include <Constituant.h>
-#include <Motcle.h>
-#include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Constituant.h>
 #include <Param.h>
 
-Implemente_instanciable(Constituant,"Constituant",Milieu_base);
+Implemente_instanciable(Constituant, "Constituant", Milieu_base);
 
-Sortie& Constituant::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Constituant::printOn(Sortie& os) const { return os; }
 
-Entree& Constituant::readOn(Entree& is)
-{
-  Milieu_base::readOn(is);
-  return is;
-}
+Entree& Constituant::readOn(Entree& is) { return Milieu_base::readOn(is); }
 
 void Constituant::set_param(Param& param)
 {
   Milieu_base::set_param(param);
-  param.ajouter("coefficient_diffusion",&D,Param::REQUIRED);
+  param.ajouter("coefficient_diffusion", &D_, Param::REQUIRED);
 }
 
-void Constituant::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
+void Constituant::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
 {
-  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
-  dis.nommer_completer_champ_physique(domaine_dis,"coefficient_diffusion","m2/s",D.valeur(),pb);
-  champs_compris_.ajoute_champ(D.valeur());
-  Milieu_base::discretiser(pb,dis);
+  discretiser_multi_concentration(Nom("coefficient_diffusion"), pb, dis);
 }
 
-
-/*! @brief Renvoie le nombre de constituants.
- *
- * (i.e. le nombre de composantes du champ representant
- *           le coefficient de diffusion)
- *
- * @return (int) le nombre de constituants
- */
-int Constituant::nb_constituants() const
+void Constituant::discretiser_multi_concentration(const Nom& nm, const Probleme_base& pb, const Discretisation_base& dis)
 {
-  return D.nb_comp();
+  const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
+  dis.nommer_completer_champ_physique(domaine_dis, nm, "m2/s", D_.valeur(), pb);
+  champs_compris_.ajoute_champ(D_.valeur());
+  Milieu_base::discretiser(pb, dis);
 }
-

@@ -20,65 +20,40 @@
 
 /*! @brief classe Constituant Cette classe represente le(s) constituant(s) d'un fluide.
  *
- *     Elle contient un champ alpha representant le coefficient de diffusion
- *     du constituant.
+ *     Elle contient un champ alpha representant le coefficient de diffusion du constituant.
  *     Lorsqu'un objet de type Constituant represente plusieurs constituant
- *     le champ alpha est vectoriel avec autant de composantes qu'il y a
- *     de constituants.
+ *     le champ alpha est vectoriel avec autant de composantes qu'il y a de constituants.
  *
  * @sa Milieu_base
  */
 class Constituant : public Milieu_base
 {
   Declare_instanciable(Constituant);
-
 public :
 
   void set_param(Param& param) override;
-  inline const Champ_Don& diffusivite_constituant() const;
-  inline void mettre_a_jour(double) override;
+
+  inline const Champ_Don& diffusivite_constituant() const { return D_; }
+
+  inline void mettre_a_jour(double temps) override
+  {
+    if (D_.non_nul()) D_.mettre_a_jour(temps);
+  }
+
   void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
-  int initialiser(const double temps) override;
-  int nb_constituants() const;
+
+  void discretiser_multi_concentration(const Nom& , const Probleme_base& pb, const Discretisation_base& dis);
+
+  int initialiser(const double temps) override
+  {
+    if (D_.non_nul()) D_.initialiser(temps);
+    return 1;
+  }
+
+  inline int nb_constituants() const { return D_.nb_comp(); }
+
 protected :
-
-  Champ_Don D; // Coefficient de diffusion du constituant dans un milieu
-
-
+  Champ_Don D_; // Coefficient de diffusion du constituant dans un milieu
 };
 
-
-/*! @brief Renvoie le coefficient de diffusion du constituant.
- *
- * @return (Champ_Don&) le champ representant le coefficient de diffusion
- */
-inline const Champ_Don& Constituant::diffusivite_constituant() const
-{
-  return D;
-}
-
-
-/*! @brief Mise a jour en temps du milieu, i.
- *
- * e. de la coefficient_diffusion du constituant.
- *
- * @param (double temps) le temps de mise a jour
- */
-inline void Constituant::mettre_a_jour(double temps)
-{
-  if (D.non_nul())
-    D.mettre_a_jour(temps);
-}
-
-
-/*! @brief NE FAIT RIEN
- *
- */
-inline int Constituant::initialiser(const double temps)
-{
-  if (D.non_nul())
-    D.initialiser(temps);
-  return 1;
-}
-
-#endif
+#endif /* Constituant_included */
