@@ -856,42 +856,68 @@ Matrice_Morse& Matrice_Morse::partie_sup(const Matrice_Morse& a)
  * Operation: resu = resu + A*x
  *
  */
-DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& x,DoubleVect& resu) const
+DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& tab_x,DoubleVect& tab_resu) const
 {
-    ToDo_Kokkos("critical");
-  assert_check_morse_matrix_structure( );
+  assert_check_morse_matrix_structure();
   const int n = tab1_.size_array() - 1;
-
-  assert(x.size_array() == nb_colonnes());
+  assert(tab_x.size_array() == nb_colonnes());
   // Test dans cet ordre car l'attribut size() peut etre invalide:
-  assert(resu.size_array() == n || resu.size() == n);
-
-  const int *tab1_ptr = tab1_.addr() + 1;
-  const int *tab2_ptr = tab2_.addr();
-  const double *coeff_ptr = coeff_.addr();
-  const double * x_fortran = x.addr() - 1; // Pour indexer x avec un indice fortran
-  int k_fortran = 1; // indice fortran dans tab2 et coeff
-  for (int i = 0; i < n; i++, tab1_ptr++)
+  assert(tab_resu.size_array() == n || tab_resu.size() == n);
+  // If matrix, x, resu are on device, we compute on the device to avoid expensive copy during TRUST GCP:
+  if (tab_x.isDataOnDevice() && tab_resu.isDataOnDevice() && coeff_.isDataOnDevice())
     {
-      const int kmax = *tab1_ptr; // tab1_[i+1] = indice fortran dans tab2_
-      assert(kmax >= k_fortran && kmax <= (tab2_.size_array()+1));
-      double t = resu[i];
-      assert(k_fortran == tab1_[i] && tab2_ptr == tab2_.addr()+(k_fortran-1));
-      for (; k_fortran < kmax; k_fortran++, tab2_ptr++, coeff_ptr++)
-        {
-          int colonne = *tab2_ptr; // indice fortran
-          assert(colonne >= 1 && colonne <= nb_colonnes());
-          t += (*coeff_ptr) * x_fortran[colonne];
-        }
-      resu[i] = t;
+      //if (tab_x.line_size()>1) Process::exit("line_size>1 pour x dans Matrice_Morse::ajouter_multvect_");
+      // Faster implementation on GPU (ToDo Kokkos: future, use Kokkos kernel?)
+      CIntArrView tab1 = tab1_.view_ro();
+      CIntArrView tab2 = tab2_.view_ro();
+      CDoubleArrView coeff = coeff_.view_ro();
+      CDoubleArrView x = tab_x.view_ro();
+      DoubleArrView resu = tab_resu.view_rw();
+      start_timer();
+      Kokkos::parallel_for("Matrice_Morse::ajouter_multvect_",
+                           Kokkos::RangePolicy<>(0, n), KOKKOS_LAMBDA(
+                             const int i)
+      {
+        for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+          {
+            int j = tab2(k) - 1;
+            resu(i) += coeff(k) * x(j);
+          }
+      });
+      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Matrice_Morse::ajouter_multvect_");
     }
-  return resu;
+  else
+    {
+      // Fast CPU (old) implementation with pointer:
+      const DoubleVect& x = tab_x;
+      DoubleVect& resu = tab_resu;
+      const int *tab1_ptr = tab1_.addr() + 1;
+      const int *tab2_ptr = tab2_.addr();
+      const double *coeff_ptr = coeff_.addr();
+      const double *x_fortran = x.addr() - 1; // Pour indexer x avec un indice fortran
+      int k_fortran = 1; // indice fortran dans tab2 et coeff
+      for (int i = 0; i < n; i++, tab1_ptr++)
+        {
+          const int kmax = *tab1_ptr; // tab1_[i+1] = indice fortran dans tab2_
+          assert(kmax >= k_fortran && kmax <= (tab2_.size_array() + 1));
+          double t = resu[i];
+          assert(k_fortran == tab1_[i] && tab2_ptr == tab2_.addr() + (k_fortran - 1));
+          for (; k_fortran < kmax; k_fortran++, tab2_ptr++, coeff_ptr++)
+            {
+              int colonne = *tab2_ptr; // indice fortran
+              assert(colonne >= 1 && colonne <= nb_colonnes());
+              t += (*coeff_ptr) * x_fortran[colonne];
+            }
+          resu[i] = t;
+        }
+    }
+  return tab_resu;
 }
 
 // Multiplication de la matrice par un vecteur x en prenant uniquement les items reels non communs pour x
 ArrOfDouble& Matrice_Morse::ajouter_multvect_(const ArrOfDouble& x,ArrOfDouble& resu,ArrOfInt& est_reel_pas_com) const
 {
-    ToDo_Kokkos("critical ?");
+  ToDo_Kokkos("critical ?");
   assert_check_morse_matrix_structure( );
   int n = nb_lignes();
 

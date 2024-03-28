@@ -32,6 +32,7 @@
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
+#include <Matrice_Morse_Diag.h>
 
 class Discretisation_base;
 class Schema_Temps_base;
@@ -211,6 +212,8 @@ public :
   }
 
   DoubleTab& derivee_en_temps_conv(DoubleTab& , const DoubleTab& );
+  // Diffusion implicit scheme
+  Matrice_Morse_Diag diag_;
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution)
   {
     return Gradient_conjugue_diff_impl(secmem,solution,0,NULL_);

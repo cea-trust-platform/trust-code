@@ -1499,15 +1499,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       // Preconditionnement
       /////////////////////
       double dt = le_schema_en_temps->pas_de_temps();
-      Matrice_Morse_Diag diag;
       if (precond_diag)
         {
-#ifdef _OPENMP
-          ToDo_Kokkos("critical");
-          Cerr
-              << "For performance, disable diagonal preconditioning for diffusion-implicited scheme cause not ported on the GPU yet."
-              << finl;
-#endif
           statistiques().begin_count(assemblage_sys_counter_);
           const int nb_case = inconnue().valeurs().dimension_tot(0);
           const int nb_comp = inconnue().valeurs().line_size();
@@ -1518,27 +1511,42 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               Cerr << "size_totale = " << n << finl;
               exit();
             }
-          diag.dimensionne_diag(n);
-          operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag);
+          if (diag_.ordre()==1) diag_.dimensionne_diag(n);
+          operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag_);
           for (int i = 0; i < size_s; i++)
             if (marq[i])
-              sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(), diag);
+              sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(), diag_);
           // La diagonale est proportionnelle au volume de controle....
           // Il faut appliquer le solveur_masse
-          DoubleTab tempo(inconnue().valeurs());
-          for (int ca = 0; ca < nb_case; ca++)
+          DoubleTrav tab_tempo(inconnue().valeurs());
+          DoubleTabView tempo = tab_tempo.view_wo();
+          // ToDo Kokkos Matrice_Morse_View diag = diag_.view_rw();
+          Matrice_Morse_View diag;
+          diag.set(diag_);
+          start_timer();
+          Kokkos::parallel_for("Equation_base::Gradient_conjugue_diff_impl first loop",
+                               Kokkos::RangePolicy<>(0, nb_case), KOKKOS_LAMBDA(
+                                 const int ca)
+          {
             for (int ncp = 0; ncp < nb_comp; ncp++)
               tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
-          solveur_masse.appliquer(tempo);
-          tempo.echange_espace_virtuel();
+          });
+          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl first loop");
+          solveur_masse.appliquer(tab_tempo);
+          tab_tempo.echange_espace_virtuel();
           // On inverse... // Crank - Nicholson
           // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
-          for (int ca = 0; ca < nb_case; ca++)
-            {
-              double tmp = (size_terme_mul ? terme_mul(ca) : 1) / dt;
-              for (int ncpa = 0; ncpa < nb_comp; ncpa++)
-                diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
-            }
+          DoubleTabView terme_mul_v = terme_mul.view_ro();
+          start_timer();
+          Kokkos::parallel_for("Equation_base::Gradient_conjugue_diff_impl second loop",
+                               Kokkos::RangePolicy<>(0, nb_case), KOKKOS_LAMBDA(
+                                 const int ca)
+          {
+            double tmp = (size_terme_mul ? terme_mul_v(ca, 0) : 1) / dt;
+            for (int ncpa = 0; ncpa < nb_comp; ncpa++)
+              diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
+          });
+          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl second loop");
           statistiques().end_count(assemblage_sys_counter_);
         }
       // On utilise p pour calculer phiB :
@@ -1559,6 +1567,9 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (size_terme_mul)
         {
           sol = solution;
+          ToDo_Kokkos("critical for IBC");
+          //operator_multiply(sol, term_mul);
+          // tab_multiply_any_shape(sol, terme_mul);
           for (int i = 0; i < size_terme_mul; i++)
             sol(i) *= terme_mul(i);
         }
@@ -1588,7 +1599,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (precond_diag)
         {
           z = residu;
-          diag.multvect(residu, z); // z = D-1(Ax-B)
+          diag_.multvect(residu, z); // z = D-1(Ax-B)
         }
       else
         z.ref(residu); // z = Ax-B
@@ -1598,7 +1609,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       /* Calcul different de initial_residual:
          DoubleTab tmp(secmem);
          if (precond_diag)
-         diag.multvect(secmem, tmp);
+         diag_.multvect(secmem, tmp);
          else
          tmp.ref(secmem);
          double initial_residual = mp_carre_norme_vect(tmp) ; // =||B|| ou ||D-1.B|| */
@@ -1652,7 +1663,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             residu.ajoute(alfa, resu, VECT_REAL_ITEMS);
 
             if (precond_diag)
-              diag.multvect(residu, z); // preconditionnement par diag^(-1)
+              diag_.multvect(residu, z); // preconditionnement par diag^(-1)
             // sinon z=residu
 
             residual = mp_carre_norme_vect(z);
