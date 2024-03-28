@@ -32,15 +32,11 @@ then
    exit 0
 fi
 rep=`dirname $file`
-if [ ! -f $rep/make.include ]
+
+# Les fichiers instancie ne sont pas traites
+if [ "`grep 'Warning : DO NOT EDIT' $file`" != "" ]
 then
    exit 0
-else
-   # Les fichiers instancie ne sont pas traites
-   if [ "`grep 'Warning : DO NOT EDIT' $file`" != "" ]
-   then
-      exit 0
-   fi
 fi
 
 ROOT=$rep
