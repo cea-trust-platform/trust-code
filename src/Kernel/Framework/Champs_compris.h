@@ -31,31 +31,26 @@ class Champ_base;
 
 class Champs_compris : public Objet_U
 {
-
   Declare_instanciable(Champs_compris);
-
 public :
-
   // Return the field if found, otherwise raises.
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   // Same thing, but without raising:
   virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
   virtual void ajoute_champ(const Champ_base& champ);
   virtual const Noms liste_noms_compris() const;
+  void clear_champs_compris() { liste_champs_.clear(); }
 
 protected :
-
   std::unordered_map<std::string, REF(Champ_base)> liste_champs_;
-
 };
 
 // ToDo commenter pour supprimer totalement les exceptions dans Flica5 ou TRUST:
 class Champs_compris_erreur
 {
-
 public:
   inline Champs_compris_erreur() {}
-
 };
-#endif
+
+#endif /* Champs_compris_included */
 
