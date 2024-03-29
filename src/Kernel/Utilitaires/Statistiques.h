@@ -31,8 +31,7 @@ class Statistiques
 {
 //private:
 
-  //Statistiques() = delete;
-  //~Statistiques() = delete;
+
 
   //static std::unordered_map<std::string, StatCntObject> ze_map_;
 
@@ -41,7 +40,8 @@ public:
 // {
 //   ze_map_[short_name] = StatCntObject();
 // }
-
+  Statistiques();
+  ~Statistiques();
   /*!@brief Function that change the debug level
    *
    *This function have to be called simultanely on each processor

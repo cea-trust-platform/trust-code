@@ -1,17 +1,17 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ * Copyright (c) 2024, CEA
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 
 #include <Statistiques.h>
 #include <EcrFicPartage.h>
@@ -303,15 +303,13 @@ public:
 
   bool comm_domaines_on[MAXCOUNTERS];
 
-  int index_in_communication_tracking_info[MAXCOUNTERS]; ///< if the counter is a communication, give its index inside the communication_tracking_info array (-1 otherwise)
-
   /*! @brief Table containing communication times of each wanted part of the code
    *
-   * 1ere dimension : les differents types de communication
-   * 2eme dimension : le temps passe dans chaque domaine  de communication qu'on a definie pour chaque compteur
-   * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans le domaine j par la communication i
-   * ==> quand j = 0 : l'element (i,j) contient le temps total (dans tout le code) consomme par la communication i
-   */
+   * First dimension i : number of the communication counter. Use function get_counter_id_from_index_in_comm_tracking_info(i) to know the associated counter ID.
+   * Second dimension j : Time elapsed in each domain j by the communication counter i. If j == 0, then it contains the total communication time of the communication counter i.
+  */
+
+  int index_in_communication_tracking_info[MAXCOUNTERS]; ///< if the counter is a communication, give its index inside the communication_tracking_info array (-1 otherwise)
 
   Stat_Results** communication_tracking_info;
 
@@ -387,6 +385,7 @@ Statistiques::~Statistiques()
  */
 void Statistiques::set_debug_level(int level)
 {
+  Stat_Internals& si = *stat_internals;
   if (si.change_level_forbidden)
     return;
 
@@ -499,7 +498,7 @@ void Statistiques::end_count_(const int id, int quantity, int count)
           si.counter_nb[id] += count;
           si.counter_quantity[id] += quantity;
 #ifdef VTRACE
-          // Level 1 only to avoid MPI calls
+// Level 1 only to avoid MPI calls
           if (si.counter_level[id]==1) VT_USER_END(si.description[id]);
 #endif
         }
@@ -535,7 +534,9 @@ static void print_stat(Sortie& perfs,
                        Sortie& perfs_globales,
                        const char * message,
                        const char * description,
+                       const char * family,
                        int level,
+                       int is_comm,
                        double time,
                        double nb,
                        double quantity,
@@ -547,15 +548,16 @@ static void print_stat(Sortie& perfs,
                        double max_time_per_step = 0,
                        double var_time_per_step = 0)
 {
-  char tampon[BUFLEN+200];
+  char tampon[BUFLEN+450];
+
   if (! skip_local)
     {
-  if (Process::is_parallel())
+      if (Process::is_parallel())
         {
           double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
 
-          snprintf(tampon, BUFLEN + 300, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
-                   message, Process::me(), description, (True_int)level, time, percent_time, 0.0, 0.0, 0.0,
+          snprintf(tampon, BUFLEN + 450, "%-50s \t %-17d \t %-25s \t %-42s \t %-15d \t %-15d \t %-15e \t %-10e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e",
+                   message, Process::me(), family, description, (True_int)level, is_comm, percent_time, time, 0.0, 0.0, 0.0,
                    nb, 0.0, 0.0, 0.0, avg_time_per_step, min_time_per_step == INITIAL_MIN? 0.0 : min_time_per_step, max_time_per_step, var_time_per_step, quantity, 0.0 , 0.0, 0.0);
           perfs << tampon << finl;
         }
@@ -576,10 +578,6 @@ static void print_stat(Sortie& perfs,
       double min_time = tmp[0];
       double min_nb = tmp[1];
       double min_quantity = tmp[2];
-      double min_avg_time_per_step = tmp[3];
-      double min_min_time_per_step = tmp[4];
-      double min_max_time_per_step = tmp[5];
-      double min_var_time_per_step = tmp[6];
 
       /// Max of each quantity on the set of processor
       tmp[0]=time;
@@ -594,10 +592,6 @@ static void print_stat(Sortie& perfs,
       double max_time = tmp[0];
       double max_nb = tmp[1];
       double max_quantity = tmp[2];
-      double max_avg_time_per_step = tmp[3];
-      double max_min_time_per_step = tmp[4];
-      double max_max_time_per_step = tmp[5];
-      double max_var_time_per_step = tmp[6];
 
       /// Average of each quantity on the set of processor
       tmp[0]=time;
@@ -612,7 +606,6 @@ static void print_stat(Sortie& perfs,
       double avg_time = tmp[0]/ Process::nproc();
       double avg_nb = tmp[1]/ Process::nproc();
       double avg_quantity = tmp[2]/ Process::nproc();
-      double avg_avg_time_per_step = tmp[3]/ Process::nproc();
       double avg_min_time_per_step = tmp[4]/ Process::nproc();
       double avg_max_time_per_step = tmp[5]/ Process::nproc();
       double avg_var_time_per_step = tmp[6]/ Process::nproc();
@@ -657,8 +650,8 @@ static void print_stat(Sortie& perfs,
           SD_nb = sqrt(SD_nb/Process::nproc());
           SD_quantity = sqrt(SD_quantity/Process::nproc());
 
-          snprintf(tampon, BUFLEN + 300, "%s \t %d \t %s \t %d \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %e",
-                   message, Process::me(), description, (True_int)level, time, percent_time, min_time, max_time, SD_time,
+          snprintf(tampon, BUFLEN + 450, "%-50s \t %-17d \t %-25s \t %-42s \t %-15d \t %-15d \t %-15e \t %-10e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e",
+                   message, -1, family, description, (True_int)level, is_comm, percent_time, time, min_time, max_time, SD_time,
                    nb, min_nb, max_nb, SD_nb, avg_time_per_step, avg_min_time_per_step == INITIAL_MIN? 0.0 : avg_min_time_per_step, avg_max_time_per_step, avg_var_time_per_step, avg_quantity, min_quantity , max_quantity, SD_quantity);
 
           perfs_globales << tampon << finl;
@@ -675,14 +668,14 @@ void Statistiques::dump(const char * message, int mode_append)
 
   Stat_Internals& si = *stat_internals;
 
-  char tampon[BUFLEN+250];
+  char tampon[BUFLEN+450];
   stop_counters();
 
   SChaine perfs;   ///< String that contains stats on each processor
   SChaine perfs_globales;   ///< String that contains stats average on the processors : processor number = -1
   SChaine File_header;      ///< String at the start of the file
 
-  if ( (Process::je_suis_maitre()) && (message == "Statistiques d'initialisation du calcul") )
+  if ( (Process::je_suis_maitre()) && (strcmp(message, "Statistiques d'initialisation du calcul")==0) )
     {
       File_header << "# Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
       File_header << "# The time was measured by the following method :" << Time::description << finl;
@@ -692,35 +685,42 @@ void Statistiques::dump(const char * message, int mode_append)
       File_header << "# Min, max and SD accounts respectively for the minimum, maximum and Standard Deviation of the quantity of the previous row." << finl;
       File_header << "# Quantity is a custom variable that depends on the counter. It is used to compute bandwidth for communication counters for example." << finl;
       File_header << "#" << finl << "#" << finl;
-      snprintf(tampon, BUFLEN + 150, "%22s \t %10s \t %30s \t %30s \t %5s \t %10s \t %10s \t %10s \t %10s \t %20s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s \t %10s", "Overall simulation step", "Processor Number", "Counter family",
-               "Counter name", "Counter level", "Percentage of total time", "time (s)", "min", "max", "SD", "count", "min", "max", "SD", "time_per_step", "min", "max", "SD", "Quantity", "min", "max", "SD");
+      snprintf(tampon, BUFLEN + 450, "%-50s \t %-17s \t %-42s \t %-25s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s", "Overall_simulation_step", "Processor_Number",
+               "Counter_family", "Counter_name",  "Counter_level", "Is_comm", "%_total_time", "time_(s)", "t_min", "t_max", "t_SD", "count", "c_min", "c_max", "c_SD", "time_per_step", "tpt_min", "tpt_max", "tpt_SD", "Quantity", "q_min", "q_max", "q_SD");
       File_header << tampon << finl;
     }
 
 
   if (Process::is_parallel())
     {
-      perfs.precision(5);
-      perfs_globales.precision(5);
+      perfs.precision(4);
+      perfs_globales.precision(4);
     }
 
   /// Check if all of the processors see the same number of counter, if not print an error message in perfs_globales
   int skip_globals = 0;
   int skip_local = 0;
-  {
-    int min_nb_of_counters = (int) Process::mp_min(si.nb_counters);
-    int max_nb_of_counters = (int) Process::mp_max(si.nb_counters);
-    if (min_nb_of_counters != max_nb_of_counters)
-      {
-        if (Process::je_suis_maitre())
-          {
-            perfs_globales << "Unable to collect statistics :" << finl
-                           << " there is not the same number of counters on all"
-                           " processors."<< finl;
-          }
-        skip_globals = 1;
-      }
-  }
+
+  int min_nb_of_counters = (int) Process::mp_min(si.nb_counters);
+  int max_nb_of_counters = (int) Process::mp_max(si.nb_counters);
+  int is_comm =0; ///< Equal to 1 if the counter is a communication counter, 0 otherwise
+
+  char* theValue = getenv("SKIP_PER_PROC_PERF_LOG"); ///< For calculation on a large number of processor, set the environment variable SKIP_PER_PROC_PERF_LOG == 1 in order to skip details per processor in the perf log file
+  if (theValue != nullptr)
+    {
+      skip_local = 1 ;
+    }
+
+  if (min_nb_of_counters != max_nb_of_counters)
+    {
+      if (Process::je_suis_maitre())
+        {
+          perfs_globales << "Unable to collect statistics :" << finl
+                         << " there is not the same number of counters on all"
+                         " processors."<< finl;
+        }
+      skip_globals = 1;
+    }
 
   /// Time of reference for statistics computation
   double temps_total_max = 0.;
@@ -750,13 +750,6 @@ void Statistiques::dump(const char * message, int mode_append)
   /// Extract information of each counter
   for (int i = 0; i < si.nb_counters; i++)
     {
-      char name_description[BUFLEN];
-
-      if (si.family[i])
-        snprintf(name_description, BUFLEN, "%10s \t %10s", si.family[i], si.description[i]); ///< name_description is a string that give the family and the description of a counter
-      else
-        snprintf(name_description, BUFLEN, "%40d  \t %s", 0, si.description[i]); ///< if the counter does not belong in a family, family becomes 0
-
       double time;
       double nb; ///< number of time the counter is open and closed
       double quantity; ///< A custom quantity which depends on the counter. Used for example to compute the bandwidth
@@ -768,12 +761,14 @@ void Statistiques::dump(const char * message, int mode_append)
           time = si.communication_tracking_info[index][0].time;
           nb = si.communication_tracking_info[index][0].count;
           quantity = si.communication_tracking_info[index][0].quantity;
+          is_comm = 1;
         }
       else
         {
           time = si.counter_time[i].second();
           nb = (double) si.counter_nb[i];
           quantity = (double) si.counter_quantity[i];
+          is_comm = 0;
         }
 
       int level = si.counter_level[i];
@@ -792,10 +787,9 @@ void Statistiques::dump(const char * message, int mode_append)
         temps_total_max = time;
 
       assert(var_time_per_step >= 0.);
-      print_stat(perfs,perfs_globales,message,name_description,
-                 level,time,nb,quantity,temps_total_max, skip_globals, skip_local,
+      print_stat(perfs,perfs_globales, message, si.description[i], si.family[i],
+                 level,is_comm,time,nb,quantity,temps_total_max, skip_globals, skip_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
-
     }
 
   // Affichage par famille de compteur
@@ -825,7 +819,6 @@ void Statistiques::dump(const char * message, int mode_append)
       if (next >= si.nb_counters)
         break;
 
-
       /// Aggregated stats by family
       for (int i = next; i < si.nb_counters; i++)
         {
@@ -845,30 +838,24 @@ void Statistiques::dump(const char * message, int mode_append)
                       time += si.communication_tracking_info[index][0].time;
                       nb   += si.communication_tracking_info[index][0].count;
                       quantity += si.communication_tracking_info[index][0].quantity;
-
+                      is_comm = 1 ;
                     }
                   else
                     {
                       time += si.counter_time[i].second();
                       nb += (double) si.counter_nb[i];
                       quantity += (double) si.counter_quantity[i];
+                      is_comm =0 ;
                     }
 
                   avg_time_per_step += si.counters_avg_min_max_var_per_step[i][1];
                   var_time_per_step += si.counters_avg_min_max_var_per_step[i][4];
-
                 }
             }
         }
-
-
-
-      char name_family_description[BUFLEN];
-      snprintf(name_family_description, BUFLEN, "%10s \t %10s", si.family[next], "Aggregated over the family"); ///< name_description is a string that give the family and the description of a counter
-
       assert(var_time_per_step >= 0.);
-      print_stat(perfs,perfs_globales,message,name_family_description,
-                 level,time,nb,quantity,temps_total_max, skip_globals, skip_local,
+      print_stat(perfs,perfs_globales,message, "Aggregated over family", si.family[next],
+                 level,is_comm, time,nb,quantity,temps_total_max, skip_globals, skip_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
 
       next++;
