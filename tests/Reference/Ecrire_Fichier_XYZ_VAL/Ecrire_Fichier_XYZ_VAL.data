@@ -135,9 +135,9 @@ Read pbF1
         }
         ecrire_fichier_xyz_valeur
 	{
-	    dt 1
-	    fields { temperature }
-	    boundaries { interface BasF }
+	    dt 1.
+	    fields 1 temperature
+	    boundaries 2 interface BasF 
 	}
     }
 

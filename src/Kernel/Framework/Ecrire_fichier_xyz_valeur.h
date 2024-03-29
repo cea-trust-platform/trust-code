@@ -17,16 +17,16 @@
 #define Ecrire_fichier_xyz_valeur_included
 
 #include <TRUST_Ref.h>
-#include <vector>
-#include <string>
+#include <Noms.h>
 #include <Param.h>
+#include <vector>
 
 class Operateur_Statistique_tps_base;
 class Equation_base;
 class Champ_base;
 class Frontiere;
 
-/*! @brief classe Ecrire_fichier_xyz_valeur This class allows to write user specified field values into a dedicated file
+/*! @brief classe Ecrire_fichier_xyz_valeur This class allows to dump fields values on some boundaries into a dedicated text file.
  */
 class Ecrire_fichier_xyz_valeur : public Objet_U
 {
@@ -34,7 +34,6 @@ class Ecrire_fichier_xyz_valeur : public Objet_U
 
 public :
   void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
   void write_fields() const;
   inline void associer_eqn(const Equation_base& eqn)
   {
@@ -43,16 +42,15 @@ public :
 
 private :
 
-  Entree& fill_vector_from_datafile_(Entree& is, std::vector<std::string>& v);
   bool write_field_during_current_timestep_() const;
-  bool getStatField_(const std::string& fname, REF(Champ_base)& field, REF(Operateur_Statistique_tps_base)& op_stat) const;
-  void writeValuesOnBoundary_(const std::string& fname, const std::string& bname, const DoubleTab& pos, const DoubleTab& val) const;
+  bool getStatField_(const Nom& fname, REF(Champ_base)& field, REF(Operateur_Statistique_tps_base)& op_stat) const;
+  void writeValuesOnBoundary_(const Nom& fname, const std::string& bname, const DoubleTab& pos, const DoubleTab& val) const;
 
   REF(Equation_base) eqn_;
   int binary_file_;
   double dt_; //file writing frequency
-  std::vector<std::string> fields_names_;
-  std::vector<std::string> boundary_names_;
+  Noms fields_names_;
+  Noms boundary_names_;
 
 };
 

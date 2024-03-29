@@ -332,13 +332,6 @@ private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
 
   Ecrire_fichier_xyz_valeur xyz_field_values_file_;
-  void ecrire_fichier_xyz() const;
-  ArrOfDouble dt_ecrire_fic_xyz;
-  Motcles nom_champ_xyz;
-  LIST(Noms) noms_bord_xyz;
-  IntVect nb_bords_post_xyz;
-  int nombre_champ_xyz;
-  int ecrit_champ_xyz_bin;
 
   //!SC: passage en protected (surcharge de get_champ dans Equation_Diphasique_base)
 //  Champs_Fonc list_champ_combi;

@@ -71,7 +71,12 @@ Read pb
         sources { Canal_perio { bord PERIO } }
 
 
-        Ecrire_fichier_xyz_valeur vitesse 100. bords 1 PERIO
+        Ecrire_fichier_xyz_valeur
+	{
+	   dt 100.
+	   fields 1 vitesse 
+	   boundaries 1 PERIO 
+	}
     }
     Post_processing
     {
