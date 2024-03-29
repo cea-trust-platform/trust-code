@@ -708,7 +708,7 @@ int main(int argc, char **argv)
   //
   Noms geoms3;
 
-  int gnerr = -1;
+  int gnerr_field = 0, gnerr_time_step = 0, gnerr_domaine = 0, gnerr_field_name = 0;
   {
     Noms geoms = filter.get_exportable_geometry_names();
     Noms geoms2 = filter2.get_exportable_geometry_names();
@@ -720,7 +720,7 @@ int main(int argc, char **argv)
         print(geoms2);
         cerr << geoms3.size() << " geometries communs  in " << filename << " and in " << filename2 << " ";
         print(geoms3);
-        gnerr += 1000;
+        gnerr_domaine++;
       }
   }
 
@@ -741,8 +741,7 @@ int main(int argc, char **argv)
           print(fields2);
           cerr << fields3.size() << " fields communs on " << geoms3[i] << " in " << filename << " and in " << filename2 << " ";
           print(fields3);
-          //exit(-1);
-          gnerr += 100;
+          gnerr_field_name++;
         }
     }
 
@@ -758,11 +757,10 @@ int main(int argc, char **argv)
         {
           cerr << filename << " has " << nbtimes - 1 << " timesteps " << endl;
           cerr << filename2 << " has " << nbtimes2 - 1 << " timesteps " << endl;
-          //   exit(1);
           // pour comparer les n premiers pas de temps
           if (nbtimes2 < nbtimes)
             nbtimes = nbtimes2;
-          gnerr += 100000;
+//          gnerr += 100000;
         }
 
       for (int i = 1; i < nbtimes; i++)
@@ -772,8 +770,7 @@ int main(int argc, char **argv)
           if (compare_temps(t, t2) == 0)
             {
               cerr << "timestep " << i << " time in " << filename << " " << t << " in " << filename2 << " " << t2 << endl;
-//	  exit(1);
-              gnerr += 10000;
+              gnerr_time_step++;
             }
         }
     }
@@ -869,7 +866,7 @@ int main(int argc, char **argv)
                   filter2.release_field(field2);
                   filter.release_field(field);
                 }
-              catch (LataError err)
+              catch (LataError& err)
                 {
                   if (err.code_ == LataError::NOT_A_FLOAT_FIELD)
                     {
@@ -992,7 +989,7 @@ int main(int argc, char **argv)
 
                   printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %d=%15.8e %s par %d=%15.8e  gmax %15.8e composante %d\n", (const char*) get_long_field_name(un_ecart.name_),
                          ecarts.t, em, (const char*) type_case, ecarts.loc[c], ecarts.val[c], (const char*) type_case, ecarts.loc2[c], ecarts.val2[c], max, c);
-                  gnerr++;
+                  gnerr_field++;
                   gnerrf++;
                   em = 0.0;
                 }
@@ -1005,8 +1002,35 @@ int main(int argc, char **argv)
 
           }
     }
-  gnerr++;
-  printf("Number of differences : %d\n", gnerr);
+
+  const int gnerr_all = gnerr_domaine + gnerr_time_step + gnerr_field_name + gnerr_field;
+
+  if (gnerr_all > 0)
+    {
+      cerr << endl;
+      cerr << "=========================================" << endl;
+    }
+
+  if (gnerr_domaine > 0)
+    printf("Number of differences on domains / domain names : %d\n", gnerr_domaine);
+
+  if (gnerr_time_step > 0)
+    printf("Number of differences on time steps : %d\n", gnerr_time_step);
+
+  if (gnerr_field_name > 0)
+    printf("Number of differences on field names : %d\n", gnerr_field_name);
+
+  if (gnerr_field > 0)
+    printf("Number of differences on fields : %d\n", gnerr_field);
+
+  if (gnerr_all > 0)
+    {
+      cerr << "=========================================" << endl;
+      cerr << endl;
+    }
+
+  printf("Number of differences : %d\n", gnerr_all);
   printf("Maximal relative error encountered : %10.5e\n", gemax);
-  return gnerr;
+
+  return gnerr_all;
 }
