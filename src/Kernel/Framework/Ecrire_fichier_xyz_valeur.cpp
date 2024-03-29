@@ -34,6 +34,12 @@ Entree& Ecrire_fichier_xyz_valeur::readOn(Entree& is)
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);
+
+  // we need to create fields here
+  // as only fields defined in equation or post-traiment are created when writing .dat file
+  for(auto fname : fields_names_ )
+      eqn_->probleme().creer_champ(fname);
+
   return is;
 }
 
@@ -198,8 +204,8 @@ void Ecrire_fichier_xyz_valeur::write_fields() const
                       else
                         field->valeur_aux(pos, val);
 
-                      // writing everything into the file
-                      writeValuesOnBoundary_(fname, bname.getString(), pos, val);
+                      // writing everything into the file, ND: I add majuscule() to keep pre 1.9.4 filenames
+                      writeValuesOnBoundary_(fname.majuscule(), bname.getString(), pos, val);
                     }
                 }
               if (!boundary_found)
