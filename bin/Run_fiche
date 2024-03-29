@@ -21,19 +21,17 @@ help()
    echo
    echo "For .prm validation forms:"
    echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
-   echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
+   echo "Script to build a PDF report file from an automated validation test case (.prm file)."
    echo "-help                          : This description."
    echo "-doc_prm                       : Open the prm file documentation."
    echo "-dest path_build               : Change the default build directory."
    echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
    echo "-post_run                      : As -not_run except it runs the post_run scripts."
-   echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default). To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
-   echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
+   echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default). To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #"
+   echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #"
    echo "-nb_pas_dt_max N               : The test cases will be run on N time steps only."
    echo "-visit_np np                   : Run VisIt on np cores (by default 1) when building the figures, which is faster on a very big mesh."
    echo "-no_visit                      : Do not build any VisIt figures, which is faster on PRM having many VisIt snapshots."
-   #echo "-d text                        : The figures will not be re-generated and will reuse previous one, if any."
-   #echo "-d figure_number               : Generates the figure_number figure without building the whole PDF report."
    echo "-o name_report.pdf             : Change the default PDF report name 'rapport.pdf'"
    echo "-xpdf                          : Open the PDF report file at the end of the build."
    echo "-remote login@machine:PATH env : Copy the src directory on a remote machine (generally a cluster) under PATH directory and run there the build after initializing the env environment"
@@ -41,7 +39,7 @@ help()
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
    echo "-compare_pdf pdf_path          : Compare the produced rapport.pdf with a pdf file."
    echo "-compare path_build            : Build one PDF report which compares results from the default build directory and several ones specified by one or more -compare option."
-   echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other." 
+   echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other."
    echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
    echo "-create_prm                    : Build a minimal .prm with data files found in the src directory."
    echo "-convert_prm                   : Convert .prm file in jupyter notebook"
@@ -66,7 +64,7 @@ show_pdf()
 pdflatex --version 1>/dev/null 2>&1
 [ $? != 0 ] && echo "WARNING! pdflatex is not available or installed. `basename $0` WILL NOT produce the PDF report. Install pdflatex on $HOST."
 
-if [ "$TRUST_WITHOUT_PDFLATEX" = 1 ] 
+if [ "$TRUST_WITHOUT_PDFLATEX" = 1 ]
 then
   echo "WARNING! You have disabled the build of pdf documentation. You probably have a problem with latex packages." | tee Run.log
   echo "  `basename $0` WILL PROBABLY NOT produce the PDF report." | tee -a Run.log
@@ -84,8 +82,7 @@ export_tex=false
 coverage=false
 parallel=false
 post_run=false
-# Changement par defaut, on utilise -np 2 si parallele et MPI non natif
-#if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
+# Changement par defaut, on utilise visit -np 2 si dispo
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
    visit_help=`$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
@@ -93,7 +90,7 @@ then
 fi
 while [ "$1" != "" ]
 do
-   if [ "${1#-}" = $1 ] && [ -d $1 ] 
+   if [ "${1#-}" = $1 ] && [ -d $1 ]
    then
       cd $1
       shift
@@ -140,13 +137,16 @@ do
       options=$options" "$1
       pdf=$1/rapport.pdf
       shift
-   elif [ "$1" = -export_pdf ]; then
+   elif [ "$1" = -export_pdf ]
+   then
       export_pdf=true
       shift
-   elif [ "$1" = -export_tex ]; then
+   elif [ "$1" = -export_tex ]
+   then
       export_tex=true
       shift
-   elif [ "$1" = -coverage ]; then
+   elif [ "$1" = -coverage ]
+   then
       coverage=true
       shift
    elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ] || [ "$1" = -parallel_sjob ]
@@ -155,10 +155,10 @@ do
       if [ "$1" = -not_run ]
       then
          not_run=1
-      elif [ "$1" = -parallel_run ] 
+      elif [ "$1" = -parallel_run ]
       then
          parallel=true
-         if [ "`echo $2 | grep [0-9]`" != "" ] 
+         if [ "`echo $2 | grep [0-9]`" != "" ]
          then
             shift
             TRUST_NB_PROCS=$1
@@ -168,7 +168,7 @@ do
          parallel=true
          # Lancement Server si necessaire
          [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ps -efl | grep Sserver | grep -v grep`" = "" ] && (cd $TRUST_ROOT/bin/Sjob;./Sserver $TRUST_NB_PROCS &)
-      elif [ "$1" = -post_run ] 
+      elif [ "$1" = -post_run ]
       then
          post_run=true
       fi
@@ -178,7 +178,7 @@ do
       options=$options" "$1
       shift
       options=$options" "$1
-      shift     
+      shift
    elif [ "$1" = -visit_np ]
    then
       shift
@@ -194,7 +194,7 @@ do
       shift
       options=$options" "$1
       pdf=$1
-      shift     
+      shift
    elif [ "$1" = -xpdf ]
    then
       xpdf=$1
@@ -283,9 +283,9 @@ do
       notebook=`ls *.ipynb 2>/dev/null`
       if [ "$notebook" != "" ]
       then
-      	echo "=========================="
-      	echo "a .ipynb file already exists"
-      	exit
+         echo "=========================="
+         echo "a .ipynb file already exists"
+         exit
       fi
       create_basic_jupyter_notebook.sh $jy
       exit 0
@@ -294,7 +294,7 @@ do
       echo "=================================================="
       echo "Warning! Option $1 not yet recognized by Run_fiche"
       echo "Use $TRUST_ROOT/Validation/Outils/Genere_courbe/Run script instead or see usage with Run_fiche -help (displayed below)"
-      echo "=================================================="     
+      echo "=================================================="
       help
       exit 1
    fi
@@ -304,7 +304,7 @@ done
 if [ "$remote" = "" ]
 then
    if [ "$rsync" = 1 ]
-   then   
+   then
       echo "============================================================================="
       echo "-> Updating files on $rep/build ..."
       echo "============================================================================="
@@ -325,15 +325,19 @@ then
       echo "For help, run: Run_fiche -help"
       exit -1
    fi
-   # Lancement d'une fiche jupyter   
-   if [ ${prm%.ipynb} != $prm ]; then
-      if $post_run; then
-          echo "Error: Run_fiche does not accept -post_run for Jupyter's notebook validation forms!" 
+   # Lancement d'une fiche jupyter
+   if [ ${prm%.ipynb} != $prm ]
+   then
+      if $post_run
+      then
+          echo "Error: Run_fiche does not accept -post_run for Jupyter's notebook validation forms!"
           exit 255
-      elif $export_pdf; then
+      elif $export_pdf
+      then
           opt_jy="--execute"
           tmp_env=""
-          if [ "$not_run" = "1" ]; then
+          if [ "$not_run" = "1" ]
+          then
              tmp_env="env JUPYTER_RUN_OPTIONS='-not_run' "
           fi
           pdf=$(basename $pdf)
@@ -352,10 +356,12 @@ then
           else
              rm -f Run.log
           fi
-      elif $export_tex; then
+      elif $export_tex
+      then
           opt_jy="--execute"
           tmp_env=""
-          if [ "$not_run" = "1" ]; then
+          if [ "$not_run" = "1" ]
+          then
              tmp_env="env JUPYTER_RUN_OPTIONS='-not_run' "
           fi
           curr_dir=`pwd`
@@ -373,8 +379,9 @@ then
              rm -f Run.log
           fi
           exit $error
-      elif $parallel; then
-          curr_dir=`pwd`  
+      elif $parallel
+      then
+          curr_dir=`pwd`
           pdf=$(basename $pdf)
           pdf=$curr_dir/build/$pdf
           env JUPYTER_RUN_OPTIONS="-parallel_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" --execute $prm 2>& 1| tee -a Run.log
@@ -384,7 +391,7 @@ then
              echo "Error, see Run.log"
              exit $error
           fi
-          #killall Sserver 
+          #killall Sserver
       else
           echo "----------------------------------------------------------------------"
           echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
