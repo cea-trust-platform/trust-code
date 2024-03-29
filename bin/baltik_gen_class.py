@@ -28,7 +28,7 @@ class ErrorManager( object ):
         self.parser_.error( message )
 
 # location determination
-def build_location_in_triou_mode( error_manager ):
+def build_location_in_trust_mode( error_manager ):
     import os
 
     trio_u_root = os.getenv("TRUST_ROOT")
@@ -37,7 +37,7 @@ def build_location_in_triou_mode( error_manager ):
         error_manager.error( "Undefined environment variable: TRUST_ROOT" )
 
     if os.path.commonprefix( ( os.getcwd( ), trio_u_root ) ) != trio_u_root:
-        error_manager.error( "Invalid location: 'baltik_gen_class --triou-mode' should be used in a subdirectory of $TRUST_ROOT." )
+        error_manager.error( "Invalid location: 'baltik_gen_class --trust-mode' should be used in a subdirectory of $TRUST_ROOT." )
 
     return os.path.join( "$TRUST_ROOT", os.path.relpath( os.getcwd( ), trio_u_root ) )
 
@@ -84,13 +84,13 @@ def classname_analysis( classname, error_manager ):
 
     macros = []
 
-    pattern = "^(REF|DERIV|LIST|VECT)\((.*)\)$"
+    #pattern = "^(REF|DERIV|LIST|VECT)\((.*)\)$"
 
-    match = re.match( pattern, root )
-    while ( match ):
-        macros += [ match.group( 1 ) ]
-        root    = match.group( 2 )
-        match   = re.match( pattern, root )
+    #match = re.match( pattern, root )
+    #while ( match ):
+    #    macros += [ match.group( 1 ) ]
+    #    root    = match.group( 2 )
+    #    match   = re.match( pattern, root )
 
     if ( ' ' in root ) or ( '(' in root ) or ( ')' in root ):
         error_manager.error( "Invalid classname: '{0}'".format( classname ) )
@@ -100,25 +100,17 @@ def classname_analysis( classname, error_manager ):
 
 # code for standard classes
 def get_header_template_for_standard_class( ):
-    return """/////////////////////////////////////////////////////////////////////////////
-//
-// File      : {header_filename}
-// Directory : {location}
-//
-/////////////////////////////////////////////////////////////////////////////
+    return """
 
 #ifndef {inclusion_guard}
 #define {inclusion_guard}
 
 {header_inclusions}
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class {classname}
-//
-// <Description of class {classname}>
-//
-/////////////////////////////////////////////////////////////////////////////
+/*! @brief : class {classname}
+ *
+ * <Description of class {classname}>
+ */
 
 class {classname} : public {superclassname}
 {opening_brace}
@@ -135,12 +127,7 @@ protected :
 """
 
 def get_source_template_for_standard_class( ):
-    return """/////////////////////////////////////////////////////////////////////////////
-//
-// File      : {source_filename}
-// Directory : {location}
-//
-/////////////////////////////////////////////////////////////////////////////
+    return """
 
 {source_inclusions}
 
@@ -191,10 +178,10 @@ def build_keywords_for_standard_class( arguments, error_manager ):
     keywords[ "superclassname" ] = " ".join( superclasslist )
 
     prefixes_ = {}
-    prefixes_[ "REF" ]   = "Ref"
-    prefixes_[ "DERIV" ] = "Deriv"
-    prefixes_[ "LIST" ]  = "List"
-    prefixes_[ "VECT" ]  = "Vect"
+    #prefixes_[ "REF" ]   = "Ref"
+    #prefixes_[ "DERIV" ] = "Deriv"
+    #prefixes_[ "LIST" ]  = "List"
+    #prefixes_[ "VECT" ]  = "Vect"
 
     inclusions = [ "{0}.h".format( root ) ]
     macros.reverse( )
@@ -206,8 +193,8 @@ def build_keywords_for_standard_class( arguments, error_manager ):
 
     keywords[ "source_inclusions" ] = "\n".join( [ "#include <{0}>".format( x ) for x in inclusions ] )
 
-    if ( arguments.triou_mode ):
-        keywords[ "location" ] = build_location_in_triou_mode( error_manager )
+    if ( arguments.trust_mode ):
+        keywords[ "location" ] = build_location_in_trust_mode( error_manager )
     else:
         keywords[ "location" ] = build_location_in_baltik_mode( error_manager )
 
@@ -226,12 +213,7 @@ def build_templates_and_keywords_for_standard_class( arguments, error_manager ):
 
 # code for macro classes
 def get_header_template_for_macro_class( ):
-    return """/////////////////////////////////////////////////////////////////////////////
-//
-// File      : {header_filename}
-// Directory : {location}
-//
-/////////////////////////////////////////////////////////////////////////////
+    return """
 
 #ifndef {inclusion_guard}
 #define {inclusion_guard}
@@ -244,12 +226,7 @@ class {classname} ;
 """
 
 def get_source_template_for_macro_class( ):
-    return """/////////////////////////////////////////////////////////////////////////////
-//
-// File      : {source_filename}
-// Directory : {location}
-//
-/////////////////////////////////////////////////////////////////////////////
+    return """
 
 {source_inclusions}
 
@@ -267,10 +244,10 @@ def build_keywords_for_macro_class( arguments, error_manager ):
     keywords[ "classname" ] = " ".join( classlist )
 
     classtypes_                 = { }
-    classtypes_[ "reference"  ] = "ref"
-    classtypes_[ "derivation" ] = "deriv"
-    classtypes_[ "vector"     ] = "vect"
-    classtypes_[ "list"       ] = "list"
+    #classtypes_[ "reference"  ] = "ref"
+    #classtypes_[ "derivation" ] = "deriv"
+    #classtypes_[ "vector"     ] = "vect"
+    #classtypes_[ "list"       ] = "list"
 
     classtype = classtypes_[ arguments.classtype ]
 
@@ -280,10 +257,10 @@ def build_keywords_for_macro_class( arguments, error_manager ):
     macros.insert( 0, classtype.upper( ) )
 
     prefixes_ = { }
-    prefixes_[ "REF" ]   = "Ref"
-    prefixes_[ "DERIV" ] = "Deriv"
-    prefixes_[ "LIST" ]  = "List"
-    prefixes_[ "VECT" ]  = "Vect"
+    #prefixes_[ "REF" ]   = "Ref"
+    #prefixes_[ "DERIV" ] = "Deriv"
+    #prefixes_[ "LIST" ]  = "List"
+    #prefixes_[ "VECT" ]  = "Vect"
 
     expanded_classlist = [ prefixes_[ x ] for x in macros ]
     expanded_classlist.append( root )
@@ -306,8 +283,8 @@ def build_keywords_for_macro_class( arguments, error_manager ):
 
     keywords[ "source_inclusions" ] = "\n".join( [ "#include <{0}>".format( x ) for x in source_inclusions ] )
 
-    if ( arguments.triou_mode ):
-        keywords[ "location" ] = build_location_in_triou_mode( error_manager )
+    if ( arguments.trust_mode ):
+        keywords[ "location" ] = build_location_in_trust_mode( error_manager )
     else:
         keywords[ "location" ] = build_location_in_baltik_mode( error_manager )
 
@@ -328,7 +305,7 @@ def parse_arguments( ):
     parser = argparse.ArgumentParser( )
     error_manager = ErrorManager( parser )
 
-    parser.add_argument( "--triou-mode",
+    parser.add_argument( "--trust-mode",
                          action = "store_true",
                          help   = "provides a skeleton for a TRUST class instead of a BALTIK project class" )
 
@@ -346,29 +323,29 @@ def parse_arguments( ):
                         const  = "base",
                         help   = "build a base class skeleton" )
 
-    group.add_argument( "-r", "--ref",
-                        dest   = "classtype",
-                        action = "store_const",
-                        const  = "reference",
-                        help   = "build a reference class" )
+    #group.add_argument( "-r", "--ref",
+    #                    dest   = "classtype",
+    #                    action = "store_const",
+    #                    const  = "reference",
+    #                    help   = "build a reference class" )
 
-    group.add_argument( "-d", "--deriv",
-                        dest   = "classtype",
-                        action = "store_const",
-                        const  = "derivation",
-                        help   = "build a derivation class" )
+    #group.add_argument( "-d", "--deriv",
+    #                    dest   = "classtype",
+    #                    action = "store_const",
+    #                    const  = "derivation",
+    #                    help   = "build a derivation class" )
 
-    group.add_argument( "-l", "--list",
-                        dest   = "classtype",
-                        action = "store_const",
-                        const  = "list",
-                        help   = "build a list class" )
+    #group.add_argument( "-l", "--list",
+    #                    dest   = "classtype",
+    #                    action = "store_const",
+    #                    const  = "list",
+    #                    help   = "build a list class" )
 
-    group.add_argument( "-v", "--vect",
-                        dest   = "classtype",
-                        action = "store_const",
-                        const  = "vector",
-                        help   = "build a vector class" )
+    #group.add_argument( "-v", "--vect",
+    #                    dest   = "classtype",
+    #                    action = "store_const",
+    #                    const  = "vector",
+    #                    help   = "build a vector class" )
 
     parser.add_argument( "-s", "--superclass",
                          dest = "superclass",
@@ -393,10 +370,10 @@ def build_templates_and_keywords( arguments, error_manager ):
     functions_ = { }
     functions_[ "instanciable" ] = build_templates_and_keywords_for_standard_class
     functions_[ "base"         ] = build_templates_and_keywords_for_standard_class
-    functions_[ "reference"    ] = build_templates_and_keywords_for_macro_class
-    functions_[ "derivation"   ] = build_templates_and_keywords_for_macro_class
-    functions_[ "list"         ] = build_templates_and_keywords_for_macro_class
-    functions_[ "vector"       ] = build_templates_and_keywords_for_macro_class
+    #functions_[ "reference"    ] = build_templates_and_keywords_for_macro_class
+    #functions_[ "derivation"   ] = build_templates_and_keywords_for_macro_class
+    #functions_[ "list"         ] = build_templates_and_keywords_for_macro_class
+    #functions_[ "vector"       ] = build_templates_and_keywords_for_macro_class
 
     return functions_[ arguments.classtype ]( arguments, error_manager )
 
