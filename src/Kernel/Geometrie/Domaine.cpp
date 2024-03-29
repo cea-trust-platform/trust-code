@@ -287,7 +287,7 @@ void Domaine::check_domaine()
   mes_faces_raccord_.associer_domaine(*this);
   mes_bords_int_.associer_domaine(*this);
   mes_groupes_faces_.associer_domaine(*this);
-  elem_.associer_domaine(*this);
+  elem_->associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
   const int nbelem = mp_sum(mes_elems_.dimension(0));
@@ -1303,7 +1303,7 @@ void Domaine::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes)
 {
   if (!volumes.get_md_vector().non_nul())
     creer_tableau_elements(volumes, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  elem_.calculer_volumes(volumes); // Dimensionne et calcule le DoubleVect volumes
+  elem_->calculer_volumes(volumes); // Dimensionne et calcule le DoubleVect volumes
   // Check and fill inverse_volumes
   if (!inverse_volumes.get_md_vector().non_nul())
     creer_tableau_elements(inverse_volumes, RESIZE_OPTIONS::NOCOPY_NOINIT);

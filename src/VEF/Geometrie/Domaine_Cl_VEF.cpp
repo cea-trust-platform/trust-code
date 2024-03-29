@@ -222,7 +222,7 @@ void Domaine_Cl_VEF::remplir_normales_facettes_Cl(const Domaine_VEF& le_dom_VEF)
   int nb_elem = z.nb_elem();
   int nsom = z.nb_som_elem();
   int nfa7 = elemvef.nb_facette();
-  //int nb_som_facette = domaine().type_elem().nb_som_face();
+  //int nb_som_facette = domaine().type_elem()->nb_som_face();
   //if ( sub_type(Hexaedre_VEF,domaine().type_elem().valeur())) { nb_som_facette--; }
   int nb_som_facette = dimension;
 
@@ -312,7 +312,7 @@ int trois_puissance(int n)
 void Domaine_Cl_VEF::remplir_type_elem_Cl(const Domaine_VEF& le_dom_VEF)
 {
   const Domaine& z = le_dom_VEF.domaine();
-  int nfac = z.type_elem().nb_faces();   // dans Elem_geom
+  int nfac = z.type_elem()->nb_faces();   // dans Elem_geom
   const IntTab& elem_faces = le_dom_VEF.elem_faces();
   const IntTab& face_voisins = le_dom_VEF.face_voisins();
   const IntVect& rang_elem = le_dom_VEF.rang_elem_non_std();

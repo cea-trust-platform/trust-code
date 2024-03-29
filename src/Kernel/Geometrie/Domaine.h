@@ -475,7 +475,7 @@ inline const IntTab& Domaine::les_elems() const {  return mes_elems_; }
  *
  * @return (int) le nombre de sommets par element
  */
-inline int Domaine::nb_som_elem() const {   return elem_.nb_som(); }
+inline int Domaine::nb_som_elem() const {   return elem_->nb_som(); }
 
 /*! @brief Renvoie le nombre de face de type i des elements geometriques constituants le domaine.
  *
@@ -485,7 +485,7 @@ inline int Domaine::nb_som_elem() const {   return elem_.nb_som(); }
  * @param (int i) le type de face
  * @return (int) le nombre de face de type i des elements geometriques constituants le domaine
  */
-inline int Domaine::nb_faces_elem(int i) const {  return elem_.nb_faces(i); }
+inline int Domaine::nb_faces_elem(int i) const {  return elem_->nb_faces(i); }
 
 /*! @brief Renvoie un element geometrique du type de ceux qui constituent le domaine.
  *
@@ -561,14 +561,14 @@ inline int Domaine::nb_front_Cl() const  {   return nb_bords() +nb_raccords() + 
 inline void Domaine::typer(const Nom& typ)
 {
   elem_.typer(typ);
-  elem_.associer_domaine(*this);
+  elem_->associer_domaine(*this);
 }
 
 /*! @brief Calcule les centres de gravites des elements du domaine.
  *
  * @param (DoubleTab& xp) le tableau contenant les centres de gravites des elements du domaine
  */
-inline void Domaine::calculer_centres_gravite(DoubleTab& xp) const {  elem_.calculer_centres_gravite(xp); }
+inline void Domaine::calculer_centres_gravite(DoubleTab& xp) const {  elem_->calculer_centres_gravite(xp); }
 
 /*! @brief Renvoie le bord dont le nom est specifie.
  *
@@ -842,7 +842,7 @@ inline Bords_Internes& Domaine::bords_int() { return mes_bords_int_; }
 
 /*! @brief Reordonne les elements suivant la convention employe par Trio-U.
  */
-inline void Domaine::reordonner() { elem_.reordonner(); }
+inline void Domaine::reordonner() { elem_->reordonner(); }
 
 /*! @brief Renvoie le nombre de faces frontiere du domaine du type specifie.
  *

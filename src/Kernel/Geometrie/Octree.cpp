@@ -1151,7 +1151,7 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
   for (int ielem = 0; ielem < sz; ielem++)
     {
 
-      if(elemgeom.contient(pos,num_elem[ielem]))
+      if(elemgeom->contient(pos,num_elem[ielem]))
         {
           element=num_elem[ielem];
           break;
@@ -1185,7 +1185,7 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
   int ielem=0;
   while((ielem < sz) && (trouve==0))
     {
-      if(elemgeom.contient(pos,num_elem[ielem]))
+      if(elemgeom->contient(pos,num_elem[ielem]))
         {
           element=num_elem[ielem];
           if(element >= prems)

@@ -137,7 +137,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
   //domaine.creer_faces(les_faces);
   {
     // bloc a factoriser avec Domaine_VF.cpp :
-    Type_Face type_face = dom.type_elem().type_face(0);
+    Type_Face type_face = dom.type_elem()->type_face(0);
     lesfaces.typer(type_face);
     lesfaces.associer_domaine(dom);
 

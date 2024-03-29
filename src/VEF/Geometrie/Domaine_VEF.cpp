@@ -682,7 +682,7 @@ void Domaine_VEF::construire_renum_arete_perio(const Conds_lim& conds_lim)
                     int som11=aretes_som(ar1, 0);
                     int som12=aretes_som(ar1, 1);
                     int ok=0;
-                    int nbf = domaine().type_elem().nb_som_face();
+                    int nbf = domaine().type_elem()->nb_som_face();
                     const IntTab& sommet = face_sommets();
                     for (int k=0; k<nbf; k++)
                       if (sommet(face,k)==som11 || sommet(face,k)==som12) ok++;
@@ -1210,7 +1210,7 @@ DoubleTab& Domaine_VEF::vecteur_face_facette()
   if (vecteur_face_facette_.size() == 0 || domaine().deformable())
     {
       // Taille 8*n*4*3*2=192n
-      const int nfa7 = type_elem().nb_facette();
+      const int nfa7 = type_elem()->nb_facette();
       const int nb_poly_tot = nb_elem_tot();
       vecteur_face_facette_.resize(nb_poly_tot, nfa7, dimension, 2);
       const IntTab& KEL = type_elem()->KEL();

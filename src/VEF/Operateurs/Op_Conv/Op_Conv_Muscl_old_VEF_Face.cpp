@@ -81,7 +81,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
 
-  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
 
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -92,7 +92,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
   int premiere_face_int = domaine_VEF.premiere_face_int();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  int nb_som_facette = domaine.type_elem().nb_som_face();
+  int nb_som_facette = domaine.type_elem()->nb_som_face();
   double inverse_nb_som_facette=1./nb_som_facette;
   DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
 

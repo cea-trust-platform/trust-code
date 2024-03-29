@@ -108,7 +108,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   //
   DoubleTab& coord=dom.les_sommets();
   dom.type_elem().typer("Tetraedre");
-  dom.type_elem().associer_domaine(dom);
+  dom.type_elem()->associer_domaine(dom);
 
   //
   // On commence par transferer les coordonnees

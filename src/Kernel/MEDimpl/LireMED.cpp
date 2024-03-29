@@ -609,7 +609,7 @@ void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
   // Read type from the first face, and check unique type
   int typ = conn[connIndex[0]];
   type_face_ = type_medcoupling_to_type_geo_trio(typ, CELL_FROM_BOUNDARY);
-  if (type_elem_.nb_type_face() != 1)  // should never happen, all is polygon normally.
+  if (type_elem_->nb_type_face() != 1)  // should never happen, all is polygon normally.
     Process::exit("Read_MED: unsupported mesh element type! It has more than a single face type (for example a prism can have triangles or quadrangles as boundary faces).");
   // Check unique type
   auto set_of_typs = face_mesh->getAllGeoTypes();
@@ -850,7 +850,7 @@ void LireMED::lire_geom(bool subDom)
   // si on a modifie type_elem
   if (type_elem_orig != type_elem_n)
     dom.typer(type_elem_n);
-  dom.type_elem().associer_domaine(dom);
+  dom.type_elem()->associer_domaine(dom);
   dom.les_elems() = les_elems2;
 
   fill_frontieres(fac_grp_id, all_faces_bords);

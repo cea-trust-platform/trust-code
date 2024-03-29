@@ -388,7 +388,7 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
   nom_top+= domaine.le_nom();
   nom_top+="_";
   nom_top+=domaine.le_nom();
-  Nom type_maille=domaine.type_elem().nom_lml();
+  Nom type_maille=domaine.type_elem()->nom_lml();
 
 
   //Ajout pour modification syntaxe ci-dessous

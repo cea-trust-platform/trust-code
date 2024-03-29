@@ -69,7 +69,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   //  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const Domaine& domaine = domaine_VEF.domaine();
   //  const int nb_faces = domaine_VEF.nb_faces();
-  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
   //  const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -82,7 +82,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
 
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  int nb_som_facette = domaine.type_elem().nb_som_face();
+  int nb_som_facette = domaine.type_elem()->nb_som_face();
 
 
   // Pour le traitement de la convection on distingue les polyedres
@@ -238,8 +238,8 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // calcul de vc
-      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),
-                                        itypcl,porosite_face);
+      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),
+                                         itypcl,porosite_face);
 
       // calcul du champ transporte aux sommets des polyedres ,tsom
       if(ncomp_ch_transporte == 1)

@@ -50,7 +50,7 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
   const int nb_faces = domaine_VEF.nb_faces();
-  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();

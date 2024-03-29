@@ -119,7 +119,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  int nb_som_facette = domaine.type_elem().nb_som_face();
+  int nb_som_facette = domaine.type_elem()->nb_som_face();
   const Elem_geom_base& elem_geom = domaine.type_elem().valeur();
   if ( sub_type(Hexaedre_VEF,elem_geom))
     {
@@ -400,7 +400,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
-  int nfac = domaine.nb_faces_elem(), nsom = domaine.nb_som_elem(), nb_som_facette = domaine.type_elem().nb_som_face();
+  int nfac = domaine.nb_faces_elem(), nsom = domaine.nb_som_elem(), nb_som_facette = domaine.type_elem()->nb_som_face();
 
   // Pour le traitement de la convection on distingue les polyedres
   // standard qui ne "voient" pas les conditions aux limites et les

@@ -254,7 +254,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
   // calcul des flux ...
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  int nb_som_facette = domaine.type_elem().nb_som_face();
+  int nb_som_facette = domaine.type_elem()->nb_som_face();
   const Elem_geom_base& elem_geom = domaine.type_elem().valeur();
   if ( sub_type(Hexaedre_VEF,elem_geom))
     {
@@ -387,7 +387,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
             }
         }
       // calcul de vc
-      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(), itypcl,porosite_face);
+      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(), itypcl,porosite_face);
 
       //for (j=0; j<dimension; j++) vc(j) =  vs(j)/nfac ;
       type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),

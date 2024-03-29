@@ -166,7 +166,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
   const int nb_faces = domaine_VEF.nb_faces();
-  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -182,7 +182,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
 
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  int nb_som_facette = domaine.type_elem().nb_som_face();
+  int nb_som_facette = domaine.type_elem()->nb_som_face();
 
   // Pour le traitement de la convection on distingue les polyedres
   // standard qui ne "voient" pas les conditions aux limites et les
@@ -389,7 +389,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             }
         }
       // calcul de la vitesse au centre de gravite
-      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
+      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
       // Boucle sur les facettes du polyedre non standard:
       for (fa7=0; fa7<nfa7; fa7++)
@@ -615,7 +615,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
             }
           // calcul de la vitesse au centre de gravite
 
-          domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
+          domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
 
           // Boucle sur les facettes du polyedre non standard:

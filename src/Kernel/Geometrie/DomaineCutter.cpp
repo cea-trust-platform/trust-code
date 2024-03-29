@@ -989,7 +989,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   {
     // Le type des faces de joint
     const Domaine& domaine_globale = ref_domaine_.valeur();
-    const Type_Face& type_face_joint = domaine_globale.type_elem().type_face();
+    const Type_Face& type_face_joint = domaine_globale.type_elem()->type_face();
     // On va modifier les joints:
     Joints& joints_partie = domaine_partie.faces_joint();
     const int nb_joints = joints_partie.size();
@@ -1200,7 +1200,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
     ref_cast(Poly_geom_base,domain.type_elem().valeur()).build_reduced(sous_domain.type_elem(), elements_sous_partie);
   else
     sous_domain.type_elem() = domain.type_elem();
-  sous_domain.type_elem().associer_domaine(sous_domain);
+  sous_domain.type_elem()->associer_domaine(sous_domain);
 
   construire_liste_sommets_sousdomaine(domain.nb_som_tot(), domain.les_elems(), elements_sous_partie, part,
                                        som_raccord, correspondance.liste_sommets_ /* write */,

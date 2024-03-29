@@ -44,7 +44,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
   is >> nom_front;
   Cerr << "Reading of the boundary " << nom_front << finl;
   front.nommer(nom_front);
-  front.typer_faces(elem_.type_face());
+  front.typer_faces(elem_->type_face());
   bool internes=(sub_type(Bord_Interne, front) || sub_type(Joint, front));
   bool groupe_faces=sub_type(Groupe_Faces, front);
   if(dimension==1)

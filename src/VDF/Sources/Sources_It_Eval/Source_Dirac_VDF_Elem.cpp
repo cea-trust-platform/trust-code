@@ -47,7 +47,7 @@ void Source_Dirac_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, co
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      int test =  mon_dom.type_elem().contient(point,elem) ;
+      int test =  mon_dom.type_elem()->contient(point,elem) ;
       if (test == 1) nb_dirac++;
     }
 

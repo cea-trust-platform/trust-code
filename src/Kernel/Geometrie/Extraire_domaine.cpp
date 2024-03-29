@@ -183,7 +183,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   assert(nb==nb_elem_m);
   Bord faces;
   faces.nommer("Bord");
-  faces.typer_faces(domaine_vf.domaine().type_elem().type_face());
+  faces.typer_faces(domaine_vf.domaine().type_elem()->type_face());
   Faces& les_faces=faces.faces();
   // const IntTab& faces_sommets=domaine_vf.faces_sommets();
   int nb_som_face=face_sommets.dimension(1);
@@ -206,7 +206,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   Cerr<<finl;;
   dom.faces_bord().add(faces);
   dom.faces_bord().associer_domaine(dom);
-  dom.type_elem().associer_domaine(dom);
+  dom.type_elem()->associer_domaine(dom);
   dom.fixer_premieres_faces_frontiere();
 
   assert(nb==nb_t);

@@ -69,7 +69,7 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
       dom.faces_raccord().associer_domaine(dom);
       dom.bords_int().associer_domaine(dom);
       dom.groupes_faces().associer_domaine(dom);
-      dom.type_elem().associer_domaine(dom);
+      dom.type_elem()->associer_domaine(dom);
       dom.fixer_premieres_faces_frontiere();
       // MEDCouplingUMesh object in domaine is now invalid:
       dom.set_mc_mesh_ready(false);

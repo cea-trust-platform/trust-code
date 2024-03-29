@@ -251,7 +251,7 @@ void Domaine_VF::discretiser()
   Faces& les_faces= *les_faces_ptr;
   {
     {
-      Type_Face type_face = domaine().type_elem().type_face(0);
+      Type_Face type_face = domaine().type_elem()->type_face(0);
       les_faces.typer(type_face);
       les_faces.associer_domaine(domaine());
 

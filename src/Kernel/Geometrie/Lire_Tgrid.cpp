@@ -407,7 +407,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   Cerr << "Contact TRUST support." << finl;
                   exit();
                 }
-              dom.type_elem().associer_domaine(dom);
+              dom.type_elem()->associer_domaine(dom);
             }
           Cerr << finl;
         }
@@ -702,7 +702,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
         }
 
   // On reordonne le domaine (utile surtout pour les hexaedres)
-  dom.type_elem().reordonner();
+  dom.type_elem()->reordonner();
 
   // Nettoie le domaine pour enlever les noeuds inutiles
   // Mettre une methode a Domaine::nettoie

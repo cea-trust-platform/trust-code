@@ -76,7 +76,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
 
   {
     // bloc a factoriser avec Domaine_VF.cpp :
-    Type_Face type_face = dom.type_elem().type_face(0);
+    Type_Face type_face = dom.type_elem()->type_face(0);
     les_faces.typer(type_face);
     les_faces.associer_domaine(dom);
 

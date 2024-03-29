@@ -2002,7 +2002,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
                                    connectivite_som_elem,
                                    0 /* ne pas inclure les sommets virtuels */);
 
-  const int nb_som_face = dom.type_elem().nb_som_face();
+  const int nb_som_face = dom.type_elem()->nb_som_face();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elems_voisins;
 

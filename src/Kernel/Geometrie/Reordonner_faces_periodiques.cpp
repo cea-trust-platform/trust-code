@@ -72,7 +72,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   int i;
   for (i = 0; i < nb_som_face; i++)
     une_face(0, i) = faces(0, i);
-  dom.type_elem().calculer_normales(une_face, normale);
+  dom.type_elem()->calculer_normales(une_face, normale);
   normale /= local_norme_vect(normale);
 
   ArrOfDouble delta(nb_faces);
