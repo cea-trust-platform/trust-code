@@ -296,103 +296,53 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  // calculation of the offset due to shear periodicity between zmin and zmax
+  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+  IJK_Splitting::Lx_for_shear_perio = Lx;
+  double DX = Lx/nii ;
+  double Shear_x_time = IJK_Splitting::shear_x_time_;
+  double offset_i = Shear_x_time/DX;
+  exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
+  exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk);
+  exchange_data(pe_jmin_, 0, 0, 0, pe_jmax_, 0, njj, 0, nii, le_ghost, nkk);
+  exchange_data(pe_jmax_, 0, njj - le_ghost, 0, pe_jmin_, 0, -le_ghost, 0, nii, le_ghost, nkk);
 
-  if (IJK_Splitting::defilement_ == 1)
-    {
-      // calculation of the offset due to shear periodicity between zmin and zmax
-      double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-      IJK_Splitting::Lx_for_shear_perio = Lx;
-      double DX = Lx/nii ;
-      double Shear_x_time = IJK_Splitting::shear_x_time_;
-      double offset_i = Shear_x_time/DX;
-
-      exchange_data(pe_imin_, 0, -le_ghost, -le_ghost, pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost);
-      exchange_data(pe_imax_, nii - le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost);
-      exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0, njj, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
-      exchange_data(pe_jmax_, 0, njj - le_ghost, -le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
-
-      // in shear periodicity, the block exchange in z must have a size [nii, njj, ghost] to deal more easily with the Lx modulo behavior
-      // On x, exchange a block [ghost, njj + 2*ghost, nkk+ 2*ghost]
-      // On z, exchange a block [nii, njj, ghost]
-      // On y, exchange a block [nii, ghost, nkk+ 2*ghost]
-      if (z_index != z_index_min)
-        exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
-      else
-        exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, DU_, le_ghost);
-
-      if (z_index != z_index_max)
-        exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
-      else
-        exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -DU_, le_ghost);
-
-      // send 2D ghost corner value (12 parallepipede)
-      exchange_data(pe_imin_, 0, -le_ghost, 0 , pe_imax_, nii, -le_ghost, 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imin_, 0, njj      , 0 , pe_imax_, nii, njj      , 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, 0 , pe_imin_, -le_ghost, -le_ghost, 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , 0 , pe_imin_, -le_ghost, njj      , 0, le_ghost, le_ghost, nkk);
-
-      exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0 , njj, -le_ghost, nii, le_ghost, le_ghost);
-      exchange_data(pe_jmin_, 0, 0, nkk      , pe_jmax_, 0 , njj, nkk      , nii, le_ghost, le_ghost);
-      exchange_data(pe_jmax_, 0, njj-le_ghost, - le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii, le_ghost, le_ghost);
-      exchange_data(pe_jmax_, 0, njj-le_ghost, nkk       , pe_jmin_, 0, -le_ghost, nkk      , nii, le_ghost, le_ghost);
-
-      exchange_data(pe_kmin_, -le_ghost, 0 , 0, pe_kmax_, -le_ghost, 0, nkk, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmin_, nii      , 0 , 0, pe_kmax_, nii      , 0, nkk, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmax_, -le_ghost, 0 , nkk-le_ghost, pe_kmin_, -le_ghost, 0, -le_ghost, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmax_, nii      , 0 , nkk-le_ghost, pe_kmin_, nii      , 0, -le_ghost, le_ghost, njj, le_ghost);
-
-      // send 3D ghost corner value (8 cubes)
-      exchange_data(pe_imin_, 0, -le_ghost, -le_ghost , pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, njj      , -le_ghost , pe_imax_, nii, njj      , -le_ghost, le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, -le_ghost, nkk       , pe_imax_, nii, -le_ghost, nkk      , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, njj      , nkk       , pe_imax_, nii, njj      , nkk      , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , -le_ghost, pe_imin_, -le_ghost, njj      , -le_ghost , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, nkk      , pe_imin_, -le_ghost, -le_ghost, nkk       , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , nkk      , pe_imin_, -le_ghost, njj      , nkk       , le_ghost, le_ghost, le_ghost);
-
-
-
-    }
+  if (z_index != z_index_min and IJK_Splitting::defilement_ == 1)
+    exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
   else
-    {
-      // send left layer of real cells to right layer of virtual cells
-      exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
-      // send right real cells to left virtual cells
-      exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk);
-      exchange_data(pe_jmin_, -le_ghost, 0, 0, pe_jmax_, -le_ghost, njj, 0, nii + 2 * le_ghost, le_ghost, nkk);
-      exchange_data(pe_jmax_, -le_ghost, njj - le_ghost, 0, pe_jmin_, -le_ghost, -le_ghost, 0, nii + 2 * le_ghost, le_ghost, nkk);
-      exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
-      exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
+    exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, DU_, le_ghost);
 
-      // send 2D ghost corner value (12 parallepipede)
-      exchange_data(pe_imin_, 0, -le_ghost, 0 , pe_imax_, nii, -le_ghost, 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imin_, 0, njj      , 0 , pe_imax_, nii, njj      , 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, 0 , pe_imin_, -le_ghost, -le_ghost, 0, le_ghost, le_ghost, nkk);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , 0 , pe_imin_, -le_ghost, njj      , 0, le_ghost, le_ghost, nkk);
+  if (z_index != z_index_max and IJK_Splitting::defilement_ == 1)
+    exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
+  else
+    exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -DU_, le_ghost);
 
-      exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0 , njj, -le_ghost, nii, le_ghost, le_ghost);
-      exchange_data(pe_jmin_, 0, 0, nkk      , pe_jmax_, 0 , njj, nkk      , nii, le_ghost, le_ghost);
-      exchange_data(pe_jmax_, 0, njj-le_ghost, - le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii, le_ghost, le_ghost);
-      exchange_data(pe_jmax_, 0, njj-le_ghost, nkk       , pe_jmin_, 0, -le_ghost, nkk      , nii, le_ghost, le_ghost);
+  // send 2D ghost corner value (12 parallepipede)
+  exchange_data(pe_imin_, 0, -le_ghost, 0 , pe_imax_, nii, -le_ghost, 0, le_ghost, le_ghost, nkk);
+  exchange_data(pe_imin_, 0, njj      , 0 , pe_imax_, nii, njj      , 0, le_ghost, le_ghost, nkk);
+  exchange_data(pe_imax_, nii-le_ghost, -le_ghost, 0 , pe_imin_, -le_ghost, -le_ghost, 0, le_ghost, le_ghost, nkk);
+  exchange_data(pe_imax_, nii-le_ghost, njj      , 0 , pe_imin_, -le_ghost, njj      , 0, le_ghost, le_ghost, nkk);
 
-      exchange_data(pe_kmin_, -le_ghost, 0 , 0, pe_kmax_, -le_ghost, 0, nkk, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmin_, nii      , 0 , 0, pe_kmax_, nii      , 0, nkk, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmax_, -le_ghost, 0 , nkk-le_ghost, pe_kmin_, -le_ghost, 0, -le_ghost, le_ghost, njj, le_ghost);
-      exchange_data(pe_kmax_, nii      , 0 , nkk-le_ghost, pe_kmin_, nii      , 0, -le_ghost, le_ghost, njj, le_ghost);
+  exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0 , njj, -le_ghost, nii, le_ghost, le_ghost);
+  exchange_data(pe_jmin_, 0, 0, nkk      , pe_jmax_, 0 , njj, nkk      , nii, le_ghost, le_ghost);
+  exchange_data(pe_jmax_, 0, njj-le_ghost, - le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii, le_ghost, le_ghost);
+  exchange_data(pe_jmax_, 0, njj-le_ghost, nkk       , pe_jmin_, 0, -le_ghost, nkk      , nii, le_ghost, le_ghost);
 
-      // send 3D ghost corner value (8 cubes)
-      exchange_data(pe_imin_, 0, -le_ghost, -le_ghost , pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, njj      , -le_ghost , pe_imax_, nii, njj      , -le_ghost, le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, -le_ghost, nkk       , pe_imax_, nii, -le_ghost, nkk      , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imin_, 0, njj      , nkk       , pe_imax_, nii, njj      , nkk      , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , -le_ghost, pe_imin_, -le_ghost, njj      , -le_ghost , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, -le_ghost, nkk      , pe_imin_, -le_ghost, -le_ghost, nkk       , le_ghost, le_ghost, le_ghost);
-      exchange_data(pe_imax_, nii-le_ghost, njj      , nkk      , pe_imin_, -le_ghost, njj      , nkk       , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_kmin_, -le_ghost, 0 , 0, pe_kmax_, -le_ghost, 0, nkk, le_ghost, njj, le_ghost);
+  exchange_data(pe_kmin_, nii      , 0 , 0, pe_kmax_, nii      , 0, nkk, le_ghost, njj, le_ghost);
+  exchange_data(pe_kmax_, -le_ghost, 0 , nkk-le_ghost, pe_kmin_, -le_ghost, 0, -le_ghost, le_ghost, njj, le_ghost);
+  exchange_data(pe_kmax_, nii      , 0 , nkk-le_ghost, pe_kmin_, nii      , 0, -le_ghost, le_ghost, njj, le_ghost);
 
+  // send 3D ghost corner value (8 cubes)
+  exchange_data(pe_imin_, 0, -le_ghost, -le_ghost , pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imin_, 0, njj      , -le_ghost , pe_imax_, nii, njj      , -le_ghost, le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imin_, 0, -le_ghost, nkk       , pe_imax_, nii, -le_ghost, nkk      , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imin_, 0, njj      , nkk       , pe_imax_, nii, njj      , nkk      , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imax_, nii-le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imax_, nii-le_ghost, njj      , -le_ghost, pe_imin_, -le_ghost, njj      , -le_ghost , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imax_, nii-le_ghost, -le_ghost, nkk      , pe_imin_, -le_ghost, -le_ghost, nkk       , le_ghost, le_ghost, le_ghost);
+  exchange_data(pe_imax_, nii-le_ghost, njj      , nkk      , pe_imin_, -le_ghost, njj      , nkk       , le_ghost, le_ghost, le_ghost);
 
-    }
   statistiques().end_count(echange_vect_counter_);
 }
 
