@@ -20,20 +20,28 @@ int info_atelier(Sortie& os)
 echo "if (0) os<<\"date of generation of this file: `date`\"<<finl;" >> $res
 nb=0
 nbnew=0
-for f in $files
-  do
-  ff=`basename $f`
-  ftrio=`Find.sh $ff`
-  if [ "$ftrio" != "" ]
-      then
-      nb=`echo $nb+1|bc`
-      echo "os<<\" $f modified the standard version \"<< finl;" >> $res
-      else
-      nbnew=`echo ${nbnew}+1|bc`
-  fi
+
+py_script="import os,sys
+ffs = os.getenv('ze_list').split()
+ffs = [os.path.split(p)[1] for p in ffs]
+lst = []
+tr = os.path.join(os.getenv('TRUST_ROOT'), 'src')
+for dirpath, dirnames, filenames in os.walk(tr):
+      if filenames:
+        lst.extend(filenames)
+inter = set(lst).intersection(set(ffs))
+print(' '.join(list(inter)))
+"
+
+modif_files=`env ze_list="$files" python -c "$py_script"`
+
+for f in $modif_files; do
+    nb=`echo $nb+1|bc`
+    echo "os<<\"File '$f' overrides the standard TRUST version \"<< finl;" >> $res
 done
+
 echo "os<<finl<< \" $nb file(s) modified \" <<finl<< finl;" >>$res
-echo "os<<finl<< \" $nbnew file(s) created \" <<finl<< finl;" >>$res
+#echo "os<<finl<< \" $nbnew file(s) created \" <<finl<< finl;" >>$res
 
 echo "return "$nb";
 }
