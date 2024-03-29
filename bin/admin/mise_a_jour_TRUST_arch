@@ -398,8 +398,10 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp_6.6.0"
 # eos
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/EOS_code/install"
-# no conda
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-conda"
+# no conda, I disable trustpy too since no PyQt5
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-conda -disable-trustpy"
+# no trustpy
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustpy" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-trustpy"
 # no openblas (add it for fedora 38)
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-openblas" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-openblas"
 
@@ -606,7 +608,7 @@ do
       then
          MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
          # Sur jean-zay mpirun desactive sur openmpi
-         [ "$MPI_VERSION" = "" ] && MPI_VERSION=`$TRUST_CC --showme:version | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$4}'`
+         [ "$MPI_VERSION" = "" ] && MPI_VERSION=`$TRUST_CC --showme:version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$4}'`
          # Sur adastra mpirun pointe vers srun avec mpich
          [ "$MPI_VERSION" = "" ] && MPI_VERSION=`$MPI_ROOT/bin/mpichversion 2>&1 | $TRUST_Awk '/Version:/ {print "MPI=MPICH "$NF}'`
          if [ "$MPI_VERSION" != "" ]

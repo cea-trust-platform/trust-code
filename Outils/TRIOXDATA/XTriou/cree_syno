@@ -4,7 +4,7 @@ cree_syno()
 {
     # On cherche les synonymes dans la hierarchie
     rm -f existepas.data # Le fichier ne doit pas exister pour la generation du hierarchie.dump
-    TRUST_USE_XDATA=1 exec=$1 trust existepas 1>/dev/null 2>&1
+    TRUST_USE_XDATA=1 $1 existepas 1>/dev/null 2>&1
     if [ -f hierarchie.dump ]
     then
        listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
