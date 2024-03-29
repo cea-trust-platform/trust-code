@@ -342,6 +342,13 @@ template<typename _TYPE_>
 inline Simd_template<_TYPE_> operator*(double a, Simd_template<_TYPE_> b) { return a * b.data_; }
 
 template<typename _TYPE_>
+inline Simd_template<_TYPE_> operator/(Simd_template<_TYPE_> a, Simd_template<_TYPE_> b) { return a.data_ / b.data_; }
+template<typename _TYPE_>
+inline Simd_template<_TYPE_> operator/(Simd_template<_TYPE_> a, double b) { return a.data_ / b; }
+template<typename _TYPE_>
+inline Simd_template<_TYPE_> operator/(double a, Simd_template<_TYPE_> b) { return a / b.data_; }
+
+template<typename _TYPE_>
 inline Simd_template<_TYPE_> Simd_absolute_value(Simd_template<_TYPE_> a)
 {
 #ifdef OPTIM_AVX_
