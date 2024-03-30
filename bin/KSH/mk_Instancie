@@ -7,7 +7,9 @@ en_tete()
 // Warning : DO NOT EDIT ! file generated automatically
 // TRUST_NO_INDENT
 //
-#include <verifie_pere.h>"
+#include <Objet_U.h>
+#include <verifie_pere.h>
+#include <arch.h>"
 }
 tmp=`mktemp_ -d`
 org=`pwd`
@@ -19,8 +21,13 @@ then
 # Repertoire non MAIN #
 # (main is handled in Createcmakefile.py #
 #######################
-   # No .h file, nothing to do, exit:
-   [ "`ls *.h 1>/dev/null 2>&1; echo $?`" != "0" ] && rm -r -f $tmp && exit 0
+   # No .h file, nothing to do, clean any previous instancie and exit:
+   ls *.h 1>/dev/null 2>&1
+   if [ ! $? -eq 0 ]; then
+      rm -f instancie_*
+      rm -rf $tmp
+      exit 0
+   fi
 
    ROOT=$org
    while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
@@ -41,14 +48,35 @@ then
    files=$files" toto.h"
    
    # On extrait les lignes declare_instanciable
-   grep eclare_instanciable $files 2>/dev/null | grep -v class_name | grep -v "//" | grep -v " \* " | grep -v "\\\\" | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable
+   grep eclare_instanciable $files 2>/dev/null | grep -v class_name | grep -v "//" | grep -v " \* " | grep -v "\\\\" | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | grep -v structeur_32_64 | grep -v _instanciable_32_64 | grep -v _base_32_64 | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable
+
+   # Same thing for 32/64 bits templatized classes:
+   grep 'eclare_instanciable[a_z_]*_32_64' $files 2>/dev/null | grep -v '#define' | grep -v class_name | grep -v "//" | grep -v " \* " | grep -v "\\\\" | grep -v _base_32_64 | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable_32_64
+
    
    # On construit le fichier instancie.cpp provisoire
    en_tete > $tmp/$name.cpp
    $TRUST_Awk '{print ("#include <"$1">")}' $tmp/declare_instanciable | sort -u >> $tmp/$name.cpp
+   if [ "`cat $tmp/declare_instanciable_32_64`" != "" ]; then
+       $TRUST_Awk '{print ("#include <"$1">")}' $tmp/declare_instanciable_32_64 | sort -u >> $tmp/$name.cpp
+   fi
    echo "void "$name"() {" >> $tmp/$name.cpp
    echo "Cerr << \"${name#instancie_}\" << finl;" >> $tmp/$name.cpp 
-   $TRUST_Awk '{print ($2,"inst"FNR";verifie_pere(inst"FNR");")}' $tmp/declare_instanciable >> $tmp/$name.cpp
+   echo "{" >> $tmp/$name.cpp
+   $TRUST_Awk '{print ($2,"inst"FNR";  verifie_pere(inst"FNR");")}' $tmp/declare_instanciable >> $tmp/$name.cpp
+   echo '}' >> $tmp/$name.cpp
+   if [ "`cat $tmp/declare_instanciable_32_64`" != "" ]; then
+       echo '{' >> $tmp/$name.cpp
+       int_or_long="int"
+       [ "$TRUST_INT64" = "1" ] && int_or_long="long"
+       $TRUST_Awk '{print ($2"<'$int_or_long'>","inst"FNR";  verifie_pere(inst"FNR");")}' $tmp/declare_instanciable_32_64 >> $tmp/$name.cpp
+       echo '}' >> $tmp/$name.cpp
+       echo "#if INT_is_64_ == 2" >> $tmp/$name.cpp
+       echo '{' >> $tmp/$name.cpp
+       $TRUST_Awk '{print ($2"<trustIdType>","inst"FNR";  verifie_pere(inst"FNR");")}' $tmp/declare_instanciable_32_64 >> $tmp/$name.cpp
+       echo '}' >> $tmp/$name.cpp
+       echo '#endif' >> $tmp/$name.cpp
+   fi
    echo "}" >> $tmp/$name.cpp
 
    # S'il est different, on le change
@@ -98,3 +126,4 @@ then
    fi
 fi
 rm -r -f $tmp
+

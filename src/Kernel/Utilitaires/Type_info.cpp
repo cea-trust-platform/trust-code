@@ -543,7 +543,7 @@ int Type_info::les_sous_types(const Nom& type, Noms& sous_types)
 
 const Type_info * Type_info::type_info_from_name(const char * type_name)
 {
-  const Type_info * type_info = 0;
+  const Type_info * type_info = nullptr;
   if (type_name != 0)
     {
       int index;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 // .SECTION Description du source
 // Implemente_instanciable_sans_destructeur(A_base, "A_base", B);
 #include <Cast.h>
+#include <arch.h>
 
 #ifdef LATATOOLS
 #define Declare_instanciable_sans_constructeur_ni_destructeur(_TYPE_)        \
@@ -127,3 +128,80 @@
   _TYPE_::_TYPE_() { }                                                        \
   _TYPE_::~_TYPE_() { }                                                        \
   Implemente_instanciable_sans_constructeur_ni_destructeur(_TYPE_,_NOM_,_BASE_)
+
+
+/////////////////////////////////////////
+/////// TEMPLATE VERSION for 32/64 bits !!! Oh yes baby!
+/////////////////////////////////////////
+
+// The declare remain identical but we create a new macro so that bin/KSH/mk_Instanciable spots it correctly:
+#define Declare_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_) Declare_instanciable_sans_constructeur_ni_destructeur(_TYPE_)
+#define Declare_instanciable_sans_constructeur_32_64(_TYPE_) Declare_instanciable_sans_constructeur(_TYPE_)
+#define Declare_instanciable_sans_destructeur_32_64(_TYPE_) Declare_instanciable_sans_destructeur(_TYPE_)
+#define Declare_instanciable_32_64(_TYPE_) Declare_instanciable(_TYPE_)
+
+// Helper macro for info_obj static variable definition:
+#if INT_is_64_ == 2
+# define info_obj_def_macro_inst(_NOM_, _TYPE_) \
+  template <> const Type_info _TYPE_<int>::info_obj(_NOM_, _TYPE_<int>::cree_instance, 1, name2(_TYPE_,bases)<int> );  \
+  template <> const Type_info _TYPE_<trustIdType>::info_obj(_NOM_ "_64", _TYPE_<long>::cree_instance, 1, name2(_TYPE_, bases)<trustIdType> );
+#else
+# define info_obj_def_macro_inst(_NOM_, _TYPE_) \
+  template <> const Type_info _TYPE_<int>::info_obj(_NOM_, _TYPE_<int>::cree_instance, 1, name2(_TYPE_,bases)<int> );
+#endif
+
+#ifdef LATATOOLS
+#define Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_,_NOM_,_BASE_)
+#else
+// The implemente are of course different:
+#define Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_,_NOM_,_BASE_) \
+                                                                                              \
+  template <typename _T_> const Type_info* name2(_TYPE_,bases)[1] = { &(_BASE_::info_obj) };     \
+                                                                                                  \
+  info_obj_def_macro_inst(_NOM_, _TYPE_)                               \
+                                                                        \
+  template <typename _T_> int _TYPE_<_T_>::duplique()  const                                        \
+  {                                                                        \
+    _TYPE_<_T_>* xxx = new _TYPE_<_T_>(*this);                                        \
+    if(!xxx){Cerr << "Not enough memory " << finl; Process::exit();}                \
+    return xxx->numero();                                                \
+  }                                                                        \
+  template <typename _T_> _TYPE_<_T_>& _TYPE_<_T_>::self_cast( Objet_U& r)   {                                \
+    return ref_cast_non_const(_TYPE_<_T_>,r); /* _non_const important sinon  recursion dans ref_cast */ \
+  }                                                                        \
+  template <typename _T_> const _TYPE_<_T_>& _TYPE_<_T_>::self_cast(const Objet_U& r)   {                        \
+    return ref_cast_non_const(_TYPE_<_T_>,r); /* _non_const important sinon  recursion dans ref_cast */ \
+  }                                                                        \
+  template <typename _T_> Objet_U* _TYPE_<_T_>::cree_instance()                                        \
+  {  _TYPE_<_T_>* xxx = new _TYPE_<_T_>();                                        \
+    if(!xxx){Cerr << "Not enough memory " << finl; Process::exit();}                \
+    return xxx ;                                                        \
+  }                                                                        \
+                                                                        \
+  template <typename _T_> const Type_info*  _TYPE_<_T_>::get_info() const {                                \
+    return &info_obj;                                                        \
+  }                                                                        \
+                                                                        \
+   template <typename _T_> const Type_info*  _TYPE_<_T_>::info() {                                        \
+    return &info_obj;                                                        \
+  }                                                                        \
+                                                                        \
+  template <typename _T_> unsigned _TYPE_<_T_>::taille_memoire() const {                                \
+    return sizeof(_TYPE_<_T_>);                                                \
+  }                                                                      \
+  class __dummy__
+
+#endif  // LATATOOLS
+
+#define Implemente_instanciable_sans_constructeur_32_64(_TYPE_,_NOM_,_BASE_)        \
+  template <typename _T_> _TYPE_<_T_>::~_TYPE_() { }                                                        \
+  Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_,_NOM_,_BASE_)
+
+#define Implemente_instanciable_sans_destructeur_32_64(_TYPE_,_NOM_,_BASE_)        \
+  template <typename _T_> _TYPE_<_T_>::_TYPE_() { }                                                        \
+  Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_,_NOM_,_BASE_)
+
+#define Implemente_instanciable_32_64(_TYPE_,_NOM_,_BASE_)                        \
+  template <typename _T_> _TYPE_<_T_>::_TYPE_() { }                                                        \
+  template <typename _T_> _TYPE_<_T_>::~_TYPE_() { }                                                        \
+  Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(_TYPE_,_NOM_,_BASE_)
