@@ -40,9 +40,8 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   is >> nom;
   interprete_get_domaine(nom);
 
-  Nom val1;
-  is >> val1;
-  bool isNum = Champ_Fonc_Tabule::Check_if_int(val1);
+  is >> nom_champ_parametre_;
+  bool isNum = Champ_Fonc_Tabule::Check_if_int(nom_champ_parametre_);
   if (isNum)
     {
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;

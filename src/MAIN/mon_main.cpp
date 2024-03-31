@@ -146,7 +146,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // Kokkos initialisation
   True_int argc2 = argc;
   Kokkos::initialize( argc2, argv );
-  Cerr << "Kokkos initialized!" << finl;
+  // Cerr << "Kokkos initialized!" << finl;
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
