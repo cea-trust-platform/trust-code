@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Thermohydraulique_Multi_Concentration_included
-#define Pb_Thermohydraulique_Multi_Concentration_included
+#ifndef Pb_Thermohydraulique_Cloned_Concentration_included
+#define Pb_Thermohydraulique_Cloned_Concentration_included
 
 #include <Convection_Diffusion_Concentration.h>
 #include <Pb_Thermohydraulique.h>
 
-/*! @brief classe Pb_Thermohydraulique_Multi_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
+/*! @brief classe Pb_Thermohydraulique_Cloned_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
  *
  *      - Equations de Navier_Stokes en regime laminaire pour un fluide incompressible
  *      - Equation d'energie en regime laminaire
@@ -30,9 +30,9 @@
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_Multi_Concentration: public Pb_Thermohydraulique
+class Pb_Thermohydraulique_Cloned_Concentration: public Pb_Thermohydraulique
 {
-  Declare_instanciable(Pb_Thermohydraulique_Multi_Concentration);
+  Declare_instanciable(Pb_Thermohydraulique_Cloned_Concentration);
 public:
   int nombre_d_equations() const override { return (2 + nb_equations_multi()); }
 
@@ -56,4 +56,4 @@ protected:
   int nb_consts_ = -123;
 };
 
-#endif /* Pb_Thermohydraulique_Multi_Concentration_included */
+#endif /* Pb_Thermohydraulique_Cloned_Concentration_included */

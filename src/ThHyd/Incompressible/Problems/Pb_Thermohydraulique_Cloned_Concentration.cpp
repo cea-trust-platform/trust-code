@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Pb_Thermohydraulique_Multi_Concentration.h>
+#include <Pb_Thermohydraulique_Cloned_Concentration.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
 #include <Operateur_Diff.h>
@@ -23,16 +23,16 @@
 #include <sstream>
 #include <iomanip>
 
-Implemente_instanciable(Pb_Thermohydraulique_Multi_Concentration, "Pb_Thermohydraulique_Multi_Concentration", Pb_Thermohydraulique);
-// XD Pb_Thermohydraulique_Multi_Concentration Pb_base Pb_Thermohydraulique_Multi_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
+Implemente_instanciable(Pb_Thermohydraulique_Cloned_Concentration, "Pb_Thermohydraulique_Cloned_Concentration", Pb_Thermohydraulique);
+// XD Pb_Thermohydraulique_Cloned_Concentration Pb_base Pb_Thermohydraulique_Cloned_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
 // XD   attr constituant constituant constituant 1 Constituents.
 // XD   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
 // XD   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
 // XD   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 
-Sortie& Pb_Thermohydraulique_Multi_Concentration::printOn(Sortie& os) const { return Pb_Thermohydraulique::printOn(os); }
-Entree& Pb_Thermohydraulique_Multi_Concentration::readOn(Entree& is)
+Sortie& Pb_Thermohydraulique_Cloned_Concentration::printOn(Sortie& os) const { return Pb_Thermohydraulique::printOn(os); }
+Entree& Pb_Thermohydraulique_Cloned_Concentration::readOn(Entree& is)
 {
   /* Step 1 : Add first equation to list ! */
   Cerr << "Adding the first Convection_Diffusion_Concentration to the list ... " << finl;
@@ -46,7 +46,7 @@ Entree& Pb_Thermohydraulique_Multi_Concentration::readOn(Entree& is)
   return Pb_Thermohydraulique::readOn(is);
 }
 
-void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
+void Pb_Thermohydraulique_Cloned_Concentration::typer_lire_milieu(Entree& is)
 {
   le_milieu_.resize(2);
   for (int i = 0; i < 2; i++) is >> le_milieu_[i];
@@ -65,7 +65,7 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
 
   if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
     {
-      Cerr << "Error in Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
+      Cerr << "Error in Pb_Thermohydraulique_Cloned_Concentration::typer_lire_milieu. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
       Cerr << "We only accept uniform fields for the moment ... Fix your data set !!!" << finl;
       Process::exit();
     }
@@ -98,7 +98,7 @@ void Pb_Thermohydraulique_Multi_Concentration::typer_lire_milieu(Entree& is)
   ref_cast(Constituant, list_eq_concentration_.dernier().milieu()).discretiser_multi_concentration(nom_const, (*this), la_discretisation_.valeur()); // Conc
 }
 
-Entree& Pb_Thermohydraulique_Multi_Concentration::lire_equations(Entree& is, Motcle& dernier_mot)
+Entree& Pb_Thermohydraulique_Cloned_Concentration::lire_equations(Entree& is, Motcle& dernier_mot)
 {
   rename_equation_unknown(0);
   Pb_Thermohydraulique::lire_equations(is, dernier_mot);
@@ -106,7 +106,7 @@ Entree& Pb_Thermohydraulique_Multi_Concentration::lire_equations(Entree& is, Mot
   return is;
 }
 
-void Pb_Thermohydraulique_Multi_Concentration::rename_equation_unknown(const int i)
+void Pb_Thermohydraulique_Cloned_Concentration::rename_equation_unknown(const int i)
 {
   if (nb_consts_ > 1)
     {
@@ -120,7 +120,7 @@ void Pb_Thermohydraulique_Multi_Concentration::rename_equation_unknown(const int
     }
 }
 
-void Pb_Thermohydraulique_Multi_Concentration::clone_equations()
+void Pb_Thermohydraulique_Cloned_Concentration::clone_equations()
 {
   if (nb_consts_ > 1)
     {
@@ -155,10 +155,10 @@ void Pb_Thermohydraulique_Multi_Concentration::clone_equations()
     }
 }
 
-const Equation_base& Pb_Thermohydraulique_Multi_Concentration::equation(int i) const
+const Equation_base& Pb_Thermohydraulique_Cloned_Concentration::equation(int i) const
 {
   if (i >= nombre_d_equations())
-    Process::exit("Error in Pb_Thermohydraulique_Multi_Concentration::equation => wrong equation number !");
+    Process::exit("Error in Pb_Thermohydraulique_Cloned_Concentration::equation => wrong equation number !");
 
   if (i < 2)
     return Pb_Thermohydraulique::equation(i);
@@ -166,10 +166,10 @@ const Equation_base& Pb_Thermohydraulique_Multi_Concentration::equation(int i) c
     return list_eq_concentration_(i - 2);
 }
 
-Equation_base& Pb_Thermohydraulique_Multi_Concentration::equation(int i)
+Equation_base& Pb_Thermohydraulique_Cloned_Concentration::equation(int i)
 {
   if (i >= nombre_d_equations())
-    Process::exit("Error in Pb_Thermohydraulique_Multi_Concentration::equation => wrong equation number !");
+    Process::exit("Error in Pb_Thermohydraulique_Cloned_Concentration::equation => wrong equation number !");
 
   if (i < 2)
     return Pb_Thermohydraulique::equation(i);
@@ -186,7 +186,7 @@ Equation_base& Pb_Thermohydraulique_Multi_Concentration::equation(int i)
  * @param (Milieu_base& mil) le milieu physique a associer au probleme
  * @throws mauvais type de milieu physique
  */
-void Pb_Thermohydraulique_Multi_Concentration::associer_milieu_base(const Milieu_base& mil)
+void Pb_Thermohydraulique_Cloned_Concentration::associer_milieu_base(const Milieu_base& mil)
 {
   if (sub_type(Constituant, mil))
     list_eq_concentration_.dernier().associer_milieu_base(mil);
@@ -204,7 +204,7 @@ void Pb_Thermohydraulique_Multi_Concentration::associer_milieu_base(const Milieu
  *
  * @return (int) code de retour propage
  */
-int Pb_Thermohydraulique_Multi_Concentration::verifier()
+int Pb_Thermohydraulique_Cloned_Concentration::verifier()
 {
   Pb_Thermohydraulique::verifier();
   const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
