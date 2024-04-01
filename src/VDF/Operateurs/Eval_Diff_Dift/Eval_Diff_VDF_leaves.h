@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ public:
 class Eval_Diff_VDF_Multi_inco_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Diff_VDF_Multi_inco_Elem_Axi>, public Eval_Diff_VDF
 {
 public:
-  static constexpr bool IS_MULTD = false, IS_AXI = true;
+  static constexpr bool IS_AXI = true;
   void mettre_a_jour() override { /* do nothing */ }
 };
 
@@ -91,7 +91,6 @@ public:
 class Eval_Diff_VDF_Multi_inco_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Diff_VDF_Multi_inco_Elem>, public Eval_Diff_VDF
 {
 public:
-  static constexpr bool IS_MULTD = false;
   void mettre_a_jour() override { /* do nothing */ }
 };
 
