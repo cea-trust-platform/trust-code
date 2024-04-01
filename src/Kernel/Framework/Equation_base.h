@@ -44,23 +44,18 @@ class Param;
 
 enum Type_modele { TURBULENCE };
 
-/*! @brief classe Equation_base Le role d'une equation est le calcul d'un ou plusieurs champs.
+/*! @brief classe Equation_base Le role d'une equation est le calcul d'un ou plusieurs champs. Cette classe est la base de la hierarchie des equations.
  *
- *      Cette classe est la base de la hierarchie des equations.
- *      Ses membres sont les attributs et les methodes communs
- *      a toutes les classes qui representent des equations.
+ *      Ses membres sont les attributs et les methodes communs a toutes les classes qui representent des equations.
  *      Une equation est modelisee de la facon suivante:
  *
  *          M * dU_h/dt + Somme_i(Op_i(U_h)) = Somme(Sources);
  *
  *      M est la matrice masse representee par un objet "Solveur_Masse"
  *      U_h est l'inconnue representee par un objet "Champ_Inc"
- *      Op_i est le i-eme operateur de l'equation represente par un objet
- *           "Operateur"
- *      Sources sont les termes sources (eventuellement inexistant) de
- *              l'equation represente par des objets "Source".
- *      Une equation est lie a un probleme par une reference contenue
- *      dans le membre REF(Probleme_base) mon_probleme.
+ *      Op_i est le i-eme operateur de l'equation represente par un objet "Operateur"
+ *      Sources sont les termes sources (eventuellement inexistant) de l'equation represente par des objets "Source".
+ *      Une equation est lie a un probleme par une reference contenue dans le membre REF(Probleme_base) mon_probleme.
  *
  *      Classe abstraite dont toutes les equations doivent deriver.
  *      Methodes abstraites:
@@ -73,8 +68,6 @@ enum Type_modele { TURBULENCE };
  *        const Milieu_base& milieu() const
  *        Milieu_base& milieu()
  *        Entree& lire(const Motcle&, Entree&) [protegee]
- *
- *
  *
  * @sa Equation
  */
@@ -109,10 +102,7 @@ public :
   virtual void associer_milieu_equation();
 
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual DoubleTab& derivee_en_temps_inco_transport(DoubleTab& derivee)
-  {
-    return derivee_en_temps_inco(derivee);
-  };
+  virtual DoubleTab& derivee_en_temps_inco_transport(DoubleTab& derivee) { return derivee_en_temps_inco(derivee); }
   virtual DoubleTab& corriger_derivee_expl(DoubleTab& );
   virtual DoubleTab& corriger_derivee_impl(DoubleTab& );
   virtual void mettre_a_jour(double temps);
@@ -146,14 +136,8 @@ public :
   const Domaine_dis& domaine_dis() const;
   //
   inline const Nom& le_nom() const override;
-  inline DoubleVect& get_residu()
-  {
-    return residu_;
-  };
-  inline DoubleVect& residu_initial()
-  {
-    return residu_initial_;
-  };
+  inline DoubleVect& get_residu() { return residu_; }
+  inline DoubleVect& residu_initial() { return residu_initial_; }
   void initialise_residu(int=0);
   virtual void imprime_residu(SFichier&);
   virtual Nom expression_residu();
@@ -182,10 +166,7 @@ public :
                      (on utilise des valeurs predites, pas de derivees renseignees)
   */
   virtual int  has_interface_blocs() const;
-  virtual double get_time_factor() const
-  {
-    return 1.;
-  }
+  virtual double get_time_factor() const { return 1.; }
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {});
@@ -194,14 +175,9 @@ public :
      par defaut, champ_conserve = coefficient_temporel * inconnue
      ce champ est mutable pour que le schema en temps puisse le mettre a jour
   */
-  Champ_Inc_base& champ_conserve() const //le champ  : autant de valeurs spatiales / temporelles que l'inconnue
-  {
-    return champ_conserve_.valeur();
-  }
-  int has_champ_conserve() const
-  {
-    return champ_conserve_.non_nul();
-  }
+  //le champ  : autant de valeurs spatiales / temporelles que l'inconnue
+  Champ_Inc_base& champ_conserve() const { return champ_conserve_.valeur(); }
+  int has_champ_conserve() const { return champ_conserve_.non_nul(); }
 
   void init_champ_conserve() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_conserve_
   /* fonction de calcul par defaut de champ_conserve */
@@ -212,18 +188,10 @@ public :
     return { inconnue().le_nom().getString(), calculer_champ_conserve};
   }
 
-  virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
-  {
-    return champ_conserve_.valeur();
-  }
-  virtual int has_champ_convecte() const
-  {
-    return champ_conserve_.non_nul();
-  }
-  virtual void init_champ_convecte() const
-  {
-    init_champ_conserve();
-  };
+  //par defaut le champ conserve
+  virtual Champ_Inc_base& champ_convecte() const { return champ_conserve_.valeur(); }
+  virtual int has_champ_convecte() const { return champ_conserve_.non_nul(); }
+  virtual void init_champ_convecte() const { init_champ_conserve(); }
   //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
   //si reset = 1, force le calcul de toutes les valeurs temporelles (et pas seulement de la valeur courante)
   virtual void mettre_a_jour_champs_conserves(double temps, int reset = 0);
@@ -246,43 +214,25 @@ public :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution)
   {
     return Gradient_conjugue_diff_impl(secmem,solution,0,NULL_);
-  };
+  }
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, const DoubleTab& terme_mul)
   {
     return Gradient_conjugue_diff_impl(secmem,solution,terme_mul.dimension_tot(0),terme_mul);
-  };
-  inline Parametre_equation& parametre_equation()
-  {
-    return parametre_equation_ ;
-  };
-  inline const Parametre_equation& parametre_equation() const
-  {
-    return parametre_equation_ ;
-  };
+  }
+  inline Parametre_equation& parametre_equation() { return parametre_equation_ ; }
+  inline const Parametre_equation& parametre_equation() const { return parametre_equation_ ; }
   virtual const RefObjU& get_modele(Type_modele type) const;
   virtual int equation_non_resolue() const;
   int disable_equation_residual() const { return disable_equation_residual_; };
 
   //pour les schemas en temps a pas multiples
-  inline virtual const Champ_Inc& derivee_en_temps() const
-  {
-    return derivee_en_temps_;
-  };
-  inline virtual Champ_Inc& derivee_en_temps()
-  {
-    return derivee_en_temps_;
-  }
-  void set_calculate_time_derivative(int i)
-  {
-    calculate_time_derivative_=i;
-  };
-  int calculate_time_derivative() const
-  {
-    return calculate_time_derivative_;
-  };
+  inline virtual const Champ_Inc& derivee_en_temps() const { return derivee_en_temps_; }
+  inline virtual Champ_Inc& derivee_en_temps() { return derivee_en_temps_; }
+  void set_calculate_time_derivative(int i) { calculate_time_derivative_=i; }
+  int calculate_time_derivative() const { return calculate_time_derivative_; }
 
   void set_residuals(const DoubleTab& residual);
-  virtual int positive_unkown() {return 0;};
+  virtual int positive_unkown() {return 0;}
 
   inline void add_champs_compris(const Champ_base& ch) { champs_compris_.ajoute_champ(ch); };
 
@@ -305,10 +255,7 @@ protected :
   //Methode lire avec signature specifique pour faire echouer
   //la compilation en cas de presence de l'ancienne methode lire
   //virtual Entree& lire(const Motcle&, Entree&)
-  virtual void lire()
-  {
-    exit();
-  };
+  virtual void lire() { exit(); }
 
   int sys_invariant_;
   int implicite_;
@@ -363,7 +310,6 @@ inline const Nom& Equation_base::le_nom() const
   return nom_;
 }
 
-
 /*! @brief Renvoie le domaine des conditions aux limite discretisee associee a l'equation
  *
  * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
@@ -384,7 +330,6 @@ inline const Domaine_Cl_dis& Equation_base::domaine_Cl_dis() const
   return le_dom_Cl_dis;
 }
 
-
 /*! @brief Renvoie le solveur de masse associe a l'equation.
  *
  * @return (Solveur_Masse&) le solveur de masse associe a l'equation
@@ -393,7 +338,6 @@ inline Solveur_Masse& Equation_base::solv_masse()
 {
   return solveur_masse;
 }
-
 
 /*! @brief Renvoie le solveur de masse associe a l'equation.
  *
@@ -406,4 +350,4 @@ inline const Solveur_Masse& Equation_base::solv_masse() const
   return solveur_masse;
 }
 
-#endif
+#endif /* Equation_base_included */
