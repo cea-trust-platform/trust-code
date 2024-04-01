@@ -15,6 +15,7 @@
 
 #include <Pb_Thermohydraulique_Cloned_Concentration.h>
 #include <Fluide_Incompressible.h>
+#include <Op_Diff_negligeable.h>
 #include <Champ_Uniforme.h>
 #include <Operateur_Diff.h>
 #include <Constituant.h>
@@ -139,18 +140,37 @@ void Pb_Thermohydraulique_Cloned_Concentration::clone_equations()
           const Nom nom_const = Nom("coefficient_diffusion") + Nom(i);
           ref_cast(Constituant, eqn.milieu()).discretiser_multi_concentration(nom_const, (*this), la_discretisation_.valeur()); // Conc
 
-          rename_equation_unknown(i);
+          rename_equation_unknown(i); // XXX
+
           eqn.get_champ_compris().clear_champs_compris();
           eqn.get_champ_compris().ajoute_champ(eqn.inconnue());
 
+          // XXX : Elie Saikali : that is REQUIRED !!!! Otherwise we use the operators of the original equation !!!
+          for (int op = 0; op < eqn.nombre_d_operateurs(); op++)
+            {
+              eqn.operateur(op).associer_eqn(eqn);
+              eqn.operateur(op).l_op_base().associer_eqn(eqn);
+            }
+
           Operateur_Diff& op_diff = dynamic_cast<Operateur_Diff&>(eqn.operateur(0));
           op_diff.associer_diffusivite(eqn.diffusivite_pour_transport());
+          op_diff->associer_diffusivite(eqn.diffusivite_pour_transport());
           op_diff.associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
+          op_diff->associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
 
           Nom nom = "Diffusion_";
           nom += eqn.inconnue().le_nom();
           op_diff.set_fichier(nom);
           op_diff.set_description((Nom) "Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m" + (Nom) (dimension + bidim_axi) + ".Mol.s-1]");
+
+          Operateur_Conv& op_conv = dynamic_cast<Operateur_Conv&>(eqn.operateur(1));
+          const Champ_base& ch_vitesse_transportante = eqn.vitesse_pour_transport();
+          eqn.associer_vitesse(ch_vitesse_transportante);
+          op_conv->associer_vitesse(ch_vitesse_transportante);
+
+          // Pareil ici !!!
+          eqn.solv_masse().associer_eqn(eqn);
+          eqn.solv_masse()->associer_eqn(eqn);
         }
     }
 }
