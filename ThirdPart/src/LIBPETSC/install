@@ -222,6 +222,8 @@ ROOT=`pwd`
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
+#fix mhypre.c pour PCHMG
+patch -p2 < $DIR/fix_mhypre.patch
 # Hack sur topaze, sinon plus de place disque (fichiers sous groupe genden...)
 if [ $HOST = topaze ]
 then
@@ -612,9 +614,9 @@ do
    export PETSC_DIR=`pwd`
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
-   [ "$COPTFLAGS" = "" ] && COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
+   [ "$TRUST_CC_BASE_EXTP" = "" ] && COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
    # On compile les librairies Fortran (eg:MUMPS) en int32, donc on supprime les flags de conversion int32 -> int64 en Fortran:
-   [ "$FOPTFLAGS" = "" ] && FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
+   [ "$TRUST_CC_BASE_EXTP" = "" ] && FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:

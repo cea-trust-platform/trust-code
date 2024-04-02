@@ -1,0 +1,22 @@
+diff --git a/petsc-3.20.0-orig/src/mat/impls/hypre/mhypre.c b/petsc-3.20.0/src/mat/impls/hypre/mhypre.c
+index c840430d1..9d6013927 100644
+--- a/petsc-3.20.0-orig/src/mat/impls/hypre/mhypre.c
++++ b/petsc-3.20.0/src/mat/impls/hypre/mhypre.c
+@@ -1739,13 +1739,14 @@ PETSC_EXTERN PetscErrorCode MatCreateFromParCSR(hypre_ParCSRMatrix *parcsr, MatT
+   M      = hypre_ParCSRMatrixGlobalNumRows(parcsr);
+   N      = hypre_ParCSRMatrixGlobalNumCols(parcsr);
+ 
++  /* PETSc convention */
++  rend++;
++  cend++;
++
+   /* fix for empty local rows/columns */
+   if (rend < rstart) rend = rstart;
+   if (cend < cstart) cend = cstart;
+ 
+-  /* PETSc convention */
+-  rend++;
+-  cend++;
+   rend = PetscMin(rend, M);
+   cend = PetscMin(cend, N);
+ 
