@@ -87,7 +87,7 @@ DoubleTab& Champ_Face_PolyVEF::valeur_aux_elems(const DoubleTab& positions, cons
 {
   const Domaine_PolyVEF& dom = domaine_PolyVEF();
   const DoubleTab& src = valeurs(), &nf = dom.face_normales(), &xp = dom.xp(), &xv = dom.xv(), &vf_dir = dom.volumes_entrelaces_dir();
-  const DoubleVect& ve = dom.volumes(), *pe = mon_equation_non_nul() ? &equation().milieu().porosite_elem() : NULL, *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL;
+  const DoubleVect& ve = dom.volumes(), *pe = mon_equation_non_nul() ? &equation().milieu().porosite_elem() : nullptr, *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr;
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, d, db, D = dimension, n, N = valeurs().line_size() / D;
 
@@ -114,7 +114,7 @@ DoubleVect& Champ_Face_PolyVEF::valeur_aux_elems_compo(const DoubleTab& position
 {
   const Domaine_PolyVEF& dom = domaine_PolyVEF();
   const DoubleTab& src = valeurs(), &nf = dom.face_normales(), &xp = dom.xp(), &xv = dom.xv(), &vf_dir = dom.volumes_entrelaces_dir();
-  const DoubleVect& ve = dom.volumes(), *pe = mon_equation_non_nul() ? &equation().milieu().porosite_elem() : NULL, *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL;
+  const DoubleVect& ve = dom.volumes(), *pe = mon_equation_non_nul() ? &equation().milieu().porosite_elem() : nullptr, *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr;
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, db, D = dimension, N = src.line_size() / D, d = ncomp / N, n = ncomp % N;
 

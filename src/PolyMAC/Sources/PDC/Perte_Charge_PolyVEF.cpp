@@ -42,7 +42,7 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 {
   assert(has_interface_blocs());
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur());
   const Champ_Don& dh = diam_hydr;
 

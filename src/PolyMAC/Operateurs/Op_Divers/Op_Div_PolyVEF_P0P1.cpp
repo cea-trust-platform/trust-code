@@ -43,7 +43,7 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
                 &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();
   int i, e, f, s, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
 
-  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   IntTrav sten_v(0,2), sten_p(0, 2); //stencil des deux matrices
   sten_v.set_smart_resize(1), sten_p.set_smart_resize(1);
 
@@ -89,7 +89,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
                 &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, j, e, f, s = 0, sb, sc, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = vit.line_size() / D, has_P_ref = 0, has_s = secmem.dimension_tot(0) > ne_tot, ok;
-  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   double vz[3] = { 0, 0, 1 }, xa[3], fac;
   DoubleTrav v(2, D);
   flux_bords_.resize(dom.nb_faces_bord(), N);
@@ -132,14 +132,14 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
           for (d = 0; d < D; d++) xa[d] = (xs(s, d) + xs(sb, d)) / 2;
           for (v = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) // surface * normale de s vers sb
             {
-              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xp(e, 0), D < 3 ? NULL : &xp(e, 0));
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xp(e, 0), D < 3 ? nullptr : &xp(e, 0));
               for (fac = (dom.dot(&xs(sb, 0), &vb[0], &xs(s, 0)) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
                 v(0, d) += fac * vb[d], v(1, d) -= fac * vb[d];
             }
           //bord
           if (f_e(f, 1) < 0)
             {
-              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xs(s, 0), D < 3 ? NULL : &xs(s, 0));
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xs(s, 0), D < 3 ? nullptr : &xs(s, 0));
               for (fac = (dom.dot(&nf(f, 0), &vb[0]) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
                 v(0, d) += fac * vb[d], v(1, d) += fac * vb[d];
             }

@@ -47,7 +47,7 @@ DoubleTab& Masse_PolyVEF_Face::appliquer_impl(DoubleTab& sm) const
   const IntTab& f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces(), &fs = dom.face_surfaces();
   int i, e, f, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
-  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : NULL, &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales();
+  const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales();
   double fac;
 
   //vitesses aux faces
@@ -88,8 +88,8 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   Matrice_Morse *mat = matrices.at(nom_inc);
   const Domaine_PolyVEF& dom =  ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
   const DoubleTab& inco = equation().inconnue().valeurs();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   int i, j, k, f, d, db, D = dimension, n, m, N = inco.line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
@@ -134,10 +134,10 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Domaine_PolyVEF& dom =  ref_cast(Domaine_PolyVEF, le_dom_PolyMAC.valeur());
   const IntTab& f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces(), &fs = dom.face_surfaces();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &nf = dom.face_normales(),
-                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : NULL, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : NULL, &vfd = dom.volumes_entrelaces_dir();
-  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = dom.volumes_entrelaces_dir();
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   const Conds_lim& cls = equation().inconnue()->domaine_Cl_dis().les_conditions_limites();
   int i, j, k, e, f, m, d, db, D = dimension, n, N = inco.line_size() / D, cR = rho.dimension_tot(0) == 1, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
   double scal;

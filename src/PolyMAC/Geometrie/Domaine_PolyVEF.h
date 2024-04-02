@@ -74,7 +74,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
             if (D == 3)
               for (d = 0; d < D; d++) x_esb[d] = (xp_(e, d) + xs(sb, d)) / 2, x_ea[d] = (xp_(e, d) + 2 * xa[d]) / 3;
             //surface s -> e
-            auto v = cross(D, 3, x_es, D < 3 ? vz : x_ea, &xv_(f, 0), D < 3 ? NULL : &xv_(f, 0));
+            auto v = cross(D, 3, x_es, D < 3 ? vz : x_ea, &xv_(f, 0), D < 3 ? nullptr : &xv_(f, 0));
             for (fac = (dot(&xp_(e, 0), &v[0], &xs(s, 0)) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++) Sa(i, j, d) += fac * v[d];
             if (D < 3) continue;
             //3D : surfaces sb -> e et s -> sb
@@ -85,7 +85,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
           }
         else //vers l'exterieur
           {
-            auto v = cross(D, 3, &xv_(f, 0), D < 3 ? &vz[0] : xa, &xs(s, 0), D < 3 ? NULL : &xs(s, 0));
+            auto v = cross(D, 3, &xv_(f, 0), D < 3 ? &vz[0] : xa, &xs(s, 0), D < 3 ? nullptr : &xs(s, 0));
             for (fac = (dot(&nf(f, 0), &v[0]) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++) Sa(i, j, d) += fac * v[d]; //s -> ext
             if (D == 3)
               for (d = 0; d < D; d++) Sa(ib, j, d) += fac * v[d]; //3D : sb -> ext

@@ -218,14 +218,14 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
           for (d = 0; d < D; d++) xa[d] = (xs(s, d) + xs(sb, d)) / 2;
           for (v = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) // surface * normale de s vers sb
             {
-              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xp(e, 0), D < 3 ? NULL : &xp(e, 0));
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xp(e, 0), D < 3 ? nullptr : &xp(e, 0));
               for (fac = (dom.dot(&xs(sb, 0), &vb[0], &xs(s, 0)) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
                 v(0, d) += fac * vb[d], v(1, d) -= fac * vb[d];
             }
           //bord
           if (f_e(f, 1) < 0)
             {
-              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xs(s, 0), D < 3 ? NULL : &xs(s, 0));
+              auto vb = dom.cross(D, 3, &xv(f, 0), D < 3 ? vz : xa, &xs(s, 0), D < 3 ? nullptr : &xs(s, 0));
               for (fac = (dom.dot(&nf(f, 0), &vb[0]) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++)
                 v(0, d) += fac * vb[d], v(1, d) += fac * vb[d];
             }

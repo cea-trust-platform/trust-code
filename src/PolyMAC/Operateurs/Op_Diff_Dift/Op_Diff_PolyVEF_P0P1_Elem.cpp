@@ -107,7 +107,7 @@ double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces();
   const DoubleTab& nf = dom.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL,
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
   update_nu();
@@ -144,7 +144,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis().valeur())));
       f_e.push_back(std::ref(dom[i].get().face_voisins())), e_f.push_back(std::ref(dom[i].get().elem_faces())), f_s.push_back(std::ref(dom[i].get().face_sommets()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
@@ -191,7 +191,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis().valeur())));
       f_e.push_back(std::ref(dom[i].get().face_voisins())), e_f.push_back(std::ref(dom[i].get().elem_faces())), f_s.push_back(std::ref(dom[i].get().face_sommets()));
       fs.push_back(std::ref(dom[i].get().face_surfaces())), nf.push_back(std::ref(dom[i].get().face_normales()));
@@ -203,7 +203,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
       scl_d.push_back(std::ref(ch.scl_d(0))), scl_c.push_back(std::ref(ch.scl_c(0)));
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
-                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : NULL);
+                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : nullptr);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(dom[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 

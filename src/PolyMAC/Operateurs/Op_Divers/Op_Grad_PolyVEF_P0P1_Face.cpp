@@ -98,10 +98,10 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl(), &f_s = dom.face_sommets(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1);
   const DoubleTab& xp = dom.xp(), &xv = dom.xv(), &vfd = dom.volumes_entrelaces_dir(), &xs = dom.domaine().coord_sommets(), &nf = dom.face_normales(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& fs = dom.face_surfaces(), &pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
   int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = secmem.line_size() / D, m, M = press.line_size();
-  Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL;
+  Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : nullptr;
 
   DoubleTrav p_a_v(N), G(2 + f_s.dimension(1), D); //produit alpha * vol, dependance de grad p en p_e (2 premieres lignes) / p_s (lignes suivantes)
   double vz[3] = {0, 0, 1 }, fac;
@@ -121,7 +121,7 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
             for (j = 0; j < 2; j++) //chaque cote
               if ((e = f_e(f, j)) >= 0) //un element
                 {
-                  auto v = dom.cross(D, 3, &xp(e, 0), D < 3 ? vz : &xs(sb, 0), &xs(s, 0), D < 3 ? NULL : &xs(s, 0)); //produit normale * surface a la facette
+                  auto v = dom.cross(D, 3, &xp(e, 0), D < 3 ? vz : &xs(sb, 0), &xs(s, 0), D < 3 ? nullptr : &xs(s, 0)); //produit normale * surface a la facette
                   for (fac = (dom.dot(&xp(e, 0), &v[0], &xv(f, 0)) > 0 ? 1. : -1.) / (vf(f) * D * (D - 1)), d = 0; d < D; d++) v[d] *= fac; //orientation vers l'exterieur, correction surface (3D), division par volume
                   for (d = 0; d < D; d++)
                     {

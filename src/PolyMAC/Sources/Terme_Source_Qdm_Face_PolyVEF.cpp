@@ -32,7 +32,7 @@ void Terme_Source_Qdm_Face_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab
 {
   const Domaine_Poly_base& dom = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
   const DoubleTab& vals = la_source->valeurs(), &vfd = dom.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique().passe(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& pf = equation().milieu().porosite_face();
   const IntTab& f_e = dom.face_voisins();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1),

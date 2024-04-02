@@ -66,8 +66,8 @@ void Portance_interfaciale_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                         &vort  = equation().probleme().get_champ("vorticite").passe(),
-                         *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
-                          *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
+                         *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
+                          *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, c, d, i, k, l, n, N = pbm.nb_phases(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
@@ -232,8 +232,8 @@ void Portance_interfaciale_PolyVEF::mettre_a_jour(double temps)
                          &rho   = equation().milieu().masse_volumique().passe(),
                           &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                            &temp  = pbm.equation_energie().inconnue().passe(),
-                            *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
-                             *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
+                            *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
+                             *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
       const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
       const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 

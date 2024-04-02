@@ -107,7 +107,7 @@ void Domaine_PolyMAC_P0::init_stencils() const
   CRIMP(fsten_d), CRIMP(fsten_eb);
 }
 
-//pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu = NULL) ou [n_f.nu.grad T]_f ou (grad p)_f (si is_p = 1)
+//pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu = nullptr) ou [n_f.nu.grad T]_f ou (grad p)_f (si is_p = 1)
 //en preservant exactement les champs verifiant [nu grad T]_e = cte.
 //Entrees : N             : nombre de composantes
 //          is_p          : 1 si on traite le champ de pression (inversion Neumann / Dirichlet)

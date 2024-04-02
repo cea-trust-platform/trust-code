@@ -40,7 +40,7 @@ void Op_Div_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& se
   const IntTab& f_e = dom.face_voisins();
   int i, e, f, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
 
-  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   IntTrav sten_v(0, 2), sten_p(0, 2); //stencil des deux matrices
   sten_v.set_smart_resize(1), sten_p.set_smart_resize(1);
 
@@ -77,7 +77,7 @@ void Op_Div_PolyVEF_P0::ajouter_blocs_ext(const DoubleTab& vit, matrices_t matri
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = vit.line_size() / D, has_P_ref = 0, has_fb = secmem.dimension_tot(0) > ne_tot;
-  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
 
   for (i = 0; i < cls.size(); i++)
     if (sub_type(Neumann_sortie_libre, cls[i].valeur()))

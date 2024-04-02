@@ -61,11 +61,11 @@ void DP_Impose_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
 {
   const Domaine_Poly_base& dom = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces(), &vf = dom.volumes_entrelaces();
-  const DoubleTab& vit = equation().inconnue().valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL,
+  const DoubleTab& vit = equation().inconnue().valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                    &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales();
   const IntTab& f_e = dom.face_voisins();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   int i, j, e, f, d, db, D = dimension, n, N = vit.line_size() / D;
 
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;

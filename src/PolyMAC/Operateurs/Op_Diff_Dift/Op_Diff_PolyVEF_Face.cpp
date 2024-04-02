@@ -77,8 +77,8 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL,
-                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL); /* produit alpha * rho */
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
+                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
   update_nu();
 
@@ -150,7 +150,7 @@ void Op_Diff_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : NULL; //facultatif
+  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : nullptr; //facultatif
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue().valeur()).fcl();

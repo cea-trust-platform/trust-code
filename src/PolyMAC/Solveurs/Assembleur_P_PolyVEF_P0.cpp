@@ -139,14 +139,14 @@ void Assembleur_P_PolyVEF_P0::dimensionner_continuite(matrices_t matrices, int a
 void Assembleur_P_PolyVEF_P0::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   const Domaine_PolyMAC& dom = le_dom_PolyMAC.valeur();
-  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
-                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : NULL, &nf = dom.face_normales();
+  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = dom.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &f_e = dom.face_voisins();
   const DoubleVect& ve = dom.volumes(), &pe = equation().milieu().porosite_elem();
   int e, f, d, D = dimension, n, N = vit.line_size() / D, m, M = press.line_size(), ne_tot = dom.nb_elem_tot();
-  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav fac(N);
   double ar_tot;
   secmem = 0, fac = 1;

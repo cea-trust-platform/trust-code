@@ -62,12 +62,12 @@ void Perte_Charge_Singuliere_PolyVEF_Face::ajouter_blocs(matrices_t matrices, Do
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
   //const DoubleVect& volumes_entrelaces = domaine_PolyVEF.volumes_entrelaces();
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const DoubleTab& vit = la_vitesse->valeurs(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(),
-                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : NULL, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : NULL;
+                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;
   const IntTab& f_e = domaine.face_voisins();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   int i, j, e, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
   DoubleTrav aar_f(N), vn(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++)
