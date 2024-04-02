@@ -821,8 +821,8 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
     {
       Sous_Domaine& ssz = dest.ss_domaine(i);
       Cerr << "Refining sub-domain " << ssz.le_nom() << finl;
-      IntVect  old_polys = ssz.les_polys();
-      IntVect& les_polys = ssz.les_polys();
+      IntVect  old_polys = ssz.les_elems();
+      IntVect& les_polys = ssz.les_elems();
       int old_size = old_polys.size_array();
       les_polys.resize(old_size * nb_refined_cells_per_cell);
       int new_poly=0;

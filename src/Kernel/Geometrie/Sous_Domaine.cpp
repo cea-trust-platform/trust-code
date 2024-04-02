@@ -22,7 +22,7 @@
 #include <Parser_U.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Sous_Domaine,"Sous_Domaine",Objet_U);
+Implemente_instanciable_32_64(Sous_Domaine_32_64,"Sous_Domaine",Objet_U);
 Add_synonym(Sous_Domaine, "Sous_Zone");
 // XD sous_zone objet_u sous_zone 1 It is an object type describing a domain sub-set. NL2 A Sous_Zone (Sub-area) type object must be associated with a Domaine type object. The Read (Lire) interpretor is used to define the items comprising the sub-area. NL2 Caution: The Domain type object nom_domaine must have been meshed (and triangulated or tetrahedralised in VEF) prior to carrying out the Associate (Associer) nom_sous_zone nom_domaine instruction; this instruction must always be preceded by the read instruction.
 // XD  attr restriction ref_sous_zone restriction 1 The elements of the sub-area nom_sous_zone must be included into the other sub-area named nom_sous_zone2. This keyword should be used first in the Read keyword.
@@ -74,11 +74,12 @@ Add_synonym(Sous_Domaine, "Sous_Zone");
  * @param (Sortie& os) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Sous_Domaine::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Sous_Domaine_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   os << "{" << finl;
   os << "Liste" << finl;
-  os << les_polys_;
+  os << les_elems_;
   os << "}" << finl;
   return os;
 }
@@ -110,7 +111,8 @@ Sortie& Sous_Domaine::printOn(Sortie& os) const
  * @throws Erreur TRUST (mot clef reconnu non prevu)
  * @throws accolade fermante attendue
  */
-Entree& Sous_Domaine::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Sous_Domaine_32_64<_SIZE_>::readOn(Entree& is)
 {
   Motcles les_mots(13);
   {
@@ -133,17 +135,17 @@ Entree& Sous_Domaine::readOn(Entree& is)
     {
       Cerr << "You have not associated one of the objects of type Sous_Domaine " << finl;
       Cerr << "to the object of type Domain " << finl;
-      exit();
+      Process::exit();
     }
 
-  const Domaine& ledomaine=le_dom_.valeur();
-  const Domaine& dom=ledomaine;
-  ArrOfInt les_polys_possibles_;
+  const Domaine_t& ledomaine=le_dom_.valeur();
+  const Domaine_t& dom=ledomaine;
+  ArrOfInt_t les_polys_possibles_;
 
   // GF de prendre nb_elem_tot au lieu de nb_elem permet de ne plus avoir besoin de decouper les sous domaines..
-  int nb_pol_possible=ledomaine.nb_elem_tot();
+  int_t nb_pol_possible=ledomaine.nb_elem_tot();
   les_polys_possibles_.resize_array(nb_pol_possible);
-  for (int i=0; i<nb_pol_possible; i++)
+  for (int_t i=0; i<nb_pol_possible; i++)
     les_polys_possibles_[i]=i;
 
   Motcle motlu;
@@ -152,7 +154,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
     {
       Cerr << "We expected a { to the reading of the subarea" << finl;
       Cerr << "instead of " << motlu << finl;
-      exit();
+      Process::exit();
     }
   is >> motlu;
 
@@ -160,11 +162,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
     {
       Nom nom_ss_domaine;
       is >> nom_ss_domaine;
-      const Sous_Domaine& ssz=ref_cast(Sous_Domaine,interprete().objet(nom_ss_domaine));
+      const Sous_Domaine_32_64& ssz=ref_cast(Sous_Domaine_32_64,interprete().objet(nom_ss_domaine));
       nb_pol_possible=ssz.nb_elem_tot();
       les_polys_possibles_.resize_array(nb_pol_possible);
 
-      for (int i=0; i<nb_pol_possible; i++)
+      for (int_t i=0; i<nb_pol_possible; i++)
         les_polys_possibles_[i]=ssz(i);
       is>>motlu;
     }
@@ -176,29 +178,29 @@ Entree& Sous_Domaine::readOn(Entree& is)
         {
           Cerr << motlu << " is not understood " << finl;
           Cerr << "The understood keywords are " << les_mots;
-          exit();
+          Process::exit();
         }
     }
   if ((rang == 0) && (Process::is_parallel()))
     {
       Cerr << "When the subareas are defined as lists of elements" << finl;
       Cerr << "it is necessary to split them for parallel computing." << finl;
-      exit();
+      Process::exit();
     }
   switch(rang)
     {
     case 0 :
-      is >> les_polys_;
+      is >> les_elems_;
       break;
     case 1 :
       {
-        Cerr<<"Sous_Domaine::readOn : Reading of the polynomials"<<finl;
+        Cerr<<"Sous_Domaine_32_64<_SIZE_>::readOn : Reading of the polynomials"<<finl;
         LIST(Polynome) les_polynomes;
         is >> motlu;
         if(motlu!=Motcle("{"))
           {
             Cerr << "We expected a { " << finl;
-            exit();
+            Process::exit();
           }
         while (1)
           {
@@ -211,17 +213,18 @@ Entree& Sous_Domaine::readOn(Entree& is)
             if(motlu!=Motcle("et"))
               {
                 Cerr << "We expected " << Et << " or } " << finl;
-                exit();
+                Process::exit();
               }
           }
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           DoubleVect x(dimension);
-          int compteur=0;
+          int_t compteur=0;
 
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=0;
@@ -247,11 +250,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
 
               if(test > 0)
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -263,13 +266,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
           {
             // Une Boite est un volume
             Cerr << "In 2 dimensions, you must use \"Rectangle\" " << finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if (motlu != Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"Origine\"" << finl;
-            exit();
+            Process::exit();
           }
         double deux_pi=M_PI*2.0 ;
         double ox, oy, oz;
@@ -278,7 +281,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if (motlu != Motcle("Cotes"))
           {
             Cerr << "We expected the keyword \"Cotes\"" << finl;
-            exit();
+            Process::exit();
           }
         double lx, ly, lz;
         is >> lx >> ly >>lz;
@@ -291,18 +294,20 @@ Entree& Sous_Domaine::readOn(Entree& is)
             ly*=deux_pi;
           }
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           double x, y, z;
-          int compteur=0;
+          int_t compteur=0;
           // int nb_poly=le_dom.nb_elem();
           Cerr << "Construction of the subarea " << le_nom()<< finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=y=z=0;
-              int s, nb_som_poly = 0;
+              int nb_som_poly = 0;
+              int_t s;
               for(int le_som = 0; le_som < nbsom && ((s = ledomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
                   x+=dom.coord(s, 0);
@@ -320,11 +325,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
                    && sup_strict(z,oz)
                    && sup_strict(lz,z) )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -336,13 +341,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
           {
             // Un Rectangle est une surface
             Cerr << "In 3 dimensions, you must use \"Boite\" " << finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if (motlu != Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"Origine\"" << finl;
-            exit();
+            Process::exit();
           }
         double ox, oy;
         is >> ox >> oy ;
@@ -350,21 +355,22 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if (motlu != Motcle("Cotes"))
           {
             Cerr << "We expected the keyword \"Cotes\"" << finl;
-            exit();
+            Process::exit();
           }
         double lx, ly;
         is >> lx >> ly ;
         lx+= ox;
         ly+=oy;
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           double x, y;
-          int compteur=0;
+          int_t compteur=0;
 
           Cerr << "Construction of the subarea " << le_nom() << finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=y=0;
@@ -380,11 +386,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
                    && sup_strict(y,oy)
                    && sup_strict(ly,y) )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -395,13 +401,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if (Process::is_parallel())
           {
             Cerr << "You can't use Intervalle option for parallel calculation." << finl;
-            exit();
+            Process::exit();
           }
-        int prems, nombre;
+        int_t prems, nombre;
         is >> prems >> nombre;
-        les_polys_.resize(nombre);
-        for(int i=0; i<nombre; i++)
-          les_polys_[i]=prems+i;
+        les_elems_.resize(nombre);
+        for(int_t i=0; i<nombre; i++)
+          les_elems_[i]=prems+i;
         break;
       }
     case 5 :
@@ -414,15 +420,15 @@ Entree& Sous_Domaine::readOn(Entree& is)
         is >> nomfic;
         if(je_suis_maitre())
           {
-            IntVect tab;
+            IntVect_t tab;
             EFichier fic;
             Cerr << "Reading of a subarea in the file " << nomfic << finl;
             if (!fic.ouvrir(nomfic))
               {
                 Cerr << " Error while opening file." << finl;
-                exit();
+                Process::exit();
               }
-            fic >> les_polys_;
+            fic >> les_elems_;
             for(int p=1; p<nproc(); p++)
               {
                 fic >> tab;
@@ -431,33 +437,33 @@ Entree& Sous_Domaine::readOn(Entree& is)
           }
         else
           {
-            recevoir(les_polys_,0,me(),me());
+            recevoir(les_elems_,0,me(),me());
           }
 
         // Ajout a la liste "les_polys_" des indices des elements virtuels
         // de la sous-domaine.
         // On cree un tableau distribue de marqueurs des elements de la sous-domaine
-        const int nb_elem = ledomaine.nb_elem();
-        IntVect marqueurs;
+        const int_t nb_elem = ledomaine.nb_elem();
+        IntVect_t marqueurs;
         dom.creer_tableau_elements(marqueurs);
-        const int nb_polys_reels = les_polys_.size();
-        for (int i = 0; i < nb_polys_reels; i++)
+        const int_t nb_polys_reels = les_elems_.size();
+        for (int_t i = 0; i < nb_polys_reels; i++)
           {
-            const int elem = les_polys_[i];
+            const int_t elem = les_elems_[i];
             marqueurs[elem] = 1;
           }
         marqueurs.echange_espace_virtuel();
         // Compter les elements virtuels dans la sous-domaine:
-        const int domaine_nb_elem_tot = ledomaine.nb_elem_tot();
-        int nb_polys = nb_polys_reels;
-        for (int i = nb_elem; i < domaine_nb_elem_tot; i++)
+        const int_t domaine_nb_elem_tot = ledomaine.nb_elem_tot();
+        int_t nb_polys = nb_polys_reels;
+        for (int_t i = nb_elem; i < domaine_nb_elem_tot; i++)
           nb_polys += marqueurs[i];
         // Ajouter les indices des elements virtuels a "les_polys_"
-        les_polys_.resize(nb_polys);
+        les_elems_.resize(nb_polys);
         nb_polys = nb_polys_reels;
-        for (int i = nb_elem; i < domaine_nb_elem_tot; i++)
+        for (int_t i = nb_elem; i < domaine_nb_elem_tot; i++)
           if (marqueurs[i])
-            les_polys_[nb_polys++] = i;
+            les_elems_[nb_polys++] = i;
 
         break;
       }
@@ -467,13 +473,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(dimension!=3)
           {
             Cerr << "In 2 dimensions, you must use something else like a segment."<< finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if (motlu != Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"Origine\"" << finl;
-            exit();
+            Process::exit();
           }
         double deux_pi=M_PI*2.0 ;
         double ox, oy, oz;
@@ -482,14 +488,14 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if (motlu != Motcle("Cotes"))
           {
             Cerr << "We expected the keyword \"Cotes\"" << finl;
-            exit();
+            Process::exit();
           }
         double lx, ly, lz;
         is >> lx >> ly >>lz;
         if ((lx!=0)&&(ly!=0)&&(lz!=0))
           {
             Cerr << "We expected at least one quotation to zero" << finl;
-            exit();
+            Process::exit();
           }
         lx+=ox;
         ly+=oy;
@@ -500,16 +506,18 @@ Entree& Sous_Domaine::readOn(Entree& is)
             ly*=deux_pi;
           }
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           double x, y, z;
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
-              int le_som, s, nb_som_poly = 0;
+              int le_som, nb_som_poly = 0;
+              int_t s;
               x=y=z=0;
               for(le_som=0; le_som<nbsom && ((s = ledomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
@@ -550,11 +558,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
                      && sup_strict(ox,xmin) && inf_ou_egal(ox,xmax) )
               )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -565,13 +573,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(dimension!=2)
           {
             Cerr << "In 3 dimensions, you must use something else like a plaque."<< finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if (motlu != Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"Origine\"" << finl;
-            exit();
+            Process::exit();
           }
         //double deux_pi=M_PI*2.0 ;
         double ox, oy;
@@ -580,26 +588,27 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if (motlu != Motcle("Cotes"))
           {
             Cerr << "We expected the keyword \"Cotes\"" << finl;
-            exit();
+            Process::exit();
           }
         double lx, ly;
         is >> lx >> ly ;
         if ((lx!=0)&&(ly!=0))
           {
             Cerr << "We expected at least one quotation to zero" << finl;
-            exit();
+            Process::exit();
           }
         lx+= ox;
         ly+=oy;
 
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           double x, y;
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               int le_som;
@@ -631,11 +640,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
                      && sup_strict(ox,xmin) && inf_ou_egal(ox,xmax) )
               )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -647,13 +656,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
           {
             // Une Couronne en 2D seulement !
             Cerr << "A crown is only in 2D : in 3 dimensions it is a tube \"Tube\" "<< finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if(motlu!=Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"ORIGINE\" " << finl;
-            exit();
+            Process::exit();
           }
         double xo,yo;
         is >> xo >> yo ;
@@ -661,7 +670,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(motlu!=Motcle("RI"))
           {
             Cerr << "We expected the internal radius \"RI\" " << finl;
-            exit();
+            Process::exit();
           }
         double ri,re;
         is >> ri;
@@ -669,21 +678,21 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(motlu!=Motcle("RE"))
           {
             Cerr << "We expected the external radius \"RE\" " << finl;
-            exit();
+            Process::exit();
           }
         is >> re;
         {
           double ri2=ri*ri; // Internal radius^2
           double re2=re*re; // External radius^2
-          const Domaine& le_dom=le_dom_.valeur();
+          const Domaine_t& le_dom=le_dom_.valeur();
           int nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
-              int le_poly=les_polys_possibles_[n_pol];
+              int_t le_poly=les_polys_possibles_[n_pol];
               x=0;
               for(int som=0; som<nbsom; som++)
                 {
@@ -693,11 +702,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
               x/=((double)(nbsom)); // Center of gravity of the cell
               if ( sup_strict((x(0)-xo)*(x(0)-xo)+(x(1)-yo)*(x(1)-yo),ri2) && sup_strict(re2,(x(0)-xo)*(x(0)-xo)+ (x(1)-yo)*(x(1)-yo)) )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -709,13 +718,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
           {
             // Un tube en 3D seulement !
             Cerr << "A tube is only in 3D : in 2 dimensions it is a crown \"Couronne\" "<< finl;
-            exit();
+            Process::exit();
           }
         is >> motlu;
         if(motlu!=Motcle("Origine"))
           {
             Cerr << "We expected the keyword \"ORIGINE\" " << finl;
-            exit();
+            Process::exit();
           }
         double xo,yo,zo;
         is >> xo >> yo >> zo;
@@ -723,7 +732,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(motlu!=Motcle("DIR"))
           {
             Cerr << "We expected the tube direction, keyword \"DIR\" " << finl;
-            exit();
+            Process::exit();
           }
         Motcles coords(3);
         {
@@ -762,14 +771,14 @@ Entree& Sous_Domaine::readOn(Entree& is)
             h0=-1;
             Cerr << "DIR is equal to X for a tube parallel to OX ; Y for a tube parallel to OY and Z for a tube parallel to OZ" << finl;
             Cerr << "Currently, DIR is equal to " << coord << finl;
-            exit();
+            Process::exit();
           }
 
         is >> motlu;
         if(motlu!=Motcle("RI"))
           {
             Cerr << "We expected the internal radius, keyword \"RI\" " << finl;
-            exit();
+            Process::exit();
           }
         double ri,re,h;
         is >> ri;
@@ -777,26 +786,27 @@ Entree& Sous_Domaine::readOn(Entree& is)
         if(motlu!=Motcle("RE"))
           {
             Cerr << "We expected the external radius, keyword \"RE\" " << finl;
-            exit();
+            Process::exit();
           }
         is >> re;
         is >> motlu;
         if(motlu!=Motcle("Hauteur"))
           {
             Cerr << "We expected the height of tube, keyword \"Hauteur\" " << finl;
-            exit();
+            Process::exit();
           }
         is >> h;
         h+=h0;
         {
           double ri2 = ri*ri, re2=re*re;
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           DoubleVect x(dimension);
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=0;
@@ -809,11 +819,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
               double tmp = dir[0]*(x(0)-xo)*(x(0)-xo)+ dir[1]*(x(1)-yo)*(x(1)-yo) + dir[2]*(x(2)-zo)*(x(2)-zo);
               if ( sup_ou_egal(tmp,ri2) && inf_ou_egal(tmp,re2) && inf_ou_egal(x(idir),h) && sup_ou_egal(x(idir),h0) )
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -824,20 +834,20 @@ Entree& Sous_Domaine::readOn(Entree& is)
           {
             // Un tube en 3D seulement !
             Cerr << "An hexagonal tube \"Tube_hexagonal\" is only in 3D "<< finl;
-            exit();
+            Process::exit();
           }
 
         // PQ : 17/09/08 : on suppose le tube hexagonal centre sur l'origine, porte par l'axe z
         // et pour lequel l'entreplat est entre y=-ep/2 et y=+ep/2
 
         double ep;
-        bool in=1;
+        bool in=true;
 
         is >> motlu;
         if(motlu!=Motcle("ENTREPLAT"))
           {
             Cerr << "We expected the entreplat of the tube, keyword \"ENTREPLAT\"" << finl;
-            exit();
+            Process::exit();
           }
         is >> ep;
         is >> motlu;
@@ -846,18 +856,19 @@ Entree& Sous_Domaine::readOn(Entree& is)
         else
           {
             Cerr << "We expected the keyword \"IN\" or \"OUT\" " << finl;
-            exit();
+            Process::exit();
           }
 
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           DoubleVect x(dimension);
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
 
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=0;
@@ -873,7 +884,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
                 {
                   if(in==1)
                     {
-                      les_polys_(compteur)=le_poly;
+                      les_elems_(compteur)=le_poly;
                       compteur++;
                     }
                 }
@@ -881,12 +892,12 @@ Entree& Sous_Domaine::readOn(Entree& is)
                 {
                   if(in==0)
                     {
-                      les_polys_(compteur)=le_poly;
+                      les_elems_(compteur)=le_poly;
                       compteur++;
                     }
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -907,13 +918,14 @@ Entree& Sous_Domaine::readOn(Entree& is)
         F.parseString();
 
         {
-          const Domaine& le_dom=le_dom_.valeur();
-          int le_poly, nbsom=le_dom.nb_som_elem();
+          const Domaine_t& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
+          int_t le_poly;
           DoubleVect x(dimension);
-          int compteur=0;
+          int_t compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
-          les_polys_.resize(nb_pol_possible);
-          for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
+          les_elems_.resize(nb_pol_possible);
+          for (int_t n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=0;
@@ -935,11 +947,11 @@ Entree& Sous_Domaine::readOn(Entree& is)
               // si on fait une fonction qui vaut 0 ou 1 ....
               if (test>0)
                 {
-                  les_polys_(compteur)=le_poly;
+                  les_elems_(compteur)=le_poly;
                   compteur++;
                 }
             }
-          les_polys_.resize(compteur);
+          les_elems_.resize(compteur);
           Cerr << "Construction of the subarea OK" << finl;
         }
         break;
@@ -950,7 +962,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
     default :
       {
         Cerr << "TRUST error" << finl;
-        exit();
+        Process::exit();
       }
       break;
     }
@@ -959,18 +971,18 @@ Entree& Sous_Domaine::readOn(Entree& is)
     {
       Nom nom_ss_domaine;
       is >> nom_ss_domaine;
-      const Sous_Domaine& ssz=ref_cast(Sous_Domaine,interprete().objet(nom_ss_domaine));
+      const Sous_Domaine_32_64& ssz=ref_cast(Sous_Domaine_32_64,interprete().objet(nom_ss_domaine));
       nb_pol_possible=ssz.nb_elem_tot();
 
       les_polys_possibles_.resize_array(nb_pol_possible);
-      int compt=0;
+      int_t compt=0;
       // on cherche dans ces polys ceux que l'on n a pas
-      for (int i=0; i<nb_pol_possible; i++)
+      for (int_t i=0; i<nb_pol_possible; i++)
         {
-          int poly_i=ssz(i);
+          int_t poly_i=ssz(i);
           int trouve=0;
-          for (int j=0; j<nb_elem_tot(); j++)
-            if ((les_polys_(j))==poly_i)
+          for (int_t j=0; j<nb_elem_tot(); j++)
+            if ((les_elems_(j))==poly_i)
               {
                 trouve=1;
                 break;
@@ -979,12 +991,12 @@ Entree& Sous_Domaine::readOn(Entree& is)
             les_polys_possibles_[compt++]=poly_i;
         }
       // on rajoute ces polys a la fin
-      int old_size=les_polys_.size();
-      les_polys_.resize(old_size+compt);
-      Journal()<<les_polys_<<finl;
+      int_t old_size=les_elems_.size();
+      les_elems_.resize(old_size+compt);
+      Journal()<<les_elems_<<finl;
 
-      for (int i=0; i<compt; i++)
-        les_polys_(old_size+i)=les_polys_possibles_[i];
+      for (int_t i=0; i<compt; i++)
+        les_elems_(old_size+i)=les_polys_possibles_[i];
 
 
       is >>motlu;
@@ -994,14 +1006,9 @@ Entree& Sous_Domaine::readOn(Entree& is)
     {
       Cerr << "We expected a } to the reading of the subarea" << finl;
       Cerr << "instead of " << motlu << finl;
-      exit();
+      Process::exit();
     }
   return is;
-}
-
-int Sous_Domaine::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
-{
-  return 0;
 }
 
 
@@ -1009,57 +1016,20 @@ int Sous_Domaine::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
  *
  * @return (int)
  */
-int Sous_Domaine::add_poly(const int poly)
+template <typename _SIZE_>
+void Sous_Domaine_32_64<_SIZE_>::add_elem(const int_t poly)
 {
   assert(0<=poly);
-  int nb_poly=les_polys_.size();
+  int_t nb_poly=les_elems_.size();
   int OK=1;
-  for(int i=0; i<nb_poly; i++)
-    if(les_polys_(i)==poly)
+  for(int_t i=0; i<nb_poly; i++)
+    if(les_elems_(i)==poly)
       OK=0;
   if(OK==1)
     {
-      les_polys_.resize(nb_poly+1);
-      les_polys_(nb_poly)=poly;
+      les_elems_.resize(nb_poly+1);
+      les_elems_(nb_poly)=poly;
     }
-  return 1;
-}
-
-
-/*! @brief Enleve un polyedre du sous-domaine.
- *
- * @return (int)
- */
-int Sous_Domaine::remove_poly(const int poly)
-{
-  assert(0<=poly);
-  assert(poly<=le_dom_->nb_elem());
-  int nb_poly=les_polys_.size();
-  IntVect les_polys_tmp;
-  les_polys_tmp.resize(le_dom_->nb_elem());
-  int compteur=0;
-  for(int i=0; i<nb_poly; i++)
-    if(les_polys_(i)!=poly)
-      {
-        les_polys_tmp(compteur)=les_polys_(i);
-        compteur++;
-      }
-  les_polys_tmp.resize(compteur);
-  les_polys_.resize(compteur);
-  les_polys_=les_polys_tmp;
-  return 1;
-}
-
-
-/*! @brief Associe un sous-domaine au domaine.
- *
- * Le sous-domaine sera un sous-domaine du Domaine specifie.
- *
- * @param (Domaine& domaine) le domaine a associer au sous-domaine
- */
-void Sous_Domaine::associer_domaine(const Domaine& un_domaine)
-{
-  le_dom_=un_domaine;
 }
 
 
@@ -1071,28 +1041,20 @@ void Sous_Domaine::associer_domaine(const Domaine& un_domaine)
  * @param (Objet_U& ob) objet a associer au sous-domaine.
  * @return (int) renvoie 1 si l'association a reussi 0 sinon.
  */
-int Sous_Domaine::associer_(Objet_U& ob)
+template <typename _SIZE_>
+int Sous_Domaine_32_64<_SIZE_>::associer_(Objet_U& ob)
 {
-  if( sub_type(Domaine, ob))
+  if( sub_type(Domaine_t, ob))
     {
-      // MONOZONE pour le moment
       if(le_dom_.non_nul()) return 1;
-      associer_domaine(ref_cast(Domaine, ob));
+      associer_domaine(ref_cast(Domaine_t, ob));
       ob.associer_(*this);
       return 1;
     }
   return 0;
 }
 
-
-
-/*! @brief Donne un nom au sous-domaine.
- *
- * @param (Nom& nom) le nom a donner au sous-domaine
- */
-void Sous_Domaine::nommer(const Nom& nom)
-{
-  nom_=nom;
-}
-
-
+template class Sous_Domaine_32_64<int>;
+#if INT_is_64_ == 2
+template class Sous_Domaine_32_64<trustIdType>;
+#endif

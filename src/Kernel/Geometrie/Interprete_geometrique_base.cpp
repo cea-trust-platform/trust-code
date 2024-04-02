@@ -107,7 +107,7 @@ void Interprete_geometrique_base::mettre_a_jour_sous_domaine(Domaine& domaine, i
                   Cerr << " generated [";
                   for(int num_elem=num_premier_elem; num_elem<num_premier_elem+nb_elem; num_elem++)
                     {
-                      sous_domaine.add_poly(num_elem);
+                      sous_domaine.add_elem(num_elem);
                       if (num_elem!=num_premier_elem) Cerr << " ";
                       Cerr << num_elem;
                     }
