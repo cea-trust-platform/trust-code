@@ -36,7 +36,7 @@ Mailler dom2
         bord droite X = 2  0 <= Y <= 2
     }
 }
-
+trianguler_h dom2
 # END MESH #
 
 # BEGIN PARTITION

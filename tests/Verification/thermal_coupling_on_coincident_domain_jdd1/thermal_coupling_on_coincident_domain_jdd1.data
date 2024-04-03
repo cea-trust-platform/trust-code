@@ -1,4 +1,4 @@
-# PARALLEL OK 8 #
+# PARALLEL OK #
 dimension 2
 pb_conduction pbt1
 pb_conduction pbt2
@@ -10,7 +10,7 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 31 31
+        Nombre_de_Noeuds 50 50
         Longueurs 2 2
     }
     {

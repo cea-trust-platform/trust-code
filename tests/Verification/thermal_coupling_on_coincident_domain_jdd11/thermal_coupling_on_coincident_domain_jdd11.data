@@ -21,6 +21,7 @@ Mailler dom1
         bord droite X = 2  0 <= Y <= 2
     }
 }
+
 Mailler dom2
 {
     Pave Cavite
@@ -36,6 +37,7 @@ Mailler dom2
         bord droite X = 2  0 <= Y <= 2
     }
 }
+trianguler_h dom2
 
 # END MESH #
 
@@ -69,6 +71,7 @@ Read sch
 {
     tinit 0
 	nb_pas_dt_max 3
+    tmax 50
     dt_max 1
     facsec 1e30
     facsec_max 1e30
@@ -81,7 +84,9 @@ Read sch
     }
 }
 
-PolyMAC_P0P1NC dis
+PolyMAC_P0P1NC dis_P
+VEFPreP1B dis_V
+
 
 associate pbt1 dom1
 associate pbt2 dom2
@@ -89,7 +94,8 @@ probleme_couple pb
 Associate pb pbt1
 Associate pb pbt2
 Associate pb sch
-Discretize pb dis
+Discretize pbt1 dis_P
+Discretize pbt2 dis_V
 
 option_interpolation { sharing_algo 1  }
 
@@ -119,7 +125,7 @@ Read pbt1
             terme_puissance_thermique_echange_impose
             {
                 himp  champ_uniforme  1  1e6
-                Text  champ_fonc_interp { pb_loc pbt1 pb_dist pbt2 nom_champ temperature nature IntensiveMaximum }
+                Text  champ_fonc_interp { pb_loc pbt1 pb_dist pbt2 nom_champ temperature_elem_dom2 nature IntensiveMaximum }
             }
         }
     }

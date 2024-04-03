@@ -50,7 +50,7 @@ Decouper dom1
 }
 Decouper dom2
 {
-    partitionneur metis { nb_parts 2 }
+    partitionneur fichier_med { file dom1_0000.med }
     nb_parts_tot 2
     Larg_joint 2
     Nom_Zones dom2
