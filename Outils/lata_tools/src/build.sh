@@ -46,5 +46,7 @@ make -j  $TRUST_NB_PROCS  install || exit -1
 echo "Check if compare_lata works"
 tar xzf $TRUST_ROOT/Outils/lata_tools/src/tools/vdf.tar.gz
 $TRUST_ROOT/exec/lata_tools/bin/compare_lata vdf/vdf.lata vdf/vdf.lata || exit -1
+echo "Check if compare_lata works with FORT21"
+$TRUST_ROOT/exec/lata_tools/bin/compare_lata FORT21 FORT21 || exit -1
 cd ..
 rm -rf $Build

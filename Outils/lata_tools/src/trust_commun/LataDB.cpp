@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include <LataDBmed.h>
+#include <LataDBFORT21.h>
 
 // Verbose level for which main lata file interpretation should be printed:
 //  Dump one line for the whole file at verb_level-1
@@ -1302,6 +1303,15 @@ int is_med(const char* filename)
   return 0;
 }
 
+int is_fort21(const char* filename)
+{
+  Motcle motcle_nom_fic(filename);
+
+  if (motcle_nom_fic.find("FORT21")>=0)
+    return 1;
+  return 0;
+}
+
 // Description: Reads the .lata database in the given file indicating than the
 //  associated data files will be found in directory "prefix".
 //  If not empty, "prefix" must finish with a '/'.
@@ -1326,6 +1336,12 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
       return;
     }
 
+  if (is_fort21(filename))
+    {
+      path_prefix_ = "";
+      read_master_file_fort21(prefix,filename);
+      return;
+    }
   //Journal() << "RECOMPILED PLUGIN !" << endl;
 
   EFichier is;
@@ -1851,6 +1867,11 @@ void LataDB::read_data2_(LataDataFile& f,
     {
       read_data2_med_(fld,data, (entier)debut,n,lines_to_read);
       return;
+    }
+  if (is_fort21(fld.filename_))
+    {
+      int is_read =read_data2_fort21_(f,fld,data, (entier)debut,n,lines_to_read);
+      if (is_read) return;
     }
   // Si file_offset_ vaut 0 on y va car on peut avoir lu a un autre endroit avant.
   if (fld.datatype_.file_offset_ >= 0)
@@ -2484,6 +2505,7 @@ void LataDB::write_master_file(const char *filename) const
             {
             case LataDBField::UNKNOWN:
               break;
+            case LataDBField::WALLSCALAR:
             case LataDBField::SCALAR:
               os << " nature=scalar";
               break;
@@ -2612,6 +2634,9 @@ FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const IntT
 
 LataDB::~LataDB()
 {
+  //clean map
+  if (basicmeshses_)
+    delete basicmeshses_;
 #if 0
   if (write_master_file_to_call_)
     {

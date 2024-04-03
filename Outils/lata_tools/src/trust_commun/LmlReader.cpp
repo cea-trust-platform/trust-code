@@ -470,6 +470,10 @@ void read_any_format_options(const char *file, LataOptions& opt)
             s++;
         }
     }
+  else if (nom_fic.find("FORT21")>=0)
+    {
+      // do nothing
+    }
   else
     {
       Journal(0) << "read_any_format_options: file " << nom_fic << " has unsupported extension" << endl;

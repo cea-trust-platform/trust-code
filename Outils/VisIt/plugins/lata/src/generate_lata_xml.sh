@@ -35,6 +35,7 @@ if [ "$version_visit" = "1" ]; then
           <Extensions>
           lml
           lata
+          21
           </Extensions>
 EOF
 else
@@ -43,6 +44,8 @@ else
           ${med_extension}
           *.lml
           *.lata
+          *.21
+          *FORT21*
         </FilePatterns>
 EOF
 fi
