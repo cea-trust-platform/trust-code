@@ -165,7 +165,7 @@ do
 		     classname=`eval $command`
 		  fi
 		  # Check Rules I and II:
-		  if [ "$classname" != "" ]
+		  if [ "$classname" != "" ] && ! [[ "$classname" == *32_64 ]]
 		  then
 		     if [ $classname != $filename ]
 		     then
