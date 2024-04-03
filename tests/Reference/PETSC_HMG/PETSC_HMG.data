@@ -1,0 +1,157 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_hydraulique_concentration pbt
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 12 12
+        Longueurs 2 2
+    }
+    {
+        bord gauche X = 0  0 <= Y <= 2
+        bord haut   Y = 2  0 <= X <= 2
+        bord bas    Y = 0  0 <= X <= 2
+        bord droite X = 2  0 <= Y <= 2
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 4
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+    dt_max 0.1
+    facsec 1e30
+    seuil_statio 1e-2
+    dt_impr 1e-10
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type gasm
+            -pc_gasm_overlap 1
+            -sub_pc_type ilu
+            -sub_pc_factor_levels 1
+
+            -ksp_type fgmres
+            -ksp_norm_type unpreconditioned
+            -ksp_rtol 1e-8
+            -ksp_max_it 1000
+        }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+PolyMAC_P0 dis
+
+associate pbt dom
+Associate pbt sch
+Discretize pbt dis
+
+Read pbt
+{
+
+    fluide_incompressible
+    {
+        mu       champ_uniforme  1  50.0
+        rho      champ_uniforme  1  2000.0
+    }
+    constituant { coefficient_diffusion champ_uniforme 33 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 }
+
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { vitesse champ_uniforme 2 0.0 0.0 }
+        boundary_conditions
+        {
+            bas    paroi_fixe
+            gauche paroi_fixe
+            droite paroi_fixe
+            haut   paroi_defilante champ_front_uniforme 2 0.0 0.0
+        }
+    }
+
+    Convection_Diffusion_concentration
+    {
+        parametre_equation parametre_implicite
+        {
+            solveur petsc cli
+            {
+                -pc_type hmg
+                -pc_hmg_use_subspace_coarsening true
+                -pc_hmg_reuse_interpolation true
+
+                -hmg_inner_pc_type hypre
+                -hmg_inner_pc_hypre_type boomeramg
+                -hmg_inner_pc_hypre_boomeramg_strong_threshold 0.8
+                -hmg_inner_pc_hypre_boomeramg_agg_nl 4
+                -hmg_inner_pc_hypre_boomeramg_agg_num_paths 5
+                -hmg_inner_pc_hypre_boomeramg_max_levels 25
+                -hmg_inner_pc_hypre_boomeramg_coarsen_type PMIS
+                -hmg_inner_pc_hypre_boomeramg_interp_type ext+i
+                -hmg_inner_pc_hypre_boomeramg_P_max 2
+                -hmg_inner_pc_hypre_boomeramg_truncfactor 0.5
+
+                -ksp_type gmres
+                -ksp_rtol 1e-8
+            }
+        }
+        convection { amont }
+        diffusion  { }
+        initial_conditions { concentration champ_uniforme 33 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+        boundary_conditions
+        {
+            bas    paroi
+            haut   paroi
+            gauche paroi
+            droite paroi
+        }
+        sources
+        {
+
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            vitesse_AA grav     vitesse periode 1e8 segment 500 0 1 2 1
+            vitesse_BB grav     vitesse periode 1e8 segment 500 1 0 1 2
+            concentration_AA grav    concentration periode 1e8 segment 500 0 1 2 1
+            concentration_BB grav    concentration periode 1e8 segment 500 1 0 1 2
+        }
+        format lml
+        fields dt_post 100
+        {
+            vitesse               elem
+            concentration    elem
+        }
+    }
+}
+
+Solve pbt
+End
+
