@@ -224,6 +224,7 @@ ROOT=`pwd`
 cd $ROOT/$package
 #fix mhypre.c pour PCHMG
 patch -p2 < $DIR/fix_mhypre.patch
+[ $? != 0 ] && echo "Patch fix_mhypre.patch impossible a appliquer!" && exit -1
 # Hack sur topaze, sinon plus de place disque (fichiers sous groupe genden...)
 if [ $HOST = topaze ]
 then
@@ -298,7 +299,7 @@ then
       done
       with_gpu=$with_gpu"]"
    fi
-   CUDAFLAGS="-O3 -ccbin $TRUST_cc_BASE"
+
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
@@ -320,9 +321,6 @@ then
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
    export MPICH_FC=$OMPI_FC
-   CUDAFLAGS="-O3 -ccbin $OMPI_CC --compiler-options -fPIC"
-   COPTFLAGS="-O3 -fPIC"
-   FOPTFLAGS="-O3 -fPIC"
    unset CPATH # Necessaire sur JeanZay
 fi
 
@@ -612,11 +610,21 @@ do
    ###############
    export PETSC_ARCH=$TRUST_ARCH`[ $debug = 0 ] && echo "_opt"`
    export PETSC_DIR=`pwd`
-   # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
+   # Flags de compilation:
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
-   [ "$TRUST_CC_BASE_EXTP" = "" ] && COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
-   # On compile les librairies Fortran (eg:MUMPS) en int32, donc on supprime les flags de conversion int32 -> int64 en Fortran:
-   [ "$TRUST_CC_BASE_EXTP" = "" ] && FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
+   FLAG="-O3 " && [ $debug = 1 ] && FLAG=""
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
+   then
+      COPTFLAGS=$FLAG"-fPIC"
+      FOPTFLAGS=$FLAG"-fPIC"
+      CUDAFLAGS=$FLAG"-ccbin $OMPI_CC --compiler-options -fPIC"
+   else
+      # On recupere les flags de compilation de TRUST pour etre coherent:
+      COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
+      # On compile les librairies Fortran (eg:MUMPS) en int32, donc on supprime les flags de conversion int32 -> int64 en Fortran:
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
+      CUDAFLAGS=$FLAG"-ccbin $TRUST_cc_BASE"
+   fi
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:
@@ -624,6 +632,7 @@ do
    LIBS="" && [ `uname -s` = Darwin ] && LIBS=--LIBS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
    export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
+   cp ../configure.help $DIR
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
    # en etudiant ce qu'il y'a dans ./$CONFIG
    # On prend with-errorchecking=1 meme en optimise (ne degrade pas les performances)
@@ -646,8 +655,9 @@ do
    $with_64bit_indices \
    $options
    err=$?
-   cp configure.log $DIR/configure.log
-   echo "Created $DIR/configure.log"
+   log=$DIR/configure_debug$debug.log
+   cp configure.log $log
+   echo "Created $log"
    [ $err != 0 ] && exit $?
    #############
    # Compilation
