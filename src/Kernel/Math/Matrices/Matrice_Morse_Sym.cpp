@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <TRUSTArrays.h>
 #include <Array_tools.h>
 #include <TRUSTTabs.h>
-#include <Matrix_tools.h>
+
 #include <Sparskit.h>
 #include <Noms.h>
 
@@ -794,6 +794,7 @@ void Matrice_Morse_Sym::renumerote() const
   Cerr << "Renumbering the matrix ..." << finl;
   // rovisoire chercher a reecrire
   const Matrice_Morse_Sym& matrice_initial = *this;
+  ArrOfInt& tab_iperm = matrice_initial.permutation_inverse();
 
   // transformation d une matrice morse symetrique en matrice morse
 
@@ -801,15 +802,53 @@ void Matrice_Morse_Sym::renumerote() const
   Matrice_Morse matrice(matrice_initial);
 
   int mon_ordre = matrice.ordre();
+  //int i;
 
   matrice2.transpose(matrice);
   for (int i=0; i<mon_ordre; i++) matrice2(i, i) = 0.;
   matrice2 += matrice ;
 
+
+  // Matrice_Bande_Sym matrice_tmp;
+  // matrice_tmp.charger_coeff(matrice);
+  //Cout<<"avant renumerotation largeur de bande:"<<matrice_tmp.dim(0)<<finl;
+
+
   // calcul de la permutation a effectuer
-  const int nb_rows = mon_ordre;
-  ArrOfInt& tab_iperm = matrice_initial.permutation_inverse();
-  ArrOfInt tab_perm = Matrix_tools::reduce_bandwith(matrice2.get_tab1(), matrice2.get_tab2(), tab_iperm);
+
+  //  int nnz = matrice2.coeff_.size();
+  const int n = mon_ordre;
+  const int* tab1tmp = matrice2.get_tab1().addr();
+  const int* tab2tmp = matrice2.get_tab2().addr();
+  // const int nfirst=1;
+
+
+  int init = 1;
+
+
+  tab_iperm.resize_array(n);
+  tab_iperm[0] = 1;
+
+  int* masktmp  = new int[n];
+  for (int i=0 ; i<n; i++ ) masktmp[i] = 1;
+  const int* mask = (const int*) masktmp;
+  const int maskval = 1;
+  // GF passage a n+1 pour permettre de faire du Cholesky sur 1 maillage 1xN
+  int*  level = new int[n+1];
+  int nlev;
+
+  // renumerotation des noeuds
+  // subroutine perphn(n,ja,ia,init,iperm,mask,maskval,nlev,riord,levels)
+  // SPARSKIT2/ORDERINGS/levset.f
+  F77NAME(PERPHN)(&n, tab2tmp, tab1tmp, &init,  mask, &maskval,
+                  &nlev, tab_iperm.addr(), level);
+
+
+  delete []masktmp;
+  delete []level;
+
+  ArrOfInt tab_perm(n);
+  for (int i=0 ; i<n; i++ ) tab_perm[tab_iperm[i] - 1] = i + 1;
 
   matrice2 = matrice;
 
@@ -833,7 +872,7 @@ void Matrice_Morse_Sym::renumerote() const
 
   // subroutine dperm (nrow,a,ja,ia,ao,jao,iao,perm,qperm,job)
   // SPARSKIT2/FORMATS/unary.f
-  F77NAME(DPERM) (&nb_rows, a, ja, ia, ao, jao, iao, perm, perm_inv, &job);
+  F77NAME(DPERM) (&n, a, ja, ia, ao, jao, iao, perm, perm_inv, &job);
 
   matrice.transpose(matrice2);
   for (int i=0; i<mon_ordre; i++) matrice2(i, i) = 0.;
