@@ -251,7 +251,7 @@ then
    org=`pwd`
    reffile=".check_sources.ok"
    [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
-   res=`ls *.cpp *.f *.tpp *.h 2>/dev/null`
+   res=`ls *.cpp *.tpp *.h *.hpp 2>/dev/null`
    if [ "x$res" != "x" ]
    then
       err=0
@@ -260,18 +260,23 @@ then
       # On cherche si des fichiers sources sont plus recents
       # Donc on exclue les repertoires avec -F | grep -v "/"
       # Donc on exclue les .o avec grep -v "\.o$"
+      # Le deuxieme test ${reffile} -nt $0 verifie aussi que le script check_source.sh lui-meme n a pas ete change. 
       ############################################  
-      [ "`\ls -AFt | grep -v / | grep -v "\.o$"  | grep -v "CMakeLists.txt" | head -1`" = "${reffile}" ] && [ ${reffile} -nt $0 ] && exit 0
+      [ "`\ls -AFt | grep -v / | grep -v "CMakeLists.txt" | head -1`" = "${reffile}" ] && [ ${reffile} -nt $0 ] && exit 0
       # Build a list of newer files than ${reffile} or this script to speed up some tests (eg: french check)
       if [ ! -f ${reffile} ] || [ $0 -nt ${reffile} ]
       then
-         newer_files=`\ls *.cpp *.h *.tpp *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
+         # check_source.ok n existe pas encore, on prend toutes les sources
+         newer_files=`\ls *.cpp *.h *.tpp *.hpp *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
          new_newer_files=$newer_files
       else
-         newer_files=`find * -type f  \( -name -o -name '*'.cpp -o -name '*'.h -o -name '*'.tpp -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
+         # check_source.ok existe, on prend les sources plus recentes:
+         newer_files=`find . -type f  \( -name '*'.cpp -o -name '*'.h -o -name '*'.tpp -o -name '*'.c -o -name '*'.hpp \) -newer ${reffile}`
+         # Different list including everything (like .P files, etc):
          new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
       [ "$new_newer_files" = "" ] && exit 0
+
       mk_Instancie
       #############
       # Git check #
@@ -290,13 +295,14 @@ then
       ##################
       # Check .P files #
       ##################
+      # [ABN] 04/2024: .P have disappeared this could be removed:
       opt_newer=""
       [ -f  ${reffile} ] && opt_newer=" -newer ${reffile}"
       check_update_P `find . -maxdepth 1 -name '*.P' ${opt_newer} -exec basename {} \;`
 
       ########################################################
       # Dans chaque repertoire on execute check.sh s'il existe
-      ########################################################  
+      ########################################################
       if [ -f check.sh ]
       then
          ./check.sh
