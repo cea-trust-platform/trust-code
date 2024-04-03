@@ -18,63 +18,38 @@
 #endif
 
 #include <TRUSTVects.h>
-#include <RTabInt.h>
 #include <Domaine.h>
 #include <Octree.h>
 
-Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
+Implemente_instanciable_sans_constructeur_32_64(OctreeRoot_32_64,"OctreeRoot",Objet_U);
 
-Sortie& Octree::printOn(Sortie& is) const
+template <typename _SIZE_>
+Sortie& Octree_32_64<_SIZE_>::printOn(Sortie& is) const
 {
-  int nb_octrees=Octree::nombre_d_octrees();
+  int nb_octrees=Octree_32_64::nombre_d_octrees();
   int i;
   is << finl << "--------------------------------" << finl;
   is << "niveau : " << niveau() << " taille : " << taille() << finl;
   for(i=0; i<nb_octrees; i++)
     {
       if(les_octrees[i]!=0)
-        {
-          les_octrees[i]->printOn(is);
-        }
+        les_octrees[i]->printOn(is);
       else
         is << "vide" << " ";
     }
   return is << finl;
 }
 
-Entree& Octree::readOn(Entree& is)
+template <typename _SIZE_>
+Sortie& OctreeRoot_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  return is;
+  return Octree_32_64<_SIZE_>::printOn(os);
 }
 
-Sortie& OctreeRoot::printOn(Sortie& os) const
+template <typename _SIZE_>
+Entree& OctreeRoot_32_64<_SIZE_>::readOn(Entree& is)
 {
-  return Octree::printOn(os);
-}
-
-Entree& OctreeRoot::readOn(Entree& is)
-{
-  return Octree::readOn(is);
-}
-
-Sortie& OctreeFloor::printOn(Sortie& os) const
-{
-  Octree::printOn(os);
-  return os << num_elem << finl;
-}
-
-Entree& OctreeFloor::readOn(Entree& is)
-{
-  return Octree::readOn(is);
-}
-
-
-/*! @brief Destructeur: appelle Octree::detruire().
- *
- */
-Octree::~Octree()
-{
-  detruire();
+  return Octree_32_64<_SIZE_>::readOn(is);
 }
 
 
@@ -100,8 +75,7 @@ void OctreeLoc::construire(const OctreeLoc& loc, int  i)
  * @param (double ymil)
  * @param (double zmil)
  */
-void OctreeLoc::construire(const OctreeLoc& loc, int  i,
-                           double xmil, double ymil, double zmil)
+void OctreeLoc::construire(const OctreeLoc& loc, int  i, double xmil, double ymil, double zmil)
 {
   switch(i)
     {
@@ -209,32 +183,6 @@ int OctreeLoc::direction(double x, double y, double z) const
 }
 
 
-/*! @brief Renvoie le nombre d'octree.
- *
- * @return (int) le nombre d'octree
- */
-int Octree::nombre_d_octrees()
-{
-  int nb_octrees;
-  switch(Objet_U::dimension)
-    {
-    case 1:
-      nb_octrees=2;
-      break;
-    case 2:
-      nb_octrees=4;
-      break;
-    case 3:
-      nb_octrees=8;
-      break;
-    default :
-      nb_octrees=0;
-      break;
-    }
-  return nb_octrees;
-}
-
-
 /*! @brief
  *
  * @param (OctreeLoc& loc)
@@ -243,10 +191,10 @@ int Octree::nombre_d_octrees()
  * @param (double z)
  * @return (int)
  */
-int Octree::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
+template <typename _SIZE_>
+typename Octree_32_64<_SIZE_>::int_t Octree_32_64<_SIZE_>::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
 {
-  int element=-1;
-
+  int_t element=-1;
   int j=1;
   while(j<nombre_d_octrees())
     {
@@ -261,9 +209,7 @@ int Octree::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) co
       OctreeLoc loci;
       loci.construire(loc, i);
       if(les_octrees[i]==0)
-        {
-          return -1;
-        }
+        return -1;
       element = les_octrees[i]->rang_elem_loc(loci, x, y, z);
     }
   else
@@ -281,10 +227,10 @@ int Octree::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) co
  * @param (double z)
  * @return (int)
  */
-int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, double y, double z) const
+template <typename _SIZE_>
+typename Octree_32_64<_SIZE_>::int_t Octree_32_64<_SIZE_>::rang_elem_depuis_loc(const OctreeLoc& loc, int_t prems, double x, double y, double z) const
 {
-  int element=-1;
-
+  int_t element=-1;
   int j=1;
   while(j<nombre_d_octrees())
     {
@@ -308,25 +254,13 @@ int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, doub
 }
 
 
-/*! @brief Renvoie une reference sur le domaine associe a l'octree.
- *
- * @return (Domaine&) reference sur le domaine associe a l'octree
- */
-const Domaine& Octree::domaine() const
-{
-  return pere->domaine();
-}
-double Octree::get_epsilon() const
-{
-  return domaine().epsilon();
-}
-void Octree::ranger_elem_1D(ArrOfInt& ok, int elem, int i, int nb_som_elem, const DoubleTab& coord,
-                            const IntTab& elems, ArrOfInt& compteur,
-                            IntVects& SousTab, double xmil)
+template <typename _SIZE_>
+void Octree_32_64<_SIZE_>::ranger_elem_1D(ArrOfInt& ok, int_t elem, int_t i, int nb_som_elem, const DoubleTab_t& coord, const IntTab_t& les_elems,
+                                          SmallArrOfTID_t& compteur, Vect_IntTab_t& SousTab, double xmil)
 {
   for(int som=0; som<nb_som_elem; som++)
     {
-      int sommet=elems(i,som);
+      int_t sommet=les_elems(i,som);
       assert(sommet>=0);
       if(coord(sommet,0)<xmil)
         {
@@ -348,8 +282,13 @@ void Octree::ranger_elem_1D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
         }
     }
 }
+
+namespace // Anonymous namespace
+{
+
+template <typename _SIZE_>
 inline void range2D(double x, double y, double xmil, double ymil,
-                    ArrOfInt& ok, IntVects& SousTab, ArrOfInt& compteur, int i)
+                    ArrOfInt& ok, TRUST_Vector<ITab_T<_SIZE_>>& SousTab, SmallAOTID_T<_SIZE_>& compteur, _SIZE_ i)
 {
   if(x<xmil)
     {
@@ -394,9 +333,11 @@ inline void range2D(double x, double y, double xmil, double ymil,
         }
     }
 }
+
+template <typename _SIZE_>
 inline void range3D(double x, double y, double z,
                     double xmil, double ymil, double zmil,
-                    ArrOfInt& ok, IntVects& SousTab, ArrOfInt& compteur, int i)
+                    ArrOfInt& ok, TRUST_Vector<ITab_T<_SIZE_>>& SousTab, SmallAOTID_T<_SIZE_>& compteur, _SIZE_ i)
 {
   if(x<xmil)
     {
@@ -490,15 +431,18 @@ inline void range3D(double x, double y, double z,
     }
 }
 
-void Octree::ranger_elem_2D(ArrOfInt& ok, int elem, int i, int nb_som_elem, const DoubleTab& coord,
-                            const IntTab& elems, ArrOfInt& compteur,
-                            IntVects& SousTab, double xmil, double ymil)
+}// end anonymous namespace
+
+
+template <typename _SIZE_>
+void Octree_32_64<_SIZE_>::ranger_elem_2D(ArrOfInt& ok, int_t elem, int_t idx, int nb_som_elem, const DoubleTab_t& coord, const IntTab_t& elems,
+                                          SmallArrOfTID_t& compteur, Vect_IntTab_t& SousTab, double xmil, double ymil)
 {
   double xmin=DMAXFLOAT, xmax=-DMAXFLOAT;
   double ymin=xmin, ymax=xmax;
   for(int som=0; som<nb_som_elem; som++)
     {
-      int sommet=elems(i,som);
+      int_t sommet=elems(idx,som);
 //      assert(sommet>=0);
 // GF dans le cas dde polyedre le tableau elem est surdimensionne et peut contenir des -1
       if (sommet>=0)
@@ -509,15 +453,15 @@ void Octree::ranger_elem_2D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
           ymax=std::max(ymax, coord(sommet,1));
         }
     }
-  range2D(xmin, ymin, xmil, ymil, ok, SousTab, compteur, i);
-  range2D(xmin, ymax, xmil, ymil, ok, SousTab, compteur, i);
-  range2D(xmax, ymin, xmil, ymil, ok, SousTab, compteur, i);
-  range2D(xmax, ymax, xmil, ymil, ok, SousTab, compteur, i);
+  range2D(xmin, ymin, xmil, ymil, ok, SousTab, compteur, idx);
+  range2D(xmin, ymax, xmil, ymil, ok, SousTab, compteur, idx);
+  range2D(xmax, ymin, xmil, ymil, ok, SousTab, compteur, idx);
+  range2D(xmax, ymax, xmil, ymil, ok, SousTab, compteur, idx);
 }
 
-void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, const DoubleTab& coord,
-                            const IntTab& elems, ArrOfInt& compteur,
-                            IntVects& SousTab, double xmil, double ymil, double zmil)
+template <typename _SIZE_>
+void Octree_32_64<_SIZE_>::ranger_elem_3D(ArrOfInt& ok, int_t elem, int_t idx, int nb_som_elem, const DoubleTab_t& coord, const IntTab_t& elems,
+                                          SmallArrOfTID_t& compteur, Vect_IntTab_t& SousTab, double xmil, double ymil, double zmil)
 {
   double epsilon=get_epsilon();
   double xmin=DMAXFLOAT, xmax=-DMAXFLOAT;
@@ -525,7 +469,7 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
   double zmin=xmin, zmax=xmax;
   for(int som=0; som<nb_som_elem; som++)
     {
-      int sommet=elems(i,som);
+      int_t sommet=elems(idx,som);
 //      assert(sommet>=0);
 // GF dans le cas dde polyedre le tableau elem est surdimensionne et peut contenir des -1
       if (sommet>=0)
@@ -538,14 +482,14 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
           zmax=std::max(zmax, coord(sommet,2))+epsilon;
         }
     }
-  range3D(xmin, ymin, zmin, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmin, ymax, zmin, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmax, ymin, zmin, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmax, ymax, zmin, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmin, ymin, zmax, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmin, ymax, zmax, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmax, ymin, zmax, xmil, ymil, zmil, ok, SousTab, compteur, i);
-  range3D(xmax, ymax, zmax, xmil, ymil, zmil, ok, SousTab, compteur, i);
+  range3D(xmin, ymin, zmin, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmin, ymax, zmin, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmax, ymin, zmin, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmax, ymax, zmin, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmin, ymin, zmax, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmin, ymax, zmax, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmax, ymin, zmax, xmil, ymil, zmil, ok, SousTab, compteur, idx);
+  range3D(xmax, ymax, zmax, xmil, ymil, zmil, ok, SousTab, compteur, idx);
 }
 
 /*! @brief
@@ -555,15 +499,13 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
  * @param (OctreeLoc& loc)
  * @param (Octree* pe)
  */
-void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
-                        const OctreeLoc& loc, Octree* pe)
+template <typename _SIZE_>
+void Octree_32_64<_SIZE_>::construire(int nb_octrees, const ArrOfInt_t& Tab, const OctreeLoc& loc, Octree_t* pe)
 {
-  //static int nb_octree=0;
   static int level=0;
-  //nb_octree++;
-  int nb_elem=Tab.size_array();
+  int_t nb_elem=Tab.size_array();
   pere=pe;
-  les_octrees=new Octree*[nb_octrees];
+  les_octrees=new Octree_32_64*[nb_octrees];
 
   if(niveau()>level)
     {
@@ -576,44 +518,42 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
   if(nb_elem<=NbCasesParNoeuds)
     {
       for(int i=0; i<nb_octrees; i++)
-        {
-          les_octrees[i]=0;
-        }
-      les_octrees[0]=new OctreeFloor(this, Tab, loc);
+        les_octrees[i]=0;
+      les_octrees[0]=new OctreeFloor_32_64<_SIZE_>(this, Tab, loc);
     }
   else
     {
       //else
-      const Domaine& z=domaine();
-      const Domaine& dom=z;
-      IntVects SousTab(nb_octrees);
-      ArrOfInt compteur(nb_octrees);
-      int nb_som_elem=z.nb_som_elem();
-      int i;
-      const IntTab& les_elems=z.les_elems();
-      const DoubleTab& coord_sommets=dom.coord_sommets();
-      for(i=0; i<nb_octrees; i++)
+      const Domaine_t& dom=domaine();
+      Vect_IntTab_t SousTab(nb_octrees);
+      SmallArrOfTID_t compteur(nb_octrees);
+      int nb_som_elem=dom.nb_som_elem();
+      const IntTab_t& les_elems=dom.les_elems();
+      const DoubleTab_t& coord_sommets=dom.coord_sommets();
+      for(int i=0; i<nb_octrees; i++)
         SousTab[i].resize(nb_elem);
       double xmil=(loc.xmin+loc.xmax)/2;
       double ymil=(loc.ymin+loc.ymax)/2;
       double zmil=(loc.zmin+loc.zmax)/2;
       ArrOfInt ok(nb_octrees);
-      for(int elem=0; elem<nb_elem; elem++)
+      for(int_t elem=0; elem<nb_elem; elem++)
         {
-          i=Tab[elem];
+          int_t idx=Tab[elem];
           ok=0;
           switch(Objet_U::dimension)
             {
             case 1:
-              ranger_elem_1D(ok, elem, i , nb_som_elem, coord_sommets,
+              // ArrOfInt oks, int_t elem, int_t idx, int nb_som_elem, DoubleTab_t coords_som, IntTab_t les_elems,
+              // SmallArrOfTID_t compteur, ArrOfInt_t sous_tab, double xmil
+              ranger_elem_1D(ok, elem, idx , nb_som_elem, coord_sommets,
                              les_elems, compteur, SousTab, xmil);
               break;
             case 2:
-              ranger_elem_2D(ok, elem, i , nb_som_elem, coord_sommets,
+              ranger_elem_2D(ok, elem, idx , nb_som_elem, coord_sommets,
                              les_elems, compteur, SousTab, xmil, ymil);
               break;
             case 3:
-              ranger_elem_3D(ok, elem, i ,nb_som_elem, coord_sommets,
+              ranger_elem_3D(ok, elem, idx ,nb_som_elem, coord_sommets,
                              les_elems, compteur, SousTab, xmil, ymil, zmil);
               break;
             default:
@@ -622,26 +562,19 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
             }
         }
 
-      for(i=0; i<nb_octrees; i++)
+      for(int i=0; i<nb_octrees; i++)
         {
           les_octrees[i]=0;
           OctreeLoc loci;
           loci.construire(loc, i, xmil, ymil, zmil);
           SousTab[i].resize(compteur[i]);
           if(compteur[i]==nb_elem)
-            {
-              les_octrees[i]=new OctreeFloor(this, SousTab[i], loci);
-            }
+            les_octrees[i]=new OctreeFloor_32_64<_SIZE_>(this, SousTab[i], loci);
           else if(compteur[i]>NbCasesParNoeuds)
-            {
-              les_octrees[i]=new Octree(nb_octrees, this, SousTab[i], loci);
-            }
+            les_octrees[i]=new Octree_32_64<_SIZE_>(nb_octrees, this, SousTab[i], loci);
           else if(compteur[i]!=0)
-            {
-              les_octrees[i]=new OctreeFloor(this, SousTab[i], loci);
-            }
+            les_octrees[i]=new OctreeFloor_32_64<_SIZE_>(this, SousTab[i], loci);
         }
-      //Cerr << "On continue dans cette direction" << finl;
     }
 }
 
@@ -651,11 +584,12 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
  * Methode appelee par le destructeur
  *
  */
-void Octree::detruire()
+template <typename _SIZE_>
+void Octree_32_64<_SIZE_>::detruire()
 {
   if(les_octrees==0)
     return;
-  int nb_octrees=Octree::nombre_d_octrees();
+  int nb_octrees=Octree_32_64<_SIZE_>::nombre_d_octrees();
   for(int i=0; i<nb_octrees; i++)
     if(les_octrees[i])
       delete les_octrees[i];
@@ -664,7 +598,8 @@ void Octree::detruire()
 }
 
 
-int Octree::niveau() const
+template <typename _SIZE_>
+int Octree_32_64<_SIZE_>::niveau() const
 {
   int i=0;
   if (pere==0) return i;
@@ -676,10 +611,11 @@ int Octree::niveau() const
  *
  * @return (unsigned) la taille de l'octree
  */
-int Octree::taille() const
+template <typename _SIZE_>
+typename Octree_32_64<_SIZE_>::int_t Octree_32_64<_SIZE_>::taille() const
 {
-  int nb_octrees=Octree::nombre_d_octrees();
-  unsigned la_taille = sizeof(Octree);
+  int nb_octrees=Octree_32_64<_SIZE_>::nombre_d_octrees();
+  int_t la_taille = (int_t) sizeof(Octree);
   for(int i=0; i<nb_octrees; i++)
     if(les_octrees[i]!=0)
       la_taille+= les_octrees[i]->taille();
@@ -687,49 +623,28 @@ int Octree::taille() const
 }
 
 
-/*! @brief Renvoie le domaine associe a l'octree.
- *
- * @return (Domaine&) le domaine associe a l'octree
- */
-const Domaine& OctreeRoot::domaine() const
+template <typename _SIZE_>
+void OctreeRoot_32_64<_SIZE_>::construire(int reel_prec)
 {
-  return le_dom.valeur();
-}
-
-
-/*! @brief Associe un domaine a l'octree
- *
- * @param (Domaine& z) le domaine a associer a l'octree
- */
-void OctreeRoot::associer_Domaine(const Domaine& z)
-{
-  le_dom=z;
-}
-
-void OctreeRoot::construire(int reel_prec)
-{
-  detruire();
+  this->detruire();
   valid_=1;
   reel_=reel_prec;
   pere=0;
-  const Domaine& z=domaine();
-  const Domaine& dom=z;
+  const Domaine_t& dom = domaine();
 
   {
     // Calcul du min et du max des coordonnees dans chaque direction
     double min[3] = { 1e30, 1e30, 1e30 };
     double max[3] = {-1e30,-1e30,-1e30 };
-    int i;
-    const DoubleTab& tab = dom.coord_sommets();
-// 	tot sinon bouding box trop petite
-// 	peut etre teste reel_ ...
-    const int n = tab.dimension_tot(0);
-    const int dim = tab.dimension(1);
+    const DoubleTab_t& tab = dom.coord_sommets();
+    //  tot sinon bouding box trop petite
+    //  peut etre teste reel_ ...
+    const int_t n = tab.dimension_tot(0);
+    const int dim = (int)tab.dimension(1);
     assert(dim <= 3);
-    for (i = 0; i < n; i++)
+    for (int_t i = 0; i < n; i++)
       {
-        int j;
-        for (j = 0; j < 3; j++)
+        for (int j = 0; j < 3; j++)
           {
             if (j>=dim) break;
             double x = tab(i,j);
@@ -762,14 +677,14 @@ void OctreeRoot::construire(int reel_prec)
         loc.zmax = 1.;
       }
   }
-  int nb_elem=z.nb_elem_tot();
+  int_t nb_elem=dom.nb_elem_tot();
   if(reel_prec)
-    nb_elem=z.nb_elem();
+    nb_elem=dom.nb_elem();
 
-  ArrOfInt SousTab(nb_elem);
-  for(int i=0; i<nb_elem; i++)
+  ArrOfInt_t SousTab(nb_elem);
+  for(int_t i=0; i<nb_elem; i++)
     SousTab[i]=i;
-  Octree::construire(Octree::nombre_d_octrees(), SousTab, loc);
+  Octree_32_64<_SIZE_>::construire(Octree_32_64<_SIZE_>::nombre_d_octrees(), SousTab, loc);
   Cerr << "Construction of the OctreeRoot OK " << finl;
 }
 
@@ -780,27 +695,27 @@ void OctreeRoot::construire(int reel_prec)
  * @param (double y)
  * @param (double z)
  * @return (int)
- * @throws Erreur dans OctreeRoot::rang_sommet
+ * @throws Erreur dans OctreeRoot_32_64<_SIZE_>::rang_sommet
  * @throws On a pas trouve de sommet a ces coordonnees
  */
-int OctreeRoot::rang_sommet(double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_sommet(double x, double y, double z) const
 {
-  int elem=rang_elem(x, y, z);
+  int_t elem=rang_elem(x, y, z);
   if (elem != -1)
     {
-      const Domaine& zo=domaine();
-      const Domaine& dom=zo;
-      int nb_som_elem=zo.nb_som_elem();
-      double epsilon=get_epsilon();
+      const Domaine_t& dom=domaine();
+      int nb_som_elem=dom.nb_som_elem();
+      double epsilon=this->get_epsilon();
       for(int i=0; i<nb_som_elem; i++)
         {
           //for i
-          int sommet=zo.sommet_elem(elem,i);
+          int_t sommet=dom.sommet_elem(elem,i);
           if(sommet<0)
             {
               Cerr << "This is not a mesh !" << finl;
-              Cerr << zo << finl;
-              exit();
+              Cerr << dom << finl;
+              Process::exit();
             }
           switch(Objet_U::dimension)
             {
@@ -821,16 +736,14 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
                 return sommet;
               break;
             default:
-              Cerr << "Error in OctreeRoot::rang_sommet" << finl;
-              assert(0);
-              exit();
+              Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_sommet" << finl;
+              Process::exit();
               return -1;
             }
         }
       return -1;
     }
   else
-    //Cerr << "On a pas trouve de sommet a ces coordonnees" << finl;
     return -1;
 }
 
@@ -840,29 +753,30 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
  * @param (double y)
  * @param (double z)
  * @return (int)
- * @throws Erreur dans OctreeRoot::rang_arete
+ * @throws Erreur dans OctreeRoot_32_64<_SIZE_>::rang_arete
  * @throws On a pas trouve d'arete a ces coordonnees
  */
-int OctreeRoot::rang_arete(double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_arete(double x, double y, double z) const
 {
   // Recherche l'element contenant le point x,y,z:
-  int elem=rang_elem(x, y, z);
-  const IntTab& elem_aretes=domaine().elem_aretes();
+  int_t elem=rang_elem(x, y, z);
+  const IntTab_t& elem_aretes=domaine().elem_aretes();
   if (elem>=elem_aretes.dimension(0)) return -2;
   if (elem != -1 && elem<elem_aretes.dimension(0))
     {
       // Boucle sur les aretes de l'element
-      double epsilon=get_epsilon();
-      const IntTab& aretes_som=domaine().aretes_som();
-      const DoubleTab& coord=domaine().coord_sommets();
-      int nb_aretes_elem=elem_aretes.dimension(1);
+      double epsilon=this->get_epsilon();
+      const IntTab_t& aretes_som=domaine().aretes_som();
+      const DoubleTab_t& coord=domaine().coord_sommets();
+      int nb_aretes_elem = (int)elem_aretes.dimension(1);
       for(int i=0; i<nb_aretes_elem; i++)
         {
           // On boucle sur les aretes de l'element pour trouver celle
           // dont le centre de gravite coincide avec le point x,y,z
-          int arete=elem_aretes(elem,i);
-          int s0=aretes_som(arete,0);
-          int s1=aretes_som(arete,1);
+          int_t arete=elem_aretes(elem,i);
+          int_t s0=aretes_som(arete,0);
+          int_t s1=aretes_som(arete,1);
           switch(Objet_U::dimension)
             {
             case 3:
@@ -872,15 +786,14 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
                 return arete;
               break;
             default:
-              Cerr << "Error in OctreeRoot::rang_elem" << finl;
-              exit();
+              Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_elem" << finl;
+              Process::exit();
               return -1;
             }
         }
       return -1;
     }
   else
-    //Cerr << "On a pas trouve d'arete a ces coordonnees" << finl;
     return -1;
 }
 
@@ -891,13 +804,14 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
  * @param (double z)
  * @return (int)
  */
-int OctreeRoot::rang_elem(double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_elem(double x, double y, double z) const
 {
-  double epsilon=get_epsilon();
+  double epsilon = this->get_epsilon();
   if(       (x<loc.xmin-epsilon) || (y<loc.ymin-epsilon) || (z<loc.zmin-epsilon)
             ||   (x>loc.xmax+epsilon) || (y>loc.ymax+epsilon) || (z>loc.zmax+epsilon)   )
     return -1;
-  return Octree::rang_elem_loc(loc, x, y, z);
+  return Octree_32_64<_SIZE_>::rang_elem_loc(loc, x, y, z);
 }
 
 
@@ -908,13 +822,14 @@ int OctreeRoot::rang_elem(double x, double y, double z) const
  * @param (double y)
  * @param (double z)
  */
-int OctreeRoot::rang_elem_depuis(int prems, double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_elem_depuis(int_t prems, double x, double y, double z) const
 {
-  double epsilon=get_epsilon();
+  double epsilon = this->get_epsilon();
   if(       (x<loc.xmin-epsilon) || (y<loc.ymin-epsilon) || (z<loc.zmin-epsilon)
             ||   (x>loc.xmax+epsilon) || (y>loc.ymax+epsilon) || (z>loc.zmax+epsilon)   )
     return -1;
-  return Octree::rang_elem_depuis_loc(loc, prems, x, y, z);
+  return Octree_32_64<_SIZE_>::rang_elem_depuis_loc(loc, prems, x, y, z);
 }
 
 
@@ -925,7 +840,8 @@ int OctreeRoot::rang_elem_depuis(int prems, double x, double y, double z) const
  * @return (int)
  * @throws dimension d'espace non prevue
  */
-int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_sommet(const DoubleTab& positions, SmallArrOfTID_t& sommets) const
 {
   int sz=positions.dimension(0);
   assert(positions.dimension(1)==Objet_U::dimension);
@@ -948,9 +864,8 @@ int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
           z=positions(i,2);
           break;
         default:
-          Cerr << "Error in OctreeRoot::rang_sommet" << finl;
-          assert(0);
-          exit();
+          Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_sommet" << finl;
+          Process::exit();
         }
       sommets[i]=rang_sommet(x,y,z);
     }
@@ -965,7 +880,8 @@ int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
  * @return (int)
  * @throws dimension d'espace non prevue
  */
-int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_arete(const DoubleTab& positions, SmallArrOfTID_t& aretes) const
 {
   int sz=positions.dimension(0);
   assert(positions.dimension(1)==Objet_U::dimension);
@@ -988,8 +904,8 @@ int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
           z=positions(i,2);
           break;
         default:
-          Cerr << "Error in OctreeRoot::rang_arete" << finl;
-          exit();
+          Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_arete" << finl;
+          Process::exit();
         }
       aretes[i]=rang_arete(x,y,z);
     }
@@ -1003,7 +919,8 @@ int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
  * @return (int)
  * @throws dimension d'espace non prevue
  */
-int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_elem(const DoubleTab& positions, SmallArrOfTID_t& elems) const
 {
   int sz=positions.dimension(0);
   assert(positions.dimension(1)==Objet_U::dimension);
@@ -1026,9 +943,8 @@ int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
           z=positions(i,2);
           break;
         default:
-          Cerr << "Error in OctreeRoot::rang_elem" << finl;
-          assert(0);
-          exit();
+          Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_elem" << finl;
+          Process::exit();
         }
       elems[i]=rang_elem(x,y,z);
     }
@@ -1043,7 +959,8 @@ int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
  * @param (ArrOfInt& elems)
  * @throws dimension d'espace non prevue
  */
-int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& prems, ArrOfInt& elems) const
+template <typename _SIZE_>
+typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_elem_depuis(const DoubleTab& positions, const SmallArrOfTID_t& prems, SmallArrOfTID_t& elems) const
 {
   int sz=positions.dimension(0);
   assert(positions.dimension(1)==Objet_U::dimension);
@@ -1066,9 +983,8 @@ int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& pre
           z=positions(i,2);
           break;
         default:
-          Cerr << "Error in OctreeRoot::rang_elem_depuis" << finl;
-          assert(0);
-          exit();
+          Cerr << "Error in OctreeRoot_32_64<_SIZE_>::rang_elem_depuis" << finl;
+          Process::exit();
         }
       elems[i]=rang_elem_depuis(prems[i],x,y,z);
     }
@@ -1078,25 +994,26 @@ int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& pre
 
 /*! @brief
  *
- * @param (ArrOfInt& elements)
+ * @param (ArrOfInt& elements)  we suppose we look for a small number of elements!
  * @param (double x)
  * @param (double y)
  * @param (double z)
  */
-void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, double z) const
+template <typename _SIZE_>
+void OctreeRoot_32_64<_SIZE_>::rang_elems_sommet(SmallArrOfTID_t& elements, double x, double y, double z) const
 {
-  RTabInt els;
-  int fini=0;
-  int i=0;
-  int el=0;
-  while(fini==0)
+  std::vector<int_t> els;
+  bool fini=false;
+  int i = 0;
+  int_t el=0;
+  while(!fini)
     {
-      el = Octree::rang_elem_depuis_loc(loc, el, x, y, z);
+      el = Octree_32_64<_SIZE_>::rang_elem_depuis_loc(loc, el, x, y, z);
       if(el==-1)
         fini=1;
       else
         {
-          els.add(el);
+          els.push_back(el);
           i++;
           el++;
         }
@@ -1111,7 +1028,8 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
  *
  * @return (int) code de retour propage
  */
-int OctreeRoot::construit() const
+template <typename _SIZE_>
+int OctreeRoot_32_64<_SIZE_>::construit() const
 {
   if((le_dom.non_nul()==0)||(valid_!=1))
     // L'Octree n'est pas construit ou le domaine est nulle
@@ -1120,13 +1038,14 @@ int OctreeRoot::construit() const
     return 1;
 }
 
-void OctreeRoot::invalide()
+template <typename _SIZE_>
+void OctreeRoot_32_64<_SIZE_>::invalide()
 {
   if(valid_!=0)
     {
       Cerr << "Invalidation of the Octree" << finl;
       valid_ = 0;
-      detruire();
+      this->detruire();
     }
 }
 
@@ -1139,18 +1058,18 @@ void OctreeRoot::invalide()
  * @param (double z)
  * @return (int)
  */
-int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeFloor_32_64<_SIZE_>::int_t OctreeFloor_32_64<_SIZE_>::rang_elem_loc(const OctreeLoc& loc, double x, double y, double z) const
 {
-  int sz=num_elem.size_array();
-  int element=-1;
-  const Elem_geom& elemgeom=domaine().type_elem();
+  int_t sz=num_elem.size_array();
+  int_t element=-1;
+  const Elem_geom_32_64<_SIZE_>& elemgeom=this->domaine().type_elem();
   pos[0]=x;
-  if(Objet_U::dimension>1) pos[1]=y;
+  pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
   // ToDo Kokkos: exemple de virtual function facile a implementer:
-  for (int ielem = 0; ielem < sz; ielem++)
+  for (int_t ielem = 0; ielem < sz; ielem++)
     {
-
       if(elemgeom->contient(pos,num_elem[ielem]))
         {
           element=num_elem[ielem];
@@ -1173,23 +1092,24 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
  * @param (double z)
  * @return (int)
  */
-int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, double y, double z) const
+template <typename _SIZE_>
+typename OctreeFloor_32_64<_SIZE_>::int_t OctreeFloor_32_64<_SIZE_>::rang_elem_depuis_loc(const OctreeLoc& loc, int_t prems, double x, double y, double z) const
 {
-  int sz=num_elem.size_array();
-  int element=-1;
-  const Elem_geom& elemgeom=domaine().type_elem();
+  int_t sz=num_elem.size_array();
+  int_t element=-1;
+  const Elem_geom_32_64<_SIZE_>& elemgeom = this->domaine().type_elem();
   pos[0]=x;
-  if(Objet_U::dimension>1) pos[1]=y;
+  pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
-  int trouve=0;
-  int ielem=0;
-  while((ielem < sz) && (trouve==0))
+  bool trouve=false;
+  int_t ielem=0;
+  while((ielem < sz) && !trouve)
     {
       if(elemgeom->contient(pos,num_elem[ielem]))
         {
           element=num_elem[ielem];
           if(element >= prems)
-            trouve=1;
+            trouve=true;
           else
             ielem++;
         }
@@ -1197,9 +1117,7 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
         ielem++;
     }
   if(ielem>=sz)
-    {
-      element=-1;
-    }
+    element=-1;
   return element;
 }
 
@@ -1210,10 +1128,9 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
  * @param (ArrOfInt& Tab)
  * @param (OctreeLoc& loc)
  */
-void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& loc)
+template <typename _SIZE_>
+void OctreeFloor_32_64<_SIZE_>::construire(Octree_t* pe, const ArrOfInt_t& Tab, const OctreeLoc& loc)
 {
-  //static int nb_octreefloor=0;
-  //nb_octreefloor++;
   assert(pe!=0);
   pere=pe;
   les_octrees=0;
@@ -1229,8 +1146,19 @@ void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& l
  *
  * @return (unsigned) la taille de l'octree
  */
-int OctreeFloor::taille() const
+template <typename _SIZE_>
+typename OctreeFloor_32_64<_SIZE_>::int_t OctreeFloor_32_64<_SIZE_>::taille() const
 {
-  return (int)sizeof(OctreeFloor)+num_elem.size_array()*(int)sizeof(int);
+  return (int_t)sizeof(OctreeFloor_32_64)+num_elem.size_array()*(int_t)sizeof(int);
 }
+
+
+template class Octree_32_64<int>;
+template class OctreeRoot_32_64<int>;
+template class OctreeFloor_32_64<int>;
+#if INT_is_64_ == 2
+template class Octree_32_64<trustIdType>;
+template class OctreeRoot_32_64<trustIdType>;
+template class OctreeFloor_32_64<trustIdType>;
+#endif
 

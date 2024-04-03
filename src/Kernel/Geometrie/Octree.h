@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
 
 class Domaine;
 
+// TODO should be a class enum
 #define GaucheArriereBas 0
 #define DroitArriereBas 1
 #define GaucheAvantBas 2
@@ -42,44 +43,53 @@ struct OctreeLoc
   void construire(const OctreeLoc& loc, int i, double xmil, double ymil, double zmil);
   int direction(double x, double y, double z) const;
 };
-class OctreeRoot;
 
 
 /*! @brief Classe Octree
  *
  * @sa OctreeLoc OctreeRoot OctreeFloor
  */
-class Octree
+template <typename _SIZE_>
+class Octree_32_64
 {
 public :
-  Octree():les_octrees(0), pere(0) {}
-  virtual ~Octree();
-  Octree(const Octree&):les_octrees(0), pere(0) {}
-  Octree(int n, Octree* mon_pere, const ArrOfInt& val,
-         const OctreeLoc& loc)
-  {
-    construire(n, val, loc, mon_pere);
-  }
-  virtual int rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const;
-  virtual int rang_elem_depuis_loc(const OctreeLoc&, int prems, double x, double y=0, double z=0) const;
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using Vect_IntTab_t = TRUST_Vector<IntTab_t>;
 
-  virtual const Domaine& domaine() const;
-  void construire(int, const ArrOfInt&, const OctreeLoc&, Octree* p=0);
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Octree_t = Octree_32_64<_SIZE_>;
+
+  Octree_32_64() : les_octrees(nullptr), pere(nullptr) {}
+  virtual ~Octree_32_64() { detruire(); }
+  Octree_32_64(int n, Octree_32_64* mon_pere, const ArrOfInt_t& val, const OctreeLoc& loc) : les_octrees(nullptr), pere(nullptr)  { construire(n, val, loc, mon_pere); }
+  virtual int_t rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const;
+  virtual int_t rang_elem_depuis_loc(const OctreeLoc&, int_t prems, double x, double y=0, double z=0) const;
+
+  virtual const Domaine_t& domaine() const  {  return pere->domaine(); }
+  void construire(int, const ArrOfInt_t&, const OctreeLoc&, Octree_t* p=0);
   int niveau() const;
-  virtual int taille() const;
-  static int nombre_d_octrees();
+  virtual int_t taille() const;  // taille memoire
+  static int nombre_d_octrees()  { return 1 << Objet_U::dimension; /* = 2**O_U::dimension */ }
+
   virtual Sortie& printOn(Sortie& is) const;
-  virtual Entree& readOn(Entree& is);
+  virtual Entree& readOn(Entree& is) {  return is; }
+
 protected :
   void detruire();
-  void ranger_elem_1D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double);
-  void ranger_elem_2D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double, double);
-  void ranger_elem_3D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double, double, double);
-  double get_epsilon() const;
-  Octree** les_octrees;
-  Octree* pere;
+  void ranger_elem_1D(ArrOfInt& oks, int_t elem, int_t idx, int nb_som_elem, const DoubleTab_t& coords_som, const IntTab_t& les_elems,
+                      SmallArrOfTID_t& compteur, Vect_IntTab_t& sous_tab, double xmil);
+  void ranger_elem_2D(ArrOfInt& oks, int_t elem, int_t idx, int nb_som_elem, const DoubleTab_t& coords_som, const IntTab_t& les_elems,
+                      SmallArrOfTID_t& compteur, Vect_IntTab_t& sous_tab, double xmil, double ymil);
+  void ranger_elem_3D(ArrOfInt& oks, int_t elem, int_t idx, int nb_som_elem, const DoubleTab_t& coords_som, const IntTab_t& les_elems,
+                      SmallArrOfTID_t& compteur, Vect_IntTab_t& sous_tab, double xmil, double ymil, double zmil);
+  double get_epsilon() const { return domaine().epsilon(); }
 
-private :
+  Octree_32_64** les_octrees;
+  Octree_32_64* pere;
 };
 
 
@@ -87,18 +97,28 @@ private :
  *
  * @sa OctreeLoc Octree OctreeFloor
  */
-class OctreeRoot :  public Objet_U, public Octree
+template <typename _SIZE_>
+class OctreeRoot_32_64 :  public Objet_U, public Octree_32_64<_SIZE_>
 {
-  Declare_instanciable_sans_constructeur(OctreeRoot);
+  Declare_instanciable_sans_constructeur_32_64(OctreeRoot_32_64);
 
 public :
-  OctreeRoot():valid_(0) {}
-  OctreeRoot(const Domaine& z)
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Octree_t = Octree_32_64<_SIZE_>;
+
+  OctreeRoot_32_64():valid_(0) {}
+  OctreeRoot_32_64(const Domaine_t& z)
   {
     associer_Domaine(z);
     construire();
   }
-  OctreeRoot(const OctreeRoot& oc): Objet_U(oc),Octree(oc)
+
+  OctreeRoot_32_64(const OctreeRoot_32_64& oc): Objet_U(oc),Octree_32_64<_SIZE_>(oc)
   {
     if(oc.construit())
       {
@@ -108,54 +128,70 @@ public :
     else
       valid_=0;
   }
-  int rang_sommet(double x, double y=0, double z=0) const;
-  int rang_arete(double x, double y=0, double z=0) const;
-  int rang_elem(double x, double y=0, double z=0) const;
-  int rang_elem_depuis(int prems, double x, double y=0, double z=0) const;
-  int rang_sommet(const DoubleTab&, ArrOfInt&) const;
-  int rang_arete(const DoubleTab&, ArrOfInt&) const;
-  int rang_elem(const DoubleTab&, ArrOfInt&) const;
-  int rang_elem_depuis(const DoubleTab&, const ArrOfInt&, ArrOfInt&) const;
-  void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
 
-  const Domaine& domaine() const override;
-  void associer_Domaine(const Domaine&);
+  int_t rang_sommet(double x, double y=0, double z=0) const;
+  int_t rang_arete(double x, double y=0, double z=0) const;
+  int_t rang_elem(double x, double y=0, double z=0) const;
+  int_t rang_elem_depuis(int_t prems, double x, double y=0, double z=0) const;
+  int_t rang_elem_depuis(const DoubleTab& positions, const SmallArrOfTID_t& prems, SmallArrOfTID_t& elems) const;
+  int_t rang_sommet(const DoubleTab& positions, SmallArrOfTID_t& sommets) const;
+  int_t rang_arete(const DoubleTab& positions, SmallArrOfTID_t& aretes) const;
+  int_t rang_elem(const DoubleTab& positions, SmallArrOfTID_t& elem) const;
+  void rang_elems_sommet(SmallArrOfTID_t&, double x, double y=0, double z=0) const;
+
+  const Domaine_t& domaine() const override { return le_dom.valeur(); }
+  void associer_Domaine(const Domaine_t& d) { le_dom=d; }
   void construire(int reel=0);
   int construit() const;
   void invalide();
   inline int reel() const { return reel_; }
 
 protected :
-  REF(Domaine) le_dom;
+  using Octree_t::les_octrees;
+  using Octree_t::pere;
+
+  REF(Domaine_t) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };
 
 /*! @brief Classe OctreeFloor
  *
- * @sa OctreeLoc Octree OctreeRoot
+ * @sa OctreeLoc Octree  OctreeRoot
  */
-class OctreeFloor : public Octree
+template <typename _SIZE_>
+class OctreeFloor_32_64 : public Octree_32_64<_SIZE_>
 {
-
 public :
+  using int_t = _SIZE_;
+  using Octree_t = Octree_32_64<_SIZE_>;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
 
-  OctreeFloor(Octree *mon_pere, const ArrOfInt& val, const OctreeLoc& loc)
+  OctreeFloor_32_64(Octree_t *mon_pere, const ArrOfInt_t& val, const OctreeLoc& loc)
   {
     pos.resize_array(Objet_U::dimension);
     construire(mon_pere, val, loc);
   }
-  void construire(Octree* , const ArrOfInt&, const OctreeLoc&);
-  int rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const override;
-  int rang_elem_depuis_loc(const OctreeLoc&, int prems, double x, double y=0, double z=0) const override;
 
-  Sortie& printOn(Sortie& is) const override;
-  Entree& readOn(Entree& is) override;
-  int taille() const override;
+  void construire(Octree_t* , const ArrOfInt_t&, const OctreeLoc&);
+  int_t rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const override;
+  int_t rang_elem_depuis_loc(const OctreeLoc&, int_t prems, double x, double y=0, double z=0) const override;
+
+  Sortie& printOn(Sortie& is) const override { return Octree_t::printOn(is); }
+  Entree& readOn(Entree& is) override { return Octree_t::readOn(is); }
+  int_t taille() const override;
+
 protected :
-  ArrOfInt num_elem;
-  mutable ArrOfDouble pos; // Tableau de travail
+  using Octree_t::les_octrees;
+  using Octree_t::pere;
+
+  ArrOfInt_t num_elem;
+  mutable ArrOfDouble pos; // Tableau de travail - size 3
 };
 
-#endif//OCTREE_INCLUS
+
+using Octree = Octree_32_64<int>;
+using OctreeRoot = OctreeRoot_32_64<int>;
+
+#endif     // Octree_included
 
