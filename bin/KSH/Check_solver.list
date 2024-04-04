@@ -68,7 +68,7 @@ fi
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering parmetis impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=6;
 let i=$i+1;solver[$i]="Petsc Cholesky_out_of_core { impr }"							;sym[$i]=1 
 # Si PETSc est construit avec SuperLu:
-if [ "`grep -i superlu $TRUST_ENV/make.liba`" != "" ] && [ "$TRUST_USE_OPENMP" != 1 ]
+if [ "`grep -i superlu $TRUST_ENV/Cmake.libs`" != "" ]
 then
    i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
 fi
