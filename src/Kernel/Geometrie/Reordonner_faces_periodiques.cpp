@@ -227,6 +227,8 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
     {
       Cerr << "Error in Check_faces_periodiques to the boundary " << frontiere.le_nom()
            << "\n The number of faces is odd : " << nb_faces << finl;
+      Cerr << "You probably forgot to define periodicity on some boundaries during partition:" << finl;
+      Cerr << "Partition domain { ... periodique 1 " << frontiere.le_nom() << " }" << finl;
       Process::exit();
     }
   const int n = nb_faces / 2;
