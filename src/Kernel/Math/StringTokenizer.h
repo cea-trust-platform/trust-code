@@ -47,8 +47,8 @@ public :
 private:
   static const int nb_op;
   static const int nb_op_bis;
-  static const char keyword_op[][16];
-  static const char keyword_op_bis[][16];
+  static const char keyword_op[][10];
+  static const char keyword_op_bis[][10];
 
 public:
 
