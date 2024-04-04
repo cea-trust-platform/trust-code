@@ -28,8 +28,9 @@
 /*! Unit tests for arrays - To be run in debug mode!!
  */
 
-struct TestTRUSTArray
+class TestTRUSTArray
 {
+public:
   void test_ctor();
   void test_resize();
   void test_ref_arr();
