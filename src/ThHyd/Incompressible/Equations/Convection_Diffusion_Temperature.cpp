@@ -16,7 +16,7 @@
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
-#include <Fluide_Ostwald.h>
+#include <Fluide_reel_base.h>
 #include <Discret_Thyd.h>
 #include <Frontiere_dis_base.h>
 #include <Param.h>
@@ -137,10 +137,10 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
   return 1;
 }
 
-/*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Fluide_base ou en Fluide_Ostwald.
+/*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Fluide_base.
  *
  * @param (Milieu_base& un_milieu)
- * @throws les proprietes physiques du fluide ne sont pas toutes specifiees
+ * @throws le milieu n'est pas un Fluide_base
  */
 void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& un_milieu)
 {
@@ -154,6 +154,17 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
  */
 void Convection_Diffusion_Temperature::discretiser()
 {
+  if (!sub_type(Fluide_reel_base,le_fluide.valeur()))
+    if  (le_fluide->conductivite().est_nul() || le_fluide->capacite_calorifique().est_nul() || le_fluide->beta_t().est_nul())
+      {
+        Cerr << "You have not defined the following physical properties of the fluid " << finl;
+        Cerr << "needed to solve energy equation: " << que_suis_je() << finl;
+        if  (le_fluide->conductivite().est_nul()) Cerr << "  Thermal conductivity (lambda)"<< finl;
+        if  (le_fluide->capacite_calorifique().est_nul()) Cerr << "  Specific heat capacity (Cp)"<< finl;
+        if  (le_fluide->beta_t().est_nul()) Cerr << "  Thermal expansion coefficient (beta_th)"<< finl;
+        exit();
+      }
+
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization" << finl;
   dis.temperature(schema_temps(), domaine_dis(), la_temperature);
@@ -166,16 +177,6 @@ void Convection_Diffusion_Temperature::discretiser()
 
 int Convection_Diffusion_Temperature::preparer_calcul()
 {
-  /* derniere chance pour faire ceci : */
-  if  (le_fluide->conductivite().est_nul() || le_fluide->capacite_calorifique().est_nul() || le_fluide->beta_t().est_nul())
-    {
-      Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
-      Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
-      Cerr << "Verifier que vous avez defini: la conductivite (lambda)"<< finl;
-      Cerr << "                                  la capacite calorifique (Cp)"<< finl;
-      Cerr << "                                  le coefficient de dilatation thermique (beta_th)"<< finl;
-      exit();
-    }
   return Equation_base::preparer_calcul();
 }
 
