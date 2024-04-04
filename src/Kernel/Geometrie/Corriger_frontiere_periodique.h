@@ -17,7 +17,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <Connectivite_som_elem.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Cet interprete doit etre utilise en sequentiel (avant decoupage) si les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
  *

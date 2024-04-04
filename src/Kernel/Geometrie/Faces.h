@@ -20,7 +20,7 @@
 #include <TRUSTTab.h>
 
 class Motcle;
-class Domaine;
+#include <Domaine_forward.h>
 
 
 /*! @brief Classe Faces Faces decrit un ensemble de faces par leur type (point ,segment,

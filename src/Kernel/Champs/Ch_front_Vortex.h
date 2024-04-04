@@ -19,7 +19,7 @@
 #include <Champ_front_var_instationnaire.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Ch_fr_Vortex Classe derivee de Champ_front_var qui represente les
  *

@@ -24,7 +24,7 @@
  * @sa Interprete Pave
  */
 #include <Interprete_geometrique_base.h>
-class Domaine;
+#include <Domaine_forward.h>
 class NettoieNoeuds : public Interprete_geometrique_base
 {
   Declare_instanciable(NettoieNoeuds);

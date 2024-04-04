@@ -18,7 +18,7 @@
 #include <IJK_Field_forward.h>
 #include <TRUSTArrays.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 // This class stores the geometry of the entire ijk grid (number of cells, cell sizes, periodicity, etc).
 // The content of the object is identical on all processors of the group.

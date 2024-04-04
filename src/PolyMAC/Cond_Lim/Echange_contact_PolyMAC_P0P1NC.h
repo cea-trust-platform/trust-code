@@ -25,7 +25,7 @@
 class Domaine_PolyMAC_P0P1NC;
 class Champ_Inc;
 class Front_VF;
-class Faces;
+#include <Domaine_forward.h>
 
 /*! @brief classe : Echange_contact_PolyMAC_P0P1NC Outre le champ_front representant la temperature de paroi,
  *

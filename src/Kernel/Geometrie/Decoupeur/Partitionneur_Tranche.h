@@ -19,7 +19,7 @@
 #include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Partitionneur de domaine en tranches paralleles aux directions de l'espace.
  *

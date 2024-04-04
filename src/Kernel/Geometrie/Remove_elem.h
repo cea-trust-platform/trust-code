@@ -28,7 +28,7 @@
 #include <Parser_U.h>
 #include <Domaine.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 class Remove_elem : public Interprete_geometrique_base
 {

@@ -17,7 +17,7 @@
 #define Tetraedriser_par_prisme_included
 
 #include <Triangulation_base.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Tetra_par_prisme Cette classe est un interprete qui sert a lire et executer
  *

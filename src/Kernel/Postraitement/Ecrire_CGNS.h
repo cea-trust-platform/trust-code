@@ -19,7 +19,7 @@
 #include <TRUST_2_CGNS.h>
 #include <map>
 
-class Domaine;
+#include <Domaine_forward.h>
 class Nom;
 
 class Ecrire_CGNS

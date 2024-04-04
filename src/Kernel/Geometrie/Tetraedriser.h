@@ -17,7 +17,7 @@
 #define Tetraedriser_included
 
 #include <Triangulation_base.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Tetraedriser Cette classe est un interprete qui sert a lire et executer
  *

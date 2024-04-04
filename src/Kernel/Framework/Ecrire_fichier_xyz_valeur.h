@@ -20,11 +20,11 @@
 #include <Noms.h>
 #include <Param.h>
 #include <vector>
+#include <Domaine_forward.h>
 
 class Operateur_Statistique_tps_base;
 class Equation_base;
 class Champ_base;
-class Frontiere;
 
 /*! @brief classe Ecrire_fichier_xyz_valeur This class allows to dump fields values on some boundaries into a dedicated text file.
  */

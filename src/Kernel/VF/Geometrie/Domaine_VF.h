@@ -19,15 +19,14 @@
 #include <TRUSTArrays.h>
 #include <Front_VF.h>
 #include <Domaine_dis.h>
+#include <Domaine_forward.h>
 
 class Domaine_Cl_dis_base;
-class Faces;
 
 /*! @brief class Domaine_VF
  *
  *  Cette classe abstraite contient les informations geometriques
  *  communes aux methodes de Volumes Finis (methodes VDF et VEF par exemple)
- *
  *
  * @sa Domaine_dis_base
  */

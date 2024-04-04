@@ -29,7 +29,7 @@
 class Champ_Generique_base;
 class Champ_base;
 class Domaine_VF;
-class Domaine;
+#include <Domaine_forward.h>
 
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);

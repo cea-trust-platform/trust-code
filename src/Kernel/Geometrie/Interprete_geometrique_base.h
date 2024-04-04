@@ -25,7 +25,7 @@
 #include <Octree.h>
 #endif
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Interprete_geometrique_base .
  *

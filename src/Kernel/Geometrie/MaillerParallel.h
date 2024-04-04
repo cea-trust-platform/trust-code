@@ -18,7 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Interprete.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 class MaillerParallel : public Interprete
 {

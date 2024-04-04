@@ -22,7 +22,7 @@
 #include <Joint.h>
 
 class Domaine_VF;
-class Domaine;
+#include <Domaine_forward.h>
 class Joints;
 
 class Scatter : public Interprete

@@ -21,7 +21,7 @@
 
 class Champ_Inc_base;
 class Domaine_EF;
-class Domaine;
+#include <Domaine_forward.h>
 
 class Elem_EF_base: public Objet_U
 {

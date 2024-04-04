@@ -32,7 +32,7 @@ class Champ_base;
 class Champ_Fonc;
 class Champ_Don;
 class Champ_Inc;
-class Domaine;
+#include <Domaine_forward.h>
 class Motcle;
 
 /*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui

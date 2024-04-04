@@ -19,7 +19,7 @@
 #include <TRUSTTab.h>
 #include <Objet_U.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 class Domaine_VEF;
 class Champ_Inc_base;
 

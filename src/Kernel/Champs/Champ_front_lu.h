@@ -19,7 +19,7 @@
 #include <Ch_front_var_stationnaire.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Champ_front_lu Classe derivee de Champ_front_var qui represente les
  *

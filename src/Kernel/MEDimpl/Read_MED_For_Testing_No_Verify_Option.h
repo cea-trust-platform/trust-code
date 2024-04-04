@@ -28,7 +28,7 @@
 #include <LireMED.h>
 
 class Nom;
-class Domaine;
+#include <Domaine_forward.h>
 
 class Read_MED_For_Testing_No_Verify_Option : public LireMED
 {

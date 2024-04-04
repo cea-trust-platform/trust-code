@@ -22,7 +22,7 @@
 #include <TRUST_Ref.h>
 #include <vector>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Interprete Decouper.
  *

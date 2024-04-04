@@ -26,7 +26,7 @@ class Operateur_Statistique_tps_base;
 class Champ_Generique_base;
 class Postraitement;
 class Champ_base;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Sonde Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
  *

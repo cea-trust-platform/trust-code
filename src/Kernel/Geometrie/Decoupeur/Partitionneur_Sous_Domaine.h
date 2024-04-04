@@ -19,7 +19,7 @@
 #include <Partitionneur_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 
 /*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sub_domain de maniere "conforme" : le sous-domaine est decoupe de maniere

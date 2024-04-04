@@ -20,7 +20,7 @@
 #include <Champ_Q1NC_implementation.h>
 #include <Domaine_VEF.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 class Champ_Q1NC: public Champ_Inc_base, public Champ_Q1NC_implementation
 {

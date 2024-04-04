@@ -18,9 +18,9 @@
 
 #include <TRUST_Ref.h>
 #include <Objet_U.h>
+#include <Domaine_forward.h>
 
 class Domaine_dis_base;
-class Sous_Domaine;
 
 /*! @brief Cette classe est a la base de la hierarchie des sous-domaines discretises.
  * Au moment de la discretisation du domaine, de meme qu'un

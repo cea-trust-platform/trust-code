@@ -19,8 +19,6 @@
 #include <Cond_lim_base.h>
 #include <TRUSTTab.h>
 
-class Faces;
-
 /*! @brief classe Periodique Cette classe represente une condition aux limites periodique.
  *
  *      On peut specifier une periodicite en X, Y ou Z.

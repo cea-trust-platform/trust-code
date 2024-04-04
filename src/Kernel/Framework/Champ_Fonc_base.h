@@ -22,7 +22,7 @@
 class Domaine_dis_base;
 class MD_Vector;
 class Domaine_VF;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
  *

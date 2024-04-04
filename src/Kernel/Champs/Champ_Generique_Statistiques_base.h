@@ -21,7 +21,7 @@
 
 class Probleme_base;
 class Domaine_dis_base;
-class Domaine;
+#include <Domaine_forward.h>
 class Nom;
 class Operateur_Statistique_tps_base;
 

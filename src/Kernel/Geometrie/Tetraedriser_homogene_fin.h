@@ -29,9 +29,9 @@
 #include <Triangulation_base.h>
 #include <TRUSTTab.h>
 
-class Domaine;
-class Domaine;
-class Faces;
+#include <Domaine_forward.h>
+#include <Domaine_forward.h>
+#include <Domaine_forward.h>
 
 class Tetraedriser_homogene_fin : public Triangulation_base
 {

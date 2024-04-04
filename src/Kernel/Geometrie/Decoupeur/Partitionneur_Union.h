@@ -20,7 +20,7 @@
 #include <string>
 #include <map>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Decoupeur permettant de decouper un domaine global de maniere conforme avec un ensemble de sous-domaines deja decoupes.
  *

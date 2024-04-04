@@ -19,7 +19,7 @@
 #include <Partitionneur_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Partition d'un domaine en nb_parties parties equilibrees en utilisant la librairie PARMETIS.
  *

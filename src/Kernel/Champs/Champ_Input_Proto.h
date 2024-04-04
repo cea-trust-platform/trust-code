@@ -19,11 +19,11 @@
 #include <ICoCoTrioField.h>
 #include <TRUSTArray.h>
 #include <TRUST_Ref.h>
+#include <Domaine_forward.h>
 
 using ICoCo::TrioField;
 
 class Probleme_base;
-class Sous_Domaine;
 
 /*! @brief This is the base class for all the Fields which can be written by a call to Problem::setInputField
  *

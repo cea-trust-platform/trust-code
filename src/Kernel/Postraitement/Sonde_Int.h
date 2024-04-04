@@ -21,7 +21,7 @@
 #include <TRUSTTab.h>
 
 class Postraitement;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief classe Sonde_Int Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
  *

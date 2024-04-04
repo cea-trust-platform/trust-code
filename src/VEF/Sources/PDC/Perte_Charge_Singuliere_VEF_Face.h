@@ -20,7 +20,7 @@
 #include <Perte_Charge_VEF_Face.h>
 #include <Perte_Charge_Singuliere.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 #include <TRUSTList.h>
 
 /*! @brief class Perte_Charge_Singuliere_VEF_Face

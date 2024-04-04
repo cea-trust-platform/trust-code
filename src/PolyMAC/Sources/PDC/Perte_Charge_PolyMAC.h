@@ -20,11 +20,11 @@
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
+#include <Domaine_forward.h>
 
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 class Champ_Inc_base;
-class Sous_Domaine;
 class Fluide_base;
 class Param;
 

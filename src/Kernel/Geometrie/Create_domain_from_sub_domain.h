@@ -19,7 +19,7 @@
 #include <Interprete_geometrique_base.h>
 
 class Nom;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Create_domain_from_sub_domain Lecture d'un fichier
  *

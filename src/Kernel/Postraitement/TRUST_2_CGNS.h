@@ -25,7 +25,7 @@
 using CGNS_TYPE = CGNS_ENUMT(ElementType_t);
 using CGNS_LOC = CGNS_ENUMT(GridLocation_t);
 
-class Domaine;
+#include <Domaine_forward.h>
 class Motcle;
 
 class TRUST_2_CGNS

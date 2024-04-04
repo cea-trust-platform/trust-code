@@ -17,7 +17,7 @@
 #define Trianguler_fin_included
 
 #include <Triangulation_base.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Trianguler_fin Cette classe est un interprete qui sert a lire et executer
  *

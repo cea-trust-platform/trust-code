@@ -17,16 +17,11 @@
 #define Domaine_EF_axi_included
 
 #include <Domaine_EF.h>
+#include <Domaine_forward.h>
 
-class DomaineAxi1d;
 /*! @brief : class Domaine_EF_axi
  *
- *  <Description of class Domaine_EF_axi>
- *
- *
- *
  */
-
 class Domaine_EF_axi : public Domaine_EF
 {
 

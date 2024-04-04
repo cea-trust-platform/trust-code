@@ -21,7 +21,7 @@
 //
 // AJOUTER ICI
 
-class Domaine;
+#include <Domaine_forward.h>
 
 void histogramme_angle(const Domaine&, Sortie&, int nb_histo=18 );
 

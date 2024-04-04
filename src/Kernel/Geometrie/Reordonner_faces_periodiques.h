@@ -18,8 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
-class Frontiere;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Cet interprete permet de reordonner les faces d'un bord periodique selon la convention utilisee dans le decoupeur (d'abord les faces d'une extremite du domaine, puis dans le
  *

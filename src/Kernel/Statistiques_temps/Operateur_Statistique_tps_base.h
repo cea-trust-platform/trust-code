@@ -19,7 +19,7 @@
 #include <Integrale_tps_Champ.h>
 class Probleme_base;
 class Domaine_dis_base;
-class Domaine;
+#include <Domaine_forward.h>
 class Nom;
 
 

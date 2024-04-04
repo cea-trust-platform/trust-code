@@ -30,7 +30,7 @@
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 class Decouper_Bord_coincident : public Interprete_geometrique_base
 {

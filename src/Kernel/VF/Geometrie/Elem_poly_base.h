@@ -21,7 +21,7 @@
 
 class Champ_Inc_base;
 class Domaine_poly;
-class Domaine;
+#include <Domaine_forward.h>
 
 class Elem_poly_base: public Objet_U
 {

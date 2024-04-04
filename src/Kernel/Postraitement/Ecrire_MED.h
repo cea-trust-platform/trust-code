@@ -33,7 +33,7 @@ class Nom;
 class Noms;
 class Champ_Inc_base;
 class Domaine_dis_base;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Ecrire_MED Ecrit un fichier MED.
  *

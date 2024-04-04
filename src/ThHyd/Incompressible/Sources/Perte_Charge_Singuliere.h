@@ -21,7 +21,7 @@
 #include <Domaine_dis.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
-class Domaine;
+#include <Domaine_forward.h>
 class Domaine_dis_base;
 class Equation_base;
 class Source_base;

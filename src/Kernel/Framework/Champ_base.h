@@ -22,7 +22,7 @@
 #include <Field_base.h>
 #include <Noms.h>
 class Motcle;
-class Domaine;
+#include <Domaine_forward.h>
 class Domaine_dis_base;
 class Format_Post_base;
 class Frontiere_dis_base;

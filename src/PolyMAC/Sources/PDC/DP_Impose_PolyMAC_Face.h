@@ -20,7 +20,7 @@
 #include <DP_Impose.h>
 #include <TRUSTList.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief class DP_Impose_PolyMAC_Face
  *

@@ -18,7 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 class Nom;
 
 /*! @brief Classe Postraiter_domaine

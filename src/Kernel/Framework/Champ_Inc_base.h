@@ -29,7 +29,7 @@ class Domaine_dis_base;
 class Domaine_Cl_dis;
 class MD_Vector;
 class Domaine_dis;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe Champ_Inc_base
  *

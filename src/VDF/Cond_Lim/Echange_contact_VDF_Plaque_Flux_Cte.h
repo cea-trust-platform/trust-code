@@ -20,7 +20,7 @@
 #include <Echange_contact_Correlation_VDF.h>
 class Front_VF;
 class Domaine_VDF;
-class Faces;
+#include <Domaine_forward.h>
 
 ////////////////////////////////////////////////////////////////
 

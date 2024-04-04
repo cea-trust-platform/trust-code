@@ -22,7 +22,7 @@
 #include <Decouper.h>
 #include <Noms.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe outil permettant de generer des sous-domaines pour un calcul parallele a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage
  *

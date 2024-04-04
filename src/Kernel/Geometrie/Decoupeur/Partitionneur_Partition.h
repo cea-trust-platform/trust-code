@@ -19,7 +19,7 @@
 #include <Partitionneur_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Partitionneur de domaine en fonction du partitionnement d'un autre domaine
  *

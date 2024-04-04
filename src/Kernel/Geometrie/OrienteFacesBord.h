@@ -26,7 +26,7 @@
 #include <Interprete_geometrique_base.h>
 #include <Domaine.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 class OrienteFacesBord : public Interprete_geometrique_base
 {

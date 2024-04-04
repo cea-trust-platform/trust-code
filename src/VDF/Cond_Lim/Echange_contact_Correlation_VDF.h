@@ -22,7 +22,7 @@
 class Milieu_base;
 class Front_VF;
 class Domaine_VDF;
-class Faces;
+#include <Domaine_forward.h>
 class Param;
 
 class Echange_contact_Correlation_VDF: public Echange_global_impose

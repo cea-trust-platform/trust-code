@@ -20,8 +20,8 @@
 
 class Champ_base;
 class Domaine_VF;
-class Domaine;
-class Domaine;
+#include <Domaine_forward.h>
+#include <Domaine_forward.h>
 
 class Champ_implementation
 {

@@ -21,7 +21,7 @@
 #include <memory>
 #include <map>
 
-class Domaine;
+#include <Domaine_forward.h>
 class Domaine_dis;
 
 /*! @brief Cache of discretized domains. Avoid repeating the discretize operation when not

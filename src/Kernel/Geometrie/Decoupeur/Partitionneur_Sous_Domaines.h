@@ -18,7 +18,7 @@
 #include <Partitionneur_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Partitionneur de domaine a partir de sous-domaines du domaine Voir construire_partition()
  *

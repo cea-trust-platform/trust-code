@@ -24,7 +24,7 @@
 
 class Domaine_PolyMAC_P0;
 class Front_VF;
-class Faces;
+#include <Domaine_forward.h>
 
 ////////////////////////////////////////////////////////////////
 

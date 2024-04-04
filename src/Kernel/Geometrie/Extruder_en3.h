@@ -19,8 +19,8 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
 
-class Domaine;
-class Faces;
+#include <Domaine_forward.h>
+#include <Domaine_forward.h>
 
 /*! @brief Classe Extruder_en3 Cette classe est un interprete qui sert a lire et executer
  *

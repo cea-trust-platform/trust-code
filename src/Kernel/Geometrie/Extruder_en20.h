@@ -18,8 +18,8 @@
 
 #include <Interprete_geometrique_base.h>
 
-class Domaine;
-class Faces;
+#include <Domaine_forward.h>
+#include <Domaine_forward.h>
 
 /*! @brief Classe Extruder_en20 Cette classe est un interprete qui sert a lire et executer
  *

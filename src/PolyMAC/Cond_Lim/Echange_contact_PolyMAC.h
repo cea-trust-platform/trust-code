@@ -23,7 +23,7 @@ class Champ_Inc;
 
 class Domaine_PolyMAC;
 class Front_VF;
-class Faces;
+#include <Domaine_forward.h>
 
 //  Outre le champ_front representant la temperature de paroi,
 //  cette classe possede un autre champ_front avec autant de valeurs

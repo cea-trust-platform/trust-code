@@ -23,10 +23,7 @@
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
-#include <Domaine.h>
-
-class Sous_Domaine;
-class Domaine;
+#include <Domaine_forward.h>
 
 enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE , UNIFORME };
 

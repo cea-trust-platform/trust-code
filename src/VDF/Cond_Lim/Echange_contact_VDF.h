@@ -26,7 +26,7 @@ class Milieu_base;
 class Champ_Inc;
 class Front_VF;
 class Domaine_VDF;
-class Faces;
+#include <Domaine_forward.h>
 
 /*! @brief classe : Echange_contact_VDF Outre le champ_front representant la temperature de paroi,
  *

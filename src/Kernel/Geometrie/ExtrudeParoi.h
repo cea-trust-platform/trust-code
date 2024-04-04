@@ -19,7 +19,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe ExtrudeParoi Cette classe est un interprete qui sert a lire et executer
  *

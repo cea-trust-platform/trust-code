@@ -19,9 +19,9 @@
 #include <Noms.h>
 
 class Static_Int_Lists;
-class Domaine;
+#include <Domaine_forward.h>
 class Param;
-class Domaine;
+#include <Domaine_forward.h>
 
 /*! @brief Classe de base des partitionneurs de domaine (pour decouper un maillage avant un calcul parallele).
  *

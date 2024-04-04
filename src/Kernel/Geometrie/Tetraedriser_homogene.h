@@ -29,7 +29,7 @@
 #include <Triangulation_base.h>
 #include <Domaine.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 class Tetraedriser_homogene : public Triangulation_base
 {

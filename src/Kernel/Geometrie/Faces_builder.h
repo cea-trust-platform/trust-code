@@ -18,12 +18,9 @@
 
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
+#include <Domaine_forward.h>
 
-class Domaine;
 class Static_Int_Lists;
-class Faces;
-class Frontiere;
-class Groupe_Faces;
 
 /*! @brief classe outil pour construire les faces d'un domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)

@@ -20,7 +20,7 @@
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
-class Domaine;
+#include <Domaine_forward.h>
 
 // TODO should be a class enum
 #define GaucheArriereBas 0

@@ -22,7 +22,7 @@
 
 class Front_VF;
 class Domaine_VEF;
-class Faces;
+#include <Domaine_forward.h>
 class Param;
 
 class Echange_contact_Correlation_VEF: public Temperature_imposee_paroi

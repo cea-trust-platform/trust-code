@@ -32,7 +32,7 @@
 #endif
 
 class Nom;
-class Domaine;
+#include <Domaine_forward.h>
 
 class LireMED : public Interprete_geometrique_base
 {
