@@ -158,9 +158,9 @@ void Pb_Thermohydraulique_Cloned_Concentration::clone_equations()
           op_diff.associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
           op_diff->associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
 
-          Nom nom = "Diffusion_";
-          nom += eqn.inconnue().le_nom();
-          op_diff.set_fichier(nom);
+          Nom nom_fich = "Diffusion_";
+          nom_fich += eqn.inconnue().le_nom();
+          op_diff.set_fichier(nom_fich);
           op_diff.set_description((Nom) "Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m" + (Nom) (dimension + bidim_axi) + ".Mol.s-1]");
 
           Operateur_Conv& op_conv = dynamic_cast<Operateur_Conv&>(eqn.operateur(1));
