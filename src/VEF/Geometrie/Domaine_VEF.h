@@ -81,7 +81,7 @@ public:
   inline int premiere_face_std() const { return nb_faces() - nb_faces_std_; }
   inline int nb_faces_non_std() const { return nb_faces() - nb_faces_std_; }
   inline double carre_pas_du_maillage() const { return h_carre; }
-  inline double carre_pas_maille(int i) const { return h_carre_(i); }
+  inline const DoubleVect& carre_pas_maille() const { return h_carre_; }
   inline DoubleTab& facette_normales() { return facette_normales_; }
   inline const DoubleTab& facette_normales() const { return facette_normales_; }
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }

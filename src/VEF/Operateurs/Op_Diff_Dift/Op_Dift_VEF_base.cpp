@@ -86,7 +86,7 @@ void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, doubl
   int flag = diffusivite().valeurs().dimension(0) > 1 ? 1 : 0;
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      double h_inv = 1. / le_dom_VEF.carre_pas_maille(elem);
+      double h_inv = 1. / le_dom_VEF.carre_pas_maille()(elem);
       // C'est pas tres propre pour recuperer diffu mais ca evite de coder cette methode dans plusieurs classes:
       double diffu = (flag ? diffusivite().valeurs()(elem) : diffusivite().valeurs()(0, 0));
       double coef = 1. / (2 * (dt_conv + DMINFLOAT) * dimension * h_inv * dt_diff_sur_dt_conv) - diffu;
@@ -127,7 +127,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
         {
           alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
           alpha /= rho_elem[num_elem];
-          coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
+          coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
           if (coef < dt_stab) dt_stab = coef;
         }
     }
@@ -142,7 +142,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
             alpha = diffu(num_elem, nc) + diffu_turb[num_elem];
             const double valeurs_diffusivite_dt = valeurs_diffusivite(!cD * num_elem, nc);
             alpha *= valeurs_diffusivite_dt / (diffu(num_elem, nc) + DMINFLOAT);
-            coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
+            coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
             if (coef < dt_stab) dt_stab = coef;
           }
     }
@@ -176,7 +176,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
                 {
                   alpha = nu_[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
                   alpha /= rho_elem[num_elem];
-                  coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * alpha);
+                  coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * alpha);
                   es_valeurs(num_elem) = coef;
                 }
             }
@@ -190,7 +190,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
                   const double valeurs_diffusivite_dt = valeurs_diffusivite(!cD * num_elem);
                   alpha = nu_[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
                   alpha *= valeurs_diffusivite_dt / nu_[num_elem];
-                  coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * alpha);
+                  coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * alpha);
                   es_valeurs(num_elem) = coef;
                 }
             }
