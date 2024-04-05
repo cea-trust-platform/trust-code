@@ -95,12 +95,11 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
   // La diffusivite est constante dans le domaine donc
   //
   //          dt_diff = h*h/diffusivite
-  ToDo_Kokkos("critical");
+
   double dt_stab = DMAXFLOAT;
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  if (! has_champ_masse_volumique())
+  if (!has_champ_masse_volumique())
     {
-
       // Methode "standard" de calcul du pas de temps
       // Ce calcul est tres conservatif: si le max de la diffusivite
       // n'est pas atteint a l'endroit ou le min de delta_h_carre est atteint,
@@ -118,7 +117,6 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
         {
           // loop on boundaries
           const Cond_lim_base& la_cl = le_dom_cl_vef.les_conditions_limites(i).valeur();
-
           if (sub_type(Echange_externe_impose,la_cl))
             {
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
@@ -154,29 +152,32 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
             }
           dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
         }
-
     }
   else
     {
-      const double           deux_dim      = 2. * Objet_U::dimension;
-      const Champ_base& champ_diffu   = diffusivite();
-      const DoubleTab&       valeurs_diffu = champ_diffu.valeurs();
-      const Champ_base&      champ_rho     = get_champ_masse_volumique();
-      const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
+      // Champ de masse volumique variable.
+      const double deux_dim = 2. * Objet_U::dimension;
+      const Champ_base& champ_diffu = diffusivite();
+      const Champ_base& champ_rho = get_champ_masse_volumique();
       assert(sub_type(Champ_Fonc_P0_base, champ_rho));
       assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
       const int nb_elem = domaine_VEF.nb_elem();
-      assert(valeurs_rho.size_array()==domaine_VEF.nb_elem_tot());
-      // Champ de masse volumique variable.
-      for (int elem = 0; elem < nb_elem; elem++)
-        {
-          const double h_carre = domaine_VEF.carre_pas_maille(elem);
-          const double diffu   = valeurs_diffu(elem);
-          const double rho     = valeurs_rho(elem);
-          const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
-          if (dt_stab > dt)
-            dt_stab = dt;
-        }
+      CDoubleArrView carre_pas_maille = domaine_VEF.carre_pas_maille().view_ro();
+      CDoubleArrView valeurs_diffu = static_cast<const DoubleVect&>(champ_diffu.valeurs()).view_ro();
+      CDoubleArrView valeurs_rho   = static_cast<const DoubleVect&>(champ_rho.valeurs()).view_ro();
+      start_timer();
+      Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
+                              Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                                const int elem, double& dt_stab)
+      {
+        const double h_carre = carre_pas_maille(elem);
+        const double diffu   = valeurs_diffu(elem);
+        const double rho     = valeurs_rho(elem);
+        const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
+        if (dt_stab > dt)
+          dt_stab = dt;
+      }, Kokkos::Min<double>(dt_stab));
+      end_timer(Objet_U::computeOnDevice, "Op_Diff_VEF_base::calculer_dt_stab");
     }
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
@@ -207,7 +208,7 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
                   const int nb_elem = domaine_VEF.nb_elem();
                   for (int elem = 0; elem < nb_elem; elem++)
                     {
-                      es_valeurs(elem) = domaine_VEF.carre_pas_maille(elem) / (2. * dimension * alpha_max);
+                      es_valeurs(elem) = domaine_VEF.carre_pas_maille()(elem) / (2. * dimension * alpha_max);
                     }
                 }
             }
@@ -225,7 +226,7 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
               // Champ de masse volumique variable.
               for (int elem = 0; elem < nb_elem; elem++)
                 {
-                  const double h_carre = domaine_VEF.carre_pas_maille(elem);
+                  const double h_carre = domaine_VEF.carre_pas_maille()(elem);
                   const double diffu   = valeurs_diffu(elem);
                   const double rho     = valeurs_rho(elem);
                   const double dt      = h_carre * rho / (deux_dim * diffu);
