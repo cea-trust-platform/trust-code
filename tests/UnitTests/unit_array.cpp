@@ -20,11 +20,6 @@
 
 #include <assert.h>
 
-// We have a lot of asserts so a lot of unused vars:
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-
 /*! Unit tests for arrays - To be run in debug mode!!
  */
 
@@ -169,4 +164,3 @@ int main()
   return 0;
 }
 
-#pragma GCC diagnostic pop
