@@ -146,7 +146,10 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // Kokkos initialisation
   True_int argc2 = argc;
   Kokkos::initialize( argc2, argv );
-  // Cerr << "Kokkos initialized!" << finl;
+
+  Nom arguments_info="";
+  arguments_info +="Kokkos initialized!\n";
+
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
@@ -154,7 +157,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
   Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == nullptr ? true : false;
 
-  Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)
     {

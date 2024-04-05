@@ -28,6 +28,9 @@ install_OpenBlas()
    targets="libs netlib"
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
    options="CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1"
+   # Sur CalculCSPG PROMES, il faut decommenter la ligne ci-apres pour ajouter TARGET=NEHALEM sinon openblas ne s'installe pas
+   #options="CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1 TARGET=NEHALEM"
+
    if [ `uname -s` = Darwin ]
    then
       $TRUST_MAKE $targets $options
@@ -35,8 +38,8 @@ install_OpenBlas()
       # Warning, faire en 2 passes car parallel build peut echouer sinon (ex: Fedora38)
       for target in $targets
       do
-         $TRUST_MAKE $target $options
-      done   
+         $TRUST_MAKE $target $options || exit -1
+      done
    fi
    lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
    BENCH=0
