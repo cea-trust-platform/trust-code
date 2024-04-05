@@ -53,7 +53,7 @@ TrioDEC::TrioDEC(const std::set<int>& src_ids, const std::set<int>& trg_ids, con
 void TrioDEC::attachLocalField(ICoCo::TrioField *field)
 {
   if(!field)
-    throw INTERP_KERNEL::Exception("TrioDEC::attachLocalField : The input trio Field is NULL !");
+    throw INTERP_KERNEL::Exception("TrioDEC::attachLocalField : The input trio Field is null !");
   releaseInternalPointer(); 
   _my_traduced_field=new MEDDoubleField(build_medfield(*field));
   DisjointDEC::attachLocalField(_my_traduced_field);

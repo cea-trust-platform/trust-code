@@ -18,7 +18,7 @@ do
     listmot="instanciable base"
     for dir in  $rep
     do
-	for file in `ls $base/$dir/*.cpp`
+	for file in `ls $base/$dir/*.cpp 2>/dev/null`
 	do
 	    ins=""
 	    #echo $file

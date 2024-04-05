@@ -31,7 +31,7 @@ SteadyProblem::SteadyProblem()
   (*my_params).problem_name="pb";
   //my_params.comm=MPI_COMM_WORLD;
   (*my_params).is_mpi=1;
-  p=NULL;
+  p=nullptr;
 
 
 }
@@ -77,7 +77,7 @@ bool SteadyProblem::initialize()
   argv[1]=new char[(*my_params).data_file.length()+1];
   strcpy(argv[1],(*my_params).data_file.c_str());
 
-  p=NULL;
+  p=nullptr;
   int res=main_TRUST(argc,argv,p,1);
 
   delete [] argv[0];

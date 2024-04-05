@@ -1162,7 +1162,7 @@ echo "###############################################"
            grep "BUILD_" $make_log
            grep error $make_log
            grep -i Stop $make_log
-           grep KO $make_log
+           grep KO $make_log | grep -v "LIBKOKKOS:OK"
            if [ "$OPT" = "_semi_opt" ]
            then
               if [ $vue = tuleap/Livraison ]
