@@ -250,7 +250,7 @@ then
    [ $TRUST_ARCH != linux ] && [ $TRUST_ARCH != darwin ] && exit 0
    org=`pwd`
    reffile=".check_sources.ok"
-   [ "$1" != "" ] && cd $1 && reffile=$org"/check_sources.ok"
+   [ "$1" != "" ] && cd $1 && reffile=$1"/.check_sources.ok"
    res=`ls *.cpp *.tpp *.h *.hpp 2>/dev/null`
    if [ "x$res" != "x" ]
    then
