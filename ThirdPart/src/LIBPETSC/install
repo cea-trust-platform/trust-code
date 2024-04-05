@@ -655,7 +655,7 @@ do
    $with_64bit_indices \
    $options
    err=$?
-   log=$DIR/configure_debug$debug.log
+   log=$DIR/configure_$PETSC_ARCH.log
    cp configure.log $log
    echo "Created $log"
    [ $err != 0 ] && exit $?
@@ -723,6 +723,12 @@ do
    else
       echo "make all failed." && exit -1
    fi
+   [ $debug = 1 ] && [ "`grep '\-g' $PETSC_ROOT/$PETSC_ARCH/lib/pkgconfig/petsc.pc`" = "" ] && echo "Fatal error: petsc debug broken!" && exit -1
+   # on met le chemin relatif et non absolu dans la config de petsc
+   sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $PETSC_ROOT/$PETSC_ARCH/lib/petsc/conf/petscvariables
+   sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $PETSC_ROOT/$PETSC_ARCH/lib/petsc/conf/variables
+   sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $PETSC_ROOT/$PETSC_ARCH/lib/petsc/conf/rules
+   sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $PETSC_ROOT/$PETSC_ARCH/lib/petsc/conf/petscrules
 done
 cd $ROOT
 #####################################
@@ -752,9 +758,5 @@ if [ $TRUST_WITHOUT_DOC -eq 1 ]
 then
    (cd $PETSC_ROOT/$TRUST_ARCH"_opt" ; rm -rf docs share src)
 fi
-# on met le chemin relatif et non absolu dans la config de petsc
-sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/petscvariables
-sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/variables
-sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/rules
-sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/petscrules
+
 exit 0
