@@ -1,6 +1,6 @@
 arch	maj		recup	hostname		Update	lance_test	baltiks						Tasks		Options	
 linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  	-FLICA5 		 		    -ctest_valgrind 	-force_provided_mpich -without-pdflatex -gcc8			# CentOS 7.9 serveur rackable pour TRUST titania
-linux	rsync_ssh	tache	pegasi6-mv-install.intra.cea.fr		-all		  	 	-force_provided_mpich  -move-install -disable-valgrind	 -remote_install_TRUST_kernel_only 							# Ubuntu 20	rack triocfd
+linux	rsync_ssh	tache	pegasi6-mv-install.intra.cea.fr		-all		  	 	-force_provided_mpich  -move-install -disable-valgrind	  							# Ubuntu 20	rack triocfd
 linux	rsync_ssh	tache	is245198-intel.intra.cea.fr		-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK  		-intel21  -disable-plot2d -force_system_mpi -disable-mpi4py 		# Ubuntu 20 titania TMA TRUST
 linux	rsync_ssh	tache	pegasi6-intel.intra.cea.fr		-all		  	 	-intel22  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit 						# Ubuntu 20	rack
 linux	rsync_ssh	tache	is234617-intel.intra.cea.fr	-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK  		-intel23  -disable-plot2d -force_system_mpi -disable-mpi4py 		# Ubuntu 22 TMA TRUST 
@@ -70,7 +70,7 @@ linux   rsync_ssh	tache	petra.intra.cea.fr 		-all		   	 		 -cuda=download -openm
 linux   rsync_ssh	tache	bug_rocalution_is246524.intra.cea.fr 		-all		   	 		     -rocm -openmp -without-pdflatex    								# Ubuntu 20.04 titania avec carte GPU AMD (bureau PL)
 linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	   	 		   								# Fedora 34 titania tmp no exec
 linux   rsync_ssh	tache	is210376-noconda.intra.cea.fr 		-all	  -C3D  	 		   		-without-conda						# Fedora 34 tmp no exec, sans conda
-linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		-prof    								# Ub20 mode formation titania 
+linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		-prof    		-remote_install_TRUST_kernel_only 						# Ub20 mode formation titania 
 linux   ssh_pass	tache	is231762.intra.cea.fr 		-all	   -MPCube -TrioCFD  -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC  	 		   			-without-pdflatex					# Rocky 9.2 GA 
 linux   rsync_ssh	tache	is240284.intra.cea.fr 		-all	   -TrioCFD	 		   								# Ub 20 titania ZH 
 linux   rsync_ssh       tache   is245205.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex  					# Fedora 39 GA titania 
