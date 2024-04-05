@@ -56,10 +56,13 @@ Read sch
     facsec 1.
     nb_pas_dt_max 10
     diffusion_implicite 1
+    impr_diffusion_implicite 1
 }
+
 
 Associate pb dom
 Associate pb sch
+
 Discretize pb dis
 Read pb
 {
@@ -72,9 +75,14 @@ Read pb
         beta_th Champ_Uniforme  1 8.6e-4
     }
 
-
     Navier_Stokes_Standard
     {
+        parametre_equation parametre_diffusion_implicite	{
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+        }
         # Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
         methode_calcul_pression_initiale avec_sources_et_operateurs
         solveur_pression amgx gcp { precond c-amg { } seuil 1.e-7 impr }
@@ -87,7 +95,7 @@ Read pb
             paroi     paroi_fixe
         }
     }
-    Postraitement { format lml Champs dt_post 1e9 { pression elem } }
+    # Postraitement { format lml Champs dt_post 1e9 { pression elem } } #
 }
 EcritureLectureSpecial 0
 Solve pb
