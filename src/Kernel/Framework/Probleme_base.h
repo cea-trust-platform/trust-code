@@ -93,6 +93,9 @@ public:
   virtual void discretiser_equations();
   virtual void finir();
 
+  inline std::vector<Milieu>& milieu_vect() { return le_milieu_; }
+  inline const std::vector<Milieu>& milieu_vect() const { return le_milieu_; }
+
   const Schema_Temps_base& schema_temps() const;
   Schema_Temps_base& schema_temps();
   const Domaine& domaine() const;

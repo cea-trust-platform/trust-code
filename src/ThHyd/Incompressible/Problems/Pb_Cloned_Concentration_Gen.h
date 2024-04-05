@@ -13,25 +13,57 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Thermohydraulique_Cloned_Concentration_included
-#define Pb_Thermohydraulique_Cloned_Concentration_included
+#ifndef Pb_Cloned_Concentration_Gen_included
+#define Pb_Cloned_Concentration_Gen_included
 
-#include <Pb_Cloned_Concentration_Gen.h>
+#include <Convection_Diffusion_Concentration.h>
+#include <Pb_Thermohydraulique.h>
 
-/*! @brief classe Pb_Thermohydraulique_Cloned_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
- *
- *      - Equations de Navier_Stokes en regime laminaire pour un fluide incompressible
- *      - Equation d'energie en regime laminaire
- *      - Une equation de convection-diffusion pour un ou plusieurs constituants caracterises par leurs concentrations
- *        En general, on couple les equations d'energie et de concentration aux equations de Navier-Stokes par l'intermediaire du terme source
- *        des forces de volume dans lequel on prend en compte de petites variations de la masse volumique en fonction de la temperature et
- *        de la concentration.
- *
- * @sa Pb_Fluide_base
- */
-class Pb_Thermohydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_Gen<Pb_Thermohydraulique>
+template <typename _DERIVED_TYPE_>
+class Pb_Cloned_Concentration_Gen : public _DERIVED_TYPE_
 {
-  Declare_instanciable(Pb_Thermohydraulique_Cloned_Concentration);
+protected:
+  LIST(Convection_Diffusion_Concentration) list_eq_concentration_;
+  std::vector<Milieu> mil_constituants_;
+  int nb_consts_ = -123;
+
+  unsigned taille_memoire() const override { return sizeof(Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_> ); }
+
+  int duplique() const override
+  {
+    Pb_Cloned_Concentration_Gen *xxx = new Pb_Cloned_Concentration_Gen(*this);
+    if (!xxx) Process::exit("Not enough memory !!!");
+    return xxx->numero();
+  }
+
+  Sortie& printOn(Sortie& os) const override { return _DERIVED_TYPE_::printOn(os); }
+
+  Entree& readOn(Entree& is) override;
+
+  void clone_equations();
+
+  void rename_equation_unknown(const int);
+
+  inline int nb_equations_multi() { return list_eq_concentration_.size(); }
+  inline int nb_equations_multi() const { return list_eq_concentration_.size(); }
+
+  Entree& lire_equations(Entree& , Motcle& ) override;
+
+public:
+  int nombre_d_equations() const override
+  {
+    return (_DERIVED_TYPE_::nombre_d_equations() + nb_equations_multi());
+  }
+
+  const Equation_base& equation(int) const override;
+  Equation_base& equation(int) override;
+
+  void associer_milieu_base(const Milieu_base&) override;
+  int verifier() override;
+
+  void typer_lire_milieu(Entree& ) override;
 };
 
-#endif /* Pb_Thermohydraulique_Cloned_Concentration_included */
+#include <Pb_Cloned_Concentration_Gen.tpp>
+
+#endif /* Pb_Cloned_Concentration_Gen_included */
