@@ -38,7 +38,7 @@ Entree& Ecrire_fichier_xyz_valeur::readOn(Entree& is)
   // we need to create fields here
   // as only fields defined in equation or post-traiment are created when writing .dat file
   for(auto fname : fields_names_ )
-      eqn_->probleme().creer_champ(fname);
+    eqn_->probleme().creer_champ(fname);
 
   return is;
 }
