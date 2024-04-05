@@ -25,13 +25,13 @@
 #include <sstream>
 #include <iomanip>
 
-template <typename _DERIVED_TYPE_>
-Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::readOn(Entree& is)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::readOn(Entree& is)
 {
   /* Step 1 : Add first equation to list ! */
-  Cerr << "Adding the first Convection_Diffusion_Concentration to the list ... " << finl;
-  list_eq_concentration_.add(Convection_Diffusion_Concentration());
-  Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+  list_eq_concentration_.add(_EQUATION_TYPE_());
+  _EQUATION_TYPE_& eqn = list_eq_concentration_.dernier();
+  Cerr << "Adding the first " << eqn.que_suis_je() << " to the list ... " << finl;
   eqn.associer_pb_base(*this);
   eqn.associer_sch_tps_base(_DERIVED_TYPE_::schema_temps());
   eqn.associer_domaine_dis(_DERIVED_TYPE_::domaine_dis());
@@ -40,8 +40,8 @@ Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::readOn(Entree& is)
   return _DERIVED_TYPE_::readOn(is);
 }
 
-template <typename _DERIVED_TYPE_>
-void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::typer_lire_milieu(Entree& is)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::typer_lire_milieu(Entree& is)
 {
   _DERIVED_TYPE_::milieu_vect().resize(2);
   for (int i = 0; i < 2; i++) is >> _DERIVED_TYPE_::milieu_vect()[i];
@@ -53,14 +53,14 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::typer_lire_milieu(Entree& is)
    *  - le_milieu_[1] pas associe a l'equation car n compos
    *  - mil_constituants_ contient le milieu associe a chaque equation
    */
-  const Constituant& les_consts = ref_cast(Constituant, _DERIVED_TYPE_::milieu_vect().back().valeur());
+  const Constituant& les_consts = ref_cast(_MEDIUM_TYPE_, _DERIVED_TYPE_::milieu_vect().back().valeur());
   const DoubleTab& vals = les_consts.diffusivite_constituant()->valeurs();
   nb_consts_ = les_consts.nb_constituants();
   mil_constituants_.resize(nb_consts_);
 
   if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
     {
-      Cerr << "Error in Pb_Thermohydraulique_Cloned_Concentration::typer_lire_milieu. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
+      Cerr << "Error in Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::typer_lire_milieu. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
       Cerr << "We only accept uniform fields for the moment ... Fix your data set !!!" << finl;
       Process::exit();
     }
@@ -70,7 +70,7 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::typer_lire_milieu(Entree& is)
       std::ostringstream oss;
       oss << std::scientific << std::setprecision(15) << vals(0, i); // Setting precision to 3 decimal places
 
-      Nom str = "Constituant { coefficient_diffusion Champ_Uniforme 1 ";
+      Nom str = "{ coefficient_diffusion Champ_Uniforme 1 ";
       str += oss.str().c_str();
       str += " }";
 
@@ -78,7 +78,7 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::typer_lire_milieu(Entree& is)
       const1 >> mil_constituants_[i];
     }
 
-  associer_milieu_base(mil_constituants_[0].valeur()); // 1er eq concentration pour le moment
+  associer_milieu_base(mil_constituants_[0]); // 1er eq concentration pour le moment
 
   // Milieux lus ... Lets go ! On discretise les equations
   _DERIVED_TYPE_::discretiser_equations();
@@ -91,11 +91,11 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::typer_lire_milieu(Entree& is)
   equation(0).milieu().discretiser((*this), _DERIVED_TYPE_::discretisation()); // NS
 
   const Nom nom_const = nb_consts_ > 1 ? "coefficient_diffusion0" : "coefficient_diffusion";
-  ref_cast(Constituant, list_eq_concentration_.dernier().milieu()).discretiser_multi_concentration(nom_const, (*this), _DERIVED_TYPE_::discretisation()); // Conc
+  ref_cast(_MEDIUM_TYPE_, list_eq_concentration_.dernier().milieu()).discretiser_multi_concentration(nom_const, (*this), _DERIVED_TYPE_::discretisation()); // Conc
 }
 
-template <typename _DERIVED_TYPE_>
-Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::lire_equations(Entree& is, Motcle& dernier_mot)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations(Entree& is, Motcle& dernier_mot)
 {
   rename_equation_unknown(0);
   _DERIVED_TYPE_::lire_equations(is, dernier_mot);
@@ -103,12 +103,12 @@ Entree& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::lire_equations(Entree& is, 
   return is;
 }
 
-template <typename _DERIVED_TYPE_>
-void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::rename_equation_unknown(const int i)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::rename_equation_unknown(const int i)
 {
   if (nb_consts_ > 1)
     {
-      Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+      _EQUATION_TYPE_& eqn = list_eq_concentration_.dernier();
       Nom nom_inco = "concentration", nom_eq = "Convection_Diffusion_Concentration";
       nom_inco += Nom(i), nom_eq += Nom(i);
       Cerr << "The unknown name of the Convection_Diffusion_Concentration equation " << i << " is modified => " << nom_inco << finl;
@@ -118,25 +118,25 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::rename_equation_unknown(const 
     }
 }
 
-template <typename _DERIVED_TYPE_>
-void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::clone_equations()
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::clone_equations()
 {
   if (nb_consts_ > 1)
     {
       Cerr << "Cloning " << nb_consts_ << " concentration equations in progress ..." << finl;
       for (int i = 1; i < nb_consts_; i++)
         {
-          Cerr << "Adding another Convection_Diffusion_Concentration to the list ... " << finl;
           list_eq_concentration_.add(list_eq_concentration_.front());
-          Convection_Diffusion_Concentration& eqn = list_eq_concentration_.dernier();
+          _EQUATION_TYPE_& eqn = list_eq_concentration_.dernier();
+          Cerr << "Adding another "<< eqn.que_suis_je() << " to the list ... " << finl;
           eqn.associer_pb_base(*this);
           eqn.associer_sch_tps_base(_DERIVED_TYPE_::schema_temps());
           eqn.associer_domaine_dis(_DERIVED_TYPE_::domaine_dis());
 
-          associer_milieu_base(mil_constituants_[i].valeur()); // 1er eq concentration pour le moment
+          associer_milieu_base(mil_constituants_[i]); // 1er eq concentration pour le moment
           eqn.associer_milieu_equation();
           const Nom nom_const = Nom("coefficient_diffusion") + Nom(i);
-          ref_cast(Constituant, eqn.milieu()).discretiser_multi_concentration(nom_const, (*this), _DERIVED_TYPE_::discretisation()); // Conc
+          ref_cast(_MEDIUM_TYPE_, eqn.milieu()).discretiser_multi_concentration(nom_const, (*this), _DERIVED_TYPE_::discretisation()); // Conc
 
           rename_equation_unknown(i); // XXX
 
@@ -173,11 +173,11 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::clone_equations()
     }
 }
 
-template <typename _DERIVED_TYPE_>
-const Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::equation(int i) const
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+const Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation(int i) const
 {
   if (i >= nombre_d_equations())
-    Process::exit("Error in Pb_Thermohydraulique_Cloned_Concentration::equation => wrong equation number !");
+    Process::exit("Error in Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
 
   const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations();
   if (i < nb_eq_mere)
@@ -186,11 +186,11 @@ const Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::equation(int i
     return list_eq_concentration_(i - nb_eq_mere);
 }
 
-template <typename _DERIVED_TYPE_>
-Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::equation(int i)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation(int i)
 {
   if (i >= nombre_d_equations())
-    Process::exit("Error in Pb_Thermohydraulique_Cloned_Concentration::equation => wrong equation number !");
+    Process::exit("Error in Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
 
   const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations();
   if (i < nb_eq_mere)
@@ -208,10 +208,10 @@ Equation_base& Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::equation(int i)
  * @param (Milieu_base& mil) le milieu physique a associer au probleme
  * @throws mauvais type de milieu physique
  */
-template <typename _DERIVED_TYPE_>
-void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::associer_milieu_base(const Milieu_base& mil)
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Constituant, mil))
+  if (sub_type(_MEDIUM_TYPE_, mil))
     list_eq_concentration_.dernier().associer_milieu_base(mil);
   else
     _DERIVED_TYPE_::associer_milieu_base(mil);
@@ -227,8 +227,8 @@ void Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::associer_milieu_base(const Mil
  *
  * @return (int) code de retour propage
  */
-template <typename _DERIVED_TYPE_>
-int Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_>::verifier()
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
+int Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::verifier()
 {
   _DERIVED_TYPE_::verifier();
   const Domaine_Cl_dis& domaine_Cl_hydr = equation(0).domaine_Cl_dis();

@@ -19,15 +19,15 @@
 #include <Convection_Diffusion_Concentration.h>
 #include <Pb_Thermohydraulique.h>
 
-template <typename _DERIVED_TYPE_>
+template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_ = Convection_Diffusion_Concentration, typename _MEDIUM_TYPE_ = Constituant>
 class Pb_Cloned_Concentration_Gen : public _DERIVED_TYPE_
 {
 protected:
-  LIST(Convection_Diffusion_Concentration) list_eq_concentration_;
-  std::vector<Milieu> mil_constituants_;
+  LIST(_EQUATION_TYPE_) list_eq_concentration_;
+  std::vector<_MEDIUM_TYPE_> mil_constituants_;
   int nb_consts_ = -123;
 
-  unsigned taille_memoire() const override { return sizeof(Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_> ); }
+  unsigned taille_memoire() const override { return sizeof(Pb_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_ >); }
 
   int duplique() const override
   {
