@@ -15,11 +15,20 @@
 
 #include <Bord_Interne.h>
 
-Implemente_instanciable(Bord_Interne, "Bord_Interne", Frontiere);
-
+Implemente_instanciable_32_64(Bord_Interne_32_64, "Bord_Interne", Frontiere_32_64<_T_>);
 // XD internes bord_base internes 0 To indicate that the block has a set of internal faces (these faces will be duplicated automatically by the program and will be processed in a manner similar to edge faces). NL2 Two boundaries with the same boundary conditions may have the same name (whether or not they belong to the same block). NL2 The keyword Internes (Internal) must be used to execute a calculation with plates, followed by the equation of the surface area covered by the plates.
 // XD   attr nom chaine nom 0 Name of block side.
 // XD   attr defbord defbord defbord 0 Definition of block side.
 
-Sortie& Bord_Interne::printOn(Sortie& s) const { return Frontiere::printOn(s); }
-Entree& Bord_Interne::readOn(Entree& s) { return Frontiere::readOn(s); }
+template <typename _SIZE_>
+Sortie& Bord_Interne_32_64<_SIZE_>::printOn(Sortie& s) const { return Frontiere_32_64<_SIZE_>::printOn(s); }
+
+template <typename _SIZE_>
+Entree& Bord_Interne_32_64<_SIZE_>::readOn(Entree& s) { return Frontiere_32_64<_SIZE_>::readOn(s); }
+
+
+template class Bord_Interne_32_64<int>;
+#if INT_is_64_ == 2
+template class Bord_Interne_32_64<trustIdType>;
+#endif
+

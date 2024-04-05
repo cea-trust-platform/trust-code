@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,7 @@
 #ifndef Raccord_base_included
 #define Raccord_base_included
 
-
 #include <Frontiere.h>
-
 #include <Domaine_forward.h>
 
 /*! @brief Classe Raccord_base Cette classe est simplement une frontiere, c'est la classe de base de la
@@ -36,55 +34,61 @@
  *
  * @sa Frontiere Raccord Raccord_distant Raccord_local
  */
-class Raccord_base : public Frontiere
+template <typename _SIZE_>
+class Raccord_base_32_64 : public Frontiere_32_64<_SIZE_>
 {
-  Declare_base(Raccord_base);
-public:
-private :
+  Declare_base_32_64(Raccord_base_32_64);
 };
 
+using Raccord_base = Raccord_base_32_64<int>;
+using Raccord_base_64 = Raccord_base_32_64<trustIdType>;
 
-/*! @brief Classe Raccord_local Cette classe represente un raccord entre 2 probleme resolus
- *
- *     par Trio-U.
+
+/*! @brief Classe Raccord_local Cette classe represente un raccord entre 2 probleme resolus par TRUST.
  *
  * @sa Raccord_base Raccord Raccord_distant Raccord
  */
-class Raccord_local : public Raccord_base
+template <typename _SIZE_>
+class Raccord_local_32_64 : public Raccord_base_32_64<_SIZE_>
 {
-  Declare_base(Raccord_local);
-public:
-private :
+  Declare_base_32_64(Raccord_local_32_64);
 };
 
+using Raccord_local = Raccord_local_32_64<int>;
+using Raccord_local_64 = Raccord_local_32_64<trustIdType>;
 
-/*! @brief Classe Raccord_distant Cette classe represente un raccord entre 2 probleme dont un est
- *
- *     resolu par Trio-U et l'autre par un autre code
+
+/*! @brief Classe Raccord_distant Cette classe represente un raccord entre 2 problemes
+ *  dont un est resolu par TRUST et l'autre par un autre code
  *
  * @sa Raccord_base Raccord Raccord_local
  */
-class Raccord_distant : public Raccord_base
+template <typename _SIZE_>
+class Raccord_distant_32_64 : public Raccord_base_32_64<_SIZE_>
 {
-  Declare_base(Raccord_distant);
-public:
-private :
+  Declare_base_32_64(Raccord_distant_32_64);
 };
 
+using Raccord_distant = Raccord_distant_32_64<int>;
+using Raccord_distant_64 = Raccord_distant_32_64<trustIdType>;
+
 /*! @brief Classe Raccord_local_homogene Cette classe represente un Raccord_local ou les maillages de part et
- *
- *     d'autres coincident.
+ *  d'autres coincident.
  *
  * @sa Raccord_base Raccord Raccord_distant Raccord_local
  */
-class Raccord_local_homogene : public Raccord_local
+template <typename _SIZE_>
+class Raccord_local_homogene_32_64 : public Raccord_local_32_64<_SIZE_>
 {
-  Declare_instanciable(Raccord_local_homogene);
+  Declare_instanciable_32_64(Raccord_local_homogene_32_64);
+
 public:
   void trace_elem_distant(const DoubleTab&, DoubleTab&) const override;
   void trace_face_distant(const DoubleTab&, DoubleTab&) const override;
   void trace_face_distant(const DoubleVect&, DoubleVect&) const override;
-private :
 };
+
+using Raccord_local_homogene = Raccord_local_homogene_32_64<int>;
+using Raccord_local_homogene_64 = Raccord_local_homogene_32_64<trustIdType>;
 
 #endif

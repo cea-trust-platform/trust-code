@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,25 +23,23 @@
  *
  * @sa Raccord
  */
-class Raccords : public LIST(Raccord)
+template <typename _SIZE_>
+class Raccords_32_64 : public LIST(Raccord_32_64<_SIZE_>)
 {
-  Declare_instanciable(Raccords);
+  Declare_instanciable_32_64(Raccords_32_64);
 public :
-  void associer_domaine(const Domaine&);
-  int nb_faces() const;
-  inline int nb_raccords() const;
-  //JY 26/08/97
-  int nb_faces(Type_Face type) const;
+  using int_t = _SIZE_;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  void associer_domaine(const Domaine_t&);
+  int_t nb_faces() const;
+  /// Renvoie le nombre de raccords contenus dans la liste.
+  inline int nb_raccords() const { return this->size(); }
+  int_t nb_faces(Type_Face type) const;
 };
 
 
-/*! @brief Renvoie le nombre de raccords contenus dans la liste.
- *
- * @return (int) le nombre de raccords contenus dans la liste
- */
-inline int Raccords::nb_raccords() const
-{
-  return size();
-}
+using Raccords = Raccords_32_64<int>;
+using Raccords_64 = Raccords_32_64<trustIdType>;
 
 #endif /* Raccords_included */

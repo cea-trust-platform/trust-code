@@ -23,28 +23,25 @@
  *
  * @sa Bord
  */
-class Bords : public LIST(Bord)
+template <typename _SIZE_>
+class Bords_32_64 : public LIST(Bord_32_64<_SIZE_>)
 {
 
-  Declare_instanciable(Bords);
+  Declare_instanciable_32_64(Bords_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
-  void associer_domaine(const Domaine&);
-  int nb_faces() const;
-  inline int nb_bords() const;
-  //JY 26/08/97
-  int nb_faces(Type_Face type) const;
+
+  void associer_domaine(const Domaine_t&);
+  int_t nb_faces() const;
+  inline int nb_bords() const { return this->size(); }
+  int_t nb_faces(Type_Face type) const;
 };
 
 
-/*! @brief Renvoie le nombre de bords contenus dans la liste
- *
- * @return (int) le nombre de bords contenus dans la liste
- */
-inline int Bords::nb_bords() const
-{
-  return size();
-}
+using Bords = Bords_32_64<int>;
+using Bords_64 = Bords_32_64<trustIdType>;
 
 #endif

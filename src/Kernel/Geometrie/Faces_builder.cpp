@@ -23,7 +23,6 @@
 #include <Faces_builder.h>
 #include <Domaine.h>
 #include <Scatter.h>
-#include <Faces2.h>
 #include <stdio.h>
 #include <vector>
 #include <array>

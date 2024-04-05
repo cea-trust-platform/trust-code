@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,17 +15,20 @@
 
 #include <Bords_Internes.h>
 
-Implemente_instanciable(Bords_Internes, "Bords_Internes", LIST(Bord_Interne));
+Implemente_instanciable_32_64(Bords_Internes_32_64, "Bords_Internes", LIST(Bord_Interne_32_64<_T_>));
 
-Sortie& Bords_Internes::printOn(Sortie& os) const { return LIST(Bord_Interne)::printOn(os); }
+template <typename _SIZE_>
+Sortie& Bords_Internes_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Bord_Interne_32_64<_SIZE_>)::printOn(os); }
 
-Entree& Bords_Internes::readOn(Entree& is) { return LIST(Bord_Interne)::readOn(is); }
+template <typename _SIZE_>
+Entree& Bords_Internes_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Bord_Interne_32_64<_SIZE_>)::readOn(is); }
 
 /*! @brief Associe un domaine a tous les objets Bord_Interne de la liste.
  *
  * @param (Domaine& un_domaine) le domaine a associer aux Bord_Interne de la liste
  */
-void Bords_Internes::associer_domaine(const Domaine& un_domaine)
+template <typename _SIZE_>
+void Bords_Internes_32_64<_SIZE_>::associer_domaine(const Domaine_t& un_domaine)
 {
   for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
@@ -38,9 +41,10 @@ void Bords_Internes::associer_domaine(const Domaine& un_domaine)
  *
  * @return (int) le nombre total de faces contenues dans la liste des Bord_Interne
  */
-int Bords_Internes::nb_faces() const
+template <typename _SIZE_>
+typename Bords_Internes_32_64<_SIZE_>::int_t Bords_Internes_32_64<_SIZE_>::nb_faces() const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
@@ -55,11 +59,20 @@ int Bords_Internes::nb_faces() const
  * @param (Type_Face type) le type des faces a compter
  * @return (int) le nombre total de faces contenues dans la liste des Bord_Interne
  */
-int Bords_Internes::nb_faces(Type_Face type) const
+template <typename _SIZE_>
+typename Bords_Internes_32_64<_SIZE_>::int_t Bords_Internes_32_64<_SIZE_>::nb_faces(Type_Face type) const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;
 }
+
+
+template class Bords_Internes_32_64<int>;
+#if INT_is_64_ == 2
+template class Bords_Internes_32_64<trustIdType>;
+#endif
+
+

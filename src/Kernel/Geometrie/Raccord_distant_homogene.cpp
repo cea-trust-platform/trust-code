@@ -30,16 +30,17 @@
 using namespace MEDCoupling;
 #endif
 
-Implemente_instanciable_sans_constructeur(Raccord_distant_homogene,"Raccord_distant_homogene",Raccord_distant);
+Implemente_instanciable_32_64(Raccord_distant_homogene_32_64,"Raccord_distant_homogene",Raccord_distant_32_64<_T_>);
 
 /*! @brief Simple appel a: Raccord_distant::printOn(Sortie& ) (+ finl)
  *
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Raccord_distant_homogene::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Raccord_distant_homogene_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  Raccord_distant::printOn(s) << finl;
+  Raccord_distant_32_64<_SIZE_>::printOn(s) << finl;
   s << (int)1 <<finl;
   s << tab_envoi << finl;
   s << tab_recep << finl;
@@ -49,17 +50,15 @@ Sortie& Raccord_distant_homogene::printOn(Sortie& s ) const
   return s;
 }
 
-
-
-
 /*! @brief Simple appel a: Raccord_distant::readOn(Entree& )
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
-Entree& Raccord_distant_homogene::readOn(Entree& s)
+template <typename _SIZE_>
+Entree& Raccord_distant_homogene_32_64<_SIZE_>::readOn(Entree& s)
 {
-  Raccord_distant::readOn(s) ;
+  Raccord_distant_32_64<_SIZE_>::readOn(s) ;
   int flag;
   s >> flag;
   if(flag==1)
@@ -73,13 +72,11 @@ Entree& Raccord_distant_homogene::readOn(Entree& s)
   return s;
 }
 
-Raccord_distant_homogene::Raccord_distant_homogene() : est_initialise_(0),e_(0)
-{}
 
 /*! @brief Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux elements du domaine distant
- *
  */
-void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab& x) const
+template<>
+void Raccord_distant_homogene_32_64<int>::trace_elem_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
   const int nb_compo_= y.line_size();
@@ -123,10 +120,12 @@ void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab&
   schema.end_comm();
 }
 
+
 /*! @brief Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux faces
  *
  */
-void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
+template<>
+void Raccord_distant_homogene_32_64<int>::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
   int n, N = y.line_size();
@@ -162,10 +161,12 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab&
   schema.end_comm();
 }
 
+
 /*! @brief Retourne dans le DoubleVect x la trace sur le raccord distant du DoubleVect y localise aux faces du raccord distant
  *
  */
-void Raccord_distant_homogene::trace_face_distant(const DoubleVect& y, DoubleVect& x) const
+template<>
+void Raccord_distant_homogene_32_64<int>::trace_face_distant(const DoubleVect& y, DoubleVect& x) const
 {
   // Verifie que l'on passe bien un tableau aux faces du raccord
   assert(y.size()==nb_faces());
@@ -197,13 +198,36 @@ void Raccord_distant_homogene::trace_face_distant(const DoubleVect& y, DoubleVec
   schema.end_comm();
 }
 
-void Raccord_distant_homogene::completer()
+// 64 bits version of these should never be called:
+template<typename _SIZE_>
+void Raccord_distant_homogene_32_64<_SIZE_>::trace_elem_distant(const DoubleTab& y, DoubleTab& x) const
+{
+  assert(false);
+  throw;
+}
+
+template<typename _SIZE_>
+void Raccord_distant_homogene_32_64<_SIZE_>::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
+{
+  assert(false);
+  throw;
+}
+
+template<typename _SIZE_>
+void Raccord_distant_homogene_32_64<_SIZE_>::trace_face_distant(const DoubleVect& y, DoubleVect& x) const
+{
+  assert(false);
+  throw;
+}
+
+
+template <typename _SIZE_>
+void Raccord_distant_homogene_32_64<_SIZE_>::completer()
 {
   const IntTab& send_data = Tab_Envoi();
   const ArrOfInt& recv_data = Tab_Recep();
   const int n1 = send_data.dimension(0);
   const int n2 = recv_data.size_array();
-
 
   const int nbproc = Process::nproc();
   ArrOfBit flags(nbproc);
@@ -226,16 +250,18 @@ void Raccord_distant_homogene::completer()
 }
 
 /*! @brief Initialise le raccord distant avec la frontiere et le domaine discretisee opposees au raccord distant, et le domaine discretisee du raccord distant
- *
+ * Only called from Champ_front* instances, so can remain 32 bits only.
  */
-void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, const Domaine_dis_base& opposed_domaine_dis, const Domaine_dis_base& domaine_dis)
+template <>
+void Raccord_distant_homogene_32_64<int>::initialise(const Frontiere& opposed_boundary,
+                                                     const Domaine_dis_base& opposed_domaine_dis, const Domaine_dis_base& domaine_dis)
 {
   Raccord_distant_homogene& raccord_distant = *this;
   if(raccord_distant.est_initialise())
     {
       Cerr << "Remote connection " << raccord_distant.le_nom() << " already initialized." << finl;
       Cerr << "Error, contact TRUST support." << finl;
-      exit();
+      Process::exit();
     }
   int dim=Objet_U::dimension;
   raccord_distant.nom_frontiere_voisine()=opposed_boundary.le_nom();
@@ -292,7 +318,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
           local_xvs->setIJ(ind_face, j, local_xv(prem_face1 + ind_face, j));
 
       //indices des points de remote_xvs les plus proches de chaque point de local_xv
-      MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
+      MCAuto<DataArrayIdType> glob_idx(DataArrayIdType::New());
 
       glob_idx = remote_xvs->findClosestTupleId(local_xvs);
 
@@ -300,8 +326,15 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
       for (int ind_face = 0, face1 = prem_face1; ind_face<nb_face1; ind_face++, face1++)
         {
           //retour de l'indice global (glob_idx(ind_face)) au couple (proc, ind_face2)
-          int proc = 0, ind_face2 = glob_idx->getIJ(ind_face, 0);
-          while (ind_face2 >= remote_xv[proc].dimension(0)) ind_face2 -= remote_xv[proc].dimension(0), proc++;
+          int proc = 0;
+          mcIdType ind_face2_big = glob_idx->getIJ(ind_face, 0);
+          while (ind_face2_big >= remote_xv[proc].dimension(0))
+            {
+              ind_face2_big -= remote_xv[proc].dimension(0);
+              proc++;
+            }
+          assert(ind_face2_big < std::numeric_limits<int>::max());
+          int ind_face2 = (int)ind_face2_big;
           assert(ind_face2 < remote_xv[proc].dimension(0));
 
           //controle de la tolerance
@@ -329,7 +362,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
         }
     }
 #else
-  Cerr<<"Raccord_distant_homogene needs TRUST compiled with MEDCoupling."<<finl;
+  Cerr<<"Raccord_distant_homogene_32_64 needs TRUST compiled with MEDCoupling."<<finl;
   exit();
 #endif
   ArrsOfInt facteurs(Process::nproc());
@@ -355,3 +388,20 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   raccord_distant.completer();
   Cerr <<"Initialize the remote connection " << domaine_dis.domaine().le_nom() << "/" << raccord_distant.le_nom() << "<-" << opposed_domaine_dis.domaine().le_nom() << "/" << opposed_boundary.le_nom() << finl;
 }
+
+// 64 bit version should fail
+template <typename _SIZE_>
+void Raccord_distant_homogene_32_64<_SIZE_>::initialise(const Frontiere_t& opposed_boundary,
+                                                        const Domaine_dis_base& opposed_domaine_dis, const Domaine_dis_base& domaine_dis)
+{
+  assert(false);
+  throw;
+}
+
+
+template class Raccord_distant_homogene_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_distant_homogene_32_64<trustIdType>;
+#endif
+
+

@@ -1763,8 +1763,6 @@ void Domaine_32_64<_SIZE_>::init_faces_virt_bord(const MD_Vector& md_vect_faces,
 template <>
 void Domaine_32_64<int>::creer_aretes()
 {
-  assert((std::is_same<_SIZE_, int>::value));  // 32bits only!
-
   const IntTab& elem_som = les_elems();
   // Nombre d'elements reels:
   const int nbelem = elem_som.dimension(0);
@@ -2203,7 +2201,8 @@ void Domaine_32_64<trustIdType>::fill_from_list(std::list<Domaine_64*>& lst)
 template <typename _SIZE_>
 void Domaine_32_64<_SIZE_>::fill_from_list(std::list<Domaine_32_64*>& lst)
 {
-  static_assert(false, "Should never be used!!");
+  assert(!(std::is_same<_SIZE_, trustIdType>::value));
+  throw;
 }
 
 

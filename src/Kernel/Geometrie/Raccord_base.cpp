@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,86 +15,81 @@
 
 #include <Raccord_base.h>
 
-Implemente_base(Raccord_base,"Raccord_base",Frontiere);
-Implemente_base(Raccord_local,"Raccord_local",Raccord_base);
-Implemente_base(Raccord_distant,"Raccord_distant",Raccord_base);
-Implemente_instanciable(Raccord_local_homogene,"Raccord_local_homogene",Raccord_local);
+Implemente_base_32_64(Raccord_base_32_64,"Raccord_base",Frontiere_32_64<_T_>);
+Implemente_base_32_64(Raccord_local_32_64,"Raccord_local",Raccord_base_32_64<_T_>);
+Implemente_base_32_64(Raccord_distant_32_64,"Raccord_distant",Raccord_base_32_64<_T_>);
+Implemente_instanciable_32_64(Raccord_local_homogene_32_64,"Raccord_local_homogene",Raccord_local_32_64<_T_>);
 
-/*! @brief Simple appel a: Frontiere::printOn(Sortie& )
+/*! @brief Simple appel a: Frontiere_32_64<_SIZE_>::printOn(Sortie& )
  *
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Raccord_base::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Raccord_base_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return Frontiere::printOn(s) ;
+  return Frontiere_32_64<_SIZE_>::printOn(s) ;
 }
 
 
-/*! @brief Simple appel a: Frontiere::readOn(Entree& )
+/*! @brief Simple appel a: Frontiere_32_64<_SIZE_>::readOn(Entree& )
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
-Entree& Raccord_base::readOn(Entree& s)
+template <typename _SIZE_>
+Entree& Raccord_base_32_64<_SIZE_>::readOn(Entree& s)
 {
-  return Frontiere::readOn(s) ;
+  return Frontiere_32_64<_SIZE_>::readOn(s) ;
 }
 
 
-/*! @brief Simple appel a: Raccord_base::printOn(Sortie& )
+/*! @brief Simple appel a: Raccord_base_32_64<_SIZE_>::printOn(Sortie& )
  *
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Raccord_local::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Raccord_local_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return Raccord_base::printOn(s) ;
+  return Raccord_base_32_64<_SIZE_>::printOn(s) ;
 }
 
 
 
-
-/*! @brief Simple appel a: Raccord_base::readOn(Entree& )
+/*! @brief Simple appel a: Raccord_base_32_64<_SIZE_>::readOn(Entree& )
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
-Entree& Raccord_local::readOn(Entree& s)
+template <typename _SIZE_>
+Entree& Raccord_local_32_64<_SIZE_>::readOn(Entree& s)
 {
-  return Raccord_base::readOn(s) ;
+  return Raccord_base_32_64<_SIZE_>::readOn(s) ;
 }
 
 
-/*! @brief Simple appel a: Raccord_base::printOn(Sortie& )
+/*! @brief Simple appel a: Raccord_base_32_64<_SIZE_>::printOn(Sortie& )
  *
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Raccord_distant::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Raccord_distant_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return Raccord_base::printOn(s) ;
+  return Raccord_base_32_64<_SIZE_>::printOn(s) ;
 }
 
 
 
 
-//    Simple appel a: Raccord_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Raccord_distant::readOn(Entree& s)
+/*! Simple appel a: Raccord_base_32_64<_SIZE_>::readOn(Entree& )
+ *
+ */
+template <typename _SIZE_>
+Entree& Raccord_distant_32_64<_SIZE_>::readOn(Entree& s)
 {
-  return Raccord_base::readOn(s) ;
+  return Raccord_base_32_64<_SIZE_>::readOn(s) ;
 }
 
 
@@ -104,9 +99,10 @@ Entree& Raccord_distant::readOn(Entree& s)
  * @param (Sortie& s) un flot de sortie
  * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Raccord_local_homogene::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Raccord_local_homogene_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return Raccord_local::printOn(s) ;
+  return Raccord_local_32_64<_SIZE_>::printOn(s) ;
 }
 
 /*! @brief Simple appel a: Raccord_local::readOn(Entree& )
@@ -114,20 +110,74 @@ Sortie& Raccord_local_homogene::printOn(Sortie& s ) const
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
  */
-Entree& Raccord_local_homogene::readOn(Entree& s)
+template <typename _SIZE_>
+Entree& Raccord_local_homogene_32_64<_SIZE_>::readOn(Entree& s)
 {
-  return Raccord_local::readOn(s) ;
+  return Raccord_local_32_64<_SIZE_>::readOn(s) ;
 }
-void Raccord_local_homogene::trace_elem_distant(const DoubleTab& x, DoubleTab& y) const
+
+template <>
+void Raccord_local_homogene_32_64<int>::trace_elem_distant(const DoubleTab& x, DoubleTab& y) const
 {
-// en suppposant les numerotations des faces identiques sur le raccord des deux cotes
-  return trace_elem_local(x,y);
+  // en suppposant les numerotations des faces identiques sur le raccord des deux cotes
+  return this->trace_elem_local(x,y);
 }
-void Raccord_local_homogene::trace_face_distant(const DoubleTab& x, DoubleTab& y) const
+
+template <>
+void Raccord_local_homogene_32_64<int>::trace_face_distant(const DoubleTab& x, DoubleTab& y) const
 {
-  return trace_face_local(x,y);
+  return this->trace_face_local(x,y);
 }
-void Raccord_local_homogene::trace_face_distant(const DoubleVect& x, DoubleVect& y) const
+
+template <>
+void Raccord_local_homogene_32_64<int>::trace_face_distant(const DoubleVect& x, DoubleVect& y) const
 {
-  return trace_face_local(x,y);
+  return this->trace_face_local(x,y);
 }
+
+
+
+// 64 bit versions should never be called:
+
+template <typename _SIZE_>
+void Raccord_local_homogene_32_64<_SIZE_>::trace_elem_distant(const DoubleTab& x, DoubleTab& y) const
+{
+  assert(false);
+  throw;
+}
+
+template <typename _SIZE_>
+void Raccord_local_homogene_32_64<_SIZE_>::trace_face_distant(const DoubleTab& x, DoubleTab& y) const
+{
+  assert(false);
+  throw;
+}
+
+template <typename _SIZE_>
+void Raccord_local_homogene_32_64<_SIZE_>::trace_face_distant(const DoubleVect& x, DoubleVect& y) const
+{
+  assert(false);
+  throw;
+}
+
+
+template class Raccord_base_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_base_32_64<trustIdType>;
+#endif
+
+template class Raccord_local_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_local_32_64<trustIdType>;
+#endif
+
+template class Raccord_local_homogene_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_local_homogene_32_64<trustIdType>;
+#endif
+
+template class Raccord_distant_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_distant_32_64<trustIdType>;
+#endif
+

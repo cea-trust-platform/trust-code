@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,6 @@
 #ifndef Bord_included
 #define Bord_included
 
-
-
-
 #include <Frontiere.h>
 
 /*! @brief Classe Bord Cette classe represente un bord d'un domaine, c'est un type de frontiere
@@ -30,10 +27,14 @@
  *
  * @sa Frontiere Domaine Bords Domaine
  */
-class Bord : public Frontiere
+template <typename _SIZE_>
+class Bord_32_64 : public Frontiere_32_64<_SIZE_>
 {
-  Declare_instanciable(Bord);
-
+  Declare_instanciable_32_64(Bord_32_64);
 };
+
+
+using Bord = Bord_32_64<int>;
+using Bord_64 = Bord_32_64<trustIdType>;
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,18 @@
 
 #include <Groupe_Faces.h>
 
-Implemente_instanciable(Groupe_Faces, "Groupe_Faces", Frontiere);
-Sortie& Groupe_Faces::printOn(Sortie& s) const { return Frontiere::printOn(s); }
-Entree& Groupe_Faces::readOn(Entree& s) { return Frontiere::readOn(s); }
+Implemente_instanciable_32_64(Groupe_Faces_32_64, "Groupe_Faces", Frontiere_32_64<_T_>);
+
+template <typename _SIZE_>
+Sortie& Groupe_Faces_32_64<_SIZE_>::printOn(Sortie& s) const { return Frontiere_32_64<_SIZE_>::printOn(s); }
+
+template <typename _SIZE_>
+Entree& Groupe_Faces_32_64<_SIZE_>::readOn(Entree& s) { return Frontiere_32_64<_SIZE_>::readOn(s); }
+
+
+template class Groupe_Faces_32_64<int>;
+#if INT_is_64_ == 2
+template class Groupe_Faces_32_64<trustIdType>;
+#endif
+
+

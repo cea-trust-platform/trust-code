@@ -15,18 +15,21 @@
 
 #include <Bords.h>
 
-Implemente_instanciable(Bords, "Bords", LIST(Bord));
+Implemente_instanciable_32_64(Bords_32_64, "Bords", LIST(Bord_32_64<_T_>));
 // XD list_bord listobj list_bord 1 bord_base 0 The block sides.
 
-Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
+template <typename _SIZE_>
+Sortie& Bords_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Bord_32_64<_SIZE_>)::printOn(os); }
 
-Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
+template <typename _SIZE_>
+Entree& Bords_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Bord_32_64<_SIZE_>)::readOn(is); }
 
 /*! @brief Associe un domaine a tous les bords de la liste.
  *
  * @param (Domaine& un_domaine) le domaine a associer aux bords de la liste
  */
-void Bords::associer_domaine(const Domaine& un_domaine)
+template <typename _SIZE_>
+void Bords_32_64<_SIZE_>::associer_domaine(const Domaine_t& un_domaine)
 {
   for (auto &itr : *this) itr.associer_domaine(un_domaine);
 }
@@ -35,9 +38,10 @@ void Bords::associer_domaine(const Domaine& un_domaine)
  *
  * @return (int) le nombre total de faces de tous les bords de la liste
  */
-int Bords::nb_faces() const
+template <typename _SIZE_>
+typename Bords_32_64<_SIZE_>::int_t Bords_32_64<_SIZE_>::nb_faces() const
 {
-  int nombre = 0;
+  int_t nombre = 0;
 
   for (const auto &itr : *this) nombre += itr.nb_faces();
 
@@ -49,12 +53,21 @@ int Bords::nb_faces() const
  * @param (Type_Face type) le type des faces a comptabiliser
  * @return (int) le nombre total de faces du type specifie, pour tous les bords de la liste
  */
-int Bords::nb_faces(Type_Face type) const
+template <typename _SIZE_>
+typename Bords_32_64<_SIZE_>::int_t Bords_32_64<_SIZE_>::nb_faces(Type_Face type) const
 {
-  int nombre = 0;
+  int_t nombre = 0;
 
   for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;
 }
+
+
+template class Bords_32_64<int>;
+#if INT_is_64_ == 2
+template class Bords_32_64<trustIdType>;
+#endif
+
+

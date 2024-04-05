@@ -15,7 +15,7 @@
 
 #include <Bord.h>
 
-Implemente_instanciable(Bord,"Bord",Frontiere);
+Implemente_instanciable_32_64(Bord_32_64,"Bord",Frontiere_32_64<_T_>);
 
 // XD defbord objet_lecture nul 0 Class to define an edge.
 
@@ -48,5 +48,30 @@ Implemente_instanciable(Bord,"Bord",Frontiere);
 // XD attr nom chaine nom 0 Name of block side.
 // XD attr defbord defbord defbord 0 Definition of block side.
 
-Sortie& Bord::printOn(Sortie& s ) const { return Frontiere::printOn(s) ; }
-Entree& Bord::readOn(Entree& s) { return Frontiere::readOn(s) ; }
+/*! @brief Simple appel a: Frontiere::printOn(Sortie&)
+ *
+ * @param (Sortie& s) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
+template <typename _SIZE_>
+Sortie& Bord_32_64<_SIZE_>::printOn(Sortie& s ) const
+{
+  return Frontiere_32_64<_SIZE_>::printOn(s) ;
+}
+
+/*! @brief Simple appel a: Frontiere::readOn(Entree&)
+ *
+ * @param (Entree& s) un flot d'entree
+ * @return (Entree&) le flot d'entre modifie
+ */
+template <typename _SIZE_>
+Entree& Bord_32_64<_SIZE_>::readOn(Entree& s)
+{
+  return Frontiere_32_64<_SIZE_>::readOn(s) ;
+}
+
+
+template class Bord_32_64<int>;
+#if INT_is_64_ == 2
+template class Bord_32_64<trustIdType>;
+#endif

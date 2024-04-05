@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,15 @@
  *
  * @sa Frontiere Domaine
  */
-class Bord_Interne : public Frontiere
+template <typename _SIZE_>
+class Bord_Interne_32_64 : public Frontiere_32_64<_SIZE_>
 {
-  Declare_instanciable(Bord_Interne);
+  Declare_instanciable_32_64(Bord_Interne_32_64);
 };
+
+
+using Bord_Interne = Bord_Interne_32_64<int>;
+using Bord_Interne_64 = Bord_Interne_32_64<trustIdType>;
+
 
 #endif /* Bord_Interne_included */

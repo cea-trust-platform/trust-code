@@ -20,29 +20,26 @@
 
 /*! @brief Classe Groupe_Face La classe sert a representer une selection de faces lu dans le fichier med
  *
- *
  * @sa Frontiere Domaine
  */
-class Groupe_Faces : public Frontiere
+template <typename _SIZE_>
+class Groupe_Faces_32_64 : public Frontiere_32_64<_SIZE_>
 {
-  Declare_instanciable(Groupe_Faces);
+  Declare_instanciable_32_64(Groupe_Faces_32_64);
 
 public:
-  inline const ArrOfInt& get_indices_faces() const;
-  inline ArrOfInt& get_indices_faces();
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+
+
+  inline const ArrOfInt_t& get_indices_faces() const { return indices_faces; }
+  inline ArrOfInt_t& get_indices_faces() { return indices_faces; }
 
 private:
-  ArrOfInt indices_faces;
-
+  ArrOfInt_t indices_faces;
 };
 
-inline const ArrOfInt& Groupe_Faces::get_indices_faces() const
-{
-  return indices_faces;
-}
 
-inline ArrOfInt& Groupe_Faces::get_indices_faces()
-{
-  return indices_faces;
-}
+using Groupe_Faces = Groupe_Faces_32_64<int>;
+using Groupe_Faces_64 = Groupe_Faces_32_64<trustIdType>;
+
 #endif /* Groupe_Faces_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,113 +22,103 @@
 class Motcle;
 #include <Domaine_forward.h>
 
+/*! @brief enum Type_Face Les differents types geometriques de faces.
+ * @sa Faces
+ */
+enum class Type_Face
+{
+  vide_0D,
+  point_1D,
+  point_1D_axi,
+  segment_2D,
+  segment_2D_axi,
+  triangle_3D,
+  quadrilatere_2D_axi,
+  quadrangle_3D,
+  quadrangle_3D_axi,
+  polygone_3D
+};
 
-/*! @brief Classe Faces Faces decrit un ensemble de faces par leur type (point ,segment,
- *
- *     triangle ou quadrangle), leurs sommets et leurs elements adjacents.
+
+/*! @brief Classe Faces Faces decrit un ensemble de faces par leur type (point ,segment, triangle ou quadrangle),
+ * leurs sommets et leurs elements adjacents.
  *
  * @sa IntTab Frontiere
  */
-class Faces : public Objet_U
+template <typename _SIZE_>
+class Faces_32_64 : public Objet_U
 {
-  Declare_instanciable(Faces);
+  Declare_instanciable_32_64(Faces_32_64);
 
 public:
 
-  /*! @brief enum Type_Face Les differents types geometriques de faces.
-   *
-   * @sa Faces
-   */
-  enum Type_Face
-  {
-    vide_0D,
-    point_1D,
-    point_1D_axi,
-    segment_2D,
-    segment_2D_axi,
-    triangle_3D,
-    quadrilatere_2D_axi,
-    quadrangle_3D,
-    quadrangle_3D_axi,
-    polygone_3D
-  };
+  using int_t = _SIZE_;
+  using IntVect_t = IVect_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using DoubleVect_t = DVect_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using DomaineAxi1d_t = DomaineAxi1d_32_64<_SIZE_>;
 
-  inline Type_Face type_face() const;
-  inline int nb_faces() const;
-  inline int nb_faces_tot() const;
+
+  inline Type_Face type_face() const {   return type_face_; }
+  inline int_t nb_faces() const {  return sommets.dimension(0); }
+  /// @brief Renvoie le nombre total de Faces i (reelles et virt) sur le proc courant
+  inline int_t nb_faces_tot() const { return sommets.dimension_tot(0); }
   inline int nb_som_faces() const;
-  inline int sommet(int, int) const;
-  inline int& sommet(int, int);
-  inline IntTab& les_sommets();
-  inline const IntTab& les_sommets() const;
+
+  inline int_t sommet(int_t, int) const;
+  inline int_t& sommet(int_t, int);
+  /// Renvoie le tableau des sommets de toutes les faces
+  inline const IntTab_t& les_sommets() const { return sommets; }
+  inline IntTab_t& les_sommets() { return sommets; }
+
   Type_Face type(const Motcle&) const;
   Motcle& type(const Type_Face&) const;
-  void ajouter(const IntTab&);
+
+  void ajouter(const IntTab_t&);
   void typer(const Motcle&);
   void typer(const Type_Face&);
-  int dimensionner(int);
-  inline int voisin(int, int) const;
-  inline int& voisin(int, int);
-  inline IntTab& voisins();
-  inline const IntTab& voisins() const;
-  void completer(int, int);
-  inline void associer_domaine(const Domaine&);
-  inline const Domaine& domaine() const;
-  void calculer_surfaces(DoubleVect& ) const;
-  void calculer_centres_gravite(DoubleTab& ) const;
+
+  int_t dimensionner(int_t);
+
+  inline int_t voisin(int_t, int) const;
+  inline int_t& voisin(int_t, int);
+  /// @brief Renvoie le tableau des voisins (des faces).
+  inline IntTab_t& voisins() { return faces_voisins; }
+  inline const IntTab_t& voisins() const { return faces_voisins; }
+
+  void completer(int_t face, int_t num_elem);
+
+  inline void associer_domaine(const Domaine_t& z)  { mon_dom=z; }
+  inline const Domaine_t& domaine() const { return mon_dom.valeur(); }
+
+  void calculer_surfaces(DoubleVect_t& surf) const;
+  void calculer_centres_gravite(DoubleTab_t& xv) const;
   void reordonner();
-  IntVect& compare(const Faces&, IntVect&);
-  void initialiser_faces_joint(int);
-  void initialiser_sommets_faces_joint(int);
+  IntVect_t& compare(const Faces_32_64& other_fac, IntVect_t& renum);
+  void initialiser_faces_joint(int_t nb_faces_joints);
+  void initialiser_sommets_faces_joint(int_t nb_faces_joints);
 
   Entree& lit(Entree&);
   Sortie& ecrit(Sortie&) const ;
 
 private :
+  // Useful tool methods:
+  int_t ppsf(int_t face, int nb_som) const;
+  bool same_face(int_t f1, const Faces_32_64& faces2, int_t f2, int nb_som) const;
 
-  Type_Face type_face_ = vide_0D;
-  int nb_som_face = -123;
-  IntTab sommets;
-  IntTab faces_voisins;
-  REF(Domaine) mon_dom;
+  Type_Face type_face_ = Type_Face::vide_0D;
+  int nb_som_face = 0;  ///< Number of vertices per face
+  IntTab_t sommets;
+  IntTab_t faces_voisins;
+  REF(Domaine_t) mon_dom;
 };
 
-typedef Faces::Type_Face Type_Face;
-
-extern void
-calculer_centres_gravite(DoubleTab& xv,
-                         Type_Face type_face_,
-                         const DoubleTab& coord,
-                         const IntTab& sommet);
-/*! @brief Renvoie le type des Faces
- *
- * @return (Type_Face) le type des Faces
- */
-inline Type_Face Faces::type_face() const
-{
-  return type_face_;
-}
-
-/*! @brief Renvoie le nombre de Faces
- *
- * @return (int) le nombre de Faces
- */
-inline int Faces::nb_faces() const
-{
-  return sommets.dimension(0);
-}
-
-/*! @brief Renvoie le nombre total de Faces i.
- *
- * e. Le nombre de faces reelles et virtuelles
- *     sur le processeur courant.
- *
- * @return (int) le nombre total de Faces
- */
-inline int Faces::nb_faces_tot() const
-{
-  return sommets.dimension_tot(0);
-}
+template <typename _SIZE_>
+extern void calculer_centres_gravite(DTab_T<_SIZE_>& xv, Type_Face type_face_,
+                                     const DTab_T<_SIZE_>& coord,  const ITab_T<_SIZE_>& sommet);
 
 /*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face
  *
@@ -136,7 +126,8 @@ inline int Faces::nb_faces_tot() const
  * @param (int j) indice du sommet a renvoyer
  * @return (int) le numero du j-ieme sommet de la i-ieme face
  */
-inline int Faces::sommet(int i, int j) const
+template <typename _SIZE_>
+inline typename Faces_32_64<_SIZE_>::int_t Faces_32_64<_SIZE_>::sommet(int_t i, int j) const
 {
   return sommets(i,j);
 }
@@ -147,35 +138,22 @@ inline int Faces::sommet(int i, int j) const
  * @param (int j) indice du sommet a renvoyer
  * @return (int&) reference sur le numero du j-ieme sommet de la i-ieme face
  */
-inline int& Faces::sommet(int i, int j)
+template <typename _SIZE_>
+inline typename Faces_32_64<_SIZE_>::int_t& Faces_32_64<_SIZE_>::sommet(int_t i, int j)
 {
   return sommets(i,j);
 }
 
-/*! @brief Renvoie le nombre de sommet par face.
- *
- * @return (int) le nombre de sommet par face
- */
-inline int Faces::nb_som_faces() const
+/// @brief Renvoie le nombre de sommet par face.
+template <typename _SIZE_>
+inline int Faces_32_64<_SIZE_>::nb_som_faces() const
 {
   if (nb_som_face!=-1)
     return nb_som_face;
   else
-    return sommets.dimension(1);
+    return (int)sommets.dimension(1);
 }
 
-/*! @brief Renvoie le tableau des sommets de toutes les faces
- *
- * @return (IntTab&) le tableau des sommets de toutes les faces
- */
-inline const IntTab& Faces::les_sommets() const
-{
-  return sommets;
-}
-inline IntTab& Faces::les_sommets()
-{
-  return sommets;
-}
 
 /*! @brief Renvoie le numero du i-ieme voisin de face.
  *
@@ -183,7 +161,8 @@ inline IntTab& Faces::les_sommets()
  * @param (int i) l'indice du voisin a renvoyer
  * @return (int) le numero i-ieme voisin de face
  */
-inline int Faces::voisin(int face, int i) const
+template <typename _SIZE_>
+inline typename Faces_32_64<_SIZE_>::int_t Faces_32_64<_SIZE_>::voisin(int_t face, int i) const
 {
   return faces_voisins(face,i);
 }
@@ -194,40 +173,14 @@ inline int Faces::voisin(int face, int i) const
  * @param (int i) l'indice du voisin a renvoyer
  * @return (int&) reference sur le numero du i-ieme voisin de face
  */
-inline int& Faces::voisin(int face, int i)
+template <typename _SIZE_>
+inline typename Faces_32_64<_SIZE_>::int_t& Faces_32_64<_SIZE_>::voisin(int_t face, int i)
 {
   return faces_voisins(face,i);
 }
 
-/*! @brief Associe les faces a une Domain.
- *
- * @param (Domaine& z) le domaine auquel l'objet s'associe
- */
-inline void Faces::associer_domaine(const Domaine& z)
-{
-  mon_dom=z;
-}
 
-/*! @brief Renvoie le domaine associe.
- *
- * @return (Domaine&) le domaine associe
- */
-inline const Domaine& Faces::domaine() const
-{
-  return mon_dom.valeur();
-}
-
-/*! @brief Renvoie le tableau des voisins (des faces).
- *
- * @return (IntTab&) le tableau des voisins (des faces)
- */
-inline IntTab& Faces::voisins()
-{
-  return faces_voisins;
-}
-inline const IntTab& Faces::voisins() const
-{
-  return faces_voisins;
-}
+using Faces = Faces_32_64<int>;
+using Faces_64 = Faces_32_64<trustIdType>;
 
 #endif

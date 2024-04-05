@@ -27,41 +27,54 @@
  *
  * @sa Domaine Bord Joint Raccord Faces_Interne
  */
-class Frontiere : public Objet_U
+template <typename _SIZE_>
+class Frontiere_32_64 : public Objet_U
 {
-  Declare_base(Frontiere);
+  Declare_base_32_64(Frontiere_32_64);
 
 public:
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntVect_t = IVect_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleVect_t = DVect_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Faces_t = Faces_32_64<_SIZE_>;
 
-  // Entree& lire(Entree&);
-  // Sortie& ecrire(Sortie&) const;
-  void associer_domaine(const Domaine&);
-  const Domaine& domaine() const;
-  Domaine& domaine();
+
+  void associer_domaine(const Domaine_t&);
+  const Domaine_t& domaine() const;
+  Domaine_t& domaine();
+  inline const Nom& le_nom() const override {  return nom; }
   void nommer(const Nom&) override;
-  void ajouter_faces(const IntTab&);
+  void ajouter_faces(const IntTab_t&);
   void typer_faces(const Motcle&);
   void typer_faces(const Type_Face&);
-  inline const Faces& faces() const;
-  inline Faces& faces();
-  IntTab& les_sommets_des_faces();
-  const IntTab& les_sommets_des_faces() const;
-  inline int nb_faces() const;
-  inline void dimensionner(int);
-  inline const Nom& le_nom() const override;
-  void renum(const IntVect&);
-  void add(const Frontiere& );
-  inline int nb_faces_virt() const;
-  inline int face_virt(int i) const;
+  inline const Faces_t& faces() const { return les_faces; }
+  inline Faces_t& faces() {  return les_faces; }
+  IntTab_t& les_sommets_des_faces();
+  const IntTab_t& les_sommets_des_faces() const;
+  /// Renvoie le nombre de faces de la frontiere.
+  inline int_t nb_faces() const  {  return les_faces.nb_faces(); }
+  /// Dimensionne la frontiere, i.e. fixe son nombre de faces.
+  inline void dimensionner(int_t i) {  les_faces.dimensionner(i); }
+  void renum(const IntVect_t&);
+  void add(const Frontiere_32_64& );
+  inline int_t nb_faces_virt() const  { return faces_virt.size_array(); }
+  inline int_t face_virt(int_t i) const { return faces_virt[i]; }
 
-  inline int num_premiere_face() const;
-  inline void fixer_num_premiere_face(int );
-  inline const ArrOfInt& get_faces_virt() const;
-  inline ArrOfInt& get_faces_virt();
+  inline int_t num_premiere_face() const { return num_premiere_face_ ;  }
+  inline void fixer_num_premiere_face(int_t i) { num_premiere_face_ = i; }
+  inline const ArrOfInt_t& get_faces_virt() const { return faces_virt; }
+  inline ArrOfInt_t& get_faces_virt() {  return faces_virt; }
+
   inline const double& get_aire() const { return aire_; }
   inline void set_aire(double& aire) { aire_ = aire; }
 
   virtual void creer_tableau_faces(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
+
+  // Various trace methods - only used by the Champ_xx classes - no need for a 64b version, so stick with DoubleTab, not DoubleTab_t:
   virtual void trace_elem_local(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_local(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_local(const DoubleVect&, DoubleVect&) const;
@@ -70,91 +83,19 @@ public:
   virtual void trace_face_distant(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_distant(const DoubleVect&, DoubleVect&) const;
   virtual void trace_som_local(const DoubleTab& y, DoubleTab& x) const;
+
 private :
 
   Nom nom;
-  Faces les_faces;
-  REF(Domaine) le_dom;
-  ArrOfInt faces_virt;
-  int num_premiere_face_ = -100;
+  Faces_t les_faces;
+  REF(Domaine_t) le_dom;
+  ArrOfInt_t faces_virt;
+  int_t num_premiere_face_ = -100;
   double aire_ = -100.;
 };
 
 
-/*! @brief Renvoie le nombre de faces de la frontiere.
- *
- * @return (int) le nombre de faces de la frontiere
- */
-inline int Frontiere::nb_faces() const
-{
-  return les_faces.nb_faces();
-}
+using Frontiere = Frontiere_32_64<int>;
+using Frontiere_64 = Frontiere_32_64<trustIdType>;
 
-
-/*! @brief Dimensionne la frontiere, i.
- *
- * e. fixe son nombre de faces.
- *
- * @param (int i) le nombre de faces a donner a la frontiere
- */
-inline void Frontiere::dimensionner(int i)
-{
-  les_faces.dimensionner(i);
-}
-
-
-/*! @brief Renvoie le nom de la frontiere.
- *
- * @return (Nom&) le nom de la frontiere
- */
-inline const Nom& Frontiere::le_nom() const
-{
-  return nom;
-}
-
-/*! @brief Renvoie les faces de la frontiere (version const)
- *
- * @return (Faces&) les faces de la frontiere
- */
-inline const Faces& Frontiere::faces() const
-{
-  return les_faces;
-}
-
-/*! @brief Renvoie les faces de la frontiere
- *
- * @return (Faces&) les faces de la frontiere
- */
-inline Faces& Frontiere::faces()
-{
-  return les_faces;
-}
-
-inline int Frontiere::nb_faces_virt() const
-{
-  return faces_virt.size_array();
-}
-inline int Frontiere::face_virt(int i) const
-{
-  return faces_virt[i];
-}
-
-inline int Frontiere::num_premiere_face() const
-{
-  return num_premiere_face_ ;
-}
-inline void Frontiere::fixer_num_premiere_face(int i)
-{
-  num_premiere_face_ = i;
-}
-
-inline const ArrOfInt& Frontiere::get_faces_virt() const
-{
-  return faces_virt;
-}
-
-inline ArrOfInt& Frontiere::get_faces_virt()
-{
-  return faces_virt;
-}
 #endif

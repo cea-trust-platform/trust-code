@@ -23,27 +23,25 @@
  *
  * @sa Groupes_Faces
  */
-class Groupes_Faces : public LIST(Groupe_Faces)
+template <typename _SIZE_>
+class Groupes_Faces_32_64 : public LIST(Groupe_Faces_32_64<_SIZE_>)
 {
-  Declare_instanciable(Groupes_Faces);
+  Declare_instanciable_32_64(Groupes_Faces_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
-  void associer_domaine(const Domaine&);
-  int nb_faces() const;
-  inline int nb_groupes_faces() const;
-  //JY 26/08/97
-  int nb_faces(Type_Face type) const;
-  void renumerote(ArrOfInt& reverse_index);
+  void associer_domaine(const Domaine_t&);
+  int_t nb_faces() const;
+  inline int nb_groupes_faces() const { return this->size(); }
+  int_t nb_faces(Type_Face type) const;
+  void renumerote(ArrOfInt_t& reverse_index);
 };
 
-/*! @brief Renvoie le nombre d'objet Groupe_Faces stockes dans la liste.
- *
- * @return (int) le nombre d'objet Groupe_Faces stockes dans la liste
- */
-inline int Groupes_Faces::nb_groupes_faces() const
-{
-  return size();
-}
+using Groupes_Faces = Groupes_Faces_32_64<int>;
+using Groupes_Faces_64 = Groupes_Faces_32_64<trustIdType>;
+
 
 #endif /* Groupes_Faces_included */

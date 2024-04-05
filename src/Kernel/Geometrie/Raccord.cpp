@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,14 +15,21 @@
 
 #include <Raccord.h>
 
-Implemente_instanciable(Raccord, "Raccord", DERIV(Raccord_base));
+Implemente_instanciable_32_64(Raccord_32_64, "Raccord", DERIV(Raccord_base_32_64<_T_>));
 // XD raccord bord_base raccord 0 The block side is in contact with the block of another domain (case of two coupled problems).
 // XD attr type1 chaine(into=["local","distant"]) type1 0 Contact type.
 // XD attr type2 chaine(into=["homogene"]) type2 0 Contact type.
 // XD attr nom chaine nom 0 Name of block side.
 // XD attr defbord defbord defbord 0 Definition of block side.
 
+template <typename _SIZE_>
+Sortie& Raccord_32_64<_SIZE_>::printOn(Sortie& s) const { return DERIV(Raccord_base_32_64<_SIZE_>)::printOn(s); }
 
-Sortie& Raccord::printOn(Sortie& s) const { return DERIV(Raccord_base)::printOn(s); }
+template <typename _SIZE_>
+Entree& Raccord_32_64<_SIZE_>::readOn(Entree& s) { return DERIV(Raccord_base_32_64<_SIZE_>)::readOn(s); }
 
-Entree& Raccord::readOn(Entree& s) { return DERIV(Raccord_base)::readOn(s); }
+
+template class Raccord_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccord_32_64<trustIdType>;
+#endif

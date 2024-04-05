@@ -15,17 +15,20 @@
 
 #include <Groupes_Faces.h>
 
-Implemente_instanciable(Groupes_Faces, "Groupes_Faces", LIST(Groupe_Faces));
+Implemente_instanciable_32_64(Groupes_Faces_32_64, "Groupes_Faces", LIST(Groupe_Faces_32_64<_T_>));
 
-Sortie& Groupes_Faces::printOn(Sortie& os) const { return LIST(Groupe_Faces)::printOn(os); }
+template <typename _SIZE_>
+Sortie& Groupes_Faces_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Groupe_Faces_32_64<_SIZE_>)::printOn(os); }
 
-Entree& Groupes_Faces::readOn(Entree& is) { return LIST(Groupe_Faces)::readOn(is); }
+template <typename _SIZE_>
+Entree& Groupes_Faces_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Groupe_Faces_32_64<_SIZE_>)::readOn(is); }
 
 /*! @brief Associe un domaine a tous les objets Groupe_Faces de la liste.
  *
  * @param (Domaine& un_domaine) le domaine a associer aux Groupe_Faces de la liste
  */
-void Groupes_Faces::associer_domaine(const Domaine& un_domaine)
+template <typename _SIZE_>
+void Groupes_Faces_32_64<_SIZE_>::associer_domaine(const Domaine_t& un_domaine)
 {
   for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
@@ -38,9 +41,10 @@ void Groupes_Faces::associer_domaine(const Domaine& un_domaine)
  *
  * @return (int) le nombre total de faces contenues dans la liste des Groupe_Faces
  */
-int Groupes_Faces::nb_faces() const
+template <typename _SIZE_>
+typename Groupes_Faces_32_64<_SIZE_>::int_t Groupes_Faces_32_64<_SIZE_>::nb_faces() const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
@@ -55,28 +59,39 @@ int Groupes_Faces::nb_faces() const
  * @param (Type_Face type) le type des faces a compter
  * @return (int) le nombre total de faces contenues dans la liste des Groupe_Faces
  */
-int Groupes_Faces::nb_faces(Type_Face type) const
+template <typename _SIZE_>
+typename Groupes_Faces_32_64<_SIZE_>::int_t Groupes_Faces_32_64<_SIZE_>::nb_faces(Type_Face type) const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;
 }
 
-// Mise a jour des indices des groupes de faces avec table inversee: reverse_index[ancien_numero] = nouveau numero:
-// necessaire lorsque les numeros des faces ont ete modifies
-void Groupes_Faces::renumerote(ArrOfInt& reverse_index)
+/*! Mise a jour des indices des groupes de faces avec table inversee: reverse_index[ancien_numero] = nouveau numero:
+ * necessaire lorsque les numeros des faces ont ete modifies
+ */
+template <typename _SIZE_>
+void Groupes_Faces_32_64<_SIZE_>::renumerote(ArrOfInt_t& reverse_index)
 {
   for (auto &itr : *this)
     {
-      ArrOfInt& indices_faces = itr.get_indices_faces();
-      const int nbfaces2    = indices_faces.size_array();
+      ArrOfInt_t& indices_faces = itr.get_indices_faces();
+      const int_t nbfaces2    = indices_faces.size_array();
       assert(nbfaces2 == itr.nb_faces());
-      for (int i = 0; i < nbfaces2; i++)
+      for (int_t i = 0; i < nbfaces2; i++)
         {
-          const int old = indices_faces[i]; // ancien indice local
+          const int_t old = indices_faces[i]; // ancien indice local
           indices_faces[i] = reverse_index[old];
         }
     }
 }
+
+
+template class Groupes_Faces_32_64<int>;
+#if INT_is_64_ == 2
+template class Groupes_Faces_32_64<trustIdType>;
+#endif
+
+

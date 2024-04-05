@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,14 @@
  *
  * @sa Frontiere Raccord_base
  */
-class Raccord : public DERIV(Raccord_base)
+template <typename _SIZE_>
+class Raccord_32_64 : public DERIV(Raccord_base_32_64<_SIZE_>)
 {
-  Declare_instanciable(Raccord);
+  Declare_instanciable_32_64(Raccord_32_64);
 };
+
+
+using Raccord = Raccord_32_64<int>;
+using Raccord_64 = Raccord_32_64<trustIdType>;
 
 #endif /* Raccord_included */

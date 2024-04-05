@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,31 +15,35 @@
 
 #include <Raccords.h>
 
-Implemente_instanciable(Raccords, "Raccords", LIST(Raccord));
+Implemente_instanciable_32_64(Raccords_32_64, "Raccords", LIST(Raccord_32_64<_T_>));
 
-Sortie& Raccords::printOn(Sortie& os) const { return LIST(Raccord)::printOn(os); }
+template <typename _SIZE_>
+Sortie& Raccords_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Raccord_32_64<_SIZE_>)::printOn(os); }
 
-Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
+template <typename _SIZE_>
+Entree& Raccords_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Raccord_32_64<_SIZE_>)::readOn(is); }
 
 /*! @brief Associe un domaine a tous les raccords de la liste.
  *
  * @param (Domaine& un_domaine) le domaine a associer
  */
-void Raccords::associer_domaine(const Domaine& un_domaine)
+template <typename _SIZE_>
+void Raccords_32_64<_SIZE_>::associer_domaine(const Domaine_t& un_domaine)
 {
   for (auto& itr : *this) itr->associer_domaine(un_domaine);
 }
 
-/*! @brief Renvoie le nombre de face total des Raccords de la liste.
+/*! @brief Renvoie le nombre de face total des Raccords_32_64 de la liste.
  *
  * (la somme des faces de tous les
  *     raccords de la liste).
  *
- * @return (int) le nombre de face total des Raccords de la liste
+ * @return (int) le nombre de face total des Raccords_32_64 de la liste
  */
-int Raccords::nb_faces() const
+template <typename _SIZE_>
+typename Raccords_32_64<_SIZE_>::int_t Raccords_32_64<_SIZE_>::nb_faces() const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this) nombre += itr->nb_faces();
 
   return nombre;
@@ -54,11 +58,20 @@ int Raccords::nb_faces() const
  * @param (Type_Face type) le type des faces a compter
  * @return (int) le nombre de faces du type specifie contenues dans la liste de raccords
  */
-int Raccords::nb_faces(Type_Face type) const
+template <typename _SIZE_>
+typename Raccords_32_64<_SIZE_>::int_t Raccords_32_64<_SIZE_>::nb_faces(Type_Face type) const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this)
     if (type == itr->faces().type_face()) nombre += itr->nb_faces();
 
   return nombre;
 }
+
+
+template class Raccords_32_64<int>;
+#if INT_is_64_ == 2
+template class Raccords_32_64<trustIdType>;
+#endif
+
+
