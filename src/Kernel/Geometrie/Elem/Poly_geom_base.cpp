@@ -13,61 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Sous_Domaine_included
-#define Sous_Domaine_included
+#include <Poly_geom_base.h>
+#include <Domaine.h>
 
-#include <TRUST_List.h>
-#include <TRUSTVect.h>
-#include <TRUST_Ref.h>
+Implemente_base_32_64( Poly_geom_base_32_64, "Poly_geom_base", Elem_geom_base_32_64<_T_> );
 
-class Domaine;
-
-/*! @brief Classe Sous_Domaine Represente un sous domaine volumique i.e un sous ensemble de polyedres d'un objet de type Domaine.
- *
- *     Un objet Sous_Domaine porte une reference vers le domaine qu'il subdivise.
- *
- * @sa Domaine Sous_Domaines
- */
-class Sous_Domaine : public Objet_U
+template <typename _SIZE_>
+Sortie& Poly_geom_base_32_64<_SIZE_>::printOn( Sortie& os ) const
 {
-  Declare_instanciable(Sous_Domaine);
+  Elem_geom_base_32_64<_SIZE_>::printOn( os );
+  return os;
+}
 
-public :
+template <typename _SIZE_>
+Entree& Poly_geom_base_32_64<_SIZE_>::readOn( Entree& is )
+{
+  Elem_geom_base_32_64<_SIZE_>::readOn( is );
+  return is;
+}
 
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Nom& le_nom() const override { return nom_; }
-  inline int operator()(int i) const          { return les_polys_[i]; }
-  inline int operator[](int i) const          { return les_polys_[i]; }
-  // Returns the subdomaine number of elements (real+virtual elements in parallel)
-  inline int nb_elem_tot() const              { return les_polys_.size(); }
-  void associer_domaine(const Domaine&);
-  int associer_(Objet_U&) override;
-  void nommer(const Nom& nom) override { nom_=nom; }
-  inline Domaine& domaine()
-  {
-    return le_dom_.valeur();
-  }
-  inline const Domaine& domaine() const
-  {
-    return le_dom_.valeur();
-  }
-  int add_poly(const int poly);
-  int remove_poly(const int poly);
-  inline const IntVect& les_polys() const
-  {
-    return les_polys_;
-  }
-  inline IntVect& les_polys()
-  {
-    return les_polys_;
-  }
-protected :
-
-  IntVect les_polys_;
-  REF(Domaine) le_dom_;
-  Nom nom_;
-};
+template <typename _SIZE_>
+int Poly_geom_base_32_64<_SIZE_>::get_nb_som_elem_max() const
+{
+  if (nb_som_elem_max_>-1)
+    return nb_som_elem_max_ ;
+  else
+    // (int) cast - we assume high order dim in an array are always small:
+    return (int)this->mon_dom.valeur().les_elems().dimension(1);
+}
 
 
+template class Poly_geom_base_32_64<int>;
+#if INT_is_64_ == 2
+template class Poly_geom_base_32_64<trustIdType>;
 #endif
 

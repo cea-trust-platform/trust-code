@@ -13,61 +13,62 @@
 *
 *****************************************************************************/
 
-#ifndef Sous_Domaine_included
-#define Sous_Domaine_included
+#include <Segment_axi.h>
+#include <DomaineAxi1d.h>
 
-#include <TRUST_List.h>
-#include <TRUSTVect.h>
-#include <TRUST_Ref.h>
+Implemente_instanciable_32_64( Segment_axi_32_64, "Segment_axi", Segment_32_64<_T_> );
 
-class Domaine;
-
-/*! @brief Classe Sous_Domaine Represente un sous domaine volumique i.e un sous ensemble de polyedres d'un objet de type Domaine.
- *
- *     Un objet Sous_Domaine porte une reference vers le domaine qu'il subdivise.
- *
- * @sa Domaine Sous_Domaines
- */
-class Sous_Domaine : public Objet_U
+template <typename _SIZE_>
+Sortie& Segment_axi_32_64<_SIZE_>::printOn( Sortie& os ) const
 {
-  Declare_instanciable(Sous_Domaine);
+  Segment_32_64<_SIZE_>::printOn( os );
+  return os;
+}
 
-public :
+template <typename _SIZE_>
+Entree& Segment_axi_32_64<_SIZE_>::readOn( Entree& is )
+{
+  Segment_32_64<_SIZE_>::readOn( is );
+  return is;
+}
 
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Nom& le_nom() const override { return nom_; }
-  inline int operator()(int i) const          { return les_polys_[i]; }
-  inline int operator[](int i) const          { return les_polys_[i]; }
-  // Returns the subdomaine number of elements (real+virtual elements in parallel)
-  inline int nb_elem_tot() const              { return les_polys_.size(); }
-  void associer_domaine(const Domaine&);
-  int associer_(Objet_U&) override;
-  void nommer(const Nom& nom) override { nom_=nom; }
-  inline Domaine& domaine()
-  {
-    return le_dom_.valeur();
-  }
-  inline const Domaine& domaine() const
-  {
-    return le_dom_.valeur();
-  }
-  int add_poly(const int poly);
-  int remove_poly(const int poly);
-  inline const IntVect& les_polys() const
-  {
-    return les_polys_;
-  }
-  inline IntVect& les_polys()
-  {
-    return les_polys_;
-  }
-protected :
+template <typename _SIZE_>
+void Segment_axi_32_64<_SIZE_>::calculer_volumes(DoubleVect_t& volumes) const
+{
+  const Domaine_t& domaine=this->mon_dom.valeur();
+  const DomaineAxi1d_32_64<_SIZE_>& dom = ref_cast(DomaineAxi1d_32_64<_SIZE_>,domaine);
 
-  IntVect les_polys_;
-  REF(Domaine) le_dom_;
-  Nom nom_;
-};
+  int_t S1,S2;
+
+  int_t size_tot = domaine.nb_elem_tot();
+  assert(volumes.size_totale()==size_tot);
+
+  assert(dimension==3);
+
+  for (int_t num_poly=0; num_poly<size_tot; num_poly++)
+    {
+      S1 = domaine.sommet_elem(num_poly,0);
+      S2 = domaine.sommet_elem(num_poly,1);
+
+      double x0 = dom.origine_repere(num_poly,0);
+      double y0 = dom.origine_repere(num_poly,1);
+
+      double x1 = dom.coord(S1,0);
+      double x2 = dom.coord(S2,0);
+
+      double y1 = dom.coord(S1,1);
+      double y2 = dom.coord(S2,1);
+
+      double r1 = sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+      double r2 = sqrt((x2-x0)*(x2-x0)+(y2-y0)*(y2-y0));
+
+      volumes[num_poly]= M_PI*std::fabs(r2*r2-r1*r1);
+    }
+}
 
 
+template class Segment_axi_32_64<int>;
+#if INT_is_64_ == 2
+template class Segment_axi_32_64<trustIdType>;
 #endif
 

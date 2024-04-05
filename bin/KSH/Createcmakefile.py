@@ -260,6 +260,7 @@ list(APPEND listdir_standard
     src/Kernel/Cond_Lim 
     src/Kernel/Framework 
     src/Kernel/Geometrie 
+    src/Kernel/Geometrie/Elem 
     src/Kernel/Geometrie/Decoupeur 
     src/Kernel/ICoCo 
     src/Kernel/MEDimpl 

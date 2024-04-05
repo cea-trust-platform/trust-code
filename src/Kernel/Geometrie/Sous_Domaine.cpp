@@ -1005,9 +1005,6 @@ int Sous_Domaine::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
 }
 
 
-
-
-
 /*! @brief Ajoute un polyedre au sous-domaine.
  *
  * @return (int)

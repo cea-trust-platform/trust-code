@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,61 +13,57 @@
 *
 *****************************************************************************/
 
-#ifndef Sous_Domaine_included
-#define Sous_Domaine_included
+#ifndef Hexaedre_axi_included
+#define Hexaedre_axi_included
 
-#include <TRUST_List.h>
-#include <TRUSTVect.h>
-#include <TRUST_Ref.h>
+#include <Hexaedre.h>
 
-class Domaine;
-
-/*! @brief Classe Sous_Domaine Represente un sous domaine volumique i.e un sous ensemble de polyedres d'un objet de type Domaine.
+/*! @brief Classe Hexaedre_axi Cette classe represente la deformee de l'hexaedre dans
  *
- *     Un objet Sous_Domaine porte une reference vers le domaine qu'il subdivise.
+ *     le cas d'un maillage en coordonnees cylindriques
+ *     Les methodes de la classe Hexaedre dont Hexaedre_axi derive sont
+ *     surchargees pour effectuer les calculs en coordonnees cylindrique.
  *
- * @sa Domaine Sous_Domaines
+ * @sa Hexaedre Elem_geom_base Elem_geom
  */
-class Sous_Domaine : public Objet_U
+template <typename _SIZE_>
+class Hexaedre_axi_32_64 : public Hexaedre_32_64<_SIZE_>
 {
-  Declare_instanciable(Sous_Domaine);
+
+  Declare_instanciable_32_64(Hexaedre_axi_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using DoubleVect_t = DVect_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Nom& le_nom() const override { return nom_; }
-  inline int operator()(int i) const          { return les_polys_[i]; }
-  inline int operator[](int i) const          { return les_polys_[i]; }
-  // Returns the subdomaine number of elements (real+virtual elements in parallel)
-  inline int nb_elem_tot() const              { return les_polys_.size(); }
-  void associer_domaine(const Domaine&);
-  int associer_(Objet_U&) override;
-  void nommer(const Nom& nom) override { nom_=nom; }
-  inline Domaine& domaine()
-  {
-    return le_dom_.valeur();
-  }
-  inline const Domaine& domaine() const
-  {
-    return le_dom_.valeur();
-  }
-  int add_poly(const int poly);
-  int remove_poly(const int poly);
-  inline const IntVect& les_polys() const
-  {
-    return les_polys_;
-  }
-  inline IntVect& les_polys()
-  {
-    return les_polys_;
-  }
-protected :
-
-  IntVect les_polys_;
-  REF(Domaine) le_dom_;
-  Nom nom_;
+  const Nom& nom_lml() const override;
+  int contient(const ArrOfDouble& pos, int_t elem) const override;
+  int contient(const SmallArrOfTID_t& soms,  int_t elem ) const override;
+  inline Type_Face type_face(int=0) const override;
+  void calculer_centres_gravite(DoubleTab_t& c) const override ;
+  void calculer_volumes(DoubleVect_t& vols) const override;
 };
 
 
-#endif
+/*! @brief Renvoie le i-ieme type de face.
+ *
+ * Un Hexaedre (Axi) n'a qu'un seul type de face.
+ *
+ * @param (int i) le rang du type de face a renvoyer
+ * @return (Type_Face) un type de face
+ */
+template <typename _SIZE_>
+inline Type_Face Hexaedre_axi_32_64<_SIZE_>::type_face(int i) const
+{
+  assert(i==0);
+  return Faces::quadrangle_3D_axi;
+}
 
+using Hexaedre_axi = Hexaedre_axi_32_64<int>;
+using Hexaedre_axi_64 = Hexaedre_axi_32_64<trustIdType>;
+
+#endif

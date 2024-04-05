@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,61 +13,25 @@
 *
 *****************************************************************************/
 
-#ifndef Sous_Domaine_included
-#define Sous_Domaine_included
+#include <Elem_geom.h>
 
-#include <TRUST_List.h>
-#include <TRUSTVect.h>
-#include <TRUST_Ref.h>
+Implemente_instanciable_32_64(Elem_geom_32_64, "Elem_geom",DERIV(Elem_geom_base_32_64<_T_>));
 
-class Domaine;
-
-/*! @brief Classe Sous_Domaine Represente un sous domaine volumique i.e un sous ensemble de polyedres d'un objet de type Domaine.
- *
- *     Un objet Sous_Domaine porte une reference vers le domaine qu'il subdivise.
- *
- * @sa Domaine Sous_Domaines
- */
-class Sous_Domaine : public Objet_U
+template <typename _SIZE_>
+Sortie& Elem_geom_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  Declare_instanciable(Sous_Domaine);
+  return DERIV(Elem_geom_base_32_64<_SIZE_>)::printOn(s);
+}
 
-public :
-
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Nom& le_nom() const override { return nom_; }
-  inline int operator()(int i) const          { return les_polys_[i]; }
-  inline int operator[](int i) const          { return les_polys_[i]; }
-  // Returns the subdomaine number of elements (real+virtual elements in parallel)
-  inline int nb_elem_tot() const              { return les_polys_.size(); }
-  void associer_domaine(const Domaine&);
-  int associer_(Objet_U&) override;
-  void nommer(const Nom& nom) override { nom_=nom; }
-  inline Domaine& domaine()
-  {
-    return le_dom_.valeur();
-  }
-  inline const Domaine& domaine() const
-  {
-    return le_dom_.valeur();
-  }
-  int add_poly(const int poly);
-  int remove_poly(const int poly);
-  inline const IntVect& les_polys() const
-  {
-    return les_polys_;
-  }
-  inline IntVect& les_polys()
-  {
-    return les_polys_;
-  }
-protected :
-
-  IntVect les_polys_;
-  REF(Domaine) le_dom_;
-  Nom nom_;
-};
+template <typename _SIZE_>
+Entree& Elem_geom_32_64<_SIZE_>::readOn(Entree& s )
+{
+  return DERIV(Elem_geom_base_32_64<_SIZE_>)::readOn(s);
+}
 
 
+template class Elem_geom_32_64<int>;
+#if INT_is_64_ == 2
+template class Elem_geom_32_64<trustIdType>;
 #endif
 
