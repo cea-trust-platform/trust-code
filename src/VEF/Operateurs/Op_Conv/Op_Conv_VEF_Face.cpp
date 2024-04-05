@@ -823,7 +823,10 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               CIntTabView les_elems_v = les_elems.view_ro();
               CDoubleTabView3 facette_normales_v = facette_normales.view3_ro();
               CIntArrView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
-              CDoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
+              // ToDo suppress one day: Domaine_VEF::vecteur_face_facette() -20% in RAM
+              // and implement a vecteur_face_fa7(poly, face, dir) method
+              //CDoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
+              CDoubleTabView xp_v = domaine_VEF.xp().view_ro();
               CDoubleTabView xv_v = xv.view_ro();
               CIntArrView type_elem_Cl_v = type_elem_Cl_.view_ro();
               CIntArrView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
@@ -840,6 +843,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               DoubleTabView flux_b_v = flux_b.view_rw();
 
               const int dim = Objet_U::dimension;
+              const int nb_som_facette = dim;
               const bool isMuscl = type_op_boucle == muscl;
               const bool isAmont = type_op_boucle == amont;
               const int ordr = ordre;
@@ -855,6 +859,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 double cc[3] {};
                 double vsom[12] {};
                 double xsom[12] {};
+                double vecteur_face_fac7[3] {};
                 {
                   int rang = rang_elem_non_std_v(poly);
                   int contrib = 0;
@@ -962,20 +967,26 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                               dir = 1;
                             }
                           // Determination des faces amont pour les points C,S,S2
-                          int face_amont_c = face_amont_m;
-                          int face_amont_s = face_amont_m;
-                          int face_amont_s2 = face_amont_m;
+                          int face_amont_c;
+                          int face_amont_s;
+                          int face_amont_s2;
                           if (isMuscl && ordr == 3)
                             {
                               face_amont_c = (psc_c >= 0) ? num10 : num20;
                               face_amont_s = (psc_s >= 0) ? num10 : num20;
                               face_amont_s2 = (psc_s2 >= 0) ? num10 : num20;
                             }
+                          else
+                            {
+                              face_amont_c = face_amont_m;
+                              face_amont_s = face_amont_m;
+                              face_amont_s2 = face_amont_m;
+                            }
                           // gradient aux items element (schema centre) ou aux items face (schemas muscl)
-                          int item_m = poly;
-                          int item_c = poly;
-                          int item_s = poly;
-                          int item_s2 = poly;
+                          int item_m;
+                          int item_c;
+                          int item_s;
+                          int item_s2;
                           if (isMuscl)
                             {
                               item_m = face_amont_m;
@@ -983,29 +994,49 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                               item_s = face_amont_s;
                               item_s2 = face_amont_s2;
                             }
-
+                          else
+                            {
+                              item_m = poly;
+                              item_c = poly;
+                              item_s = poly;
+                              item_s2 = poly;
+                            }
+                          if (rang==-1)
+                            {
+                              // vecteur_face_fa7(poly, face, dir);
+                              int num_face = elem_faces_v(poly, KEL_v(dir, fa7));
+                              for (int j = 0; j < dim; j++)
+                                {
+                                  vecteur_face_fac7[j] = xp_v(poly, j);
+                                  for (int num_som_fa7 = 0; num_som_fa7 < nb_som_facette - 1; num_som_fa7++)
+                                    {
+                                      int isom_loc = KEL_v(num_som_fa7 + 2, fa7);
+                                      int isom_glob = les_elems_v(poly, isom_loc);
+                                      vecteur_face_fac7[j] += coord_sommets_v(isom_glob, j);
+                                    }
+                                  vecteur_face_fac7[j] /= nb_som_facette;
+                                  vecteur_face_fac7[j] -= xv_v(num_face, j);
+                                }
+                            }
                           for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
                             {
                               double flux;
-                              double inco_m = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_m, 0)
-                                               : transporte_face_v(face_amont_m, comp0));
+                              double inco_m = transporte_face_v(face_amont_m, comp0);
                               if (isAmont || appliquer_cl_dirichlet)
                                 flux = inco_m * psc_m;
                               else   // muscl ou centre
                                 {
+
                                   // Calcul de l'inconnue au centre M de la fa7
                                   if (rang == -1)
                                     for (int j = 0; j < dim; j++)
-                                      inco_m += gradient_v(item_m, comp0, j) *
-                                                vecteur_face_facette_v(poly, fa7, j, dir);
+                                      inco_m += gradient_v(item_m, comp0, j) * vecteur_face_fac7[j];
                                   else
                                     for (int j = 0; j < dim; j++)
                                       inco_m += gradient_v(item_m, comp0, j) *
                                                 vecteur_face_facette_Cl_v(rang, fa7, j, dir);
                                   // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
-                                  double inco_s = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s, 0)
-                                                   : transporte_face_v(face_amont_s,
-                                                                       comp0));
+                                  double inco_s = transporte_face_v(face_amont_s, comp0);
                                   int sommet_s = les_elems_v(poly, KEL_v(2, fa7));
                                   for (int j = 0; j < dim; j++)
                                     inco_s += gradient_v(item_s, comp0, j) *
@@ -1015,9 +1046,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                   double inco_s2 = 0;
                                   if (dim == 3)
                                     {
-                                      inco_s2 = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_s2, 0)
-                                                 : transporte_face_v(face_amont_s2,
-                                                                     comp0));
+                                      inco_s2 = transporte_face_v(face_amont_s2, comp0);
                                       int sommet_s2 = les_elems_v(poly, KEL_v(3, fa7));
                                       for (int j = 0; j < dim; j++)
                                         inco_s2 += gradient_v(item_s2, comp0, j) *
@@ -1030,12 +1059,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                   double inco_c;
                                   if (ordr == 3)
                                     {
-                                      inco_c = (ncomp_ch_transporte == 1 ? transporte_face_v(face_amont_c, 0)
-                                                : transporte_face_v(face_amont_c,
-                                                                    comp0));
+                                      inco_c = transporte_face_v(face_amont_c, comp0);
                                       for (int j = 0; j < dim; j++)
-                                        inco_c +=
-                                          gradient_v(item_c, comp0, j) * (-xv_v(face_amont_c, j) + xc[j]);
+                                        inco_c += gradient_v(item_c, comp0, j) * (-xv_v(face_amont_c, j) + xc[j]);
                                     }
                                   else
                                     inco_c = dim * inco_m - inco_s - inco_s2;
