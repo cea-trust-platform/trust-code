@@ -13,10 +13,15 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Thermohydraulique_Cloned_Concentration_included
-#define Pb_Thermohydraulique_Cloned_Concentration_included
+#ifndef Problemes_Cloned_Concentration_included
+#define Problemes_Cloned_Concentration_included
 
 #include <Pb_Cloned_Concentration_Gen.h>
+
+/// \cond DO_NOT_DOCUMENT
+class Problemes_Cloned_Concentration
+{ /* pour check sources */ };
+/// \endcond
 
 /*! @brief classe Pb_Thermohydraulique_Cloned_Concentration Cette classe represente un probleme de thermohydraulique avec concentrations :
  *
@@ -34,4 +39,18 @@ class Pb_Thermohydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_
   Declare_instanciable(Pb_Thermohydraulique_Cloned_Concentration);
 };
 
-#endif /* Pb_Thermohydraulique_Cloned_Concentration_included */
+/*! @brief Classe Pb_Hydraulique_Cloned_Concentration Cette classe represente un probleme d'hydraulique avec transport d'un ou plusieurs constituants:
+ *        - Equations de Navier_Stokes en regime laminaire pour un fluide incompressible
+ *        - Equations de convection-diffusion en regime laminaire
+ *          En fait si on transporte plusieurs constituants on utilisera une seule equation de convection-diffusion avec une inconnue vectorielle.
+ *          En general, on couple les 2 equations par l'intermediaire du terme source des forces de volume de Navier_Stokes dans lequel on prend
+ *          en compte de petites variations de la masse volumique en fonction du ou des constituants
+ *
+ * @sa Pb_Fluide_base
+ */
+class Pb_Hydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_Gen<Pb_Hydraulique>
+{
+  Declare_instanciable(Pb_Hydraulique_Cloned_Concentration);
+};
+
+#endif /* Problemes_Cloned_Concentration_included */
