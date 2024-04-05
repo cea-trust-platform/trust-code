@@ -76,28 +76,28 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
 {
   switch(type_face)
     {
-    case Faces::vide_0D:
+    case Type_Face::vide_0D:
       type_elem_face = "??";
       break;
-    case Faces::point_1D:
+    case Type_Face::point_1D:
       type_elem_face = "??";
       break;
-    case Faces::segment_2D:
+    case Type_Face::segment_2D:
       type_elem_face = "segment";
       break;
-    case Faces::segment_2D_axi:
+    case Type_Face::segment_2D_axi:
       type_elem_face = "segment";
       break;
-    case Faces::triangle_3D:
+    case Type_Face::triangle_3D:
       type_elem_face = "triangle";
       break;
-    case Faces::quadrilatere_2D_axi:
+    case Type_Face::quadrilatere_2D_axi:
       type_elem_face = "quadrangle_VEF";
       break;
-    case Faces::quadrangle_3D:
+    case Type_Face::quadrangle_3D:
       type_elem_face = (sub_type(Hexaedre,type_elem)?"rectangle":"quadrangle_VEF");
       break;
-    case Faces::quadrangle_3D_axi:
+    case Type_Face::quadrangle_3D_axi:
       type_elem_face = "quadrangle_VEF";
       break;
     default:

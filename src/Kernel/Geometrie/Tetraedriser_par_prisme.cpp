@@ -159,28 +159,28 @@ void Tetraedriser_par_prisme::trianguler(Domaine& domaine) const
   for (auto &itr : domaine.faces_bord())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::triangle_3D);
+      les_faces.typer(Type_Face::triangle_3D);
       decoupe(domaine, les_faces);
     }
 
   for (auto &itr : domaine.faces_raccord())
     {
       Faces& les_faces = itr->faces();
-      les_faces.typer(Faces::triangle_3D);
+      les_faces.typer(Type_Face::triangle_3D);
       decoupe(domaine, les_faces);
     }
 
   for (auto &itr : domaine.bords_int())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::triangle_3D);
+      les_faces.typer(Type_Face::triangle_3D);
       decoupe(domaine, les_faces);
     }
 
   for (auto &itr : domaine.groupes_faces())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::triangle_3D);
+      les_faces.typer(Type_Face::triangle_3D);
       decoupe(domaine, les_faces);
     }
 }

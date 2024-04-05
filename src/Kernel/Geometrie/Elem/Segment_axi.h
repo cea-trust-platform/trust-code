@@ -47,7 +47,7 @@ template <typename _SIZE_>
 inline Type_Face Segment_axi_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::point_1D_axi;
+  return Type_Face::point_1D_axi;
 }
 
 using Segment_axi = Segment_axi_32_64<int>;

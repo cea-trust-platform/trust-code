@@ -547,11 +547,11 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                           nouveau_bord=dom.faces_bord().add(Bord());
                           nouveau_bord->nommer((Nom)idomaine);
                           if (nb_som_face==3)
-                            nouveau_bord->faces().typer(Faces::triangle_3D);
+                            nouveau_bord->faces().typer(Type_Face::triangle_3D);
                           else if (nb_som_face==4)
-                            nouveau_bord->faces().typer(Faces::quadrangle_3D);
+                            nouveau_bord->faces().typer(Type_Face::quadrangle_3D);
                           else if (nb_som_face==2)
-                            nouveau_bord->faces().typer(Faces::segment_2D);
+                            nouveau_bord->faces().typer(Type_Face::segment_2D);
                           else
                             {
                               Cerr << "Type of boundary face not provided for nb_som_face=" << nb_som_face << finl;

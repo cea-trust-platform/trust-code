@@ -63,7 +63,7 @@ template <typename _SIZE_>
 inline Type_Face Rectangle_2D_axi_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::quadrilatere_2D_axi;
+  return Type_Face::quadrilatere_2D_axi;
 }
 
 using Rectangle_2D_axi = Rectangle_2D_axi_32_64<int>;

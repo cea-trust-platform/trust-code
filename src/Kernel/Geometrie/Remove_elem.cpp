@@ -313,18 +313,18 @@ void Remove_elem::remove_elem_(Domaine& dom)
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)
-              les_faces.typer(Faces::segment_2D);
+              les_faces.typer(Type_Face::segment_2D);
             else
-              les_faces.typer(Faces::quadrangle_3D);
+              les_faces.typer(Type_Face::quadrangle_3D);
             recreer_faces(dom, les_faces, som_face);
           }
         Cerr << " addition of a new boundary issued from removed elements" << finl;
         Bord& new_bord = dom.faces_bord().add(Bord());
         new_bord.nommer("newBord");
         if (dimension == 2)
-          new_bord.typer_faces(Faces::segment_2D);
+          new_bord.typer_faces(Type_Face::segment_2D);
         else
-          new_bord.typer_faces(Faces::quadrangle_3D);
+          new_bord.typer_faces(Type_Face::quadrangle_3D);
         Faces& les_faces = new_bord.faces();
         creer_faces(dom, les_faces, som_face);
       }
@@ -336,9 +336,9 @@ void Remove_elem::remove_elem_(Domaine& dom)
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)
-              les_faces.typer(Faces::segment_2D);
+              les_faces.typer(Type_Face::segment_2D);
             else
-              les_faces.typer(Faces::quadrangle_3D);
+              les_faces.typer(Type_Face::quadrangle_3D);
             recreer_faces(dom, les_faces, som_face);
           }
       }

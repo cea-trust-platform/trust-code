@@ -245,7 +245,7 @@ template <typename _SIZE_>
 inline Type_Face Hexaedre_VEF_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::quadrangle_3D;
+  return Type_Face::quadrangle_3D;
 }
 
 using Hexaedre_VEF = Hexaedre_VEF_32_64<int>;

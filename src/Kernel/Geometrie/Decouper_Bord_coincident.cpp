@@ -232,9 +232,9 @@ void Decouper_Bord_coincident::decouper_(Domaine& domaine)
               {
                 Faces& les_faces = itr->faces();
                 if (dimension == 2)
-                  les_faces.typer(Faces::segment_2D);
+                  les_faces.typer(Type_Face::segment_2D);
                 else
-                  les_faces.typer(Faces::triangle_3D);
+                  les_faces.typer(Type_Face::triangle_3D);
 
                 IntTab& sommets = les_faces.les_sommets();
                 assert(sommets.dimension(1) == dimension);

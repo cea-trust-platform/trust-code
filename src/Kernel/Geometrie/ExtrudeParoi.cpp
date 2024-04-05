@@ -545,7 +545,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
     for (auto& itr : dom.faces_bord())
       {
         Faces& lesfacesbord=itr.faces();
-        lesfacesbord.typer(Faces::triangle_3D);
+        lesfacesbord.typer(Type_Face::triangle_3D);
         IntTab& sommets=lesfacesbord.les_sommets();
         if(itr.le_nom()==nom_front)
           {

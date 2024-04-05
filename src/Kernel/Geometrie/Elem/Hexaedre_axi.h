@@ -60,7 +60,7 @@ template <typename _SIZE_>
 inline Type_Face Hexaedre_axi_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::quadrangle_3D_axi;
+  return Type_Face::quadrangle_3D_axi;
 }
 
 using Hexaedre_axi = Hexaedre_axi_32_64<int>;

@@ -20,7 +20,7 @@
 
 /*! @brief Classe Hexaedre Cette represente un element geometrique a 6 faces, 8 sommets et
  *
- *     un seul type de face (Faces::quadrangle_3D) a 4 sommets.
+ *     un seul type de face (Type_Face::quadrangle_3D) a 4 sommets.
  *
  * @sa Hexaedre_axi Elem_geom_base Elem_geom, Un hexaedre est un element 3D
  */
@@ -206,7 +206,7 @@ template<typename _SIZE_>
 inline Type_Face Hexaedre_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::quadrangle_3D;
+  return Type_Face::quadrangle_3D;
 }
 
 using Hexaedre = Hexaedre_32_64<int>;

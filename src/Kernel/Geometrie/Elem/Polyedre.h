@@ -20,7 +20,7 @@
 
 /*! @brief Classe Polyedre Cette represente l'element geometrique Polyedre.
  *
- * Un polyedre est un element defini par ses faces de type Faces::polygone_3D
+ * Un polyedre est un element defini par ses faces de type Type_Face::polygone_3D
  *
  * @sa Poly_geom_base Elem_geom
  */
@@ -159,11 +159,11 @@ inline Type_Face Polyedre_32_64<_SIZE_>::type_face(int i) const
   switch(i)
     {
     case 0:
-      return Faces::polygone_3D;
+      return Type_Face::polygone_3D;
     default :
       Cerr << "Error, a polyhedron has 1 type of faces and not " << i << finl;
       Process::exit();
-      return Faces::quadrangle_3D;
+      return Type_Face::quadrangle_3D;
     }
 }
 

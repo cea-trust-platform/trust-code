@@ -193,7 +193,7 @@ template <typename _SIZE_>
 inline Type_Face Triangle_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::segment_2D;
+  return Type_Face::segment_2D;
 }
 
 

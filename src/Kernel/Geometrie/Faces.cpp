@@ -27,7 +27,7 @@ Implemente_instanciable_32_64(Faces_32_64,"Faces",Objet_U);
  *       - le type des faces
  *       - les sommets
  *       - les voisins
- *     On ecrit juste le type Faces::vide_0D, si le nombre de
+ *     On ecrit juste le type Type_Face::vide_0D, si le nombre de
  *     faces est nul.
  *
  * @param (Sortie& s) un flot de sortie
@@ -53,7 +53,7 @@ Sortie& Faces_32_64<_SIZE_>::printOn(Sortie& s ) const
  *       - le type des faces
  *       - les sommets
  *       - les voisins
- *     On ecrit juste le type Faces::vide_0D, si le nombre de
+ *     On ecrit juste le type Type_Face::vide_0D, si le nombre de
  *     faces est nul.
  *
  * @param (Sortie& s) un flot de sortie
@@ -223,25 +223,25 @@ Type_Face Faces_32_64<_SIZE_>::type(const Motcle& mot) const
   switch(rang)
     {
     case  0 :
-      return Faces::vide_0D;
+      return Type_Face::vide_0D;
     case  1 :
-      return Faces::point_1D;
+      return Type_Face::point_1D;
     case  2 :
-      return Faces::point_1D_axi;
+      return Type_Face::point_1D_axi;
     case  3 :
-      return Faces::segment_2D;
+      return Type_Face::segment_2D;
     case  4 :
-      return Faces::triangle_3D;
+      return Type_Face::triangle_3D;
     case  5 :
-      return Faces::quadrangle_3D;
+      return Type_Face::quadrangle_3D;
     case  6 :
-      return Faces::segment_2D_axi;
+      return Type_Face::segment_2D_axi;
     case  7 :
-      return Faces::quadrangle_3D_axi;
+      return Type_Face::quadrangle_3D_axi;
     case  8 :
-      return Faces::quadrilatere_2D_axi;
+      return Type_Face::quadrilatere_2D_axi;
     case 9 :
-      return Faces::polygone_3D;
+      return Type_Face::polygone_3D;
     default :
       {
         Cerr << "In the area number " << Process::me() << " " << mot << " is not a type of face." << finl;
@@ -258,7 +258,7 @@ Type_Face Faces_32_64<_SIZE_>::type(const Motcle& mot) const
       }
     }
   // pour le compilo :
-  return Faces::point_1D;
+  return Type_Face::point_1D;
 }
 
 /*! @brief Renvoie le nom associe a un type de face.
@@ -275,34 +275,34 @@ Motcle& Faces_32_64<_SIZE_>::type(const Type_Face& typ) const
   static Motcle mot;
   switch(typ)
     {
-    case  Faces::vide_0D :
+    case  Type_Face::vide_0D :
       mot="vide_0D";
       break;
-    case  Faces::point_1D :
+    case  Type_Face::point_1D :
       mot="point_1D";
       break;
-    case  Faces::point_1D_axi :
+    case  Type_Face::point_1D_axi :
       mot="point_1D_axi";
       break;
-    case  Faces::segment_2D :
+    case  Type_Face::segment_2D :
       mot="segment_2D";
       break;
-    case  Faces::segment_2D_axi :
+    case  Type_Face::segment_2D_axi :
       mot="segment_2D_axi";
       break;
-    case  Faces::triangle_3D :
+    case  Type_Face::triangle_3D :
       mot="triangle_3D";
       break;
-    case  Faces::quadrangle_3D :
+    case  Type_Face::quadrangle_3D :
       mot="quadrangle_3D";
       break;
-    case  Faces::quadrangle_3D_axi :
+    case  Type_Face::quadrangle_3D_axi :
       mot="quadrangle_3D_axi";
       break;
-    case Faces::quadrilatere_2D_axi :
+    case Type_Face::quadrilatere_2D_axi :
       mot="quadrilatere_2D_axi";
       break;
-    case Faces::polygone_3D:
+    case Type_Face::polygone_3D:
       mot="polygone_3D";
       break;
     default :
@@ -405,32 +405,32 @@ void Faces_32_64<_SIZE_>::typer(const Type_Face& typ)
   int max_dim = 3;
   switch(typ)
     {
-    case  Faces::vide_0D :
+    case  Type_Face::vide_0D :
       nb_som_face=0;
       break;
-    case  Faces::point_1D :
-    case  Faces::point_1D_axi :
+    case  Type_Face::point_1D :
+    case  Type_Face::point_1D_axi :
       nb_som_face=1;
       break;
-    case  Faces::segment_2D :
+    case  Type_Face::segment_2D :
       nb_som_face=2;
       break;
-    case  Faces::segment_2D_axi :
+    case  Type_Face::segment_2D_axi :
       nb_som_face=2; //axi_=1;
       break;
-    case  Faces::triangle_3D :
+    case  Type_Face::triangle_3D :
       nb_som_face=3;
       break;
-    case  Faces::quadrangle_3D :
+    case  Type_Face::quadrangle_3D :
       nb_som_face=4;
       break;
-    case  Faces::quadrangle_3D_axi :
+    case  Type_Face::quadrangle_3D_axi :
       nb_som_face=4; //axi_=1;
       break;
-    case  Faces::quadrilatere_2D_axi :
+    case  Type_Face::quadrilatere_2D_axi :
       nb_som_face=2; //axi_=1;
       break;
-    case Faces::polygone_3D:
+    case Type_Face::polygone_3D:
       nb_som_face=-1; // sera fixe plus tard
       break;
     default :
@@ -513,7 +513,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
     }
   switch(type_face_)
     {
-    case Faces::segment_2D :
+    case Type_Face::segment_2D :
       {
         assert(dimension==2);
         double delta0, delta1;
@@ -532,7 +532,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case Faces::quadrilatere_2D_axi :
+    case Type_Face::quadrilatere_2D_axi :
       {
         assert(dimension==2);
         double r0,r1,z0,z1,delta_r,delta_z;
@@ -556,7 +556,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
         break;
       }
 
-    case  Faces::segment_2D_axi :
+    case  Type_Face::segment_2D_axi :
       {
         assert(dimension==2);
         double r0,r1,teta0,teta1,d_teta;
@@ -577,7 +577,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case  Faces::triangle_3D :
+    case  Type_Face::triangle_3D :
       {
         assert(dimension==3);
 
@@ -611,7 +611,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case  Faces::quadrangle_3D :
+    case  Type_Face::quadrangle_3D :
       {
         // On se base sur Hexa_VEF::normale():
         for(int_t face=0; face <nb_faces_tot(); face++)
@@ -651,7 +651,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case Faces::quadrangle_3D_axi :
+    case Type_Face::quadrangle_3D_axi :
       {
         assert(dimension==3);
         double r0,r1,teta0,teta1,teta2,z0,z2,d_teta,delta_r;
@@ -690,15 +690,15 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case Faces::point_1D:
-    case Faces::vide_0D :
+    case Type_Face::point_1D:
+    case Type_Face::vide_0D :
       {
         for(int_t face=0; face <nb_faces_tot(); face++)
           surfaces(face) = 1.0;
 
         break;
       }
-    case Faces::point_1D_axi:
+    case Type_Face::point_1D_axi:
       {
         assert(dimension==3);
 
@@ -718,7 +718,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
           }
         break;
       }
-    case Faces::polygone_3D:
+    case Type_Face::polygone_3D:
       {
         const DoubleTab_t& coord=dom.coord_sommets();
         int nmax=(int)les_sommets().dimension(1);
@@ -786,7 +786,7 @@ void calculer_centres_gravite(DTab_T<_SIZE_>& xv, Type_Face type_face_,
         {
           switch(type_face_)
             {
-            case  Faces::segment_2D_axi :
+            case  Type_Face::segment_2D_axi :
               {
                 for (int_t face=0; face<nb_faces_tot; face++)
                   {
@@ -807,7 +807,7 @@ void calculer_centres_gravite(DTab_T<_SIZE_>& xv, Type_Face type_face_,
                   }
                 break;
               }
-            case Faces::quadrangle_3D_axi :
+            case Type_Face::quadrangle_3D_axi :
               {
                 for (int_t face=0; face<nb_faces_tot; face++)
                   {
@@ -877,18 +877,18 @@ void Faces_32_64<_SIZE_>::reordonner()
   //Cerr << "Faces_32_64<_SIZE_>::reordonner()" << finl;
   switch(type_face_)
     {
-    case  Faces::point_1D :
-    case  Faces::point_1D_axi :
+    case  Type_Face::point_1D :
+    case  Type_Face::point_1D_axi :
       {
         break;
       }
-    case  Faces::segment_2D :
+    case  Type_Face::segment_2D :
       {
         // on peut avoir des bords de maillage triangulaire en 3D
         assert(dimension>=2);
         break;
       }
-    case Faces::quadrilatere_2D_axi :
+    case Type_Face::quadrilatere_2D_axi :
       {
         assert(dimension==2);
         const Domaine_t& dom=domaine();
@@ -922,17 +922,17 @@ void Faces_32_64<_SIZE_>::reordonner()
           }
         break;
       }
-    case  Faces::segment_2D_axi :
+    case  Type_Face::segment_2D_axi :
       {
         assert(dimension==2);
         break;
       }
-    case  Faces::triangle_3D :
+    case  Type_Face::triangle_3D :
       {
         assert(dimension==3);
         break;
       }
-    case  Faces::quadrangle_3D :
+    case  Type_Face::quadrangle_3D :
       {
         assert(dimension==3);
         const Domaine_t& dom=domaine();
@@ -1062,12 +1062,12 @@ void Faces_32_64<_SIZE_>::reordonner()
           }
         break;
       }
-    case Faces::quadrangle_3D_axi :
+    case Type_Face::quadrangle_3D_axi :
       {
         assert(dimension==3);
         break;
       }
-    case Faces::polygone_3D:
+    case Type_Face::polygone_3D:
       assert(dimension==3);
       break;
     default :

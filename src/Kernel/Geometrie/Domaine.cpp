@@ -74,22 +74,22 @@ void check_frontiere(const LIST_FRONTIERE& list, const char *msg)
 template <class _SIZE_>
 void corriger_type(Faces_32_64<_SIZE_>& faces, const Elem_geom_32_64<_SIZE_>& type_elem)
 {
-  int typ = faces.type_face();
-  const int pe = (faces.type_face() == Faces::vide_0D) ? Process::nproc() - 1 : Process::me();
+  Type_Face typ = faces.type_face();
+  const int pe = (faces.type_face() == Type_Face::vide_0D) ? Process::nproc() - 1 : Process::me();
   const int min_pe = ::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
-  int typ_commun = typ;
-  envoyer_broadcast(typ_commun, min_pe);
+  int typ_commun_i = static_cast<int>(typ);
+  envoyer_broadcast(typ_commun_i, min_pe);
+  Type_Face typ_commun = static_cast<Type_Face>(typ_commun_i);
 
   if (typ_commun != typ)
     {
-      if (typ != Faces::vide_0D)
+      if (typ != Type_Face::vide_0D)
         {
           Cerr << "Error in Domaine.cpp corriger_type: invalid boundary face type" << finl;
           Process::exit();
         }
-      Type_Face tt = (Type_Face) typ_commun;
-      faces.typer(tt);
+      faces.typer(typ_commun);
       int n = type_elem->nb_som_face();
       faces.les_sommets().resize(0, n);
     }
@@ -297,7 +297,7 @@ void check_frontiere(const LIST_FRONTIERE& list, const char *msg)
 template<typename _SZ_>
 void Domaine_32_64<_SZ_>::check_domaine()
 {
-  // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
+  // remplacer Type_Face::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
   {
     int i;
     int n = nb_front_Cl();

@@ -182,7 +182,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
       Bord& nouveau=les_bords.add(Bord());
       //
       nouveau.nommer(nom_bord);
-      nouveau.faces().typer(Faces::triangle_3D);
+      nouveau.faces().typer(Type_Face::triangle_3D);
       //
       nouveau.faces().dimensionner(NGELEM[k]);
       //

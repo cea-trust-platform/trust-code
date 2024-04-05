@@ -786,7 +786,7 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
   for (int fr=0; fr<nbfr; fr++)
     {
       dom.frontiere(fr).faces().associer_domaine(dom);
-      if (dom.frontiere(fr).faces().type_face() != Faces::vide_0D)
+      if (dom.frontiere(fr).faces().type_face() != Type_Face::vide_0D)
         dom.frontiere(fr).faces().reordonner();
     }
 }

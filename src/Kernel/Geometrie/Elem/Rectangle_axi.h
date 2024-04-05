@@ -69,7 +69,7 @@ template <typename _SIZE_>
 inline Type_Face Rectangle_axi_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::segment_2D_axi;
+  return Type_Face::segment_2D_axi;
 }
 
 

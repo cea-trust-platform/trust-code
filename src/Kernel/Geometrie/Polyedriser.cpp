@@ -211,28 +211,28 @@ void Polyedriser::polyedriser(Domaine& domaine) const
   for (auto &itr : domaine.faces_bord())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::polygone_3D);
+      les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.faces_raccord())
     {
       Faces& les_faces = itr->faces();
-      les_faces.typer(Faces::polygone_3D);
+      les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.bords_int())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::polygone_3D);
+      les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.groupes_faces())
     {
       Faces& les_faces = itr.faces();
-      les_faces.typer(Faces::polygone_3D);
+      les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
   return;

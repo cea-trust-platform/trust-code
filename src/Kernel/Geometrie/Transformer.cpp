@@ -135,7 +135,7 @@ void Transformer::transformation_complete(Noms& les_fcts)
           Bords& les_bords = domaine().faces_bord();
 
           for (auto &itr : les_bords)
-            itr.faces().typer(Faces::quadrangle_3D);
+            itr.faces().typer(Type_Face::quadrangle_3D);
 
           les_bords.associer_domaine(domaine());
         }

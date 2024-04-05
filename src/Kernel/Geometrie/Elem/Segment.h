@@ -133,7 +133,7 @@ template <typename _SIZE_>
 inline Type_Face Segment_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::point_1D;
+  return Type_Face::point_1D;
 }
 
 

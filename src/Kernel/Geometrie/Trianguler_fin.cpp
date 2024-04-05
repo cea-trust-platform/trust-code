@@ -180,7 +180,7 @@ void Trianguler_fin::trianguler(Domaine& dom) const
       for (auto &itr : dom.faces_bord())
         {
           Faces& les_faces = itr.faces();
-          les_faces.typer(Faces::segment_2D);
+          les_faces.typer(Type_Face::segment_2D);
           IntTab& sommetsfaces = les_faces.les_sommets();
           int nb_faces = sommetsfaces.dimension(0);
           IntTab nouveaux(2 * nb_faces, 2);
@@ -208,7 +208,7 @@ void Trianguler_fin::trianguler(Domaine& dom) const
       for (auto &itr : dom.faces_raccord())
         {
           Faces& les_faces = itr->faces();
-          les_faces.typer(Faces::segment_2D);
+          les_faces.typer(Type_Face::segment_2D);
           IntTab& sommetsfaces = les_faces.les_sommets();
           int nb_faces = sommetsfaces.dimension(0);
           IntTab nouveaux(2 * nb_faces, 2);
@@ -236,7 +236,7 @@ void Trianguler_fin::trianguler(Domaine& dom) const
       for (auto &itr : dom.bords_int())
         {
           Faces& les_faces = itr.faces();
-          les_faces.typer(Faces::segment_2D);
+          les_faces.typer(Type_Face::segment_2D);
           IntTab& sommetsfaces = les_faces.les_sommets();
           int nb_faces = sommetsfaces.dimension(0);
           IntTab nouveaux(2 * nb_faces, 2);
@@ -264,7 +264,7 @@ void Trianguler_fin::trianguler(Domaine& dom) const
       for (auto &itr : dom.groupes_faces())
         {
           Faces& les_faces = itr.faces();
-          les_faces.typer(Faces::segment_2D);
+          les_faces.typer(Type_Face::segment_2D);
           IntTab& sommetsfaces = les_faces.les_sommets();
           int nb_faces = sommetsfaces.dimension(0);
           IntTab nouveaux(2 * nb_faces, 2);

@@ -151,7 +151,7 @@ public:
       aa[2].nommer("ok2");
       SChaine out;
       out<<aa;
-      //CPPUNIT_ASSERT_EQUAL_MESSAGE("apres printon ",Nom("3 ok0\nFaces::vide_0D\n ok1\nFaces::vide_0D\n ok2\nFaces::vide_0D\n \n"),Nom(out.get_str()));
+      //CPPUNIT_ASSERT_EQUAL_MESSAGE("apres printon ",Nom("3 ok0\nType_Face::vide_0D\n ok1\nType_Face::vide_0D\n ok2\nType_Face::vide_0D\n \n"),Nom(out.get_str()));
       CPPUNIT_ASSERT_EQUAL_MESSAGE("apres printon ",Nom("3 ok0\nvide_0D\n ok1\nvide_0D\n ok2\nvide_0D\n \n"),Nom(out.get_str()));
       {
         VECT(Bord) bb;

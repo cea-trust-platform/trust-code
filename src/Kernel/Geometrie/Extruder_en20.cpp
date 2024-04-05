@@ -394,7 +394,7 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
         }
     }
 
-  les_faces_bord.typer(Faces::triangle_3D);
+  les_faces_bord.typer(Type_Face::triangle_3D);
   les_faces_bord.les_sommets().ref(les_sommets);
   les_faces_bord.voisins().resize(6*size_2D*NZ, 2);
   les_faces_bord.voisins()=-1;
@@ -422,7 +422,7 @@ void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, i
   Bord& devant = dom.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
-  les_faces_dvt.typer(Faces::triangle_3D);
+  les_faces_dvt.typer(Type_Face::triangle_3D);
 
   IntTab som_dvt(oldsz, 3);
   les_faces_dvt.voisins().resize(oldsz, 2);
@@ -431,7 +431,7 @@ void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, i
   Bord& derriere = dom.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
-  les_faces_der.typer(Faces::triangle_3D);
+  les_faces_der.typer(Type_Face::triangle_3D);
 
   IntTab som_der(oldsz, 3);
   les_faces_der.voisins().resize(oldsz, 2);

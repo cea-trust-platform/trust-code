@@ -215,7 +215,7 @@ template <typename _SIZE_>
 inline Type_Face Tetraedre_32_64<_SIZE_>::type_face(int i) const
 {
   assert(i==0);
-  return Faces::triangle_3D;
+  return Type_Face::triangle_3D;
 }
 
 /*! @brief remplit la matrice m avec les trois vecteurs de base du tetraedre demande (le premier sommet du tetra est pris comme origine).

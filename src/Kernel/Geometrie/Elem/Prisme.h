@@ -290,13 +290,13 @@ inline Type_Face Prisme_32_64<_SIZE_>::type_face(int i) const
   switch(i)
     {
     case 0:
-      return Faces::quadrangle_3D;
+      return Type_Face::quadrangle_3D;
     case 1:
-      return Faces::triangle_3D;
+      return Type_Face::triangle_3D;
     default :
       Cerr << "Error, a prism has 2 types of faces and not " << i << finl;
       Process::exit();
-      return Faces::quadrangle_3D;
+      return Type_Face::quadrangle_3D;
     }
 }
 

@@ -115,7 +115,7 @@ void Refine_Mesh::apply_2D(void)
   IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_2D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
-  update_domain(Nom("Triangle"), Faces::segment_2D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
+  update_domain(Nom("Triangle"), Type_Face::segment_2D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
                 new_cells_of_connector_faces, new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces);
 
   Scatter::init_sequential_domain(domain);
@@ -156,7 +156,7 @@ void Refine_Mesh::apply_3D(void)
   IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_3D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
-  update_domain(Nom("Tetraedre"), Faces::triangle_3D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
+  update_domain(Nom("Tetraedre"), Type_Face::triangle_3D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
                 new_cells_of_connector_faces, new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces);
 
   Scatter::init_sequential_domain(domain);

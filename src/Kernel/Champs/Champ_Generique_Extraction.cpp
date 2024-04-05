@@ -325,18 +325,18 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   int nb_som_faces = zvf_source.nb_som_face();
 
   Nom type_elem;
-  if (type_face_source==Faces::segment_2D || type_face_source==Faces::segment_2D_axi)
+  if (type_face_source==Type_Face::segment_2D || type_face_source==Type_Face::segment_2D_axi)
     type_elem = "Segment"; // Pour MC2
-  else if (type_face_source==Faces::quadrilatere_2D_axi)
+  else if (type_face_source==Type_Face::quadrilatere_2D_axi)
     type_elem = "Segment"; // Pour MC2
-  else if (type_face_source==Faces::quadrangle_3D)
+  else if (type_face_source==Type_Face::quadrangle_3D)
     type_elem = "Quadrangle";
-  else if (type_face_source==Faces::triangle_3D)
+  else if (type_face_source==Type_Face::triangle_3D)
     type_elem = "Triangle";
-  else if (type_face_source==Faces::point_1D)
+  else if (type_face_source==Type_Face::point_1D)
     type_elem = "Point";
   //Cas suivant possible en parallele
-  else if ((type_face_source==Faces::vide_0D) && (nb_faces==0))
+  else if ((type_face_source==Type_Face::vide_0D) && (nb_faces==0))
     {
       if (source.get_discretisation().is_vdf())
         type_elem = "Rectangle";
@@ -350,7 +350,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     }
   else
     {
-      Cerr<<"The type of faces of the boundary name "<<nom_fr_<<" is neither type Faces::quadrangle_3D nor Faces::triangle_3D"<<finl;
+      Cerr<<"The type of faces of the boundary name "<<nom_fr_<<" is neither type Type_Face::quadrangle_3D nor Type_Face::triangle_3D"<<finl;
       Cerr<<"We do not realize the extraction"<<finl;
       exit();
     }
