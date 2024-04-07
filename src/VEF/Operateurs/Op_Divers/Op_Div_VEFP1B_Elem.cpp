@@ -319,15 +319,11 @@ double calculer_coef_som(True_int type_elem, True_int dimension, True_int& nb_fa
 }
 #pragma omp end declare target
 
-DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div, DoubleTab& flux_b) const
+DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& tab_div, DoubleTab& tab_flux_b) const
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const IntTab& som_elem = domaine.les_elems();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = domaine.nb_faces_elem();
   int nb_elem_tot = domaine.nb_elem_tot();
   int nps = domaine_VEF.numero_premier_sommet();
@@ -335,14 +331,15 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   // Initialisation tableaux constants
   if (som_.size_array() == 0)
     {
+      const IntTab& som_elem = domaine.les_elems();
       som_.resize(nb_elem_tot, nfe);
-      nb_degres_liberte.resize(domaine_VEF.domaine().nb_som_tot());
-      nb_degres_liberte = -1;
+      nb_degres_liberte_.resize(domaine_VEF.domaine().nb_som_tot());
+      nb_degres_liberte_ = -1;
       for (int elem = 0; elem < nb_elem_tot; elem++)
         for (int indice = 0; indice < nfe; indice++)
           {
             int som = nps + domaine.get_renum_som_perio(som_elem(elem, indice));
-            nb_degres_liberte(som - nps)++;
+            nb_degres_liberte_(som - nps)++;
             som_
             (elem, indice) = som;
           }
@@ -353,12 +350,12 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   double coeff_som = 1. / (dimension * (dimension + 1));
   const int *rang_elem_non_std_addr = mapToDevice(domaine_VEF.rang_elem_non_std());
   const int* type_elem_Cl_addr = mapToDevice(zcl.type_elem_Cl());
-  const int *elem_faces_addr = mapToDevice(elem_faces);
-  const int *face_voisins_addr = mapToDevice(face_voisins);
-  const double *face_normales_addr = mapToDevice(face_normales);
+  const int *elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
+  const int *face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
+  const double *face_normales_addr = mapToDevice(domaine_VEF.face_normales());
   const int *som_addr = mapToDevice(som_);
-  const double *vit_addr = mapToDevice(vit, "vit");
-  double *div_addr = computeOnTheDevice(div);
+  const double *vit_addr = mapToDevice(tab_vit, "vit");
+  double *div_addr = computeOnTheDevice(tab_div);
   start_gpu_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int elem = 0; elem < nb_elem_tot; elem++)
@@ -404,71 +401,82 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
     }
   end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
 
-  ToDo_Kokkos("critical");
-  // ToDo OpenMP check, it seems there is an expensive copyToDevice here !!! See test case GPU
-  copyPartialFromDevice(div, nps, nps+domaine.nb_som_tot(), "div on som");
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
+  int nb_comp = Objet_U::dimension;
+
+  CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+  IntArrView nb_degres_liberte = nb_degres_liberte_.view_rw();
+  CDoubleTabView vit = tab_vit.view_ro();
+  DoubleTabView flux_b = tab_flux_b.view_wo();
+  start_timer();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      {
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-        int nb_faces_bord = le_bord.nb_faces();
-        int nb_faces_bord_tot = le_bord.nb_faces_tot();
-        assert(le_bord.nb_faces() == domaine_VEF.domaine().frontiere(n_bord).nb_faces());
-        if (!sub_type(Periodique, la_cl.valeur()))
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      CIntArrView num_face = le_bord.num_face().view_ro();
+      int nb_faces_bord = le_bord.nb_faces();
+      int nb_faces_bord_tot = le_bord.nb_faces_tot();
+      assert(le_bord.nb_faces() == domaine_VEF.domaine().frontiere(n_bord).nb_faces());
+      if (!sub_type(Periodique, la_cl.valeur()))
+        {
+          int libre = 1;
+          if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene, la_cl.valeur()) || sub_type(Dirichlet_entree_fluide, la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()))
+            libre = 0;
+
+          CIntTabView face_sommets = domaine_VEF.face_sommets().view_ro();
+          CIntArrView renum_som_perio = domaine.get_renum_som_perio().view_ro();
+          DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
+          // On boucle sur les faces de bord reelles et virtuelles
+          Kokkos::parallel_for("Op_Div_VEFP1B_Elem::ajouter_som CL non periodique",
+                               Kokkos::RangePolicy<>(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
+                                 const int ind_face)
           {
-            int libre = 1;
-            if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene, la_cl.valeur()) || sub_type(Dirichlet_entree_fluide, la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()))
-              libre = 0;
-            // On boucle sur les faces de bord reelles et virtuelles
-            for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
+            int face = num_face(ind_face);
+            double flux = 0.;
+            for (int comp = 0; comp < nb_comp; comp++)
+              flux += vit(face, comp) * face_normales(face, comp);
+            if (ind_face < nb_faces_bord)
+              flux_b(face, 0) = flux;
+            flux *= 1. / nb_comp;
+            for (int indice = 0; indice < (nfe - 1); indice++)
               {
-                int face = le_bord.num_face(ind_face);
-                double flux = 0.;
-                for (int comp = 0; comp < dimension; comp++)
-                  flux += vit(face, comp) * face_normales(face, comp);
-                if (ind_face < nb_faces_bord)
-                  flux_b(face, 0) = flux;
-                flux *= 1. / dimension;
-                for (int indice = 0; indice < (nfe - 1); indice++)
-                  {
-                    int som = domaine.get_renum_som_perio(face_sommets(face, indice));
-                    div(nps + som) += flux;
-                    if (libre)
-                      nb_degres_liberte(som)++;
-                  }
+                int som = renum_som_perio(face_sommets(face, indice));
+                Kokkos::atomic_add(&div(nps + som), flux);
+                if (libre)
+                  Kokkos::atomic_add(&nb_degres_liberte(som), 1);
               }
-          }
-        else
+          });
+        }
+      else
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          // On boucle sur les faces de bord reelles et virtuelles
+          Kokkos::parallel_for("Op_Div_VEFP1B_Elem::ajouter_som CL non periodique",
+                               Kokkos::RangePolicy<>(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
+                                 const int ind_face)
           {
-            const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-            // On boucle sur les faces de bord reelles et virtuelles
-            for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
+            int face = num_face(ind_face);
+            int face_perio = num_face(face_associee(ind_face));
+            double flux = 0.;
+            double flux_perio = 0.;
+            for (int comp = 0; comp < nb_comp; comp++)
               {
-                int face = le_bord.num_face(ind_face);
-                int face_associee = le_bord.num_face(la_cl_perio.face_associee(ind_face));
-                double flux = 0.;
-                double flux_perio = 0.;
-                for (int comp = 0; comp < dimension; comp++)
-                  {
-                    flux += vit(face, comp) * face_normales(face, comp);
-                    flux_perio += vit(face_associee, comp) * face_normales(face_associee, comp);
-                  }
-                if (ind_face < (nb_faces_bord / 2))
-                  {
-                    flux_b(face, 0) = -flux;
-                    flux_b(face_associee, 0) = flux_perio;
-                  }
+                flux += vit(face, comp) * face_normales(face, comp);
+                flux_perio += vit(face_perio, comp) * face_normales(face_perio, comp);
               }
-          }
-      }
+            if (ind_face < (nb_faces_bord / 2))
+              {
+                flux_b(face, 0) = -flux;
+                flux_b(face_perio, 0) = flux_perio;
+              }
+          });
+        }
     }
-  copyPartialToDevice(div, nps, nps+domaine.nb_som_tot(), "div on som");
-  return div;
+  end_timer(Objet_U::computeOnDevice, "Op_Div_VEFP1B_Elem::ajouter_som CL");
+  return tab_div;
 }
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& div) const
@@ -751,7 +759,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   for (int k = 0; k < nb_som; k++)
     {
       int sommet = dom.get_renum_som_perio(k);
-      if (nb_degres_liberte(sommet) != 0)
+      if (nb_degres_liberte_(sommet) != 0)
         continue;
       if (!afficher_message && VerifierCoin::expert_only == 0)
         {
