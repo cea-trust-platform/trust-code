@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,6 +75,7 @@ private :
   DoubleTab& ajouter_diffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
 
+  KOKKOS_INLINE_FUNCTION void calculer_senseur(CDoubleTabView3, CDoubleArrView, const int, const int, CIntTabView, CIntTabView, CIntTabView, double*, double*, double*, double*) const;
   inline void calculer_senseur(const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
   void mettre_a_jour_pour_periodicite(DoubleTab&) const;
   void ajouter_old(const DoubleTab& , DoubleTab&, const DoubleTab& vitesse) const;
@@ -93,11 +94,11 @@ private :
   void test_implicite() const;
 
   //Attributs de la classe
-  IntTab elem_nb_faces_dirichlet_;
+  ArrOfInt elem_nb_faces_dirichlet_;
   IntTab elem_faces_dirichlet_;
 
-  ArrOfDouble alpha_tab;
-  ArrOfDouble beta; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
+  ArrOfDouble alpha_tab_;
+  ArrOfDouble beta_; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
   //  mutable DoubleTab limiteurs_;//tableau stockant pour chaque face la moyenne algebrique du limiteur
 
   double alpha_ = 1.;
