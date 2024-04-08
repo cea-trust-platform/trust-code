@@ -562,7 +562,6 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
 
   int nb_sources = get_nb_sources();
   nb_pos = positions.dimension(0);
-  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
   double x=0;
   double y=0;
   double z=0;
