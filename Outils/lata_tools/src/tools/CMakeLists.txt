@@ -36,7 +36,6 @@ if (loadercpp)
   set(tgt_tst test_LataLoader)
   add_executable (${tgt_tst} test_LataLoader.cpp )
   install(TARGETS ${tgt_tst} DESTINATION bin)
-  message("la ${paramedmem}")
   target_link_libraries(${tgt_tst} ${tgt_ll} ${ajout})
 
   #

@@ -29,11 +29,11 @@ endif ()
 if (loadercpp)
    add_definitions(-DWITH_MEDLOADER)
    find_library(libz z)
-   if (NOT ${libz}) # Not found
+   if (NOT libz) # Not found
      set(libz "")
    endif()
    find_library(libdl dl)
-   if (NOT ${libdl})
+   if (NOT libdl) # Not found
      set(libdl "")
    endif()
  
