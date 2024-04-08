@@ -123,6 +123,15 @@ void TestTRUSTArray::test_ref_data()
     assert(a.mem_ == nullptr);
     assert(a.span_.data() == pt_int);
   }
+  {
+    IntTab a;
+    a.ref_data(pt_int, 10);
+    assert(a.mem_ == nullptr);
+    assert(a.span_.data() == pt_int);
+    assert(a(1) == 24);
+    a.resize(2,5);
+    assert(a(1, 1) == 24);
+  }
   delete [] pt_int;
 }
 

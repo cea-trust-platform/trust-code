@@ -79,6 +79,11 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 
   if (mem_ == nullptr)
     {
+      if (!span_.empty()) // ref_data! We may pass here if just changing the shape of a tab
+        {
+          assert(size_array() == new_size);
+          return;  // Nothing to do ...
+        }
       // We avoid allocating for empty arrays ... those are typically situations where we will resize (with a non
       // null size) just after, so the real allocation will be made at that point.
       if(new_size == 0) return;
