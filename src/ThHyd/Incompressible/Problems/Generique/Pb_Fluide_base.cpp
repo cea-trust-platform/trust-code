@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,17 +17,8 @@
 
 Implemente_base(Pb_Fluide_base,"Pb_Fluide_base",Probleme_base);
 
-Sortie& Pb_Fluide_base::printOn(Sortie& os) const
-{
-  Probleme_base::printOn(os);
-  return os;
-}
-
-Entree& Pb_Fluide_base::readOn(Entree& is)
-{
-  Probleme_base::readOn(is);
-  return is ;
-}
+Sortie& Pb_Fluide_base::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
+Entree& Pb_Fluide_base::readOn(Entree& is) { return Probleme_base::readOn(is); }
 
 int Pb_Fluide_base::expression_predefini(const Motcle& motlu, Nom& expression)
 {
