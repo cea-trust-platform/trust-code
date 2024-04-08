@@ -560,7 +560,6 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
 
   int nb_sources = get_nb_sources();
   int nb_pos = positions.dimension(0);
-  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
   using DoubleTravs = TRUST_Vector<DoubleTrav>; // remplace VECT(DoubleTrav)
   const int max_nb_sources = 14;
   if (nb_sources>max_nb_sources)
