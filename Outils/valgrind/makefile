@@ -8,7 +8,7 @@ $(cible): Installer_valgrind $(TRUST_cc) makefile
 	@./Installer_valgrind $(version) #1>$(install).log 2>&1
 
 clean:
-	rm -r -f $(install)* $(name)-*.*.*
+	rm -r -f ../../exec/$(name)* $(name)-*.*.*
 
 test_in_place: 
 	$(TRUST_CC) -g test_in_place.cpp -g -o test_in_place.exe

@@ -1039,13 +1039,9 @@ echo "###############################################"
               then
                  echo "Composants/$Composant">>$rebase_log
                  cd $TRUST_ROOT/../Composants/$Composant
-#                  git rebase Livraison 1>>$rebase_log 2>&1
-#                  [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
-#                  git rebase --continue 1>>$rebase_log 2>&1
-#                  [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
                  git remote update
-#                On test uniquement mpcube sur la verison Kernel !
-#                La branche est appele portage car elle ne bouge pas beacoup
+#                On teste uniquement mpcube sur la verison Kernel !
+#                La branche est appelee portage car basee sur une version de developpement TRUST
                  git reset --hard origin/portage
                  cd - 1>/dev/null 2>&1
                  echo>>$rebase_log

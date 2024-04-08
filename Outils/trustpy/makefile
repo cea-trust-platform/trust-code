@@ -1,6 +1,6 @@
 archive=$(TRUST_ROOT)/externalpackages/SALOME/packagespy.tar.gz
 install_dir=$(TRUST_ROOT)/Outils/trustpy/install
-log_file=$(TRUST_ROOT)/Outils/trustpy/trustpy.log
+log_file=trustpy.log
 SHELL=/bin/bash -o pipefail   # make sure failures are spotted before tee below:
 
 all : makefile install check
@@ -16,6 +16,6 @@ check:
 
 clean:
 	echo "Cleaning ..."
-	rm -rf $(install_dir)
+	rm -rf install $(log_file)
 
 .PHONY: install check clean doc

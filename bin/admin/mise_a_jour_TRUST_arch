@@ -875,10 +875,7 @@ do
          echo "--------------------------------------------------------" 
 	 echo $ECHO_OPTS "Test of the baltik environment at "`date '+%H:%M:%S'`
 	 echo $ECHO_OPTS "BALTIK=\c"
-         if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST_BUILD"\."`" != "" ]
-         then
-	    echo "NOT"
-         elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST_BUILD"\."`" != "" ]
+         if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST_BUILD"\."`" != "" ]
          then
 	    echo "NOT"
          else
