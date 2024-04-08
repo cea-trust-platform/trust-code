@@ -600,7 +600,6 @@ Notice that TRUST optimized binary for profiling or a TRUST optimized binary for
 
 \begin{block}{Initialize baltik environnement}
  \texttt{\$ source env\_my\_project.sh } \\
- \texttt{\$ echo \$project\_directory/src }
 \end{block}
 
 \begin{exampleblock}{Launch Eclipse}
@@ -654,14 +653,15 @@ then follow the instructions displayed on the terminal.
 \begin{itemize} 
 \item Open a cpp file from Project Explorer tab: \\
   Double click on TRUST-1.9.4 $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
-\item In the cpp file: Right click on method "initialize()" \\
+  or : Ctrl+shift+R then type Probleme\_base.cpp \\ \vspace{0.2cm}
+\item In the cpp file: Right click on method "postraiter()" \\
   $\Rightarrow$ F3: Opens Declaration \\
   $\Rightarrow$ F4: Open Type Hierarchy \\
   $\Rightarrow$ Ctrl+Alt+H: Open Call Hierarchy \\
   $\Rightarrow$ "Ctrl+PageUp" and "Ctrl+PageDown": Move from a tab to another
 \item you can also: \\
-  $\Rightarrow$ search files by name using: "Ctrl+R" \\
-  $\Rightarrow$ serach attributes/methods/functions/... using: "Ctrl+T"
+  $\Rightarrow$ search files by name using: "Ctrl+shift+R" \\
+  $\Rightarrow$ serach attributes/methods/functions/... using: "Ctrl+shift+T"
 \end{itemize}
 \end{exampleblock}
 
@@ -716,7 +716,7 @@ then follow the instructions displayed on the terminal.
 \begin{itemize}
 \item Have a look at the 2 files my\_first\_class.h|cpp.\\
 
-\item Each time a source file is added to the project, you need to configure it:\\
+\item Each time a source file is added to the project, you need to reconfigure your project to take new files into account when building the exectuable:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ ./configure}
 
@@ -753,16 +753,15 @@ So:
     \begin{itemize}
     \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
     \item [$\circ$] replace "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
-    \item [$\circ$] rebuild your application.\\
-    \item [$\circ$] An error will occur!
+    \item [$\circ$] Interprete\_geometrique\_base contains a pure virtual method which you should implement\\
+    \item [$\circ$] rebuild your application and an error will occur!
     \end{itemize}
 
 This error indicates that a pure virtual function ("interpreter\_") should be implemented.
 
 \item Look at the "Interprete\_geometrique\_base" class:
     \begin{itemize}
-    \item [$\circ$] Eclipse: highlight the string "Interprete\_geometrique\_base" and push the F3 button of your keyboard to open the declaration file of this class
-    \item [$\circ$] Or with the HTLM documentation: open the declaration file of the "Interprete\_geometrique\_base" class
+    \item [$\circ$] in Eclipse: highlight the string "Interprete\_geometrique\_base" and push the F3 button of your keyboard to open the declaration file of this class
     \end{itemize}
 \end{itemize}
 
@@ -781,10 +780,9 @@ This error indicates that a pure virtual function ("interpreter\_") should be im
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. \\
 "Entree" is a TRUST class to read an input stream (from a file for example):\\
-"virtual Entree\& interpreter\_(Entree\&) override;"
+virtual Entree\& interpreter\_(Entree\&) override;
 
-\item Rebuild your project and fix your files until the binary of your project is built %(named
-%my\_project if you have not changed the name in the project.cfg file)\\
+\item Rebuild your project and fix errors until the binary of your project is built
 \end{itemize}
 \end{block}
 
@@ -813,7 +811,6 @@ ERROR...
 \item Edit the data file:\\
 \texttt{\$ nedit Cx.data \&} \\
 Add keywords "my\_first\_class" and "End" after the line where \underline{the problem is discretized}.\\
-NB: Instead of "End", you can reduce the number of time steps to only 1.\\
 
 \item Run this datafile with your baltik binary to check that this new keyword is recognized (see next slide).
 \end{itemize}
@@ -826,15 +823,13 @@ NB: Instead of "End", you can reduce the number of time steps to only 1.\\
 \frametitle{Create a new cpp class}
 
 \begin{exampleblock}{With Eclipse:}
-%    \begin{itemize}
-%    \item [$\circ$] With Eclipse:\\
-    $\rightarrow$ In the project explorer, right click on "MY\_BALTIK" and select "Debug As/Debug configurations..." \\
+    $\rightarrow$ In the project explorer, right click on "my\_project" and select "Debug As/Debug configurations..." \\
     $\rightarrow$ In "Main" tab, check "Disable auto build" then click on "Apply"\\
     $\rightarrow$ In "Arguments" tab, fill "Program arguments:" with "Cx"\\
     $\rightarrow$ "Working directory:" Copy the path to datafile matching \$project\_directory/build/Cx\\
     $\rightarrow$ "Apply" and "Debug"\\
     $\rightarrow$ Click on "Yes" to switch to the debug view\\
-    $\rightarrow$ Click on "Resume" button to run the calculation until the end\\
+    $\rightarrow$ Click on "Resume" button (or F8) to run the calculation until the end\\
 \end{exampleblock}    
 
 \begin{block}{On a terminal:}
@@ -843,7 +838,7 @@ NB: Instead of "End", you can reduce the number of time steps to only 1.\\
 \end{block}    
     
 \begin{block}{}
-\textbf{Nota bene:} "Interprete\_geometrique\_base::interpreter\_()" method is called first,
+\textbf{Nota bene:} "Interprete\_geometrique\_base::interpreter()" method is called first,
 then it calls "my\_first\_class::interpreter\_()" method.
 \end{block}
 
@@ -867,15 +862,15 @@ then it calls "my\_first\_class::interpreter\_()" method.
 \begin{block}{}
 
 \begin{itemize}
-\item To be able to read object parameters from the datafile using the following syntaxe for example:
+\item Now, we want to read from the datafile this syntax:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
- my\_new\_keyword \{ {\bf{dimension}} 3 {\bf{option}} fast \}
+ my\_new\_keyword \{ {\bf{problem}} pb\_name {\bf{option}} 1 \}
 \end{alltt}
 \end{minipage}}
 \end{center}
-it is recommended to use \textbf{Param} objects as shown on the next slide.
+and we will use \textbf{Param} objects as shown on the next slide.
 
 \end{itemize}
 
@@ -892,15 +887,15 @@ it is recommended to use \textbf{Param} objects as shown on the next slide.
 \begin{alltt}
 \small{
 \#include <Param.h>\\
-Entree\& Class::method(Entree\& is)\\
+Entree\& Class::interpreter(Entree\& is)\\
 \{\\
 {\bf{Nom}} opt;\\
-{\bf{int}} dim;\\
+{\bf{Nom}} pb\_name;\\
 {\bf{Cerr}} <\textcompwordmark{}< "Reading parameters of A from a stream (cin or file)" <\textcompwordmark{}< {\bf{finl}};\\
 {\bf{Param}} \textcolor{orange}{param}(que\_suis\_je());\\
 \textcolor{blue}{// Register parameters to be read:}\\
 \textcolor{orange}{param}.ajouter("option",\&opt);\\
-\textcolor{orange}{param}.ajouter("dimension",\&dim,Param::REQUIRED); \\
+\textcolor{orange}{param}.ajouter("problem",\&pb\_name,Param::REQUIRED); \\
 %\textcolor{blue}{// Mandatory parameter}\\
 \textcolor{blue}{// Read now the parameters from the stream is and produces an error }\\
 \textcolor{blue}{// if unknown keyword is read or if braces are not found at the }\\
@@ -924,7 +919,7 @@ return is;\\
 
 \begin{itemize}
 
-\item In our case, the read of the parameters will be done by the interpreter() method. We want to read this syntax from the data:
+\item In our case, the read of the parameters will be done by the interpreter\_() method. We want to read this syntax from the data:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
