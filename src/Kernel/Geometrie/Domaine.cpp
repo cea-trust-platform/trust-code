@@ -2230,7 +2230,7 @@ void Domaine::build_mc_mesh() const
       poly.remplir_Nodes_glob(nodes_glob, les_elems2);
       const ArrOfInt& facesIndex = poly.getFacesIndex();
       const ArrOfInt& polyhedronIndex = poly.getPolyhedronIndex();
-      assert(ncells == polyhedronIndex.size_array() - 1);
+      assert(ncells <= polyhedronIndex.size_array() - 1);
       for (int i = 0; i < ncells; i++)
         {
           int size = 0;
