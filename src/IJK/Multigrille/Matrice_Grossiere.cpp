@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,8 +79,10 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
 {
   // renvoi la valeur interpolee pour la condition de shear-periodicity
   int nb_points = order_interpolation_poisson_solver_+1;
-  int * x = new int[nb_points];
-  double* a= new double[nb_points];
+  ArrOfInt x;
+  ArrOfDouble a;
+  x.resize_array(nb_points);
+  a.resize_array(nb_points);
 
   if (nb_points==2)
     {
@@ -162,9 +164,6 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
           ii_m_[pt] = (i + real_size_i + x[pt] % real_size_i + real_size_i) % real_size_i;
         }
     }
-
-  delete[] x;
-  delete[] a;
 
   return;
 
