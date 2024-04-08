@@ -871,7 +871,7 @@ void Statistiques::dump(const char * message, int mode_append)
   // Les fichiers sont ouverts en mode append.
   {
     Nom CSV(Objet_U::nom_du_cas());
-    CSV+="_log_perf.csv";
+    CSV+="_csv.TU";
     EcrFicPartage file(CSV, mode_append ? (ios::out | ios::app) : (ios::out));
     if (Process::je_suis_maitre())
       file << File_header.get_str();
@@ -1322,14 +1322,6 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
   free(send_recv_family);
   free(all_reduce_family);
-
-  if (Process::je_suis_maitre())
-    {
-      Nom TU(Objet_U::nom_du_cas());
-      TU += "_comm.TU";
-      SFichier comm_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
-      comm_file << comm.get_str();
-    }
 
   restart_counters();
 
