@@ -15,13 +15,13 @@
 
 #include <Problemes_List_Concentration.h>
 
-Implemente_instanciable(Pb_Thermohydraulique_List_Concentration, "Pb_Thermohydraulique_List_Concentration", Pb_List_Concentration_Gen<Pb_Thermohydraulique>);
-Sortie& Pb_Thermohydraulique_List_Concentration::printOn(Sortie& os) const { return Pb_List_Concentration_Gen<Pb_Thermohydraulique>::printOn(os); }
-Entree& Pb_Thermohydraulique_List_Concentration::readOn(Entree& is) { return Pb_List_Concentration_Gen<Pb_Thermohydraulique>::readOn(is); }
+Implemente_instanciable(Pb_Thermohydraulique_List_Concentration, "Pb_Thermohydraulique_List_Concentration", TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique>);
+Sortie& Pb_Thermohydraulique_List_Concentration::printOn(Sortie& os) const { return TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique>::printOn(os); }
+Entree& Pb_Thermohydraulique_List_Concentration::readOn(Entree& is) { return TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique>::readOn(is); }
 
-Implemente_instanciable(Pb_Hydraulique_List_Concentration, "Pb_Hydraulique_List_Concentration", Pb_List_Concentration_Gen<Pb_Hydraulique>);
-Sortie& Pb_Hydraulique_List_Concentration::printOn(Sortie& os) const { return Pb_List_Concentration_Gen<Pb_Hydraulique>::printOn(os); }
-Entree& Pb_Hydraulique_List_Concentration::readOn(Entree& is) { return Pb_List_Concentration_Gen<Pb_Hydraulique>::readOn(is); }
+Implemente_instanciable(Pb_Hydraulique_List_Concentration, "Pb_Hydraulique_List_Concentration", TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>);
+Sortie& Pb_Hydraulique_List_Concentration::printOn(Sortie& os) const { return TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>::printOn(os); }
+Entree& Pb_Hydraulique_List_Concentration::readOn(Entree& is) { return TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>::readOn(is); }
 
 // XD Pb_Thermohydraulique_List_Concentration Pb_base Pb_Thermohydraulique_List_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.

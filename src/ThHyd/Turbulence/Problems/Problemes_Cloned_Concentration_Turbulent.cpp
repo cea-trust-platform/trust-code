@@ -15,8 +15,8 @@
 
 #include <Problemes_Cloned_Concentration_Turbulent.h>
 
-using Pb_Cloned_Concentration_Gen1 = Pb_Cloned_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
-using Pb_Cloned_Concentration_Gen2 = Pb_Cloned_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
+using Pb_Cloned_Concentration_Gen1 = TRUSTProblem_Cloned_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
+using Pb_Cloned_Concentration_Gen2 = TRUSTProblem_Cloned_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
 
 Implemente_instanciable(Pb_Thermohydraulique_Cloned_Concentration_Turbulent, "Pb_Thermohydraulique_Cloned_Concentration_Turbulent", Pb_Cloned_Concentration_Gen1);
 Sortie& Pb_Thermohydraulique_Cloned_Concentration_Turbulent::printOn(Sortie& os) const { return Pb_Cloned_Concentration_Gen1::printOn(os); }

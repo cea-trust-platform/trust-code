@@ -20,7 +20,7 @@
 #include <Verif_Cl.h>
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-void Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::typer_lire_milieu(Entree& is)
+void TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::typer_lire_milieu(Entree& is)
 {
   this->lire_resize_medium(is);
   add_concentration_equations(); // XXX
@@ -65,7 +65,7 @@ void Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::
 }
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-void Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::add_concentration_equations()
+void TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::add_concentration_equations()
 {
   for (int i = 0; i < this->nb_consts_; i++)
     {
@@ -78,7 +78,7 @@ void Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::
 }
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-Entree& Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations(Entree& is, Motcle& dernier_mot)
+Entree& TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations(Entree& is, Motcle& dernier_mot)
 {
   Nom un_nom;
   const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations(), nb_eq = this->nombre_d_equations();
@@ -96,7 +96,7 @@ Entree& Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_
       Motcle un_nom_maj = Motcle(un_nom), eq_nom_maj = this->list_eq_concentration_.front().que_suis_je();
       if (un_nom_maj != eq_nom_maj)
         {
-          Cerr << "What() ?? Error in Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations !!!" << finl;
+          Cerr << "What() ?? Error in TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations !!!" << finl;
           Cerr << "You defined " << this->nb_consts_ << " diffusion coefficients so we are supposed to read " << this->nb_consts_ << " equations ..." << finl;
           Cerr << "We expected to read " << eq_nom_maj << " and not " << un_nom_maj << " !!!" << finl;
           Cerr << "Correct your data file or call the 911 !!!" << finl;
@@ -111,14 +111,14 @@ Entree& Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_
 }
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-void Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::associer_milieu_base(const Milieu_base& mil)
+void TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::associer_milieu_base(const Milieu_base& mil)
 {
   if (sub_type(_MEDIUM_TYPE_, mil)) { /* Do nothing */ }
   else _DERIVED_TYPE_::associer_milieu_base(mil);
 }
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-int Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::verifier()
+int TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::verifier()
 {
   _DERIVED_TYPE_::verifier();
   const Domaine_Cl_dis& domaine_Cl_hydr = this->equation(0).domaine_Cl_dis();

@@ -13,27 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_List_Concentration_Gen_included
-#define Pb_List_Concentration_Gen_included
+#ifndef TRUSTProblem_Cloned_Concentration_Gen_included
+#define TRUSTProblem_Cloned_Concentration_Gen_included
 
-#include <Pb_Concentration_Gen.h>
+#include <TRUSTProblem_Concentration_Gen.h>
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_ = Convection_Diffusion_Concentration, typename _MEDIUM_TYPE_ = Constituant>
-class Pb_List_Concentration_Gen : public Pb_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>
+class TRUSTProblem_Cloned_Concentration_Gen : public TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>
 {
 protected:
-  unsigned taille_memoire() const override { return sizeof(Pb_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_ >); }
+  unsigned taille_memoire() const override { return sizeof(TRUSTProblem_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_ >); }
 
   int duplique() const override
   {
-    Pb_List_Concentration_Gen *xxx = new Pb_List_Concentration_Gen(*this);
+    TRUSTProblem_Cloned_Concentration_Gen *xxx = new TRUSTProblem_Cloned_Concentration_Gen(*this);
     if (!xxx) Process::exit("Not enough memory !!!");
     return xxx->numero();
   }
 
-  Entree& readOn(Entree& is) override { return _DERIVED_TYPE_::readOn(is); }
-  void add_concentration_equations();
-  Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
+  Entree& readOn(Entree& is) override;
+  void clone_equations();
+  Entree& lire_equations(Entree& , Motcle& ) override;
 
 public:
   void associer_milieu_base(const Milieu_base&) override;
@@ -41,6 +41,6 @@ public:
   void typer_lire_milieu(Entree& ) override;
 };
 
-#include <Pb_List_Concentration_Gen.tpp>
+#include <TRUSTProblem_Cloned_Concentration_Gen.tpp>
 
-#endif /* Pb_List_Concentration_Gen_included */
+#endif /* TRUSTProblem_Cloned_Concentration_Gen_included */

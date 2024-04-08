@@ -17,8 +17,8 @@
 #define Problemes_List_Concentration_Turbulent_included
 
 #include <Convection_Diffusion_Concentration_Turbulent.h>
+#include <TRUSTProblem_List_Concentration_Gen.h>
 #include <Pb_Thermohydraulique_Turbulent.h>
-#include <Pb_List_Concentration_Gen.h>
 #include <Pb_Hydraulique_Turbulent.h>
 
 /// \cond DO_NOT_DOCUMENT
@@ -33,7 +33,7 @@ class Problemes_List_Concentration_Turbulent
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_List_Concentration_Turbulent: public Pb_List_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>
+class Pb_Thermohydraulique_List_Concentration_Turbulent: public TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>
 {
   Declare_instanciable(Pb_Thermohydraulique_List_Concentration_Turbulent);
 };
@@ -44,7 +44,7 @@ class Pb_Thermohydraulique_List_Concentration_Turbulent: public Pb_List_Concentr
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Hydraulique_List_Concentration_Turbulent: public Pb_List_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>
+class Pb_Hydraulique_List_Concentration_Turbulent: public TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>
 {
   Declare_instanciable(Pb_Hydraulique_List_Concentration_Turbulent);
 };

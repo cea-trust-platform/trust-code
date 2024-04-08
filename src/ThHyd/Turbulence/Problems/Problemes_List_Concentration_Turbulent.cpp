@@ -15,8 +15,8 @@
 
 #include <Problemes_List_Concentration_Turbulent.h>
 
-using Pb_List_Concentration_Gen1 = Pb_List_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
-using Pb_List_Concentration_Gen2 = Pb_List_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
+using Pb_List_Concentration_Gen1 = TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
+using Pb_List_Concentration_Gen2 = TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique_Turbulent, Convection_Diffusion_Concentration_Turbulent, Constituant>;
 
 Implemente_instanciable(Pb_Thermohydraulique_List_Concentration_Turbulent, "Pb_Thermohydraulique_List_Concentration_Turbulent", Pb_List_Concentration_Gen1);
 Sortie& Pb_Thermohydraulique_List_Concentration_Turbulent::printOn(Sortie& os) const { return Pb_List_Concentration_Gen1::printOn(os); }

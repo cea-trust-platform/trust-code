@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Pb_Concentration_Gen_included
-#define Pb_Concentration_Gen_included
+#ifndef TRUSTProblem_Concentration_Gen_included
+#define TRUSTProblem_Concentration_Gen_included
 
 #include <Convection_Diffusion_Concentration.h>
 #include <Pb_Thermohydraulique.h>
@@ -25,7 +25,7 @@
 #include <iomanip>
 
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
-class Pb_Concentration_Gen : public _DERIVED_TYPE_
+class TRUSTProblem_Concentration_Gen : public _DERIVED_TYPE_
 {
 protected:
   std::vector<_MEDIUM_TYPE_> mil_constituants_;
@@ -46,7 +46,7 @@ public:
   const Equation_base& equation(int i) const override
   {
     if (i >= nombre_d_equations())
-      Process::exit("Error in Pb_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
+      Process::exit("Error in TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
 
     const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations();
     if (i < nb_eq_mere)
@@ -58,7 +58,7 @@ public:
   Equation_base& equation(int i) override
   {
     if (i >= nombre_d_equations())
-      Process::exit("Error in Pb_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
+      Process::exit("Error in TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::equation => wrong equation number !");
 
     const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations();
     if (i < nb_eq_mere)
@@ -98,7 +98,7 @@ public:
 
     if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
       {
-        Cerr << "Error in Pb_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_resize_medium. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
+        Cerr << "Error in TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_resize_medium. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
         Cerr << "We only accept uniform fields for the moment ... Fix your data set or call the 911 !!!" << finl;
         Process::exit();
       }
@@ -125,4 +125,4 @@ public:
   }
 };
 
-#endif /* Pb_Concentration_Gen_included */
+#endif /* TRUSTProblem_Concentration_Gen_included */

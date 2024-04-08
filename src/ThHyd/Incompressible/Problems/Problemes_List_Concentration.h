@@ -16,7 +16,7 @@
 #ifndef Problemes_List_Concentration_included
 #define Problemes_List_Concentration_included
 
-#include <Pb_List_Concentration_Gen.h>
+#include <TRUSTProblem_List_Concentration_Gen.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Problemes_List_Concentration
@@ -34,7 +34,7 @@ class Problemes_List_Concentration
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_List_Concentration: public Pb_List_Concentration_Gen<Pb_Thermohydraulique>
+class Pb_Thermohydraulique_List_Concentration: public TRUSTProblem_List_Concentration_Gen<Pb_Thermohydraulique>
 {
   Declare_instanciable(Pb_Thermohydraulique_List_Concentration);
 };
@@ -48,7 +48,7 @@ class Pb_Thermohydraulique_List_Concentration: public Pb_List_Concentration_Gen<
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Hydraulique_List_Concentration: public Pb_List_Concentration_Gen<Pb_Hydraulique>
+class Pb_Hydraulique_List_Concentration: public TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>
 {
   Declare_instanciable(Pb_Hydraulique_List_Concentration);
 };

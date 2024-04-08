@@ -16,7 +16,7 @@
 #ifndef Problemes_Cloned_Concentration_included
 #define Problemes_Cloned_Concentration_included
 
-#include <Pb_Cloned_Concentration_Gen.h>
+#include <TRUSTProblem_Cloned_Concentration_Gen.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Problemes_Cloned_Concentration
@@ -34,7 +34,7 @@ class Problemes_Cloned_Concentration
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_Gen<Pb_Thermohydraulique>
+class Pb_Thermohydraulique_Cloned_Concentration: public TRUSTProblem_Cloned_Concentration_Gen<Pb_Thermohydraulique>
 {
   Declare_instanciable(Pb_Thermohydraulique_Cloned_Concentration);
 };
@@ -48,7 +48,7 @@ class Pb_Thermohydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Hydraulique_Cloned_Concentration: public Pb_Cloned_Concentration_Gen<Pb_Hydraulique>
+class Pb_Hydraulique_Cloned_Concentration: public TRUSTProblem_Cloned_Concentration_Gen<Pb_Hydraulique>
 {
   Declare_instanciable(Pb_Hydraulique_Cloned_Concentration);
 };
