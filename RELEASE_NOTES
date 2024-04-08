@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
-05/04/24 (TRUST) Keyword      : Keyword 'ecrire_fichier_xyz_valeur' is now used in a single block, with attributes 'dt', 'fields' and 'boundaries'
+08/04/24 (TRUST) Keyword      : Keyword 'ecrire_fichier_xyz_valeur' is now used in a single block, with attributes 'dt', 'fields' and 'boundaries'
 20/03/24 (TRUST) New feature  : CoolProp and EOS can now be used with Dilatable flows problems
 07/03/24 (TRUST) New feature  : New syntax for facsec with Euler implicit scheme: more options allowed in datafile to monitor facsec behavior
 07/03/24 (TRUST) Keyword      : Obsolete syntax for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, and Sutherland (pre v1.8.4) is not accepted anymore.
