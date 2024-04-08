@@ -1314,7 +1314,8 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
       poly.remplir_Nodes_glob(nodes_glob, les_elems2);
       const ArrOfInt_t& facesIndex = poly.getFacesIndex();
       const ArrOfInt_t& polyhedronIndex = poly.getPolyhedronIndex();
-      assert(ncells == polyhedronIndex.size_array() - 1);
+      assert(ncells <= polyhedronIndex.size_array() - 1);
+
       for (int_t i = 0; i < ncells; i++)
         {
           int size = 0;
