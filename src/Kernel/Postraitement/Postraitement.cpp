@@ -2243,7 +2243,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         {
         }
     }
-  Cerr<<"Field " <<nom<<" not found."<< finl;
+  //Cerr<<"Field " <<nom<<" not found."<< finl;
   throw Champs_compris_erreur();
 }
 

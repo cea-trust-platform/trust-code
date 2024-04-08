@@ -461,13 +461,13 @@ double ProblemTrio::getOutputDoubleValue(const std::string& name) const
 void ProblemTrio::setInputIntValue(const std::string& name, const int& val)
 {
   // add value in ICoCoScalarRegister
-  const Nom nom(name.c_str());
+  const Nom nom(name);
   pb->setInputIntValue(nom, val);
 }
 
 int ProblemTrio::getOutputIntValue(const std::string& name) const
 {
-  const Nom nom(name.c_str());
+  const Nom nom(name);
   // [ABN] A bit ugly: we force cast to int to handle the 64b situation.
   // In 64b the ScalarRegister will become long, but the final ICoCo interface will be int.
   // Hopefully soon we will have a clean 64-bits version...
@@ -502,7 +502,7 @@ ICoCo::ValueType ProblemTrio::getFieldType(const std::string& name) const
 
 void ProblemTrio::getOutputField(const std::string& name_, TrioField& afield) const
 {
-  Motcle name(name_);
+  const Nom name(name_);
   pb->getOutputField(name,afield);
 }
 
