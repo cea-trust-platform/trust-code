@@ -1,0 +1,151 @@
+# Test de Champ_fonc_fonction #
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_Thermohydraulique_Cloned_Concentration pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 20 2
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.	0. <= Y <= 0.01
+        Bord Haut   Y = 0.01	0. <= X <= 0.01
+        Bord Bas    Y = 0.	0. <= X <= 0.01
+        Bord Droit  X = 0.01	0. <= Y <= 0.01
+    }
+}
+trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+polymac_p0p1nc dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    facsec 1e30
+    dt_max 1e-5
+    dt_impr 1e-10
+    solveur implicite
+    {
+        solveur petsc cholesky { }
+    }
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    Fluide_Incompressible
+    {
+        mu	champ_fonc_fonction pb temperature 1 1.85e-5*(1+val*0.01)
+        rho	Champ_Uniforme 1 1.
+        lambda	champ_fonc_fonction pb temperature 1 0.0262
+        Cp	Champ_Uniforme 1 1.
+        beta_th	Champ_Uniforme 1 3.41e-3
+        beta_co	Champ_Uniforme 1 0.04
+        gravite Champ_Uniforme 2 0 -9.81
+    }
+
+    Constituant
+    {
+        coefficient_diffusion champ_uniforme 4 0.000262 0.00262 0.0262 0.262
+     }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+
+        convection { amont }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions
+        {
+            Haut	symetrie
+            Droit	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            Bas	    symetrie
+            Gauche	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+        }
+
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { Temperature Champ_Uniforme 1 0. }
+        boundary_conditions
+        {
+            Haut symetrie
+            Bas     symetrie
+            Gauche	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0.
+            Droit	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+        # sources { puissance_thermique champ_fonc_fonction pb concentration0 1 val } #
+    }
+    Convection_diffusion_Concentration
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { concentration0 Champ_Uniforme 1 0. }
+        boundary_conditions
+        {
+            Haut    symetrie
+            Bas     symetrie
+            Gauche	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            Droit	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 10.
+        }
+        # sources { source_constituant champ_fonc_fonction pb temperature 1 val } #
+    }
+    Post_processing
+    {
+        probes
+        {
+            c0 grav concentration0 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+ 		c1 grav concentration1 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+ 		c2 grav concentration2 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+        c3 grav concentration3 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+        }
+        format lml
+        fields dt_post 0.1
+        {
+            temperature		elem
+            # concentration0 		elem
+            diffusivite_thermique	elem
+            coefficient_diffusion0 	elem
+            concentration1      elem
+            coefficient_diffusion1 elem 
+	    concentration2      elem
+            coefficient_diffusion2 elem #
+        }
+    }
+}
+
+Solve pb
+End
+

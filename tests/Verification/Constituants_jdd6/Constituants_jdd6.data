@@ -1,0 +1,124 @@
+# Hydraulique 2D avec transport n constituants et termes sources #
+# PARALLEL OK 5 #
+dimension 2
+
+Pb_hydraulique_concentration pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 6 6
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
+trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+vef dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    facsec 1e30
+    dt_max 1e-5
+    dt_impr 1e-10
+    solveur implicite
+    {
+        solveur petsc cholesky { }
+    }
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    Fluide_Incompressible
+    {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2.
+        beta_co Champ_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+        gravite Champ_Uniforme 2 0 0
+    }
+
+    Constituant
+    {
+        coefficient_diffusion Champ_Uniforme 12 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12
+    }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 1. 1.
+        }
+        boundary_conditions {
+            Haut frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 1.
+            Droit frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 1.
+            Bas frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 1.
+            Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 1.
+        }
+    }
+    Convection_diffusion_Concentration {
+        Sources {
+            source_Constituant Champ_fonc_xyz dom 12 2*x*y 4*x*y 6*x*y 8*x*y 10*x*y
+            12*x*y 14*x*y 16*x*y 18*x*y 20*x*y 22*x*y 24*x*y
+        }
+        diffusion { }
+        convection { amont }
+        boundary_conditions {
+            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+        }
+        initial_conditions {
+            concentration Champ_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            c grav concentration periode 1e8 segment 500 0 0.5 1 0.5
+        }
+        fields dt_post 0.3
+        {
+            pression elem
+            vitesse elem
+            Concentration elem
+        }
+    }
+}
+
+Solve pb
+End
