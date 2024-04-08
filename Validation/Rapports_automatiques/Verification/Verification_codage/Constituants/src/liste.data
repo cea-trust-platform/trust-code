@@ -42,10 +42,11 @@ $dis dis
 Scheme_euler_implicit sch
 Read sch
 {
-    nb_pas_dt_max 30
+    tinit 0
     facsec 1e30
     dt_max 1e-5
     dt_impr 1e-10
+    nb_pas_dt_max 20
     solveur implicite
     {
         solveur petsc cholesky { }
