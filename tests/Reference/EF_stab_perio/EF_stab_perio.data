@@ -78,7 +78,7 @@ Read pb
         }
         convection { EF_stab { } }
         diffusion { }
-        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        initial_conditions { vitesse Champ_Uniforme 2 1. 0. }
         boundary_conditions
         {
             perioy  periodique

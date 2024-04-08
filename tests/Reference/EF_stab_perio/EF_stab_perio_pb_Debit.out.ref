@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
+# Volumetric flow rate=Integral(u*ndS) [m2.s-1] if SI units used
+#            Time           Gauche           perioy           perioy            Droit            Total
+   8.32631171e-03  -1.00000000e+00   0.00000000e+00   0.00000000e+00   1.00000000e+00   0.00000000e+00
+   1.66526234e-02  -1.00000000e+00   0.00000000e+00   0.00000000e+00   1.00000000e+00   0.00000000e+00
