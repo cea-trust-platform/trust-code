@@ -103,8 +103,8 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
         }
       else if (fcl(f, 0) == 1) mat(ne_tot + f, ne_tot + f) = 1;
 
-  if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
-
+  if (!has_P_ref && Process::me() == Process::mp_min(dom.nb_elem() ? Process::me() : 1e8)) /* 1er proc possedant un element reel */
+    mat(0, 0) *= 2;
   return 1;
 }
 
