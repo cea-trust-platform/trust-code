@@ -636,7 +636,7 @@ CHECKOUT $SORTIE 2>/dev/null
 if [ $using_ctest = 1 ]
 then
    add_test_case_from_validation || exit -1
-   if [ "$project_directory" = "" ]
+   if [ "$project_directory" = "" ] || [ "${PWD%$TRUST_ROOT}" = "" ]
    then # TRUST
       OPT=`basename $exec` && OPT=${OPT#TRUST} && cd $TRUST_ROOT/MonoDir$OPT/src || exit -1
       rep_tests=MonoDir$OPT/src
