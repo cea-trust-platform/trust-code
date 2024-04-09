@@ -57,8 +57,9 @@ public:
   {
 #ifndef LATATOOLS
     return (ptr_ != 0);
-#endif
+#else
     return 0;
+#endif
   }
 
   inline void detach();

@@ -327,6 +327,7 @@
  Ecrire_Champ_MED Ecrire_Champ_MED Ecrire_Champ_MED.h
  Ecrire_Fichier Ecrire_Fichier Ecrire_Fichier.h
  Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte.h
+ Ecrire_fichier_xyz_valeur Ecrire_fichier_xyz_valeur Ecrire_fichier_xyz_valeur.h
  EcritureLectureSpecial EcritureLectureSpecial EcritureLectureSpecial.h
  EDO_Pression_th EDO_Pression_th EDO_Pression_th.h
  EDO_Pression_th_base EDO_Pression_th_base EDO_Pression_th_base.h

@@ -16,7 +16,7 @@ endif
 all: $(LIB)
 
 $(LIB): src/CMakeLists.txt makefile
-	rm -rf ../../../lib/src/LIBLATAFILTER/*
+	make clean
 	cmake -S $(SRC_DIR) -B $(BUILD_DIR) -DCMAKE_CXX_FLAGS="$(CppFlags)" -DTRUST_DEFINES="$(Defines)" -DCMAKE_C_COMPILER="$(CCompiler)" -DCMAKE_CXX_COMPILER="$(TRUST_CC)"
 	$(TRUST_MAKE) -C $(BUILD_DIR) install
 
