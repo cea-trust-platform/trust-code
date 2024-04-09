@@ -2457,12 +2457,10 @@ cd $TRUST_ROOT/bin
 
 # Update/create instancie_xxx files - MAIN must be done last!!
 echo -n "Updating instancie_xxx files... "
-for ze_dir in `find $TRUST_ROOT/src -type d`; do
-    if [ "$ze_dir" != "$TRUST_ROOT/src/MAIN" ]; then
-        (cd $ze_dir; mk_Instancie) &   # Go parallel!
-    fi
+for ze_dir in `find $TRUST_ROOT/src -type d -not -wholename $TRUST_ROOT/src/MAIN -not -wholename $TRUST_ROOT/src`
+do
+   (cd $ze_dir; mk_Instancie) #&   # Go parallel crash on mezel
 done
-wait $(jobs -rp)
 (cd $TRUST_ROOT/src/MAIN; mk_Instancie)
 echo "done."
 

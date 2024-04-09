@@ -31,7 +31,7 @@ then
    name=instancie`echo ${org#$ROOT} | sed "s?/?_?g" | sed "s/\.//g"`  
     
    # Liste les .h du repertoire
-   files=`ls *.h | grep -v __Scalar__ | sort 2>/dev/null`
+   files=`ls *.h | sort 2>/dev/null`
    
    # Rien a faire si pas de .h ou si pas de declare_instanciable dans les .h
    # On efface meme le fichier d'instanciation au cas ou il aurait existe
