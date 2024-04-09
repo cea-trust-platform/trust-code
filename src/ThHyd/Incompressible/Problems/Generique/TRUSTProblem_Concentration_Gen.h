@@ -77,6 +77,10 @@ public:
         eqn.inconnue()->nommer(nom_inco);
         Cerr << "The " << eqn.que_suis_je() << " equation name, of number " << i << ", is modified => " << nom_eq << finl;
         eqn.nommer(nom_eq);
+
+        // et pour champs_compis ....
+        eqn.get_champ_compris().clear_champs_compris();
+        eqn.get_champ_compris().ajoute_champ(eqn.inconnue());
       }
   }
 

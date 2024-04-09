@@ -87,9 +87,6 @@ void TRUSTProblem_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MED
 
           this->rename_equation_unknown(i, eqn); // XXX
 
-          eqn.get_champ_compris().clear_champs_compris();
-          eqn.get_champ_compris().ajoute_champ(eqn.inconnue());
-
           // XXX : Elie Saikali : that is REQUIRED !!!! Otherwise we use the operators of the original equation !!!
           for (int op = 0; op < eqn.nombre_d_operateurs(); op++)
             {
