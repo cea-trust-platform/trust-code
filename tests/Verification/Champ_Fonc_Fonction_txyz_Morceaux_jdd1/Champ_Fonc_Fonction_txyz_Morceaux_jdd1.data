@@ -1,15 +1,18 @@
-# Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL OK 4 #
+# Test de Champ_fonc_Fonction_txyz #
+# NB_PAS_DT_MAX 20 #
+# PARALLEL OK 8 #
 dimension 2
-Pb_conduction pb
+
+Pb_thermohydraulique pb
 Domaine dom
+
 # BEGIN MESH #
 Mailler dom
 {
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 5 2
+        Nombre_de_Noeuds 41 41
         Longueurs 4. 1.
     }
     {
@@ -19,20 +22,13 @@ Mailler dom
         Bord Droit  X = 4. 0. <= Y <= 1.
     }
 }
-
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lml
-    domaine dom
-}
-
 # END MESH #
+
 # BEGIN PARTITION
 Partition dom
 {
     Partition_tool tranche { tranches 2 1 }
-    Larg_joint 1
+    Larg_joint 2
     zones_name DOM
 }
 End
@@ -59,14 +55,17 @@ Read sz2 {
 
 
 VDF dis
-
-/* Scheme_euler_implicit sch */
 Scheme_euler_explicit sch
 Read sch
 {
-    tinit 0
-	nb_pas_dt_max 0
-    tmax 1.0
+    tinit 0.0
+	nb_pas_dt_max 20
+    tmax 0.2
+    dt_min 0.01
+    dt_max 0.01
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Associate pb dom
@@ -76,55 +75,69 @@ Discretize pb dis
 Read pb
 {
 
-    solide {
-        rho Champ_Uniforme 1 50
-        lambda Champ_Uniforme 1 0.01
-        Cp Champ_Uniforme 1 0.5
+    fluide_incompressible {
+        gravite champ_uniforme 2 0 -9.81
+
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
     }
 
 
-
-    Conduction
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-11 }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 0. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2  1. 0.
+            Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
+    }
+    Convection_Diffusion_Temperature
     {
         diffusion { }
-        initial_conditions {
-
-            temperature Champ_Fonc_Fonction_txyz_Morceaux pb rho 1
+        convection { quick }
+        sources {
+            Puissance_Thermique Champ_Fonc_Fonction_txyz_Morceaux pb temperature 1
             {
-                defaut 3000.0
-                sz1 val+3
-                sz2 val*2+2
+                defaut t*val*sin(3.14*x*y)
+                sz1 val+100*t
+                sz2 2*val+1000*t
             }
-
         }
-
-        boundary_conditions {
+        boundary_conditions
+        {
             Haut paroi_adiabatique
-            Bas  paroi_adiabatique
-            Droit paroi_adiabatique
-            Gauche paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 1.
+            Droit  frontiere_ouverte T_ext Champ_Front_Uniforme 1 1.
         }
+        initial_conditions { Temperature Champ_Uniforme 1 1. }
     }
 
     Post_processing
     {
-        definition_champs
+        Probes
         {
-            ma_comparaison Transformation
-            {
-                methode formule expression 1 temperature_natif_dom+10.0
-                source refChamp { Pb_champ pb temperature }
-            }
+            sonde_pression pression periode 0.01 points 1 0.0045 0.0045
         }
-        format lml
-        fields dt_post 1.
+        Format lml
+        fields dt_post 1.0
         {
-            ma_comparaison
+            vitesse elem
             temperature elem
+            puissance_volumique elem
         }
     }
-
-
 }
 
 Solve pb
