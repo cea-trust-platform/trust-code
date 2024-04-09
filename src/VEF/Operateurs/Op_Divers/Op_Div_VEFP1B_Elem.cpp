@@ -733,8 +733,6 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   // (sommet uniquement commun a des faces avec des CL Diriclet)
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const Domaine& domaine = domaine_VEF.domaine();
-  const Domaine& dom = domaine;
-  const IntTab& som_elem = domaine.les_elems();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const int nse = domaine.nb_som_elem();
@@ -750,15 +748,15 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   // et uniquement en sequentiel
   if ((Process::is_sequential()) && equation().schema_temps().nb_pas_dt() == 0)
     decoupage_som = 1;
-  //SFichier* os=nullptr;
+
   SChaine decoup_som;
   decoup_som << "1" << finl;
   decoup_som << Objet_U::dimension << " " << nb_som << finl;
-  IntVect somm(dimension + 2);
-
+  ArrOfInt somm(dimension + 2);
+  ToDo_Kokkos("critical");
   for (int k = 0; k < nb_som; k++)
     {
-      int sommet = dom.get_renum_som_perio(k);
+      int sommet = domaine.get_renum_som_perio(k);
       if (nb_degres_liberte_(sommet) != 0)
         continue;
       if (!afficher_message && VerifierCoin::expert_only == 0)
@@ -767,9 +765,9 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
           Cerr << finl << "Problem with the mesh used for the VEF P1Bulle discretization." << finl;
           journal << "List of nodes with no degrees of freedom :" << finl;
         }
-      const double x = dom.coord(sommet, 0);
-      const double y = dom.coord(sommet, 1);
-      const double z = (Objet_U::dimension == 3) ? dom.coord(sommet, 2) : 0.;
+      const double x = domaine.coord(sommet, 0);
+      const double y = domaine.coord(sommet, 1);
+      const double z = (Objet_U::dimension == 3) ? domaine.coord(sommet, 2) : 0.;
 
       journal << "Error node " << sommet << " ( " << x << " " << y << " " << z << " )\n";
       // On affiche la liste des indices d'elements reels et virtuels qui contiennent
@@ -777,6 +775,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       journal << "Elements ";
       const int nb_elem_tot = domaine.nb_elem_tot();
       const int nb_elem = domaine.nb_elem();
+      const IntTab& som_elem = domaine.les_elems();
       for (int elem = 0; elem < nb_elem_tot; elem++)
         for (int som = 0; som < nse; som++)
           if (som_elem(elem, som) == sommet)
@@ -874,7 +873,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       if (dimension == 3)
         Cerr << "If you have used \"Tetraedriser\", substituted by \"Tetraedriser_homogene\" or \"Tetraedriser_par_prisme\"." << finl << finl;
       Cerr << "Or insert the line:" << finl;
-      Cerr << "VerifierCoin " << dom.le_nom() << " { [Read_file " << nom_fichier << ".decoupage_som] }" << finl;
+      Cerr << "VerifierCoin " << domaine.le_nom() << " { [Read_file " << nom_fichier << ".decoupage_som] }" << finl;
       Cerr << "after the mesh is finished to be read and built." << finl;
       if (Process::is_parallel())
         Cerr << "and BEFORE the keyword \"Decouper\" during the partition of the mesh." << finl;
@@ -884,7 +883,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       Cerr << finl;
       Cerr << "Last possibility, it is possible now for experimented users to not check if there is enough degrees of freedom" << finl;
       Cerr << "by adding the next line BEFORE the keyword \"Discretiser\":" << finl;
-      Cerr << "VerifierCoin " << dom.le_nom() << " { expert_only } " << finl;
+      Cerr << "VerifierCoin " << domaine.le_nom() << " { expert_only } " << finl;
       Cerr << "In this case, check the results carefully." << finl;
       Process::exit();
     }
