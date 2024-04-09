@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,6 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   assert(nb_faces_elem==(dimension+1));
   {
     // calcul de la CFL.
-    DoubleVect& fluent_ = fluent;
     double psc;
     // On remet a zero le tableau qui sert pour
     // le calcul du pas de temps de stabilite

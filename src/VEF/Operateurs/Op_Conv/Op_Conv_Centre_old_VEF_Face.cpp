@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,8 +51,8 @@ void Op_Conv_Centre_old_VEF_Face::associer(const Domaine_dis& domaine_dis,
   la_zcl_vef = zclvef;
   champ_transporte = le_ch_transporte;
 
-  fluent.reset();
-  le_dom_vef.valeur().creer_tableau_faces(fluent);
+  fluent_.reset();
+  le_dom_vef.valeur().creer_tableau_faces(fluent_);
 }
 
 DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
@@ -79,7 +79,6 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   //  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
 
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  DoubleVect& fluent_ = fluent;
 
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();

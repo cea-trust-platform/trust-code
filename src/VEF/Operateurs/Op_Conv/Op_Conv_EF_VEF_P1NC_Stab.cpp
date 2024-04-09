@@ -1996,7 +1996,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
           //const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
-          DoubleVect& fluent_ = fluent;
 
           for (num_face=num1; num_face<num2; num_face++)
             {

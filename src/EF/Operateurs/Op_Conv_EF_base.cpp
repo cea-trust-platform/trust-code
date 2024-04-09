@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const DoubleVect& volumes_entrelaces = domaine_EF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_EF.volumes_entrelaces_Cl();
-  remplir_fluent(fluent);
+  remplir_fluent(fluent_);
 
 
   double dt_face,dt_stab =1.e30;

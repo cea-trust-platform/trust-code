@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,6 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
   int nsom = domaine.nb_som_elem();
   int nb_som_facette = domaine.type_elem().nb_som_face();
   double inverse_nb_som_facette=1./nb_som_facette;
-  DoubleVect& fluent_ = fluent;
   DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
 
   // Pour le traitement de la convection on distingue les polyedres

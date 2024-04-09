@@ -183,7 +183,6 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
   int nb_som_facette = domaine.type_elem().nb_som_face();
-  DoubleVect& fluent_ = fluent;
 
   // Pour le traitement de la convection on distingue les polyedres
   // standard qui ne "voient" pas les conditions aux limites et les

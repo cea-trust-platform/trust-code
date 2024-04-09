@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -199,7 +199,6 @@ DoubleTab& Op_Conv_kschemas_centre_VEF::ajouter(const DoubleTab& transporte,
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
   int nb_som_facette = domaine.type_elem().nb_som_face();
-  DoubleVect& fluent_ = fluent;
   // MODIF SB su 10/09/03
   // Pour les 3 elements suivants, il y a autant de sommets que de face
   // constituant l'element geometrique

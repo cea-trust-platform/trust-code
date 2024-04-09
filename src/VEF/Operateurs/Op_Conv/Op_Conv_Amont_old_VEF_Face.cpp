@@ -123,7 +123,6 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
-  DoubleVect& fluent_ = fluent;
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
   int nb_som_facette = domaine.type_elem().nb_som_face();

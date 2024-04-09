@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,7 +109,6 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_template(const DoubleTab& transporte, D
   if ((btd_impl == 1) && (hourglass_impl == 1) && (centre_impl == 1))
     return resu;
 
-  DoubleVect& fluent_ = fluent;
 
   const Champ_Inc_base& la_vitesse = vitesse_.valeur();
   const DoubleTab& G = la_vitesse.valeurs();

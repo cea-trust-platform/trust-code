@@ -64,54 +64,62 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
-  remplir_fluent(fluent);
+  remplir_fluent(fluent_);
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-    diviser_par_rho_si_dilatable(fluent,equation().milieu());
+    diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
-  double dt_stab =1.e30;
-
-  // On traite les conditions aux limites
-  // Si une face porte une condition de Dirichlet on n'en tient pas compte
-  // dans le calcul de dt_stab
-  copyPartialFromDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
-  start_gpu_timer();
-  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
+  // Remplissage de faces_entrelaces_Cl_ qui contient les faces de bord non Dirichlet et les faces internes non std pour lequelles on utilise le volumes_entrelaces_Cl
+  // Ce tableau temporaire a ete cree pour fusionner plusieurs kernels Kokkos en un seul
+  if (faces_entrelaces_Cl_.size_array()==0)
     {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
-        { /* Do nothing */}
-      else
+      faces_entrelaces_Cl_.resize(domaine_VEF.premiere_face_std());
+      int ind_face=-1;
+      // On traite les conditions aux limites
+      // Si une face porte une condition de Dirichlet on n'en tient pas compte
+      // dans le calcul de dt_stab
+      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int num_face=ndeb; num_face<nfin; num_face++)
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+          if (!sub_type(Dirichlet, la_cl.valeur()) && !sub_type(Dirichlet_homogene, la_cl.valeur()))
             {
-              double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+1.e-30);
-              dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              int ndeb = le_bord.num_premiere_face();
+              int nfin = ndeb + le_bord.nb_faces();
+              for (int num_face = ndeb; num_face < nfin; num_face++)
+                faces_entrelaces_Cl_(++ind_face) = num_face;
             }
         }
+      // Faces internes non std:
+      int ndeb = domaine_VEF.premiere_face_int();
+      int nfin = domaine_VEF.premiere_face_std();
+      for (int num_face = ndeb; num_face < nfin; num_face++)
+        faces_entrelaces_Cl_(++ind_face) = num_face;
+      faces_entrelaces_Cl_.resize(ind_face);
     }
 
-  // On traite les faces internes non standard
-  int ndeb = domaine_VEF.premiere_face_int();
-  int nfin = domaine_VEF.premiere_face_std();
-  for (int num_face=ndeb; num_face<nfin; num_face++)
-    {
-      double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
-      dt_stab =(dt_face < dt_stab) ? dt_face : dt_stab;
-    }
-  end_gpu_timer(0, "Boundary face loop for dt_stab");
-  copyPartialToDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
+  double dt_stab =1.e30;
+  CIntArrView faces_entrelaces_Cl = faces_entrelaces_Cl_.view_ro();
+  CDoubleArrView fluent = fluent_.view_ro();
+  CDoubleArrView volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl().view_ro();
+  start_gpu_timer();
+  Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
+                          Kokkos::RangePolicy<>(0, faces_entrelaces_Cl_.size_array()), KOKKOS_LAMBDA(
+                            const int ind_face, double& dt_stab)
+  {
+    int num_face = faces_entrelaces_Cl(ind_face);
+    double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
+    if (dt_stab > dt_face) dt_stab = dt_face;
+  }, Kokkos::Min<double>(dt_stab));
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   // On traite les faces internes standard
-  ndeb = nfin;
-  nfin = domaine_VEF.nb_faces();
+  // ToDo Kokkos
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  int ndeb = domaine_VEF.premiere_face_std();
+  int nfin = domaine_VEF.nb_faces();
 
-  bool kernelOnDevice = fluent.checkDataOnDevice();
-  const double* fluent_addr = mapToDevice(fluent, "", kernelOnDevice);
+  bool kernelOnDevice = fluent_.checkDataOnDevice();
+  const double* fluent_addr = mapToDevice(fluent_, "", kernelOnDevice);
   const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
   // ToDo bug nvc++ compiler recent bouh
   start_gpu_timer();
@@ -138,7 +146,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);
   op.fixer_dt_stab_conv(dt_stab);
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-    multiplier_par_rho_si_dilatable(fluent,equation().milieu());
+    multiplier_par_rho_si_dilatable(fluent_,equation().milieu());
 
   return dt_stab;
 }
@@ -158,9 +166,9 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
           const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
           double dt_face;
-          remplir_fluent(fluent);
+          remplir_fluent(fluent_);
           if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-            diviser_par_rho_si_dilatable(fluent,equation().milieu());
+            diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
           // On traite les conditions aux limites
           // Si une face porte une condition de Dirichlet on n'en tient pas compte
@@ -177,7 +185,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
                   int nfin = ndeb + le_bord.nb_faces();
                   for (int num_face=ndeb; num_face<nfin; num_face++)
                     {
-                      dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+1.e-30);
+                      dt_face = volumes_entrelaces_Cl(num_face)/(fluent_[num_face]+1.e-30);
                       es_valeurs(num_face) = dt_face;
                     }
                 }
@@ -189,7 +197,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
 
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
-              dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+1.e-30);
+              dt_face = volumes_entrelaces_Cl(num_face)/(fluent_[num_face]+1.e-30);
               es_valeurs(num_face) = dt_face;
             }
 
@@ -198,13 +206,13 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           nfin = domaine_VEF.nb_faces();
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
-              dt_face = volumes_entrelaces(num_face)/(fluent[num_face]+1.e-30);
+              dt_face = volumes_entrelaces(num_face)/(fluent_[num_face]+1.e-30);
               es_valeurs(num_face) = dt_face;
             }
 
           assert(mp_min_vect(es_valeurs)==calculer_dt_stab());
           if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-            multiplier_par_rho_si_dilatable(fluent,equation().milieu());
+            multiplier_par_rho_si_dilatable(fluent_,equation().milieu());
         }
     }
   else
@@ -243,7 +251,7 @@ void Op_Conv_VEF_base::associer(const Domaine_dis& domaine_dis,
   roue= -1;
   //  roue2=-1;
 
-  le_dom_vef.valeur().creer_tableau_faces(fluent);
+  le_dom_vef.valeur().creer_tableau_faces(fluent_);
 }
 
 int Op_Conv_VEF_base::impr(Sortie& os) const
@@ -284,7 +292,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   int nb_faces= domaine_VEF.nb_faces();
   dt_face=(volumes_entrelaces);
-  remplir_fluent(fluent);
+  remplir_fluent(fluent_);
 
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
@@ -294,8 +302,8 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
       int nfin = ndeb + le_bord.nb_faces();
       for (int num_face=ndeb; num_face<nfin; num_face++)
         {
-          if( sup_strict(fluent[num_face], 1.e-30) )
-            dt_face(num_face)= volumes_entrelaces_Cl(num_face)/fluent[num_face];
+          if( sup_strict(fluent_[num_face], 1.e-30) )
+            dt_face(num_face)= volumes_entrelaces_Cl(num_face)/fluent_[num_face];
           else
             dt_face(num_face) = -1.;
         }
@@ -307,8 +315,8 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
-      if( sup_strict(fluent[num_face], 1.e-30) )
-        dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+      if( sup_strict(fluent_[num_face], 1.e-30) )
+        dt_face(num_face)= volumes_entrelaces(num_face)/fluent_[num_face];
       else
         dt_face(num_face) = -1.;
     }
@@ -318,8 +326,8 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
   nfin = domaine_VEF.nb_faces();
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
-      if( sup_strict(fluent[num_face], 1.e-30) )
-        dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+      if( sup_strict(fluent_[num_face], 1.e-30) )
+        dt_face(num_face)= volumes_entrelaces(num_face)/fluent_[num_face];
       else
         dt_face(num_face) = -1.;
     }

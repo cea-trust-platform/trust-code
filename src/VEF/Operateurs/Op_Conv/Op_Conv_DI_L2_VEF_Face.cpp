@@ -428,7 +428,6 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
 
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   //  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
-  DoubleVect& fluent_ = fluent;
 
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
