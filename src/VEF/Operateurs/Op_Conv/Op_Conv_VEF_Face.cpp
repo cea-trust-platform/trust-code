@@ -1838,9 +1838,8 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   marq=0;
 
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const DoubleTab& vitesse_face = vitesse().valeurs();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  //const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
   const IntTab& les_elems=domaine.les_elems();
@@ -1893,7 +1892,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const double *facette_normales_addr = mapToDevice(facette_normales);
       const int *KEL_addr = mapToDevice(KEL);
       const double *normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
-      const double *vitesse_face_addr = mapToDevice(vitesse_face,"vitesse_face");
+      const double *vitesse_face_addr = mapToDevice(vitesse().valeurs(),"vitesse_face");
       const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
       double *fluent_addr = computeOnTheDevice(fluent_, "fluent_");
       start_gpu_timer();
@@ -2010,7 +2009,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       ArrOfDouble vc(dimension);
       DoubleTab vsom(nsom,dimension);
       ArrOfDouble cc(dimension);
-
+      const DoubleTab& vitesse_face = vitesse().valeurs();
       // boucle sur les polys
       for (int poly=0; poly<nb_elem_tot; poly++)
         {
@@ -2128,9 +2127,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
   int nb_bord = domaine_VEF.nb_front_Cl();
-  copyPartialFromDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
-  copyPartialFromDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
-  start_gpu_timer();
+  int dimension = Objet_U::dimension;
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -2139,20 +2136,24 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1b = le_bord.num_premiere_face();
           int num2b = num1b + le_bord.nb_faces();
-          for (int num_face=num1b; num_face<num2b; num_face++)
-            {
-              double psc = 0;
-              for (int i=0; i<dimension; i++)
-                psc += vitesse_face(num_face,i)*face_normales(num_face,i);
-              if (psc>0) { /* Do nothing */}
-              else
-                fluent_(num_face) -= psc;
-            }
+          CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+          CDoubleTabView vitesse_face = vitesse().valeurs().view_ro();
+          DoubleArrView fluent = fluent_.view_rw();
+          start_gpu_timer();
+          Kokkos::parallel_for(__KERNEL_NAME__,
+                               Kokkos::RangePolicy<>(num1b, num2b), KOKKOS_LAMBDA(
+                                 const int num_face)
+          {
+            double psc = 0;
+            for (int i=0; i<dimension; i++)
+              psc += vitesse_face(num_face,i)*face_normales(num_face,i);
+            if (psc>0) { /* Do nothing */}
+            else
+              fluent(num_face) -= psc;
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
     }
-  end_gpu_timer(0, "Boundary face loop for fluent_");
-  copyPartialToDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
-  copyPartialToDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
 }
 
 void Op_Conv_VEF_Face::get_ordre(int& ord) const
