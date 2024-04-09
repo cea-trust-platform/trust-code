@@ -571,17 +571,12 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
   // cela depend si on transporte avec phi u ou avec u.
   const DoubleTab& tab_vitesse=modif_par_porosite_si_flag(vitesse_2,vitesse_face_,marq,porosite_face);
 
-  DoubleTab Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
-
-  //Pour tenir compte des conditions de Neumann sortie libre
-  IntList NeumannFaces;
-  DoubleTabs ValeursNeumannFaces;
-
   // soit on a transporte=phi*transporte_ et vitesse=vitesse_
   // soit transporte=transporte_ et vitesse=phi*vitesse_
   // cela depend si on transporte avec phi u ou avec u.
   const DoubleTab& transporte=modif_par_porosite_si_flag(transporte_2,transporte_,!marq,porosite_face);
 
+  DoubleTrav Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
   //Initialisation du tableau flux_bords_ pour le calcul des pertes de charge
   flux_bords_.resize(domaine_VEF.nb_faces_bord(),nb_comp);
   calculer_flux_bords(Kij,tab_vitesse,transporte);
@@ -610,13 +605,15 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
       ajouter_old(transporte,resu,tab_vitesse);
     }
 
+  //Pour tenir compte des conditions de Neumann sortie libre
+  IntList NeumannFaces;
+  DoubleTabs ValeursNeumannFaces;
   reinit_conv_pour_Cl(transporte,NeumannFaces,ValeursNeumannFaces,tab_vitesse,resu);
 
   resu+=sauv;
 
   if (test_) test(transporte,resu,tab_vitesse);
   modifier_flux(*this);
-
   return resu;
 }
 
