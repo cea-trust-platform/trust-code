@@ -75,7 +75,8 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
   // ...and its components
   int nb_composantes = champ.nb_comp();
   for (int i = 0; i < nb_composantes; i++)
-    add_key(champ.nom_compo(i));
+    if(champ.nom_compo(i) != "??")
+      add_key(champ.nom_compo(i));
 
   Cerr<<"Champs_compris::ajoute_champ " << champ.le_nom() <<finl;
 }
