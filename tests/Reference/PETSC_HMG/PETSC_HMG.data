@@ -24,7 +24,7 @@ Mailler dom
 # BEGIN PARTITION
 Decouper dom
 {
-    partitionneur metis { nb_parts 2 }
+    partitionneur metis { nb_parts 4 }
     nb_parts_tot 4
     Larg_joint 2
     Nom_Zones dom
