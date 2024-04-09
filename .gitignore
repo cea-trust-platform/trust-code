@@ -18,6 +18,7 @@ md5.check
 __pycache__
 .toto
 .check_sources.ok
+.form.md5sum
 make.lock
 .ipynb_checkpoints/
 instancie_src_*.cpp

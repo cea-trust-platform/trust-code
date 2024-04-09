@@ -2252,14 +2252,6 @@ then
    m="# Default, no multithreading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
 fi
 
-#################################################################
-# Creation des cas tests ou non a partir des fiches de validation
-#################################################################
-TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=0
-# 0 by default, except for the TRUST_ROOT which is building the code (<=> $TRUST_ROOT used in the crontab)
-[ "`crontab -l 2>/dev/null | grep $TRUST_ROOT`" != "" ] && TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
-m="# Create tests from validation forms with lance_test ?";e="TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=\"$TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS\" && export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS";ecrit $m"|"$e"|"$env
-
 ############################
 # LIBCCC_USER support (CCRT)
 ############################

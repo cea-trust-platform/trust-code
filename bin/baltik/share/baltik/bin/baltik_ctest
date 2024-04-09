@@ -139,12 +139,6 @@ export LC_COLLATE
 
 rm -f $project_report_file
 
-# on met le flag a 1 pour creer les cas tests de NR a partir des fiches de valid
-if [ "$mode" != "trust" ] && [ "$mode" != "trio" ]
-then
-TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
-export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS
-fi
 export PATH=$BALTIK_ROOT/bin:${PATH} 
 
 lance_test -ctest -nomail -no_timeout  $project_executable_name $project_test_directory

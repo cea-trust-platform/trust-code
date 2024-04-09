@@ -229,172 +229,193 @@ add_test_case_from_validation()
    erreur=0
    FICHES=`mktemp_`
    let NB_FICHES=0
-   if [ "$TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS" = 1 ]
-   then
-      echo " "
-      echo "Looking for new test cases extracted from the validation database. Please wait..."
-      for DIRECTORY in Validation Verification
-      do
-         # Le test sur l'existence du repertoire est important car
-         # TRUST_TESTS peut etre fixe a autre chose que $TRUST_ROOT/tests...
-         if [ -d $TRUST_TESTS/$DIRECTORY ]
-         then
-            # Verifie la coherence des fiches de validation avec le repertoire $DIRECTORY
-            cd $TRUST_TESTS/$DIRECTORY
-            # Menage
-            rm -r -f *.unloaded 1>/dev/null 2>&1
-            # Liste les fiches des cas tests existants completes (tous les .lml.gz sont la)
-            for FICHE in `find * -type d -follow 2>/dev/null | $TRUST_Awk -F_jdd '{print $1}' | sort -u`
+   echo " "
+   echo "Looking for new test cases extracted from the validation database. Please wait..."
+   for DIRECTORY in Validation Verification
+   do
+      # Le test sur l'existence du repertoire est important car
+      # TRUST_TESTS peut etre fixe a autre chose que $TRUST_ROOT/tests...
+      if [ -d $TRUST_TESTS/$DIRECTORY ]
+      then
+         # Verifie la coherence des fiches de validation avec le repertoire $DIRECTORY
+         cd $TRUST_TESTS/$DIRECTORY
+         # Menage
+         rm -r -f *.unloaded 1>/dev/null 2>&1
+         # Liste les fiches des cas tests existants completes (tous les .lml.gz sont la)
+         for FICHE in `find * -type d -follow 2>/dev/null | $TRUST_Awk -F_jdd '{print $1}' | sort -u`
+         do
+            let NB_FICHES=$NB_FICHES+1
+            echo $ECHO_OPTS "-\c"
+            ok=1
+            ###################################################################
+            # 1ere verification: Cas test incomplet (lien ou lml.gz manquant) #
+            ###################################################################
+            for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
             do
-               let NB_FICHES=$NB_FICHES+1
-               echo $ECHO_OPTS "-\c"
-               ok=1
-               ###################################################################
-               # 1ere verification: Cas test incomplet (lien ou lml.gz manquant) #
-               ###################################################################
-               for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
-               do
-                  [ ! -f $cas_test/lien_fiche_validation ] && ok=0 && echo "lien_fiche_validation manquant..."
-                  [ ! -f $cas_test/$cas_test.lml.gz ]      && ok=0 && echo "Fichier $cas_test.lml.gz manquant... Effacer le repertoire `pwd`/$cas_test"
-                  #####################################################################################
-                  # Verification de la localisation de la fiche de validation pointee par le cas test #
-                  #####################################################################################
-                  if [ -f $cas_test/lien_fiche_validation ]
-                  then
-                     FICHE_ROOT=`$TRUST_Awk -F/build '{print $1}' $cas_test/lien_fiche_validation`
-                     FICHE_ROOT=${FICHE_ROOT%/}
-                     if [ ! -d ${Rapports_auto_root}/$FICHE_ROOT ]
-                     then
-                        # La fiche a bouge ? On cherche sa nouvelle localisation sous ${Rapports_auto_root}/Validation/Rapports_automatiques
-                        basename_fiche=`basename $FICHE_ROOT`
-                        NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -follow -name $basename_fiche`
-                        [ "$NEW_FICHE_ROOT" = "$FICHE_ROOT" ] && echo "Erreur dans lance_test !" && echo $NEW_FICHE_ROOT" "$FICHE_ROOT && exit -1
-                        pth=${Rapports_auto_root}/$NEW_FICHE_ROOT
-                        if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ] && [ `is_link_or_double_link $pth` = "no" ]
-                        then
-                           # On l'a retrouvee !
-                           echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved to $NEW_FICHE_ROOT"
-                           # On met a jour les liens
-                           cd $TRUST_TESTS/$DIRECTORY
-                           for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
-                           do
-                              CHECKOUT $cas_test/lien_fiche_validation 1>/dev/null 2>&1
-                              echo $ECHO_OPTS "1,$ s?$FICHE_ROOT?$NEW_FICHE_ROOT?g\nw" | ed $cas_test/lien_fiche_validation 1>/dev/null 2>&1
-                              echo "So $cas_test/lien_fiche_validation is updated."
-                           done
-                           FICHE_ROOT=$NEW_FICHE_ROOT
-                           cd - 1>/dev/null 2>&1
-                        else
-                           echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved somewhere or deleted..."
-                        fi
-                    fi
-                    ################################################################################################################
-                    # Verification de la localisation du cas test par rapport a la nouvelle localisation de la fiche de validation #
-                    # Uniquement pour TRUST: c'est pas encore clair pour les autes composants...                                  #
-                    ################################################################################################################
-                    if [ "`echo $TRUST_TESTS | grep $TRUST_ROOT/tests`" != "" ]
-                    then
-                       if [ "`echo $FICHE_ROOT | grep /Validant/`" != "" ]
-                       then
-                          NEW_DIRECTORY=Validation
-                       elif [ "`echo $FICHE_ROOT | grep /Verification/`" != "" ]
-                       then
-                          #########################################
-                          # Verification de la taille du cas test #
-                          #########################################
-                          cd $TRUST_TESTS
-                          check_size_lml $DIRECTORY/$cas_test
-                          if [ "$err" != 0 ]
-                          then
-                             msg="\n -> The validation form $FICHE_ROOT generates test cases with huge size...\n"
-                             msg_warning="\n-----------------------------Advice--------------------------------------\n"
-                             msg_warning+="You can skip the validation form or a part of its test cases : \n"
-                             msg_warning+="- To skip the validation form, add a file skip_prm into '$FICHE_ROOT' or '$FICHE_ROOT/src'\n"
-                             msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in '$FICHE_ROOT/src'\n"
-                             msg_warning+="- To build no test cases, add a file fiche_exclu_nr into '$FICHE_ROOT/src'\n"
-                             msg_warning+="--------------------------------------------------------------------------\n"
-                             echo $ECHO_OPTS $msg $msg_warning
-                             return 255
-                             echo $ECHO_OPTS "\n-> The validation $FICHE_ROOT SHOULD be moved to ${Rapports_auto_root}/Validation/Rapports_automatiques/Validant !"
-                             NEW_DIRECTORY=$DIRECTORY
-                          else
-                             NEW_DIRECTORY=Verification
-                          fi
-                          cd - 1>/dev/null 2>&1
-                       fi
-                       # Pas au bon endroit ? On le deplace si respect du critere de place (.lml.gz < size)
-                       if [ "$NEW_DIRECTORY" != "$DIRECTORY" ]
-                       then
-                          cd $TRUST_TESTS
-                          err=0 && [ "$NEW_DIRECTORY" = Verification ] && check_size_lml $DIRECTORY/$cas_test
-                          if [ "$err" != 0 ]
-                          then
-                             echo $ECHO_OPTS "\n-> The test case can't be moved under `pwd`/$NEW_DIRECTORY"
-                          else
-                             CHECKOUT $DIRECTORY 1>/dev/null 2>&1
-                             CHECKOUT $NEW_DIRECTORY 1>/dev/null 2>&1
-                             #cleartool mv $DIRECTORY/$cas_test $NEW_DIRECTORY 1>/dev/null 2>&1
-                             #echo "Test case $cas_test is moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
-                             echo "Test case $cas_test SHOULD be moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
-                             echo "   (with 'git mv $DIRECTORY/$cas_test $NEW_DIRECTORY')"
-                          fi
-                          cd - 1>/dev/null 2>&1
-                       fi
-                     fi
-                  fi
-               done
-               ##################################################################################################
-               # 2eme verification: Est ce que le nombre de cas tests de la fiche de validation est identique ? #
-               ##################################################################################################
-               if [ $ok = 1 ]
+               [ ! -f $cas_test/lien_fiche_validation ] && ok=0 && echo "lien_fiche_validation manquant..."
+               [ ! -f $cas_test/$cas_test.lml.gz ]      && ok=0 && echo "Fichier $cas_test.lml.gz manquant... Effacer le repertoire `pwd`/$cas_test"
+               #####################################################################################
+               # Verification de la localisation de la fiche de validation pointee par le cas test #
+               #####################################################################################
+               if [ -f $cas_test/lien_fiche_validation ]
                then
-                  TMP_BUILD=`mktemp_ -d`
-                  nombre_cas_test_fiche1=`\ls | grep $FICHE"_jdd" 2>/dev/null | wc -l`
                   FICHE_ROOT=`$TRUST_Awk -F/build '{print $1}' $cas_test/lien_fiche_validation`
                   FICHE_ROOT=${FICHE_ROOT%/}
-                  # Nombre de cas tests de la fiche
-                  if [ -d ${Rapports_auto_root}/$FICHE_ROOT ]
+                  if [ ! -d ${Rapports_auto_root}/$FICHE_ROOT ]
                   then
-                     nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr . -dest $TMP_BUILD)`
-                  else
-                     nombre_cas_test_fiche2=0
-                  fi
-                  #echo $FICHE" "$nombre_cas_test_fiche1" "$nombre_cas_test_fiche2 # DEBUG
-                  if [ $nombre_cas_test_fiche1 != $nombre_cas_test_fiche2 ]
-                  then
-                     ok=0
-                     msg="\nNombre de cas tests modifies sur la fiche $FICHE_ROOT. Ils vont passer de $nombre_cas_test_fiche1 a $nombre_cas_test_fiche2.\n"
-                     echo $ECHO_OPTS $msg
-                  else
-                     # on regarde si on a bien des fiches differentes
-                     resu=`cat ${FICHE}_jdd*/lien_fiche_validation | uniq -d  2>/dev/null`
-                     if [ "$resu" != "" ]
+                     # La fiche a bouge ? On cherche sa nouvelle localisation sous ${Rapports_auto_root}/Validation/Rapports_automatiques
+                     basename_fiche=`basename $FICHE_ROOT`
+                     NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -follow -name $basename_fiche`
+                     [ "$NEW_FICHE_ROOT" = "$FICHE_ROOT" ] && echo "Erreur dans lance_test !" && echo $NEW_FICHE_ROOT" "$FICHE_ROOT && exit -1
+                     pth=${Rapports_auto_root}/$NEW_FICHE_ROOT
+                     if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ] && [ `is_link_or_double_link $pth` = "no" ]
                      then
-                        ok=0
-                        echo $resu en double
+                        # On l'a retrouvee !
+                        echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved to $NEW_FICHE_ROOT"
+                        # On met a jour les liens
+                        cd $TRUST_TESTS/$DIRECTORY
+                        for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
+                        do
+                           CHECKOUT $cas_test/lien_fiche_validation 1>/dev/null 2>&1
+                           echo $ECHO_OPTS "1,$ s?$FICHE_ROOT?$NEW_FICHE_ROOT?g\nw" | ed $cas_test/lien_fiche_validation 1>/dev/null 2>&1
+                           echo "So $cas_test/lien_fiche_validation is updated."
+                        done
+                        FICHE_ROOT=$NEW_FICHE_ROOT
+                        cd - 1>/dev/null 2>&1
+                     else
+                        echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved somewhere or deleted..."
                      fi
                   fi
-                  rm -r -f $TMP_BUILD
-               fi
-               ######################################################################
-               # Construction de liste $FICHES des fiches a jour avec les cas tests #
-               ######################################################################
-               [ $ok = 1 ] && echo " $FICHE_ROOT " >> $FICHES
+                  ################################################################################################################
+                  # Verification de la localisation du cas test par rapport a la nouvelle localisation de la fiche de validation #
+                  # Uniquement pour TRUST: c'est pas encore clair pour les autes composants...                                  #
+                  ################################################################################################################
+                  if [ "`echo $TRUST_TESTS | grep $TRUST_ROOT/tests`" != "" ]
+                  then
+                     if [ "`echo $FICHE_ROOT | grep /Validant/`" != "" ]
+                     then
+                        NEW_DIRECTORY=Validation
+                     elif [ "`echo $FICHE_ROOT | grep /Verification/`" != "" ]
+                     then
+                        #########################################
+                        # Verification de la taille du cas test #
+                        #########################################
+                        cd $TRUST_TESTS
+                        check_size_lml $DIRECTORY/$cas_test
+                        if [ "$err" != 0 ]
+                        then
+                           msg="\n -> The validation form $FICHE_ROOT generates test cases with huge size...\n"
+                           msg_warning="\n-----------------------------Advice--------------------------------------\n"
+                           msg_warning+="You can skip the validation form or a part of its test cases : \n"
+                           msg_warning+="- To skip the validation form, add a file skip_prm into '$FICHE_ROOT' or '$FICHE_ROOT/src'\n"
+                           msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in '$FICHE_ROOT/src'\n"
+                           msg_warning+="- To build no test cases, add a file fiche_exclu_nr into '$FICHE_ROOT/src'\n"
+                           msg_warning+="--------------------------------------------------------------------------\n"
+                           echo $ECHO_OPTS $msg $msg_warning
+                           return 255
+                           echo $ECHO_OPTS "\n-> The validation $FICHE_ROOT SHOULD be moved to ${Rapports_auto_root}/Validation/Rapports_automatiques/Validant !"
+                           NEW_DIRECTORY=$DIRECTORY
+                        else
+                           NEW_DIRECTORY=Verification
+                        fi
+                        cd - 1>/dev/null 2>&1
+                     fi
+                     # Pas au bon endroit ? On le deplace si respect du critere de place (.lml.gz < size)
+                     if [ "$NEW_DIRECTORY" != "$DIRECTORY" ]
+                     then
+                        cd $TRUST_TESTS
+                        err=0 && [ "$NEW_DIRECTORY" = Verification ] && check_size_lml $DIRECTORY/$cas_test
+                        if [ "$err" != 0 ]
+                        then
+                           echo $ECHO_OPTS "\n-> The test case can't be moved under `pwd`/$NEW_DIRECTORY"
+                        else
+                           CHECKOUT $DIRECTORY 1>/dev/null 2>&1
+                           CHECKOUT $NEW_DIRECTORY 1>/dev/null 2>&1
+                           #cleartool mv $DIRECTORY/$cas_test $NEW_DIRECTORY 1>/dev/null 2>&1
+                           #echo "Test case $cas_test is moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
+                           echo "Test case $cas_test SHOULD be moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
+                           echo "   (with 'git mv $DIRECTORY/$cas_test $NEW_DIRECTORY')"
+                        fi
+                        cd - 1>/dev/null 2>&1
+                      fi
+                   fi
+                fi
             done
-         fi
-      done
-      echo $ECHO_OPTS "\n=> $NB_FICHES validation forms found."
-      #############################################################################
-      # Creation eventuelle de nouveaux cas tests depuis les fiches de validation #
-      #############################################################################
+            ##################################################################################################
+            # 2eme verification: Est ce que le nombre de cas tests de la fiche de validation est identique ? #
+            ##################################################################################################
+            if [ $ok = 1 ]
+            then
+               TMP_BUILD=`mktemp_ -d`
+               nombre_cas_test_fiche1=`\ls | grep $FICHE"_jdd" 2>/dev/null | wc -l`
+               FICHE_ROOT=`$TRUST_Awk -F/build '{print $1}' $cas_test/lien_fiche_validation`
+               FICHE_ROOT=${FICHE_ROOT%/}
+               nombre_cas_test_fiche2=0
+               # Nombre de cas tests de la fiche
+               if [ -d ${Rapports_auto_root}/$FICHE_ROOT ]
+               then
+                  # Verifier que la fiche n'a pas bouge, si elle a bouhe on supprime .form.md5sum
+                  if [ -f ${Rapports_auto_root}/$FICHE_ROOT/.form.md5sum ]
+                  then
+                     cd ${Rapports_auto_root}/$FICHE_ROOT
+                     find . -type f -not -path ./build'*' -not -name '*'.log -exec md5sum {} \; | sort -k 1 | grep -v md5sum | grep -v ppms > .new_form.md5sum
+                     [ "`diff .new_form.md5sum .form.md5sum`" = "" ] && nombre_cas_test_fiche2=$nombre_cas_test_fiche1 && rm .new_form.md5sum || rm .form.md5sum
+                     cd - 1>/dev/null 2>&1
+                  fi
+                  if [ ! -f ${Rapports_auto_root}/$FICHE_ROOT/.form.md5sum ]
+                  then
+                     nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr . -dest $TMP_BUILD)`
+                  fi
+               fi
+               #echo $FICHE" "$nombre_cas_test_fiche1" "$nombre_cas_test_fiche2 # DEBUG
+               if [ "$nombre_cas_test_fiche1" != "$nombre_cas_test_fiche2" ]
+               then
+                  ok=0
+                  msg="\nNombre de cas tests modifies sur la fiche $FICHE_ROOT. Ils vont passer de $nombre_cas_test_fiche1 a $nombre_cas_test_fiche2.\n"
+                  rm -f ${Rapports_auto_root}/$FICHE_ROOT/.form.md5sum  # test cases changed, we remove .form.md5sum
+                  echo $ECHO_OPTS $msg
+               else
+                  # on regarde si on a bien des fiches differentes
+                  resu=`cat ${FICHE}_jdd*/lien_fiche_validation | uniq -d  2>/dev/null`
+                  if [ "$resu" != "" ]
+                  then
+                     ok=0
+                     echo $resu en double
+                  fi
+               fi
+               rm -r -f $TMP_BUILD
+            fi
+            ######################################################################
+            # Construction de liste $FICHES des fiches a jour avec les cas tests #
+            ######################################################################
+            [ $ok = 1 ] && echo " $FICHE_ROOT " >> $FICHES
+         done
+      fi
+   done
+   echo $ECHO_OPTS "\n=> $NB_FICHES validation forms found."
+   #############################################################################
+   # Creation eventuelle de nouveaux cas tests depuis les fiches de validation #
+   #############################################################################
 
-      for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}';
-                             cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname 2>/dev/null`
-      do
-         ####################
-         # Nouveau cas test #
-         ####################
-         pth=${Rapports_auto_root}/$FICHE_ROOT
+   for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}';
+                      cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname 2>/dev/null`
+   do
+      ####################
+      # Nouveau cas test #
+      ####################
+      pth=${Rapports_auto_root}/$FICHE_ROOT
+      # Verifier que la fiche n'a pas bouge
+      # seconde verification pour les nouvelles fiches
+      create_jdd=true  # create jdd from validation form
+      cd $pth
+      if [ -f $pth/.form.md5sum ]
+      then
+         find . -type f -not -path ./build'*' -not -name '*'.log -exec md5sum {} \; | sort -k 1 | grep -v md5sum | grep -v ppms > .new_form.md5sum
+         [ "`diff .new_form.md5sum .form.md5sum`" = "" ] && create_jdd=false && rm .new_form.md5sum # do not create datafile, all is OK
+      fi
+      cd - 1>/dev/null 2>&1
+      if $create_jdd
+      then
          if [ "`grep " $FICHE_ROOT " $FICHES`" = "" ] && [ ! -f $pth/src/fiche_exclu_nr ] && [ `is_link_or_double_link $pth` = "no" ]
          then
             msg="\nThe validation form $FICHE_ROOT is new or its number of test cases has changed ...\n"
@@ -469,21 +490,20 @@ add_test_case_from_validation()
                         cd $org 1>/dev/null 2>&1
                      fi
                   else
-                      # le fichier lien est il a jour
-                      ff=`mktemp_`
-                      echo ${FICHE_ROOT#$Rapports_auto_root/}/build/$jeu > $ff
-                      if [ "`diff $ff $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation`" != "" ]
-                      then
-                          echo  $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation a modifie
-                          CHECKOUT $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation
-                          cp $ff $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation
-                          toto=`mktemp_ -d`
-                          # mise a jour du jdd et du lml
-                          ( cd $toto; copie_cas_test $test)
-                          rm -rf $toto
-                      fi
-                      rm -f $ff
-
+                     # le fichier lien est il a jour
+                     ff=`mktemp_`
+                     echo ${FICHE_ROOT#$Rapports_auto_root/}/build/$jeu > $ff
+                     if [ "`diff $ff $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation`" != "" ]
+                     then
+                        echo  $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation a modifie
+                        CHECKOUT $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation
+                        cp $ff $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation
+                        toto=`mktemp_ -d`
+                        # mise a jour du jdd et du lml
+                        ( cd $toto; copie_cas_test $test)
+                        rm -rf $toto
+                    fi
+                    rm -f $ff
                   fi
                   if [ $boucle = creation_lml ]
                   then
@@ -521,9 +541,12 @@ add_test_case_from_validation()
             done
             rm -r -f $TMP_BUILD
          fi
-      done
-      rm -f $FICHES
-   fi
+         # _jdd* created/updated, we create .form.md5sum since it was previously removed
+         cd $pth
+         find . -type f -not -path ./build'*' -not -name '*'.log -exec md5sum {} \; | sort -k 1 | grep -v md5sum | grep -v ppms > .form.md5sum
+      fi
+   done
+   rm -f $FICHES
 }
 ###################
 # Debut du script #
