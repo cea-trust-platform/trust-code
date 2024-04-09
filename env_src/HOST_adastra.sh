@@ -75,6 +75,9 @@ define_soumission_batch()
    fi
    node=1 # --exclusive
    ram=0 # Important pour acceder a toute la RAM du noeud
+   # ToDo utiliser le binding !!!
+   # https://dci.dci-gitlab.cines.fr/webextranet/porting_optimization/#proper-binding-why-and-how
+   # https://dci.dci-gitlab.cines.fr/webextranet/porting_optimization/detailed_binding_script.html#adastra-detailed-binding-script
    # Attention, le verbose est important sinon crash ! voir doc
    mpirun="srun -l $srun_options --mem-bind=local --mpi=cray_shasta --cpu-bind=verbose,cores"
    sub=SLURM
