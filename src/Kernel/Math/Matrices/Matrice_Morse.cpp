@@ -1803,12 +1803,12 @@ inline void Matrice_Morse::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& co
   stencil.resize(tab2_.size_array(), 2);
 
 
-  IntTab tmp1(0);
+  //IntTab tmp1(0);
 
 
   std::vector<_VALUE_T_> tmp2;
 
-  ArrOfInt index;
+  //ArrOfInt index;
 
   int compteur = 0;
   const int nb_lines = nb_lignes( );
