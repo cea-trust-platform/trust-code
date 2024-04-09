@@ -542,7 +542,7 @@ static void print_stat(Sortie& perfs,
                        double quantity,
                        double temps_total_max,
                        int skip_globals,
-                       int skip_local,
+                       int print_local,
                        double avg_time_per_step = 0,
                        double min_time_per_step = 0,
                        double max_time_per_step = 0,
@@ -550,7 +550,7 @@ static void print_stat(Sortie& perfs,
 {
   char tampon[BUFLEN+450];
 
-  if (! skip_local)
+  if (print_local)
     {
       if (Process::is_parallel())
         {
@@ -679,14 +679,15 @@ void Statistiques::dump(const char * message, int mode_append)
     {
       File_header << "# Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
       File_header << "# The time was measured by the following method :" << Time::description << finl;
+      File_header << "# By default, only averaged statistics on all processor are printed. For accessing the detail per processor, initialize the environment variable STAT_PER_PROC_PERF_LOG==1" << finl;
       File_header << "# Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << finl;
-      File_header << "# If a counter does not belong in any particular family, then counter family equal to 0" << finl;
+      File_header << "# If a counter does not belong in any particular family, then counter family is set to (null)" << finl;
       File_header << "# Count means the number of time the counter is called during the overall calculation step." << finl;
       File_header << "# Min, max and SD accounts respectively for the minimum, maximum and Standard Deviation of the quantity of the previous row." << finl;
-      File_header << "# Quantity is a custom variable that depends on the counter. It is used to compute bandwidth for communication counters for example." << finl;
+      File_header << "# Quantity is a custom variable that depends on the counter. It is used to compute bandwidth for communication counters for example. See the table at the end of the introduction on statistics in TRUST form for more details." << finl;
       File_header << "#" << finl << "#" << finl;
       snprintf(tampon, BUFLEN + 450, "%-50s \t %-17s \t %-42s \t %-25s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s \t %-15s", "Overall_simulation_step", "Processor_Number",
-               "Counter_family", "Counter_name",  "Counter_level", "Is_comm", "%_total_time", "time_(s)", "t_min", "t_max", "t_SD", "count", "c_min", "c_max", "c_SD", "time_per_step", "tpt_min", "tpt_max", "tpt_SD", "Quantity", "q_min", "q_max", "q_SD");
+               "Counter_family", "Counter_name",  "Counter_level", "Is_comm", "%_total_time", "time_(s)", "t_min", "t_max", "t_SD", "count", "c_min", "c_max", "c_SD", "time_per_step", "tps_min", "tps_max", "tps_SD", "Quantity", "q_min", "q_max", "q_SD");
       File_header << tampon << finl;
     }
 
@@ -699,16 +700,16 @@ void Statistiques::dump(const char * message, int mode_append)
 
   /// Check if all of the processors see the same number of counter, if not print an error message in perfs_globales
   int skip_globals = 0;
-  int skip_local = 0;
+  int print_local = 0;
 
   int min_nb_of_counters = (int) Process::mp_min(si.nb_counters);
   int max_nb_of_counters = (int) Process::mp_max(si.nb_counters);
   int is_comm =0; ///< Equal to 1 if the counter is a communication counter, 0 otherwise
 
-  char* theValue = getenv("SKIP_PER_PROC_PERF_LOG"); ///< For calculation on a large number of processor, set the environment variable SKIP_PER_PROC_PERF_LOG == 1 in order to skip details per processor in the perf log file
+  char* theValue = getenv("STAT_PER_PROC_PERF_LOG"); ///< For calculation on a large number of processor, set the environment variable STAT_PER_PROC_PERF_LOG == 1 in order to print details per processor in the perf log file
   if (theValue != nullptr)
     {
-      skip_local = 1 ;
+      print_local = 1 ;
     }
 
   if (min_nb_of_counters != max_nb_of_counters)
@@ -788,7 +789,7 @@ void Statistiques::dump(const char * message, int mode_append)
 
       assert(var_time_per_step >= 0.);
       print_stat(perfs,perfs_globales, message, si.description[i], si.family[i],
-                 level,is_comm,time,nb,quantity,temps_total_max, skip_globals, skip_local,
+                 level,is_comm,time,nb,quantity,temps_total_max, skip_globals, print_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
     }
 
@@ -855,7 +856,7 @@ void Statistiques::dump(const char * message, int mode_append)
         }
       assert(var_time_per_step >= 0.);
       print_stat(perfs,perfs_globales,message, "Aggregated over family", si.family[next],
-                 level,is_comm, time,nb,quantity,temps_total_max, skip_globals, skip_local,
+                 level,is_comm, time,nb,quantity,temps_total_max, skip_globals, print_local,
                  avg_time_per_step, min_time_per_step, max_time_per_step, sqrt(var_time_per_step));
 
       next++;
