@@ -263,6 +263,7 @@ public:
   inline void reset();
 
 };
+
 inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool track_comm)
 {
   assert(counter_id.initialized());
@@ -271,9 +272,6 @@ inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool tr
       begin_count_(counter_id.id_);
       if(track_comm) begin_communication_tracking(counter_id.id_);
     }
-
-
-
 }
 
 /*! @brief Arret du compteur counter_id.
@@ -295,11 +293,7 @@ inline void Statistiques::end_count(const Stat_Counter_Id& counter_id,
       end_count_(counter_id.id_, quantity, count);
       if(track_comm) end_communication_tracking(counter_id.id_);
     }
-
-
-
 }
-
 
 inline void Stat_Results::reset()
 {

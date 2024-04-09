@@ -481,6 +481,11 @@ void Statistiques::begin_count_(const int id)
       // Level 1 only to avoid MPI calls
       if (si.counter_level[id]==1) VT_USER_START(si.description[id]);
 #endif
+#ifdef TRUST_USE_CUDA
+      // Level 1 only to avoid MPI calls
+      if (si.counter_level[id]==1)
+        nvtxRangePush(si.description[id]);
+#endif
     }
 
 }
@@ -506,6 +511,10 @@ void Statistiques::end_count_(const int id, int quantity, int count)
 #ifdef VTRACE
 // Level 1 only to avoid MPI calls
           if (si.counter_level[id]==1) VT_USER_END(si.description[id]);
+#endif
+#ifdef TRUST_USE_CUDA
+          // Level 1 only to avoid MPI calls
+          if (si.counter_level[id]==1) nvtxRangePop();
 #endif
         }
     }
