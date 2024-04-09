@@ -1406,7 +1406,7 @@ valeur_aux_elems(const DoubleTab& positions,
   CDoubleTabView positions_v = positions.view_ro();
   CIntArrView les_polys_v = les_polys.view_ro();
   DoubleTabView val_v = val.view_rw();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for(les_polys.size(), KOKKOS_LAMBDA(
                          const int rang_poly)
   {
@@ -1431,7 +1431,7 @@ valeur_aux_elems(const DoubleTab& positions,
           }
       }
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC_implementation::valeur_aux_elems");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC_implementation::valeur_aux_elems");
   return val;
 }
 

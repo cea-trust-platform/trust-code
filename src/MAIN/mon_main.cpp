@@ -143,13 +143,13 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
-    bool init_kokkos_before_mpi = true; // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
-    if (init_kokkos_before_mpi)
+  bool init_kokkos_before_mpi = true; // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
+  if (init_kokkos_before_mpi)
     {
-        // Kokkos initialisation
-        True_int argc2 = argc;
-        Kokkos::initialize( argc2, argv );
-   }
+      // Kokkos initialisation
+      True_int argc2 = argc;
+      Kokkos::initialize( argc2, argv );
+    }
   Nom arguments_info="";
   arguments_info +="Kokkos initialized!\n";
 

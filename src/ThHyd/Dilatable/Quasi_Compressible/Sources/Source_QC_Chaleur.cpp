@@ -71,13 +71,13 @@ DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
   CDoubleArrView porosites_v = porosites.view_ro();
   // ToDo_Kokkos :  DoubleArrView resu_v = resu.view_rw(); avec resu DoubleTab
   DoubleTabView resu_v = resu.view_rw();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for(nsom, KOKKOS_LAMBDA(
                          const int i)
   {
     resu_v(i, 0) += dpth * volumes_v(i) * porosites_v(i);
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Source_QC_Chaleur::ajouter_");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Source_QC_Chaleur::ajouter_");
   /* Ne marche pas detect inf en debug: */
   /* DoubleVect vol(volumes);
   vol*=porosites;

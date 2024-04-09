@@ -198,7 +198,7 @@ void Loi_Etat_base::calculer_nu()
           CIntTabView elem_faces_v = elem_faces.view_ro();
           CDoubleTabView tab_rho_v = tab_rho.view_ro();
           DoubleTabView tab_nu_v = tab_nu.view_rw();
-          start_timer();
+          start_gpu_timer();
           Kokkos::parallel_for("Loi_Etat_base::calculer_nu", n, KOKKOS_LAMBDA(
                                  const int i)
           {
@@ -208,7 +208,7 @@ void Loi_Etat_base::calculer_nu()
             rhoelem /= nfe;
             tab_nu_v(i, 0) = mu0 / rhoelem;
           });
-          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Loi_Etat_base::calculer_nu");
+          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Loi_Etat_base::calculer_nu");
         }
       else
         {

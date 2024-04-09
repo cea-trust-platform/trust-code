@@ -41,14 +41,14 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTa
   CDoubleTabView tab_rho_v = tab_rho.view_ro();
   CDoubleTabView vit_v = vit.view_ro();
   DoubleTabView rhovitesse_v = rhovitesse.view_rw();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl", n, KOKKOS_LAMBDA(
                          const int i)
   {
     for (int j=0 ; j<ncomp ; j++)
       rhovitesse_v(i, j) = tab_rho_v(i, 0) * vit_v(i, j);
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl");
 
   rhovitesse.echange_espace_virtuel();
   Debog::verifier("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse : ", rhovitesse);
@@ -409,14 +409,14 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       CDoubleTabView tab_rho_face_n_v = tab_rho_face_n.view_ro();
       CDoubleTabView tab_rho_face_np1_v = tab_rho_face_np1.view_ro();
       DoubleTabView dr_v = dr.view_rw();
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star", dr.size_totale(),
                            KOKKOS_LAMBDA(
                              const int i)
       {
         dr_v(i, 0) = (tab_rho_face_n_v(i, 0) / tab_rho_face_np1_v(i, 0) - 1.) / dt;
       });
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star");
 
       // on sert de vpoint pour calculer
       rho_vitesse_impl(dr,vit,vpoint);

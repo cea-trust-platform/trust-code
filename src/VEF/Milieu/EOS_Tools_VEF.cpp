@@ -181,7 +181,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   CDoubleArrView volumes_entrelaces_v = volumes_entrelaces.view_ro();
   CIntArrView renum_som_perio_v = dom.get_renum_som_perio().view_ro();
   DoubleArrView volume_int_som_v = volume_int_som.view_rw();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 1", nb_faces_tot, KOKKOS_LAMBDA(
                          const int face)
   {
@@ -191,7 +191,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&volume_int_som_v(som_glob), volumes_entrelaces_v(face));
       }
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
 
   //discretisation de rho sur les sommets
   tab_rhon_som = 0;
@@ -201,7 +201,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   CDoubleTabView tab_rhonp1P1_v = tab_rhonp1P1.view_ro();
   DoubleArrView tab_rhon_som_v = tab_rhon_som.view_rw();
   DoubleArrView tab_rhonp1_som_v = tab_rhonp1_som.view_rw();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 2", nb_faces_tot, KOKKOS_LAMBDA(
                          const int face)
   {
@@ -214,7 +214,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&tab_rhonp1_som_v(som_glob), tab_rhonp1P1_v(face, 0) * pond);
       }
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
 
 //Corrections pour test de la moyenne de la derivee de la masse volumique
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
@@ -233,7 +233,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   if (p_has_elem)
     {
       CIntTabView elem_faces_v = le_dom->elem_faces().view_ro();
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 3", nb_elem_tot, KOKKOS_LAMBDA(
                              const int elem)
       {
@@ -246,19 +246,19 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
           }
         tab_dZ_v(elem) = (rnp1 - rn) / (nfe * dt);
       });
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
       decal += nb_elem_tot;
     }
 
   if (p_has_som)
     {
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 4", nb_som_tot, KOKKOS_LAMBDA(
                              const int som)
       {
         tab_dZ_v(decal + som) = ((tab_rhonp1_som_v(som)) - (tab_rhon_som_v(som))) / dt;
       });
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
       decal += nb_som_tot;
     }
 
@@ -276,26 +276,26 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
     {
       double coefdivelem=1;
       CDoubleArrView volumes_v = le_dom->volumes().view_ro();
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 5", nb_elem_tot, KOKKOS_LAMBDA(
                              const int elem)
       {
         tab_W_v(elem, 0) = -coefdivelem * tab_dZ_v(elem) * volumes_v(elem);
       });
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
       decal+=nb_elem_tot;
     }
   if (p_has_som)
     {
       double coefdivsom=1;
       CDoubleArrView volumes_controle_v = zp1b.volume_aux_sommets().view_ro();
-      start_timer();
+      start_gpu_timer();
       Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 6", nb_som_tot, KOKKOS_LAMBDA(
                              const int som)
       {
         tab_W_v(decal + som, 0) = -coefdivsom * tab_dZ_v(decal + som) * volumes_controle_v(som);
       });
-      end_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
+      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
       decal+=nb_som_tot;
     }
   if (p_has_arrete)

@@ -70,7 +70,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
   device_view = t_dev("", dims[0], dims[1]);
   Kokkos::View<const _TYPE_ **, Kokkos::LayoutRight, memory_space, Kokkos::MemoryUnmanaged> device_view_LayoutRight(
     const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1]);
-  start_timer();
+  start_gpu_timer();
   Nom name("[KOKKOS] Deep_copy items= ");
   name += (Nom) (int) dims[0];
   // Kokkos::deep_copy(device_view, device_view_LayoutRight); Slower 100-200% ?
@@ -80,7 +80,7 @@ inline void TRUSTTab<_TYPE_>::init_view_tab2() const
     for (int j = 0; j < dims[1]; j++)
       device_view(i, j) = device_view_LayoutRight(j, i);
   });
-  end_timer(Objet_U::computeOnDevice, name.getString());
+  end_gpu_timer(Objet_U::computeOnDevice, name.getString());
    */
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);

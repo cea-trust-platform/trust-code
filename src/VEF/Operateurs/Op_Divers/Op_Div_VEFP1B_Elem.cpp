@@ -410,7 +410,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
   IntArrView nb_degres_liberte = nb_degres_liberte_.view_rw();
   CDoubleTabView vit = tab_vit.view_ro();
   DoubleTabView flux_b = tab_flux_b.view_wo();
-  start_timer();
+  start_gpu_timer();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -475,7 +475,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
           });
         }
     }
-  end_timer(Objet_U::computeOnDevice, "Op_Div_VEFP1B_Elem::ajouter_som CL");
+  end_gpu_timer(Objet_U::computeOnDevice, "Op_Div_VEFP1B_Elem::ajouter_som CL");
   return tab_div;
 }
 

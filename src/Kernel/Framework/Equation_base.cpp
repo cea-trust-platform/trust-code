@@ -1523,7 +1523,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           // ToDo Kokkos Matrice_Morse_View diag = diag_.view_rw();
           Matrice_Morse_View diag;
           diag.set(diag_);
-          start_timer();
+          start_gpu_timer();
           Kokkos::parallel_for("Equation_base::Gradient_conjugue_diff_impl first loop",
                                Kokkos::RangePolicy<>(0, nb_case), KOKKOS_LAMBDA(
                                  const int ca)
@@ -1531,13 +1531,13 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             for (int ncp = 0; ncp < nb_comp; ncp++)
               tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
           });
-          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl first loop");
+          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl first loop");
           solveur_masse.appliquer(tab_tempo);
           tab_tempo.echange_espace_virtuel();
           // On inverse... // Crank - Nicholson
           // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
           DoubleTabView terme_mul_v = terme_mul.view_ro();
-          start_timer();
+          start_gpu_timer();
           Kokkos::parallel_for("Equation_base::Gradient_conjugue_diff_impl second loop",
                                Kokkos::RangePolicy<>(0, nb_case), KOKKOS_LAMBDA(
                                  const int ca)
@@ -1546,7 +1546,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             for (int ncpa = 0; ncpa < nb_comp; ncpa++)
               diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
           });
-          end_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl second loop");
+          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Equation_base::Gradient_conjugue_diff_impl second loop");
           statistiques().end_count(assemblage_sys_counter_);
         }
       // On utilise p pour calculer phiB :

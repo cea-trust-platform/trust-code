@@ -91,7 +91,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   CDoubleArrView volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl().view_ro();
   CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
   DoubleTabView sm = tab_sm.view_rw();
-  start_timer();
+  start_gpu_timer();
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -143,7 +143,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
             sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
         });
     }
-  end_timer(Objet_U::computeOnDevice, "Masse_VEF_P1NC::appliquer_impl BC");
+  end_gpu_timer(Objet_U::computeOnDevice, "Masse_VEF_P1NC::appliquer_impl BC");
 
   kernelOnDevice = tab_sm.checkDataOnDevice();
   const double * volumes_entrelaces_Cl_addr = mapToDevice(domaine_Cl_VEF.volumes_entrelaces_Cl(), "", kernelOnDevice);

@@ -841,7 +841,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
   int dimension = Objet_U::dimension;
   CDoubleTabView3 duidxj_v = duidxj.view3_ro();
   DoubleArrView SMA_barre_v = SMA_barre.view_wo();
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for("Champ_P1NC::calcul_S_barre", nb_elem, KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -854,7 +854,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
         }
     SMA_barre_v(elem) = 2. * temp;
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC::calcul_S_barre");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC::calcul_S_barre");
 
   return SMA_barre;
 }

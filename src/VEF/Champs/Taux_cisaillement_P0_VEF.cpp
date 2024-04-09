@@ -40,13 +40,13 @@ void Taux_cisaillement_P0_VEF::mettre_a_jour(double tps)
   vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), S_barre, le_dom_Cl_VEF.valeur());
   CDoubleArrView S_barre_v = static_cast<const DoubleVect&>(S_barre).view_ro();
   DoubleTabView S_v = valeurs().view_wo(); // Shear rate
-  start_timer();
+  start_gpu_timer();
   Kokkos::parallel_for("Taux_cisaillement_P0_VEF::mettre_a_jour", nb_elem, KOKKOS_LAMBDA(
                          const int i)
   {
     S_v(i,0) = sqrt(S_barre_v(i));
   });
-  end_timer(Objet_U::computeOnDevice, "[KOKKOS]Taux_cisaillement_P0_VEF::mettre_a_jour");
+  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Taux_cisaillement_P0_VEF::mettre_a_jour");
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }
