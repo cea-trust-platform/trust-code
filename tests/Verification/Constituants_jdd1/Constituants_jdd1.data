@@ -88,218 +88,220 @@ Read pb
         }
     }
 
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 2*x*y 
+    list_equations
+    {
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 2*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration0 Champ_Uniforme 1 0.
+            }
         }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration0 Champ_Uniforme 1 0.
-        }
-    }
 
         Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 4*x*y  
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 4*x*y  
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration1 Champ_Uniforme 1 0.
+            }
         }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1  6*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration2 Champ_Uniforme 1 0.
+            }
         }
-        initial_conditions {
-            concentration1 Champ_Uniforme 1 0.
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 8*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration3 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 10*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration4 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 12*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration5 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 14*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration6 Champ_Uniforme 1 0.
+            }
+        }
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 16*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration7 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 18*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration8 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 20*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration9 Champ_Uniforme 1 0.
+            }
+        }
+
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 22*x*y 
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration10 Champ_Uniforme 1 0.
+            }
+        }
+
+        Convection_diffusion_Concentration {
+            Sources {
+                source_Constituant Champ_fonc_xyz dom 1 24*x*y
+            }
+            diffusion { }
+            convection { amont }
+            boundary_conditions {
+                Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+                Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+            }
+            initial_conditions {
+                concentration11 Champ_Uniforme 1 0.
+            }
         }
     }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1  6*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration2 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 8*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration3 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 10*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration4 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 12*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration5 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 14*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration6 Champ_Uniforme 1 0.
-        }
-    }
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 16*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration7 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 18*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration8 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 20*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration9 Champ_Uniforme 1 0.
-        }
-    }
-
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 22*x*y 
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration10 Champ_Uniforme 1 0.
-        }
-    }
-
-    Convection_diffusion_Concentration {
-        Sources {
-            source_Constituant Champ_fonc_xyz dom 1 24*x*y
-        }
-        diffusion { }
-        convection { amont }
-        boundary_conditions {
-            Haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-            Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
-        }
-        initial_conditions {
-            concentration11 Champ_Uniforme 1 0.
-        }
-    }
-
 
     Post_processing
     {
