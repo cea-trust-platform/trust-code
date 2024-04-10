@@ -77,34 +77,55 @@ void TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIU
     }
 }
 
+inline void error_read_equation(const Motcle& read, const Motcle& expected)
+{
+  Cerr << "What() ?? Error in TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations !!!" << finl;
+  Cerr << "We expected to read " << expected << " and not " << read << " !!!" << finl;
+  Cerr << "Correct your data file or call the 911 !!!" << finl;
+  Process::exit();
+}
+
 template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TYPE_>
 Entree& TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations(Entree& is, Motcle& dernier_mot)
 {
-  Nom un_nom;
+  Motcle un_nom;
   const int nb_eq_mere = _DERIVED_TYPE_::nombre_d_equations(), nb_eq = this->nombre_d_equations();
   Cerr << "Reading of the equations ..." << finl;
 
   for (int i = 0; i < nb_eq_mere; i++)
     {
       is >> un_nom;
+      if (!un_nom.debute_par("NAVIER_STOKES") && !un_nom.debute_par("CONVECTION_DIFFUSION_TEMPERATURE"))
+        error_read_equation(un_nom, Motcle(this->equation(i).que_suis_je()));
+
       is >> _DERIVED_TYPE_::getset_equation_by_name(un_nom);
     }
+
+  // lecture de la liste
+  is >> un_nom;
+  if (un_nom != "LIST_EQUATIONS" && un_nom != "LISTE_EQUATIONS")
+    error_read_equation(un_nom, Motcle("LIST_EQUATIONS"));
+
+  is >> un_nom;
+  if (un_nom != "{" )
+    error_read_equation(un_nom, Motcle("{"));
 
   for (int i = nb_eq_mere; i < nb_eq; i++)
     {
       is >> un_nom; /* poubelle */
-      Motcle un_nom_maj = Motcle(un_nom), eq_nom_maj = this->list_eq_concentration_.front().que_suis_je();
-      if (un_nom_maj != eq_nom_maj)
+      Motcle eq_nom = this->list_eq_concentration_.front().que_suis_je();
+      if (un_nom != eq_nom)
         {
-          Cerr << "What() ?? Error in TRUSTProblem_List_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_equations !!!" << finl;
           Cerr << "You defined " << this->nb_consts_ << " diffusion coefficients so we are supposed to read " << this->nb_consts_ << " equations ..." << finl;
-          Cerr << "We expected to read " << eq_nom_maj << " and not " << un_nom_maj << " !!!" << finl;
-          Cerr << "Correct your data file or call the 911 !!!" << finl;
-          Process::exit();
+          error_read_equation(un_nom, eq_nom);
         }
 
       is >> this->list_eq_concentration_[i - nb_eq_mere];
     }
+
+  is >> un_nom;
+  if (un_nom != "}" )
+    error_read_equation(un_nom, Motcle("}"));
 
   is >> dernier_mot;
   return is;

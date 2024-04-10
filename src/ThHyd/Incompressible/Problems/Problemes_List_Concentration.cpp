@@ -23,15 +23,16 @@ Implemente_instanciable(Pb_Hydraulique_List_Concentration, "Pb_Hydraulique_List_
 Sortie& Pb_Hydraulique_List_Concentration::printOn(Sortie& os) const { return TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>::printOn(os); }
 Entree& Pb_Hydraulique_List_Concentration::readOn(Entree& is) { return TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>::readOn(is); }
 
-// XD Pb_Thermohydraulique_List_Concentration Pb_base Pb_Thermohydraulique_List_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
+// XD pb_avec_liste_conc Pb_base pb_avec_liste_conc -1 Class to create a classical problem with a list of scalar concentration equations.
+// XD attr LISTE_EQUATIONS listeqn LIST_EQUATIONS 0 convection_diffusion_concentration equations. The unknown of the concentration equation number N is named concentrationN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.
+
+// XD Pb_Thermohydraulique_List_Concentration pb_avec_liste_conc Pb_Thermohydraulique_List_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
 // XD   attr constituant constituant constituant 1 Constituents.
 // XD   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-// XD   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
 // XD   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 
-// XD Pb_Hydraulique_List_Concentration Pb_base Pb_Hydraulique_List_Concentration -1 Resolution of Navier-Stokes/multiple constituent transport equations.
+// XD Pb_Hydraulique_List_Concentration pb_avec_liste_conc Pb_Hydraulique_List_Concentration -1 Resolution of Navier-Stokes/multiple constituent transport equations.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
 // XD   attr constituant constituant constituant 1 Constituents.
 // XD   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-// XD   attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport vectorial equation (concentration diffusion convection).
