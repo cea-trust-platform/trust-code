@@ -15,7 +15,7 @@ public :
   const Champ_base& vitesse_pour_transport() ;
   void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
 protected :
-  Champ_Don C;
+  Champ_Don C_;
 private :
   Champ_Inc vitesse_transport;
 };
