@@ -1,5 +1,4 @@
-# Test de Champ_fonc_Fonction_txyz #
-# NB_PAS_DT_MAX 20 #
+# Test de Champ_Fonc_Fonction_txyz_Morceaux #
 # PARALLEL OK 8 #
 dimension 2
 
@@ -76,7 +75,6 @@ Read pb
 
     fluide_incompressible {
         gravite champ_uniforme 2 0 -9.81
-
         mu Champ_Uniforme 1 1.85e-5
         rho Champ_Uniforme 1 1.17
         lambda Champ_Uniforme 1 0.0262
@@ -125,11 +123,7 @@ Read pb
 
     Post_processing
     {
-        Probes
-        {
-            sonde_pression pression periode 0.01 points 1 0.0045 0.0045
-        }
-        Format lata
+        Format lml
         fields dt_post 1.0
         {
             vitesse elem
