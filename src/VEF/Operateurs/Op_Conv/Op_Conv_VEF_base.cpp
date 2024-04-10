@@ -64,7 +64,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  remplir_fluent(fluent_);
+  remplir_fluent();
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
@@ -94,7 +94,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
       int nfin = domaine_VEF.premiere_face_std();
       for (int num_face = ndeb; num_face < nfin; num_face++)
         faces_entrelaces_Cl_(++ind_face) = num_face;
-      faces_entrelaces_Cl_.resize(ind_face);
+      faces_entrelaces_Cl_.resize(ind_face+1);
     }
 
   double dt_stab =1.e30;
@@ -104,11 +104,11 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   start_gpu_timer();
   Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
                           Kokkos::RangePolicy<>(0, faces_entrelaces_Cl_.size_array()), KOKKOS_LAMBDA(
-                            const int ind_face, double& dt_stab)
+                            const int ind_face, double& dtstab)
   {
     int num_face = faces_entrelaces_Cl(ind_face);
     double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
-    if (dt_stab > dt_face) dt_stab = dt_face;
+    if (dt_face < dtstab) dtstab = dt_face;
   }, Kokkos::Min<double>(dt_stab));
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
@@ -166,7 +166,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
           const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
           double dt_face;
-          remplir_fluent(fluent_);
+          remplir_fluent();
           if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
             diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
@@ -209,8 +209,6 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
               dt_face = volumes_entrelaces(num_face)/(fluent_[num_face]+1.e-30);
               es_valeurs(num_face) = dt_face;
             }
-
-          assert(mp_min_vect(es_valeurs)==calculer_dt_stab());
           if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
             multiplier_par_rho_si_dilatable(fluent_,equation().milieu());
         }
@@ -265,7 +263,7 @@ DoubleTab& Op_Conv_VEF_base::calculer(const DoubleTab& transporte,
   resu = 0;
   return ajouter(transporte,resu);
 }
-void Op_Conv_VEF_base::remplir_fluent(DoubleVect& tab_fluent) const
+void Op_Conv_VEF_base::remplir_fluent() const
 {
   // Remplissage du tableau fluent par appel a ajouter
   // C'est cher mais au moins cela corrige (en attendant
@@ -292,7 +290,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   int nb_faces= domaine_VEF.nb_faces();
   dt_face=(volumes_entrelaces);
-  remplir_fluent(fluent_);
+  remplir_fluent();
 
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {

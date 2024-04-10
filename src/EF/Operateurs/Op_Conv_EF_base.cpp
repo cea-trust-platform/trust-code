@@ -78,7 +78,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const DoubleVect& volumes_entrelaces = domaine_EF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_EF.volumes_entrelaces_Cl();
-  remplir_fluent(fluent_);
+  remplir_fluent();
 
 
   double dt_face,dt_stab =1.e30;
@@ -189,7 +189,7 @@ DoubleTab& Op_Conv_EF_base::calculer(const DoubleTab& transporte,
   resu = 0;
   return ajouter(transporte,resu);
 }
-void Op_Conv_EF_base::remplir_fluent(DoubleVect& ) const
+void Op_Conv_EF_base::remplir_fluent() const
 {
   // Remplissage du tableau fluent par appel a ajouter
   // C'est cher mais au moins cela corrige (en attendant

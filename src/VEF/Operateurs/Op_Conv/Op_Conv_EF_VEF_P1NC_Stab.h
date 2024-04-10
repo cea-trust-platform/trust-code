@@ -48,7 +48,7 @@ class Op_Conv_EF_VEF_P1NC_Stab : public Op_Conv_VEF_Face
 public:
 
   //Methodes annexes
-  void remplir_fluent(DoubleVect& ) const override;
+  void remplir_fluent() const override;
   int is_compressible() const;
   void completer() override;
 

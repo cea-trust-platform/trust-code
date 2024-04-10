@@ -1536,8 +1536,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           tab_tempo.echange_espace_virtuel();
           // On inverse... // Crank - Nicholson
           // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
-          DoubleTabView terme_mul_v = terme_mul.view_ro();
-          start_gpu_timer();
+          CDoubleTabView terme_mul_v = terme_mul.view_ro();
+          start_gputimer();
           Kokkos::parallel_for("Equation_base::Gradient_conjugue_diff_impl second loop",
                                Kokkos::RangePolicy<>(0, nb_case), KOKKOS_LAMBDA(
                                  const int ca)

@@ -1829,7 +1829,7 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
     }
 }
 
-void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
+void Op_Conv_VEF_Face::remplir_fluent() const
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
@@ -1849,7 +1849,6 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
-  DoubleVect& fluent_ = tab_fluent;
 
   // On definit le tableau des sommets:(C MALOD 17/07/2007)
 
@@ -1894,7 +1893,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
       const double *normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
       const double *vitesse_face_addr = mapToDevice(vitesse().valeurs(),"vitesse_face");
       const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
-      double *fluent_addr = computeOnTheDevice(fluent_, "fluent_");
+      double *fluent_addr = computeOnTheDevice(fluent_, "fluent");
       start_gpu_timer();
       #pragma omp target teams if (computeOnDevice)
       {
@@ -2127,7 +2126,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
   int nb_bord = domaine_VEF.nb_front_Cl();
-  int dimension = Objet_U::dimension;
+  int nb_comp = Objet_U::dimension;
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -2145,7 +2144,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
                                  const int num_face)
           {
             double psc = 0;
-            for (int i=0; i<dimension; i++)
+            for (int i=0; i<nb_comp; i++)
               psc += vitesse_face(num_face,i)*face_normales(num_face,i);
             if (psc>0) { /* Do nothing */}
             else

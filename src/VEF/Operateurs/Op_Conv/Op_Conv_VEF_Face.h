@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
   Op_Conv_VEF_Face() { }
   void completer() override;
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
-  void remplir_fluent(DoubleVect& ) const override;
+  void remplir_fluent() const override;
   // Methodes pour l implicite.
   inline void dimensionner(Matrice_Morse& ) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;

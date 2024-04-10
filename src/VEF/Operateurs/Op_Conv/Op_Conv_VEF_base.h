@@ -48,7 +48,7 @@ public:
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
 
-  virtual void remplir_fluent(DoubleVect& ) const;
+  virtual void remplir_fluent() const;
   int impr(Sortie& os) const override;
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;
   int  phi_u_transportant(const Equation_base& eq) const;

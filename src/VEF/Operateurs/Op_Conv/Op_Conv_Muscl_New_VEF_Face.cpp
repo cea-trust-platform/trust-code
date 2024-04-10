@@ -148,6 +148,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   //
   //Calcul des coefficients de l'operateur
   //
+  ToDo_Kokkos("critical");
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
       int rang=rang_elem_non_std(elem);
@@ -374,7 +375,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   //Calcul des flux de l'operateur
   //
   Champ_P1NC::calcul_gradient(transporte,gradient_elem,domaine_Cl_VEF);
-
+  ToDo_Kokkos("critical");
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
       int rang=rang_elem_non_std(elem);
@@ -648,7 +649,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   //Calcul des flux de l'operateur
   //
   Champ_P1NC::calcul_gradient(transporte,gradient_elem,domaine_Cl_VEF);
-
+  ToDo_Kokkos("critical");
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
       int rang=rang_elem_non_std(elem);
@@ -751,7 +752,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
     }//for sur elem
 }
 
-void Op_Conv_Muscl_New_VEF_Face::remplir_fluent(DoubleVect& fluent_) const
+void Op_Conv_Muscl_New_VEF_Face::remplir_fluent() const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
@@ -762,7 +763,7 @@ void Op_Conv_Muscl_New_VEF_Face::remplir_fluent(DoubleVect& fluent_) const
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
   fluent_ = 0;
-
+  ToDo_Kokkos("critical");
   for(int num_face=0; num_face<nb_faces; num_face++)
     {
       double psc=0.;
@@ -892,6 +893,7 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
 
       //Debut du calcul
       IntTab plus_tab(nb_faces_tot);
+      ToDo_Kokkos("critical");
       for (int elem=0; elem<nb_elem_tot; elem++)
         for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
           {
@@ -1109,6 +1111,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const
   DoubleVect& resuV = resu;
 
   //Faces internes
+  ToDo_Kokkos("critical");
   for (int elem=0; elem<nb_elem_tot; elem++)
     for (int fa7=0; fa7<nfa7; fa7++)
       {
@@ -1221,6 +1224,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& Kij,const DoubleT
   DoubleVect& resuV = resu;
 
   //Pour les faces internes
+  ToDo_Kokkos("critical");
   for (int elem=0; elem<nb_elem_tot; elem++)
     for (int fa7=0; fa7<nfa7; fa7++)
       {
@@ -1310,6 +1314,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
   DoubleVect& resuV = resu;
 
   //Pour les faces internes
+  ToDo_Kokkos("critical");
   for (int elem=0; elem<nb_elem_tot; elem++)
     for (int fa7=0; fa7<nfa7; fa7++)
       {
@@ -1420,6 +1425,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
   DoubleVect& resuV = resu;
 
   //Pour les faces internes
+  ToDo_Kokkos("critical");
   for (int elem=0; elem<nb_elem_tot; elem++)
     for (int fa7=0; fa7<nfa7; fa7++)
       {
@@ -1704,7 +1710,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
                   }
               }
         }
-
+      ToDo_Kokkos("critical");
       for (int elem=0; elem<nb_elem_tot; elem++)
         {
           int rang=rang_elem_non_std(elem);

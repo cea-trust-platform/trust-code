@@ -45,7 +45,7 @@ public:
 
   double calculer_dt_stab() const override ;
 
-  //virtual void remplir_fluent(DoubleVect& ) const;
+  //virtual void remplir_fluent() const;
   // Methodes pour l implicite.
   inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(le_dom_EF.valeur(),la_zcl_EF.valeur(), matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_EF_base::modifier_pour_Cl(le_dom_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem); }

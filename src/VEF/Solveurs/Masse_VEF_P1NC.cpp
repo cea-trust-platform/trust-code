@@ -61,7 +61,6 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   int num_std = domaine_VEF.premiere_face_std();
   int num_int = domaine_VEF.premiere_face_int();
   int nbcomp = tab_sm.line_size();
-  int dimension = Objet_U::dimension;
 
   if (nfa != tab_sm.dimension(0))
     {
@@ -124,7 +123,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
                 surf+=normales(face,comp)*normales(face,comp);
               }
             psc/=surf;
-            for(int comp=0; comp<dimension; comp++)
+            for(int comp=0; comp<nbcomp; comp++)
               {
                 sm(face,comp)-=psc*normales(face,comp);
                 sm(face,comp) /= (volumes_entrelaces_Cl(face)*

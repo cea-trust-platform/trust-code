@@ -308,7 +308,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem = domaine_VEF.elem_faces().line_size();
-  int dimension = Objet_U::dimension;
+  int dim = Objet_U::dimension;
 
   assert(tab_Kij.nb_dim()==3);
   assert(tab_Kij.dimension(0)==nb_elem_tot);
@@ -336,7 +336,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
         if(face_voisins(face_i,0)!=elem) signei=-1.0;
 
         double psci=0;
-        for(int comp=0; comp<dimension; comp++)
+        for(int comp=0; comp<dim; comp++)
           psci+=vitesse(face_i,comp)*face_normales(face_i,comp);
         psci*=signei;
 
@@ -350,7 +350,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
 
             double pscj=0;
             //psci=0;
-            for(int comp=0; comp<dimension; comp++)
+            for(int comp=0; comp<dim; comp++)
               pscj+=vitesse(face_j,comp)*face_normales(face_j,comp);
             pscj*=signej;
 
@@ -522,12 +522,12 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
   // Fin de la correction des Kij
   //
 }
-void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
+void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent() const
 {
   // calcul de la CFL.
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const int nb_faces = domaine_VEF.nb_faces();
-  int dimension = Objet_U::dimension;
+  int nb_comp = Objet_U::dimension;
   CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
   CDoubleTabView tab_vitesse = vitesse_.valeur().valeurs().view_ro();
   DoubleArrView fluent = fluent_.view_rw();
@@ -537,7 +537,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
                          const int num_face)
   {
     double psc=0.;
-    for (int i=0; i<dimension; i++)
+    for (int i=0; i<nb_comp; i++)
       psc+=tab_vitesse(num_face,i)*face_normales(num_face,i);
     fluent(num_face)=std::fabs(psc);
   });
@@ -719,7 +719,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
                 || sub_type(Dirichlet,la_cl.valeur())
                 || sub_type(Periodique,la_cl.valeur()) )
         {
-          int dimension = Objet_U::dimension;
           CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
           CIntArrView num_face = le_bord.num_face().view_ro();
           CDoubleTabView vitesse = tab_vitesse.view_ro();
@@ -732,7 +731,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
           {
             int facei = num_face(ind_face);
             double psc=0.;
-            for (int dim=0; dim<dimension; dim++)
+            for (int dim=0; dim<nb_comp; dim++)
               psc-=vitesse(facei,dim)*face_normales(facei,dim);
 
             for (int dim=0; dim<nb_comp; dim++)
@@ -941,7 +940,7 @@ Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(CDoubleTabView3 Kij, CDoubleArrView t
       P_plus[i] = 0., P_moins[i] = 0.;
       Q_plus[i] = 0., Q_moins[i] = 0.;
     }
-  const int nb_faces_elem=elem_faces.extent(1);
+  const int nb_faces_elem=(int)elem_faces.extent(1);
   for (int elem_voisin=0; elem_voisin<2; elem_voisin++)
     {
       int elem = face_voisins(face_i,elem_voisin);

@@ -168,14 +168,13 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       start_gpu_timer();
       Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
                               Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
-                                const int elem, double& dt_stab)
+                                const int elem, double& dtstab)
       {
         const double h_carre = carre_pas_maille(elem);
         const double diffu   = valeurs_diffu(elem);
         const double rho     = valeurs_rho(elem);
         const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
-        if (dt_stab > dt)
-          dt_stab = dt;
+        if (dt < dtstab) dtstab = dt;
       }, Kokkos::Min<double>(dt_stab));
       end_gpu_timer(Objet_U::computeOnDevice, "Op_Diff_VEF_base::calculer_dt_stab");
     }
