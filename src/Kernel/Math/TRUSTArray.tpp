@@ -360,7 +360,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 
   // stupid enough, but we might have ref'ed a detached array ...
   if (mem_ != nullptr)
-    span_ = Span_((_TYPE_ *)(m.mem_->data()+start), size);
+    span_ = Span_((_TYPE_ *)(m.span_.begin()+start), size);
   else
     span_ = Span_();
 }

@@ -19,6 +19,7 @@
 #include <TRUSTTrav.h>
 
 #include <assert.h>
+#include <numeric>
 
 /*! Unit tests for arrays - To be run in debug mode!!
  */
@@ -111,6 +112,18 @@ void TestTRUSTArray::test_ref_arr()
     assert(b.size_array() == 4);
   }
   assert(a.ref_count() == 1);
+  
+  {
+    // Non regression : ref_array of ref_array were improperly set up:
+    ArrOfInt b(10);
+    std::iota(b.addr(), b.addr()+b.size_array(),0);
+    ArrOfInt ref1, ref2;
+    ref1.ref_array(b, 2);
+    ref2.ref_array(ref1, 2);
+    assert(ref2[0] == 4);  // was 2!!
+  } 
+
+  
 }
 
 void TestTRUSTArray::test_ref_data()
@@ -132,6 +145,7 @@ void TestTRUSTArray::test_ref_data()
     a.resize(2,5);
     assert(a(1, 1) == 24);
   }
+    
   delete [] pt_int;
 }
 
