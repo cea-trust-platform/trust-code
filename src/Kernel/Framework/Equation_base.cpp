@@ -266,6 +266,7 @@ void Equation_base::set_param(Param& param)
   param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this)); // XD attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field only for some boundaries in a text file
   param.ajouter("parametre_equation",&parametre_equation_); // XD attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
   param.ajouter_non_std("equation_non_resolue",(this)); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
+  param.ajouter_non_std("rename_equation|renommer_equation",(this)); // XD attr renommer_equation chaine rename_equation 1 Rename the equation with a specific name.
 }
 
 int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -290,6 +291,13 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       xyz_field_values_file_.associer_eqn(*this);
       is >> xyz_field_values_file_;
+      return 1;
+    }
+  else if (mot=="rename_equation|renommer_equation")
+    {
+      Cerr << "Equation " << nom_ << " renamed to : ";
+      is >> nom_;
+      Cerr << nom_ << finl;
       return 1;
     }
   else if (mot=="equation_non_resolue")
