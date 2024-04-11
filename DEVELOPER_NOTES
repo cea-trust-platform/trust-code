@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
-10/04/24 (TRUST) Cgange       : Environment variable TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS removed, make ctest_MODE does now a smart check of tests issued from validation forms.
+11/04/24 (TRUST) NR Tests     : Environment variable TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS removed, make ctest_MODE does now a smart check of tests issued from validation forms.
 22/03/24 (TRUST) Major change : mklibs script now generates only what is necessary for CMake. Old building mode (autotools) not supported anymore. File make.liba not generated anymore.
 15/03/24 (TRUST) Major change : make.include files are not necessary anymore. Include directories lists are automatically generated (keeping the principle of spatial discretisation independence)
 12/03/24 (TRUST) Tools        : Kokkos (portability performance library) may be used for GPU acceleration and SIMD vectorization (use ./configure -kokkos_simd for the last case). In both cases, C++17 compiler is mandatory.

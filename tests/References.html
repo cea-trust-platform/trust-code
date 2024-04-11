@@ -82,6 +82,7 @@
 <TR><TD><SMALL><A HREF="#ChFrontTab_VEFPreP1B">ChFrontTab_VEFPreP1B</A></TD><TD><SMALL># Thermohydraulique 2D VEF : Conditions limites instationnaires TAB #</TD></TR>
 <TR><TD><SMALL><A HREF="#ChFrontXYZ">ChFrontXYZ</A></TD><TD><SMALL># Test Champ Frontiere lu sous forme de fonction f(x,y,z)  dans le jeu de donnees #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_Don_lu_CCM">Champ_Don_lu_CCM</A></TD><TD><SMALL># Lecture d'un fichier csv de STAR-CCM #</TD></TR>
+<TR><TD><SMALL><A HREF="#Champ_Fonc_Fonction_txyz_Morceaux">Champ_Fonc_Fonction_txyz_Morceaux</A></TD><TD><SMALL># Test de Champ_Fonc_Fonction_txyz_Morceaux #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_Fonc_Tabule_Morceaux">Champ_Fonc_Tabule_Morceaux</A></TD><TD><SMALL># PARALLEL OK 4 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_Fonc_txyz">Champ_Fonc_txyz</A></TD><TD><SMALL># Test Champ_Don lu sous forme de fonction f(x,y,z) dans le jeu de donnees #</TD></TR>
 <TR><TD><SMALL><A HREF="#Champ_Front_Normal">Champ_Front_Normal</A></TD><TD><SMALL># Hydraulique 3D VEF P1NC/P1B Schema RungeKutta3+EF_stab cylindres emboites #</TD></TR>
@@ -300,6 +301,7 @@
 <TR><TD><SMALL><A HREF="#PETSC_DECIDE">PETSC_DECIDE</A></TD><TD><SMALL># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_ILU_P0P1">PETSC_GCP_ILU_P0P1</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_GCP_SPAI_P0P1Pa">PETSC_GCP_SPAI_P0P1Pa</A></TD><TD><SMALL># Hydraulique 3D VEF P1NCP1P0Pa #</TD></TR>
+<TR><TD><SMALL><A HREF="#PETSC_HMG">PETSC_HMG</A></TD><TD><SMALL># PARALLEL OK 8 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_IMPL">PETSC_IMPL</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_MAT_TYPE">PETSC_MAT_TYPE</A></TD><TD><SMALL># Test matrix type in PETSc. sbaij is the less memory expensive but slower than aij, and optimized aijmkl or aijsell (slice Ellpack), most memory expensive one #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_OPENMP">PETSC_OPENMP</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #</TD></TR>
@@ -794,6 +796,9 @@
 <CENTER># Lecture d'un fichier csv de STAR-CCM #</CENTER>
 <CENTER><a href=../tests/Reference/Champ_Don_lu_CCM/Champ_Don_lu_CCM.data>Edit</a> Champ_Don_lu_CCM.data </CENTER>
 <CENTER><a href=../tests/Reference/Champ_Don_lu_CCM/Champ_Don_lu_CCM.geom>Edit</a> Champ_Don_lu_CCM.geom </CENTER>
+<HR><CENTER><B><A NAME=Champ_Fonc_Fonction_txyz_Morceaux>Champ_Fonc_Fonction_txyz_Morceaux</A></B></CENTER>
+<CENTER># Test de Champ_Fonc_Fonction_txyz_Morceaux #</CENTER>
+<CENTER><a href=../tests/Reference/Champ_Fonc_Fonction_txyz_Morceaux/Champ_Fonc_Fonction_txyz_Morceaux.data>Edit</a> Champ_Fonc_Fonction_txyz_Morceaux.data </CENTER>
 <HR><CENTER><B><A NAME=Champ_Fonc_Tabule_Morceaux>Champ_Fonc_Tabule_Morceaux</A></B></CENTER>
 <CENTER># PARALLEL OK 4 #</CENTER>
 <CENTER><a href=../tests/Reference/Champ_Fonc_Tabule_Morceaux/Champ_Fonc_Tabule_Morceaux.data>Edit</a> Champ_Fonc_Tabule_Morceaux.data </CENTER>
@@ -1508,6 +1513,9 @@
 <HR><CENTER><B><A NAME=PETSC_GCP_SPAI_P0P1Pa>PETSC_GCP_SPAI_P0P1Pa</A></B></CENTER>
 <CENTER># Hydraulique 3D VEF P1NCP1P0Pa #</CENTER>
 <CENTER><a href=../tests/Reference/PETSC_GCP_SPAI_P0P1Pa/PETSC_GCP_SPAI_P0P1Pa.data>Edit</a> PETSC_GCP_SPAI_P0P1Pa.data </CENTER>
+<HR><CENTER><B><A NAME=PETSC_HMG>PETSC_HMG</A></B></CENTER>
+<CENTER># PARALLEL OK 8 #</CENTER>
+<CENTER><a href=../tests/Reference/PETSC_HMG/PETSC_HMG.data>Edit</a> PETSC_HMG.data </CENTER>
 <HR><CENTER><B><A NAME=PETSC_IMPL>PETSC_IMPL</A></B></CENTER>
 <CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</CENTER>
 <CENTER><a href=../tests/Reference/PETSC_IMPL/PETSC_IMPL.data>Edit</a> PETSC_IMPL.data </CENTER>

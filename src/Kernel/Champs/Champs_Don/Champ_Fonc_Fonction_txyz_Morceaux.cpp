@@ -17,7 +17,7 @@
 #include <Champ_Fonc_Tabule.h>
 
 Implemente_instanciable(Champ_Fonc_Fonction_txyz_Morceaux,"Champ_Fonc_Fonction_txyz_Morceaux",TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TXYZ>);
-// XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-domaine. It makes possible the definition of a field that depends on the time and the space.
+// XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-domaine. On each zone, the value is defined as a function of x,y,z,t and of scalar value taken from a parameter field. This values is associated to the variable ’val’ in the expression.
 // XD   attr problem_name ref_Pb_base problem_name 0 Name of the problem.
 // XD   attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD   attr nb_comp entier nb_comp 0 Number of field components.

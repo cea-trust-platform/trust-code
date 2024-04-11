@@ -545,8 +545,10 @@ VOBS="TRUST Composants"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK module3D"
 export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 module3D"
-ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
-ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
+#ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
+#ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
+# ND : I comment the 2 prev lines to check triocfd first
+ComposantsGit="triocfd flica5 genepi3 mpcube TRUST_NK module3D sides scorpio sympy_to_TRUST pemfc"
 export Composants=$ComposantsLns" "$ComposantsGit
 
 # Initialize environment TRUST:
@@ -640,7 +642,7 @@ echo>>$config_log
 ./configure -force_provided_mpich 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
-tail -n9 $config_log | head -n1
+tail -n24 $config_log | head -n1
 echo " "
 echo "Call to "$TRUST_ROOT"/env_TRUST.sh"
 source env_TRUST.sh #1>/dev/null 2>&1
