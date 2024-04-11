@@ -1281,12 +1281,12 @@ then
 else
    # Pas de gestionnaire, example PC:
    [ "$cpus_per_task" != "" ]         && [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-   if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
-   then
-      run="$nsight $gdb $exec $NOM $PETSC_OPTIONS $quiet"
-   else
+#   if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
+#   then
+#      run="$nsight $gdb $exec $NOM $PETSC_OPTIONS $quiet"
+#   else
       run="$nsight $TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS $quiet"
-   fi
+#   fi
    if [ "$create_sub_file" ]
    then
       echo $run > $sub_file
