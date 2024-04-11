@@ -651,7 +651,7 @@ static void print_stat(Sortie& perfs,
           SD_quantity = sqrt(SD_quantity/Process::nproc());
 
           snprintf(tampon, BUFLEN + 450, "%-50s \t %-17d \t %-25s \t %-42s \t %-15d \t %-15d \t %-15e \t %-10e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e \t %-15e",
-                   message, -1, family, description, (True_int)level, is_comm, percent_time, time, min_time, max_time, SD_time,
+                   message, -1, family, description, (True_int)level, is_comm, percent_time, avg_time, min_time, max_time, SD_time,
                    nb, min_nb, max_nb, SD_nb, avg_time_per_step, avg_min_time_per_step == INITIAL_MIN? 0.0 : avg_min_time_per_step, avg_max_time_per_step, avg_var_time_per_step, avg_quantity, min_quantity , max_quantity, SD_quantity);
 
           perfs_globales << tampon << finl;
