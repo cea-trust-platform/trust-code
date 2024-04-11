@@ -1,0 +1,40 @@
+diff --git a/src/ParaMEDMEM/OverlapMapping.cxx b/src/ParaMEDMEM/OverlapMapping.cxx
+index 15a5e309..77ea488a 100644
+--- a/src/ParaMEDMEM/OverlapMapping.cxx
++++ b/src/ParaMEDMEM/OverlapMapping.cxx
+@@ -311,7 +311,7 @@ void OverlapMapping::serializeMatrixStep0ST(const mcIdType *nbOfElemsSrc, mcIdTy
+   int myProcId=_group.myRank();
+   for(std::size_t i=0;i<_matrixes_st.size();i++)
+     {
+-      if(_source_proc_id_st[i]==myProcId)// && _target_proc_id_st[i]!=myProcId
++      if(_source_proc_id_st[i]==myProcId && _matrixes_st[i].size())// && _target_proc_id_st[i]!=myProcId
+         {
+           count[_target_proc_id_st[i]]=(int)_matrixes_st[i].size()+1;
+           szz+=_matrixes_st[i].size()+1;
+@@ -323,7 +323,7 @@ void OverlapMapping::serializeMatrixStep0ST(const mcIdType *nbOfElemsSrc, mcIdTy
+     offsets[i]=offsets[i-1]+count[i-1];
+   for(std::size_t i=0;i<_matrixes_st.size();i++)
+     {
+-      if(_source_proc_id_st[i]==myProcId)
++      if(_source_proc_id_st[i]==myProcId && _matrixes_st[i].size())
+         {
+           mcIdType start=offsets[_target_proc_id_st[i]];
+           mcIdType *work=bigArr+start;
+@@ -374,7 +374,7 @@ mcIdType OverlapMapping::serializeMatrixStep1ST(const mcIdType *nbOfElemsSrc, co
+   std::size_t fullLgth=0;
+   for(std::size_t i=0;i<_matrixes_st.size();i++)
+     {
+-      if(_source_proc_id_st[i]==myProcId)
++      if(_source_proc_id_st[i]==myProcId && _matrixes_st[i].size())
+         {
+           const std::vector< SparseDoubleVec >& mat=_matrixes_st[i];
+           mcIdType lgthToSend=0;
+@@ -393,7 +393,7 @@ mcIdType OverlapMapping::serializeMatrixStep1ST(const mcIdType *nbOfElemsSrc, co
+   fullLgth=0;
+   for(std::size_t i=0;i<_matrixes_st.size();i++)
+     {
+-      if(_source_proc_id_st[i]==myProcId)
++      if(_source_proc_id_st[i]==myProcId && _matrixes_st[i].size())
+         {
+           const std::vector< SparseDoubleVec >& mat=_matrixes_st[i];
+           for(std::vector< SparseDoubleVec >::const_iterator it1=mat.begin();it1!=mat.end();it1++)

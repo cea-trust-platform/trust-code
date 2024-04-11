@@ -88,6 +88,8 @@ echo "Applying patch for tetra intersect ..."
 (cd ../$src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/tetra_mc.patch)
 echo "Applying patch for dpIndex ..."
 (cd ../$src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_tri.patch)
+echo "Applying patch for OverlapDEC (again) ..."
+(cd ../$src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_odec.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
