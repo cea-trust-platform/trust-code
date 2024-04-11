@@ -17,7 +17,8 @@
 #define Op_Diff_Turbulent_PolyVEF_Face_included
 
 #include <Op_Diff_PolyVEF_Face.h>
-#include <Op_Dift_Multiphase_proto.h>
+#include <Correlation.h>
+#include <Champ_Fonc.h>
 #include <vector>
 
 /*! @brief : class Op_Diff_Turbulent_PolyVEF_Face
@@ -27,19 +28,25 @@
  *
  */
 
-class Op_Diff_Turbulent_PolyVEF_Face: public Op_Diff_PolyVEF_Face, public Op_Dift_Multiphase_proto
+class Op_Diff_Turbulent_PolyVEF_Face: public Op_Diff_PolyVEF_Face
 {
   Declare_instanciable( Op_Diff_Turbulent_PolyVEF_Face );
 
 public:
   void creer_champ(const Motcle& motlu) override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+
   void mettre_a_jour(double temps) override;
   void completer() override;
-  void preparer_calcul() override;
   void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
-  inline const Correlation& correlation() const { return corr_; }
+  inline const Correlation& correlation() const { return corr; }
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
+
+protected:
+  Correlation corr; //correlation de viscosite turbulente
+  std::vector<Champ_Fonc> nu_t_post_; //flux massiques (kg/m2/s)
+  Motcles noms_nu_t_post_; //leurs noms
 };
 
 #endif /* Op_Diff_PolyVEF_Face_included */

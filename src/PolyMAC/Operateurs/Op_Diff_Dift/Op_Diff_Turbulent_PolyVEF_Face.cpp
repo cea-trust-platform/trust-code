@@ -21,16 +21,19 @@
 #include <Pb_Multiphase.h>
 #include <vector>
 
-Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulente_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyVEF_P0P1_Face", Op_Diff_PolyVEF_Face );
-
+Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulent_PolyVEF_Face|Op_Diff_Turbulente_PolyVEF_Face", Op_Diff_PolyVEF_Face );
 
 Sortie& Op_Diff_Turbulent_PolyVEF_Face::printOn(Sortie& os) const { return Op_Diff_PolyVEF_base::printOn(os); }
 
 Entree& Op_Diff_Turbulent_PolyVEF_Face::readOn(Entree& is)
 {
-  corr_.typer_lire(equation().probleme(), "viscosite_turbulente", is); // lecture de la correlation ...
-  if (pbm_.est_nul()) associer_pbm(ref_cast(Pb_Multiphase, equation().probleme()));
-  ajout_champs_op_face(champs_compris_);
+  //lecture de la correlation de viscosite turbulente
+  corr.typer_lire(equation().probleme(), "viscosite_turbulente", is);
+
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  noms_nu_t_post_.dimensionner(pb.nb_phases()), nu_t_post_.resize(pb.nb_phases());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_nu_t_post_[i] = Nom("viscosite_turbulente_") + pb.nom_phase(i);
   return is;
 }
 
@@ -38,39 +41,69 @@ void Op_Diff_Turbulent_PolyVEF_Face::completer()
 {
   Op_Diff_PolyVEF_Face::completer();
   //si la correlation a besoin du gradient de u, on doit le creer maintenant
-  if (corr_.non_nul() && ref_cast(Viscosite_turbulente_base, corr_.valeur()).gradu_required())
+  if (corr.non_nul() && ref_cast(Viscosite_turbulente_base, corr.valeur()).gradu_required())
     equation().probleme().creer_champ("gradient_vitesse");
-  if (corr_.non_nul())
-    corr_->completer();
+  if (corr.non_nul())
+    corr->completer();
 }
 
 void Op_Diff_Turbulent_PolyVEF_Face::creer_champ(const Motcle& motlu)
 {
   Op_Diff_PolyVEF_Face::creer_champ(motlu);
-  if (pbm_.est_nul()) associer_pbm(ref_cast(Pb_Multiphase, equation().probleme()));
-  creer_champs(motlu, champs_compris_);
+  int i = noms_nu_t_post_.rang(motlu);
+  if (i >= 0 && nu_t_post_[i].est_nul())
+    {
+      const PolyVEF_discretisation dis = ref_cast(PolyVEF_discretisation, equation().discretisation());
+      Noms noms(1), unites(1);
+      noms[0] = noms_nu_t_post_[i];
+      Motcle typeChamp = "champ_elem";
+      dis.discretiser_champ(typeChamp, equation().domaine_dis(), scalaire, noms, unites, 1, 0, nu_t_post_[i]);
+      champs_compris_.ajoute_champ(nu_t_post_[i]);
+    }
 }
 
-void Op_Diff_Turbulent_PolyVEF_Face::preparer_calcul()
+void Op_Diff_Turbulent_PolyVEF_Face::get_noms_champs_postraitables(Noms& noms,Option opt) const
 {
-  Op_Diff_PolyVEF_Face::preparer_calcul();
-  prepare_calcul_op_proto (true /* Eq_QDM */);
+  Op_Diff_PolyVEF_Face::get_noms_champs_postraitables(noms,opt);
+
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  Noms noms_compris;
+  for (int i = 0; i < pb.nb_phases(); i++)
+    noms_compris.add(noms_nu_t_post_[i]);
+  if (opt==DESCRIPTION)
+    Cerr<<" Op_Diff_Turbulent_PolyVEF_Face : "<< noms_compris <<finl;
+  else
+    noms.add(noms_compris);
 }
 
 void Op_Diff_Turbulent_PolyVEF_Face::mettre_a_jour(double temps)
 {
   Op_Diff_PolyVEF_Face::mettre_a_jour(temps);
-  mettre_a_jour_champs_op_face(temps);
+
+  int N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases();
+  for (int n = 0; n < N; n++)
+    if (nu_t_post_[n].non_nul()) //viscosite turbulente : toujours scalaire
+      {
+        const DoubleTab& rho = equation().milieu().masse_volumique().passe();
+        DoubleTab& val = nu_t_post_[n]->valeurs();
+        int nl = val.dimension(0);
+        int cR = (rho.dimension(0) == 1);
+        DoubleTrav nu_t(nl, N);
+        ref_cast(Viscosite_turbulente_base, corr.valeur()).eddy_viscosity(nu_t); //remplissage par la correlation
+        for (int i = 0; i < nl; i++)
+          val(i, 0) = rho(!cR * i, n) * nu_t(i, n);
+        nu_t_post_[n].mettre_a_jour(temps);
+      }
 }
 
 void Op_Diff_Turbulent_PolyVEF_Face::modifier_mu(DoubleTab& mu) const
 {
-  if (corr_.est_nul()) return; //rien a faire
+  if (corr.est_nul()) return; //rien a faire
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(), *alpha =
                            sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
-  int i, nl = mu.dimension(0), D = dimension, n, N = equation().inconnue().valeurs().line_size()/D, cR = rho.dimension(0) == 1, d;
+  int i, nl = mu.dimension(0), n, N = equation().inconnue().valeurs().line_size(), cR = rho.dimension(0) == 1, d, D = dimension;
   DoubleTrav nu_t(nl, N); //viscosite turbulente : toujours scalaire
-  ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_t); //remplissage par la correlation
+  ref_cast(Viscosite_turbulente_base, corr.valeur()).eddy_viscosity(nu_t); //remplissage par la correlation
   if (mu.nb_dim() == 2) //nu scalaire
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
