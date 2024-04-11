@@ -77,7 +77,7 @@ Entree& EcritureLectureSpecial::interpreter(Entree& is)
       Input=option;
       Cerr << "EcritureLectureSpecial::Input set to " << option << finl;
     }
-  else if (option=="EcrFicPartageMPIIO" || option=="EcrFicPartageBin")
+  else if (option=="EcrFicPartageMPIIO" || option=="EcrFicPartageBin" || option=="EcrFicPartage")
     {
       Active=1;
       Output=option;
