@@ -166,7 +166,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
           prepare_secmem(coarse_b);
 
           // We need one less layer on b than on x to compute jacobi or residue
-          if (IJK_Splitting::defilement_==0)
+          if (IJK_Shear_Periodic_helpler::defilement_==0)
             {
               //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
               coarse_b.echange_espace_virtuel(b.ghost()-1);
@@ -324,7 +324,7 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
         secmem[mat.renum(i,j,k)] = b(i,j,k);
 
   //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-  if (IJK_Splitting::defilement_==0)
+  if (IJK_Shear_Periodic_helpler::defilement_==0)
     {
       secmem.echange_espace_virtuel();
     }

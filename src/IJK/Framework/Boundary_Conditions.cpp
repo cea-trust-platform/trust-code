@@ -14,16 +14,16 @@
 *****************************************************************************/
 
 #include <Boundary_Conditions.h>
-#include <IJK_Splitting.h>
+#include <IJK_Shear_Periodic_helpler.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Boundary_Conditions,"Boundary_Conditions",Objet_U);
-double IJK_Splitting::shear_x_time_=0.;
-double IJK_Splitting::Lx_for_shear_perio=0.;
-int IJK_Splitting::defilement_=0;
-int IJK_Splitting::order_interpolation_poisson_solver_=0;
-double IJK_Splitting::rho_vap_ref_for_poisson_=0;
-double IJK_Splitting::rho_liq_ref_for_poisson_=0;
+double IJK_Shear_Periodic_helpler::shear_x_time_=0.;
+double IJK_Shear_Periodic_helpler::Lx_for_shear_perio=0.;
+int IJK_Shear_Periodic_helpler::defilement_=0;
+int IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_=0;
+double IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_=0;
+double IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_=0;
 
 Boundary_Conditions::Boundary_Conditions()
 {
@@ -69,9 +69,9 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.dictionnaire("Mixte_shear", Mixte_shear);
 
   param.lire_avec_accolades(is);
-  IJK_Splitting::shear_x_time_=dU_perio_*t0_shear_;
-  IJK_Splitting::defilement_=defilement_;
-  IJK_Splitting::order_interpolation_poisson_solver_=order_interpolation_poisson_solver_;
+  IJK_Shear_Periodic_helpler::shear_x_time_=dU_perio_*t0_shear_;
+  IJK_Shear_Periodic_helpler::defilement_=defilement_;
+  IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_=order_interpolation_poisson_solver_;
 
   return is;
 }

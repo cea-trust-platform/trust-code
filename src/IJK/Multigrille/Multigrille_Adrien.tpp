@@ -101,10 +101,10 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
 
           // echange espace virtuel sur rho sans passer par IJK_Field --> mauvais remplissage des coeffs de la matrice pour le shear periodique
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Pousson
-          if (IJK_Splitting::defilement_==1)
+          if (IJK_Shear_Periodic_helpler::defilement_==1)
             {
-              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmin_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmin_());
+              set_grid_data<_TYPE_FUNC_>(l).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmax_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmax_());
             }
         }
       else
@@ -161,10 +161,10 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
                 r(i2,j,k) = (_TYPE_FUNC_)rho(i2,j,k);
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Poisson
           // on ajoute ca pour le shear perio, uniquement sur le premier niveau de multigrille pour l'instant
-          if (IJK_Splitting::defilement_==1)
+          if (IJK_Shear_Periodic_helpler::defilement_==1)
             {
-              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmin_(rho.get_indicatrice_ghost_zmin_());
-              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().set_indicatrice_ghost_zmax_(rho.get_indicatrice_ghost_zmax_());
+              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmin_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmin_());
+              set_grid_data<_TYPE_FUNC_>(i).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmax_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmax_());
             }
         }
       else

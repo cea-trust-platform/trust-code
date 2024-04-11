@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ void Grid_Level_Data_template<_TYPE_>::initialize(const IJK_Splitting& splitting
   grid_splitting_ = splitting;
   perio_k_= splitting.get_grid_geometry().get_periodic_flag(DIRECTION_K);
   ghost_size_ = ghost;
-  if (IJK_Splitting::defilement_==1)
+  if (IJK_Shear_Periodic_helpler::defilement_==1)
     {
-      ijk_rho_.allocate(grid_splitting_, IJK_Splitting::ELEM, ghost, 0 ,1, false, 2, IJK_Splitting::rho_vap_ref_for_poisson_, IJK_Splitting::rho_liq_ref_for_poisson_);
+      ijk_rho_.allocate(grid_splitting_, IJK_Splitting::ELEM, ghost, 0 ,1, false, 2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
     }
   else
     {

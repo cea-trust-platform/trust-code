@@ -198,7 +198,7 @@ void Multigrille_base::solve_ijk_in_storage_template<float>()
 
   prepare_secmem(ijk_b);
   //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-  if (IJK_Splitting::defilement_==0)
+  if (IJK_Shear_Periodic_helpler::defilement_==0)
     {
       ijk_b.echange_espace_virtuel(ijk_b.ghost());
     }
@@ -222,7 +222,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
 
   prepare_secmem(ijk_b);
   //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-  if (IJK_Splitting::defilement_==0)
+  if (IJK_Shear_Periodic_helpler::defilement_==0)
     {
       ijk_b.echange_espace_virtuel(ijk_b.ghost());
     }
@@ -292,7 +292,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           float_x.data() = 0.;
           prepare_secmem(float_b);
           //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-          if (IJK_Splitting::defilement_==0)
+          if (IJK_Shear_Periodic_helpler::defilement_==0)
             {
               float_b.echange_espace_virtuel(float_b.ghost());
             }

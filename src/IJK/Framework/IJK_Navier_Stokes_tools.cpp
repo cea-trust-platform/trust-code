@@ -196,9 +196,9 @@ void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting&
   v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
   v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
   v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
-  v[0].set_dU_(DU);
-  v[1].set_dU_(0.);
-  v[2].set_dU_(0.);
+  v[0].get_shear_BC_helpler().set_dU_(DU);
+  v[1].get_shear_BC_helpler().set_dU_(0.);
+  v[2].get_shear_BC_helpler().set_dU_(0.);
 }
 
 void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, double DU)
@@ -206,9 +206,9 @@ void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s,
   v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
   v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
   v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
-  v[0].set_dU_(DU);
-  v[1].set_dU_(0.);
-  v[2].set_dU_(0.);
+  v[0].get_shear_BC_helpler().set_dU_(DU);
+  v[1].get_shear_BC_helpler().set_dU_(0.);
+  v[2].get_shear_BC_helpler().set_dU_(0.);
 }
 
 // Interpolate the "field" at the requested "coordinates" (array with 3 columns), and stores into "result"
@@ -536,7 +536,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
-  if (IJK_Splitting::defilement_ == 1)
+  if (IJK_Shear_Periodic_helpler::defilement_ == 1)
     {
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
     }
@@ -588,7 +588,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
-  if (IJK_Splitting::defilement_ == 1)
+  if (IJK_Shear_Periodic_helpler::defilement_ == 1)
     {
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
     }

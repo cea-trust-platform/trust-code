@@ -21,9 +21,9 @@
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&   coeffs_face)
 {
-  shear_x_time_=IJK_Splitting::shear_x_time_;
-  defilement_=IJK_Splitting::defilement_;
-  order_interpolation_poisson_solver_=IJK_Splitting::order_interpolation_poisson_solver_;
+  shear_x_time_=IJK_Shear_Periodic_helpler::shear_x_time_;
+  defilement_=IJK_Shear_Periodic_helpler::defilement_;
+  order_interpolation_poisson_solver_=IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_;
   const IJK_Splitting& splitting = coeffs_face.get_splitting();
 
   int i, j, k;
@@ -36,10 +36,10 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     renum_ = -1; // init a -1
     // plusieur vecteur renum pour le cas shear periodic ou une case peut renvoyer vers plusieurs
     // + 4 autres vecteur contenant les ponderation associee pour interpolation 4th order
-    ponderation_shear_p_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
-    ponderation_shear_m_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
-    ii_p_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
-    ii_m_.resize_array(IJK_Splitting::order_interpolation_poisson_solver_+1);
+    ponderation_shear_p_.resize_array(IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_+1);
+    ponderation_shear_m_.resize_array(IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_+1);
+    ii_p_.resize_array(IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_+1);
+    ii_m_.resize_array(IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_+1);
 
     int count = 0;
     for (k = 0; k < nk; k++)
