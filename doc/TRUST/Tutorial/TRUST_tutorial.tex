@@ -3275,20 +3275,10 @@ then, on another cell plot residual using:\\
 \begin{block}{}
 
 \begin{itemize}
-\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
+\item Now, we are going to extract the number of cells and the simulation final time from three .err files and write it in .dat files. Extraction script (extraction.sh) is already available in the src directory of this validation form (you can have a look at it). 
 
     \begin{itemize}
-    \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
-    {\footnotesize{
-    \textbf{nb1=\` \,grep "Total number of elements" std.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{nb2=\` \,grep "Total number of elements" debit.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{nb3=\` \,grep "Total number of elements" debit2.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{echo \$nb1 \$nb2 \$nb3 $>$ nbcells.dat} \\
-    \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
-    }}
+    \item [$\circ$] from your validation form, run this script using "executeScript" from run module of trustutils (see SampleFormJupyter for help). 
 
     \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing new cells.\\
     Tip: look on the next slide for an example of table plot.
