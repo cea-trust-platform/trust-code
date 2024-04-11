@@ -678,6 +678,7 @@ void Statistiques::dump(const char * message, int mode_append)
   if ( (Process::je_suis_maitre()) && (strcmp(message, "Statistiques d'initialisation du calcul")==0) )
     {
       File_header << "# Detailed performance log file. See the associated validation form for an example of data analysis"<< finl;
+      File_header << "# Number of processor = " << Process::nproc() << finl ;
       File_header << "# The time was measured by the following method :" << Time::description << finl;
       File_header << "# By default, only averaged statistics on all processor are printed. For accessing the detail per processor, initialize the environment variable STAT_PER_PROC_PERF_LOG==1" << finl;
       File_header << "# Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << finl;
