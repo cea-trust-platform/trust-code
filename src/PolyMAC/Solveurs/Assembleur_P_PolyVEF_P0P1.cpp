@@ -140,7 +140,6 @@ void Assembleur_P_PolyVEF_P0P1::dimensionner_continuite(matrices_t matrices, int
   const IntTab& fcl = ch.fcl(), &scl_d = ch.scl_d(1), &f_s = dom.face_sommets(), &ps_r = ps_ref();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
   DoubleTrav w2;
-  sten_a.set_smart_resize(1), sten_p.set_smart_resize(1), sten_v.set_smart_resize(1), w2.set_smart_resize(1);
   /* equations sum alpha_k = 1 */
   if (!aux_only)
     for (e = 0; e < dom.nb_elem(); e++)
@@ -189,7 +188,6 @@ void Assembleur_P_PolyVEF_P0P1::assembler_continuite(matrices_t matrices, Double
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, a_r(N), v(2, D);
   double ar_tot = 1, dt = equation().schema_temps().pas_de_temps(), fac, xa[3], vz[3] = { 0, 0, 1 };
-  w2.set_smart_resize(1);
   secmem = 0, a_r = 1;
 
   /* equations sum alpha_k = 1 : on multiplie par porosite * volume * rho_m / dt pour que l'equation ressemble a delta p = 0 */

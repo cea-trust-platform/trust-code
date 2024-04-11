@@ -169,7 +169,6 @@ void Champ_Face_PolyVEF::init_vf2() const
 
   DoubleTrav vf2, vf2i, A, B, P, W(1), x_cg(D);
   IntTrav pvt;
-  vf2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
 
   /* connectivite arete-face */
   std::map<std::array<int, 2>, std::vector<int>> a_f;
@@ -177,8 +176,8 @@ void Champ_Face_PolyVEF::init_vf2() const
     for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
       sb = D < 3 ? -1 : f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0), a_f[ { { std::min(s, sb), std::max(s, sb) } }].push_back(f);
 
-  vf2d.resize(1, 2), vf2d.set_smart_resize(1), vf2j.set_smart_resize(1), vf2bj.resize(0, 2), vf2bj.set_smart_resize(1);
-  vf2c.resize(0, D), vf2c.set_smart_resize(1), vf2bc.resize(0, D), vf2bc.set_smart_resize(1);
+  vf2d.resize(1, 2), vf2bj.resize(0, 2);
+  vf2c.resize(0, D), vf2bc.resize(0, D);
   std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
   std::vector<std::array<int, 2>> i_v; // v_i[i_v[f]] = f
   for (f = 0; f < dom.nb_faces(); f++, v_i.clear(), i_v.clear(), vf2d.append_line(vf2c.dimension(0), vf2bc.dimension(0)))

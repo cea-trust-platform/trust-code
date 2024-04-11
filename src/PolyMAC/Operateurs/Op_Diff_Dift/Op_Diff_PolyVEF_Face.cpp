@@ -85,7 +85,6 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
   int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size() / dimension, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom), skip;
   double dt = 1e10;
   DoubleTrav flux(dom.nb_faces(), N), vol(N), a_f(N), w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
-  w2.set_smart_resize(1), lw2.set_smart_resize(1);
 
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {
@@ -131,7 +130,6 @@ void Op_Diff_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   int i, j, e, f, fb, nd, ND = equation().inconnue().valeurs().line_size(), nf_tot = dom.nb_faces_tot();
 
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
 
   /* stencil : tous les voisins de la face par un element, sans melanger les dimensions ou les composantes */
   for (f = 0; f < dom.nb_faces(); f++)
@@ -157,7 +155,6 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, skip;
 
   DoubleTrav w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
-  w2.set_smart_resize(1), lw2.set_smart_resize(1);
 
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {

@@ -67,7 +67,6 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   if (!stencil_done)
     {
       IntTrav stencil(0, 2);
-      stencil.set_smart_resize(1);
       for (f = 0; f < dom.nb_faces(); f++)
         for (i = 0; i < 2; i++)
           if ((e = f_e(f, i)) >= 0  ? e < ne : fcl(f, 0) != 1)
@@ -116,7 +115,6 @@ void Assembleur_P_PolyVEF_P0::dimensionner_continuite(matrices_t matrices, int a
   int e, f, d, D = dimension, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), m, M = equation().get_champ("pression").valeurs().line_size(),
                ne_tot = le_dom_PolyMAC->nb_elem_tot(), nfb_tot = le_dom_PolyMAC->nb_faces_bord_tot();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
-  sten_a.set_smart_resize(1), sten_p.set_smart_resize(1), sten_v.set_smart_resize(1);
   /* elements : sum alpha = 1 */
   if (!aux_only)
     for (e = 0; e < le_dom_PolyMAC->nb_elem(); e++)

@@ -43,7 +43,6 @@ void Travail_pression_PolyVEF::dimensionner_blocs(matrices_t matrices, const tab
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
         if (n_m.first == "pression") /* pression : dependance locale, implicite */
           for (e = 0; e < ne; e++)
             for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * e + n, M * e + m);

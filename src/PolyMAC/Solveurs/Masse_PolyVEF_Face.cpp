@@ -97,7 +97,6 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
     if (kv.second == mat || kv.second->nb_colonnes())
       {
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
         std::vector<std::set<int>> s_sten(N * D); //stencil a mettre a chaque ligne
         for (f = 0; f < dom.nb_faces(); f++)
           {

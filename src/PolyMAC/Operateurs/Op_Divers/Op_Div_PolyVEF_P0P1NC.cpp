@@ -43,7 +43,6 @@ void Op_Div_PolyVEF_P0P1NC::dimensionner_blocs(matrices_t matrices, const tabs_t
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   IntTab sten_v(0, 2), sten_p(0, 2);
   DoubleTab w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
-  sten_v.set_smart_resize(1), sten_p.set_smart_resize(1), w2.set_smart_resize(1);
 
   for (f = 0; matv && f < domaine.nb_faces(); f++) /* dependance en v : divergence par elem + v = v_imp aux faces de Dirichlet */
     for (i = 0; i < 2; i++)
@@ -94,7 +93,6 @@ void Op_Div_PolyVEF_P0P1NC::ajouter_blocs_ext(const DoubleTab& vit, matrices_t m
 
 
   DoubleTrav w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
-  w2.set_smart_resize(1);
 
   DoubleTab& tab_flux_bords = flux_bords_;
   tab_flux_bords.resize(domaine.nb_faces_bord(), 1), tab_flux_bords = 0;

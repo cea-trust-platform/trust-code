@@ -73,7 +73,6 @@ void Op_Conv_Classic_PolyVEF_Face::completer()
   const DoubleTab& xp = dom.xp(), &xv = dom.xv(), &xs = dom.domaine().coord_sommets();
   int i, j, e, f, s, n_f, D = dimension, skip;
   double vz[3] = { 0, 0, 1 };
-  e_fa_d.set_smart_resize(1), e_fa_f.set_smart_resize(1), e_fa_s.set_smart_resize(1);
   std::map<std::array<int, 2>, std::array<int, 2>> a_f; //faces connectees a chaque arete : on stocke les indices de face + 1
   for (e = 0, e_fa_d.resize(1), e_fa_f.resize(0, 2), e_fa_s.resize(0, D); e < dom.nb_elem_tot(); e_fa_d.append_line(e_fa_f.dimension(0)), e++)
     {
@@ -155,7 +154,6 @@ void Op_Conv_Classic_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
   int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom);
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
   /* stencil : toutes les faces connectees par une facette de e_fa_f, avec melange des phases si correlation de masse ajoutee */
   for (i = 0; i < e_fa_f.dimension(0); i++)
     for (j = 0; j < 2; j++)

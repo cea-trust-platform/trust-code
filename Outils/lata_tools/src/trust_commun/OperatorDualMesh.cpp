@@ -41,7 +41,7 @@ void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDe
 
   dest.elements_.resize(nb_faces, src.faces_.dimension(1) + 2);
   dest.elem_faces_.resize(nb_faces, 2 * src.faces_.dimension(1));
-  dest.faces_.resize(0, src.faces_.dimension(1)), dest.faces_.set_smart_resize(1);
+  dest.faces_.resize(0, src.faces_.dimension(1));
 
   for (int f = 0, i, j, k, l, m, e, s; f < nb_faces; f++)
     {

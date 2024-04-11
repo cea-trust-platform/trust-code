@@ -63,7 +63,6 @@ void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int 
                   m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
 
   IntTrav sten(0, 2); //stencil (NS, pression)
-  sten.set_smart_resize(1);
 
   Matrice_Morse *mat = matrices["pression"], mat2;
 

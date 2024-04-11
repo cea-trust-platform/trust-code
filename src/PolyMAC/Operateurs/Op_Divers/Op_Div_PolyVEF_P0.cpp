@@ -42,7 +42,6 @@ void Op_Div_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   IntTrav sten_v(0, 2), sten_p(0, 2); //stencil des deux matrices
-  sten_v.set_smart_resize(1), sten_p.set_smart_resize(1);
 
   for (f = 0; f < dom.nb_faces(); f++) /* sten_v : divergence "classique" */
     {

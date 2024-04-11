@@ -43,7 +43,6 @@ void Correction_Antal_PolyVEF::dimensionner_blocs(matrices_t matrices, const tab
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
   int f, k, l, d, D = dimension, N = inco.line_size() / D;
   /* faces */
   for (f = 0; f < domaine.nb_faces(); f++)

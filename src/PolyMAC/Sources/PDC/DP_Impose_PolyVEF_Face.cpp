@@ -42,7 +42,6 @@ void DP_Impose_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
   IntTrav sten(0, 2);
-  sten.set_smart_resize(1);
 
   int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, nf_tot = dom.nb_faces_tot();
   for (i = 0; i < num_faces.size(); i++)

@@ -67,7 +67,6 @@ void Op_Grad_PolyVEF_P0P1NC_Face::dimensionner_blocs_ext(matrices_t matrices, in
   Matrice_Morse *mat = matrices["pression"], mat2;
   IntTrav sten(0, 2);
   DoubleTrav w2;
-  sten.set_smart_resize(1), w2.set_smart_resize(1);
   for (f = 0; f < (virt ? domaine.nb_faces_tot() : domaine.nb_faces()); f++)
     for (i = 0; i < 2; i++)
       if ((e = f_e(f, i)) >= 0)
@@ -100,7 +99,6 @@ void Op_Grad_PolyVEF_P0P1NC_Face::ajouter_blocs_ext(matrices_t matrices, DoubleT
 
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : nullptr;
   DoubleTrav w2, alpha(N); //matrice W2 dans chaque element, taux de vide a la face
-  w2.set_smart_resize(1);
 
   for (e = 0; e < ne_tot; e++)
     for (dom.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)

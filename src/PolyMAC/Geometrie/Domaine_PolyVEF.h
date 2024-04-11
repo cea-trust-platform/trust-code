@@ -61,7 +61,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
   int i, j, e, n_sf = 0, d, D = dimension;
   double vz[3] = { 0, 0, 1 }, xa[3] = { 0, }, x_es[3] = { 0, }, x_esb[3] = { 0, }, x_ea[3] = { 0, }, fac;
   for (n_sf = 0; n_sf < f_s.dimension(1) && f_s(f, n_sf) >= 0; ) n_sf++; //nombre de sommets a la face
-  Sa.set_smart_resize(1), Sa.resize(n_sf, D < 3 ? 2 : 5, D);
+  Sa.resize(n_sf, D < 3 ? 2 : 5, D);
   for (Sa = 0, i = 0; i < n_sf; i++)
     {
       int s = f_s(f, i), ib = i + 1 < n_sf ? i + 1 : 0, sb = D < 3 ? -1 : f_s(f, ib);

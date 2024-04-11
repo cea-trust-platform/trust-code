@@ -153,7 +153,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
       scl_d.push_back(std::ref(ch.scl_d(0))), scl_c.push_back(std::ref(ch.scl_c(0)));
       N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(dom[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
-      stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
+      stencil[i].resize(0, 2);
     }
 
   for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
@@ -215,7 +215,6 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   for (i = 0; i < n_ext; i++) v_aux.push_back(use_aux_ ? ref_cast(Op_Diff_PolyVEF_P0P1_Elem, *op_ext[i]).var_aux : v_part[i][1]); /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
   DoubleTrav Sa, Gf, Gfa, A; //surface par arete du diamant, gradient non stabilise (par diamant) et stabilise (par arete du diamant), forme bilineaire
-  Gf.set_smart_resize(1), Gfa.set_smart_resize(1), A.set_smart_resize(1);
   for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
     {
       for (ok = 0, i = 0; i < 2 + f_s[0].get().dimension(1); i++) /* si aucun element ou sommet reel autour de f, rien a faire */

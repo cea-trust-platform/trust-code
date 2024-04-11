@@ -63,7 +63,7 @@ const DoubleTab& Champ_Elem_PolyVEF_P0P1::alpha_es() const
   std::vector<int> v_s;//sommets qu'on peut utiliser
   DoubleTrav A, B, W(1);
   IntTrav pvt;
-  alpha_es_.resize(e_s.dimension_tot(0), e_s.dimension_tot(1)), alpha_es_ = 0, A.set_smart_resize(1), B.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
+  alpha_es_.resize(e_s.dimension_tot(0), e_s.dimension_tot(1)), alpha_es_ = 0;
 
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {

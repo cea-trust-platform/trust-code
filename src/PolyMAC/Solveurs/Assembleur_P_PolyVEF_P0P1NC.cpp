@@ -110,7 +110,6 @@ void Assembleur_P_PolyVEF_P0P1NC::dimensionner_continuite(matrices_t matrices, i
   const IntTab& fcl = ref_cast(Champ_Face_PolyVEF, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
   DoubleTrav w2;
-  sten_a.set_smart_resize(1), sten_p.set_smart_resize(1), sten_v.set_smart_resize(1), w2.set_smart_resize(1);
   /* equations sum alpha_k = 1 */
   if (!aux_only)
     for (e = 0; e < domaine.nb_elem(); e++)
@@ -151,7 +150,6 @@ void Assembleur_P_PolyVEF_P0P1NC::assembler_continuite(matrices_t matrices, Doub
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
   double ar_tot = 1, acc, dt = equation().schema_temps().pas_de_temps(), fac2;
-  w2.set_smart_resize(1);
   secmem = 0, fac = 1;
 
   /* equations sum alpha_k = 1 */

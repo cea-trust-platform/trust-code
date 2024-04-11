@@ -52,8 +52,6 @@ void Op_Evanescence_Homogene_PolyVEF_Face::dimensionner_blocs(matrices_t matrice
     if (n_m.second->nb_colonnes())
       {
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
-
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */

@@ -79,7 +79,6 @@ void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten(0, 2); //stencil (NS, pression)
-  sten.set_smart_resize(1);
 
   Matrice_Morse *mat = matrices["pression"], mat2;
 

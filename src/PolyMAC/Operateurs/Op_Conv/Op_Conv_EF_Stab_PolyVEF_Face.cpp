@@ -74,10 +74,8 @@ void Op_Conv_EF_Stab_PolyVEF_Face::completer()
   const DoubleTab& vfd = dom.volumes_entrelaces_dir();
   const DoubleVect& ve = dom.volumes();
   int i, j, k, e, f, s, nw, infoo = 0, rk = 0, skip, n_f, D = dimension, sgn;
-  DoubleTrav A, B, W;
+  DoubleTrav A, B, W(1);
   IntTrav piv;
-  e_fa_d.set_smart_resize(1), e_fa_f.set_smart_resize(1), e_fa_c.set_smart_resize(1);
-  A.set_smart_resize(1), B.set_smart_resize(1), W.set_smart_resize(1), W.resize(1), piv.set_smart_resize(1);
   std::map<std::array<int, 2>, std::array<int, 2>> a_f; //faces connectees a chaque arete : on stocke les indices de face + 1
   for (e = 0, e_fa_d.resize(1, 2), e_fa_f.resize(0, 2); e < dom.nb_elem_tot(); e_fa_d.append_line(e_fa_f.dimension(0), e_fa_c.dimension(0)), e++)
     {
@@ -170,7 +168,6 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
   int i, j, f, fb, nf_tot = dom.nb_faces_tot(), m, d, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D;
 
   IntTab stencil(0, 2);
-  stencil.set_smart_resize(1);
   /* stencil : toutes les faces connectees par une facette de e_fa_f, avec melange des phases si correlation de masse ajoutee */
   for (i = 0; i < e_fa_f.dimension(0); i++)
     for (j = 0; j < 2; j++)
