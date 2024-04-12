@@ -873,8 +873,8 @@ DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& tab_x,DoubleVect&
       CDoubleArrView coeff = coeff_.view_ro();
       CDoubleArrView x = tab_x.view_ro();
       DoubleArrView resu = tab_resu.view_rw();
-      start_gpu_timer();
-      Kokkos::parallel_for("Matrice_Morse::ajouter_multvect_",
+      start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(__KERNEL_NAME__,
                            Kokkos::RangePolicy<>(0, n), KOKKOS_LAMBDA(
                              const int i)
       {
@@ -884,7 +884,7 @@ DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& tab_x,DoubleVect&
             resu(i) += coeff(k) * x(j);
           }
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Matrice_Morse::ajouter_multvect_");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {

@@ -137,7 +137,7 @@ void init_openmp()
       Process::exit();
     }
   int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
-  Cerr << "Initializing OpenMP offload on devices..."  << finl;
+  Cerr << "[OpenMP] Initialization on the device(s):"  << finl;
   cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
   omp_set_default_device(devID);
 #endif

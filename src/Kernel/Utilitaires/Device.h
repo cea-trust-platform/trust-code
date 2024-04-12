@@ -26,9 +26,9 @@
 
 #ifdef _OPENMP
 #include <omp.h>
-#endif
 #ifdef TRUST_USE_CUDA
 #include <nvtx3/nvToolsExt.h>
+#endif
 // See https://nvidia.github.io/NVTX/
 // See https://stackoverflow.com/questions/23230003/something-between-func-and-pretty-function/29856690#29856690
 #endif
@@ -53,6 +53,7 @@ std::string ptrToString(const void* adr);
 #endif
 
 // Macro Kernel_Name
+#ifdef _OPENMP
 inline const std::string methodName(const std::string& prettyFunction, const int line)
 {
   size_t colons = prettyFunction.find("::");
@@ -61,11 +62,14 @@ inline const std::string methodName(const std::string& prettyFunction, const int
   return prettyFunction.substr(begin,end)+":"+std::to_string(line);
 }
 #define __KERNEL_NAME__ methodName(__PRETTY_FUNCTION__,__LINE__)
+#else
+#define __KERNEL_NAME__
+#endif
 
-// Timers GPU avec OpenMP
-inline void start_gpu_timer(std::string str="kernel", int bytes=-1)
-{
+// Timers GPU avec OpenMP (renommer?)
 #ifdef _OPENMP
+inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
+{
   if (init_openmp_ && timer_on)
     {
       if (clock_on) clock_start = Statistiques::get_time_now();
@@ -74,9 +78,13 @@ inline void start_gpu_timer(std::string str="kernel", int bytes=-1)
       nvtxRangePush(str.c_str());
 #endif
     }
-#endif
+  return str;
 }
+#else
+inline void start_gpu_timer() {}
+#endif
 
+#ifdef _OPENMP
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
 #ifndef LATATOOLS
@@ -85,7 +93,6 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
 #ifdef TRUST_USE_UVM
   cudaDeviceSynchronize();
 #endif
-#ifdef _OPENMP
   if (init_openmp_ && timer_on)
     {
       Kokkos::fence(); // Barrier for real time
@@ -115,8 +122,10 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
       nvtxRangePop();
 #endif
     }
-#endif
 }
+#else
+inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) {}
+#endif
 
 template <typename _TYPE_>
 extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab);

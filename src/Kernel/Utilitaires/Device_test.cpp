@@ -413,8 +413,9 @@ void self_test()
             P1 -= moyenne_K; // Gros pb car P1 toujours sur Device !
         }
         */
-      if (Process::me()==0) std::cerr << ptr_host << std::endl;
+      //if (Process::me()==0) std::cerr << ptr_host << std::endl;
 
+      // DoubleTrav copy Constructor:
       {
         DoubleTrav b(100);
         b = 123;
@@ -428,7 +429,12 @@ void self_test()
         assert(b3.get_data_location() == DataLocation::Device);
       }
 
-
+      {
+        // Provisoire reproduire le blocage ?
+        //DoubleTab a(10);
+        //allocateOnDevice(a);
+        //allocateOnDevice(a);
+      }
     }
 #endif
 }

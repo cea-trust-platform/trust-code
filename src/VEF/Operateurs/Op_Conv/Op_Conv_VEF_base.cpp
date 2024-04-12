@@ -101,8 +101,8 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   CIntArrView faces_entrelaces_Cl = faces_entrelaces_Cl_.view_ro();
   CDoubleArrView fluent = fluent_.view_ro();
   CDoubleArrView volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl().view_ro();
-  start_gpu_timer();
-  Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
+  start_gpu_timer(__KERNEL_NAME__);
+  Kokkos::parallel_reduce(__KERNEL_NAME__,
                           Kokkos::RangePolicy<>(0, faces_entrelaces_Cl_.size_array()), KOKKOS_LAMBDA(
                             const int ind_face, double& dtstab)
   {
