@@ -1091,7 +1091,10 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse.valeurs());
 
   if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
-
+  if (critere_Q.non_nul()) critere_Q.mettre_a_jour(temps);
+  if (Reynolds_maille.non_nul()) Reynolds_maille.mettre_a_jour(temps);
+  if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
+  if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
 }
 
 double Navier_Stokes_std::LocalFlowRateRelativeError() const
@@ -1442,7 +1445,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     {
       if (critere_Q.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,critere_Q.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
@@ -1467,7 +1470,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     {
       if (Reynolds_maille.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Reynolds_maille.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
@@ -1483,7 +1486,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     {
       if (Taux_cisaillement.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Taux_cisaillement.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
@@ -1491,7 +1494,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     {
       if (grad_u.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
