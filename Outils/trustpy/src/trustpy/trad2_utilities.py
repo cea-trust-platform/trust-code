@@ -489,7 +489,7 @@ if __name__ == "__main__":
   if not pd is None and trustpy_from_trust is None:  # called from a BALTIK
     trad2org = os.path.join(pd, "build", "trustpy", "generated", "agg_TRAD_2.org")
     # Append baltik sources:
-    srcs.append(os.path.join(pd, "src"))
+    srcs.append(os.path.join(pd, "build", "src"))
   else:   # called from TRUST
     trad2org = os.path.join(tr, "Outils", "TRIOXDATA", "XTriou", "TRAD_2.org")
   tg = TRAD2Content.BuildFromOrgAndSources(trad2org, srcs)
