@@ -36,7 +36,7 @@
 Implemente_instanciable(Champ_Generique_Transformation,"Transformation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Transformation,"Champ_Post_Transformation");
 
-// XD transformation champ_post_de_champs_post champ_post_transformation 1 To create a field with a transformation using source fields and x, y, z, t
+// XD transformation champ_post_de_champs_post champ_post_transformation 1 To create a field with a transformation using source fields and x, y, z, t. If you use in your datafile source refChamp { Pb_champ pb pression }, the field pression may be used in the expression with the name pression_natif_dom; this latter is the same as pression. If you specify nom_source in refChamp bloc, you should use the alias given to pressure field. This is avail for all equations unknowns in transformation.
 
 Sortie& Champ_Generique_Transformation::printOn(Sortie& s ) const
 {

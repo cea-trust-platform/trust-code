@@ -1,7 +1,7 @@
-11/04/24 (TRUST) Keyword      : .xyz file may be written in ASCII format with "EcritureLectureSpecial EcrFicPartage" keyword. Fields are written in "x(i) y(i) z(i) value(i)" format
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+12/04/24 (TRUST) Keyword      : .xyz file may be written in ASCII format with "EcritureLectureSpecial EcrFicPartage" keyword. Fields are written in "x(i) y(i) z(i) value(i)" format
 10/04/24 (TRUST) Fix          : Element-wall distance is now correctly calculated in the diffusion-operator for multi-component cases
 10/04/24 (TRUST) New feature  : Add series of problems XXX_List_Concenration & XXX_List_Concenration_Turbulent that can be used to dolve a list of N concentration equations. Possible to define different diffusion coefficients for each cloned equation (which is not the case of list_scalaire_passif problem !!!)
 10/04/24 (TRUST) New feature  : Add series of problems XXX_Cloned_Concenration & XXX_Cloned_Concenration_Turbulent that can be used to state only a single concentration equation in the .data but clone N equations. We assume here that the same BC are used. Possible to define different diffusion coefficients for each cloned equation.
