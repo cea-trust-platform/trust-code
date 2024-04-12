@@ -186,7 +186,6 @@ public:
   REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   virtual bool is_pb_med() { return false ; }
-  virtual bool is_pb_FT() { return false ; }
   virtual bool is_pb_rayo() { return false ; }
 
   void associer_pb_couple(const Probleme_Couple& pbc) { pbc_ = pbc; }

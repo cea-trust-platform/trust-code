@@ -51,7 +51,7 @@ public:
   const Equation_base& equation(int) const override ;
   Equation_base& equation(int) override;
   void associer_milieu_base(const Milieu_base& ) override;
-  virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
+  Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
   int verifier() override;
   void mettre_a_jour(double temps) override;
   void completer() override;

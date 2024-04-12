@@ -145,7 +145,7 @@ Entree& Probleme_base::readOn(Entree& is)
     }
 
   /* 1 : milieu : NEW SYNTAX */
-  if (!milieu_via_associer_ && !is_pb_med() && !is_pb_FT() && !is_pb_rayo())
+  if (!milieu_via_associer_ && !is_pb_med() && !is_pb_rayo())
     typer_lire_milieu(is);
   else assert((int)le_milieu_.size() == 0);
 
@@ -260,7 +260,7 @@ void Probleme_base::associer()
 
 void Probleme_base::warn_old_syntax()
 {
-  if (!is_pb_FT() && !is_pb_rayo())
+  if (!is_pb_rayo())
     {
       Cerr << "YOU ARE USING AN OLD SYNTAX IN YOUR DATA FILE AND THIS IS NO MORE SUPPORTED !" << finl;
       Cerr << "STARTING FROM TRUST-v1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIATION ... " << finl;
@@ -392,7 +392,7 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   // Can not do this before, since the Domaine_dis is not typed yet:
   le_domaine_dis_->associer_domaine(le_domaine_);
 
-  if (milieu_via_associer_ || is_pb_FT())
+  if (milieu_via_associer_)
     {
       discretiser_equations();
       Noms milieux_deja_discretises;
