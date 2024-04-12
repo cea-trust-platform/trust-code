@@ -168,6 +168,25 @@ void TestTRUSTArray::test_trav()
     IntTrav a2(10);
     assert(ptr == a2.mem_->data());
   }
+
+  {
+    IntTrav a2(10);
+    a2 = 24;
+    IntTrav b(a2);  // copy only structure not data
+    assert(b.dimension(0) == 10);
+    assert(b(0) == 0);
+  }
+
+  { // Copy ctor from other Trav
+    IntTab a(1,1);
+    IntTrav b(a);  // from Tab
+    IntTrav c(b);  // from Trav
+
+    assert(a.nb_dim() == 2);
+    assert(b.nb_dim() == 2);
+    assert(c.nb_dim() == 2);
+  }
+
 }
 
 
