@@ -21,6 +21,7 @@
 #include <Domaine_VF.h>
 #include <PE_Groups.h>
 #include <Comm_Group.h>
+#include <Polyedre.h>
 
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
 {
@@ -116,13 +117,20 @@ void build_triomesh(const Domaine_dis_base& dom_dis, ICoCo::TrioField& afield, i
     }
   else //maillage de polyedres -> connectivite au format MEDCoupling, a faire a la main
     {
-      afield._nodes_per_elem = std::max(zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1), (int) 9); //un -1 apres chaque face : au moins 9 pour eviter un papillonage
+      const Polyedre& poly = ref_cast(Polyedre, dom.type_elem().valeur());
+      const ArrOfInt& e_fi = poly.getPolyhedronIndex(), &f_si = poly.getFacesIndex(), &sl = poly.getNodes();
+      const IntTab& e_s = dom.les_elems();
+      int e, f, s, nef_max = 0, nfs_max = 0; //nb face/elem et som/face max
+      for (e = 0; e + 1 < e_fi.size_array(); e++) nef_max = std::max(nef_max, e_fi(e + 1) - e_fi(e));
+      for (f = 0; f + 1 < f_si.size_array(); f++) nfs_max = std::max(nfs_max, f_si(f + 1) - f_si(f));
+      afield._nodes_per_elem = std::max(nef_max * (nfs_max + 1), (int) 9); //un -1 apres chaque face : au moins 9 pour eviter un papillonage
       int *p = afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
-      for (int e = 0, f, s, i, j; e < afield._nb_elems; e++)
+      for (e = 0; e < afield._nb_elems; e++)
         {
           /* insertion de la connectivite de chaque face, suivie d'un -1 */
-          for (i = 0; i < zvf.elem_faces().dimension(1) && (f = zvf.elem_faces(e, i)) >= 0; i++, *p = -1, p++)
-            for (j = 0; j < zvf.face_sommets().dimension(1) && (s = zvf.face_sommets(f, j)) >= 0; j++) *p = s, p++;
+          for (f = e_fi(e); f < e_fi(e + 1); f++, *p = -1, p++)
+            for (s = f_si(f); s < f_si(f + 1); s++)
+              *p = e_s(e, sl(s)), p++;
           /* des -1 jusqu'a la ligne suivante */
           for ( ; p < afield._connectivity + (e + 1) * afield._nodes_per_elem; p++) *p = -1;
         }
