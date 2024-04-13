@@ -46,6 +46,8 @@ struct PoolImpl_
   static size_t req_sz_;
   //! Actual alloc performed:
   static size_t actual_sz_;
+  //! Total number of blocks in the pool:
+  static int num_items_;
 #endif
 };
 
@@ -57,6 +59,7 @@ template<> PoolImpl_<float>::pool_t  PoolImpl_<float>::Free_blocks_  = PoolImpl_
 template<> PoolImpl_<double>::pool_t PoolImpl_<double>::Free_blocks_ = PoolImpl_<double>::pool_t();
 
 #ifndef NDEBUG
+// Need C++17 to have this inline in the class def directly ...
 template<> size_t PoolImpl_<int>::req_sz_ = 0;
 template<> size_t PoolImpl_<float>::req_sz_ = 0;
 template<> size_t PoolImpl_<double>::req_sz_ = 0;
@@ -64,8 +67,11 @@ template<> size_t PoolImpl_<double>::req_sz_ = 0;
 template<> size_t PoolImpl_<int>::actual_sz_ = 0;
 template<> size_t PoolImpl_<float>::actual_sz_ = 0;
 template<> size_t PoolImpl_<double>::actual_sz_ = 0;
-#endif
 
+template<> int PoolImpl_<int>::num_items_ = 0;
+template<> int PoolImpl_<float>::num_items_ = 0;
+template<> int PoolImpl_<double>::num_items_ = 0;
+#endif
 
 /*! Handy method to get the proper list corresponding to a given size.
  * The list is created if this is the first time the corresponding key (=size) is encountered
@@ -111,6 +117,9 @@ typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::GetFreeBlock(
       // Yes - pop it from the list and returns it:
       ptr_t ret = lst.back();
       lst.pop_back();
+#ifndef NDEBUG
+      PoolImpl_<_TYPE_>::num_items_--;
+#endif
       return ret;
     }
   else // No, must create a new one - it will be registered in the pool when released in ~TRUSTArray()
@@ -127,11 +136,18 @@ typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::GetFreeBlock(
  *    - get a new free block of the new size
  *    - copy the former data into it
  *    - release the former small block (and so make it available for future potential use by another Trav)
+ *    - danger: can lead to clottering of the pool if many incremental resize() are done (typically append_line() in a for loop...)
+ *       -> mitigation: when the number of elements in the pool becomes too large, raise a warning
  *  Strategy 2
  *    - simply resize the underlying vector, hence completely forgetting the previous block which is never registered in the pool.
+ *    - danger: can also lead to clottering of the pool if doing
+ *      {  DoubleTrav a(1);
+ *         a.resize(10);
+ *      }
+ *      many times -> the array of size 10 is registered at each destruction (because it was always arrays of size 1 that were
+ *      requested ...) -> same mitigation as above.
  *
- *  Strategy 2 is retained, since in part of the code (e.g. Assembleur PolyMAC) we have aggressive 'append_line' usage which
- *  leads to a clottering of the pool with blocks of intermediate sizes if using strategy 1.
+ *  TODO TODO ABN: Strategy 2 is retained for now, because of PolyMAC which does a lot of stupid 'append_line' on Trav!!
  */
 template<typename _TYPE_>
 typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::ResizeBlock(typename TRUSTTravPool<_TYPE_>::block_ptr_t p, int new_sz)
@@ -140,17 +156,18 @@ typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::ResizeBlock(t
   assert(p->size() > 0);
   assert(new_sz > 0);  // new_sz == 0 should never happen, see TRUSTArray::resize_array_()
 
-  // Resize ... and that's it!
-  p->resize(new_sz);
-
-// Strategy 1 - to be avoided!! See comments above.
+//  // Strategy 1
 //  // Get new bigger block
-//  block_ptr_t new_blk = GetFreeBlock_impl_<_TYPE_>(new_sz);
+//  block_ptr_t new_blk = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_sz);
 //  // Copy data
 //  std::copy(p->begin(), p->end(), new_blk->begin());
 //  // Release small block
-//  ReleaseBlock_impl_<_TYPE_>(p);
+//  TRUSTTravPool<_TYPE_>::ReleaseBlock(p);
+//  return new_blk;
 
+  // Strategy 2
+  // Resize ... and that's it!
+  p->resize(new_sz);
   return p;
 }
 
@@ -173,6 +190,22 @@ void TRUSTTravPool<_TYPE_>::ReleaseBlock(typename TRUSTTravPool<_TYPE_>::block_p
       lst_t& lst = GetOrCreateList<_TYPE_>(sz);
       // Append the free block pointer to the list corresponding to its size:
       lst.push_back(p);
+#ifndef NDEBUG
+      PoolImpl_<_TYPE_>::num_items_++;
+      // If the pool becomes too big this probably means we have a pattern like this
+      //
+      //   DoubleTrav b(1)
+      //   for(i=0; i < a_lot; i++)
+      //      b.append_array(x);
+      //
+      // where the Trav is resized over and over, and each of its intermediate size is stored in the Pool.
+      // Trav size should be fixed once and moved too much, or one should use a Tab if outside time steps.
+//      if (PoolImpl_<_TYPE_>::num_items_ > 500)
+//        {
+//          Cerr << "Too many blocks in the TravPool!! This probably means that a Trav is badly used!! Fix this." << finl;
+//          Process::exit();
+//        }
+#endif
     }
 }
 
@@ -190,7 +223,8 @@ void TRUSTTravPool<_TYPE_>::PrintStats()
 
   Cerr << "Total requested  (MB): " << (double)pi::req_sz_ / (1024.0 * 1024.0) << finl;
   Cerr << "Total allocated  (MB): " << (double)pi::actual_sz_ / (1024.0 * 1024.0) << finl;
-//  std::cout << "-- Top five blocks:" << std::endl;
+  Cerr << "Number of blocks in the pool: " << pi::num_items_ << finl;
+  //  std::cout << "-- Top five blocks:" << std::endl;
 //  std::cout << "   Size" << std::setw(40) << "Nb instances" << std::finl;
 //  int cnt = 0;
 //  for (auto& )

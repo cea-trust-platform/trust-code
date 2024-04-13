@@ -163,10 +163,16 @@ void TestTRUSTArray::test_trav()
     assert(a2.storage_type_ == STORAGE::TEMP_STORAGE);
     a2.resize(10);
     ptr = a2.mem_->data();
+    assert(a2.size_array() == 10);
   }
   { // Same block re-used for Trav
     IntTrav a2(10);
     assert(ptr == a2.mem_->data());
+  }
+  { // Same block re-used for Trav
+    IntTrav a2(10);
+    a2.append_array(5);
+    assert(a2.size_array() == 11);
   }
 
   {
@@ -187,6 +193,13 @@ void TestTRUSTArray::test_trav()
     assert(c.nb_dim() == 2);
   }
 
+  {
+    // NOT A PROPER USAGE OF TRAV!! Should exit in Debug with strategy 2 - to be activated
+    // once PolyMAC has been cleaned.
+//    IntTrav a2;
+//    for (int i=0; i < 3000; i++)
+//       a2.append_array(1);
+  }
 }
 
 

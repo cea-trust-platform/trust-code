@@ -26,7 +26,7 @@
 template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>::~TRUSTArray()
 {
-  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr)
+  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr && ref_count() == 1)
     // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
     TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
   // Deletion on device if last (shared) instance and not a Trav:
@@ -244,14 +244,10 @@ template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
 {
   this->checkDataOnHost();
-  if (mem_ == nullptr)
-    {
-      assert(span_.empty()); // not ref_data
-      mem_ = std::make_shared<Vector_>(Vector_(1, valeur));
-    }
-  else
-    mem_->push_back(valeur);
-  span_ = Span_(*mem_);
+  // Call the official resize, with all its checks and management of Trav:
+  const int sz = size_array();
+  resize_array_(sz+1, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  operator[](sz) = valeur;
 }
 
 /**  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
