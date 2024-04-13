@@ -107,7 +107,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
     if (i_m.first == "vitesse" || (!hcc && i_m.first == cc.le_nom()) || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
       {
         Matrice_Morse mat;
-        IntTrav stencil(0, 2);
+        IntTab stencil(0, 2);
 
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */

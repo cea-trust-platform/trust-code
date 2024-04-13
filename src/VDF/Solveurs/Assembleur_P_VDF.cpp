@@ -783,7 +783,7 @@ void Assembleur_P_VDF::dimensionner_continuite(matrices_t matrices, int aux_only
 {
   if (aux_only) return; //rien a faire
   int e, n, N = ref_cast(Pb_Multiphase, le_dom_Cl_VDF->equation().probleme()).nb_phases(), ne_tot = le_dom_VDF->nb_elem_tot();
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
 
   for (e = 0; e < le_dom_VDF->nb_elem(); e++)
     for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);

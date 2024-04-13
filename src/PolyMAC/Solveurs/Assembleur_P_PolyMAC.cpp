@@ -82,7 +82,7 @@ int Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice, const DoubleVect& d
   /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
   if (!stencil_done)
     {
-      IntTrav stencil_M(0, 2), stencil_R(0, 2);
+      IntTab stencil_M(0, 2), stencil_R(0, 2);
 
       for (e = 0; e < ne_tot; e++)
         {

@@ -96,7 +96,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
   ConstDoubleTab_parts p_inco(ch.valeurs());
   int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = domaine.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = (int) semi_impl.count(nom_inco);
 
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
 
   Cerr << "Op_Diff_PolyMAC_P0P1NC_Face::dimensionner() : ";
 

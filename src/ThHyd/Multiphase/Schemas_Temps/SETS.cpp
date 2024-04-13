@@ -713,7 +713,7 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
 
   if (!P.nb_colonnes()) //dimensionnement au premier passage
     {
-      IntTrav stencil(0, 2);
+      IntTab stencil(0, 2);
 
       for (auto &&n_m : mats.at(inco_p))
         if (n_m.second && n_m.second->nb_colonnes())

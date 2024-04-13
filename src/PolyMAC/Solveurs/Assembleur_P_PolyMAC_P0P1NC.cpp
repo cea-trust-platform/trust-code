@@ -63,7 +63,7 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
   /* 1. stencil de la matrice en pression : seulement au premier passage */
   if (!stencil_done) /* premier passage: calcul */
     {
-      IntTrav stencil(0, 2);
+      IntTab stencil(0, 2);
 
       for (e = 0; e < ne; e++)
         for (stencil.append_line(e, e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* blocs "elem-elem" et "elem-face" */
