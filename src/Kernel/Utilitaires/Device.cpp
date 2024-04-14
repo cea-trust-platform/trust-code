@@ -326,7 +326,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       if (currentLocation==DataLocation::HostOnly)
         {
           // Not a Trav which is already allocated on device:
-          if (!(dynamic_cast<TRUSTTrav<_TYPE_> *>(&tab) != nullptr && isAllocatedOnDevice(tab_addr)))
+          if (!(tab.get_mem_storage() == STORAGE::TEMP_STORAGE && isAllocatedOnDevice(tab_addr)))
             allocateOnDevice(tab_addr, tab.size_array());
           copyToDevice(tab_addr, tab.size_array(), "array "+arrayName);
         }

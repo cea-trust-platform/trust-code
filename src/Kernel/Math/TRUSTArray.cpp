@@ -96,7 +96,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
           if(opt == RESIZE_OPTIONS::COPY_INIT)
             std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
           // TODO - should be in TRUSTTravPool logic:
-          if (isDataOnDevice() && !isAllocatedOnDevice(*this))
+          if (get_data_location() != DataLocation::HostOnly && !isAllocatedOnDevice(*this))
             allocateOnDevice(*this);
         }
       else
@@ -106,7 +106,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
           if (!isDataOnDevice() && opt == RESIZE_OPTIONS::COPY_INIT)
             std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
           // Allocate on GPU if needed:
-          if (isDataOnDevice()) allocateOnDevice(*this);
+          if (get_data_location() != DataLocation::HostOnly) allocateOnDevice(*this);
         }
       span_ = Span_(*mem_);
       data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
@@ -138,7 +138,7 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               else  // Real size increase of the underlying std::vector
                 {
                   // No Trav resize (from non null size!) on GPU for now:
-                  assert(storage_type_ != STORAGE::TEMP_STORAGE || !isDataOnDevice());
+                  assert(storage_type_ != STORAGE::TEMP_STORAGE || get_data_location() == DataLocation::HostOnly);
 
                   // ResizeBlock in its current impl. does also the zeroing:
                   mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
@@ -151,9 +151,9 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               mem_->resize(new_size);
               span_ = Span_(*mem_);
               // Possibly set to 0 extended part, since we have a custom Vector not doing it by default (TVAlloc):
-              if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT && !isDataOnDevice())
+              if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT && get_data_location() == DataLocation::HostOnly)
                 std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
-              if(isDataOnDevice())
+              if(get_data_location() != DataLocation::HostOnly)
                 {
                   // Allocate new (bigger) block on device:
                   allocateOnDevice(*this);
@@ -168,7 +168,6 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
         }
     }
 }
-
 
 /**  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
 *    Les autres elements de (*this) sont inchanges.

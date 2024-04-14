@@ -26,14 +26,8 @@
 template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>::~TRUSTArray()
 {
-  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr && ref_count() == 1)
-    // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
-    TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
-  // Deletion on device if last (shared) instance and not a Trav:
-  if (isDataOnDevice() && ref_count() == 1 && storage_type_ != STORAGE::TEMP_STORAGE)
-    deleteOnDevice(*this);
+  detach_array(); // release all resources properly (esp. Trav!!)
 }
-
 
 /**
  * Change the size of the array.
@@ -93,6 +87,7 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
 {
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
+  assert(storage_type_ != STORAGE::TEMP_STORAGE);  // Not a Trav!
   detach_array(); // ToDo OpenMP revenir en arriere sur TRUSTArray.h
   span_ = Span_(ptr, size);
 }
@@ -106,7 +101,7 @@ template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::ref_array(TRUSTArray& m, int start, int size)
 {
   assert(&m != this);
-  // La condition 'm n'est pas de type "ref_data"' est necessaire pour attach_array().
+  assert(storage_type_ != STORAGE::TEMP_STORAGE);  // Not a Trav!
   detach_array();
   attach_array(m, start, size);
 }
@@ -354,6 +349,9 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
   // Copy (shared) data location from m - locations will be synchronized automatically between ref arrays
   data_location_ = m.data_location_;
 
+  // Copy storage type! A Tab might become a Trav ... (but not the other way around, see ref_*() methods and asserts)
+  storage_type_ = m.storage_type_;
+
   // stupid enough, but we might have ref'ed a detached array ...
   if (mem_ != nullptr)
     span_ = Span_((_TYPE_ *)(m.span_.begin()+start), size);
@@ -361,16 +359,25 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
     span_ = Span_();
 }
 
-
 /** Bring the current array in a detached state, i.e. both 'mem_' and 'span_' are cleared, whatever the current state.
 */
 template <typename _TYPE_>
 inline bool TRUSTArray<_TYPE_>::detach_array()
 {
+  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr && ref_count() == 1)
+    // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
+    TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
+  // Deletion on device if:
+  //  - not a pure CPU array (i.e. was allocated on the GPU)
+  //  - this is the last (shared) instance
+  //  - and this is not a Trav.
+  if (get_data_location() != DataLocation::HostOnly && ref_count() == 1 && storage_type_ != STORAGE::TEMP_STORAGE)
+    deleteOnDevice(*this);
+
   mem_ = nullptr;
   span_ = Span_();
-  if (isDataOnDevice())
-    deleteOnDevice(*this);
+  data_location_ = nullptr;
+
   return true;
 }
 
