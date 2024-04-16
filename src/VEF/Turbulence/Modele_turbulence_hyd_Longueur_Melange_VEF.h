@@ -35,7 +35,6 @@ class Modele_turbulence_hyd_Longueur_Melange_VEF: public Modele_turbulence_hyd_L
 public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void lire_distance_paroi();
   int preparer_calcul() override;
   Champ_Fonc& calculer_viscosite_turbulente() override;
@@ -47,8 +46,6 @@ protected:
   double hauteur_ = 2., diametre_ = 2., dmax_ = -1.;
   int cas_ = 0;
   DoubleVect f_amortissement_;
-  REF(Domaine_VEF) le_dom_VEF_;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF_;
 };
 
 #endif /* Modele_turbulence_hyd_Longueur_Melange_VEF_included */

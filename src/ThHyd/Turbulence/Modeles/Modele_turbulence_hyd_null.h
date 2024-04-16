@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,4 +26,4 @@ public:
   int sauvegarder(Sortie&) const override;
 };
 
-#endif
+#endif /* Modele_turbulence_hyd_null_included */

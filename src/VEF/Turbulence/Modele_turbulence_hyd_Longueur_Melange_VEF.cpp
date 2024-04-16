@@ -88,19 +88,13 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const M
     return Modele_turbulence_hyd_Longueur_Melange_base::lire_motcle_non_standard(mot, is);
 }
 
-void Modele_turbulence_hyd_Longueur_Melange_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VEF_ = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
-}
-
 Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbulente()
 {
   const double Kappa = 0.415;
   double Cmu = CMU;
 
   double temps = mon_equation_->inconnue().temps();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   DoubleVect& k = energie_cinetique_turb_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
@@ -208,8 +202,8 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_Sij2()
 {
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
   const Champ_P1NC& ch = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem_tot();
 
   DoubleTab duidxj(nb_elem, dimension, dimension);
@@ -240,7 +234,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::lire_distance_paroi()
 
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
 
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   DoubleTab& wall_length = wall_length_.valeurs();
   wall_length = -1.;
 
@@ -289,7 +283,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
   //                 f_vd^4 < 0.99          =>   u+.y+ < 2784
   //
 
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   DoubleTab& wall_length = wall_length_.valeurs();
   int nb_face_elem = domaine_VEF.domaine().nb_faces_elem();

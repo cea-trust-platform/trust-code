@@ -51,12 +51,6 @@ int Modele_turbulence_hyd_Longueur_Melange_VDF::preparer_calcul()
   return 1;
 }
 
-void Modele_turbulence_hyd_Longueur_Melange_VDF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VDF_ = ref_cast(Domaine_VDF, domaine_dis.valeur());
-  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
-}
-
 Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbulente()
 {
   double hauteur = std::fabs(alt_max_ - alt_min_); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
@@ -65,7 +59,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
   double Cmu = CMU;
 
   double temps = mon_equation_->inconnue().temps();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   DoubleVect& k = energie_cinetique_turb_.valeurs();
   const int nb_elem = domaine_VDF.nb_elem();
@@ -113,8 +107,8 @@ void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
 {
   const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
   Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
-  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VDF.nb_elem_tot();
 
   assert(vitesse.line_size() == 1);

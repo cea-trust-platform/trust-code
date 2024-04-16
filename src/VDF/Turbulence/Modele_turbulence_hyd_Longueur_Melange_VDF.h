@@ -32,16 +32,11 @@ class Modele_turbulence_hyd_Longueur_Melange_VDF: public Modele_turbulence_hyd_L
   Declare_instanciable(Modele_turbulence_hyd_Longueur_Melange_VDF);
 public:
   void set_param(Param& param) override;
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_Sij2();
   int preparer_calcul() override;
 
 protected:
-  REF(Domaine_VDF) le_dom_VDF_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
-
   int direction_ = 1;
   double alt_min_ = 0., alt_max_ = 2.;
 };
