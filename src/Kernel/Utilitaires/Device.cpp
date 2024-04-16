@@ -144,7 +144,7 @@ void init_openmp()
 }
 #endif
 
-
+#ifndef LATATOOLS
 #ifdef TRUST_USE_CUDA
 #include <cuda_runtime.h>
 void init_cuda()
@@ -189,8 +189,8 @@ void init_cuda()
     }
 #endif     /* MPIX_CUDA_AWARE_SUPPORT */
 }
-#endif
-
+#endif /* TRUST_USE_CUDA */
+#endif /* LATATOOLS */
 
 // Adress on device (return host adress if no device):
 template <typename _TYPE_>
