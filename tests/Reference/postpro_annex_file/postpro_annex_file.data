@@ -1,0 +1,103 @@
+# Hydraulique 2D sinusoidal #
+# PARALLEL OK #
+dimension 2
+
+Pb_Hydraulique pb
+Domaine dom
+
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Entree
+    {
+        Origine           0. 0.
+        Longueurs         1. 1.
+        Nombre_de_Noeuds  9  9
+    }
+    {
+        bord Inlet     X = 0.      0. <= Y <= 1.
+        bord Outlet    X = 1.      0. <= Y <= 1.
+        bord Left      Y = 0.      0. <= X <= 1.
+        bord Right     Y = 1.      0. <= X <= 1.
+    }
+}
+
+trianguler   dom
+verifiercoin dom { }
+regroupebord dom Wall { Left Right }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Adams_Bashforth_order_2 sch
+Read sch
+{
+    tinit 0
+    dt_max 0.01
+    nb_pas_dt_max 3
+    dt_impr 1e-3
+    tmax 10
+    diffusion_implicite 1
+    seuil_statio -1
+}
+
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+
+    fluide_incompressible {
+        gravite Champ_uniforme 2 0 0
+        mu      Champ_Uniforme 1 8.53754E-04
+        rho     Champ_Uniforme 1 996.7366105
+    }
+
+    Navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { EF_stab { alpha 0.3 } }
+        Diffusion { }
+        conditions_initiales { vitesse champ_fonc_t 2 sin(300*t) 0. }
+        boundary_conditions
+        {
+            Inlet  frontiere_ouverte_vitesse_imposee champ_front_fonc_t 2 sin(300*t) 0.
+            Outlet frontiere_ouverte_vitesse_imposee champ_front_fonc_t 2 sin(300*t) 0.
+            Wall   symetrie
+        }
+    }
+
+    Postraitement
+    {
+        champs dt_post 1.e-4
+        {
+            pression som
+        }
+        champs_fichier dt_post 1.e-4 { fichier fields_def }
+        statistiques dt_post 1.e-4
+        {
+            t_deb 0.
+            t_fin 10.
+            moyenne pression
+        }
+        statistiques_fichier dt_post 1.e-4 { fichier stats_def }
+    }
+}
+Solve pb
+Fin

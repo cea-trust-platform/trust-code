@@ -38,7 +38,6 @@ public:
   void associer_post(const Postraitement&);
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
-  void lire_fichier(const Nom& nom_fichier);
   REF(Champ_base) get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
   void clear_cache();
   void set_noms_champs_postraitables();

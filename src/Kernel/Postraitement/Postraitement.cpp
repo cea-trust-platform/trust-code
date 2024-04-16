@@ -32,6 +32,9 @@
 #include <Sous_Domaine.h>
 #include <EChaine.h>
 #include <Interprete_bloc.h>
+#include <communications.h>
+#include <communications_array.h>
+
 
 
 
@@ -331,6 +334,44 @@ Entree& Postraitement::readOn(Entree& s)
   return s;
 }
 
+
+
+
+static EChaineJDD read_and_broadcast_file(const Nom& filename)
+{
+  // Proc 0 read file and fills its "file_content"
+  LecFicDiffuse_JDD file_stream(filename, ios::in, true);
+  long unsigned int file_char_number;
+  Nom file_content("{ ");
+  if (Process::je_suis_maitre())
+    {
+      std::stringstream buffer;
+      buffer << file_stream.get_entree_master().get_istream().rdbuf();
+      file_content += buffer.str();
+      file_content += " }";
+      file_char_number = file_content.getString().size()-4;
+    }
+  // Proc0 sends its "file_content" to other procs
+  envoyer_broadcast(file_char_number, 0);
+  file_content.getString().resize(file_char_number+4); // +4 for braces and spaces
+  envoyer_broadcast_array(&file_content.getString()[2], (int)file_char_number, 0);
+  file_content.getString()[file_char_number+2] = ' ';
+  file_content.getString()[file_char_number+3] = '}';
+  // We build an EChaine to interpret the file
+  return EChaineJDD(file_content);
+}
+
+static EChaineJDD get_file_content_for_bloc(const Nom& associated_word, Entree& s)
+{
+  Nom filename;
+  Param param2(associated_word + "_files");
+  param2.ajouter("fichier|file",&filename,Param::REQUIRED);
+  param2.lire_avec_accolades_depuis(s);
+
+  Cerr << "Reading of "<<associated_word<<" from file "<<filename<< finl;
+  return read_and_broadcast_file(filename);
+}
+
 void Postraitement::set_param(Param& param)
 {
 // XD postraitement postraitement_base postraitement -1 An object of post-processing (without name).
@@ -347,7 +388,9 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
   param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P entier Flag to not remove duplicated probes in .son files (1: keep duplicate probes, 0: remove duplicate probes)
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
-  param.ajouter_non_std("Statistiques",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
+  param.ajouter_non_std("champs_fichier|fields_file",(this));// XD_ADD_P Fields_file  Fields read from file.
+  param.ajouter_non_std("Statistiques|statistics",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
+  param.ajouter_non_std("statistiques_fichier|statistics_file",(this));// XD_ADD_P Statistics_file  Statistics read from file.
   param.ajouter_non_std("Sondes_Int",(this));
   param.ajouter_non_std("Tableaux_Int",(this));
   param.ajouter_non_std("Statistiques_en_serie",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
@@ -401,19 +444,12 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
   if (mot=="Sondes_fichier|Probes_file")
     {
-      Nom file;
-      Param param2("probes_files");
-      // XD sondes_fichier objet_lecture nul 1 not_set
-      param2.ajouter("fichier|file",&file,Param::REQUIRED); // XD_ADD_P chaine name of file
-      param2.lire_avec_accolades_depuis(s);
-
-      Cerr << "Reading of probes" << finl;
-      les_sondes_.associer_post(*this);
-      les_sondes_.lire_fichier(file);
-      sondes_demande_ = 1;
+      Nom associated_word("Probes");
+      EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
+      this->lire_motcle_non_standard(associated_word, file_content);
       return 1;
     }
-  else if (mot=="champs|fields")
+  else if (mot=="champs|fields|champs_fichier|fields_file")
     {
       Cerr << "Reading of fields to be postprocessed" << finl;
       Noms liste_noms;
@@ -452,11 +488,18 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
-      lire_champs_a_postraiter(s);
+      if (mot=="champs_fichier|fields_file")
+        {
+          Nom associated_word("Fields");
+          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
+          lire_champs_a_postraiter(file_content);
+        }
+      else
+        lire_champs_a_postraiter(s);
       champs_demande_ = 1;
       return 1;
     }
-  else if (mot=="Statistiques")
+  else if (mot=="Statistiques|statistics|statistiques_fichier|statistics_file")
     {
       Cerr << "Reading of the statistics block" << finl;
       s >> motlu;
@@ -481,7 +524,15 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
         }
       //La methode lire_champs_stat_a_postraiter() va generer auatomatiquement un Champ_Generique
       //en fonction des indications du jeu de donnees (ancienne formulation)
-      lire_champs_stat_a_postraiter(s);
+
+      if (mot=="statistiques_fichier|statistics_file")
+        {
+          Nom associated_word("statistics");
+          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
+          lire_champs_stat_a_postraiter(file_content);
+        }
+      else
+        lire_champs_stat_a_postraiter(s);
 
       //Activer pour lancer la sauvegarde et la reprise des statistiques
       stat_demande_ = 1;
@@ -596,17 +647,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
     }
   else if (mot=="Definition_champs_fichier|Definition_champs_file")
     {
-      //bool depuisFichier = false;
-      Nom file;
-      Param param("definition_champ_files");
-      // XD Definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
-      param.ajouter("fichier|file",&file,Param::REQUIRED); // XD_ADD_P chaine name of file containing the definition of advanced fields
-      param.lire_avec_accolades_depuis(s);
-
-      Cerr << "Reading of Definition_champs from file " << file << finl;
-
-      lire_fichier(file);
-
+      Nom associated_word("Definition_champs");
+      EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
+      this->lire_motcle_non_standard(associated_word, file_content);
       return 1;
     }
 
@@ -1103,29 +1146,6 @@ int Postraitement::lire_champs_operateurs(Entree& s)
     }
 
   return 1;
-}
-
-void Postraitement::lire_fichier(const Nom& nom_fichier)
-{
-  LecFicDiffuse_JDD f(nom_fichier);
-  Motcle motlu;
-  Champ_Generique champ;
-
-  if (!f.good())
-    {
-      Cerr << "Cannot open the file " << nom_fichier << finl;
-      Process::exit();
-    }
-
-  f >> motlu;
-  while (!f.eof())
-    {
-      Cerr <<"Reading definition of field "<<motlu<<finl;
-      f >> champ;
-      complete_champ(champ,motlu);
-      f >> motlu;
-    }
-  f.close();
 }
 
 void Postraitement::complete_champ(Champ_Generique& champ,const Motcle& motlu)

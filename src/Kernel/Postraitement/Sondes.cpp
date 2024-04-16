@@ -49,15 +49,12 @@ Entree& Sondes::readOn(Entree& s )
     }
   s >> motlu;
 
-  bool depuisFichier = false;
   Nom nom_fichier;
 
   if (motlu == "FICHIER")
     {
-      Cerr<<"Warning: Sondes { " << motlu << " .... } no more allowed, use Sondes_fichier { " << motlu << " .... }" <<finl;
-      exit();
-      depuisFichier = true;
-      s >> nom_fichier;
+      Cerr<<"Error: Sondes { " << motlu << " .... } no more allowed, use Sondes_fichier { " << motlu << " .... }" <<finl;
+      Process::exit();
     }
   else if (motlu == accolade_fermee)
     {
@@ -66,58 +63,18 @@ Entree& Sondes::readOn(Entree& s )
       exit();
     }
   set_noms_champs_postraitables();
-  if (depuisFichier)
-    {
-      lire_fichier(nom_fichier);
-      s >> motlu;
-      if (motlu != accolade_fermee)
-        {
-          Cerr << "Error while reading the probes in the postprocessing" << finl;
-          Cerr << "We expected } to end to read the probes" << finl;
-          exit();
-        }
-    }
-  else
-    {
-      while (motlu != accolade_fermee)
-        {
-          DERIV(Sonde) une_sonde;
-          une_sonde.typer("Sonde");
-          une_sonde->nommer(motlu);
-          une_sonde->associer_post(mon_post.valeur());
-          s >> une_sonde.valeur();
-          add(une_sonde);
-          s >> motlu;
-        }
-    }
-  Cerr << "End of reading probes " << finl;
-  return s;
-}
-
-void Sondes::lire_fichier(const Nom& nom_fichier)
-{
-  set_noms_champs_postraitables();
-  LecFicDiffuse_JDD f(nom_fichier);
-  Motcle motlu;
-
-  if (!f.good())
-    {
-      Cerr << "Cannot open the file " << nom_fichier << finl;
-      Process::exit();
-    }
-
-  f >> motlu;
-  while (!f.eof())
+  while (motlu != accolade_fermee)
     {
       DERIV(Sonde) une_sonde;
       une_sonde.typer("Sonde");
       une_sonde->nommer(motlu);
       une_sonde->associer_post(mon_post.valeur());
-      f >> une_sonde.valeur();
+      s >> une_sonde.valeur();
       add(une_sonde);
-      f >> motlu;
+      s >> motlu;
     }
-  f.close();
+  Cerr << "End of reading probes " << finl;
+  return s;
 }
 
 void Sondes::set_noms_champs_postraitables()
