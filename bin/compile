@@ -1,4 +1,6 @@
 #!/bin/bash
+# Exit immediately if a pipeline returns non zero return code
+set -e
 # Compilation multi-repertoire et multi-plateforme de TRUST
 # OK
 find_()
