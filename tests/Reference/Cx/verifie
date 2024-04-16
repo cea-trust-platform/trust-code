@@ -22,5 +22,24 @@ do
 done
 [ $err != 0 ] && exit $err
 
+########################################
+# Comparaison de l'utilisation de la RAM avec $exec_opt
+########################################
+if [ $HOST = $TRUST_HOST_ADMIN ] && [ "$exec" = "$exec_opt" ] && [ -f PAR_Cx.out ]
+then
+   echo "Verification de la RAM, limite a 253+1 Mo Mo pour le moment en sequentiel"
+   grep "MBytes of RAM taken by the calculation" Cx.out | tail -1
+   err_seq=`grep "MBytes of RAM taken by the calculation" Cx.out | tail -1 | awk '/MBytes of RAM taken by the calculation/{if ($0<255) print 0;else print 1}'`
+   exit $err_seq
+
+   echo "Verification de la RAM, limite a 523+1 Mo en parallele sur 4 procs"
+   grep "MBytes of RAM taken by the calculation" PAR_Cx.out | tail -1
+   err_seq=`grep "MBytes of RAM taken by the calculation" PAR_Cx.out | tail -1 | awk '/MBytes of RAM taken by the calculation/{if ($0<524) print 0;else print 1}'`
+   exit $err_seq
+fi
+
+#######################################################
+# Comparaison non regression des echange_espace_virtuel
+#######################################################
 # Verification du nombre d'appels a echange_espace_virtuel par pas de temps
-exit `awk '/Nb echange_espace_virtuel/ {if ($NF<40) print 0;else print 1}' Cx.TU`
+exit `awk '/Nb echange_espace_virtuel/ {if ($NF<32) print 0;else print 1}' Cx.TU`

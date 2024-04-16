@@ -59,7 +59,7 @@ def save_connections(LataFile, Probe):
 # Write the main lata file
 def write_lata_file(LataFile,DataFile,Probe,GridCoordinates,GridConnections,Nelem,Ncells,post_processed_Fields,dimension):
     latafileout = open(LataFile,'w')
-    latafileout.write('LATA_V2.1\n'+DataFile+'\nTrio_U verbosity=0')
+    latafileout.write('LATA_V2.1\n'+DataFile+'\nTRUST verbosity=0')
     latafileout.write('\nFormat LITTLE_ENDIAN,INT32,F_INDEXING,C_ORDERING,F_MARKERS_SINGLE,REAL32'+'\nGEOM '+Probe+' type_elem=RECTANGLE')
     latafileout.write('\nCHAMP SOMMETS '+GridCoordinates+' geometrie='+Probe+' size='+str(Nelem)+' composantes='+str(dimension)+' format=ASCII,F_MARKERS_NO')
     latafileout.write('\nCHAMP ELEMENTS '+GridConnections+' geometrie='+Probe+' size='+str(Ncells)+' composantes=4 format=ASCII,INT32,F_MARKERS_NO\n')
