@@ -22,7 +22,7 @@
 #include <Champ_base.h>
 
 Implemente_instanciable(Ecrire_fichier_xyz_valeur,"Ecrire_fichier_xyz_valeur",Objet_U);
-// XD ecrire_fichier_xyz_valeur objet_u ecrire_fichier_xyz_valeur -1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
+// XD ecrire_fichier_xyz_valeur interprete nul 1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
 
 Sortie& Ecrire_fichier_xyz_valeur::printOn(Sortie& os) const
 {
