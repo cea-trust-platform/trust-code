@@ -513,6 +513,7 @@ then
    rm -f $(find $TRUST_ROOT/src -name instancie_src_*)
    rm -f $TRUST_ROOT/src/MAIN/instancie_appel*
    rm -f $(find $TRUST_ROOT/src -name CMakeLists.txt)
+   rm -f $(find $TRUST_ROOT/Validation/Rapports_automatiques -name .form.md5sum)
    exit 0
 else
    rm -f prog.log

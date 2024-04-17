@@ -4,4 +4,5 @@ rm -rf basic_ok/tests/Reference/basic_ok/Ecrire_fic_lml_mod
 rm -f */configure */LOG_CONFIG */LOG_RUN */LOG_COMP */README.BALTIK 
 rm -rf */local/ */build
 rm -f */liste_pb
-
+rm -r basic_rapport/share/Validation/Rapports_automatiques/test_rapport*/.form.md5sum
+rm -rf basic_rapport/tests/Reference/Validation/test_rapport_

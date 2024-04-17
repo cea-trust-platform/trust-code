@@ -212,6 +212,7 @@ check_components()
                   wompi_machines=`liste_machines "\-disable-mpi"`
                   wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
                   wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
+                  wompi_machines=$wompi_machines" `liste_machines "\-openmp "`"
                   # Machines en mode parallele
                   machines=""
                   for machine in $all_machines
@@ -543,8 +544,8 @@ VOBS="TRUST Composants"
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
 # MPCube est un Baltik qui peut etre teste sur TRUST et sur le kernel.
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
-ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK module3D"
-export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 module3D"
+ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK sides scorpio sympy_to_TRUST pemfc module3D"
+export ComposantsBeta="flica5 module3D"
 #ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 #ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 # ND : I comment the 2 prev lines to check triocfd first
@@ -3469,14 +3470,10 @@ do
       fi
    fi
    echo " "
-   other_dest=""
-   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_PROJECT_LEADER`
-   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "module3D" ] && echo $module3D_PROJECT_LEADER`
-   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "flica5" ] && echo $flica5_PROJECT_LEADER`
    if [ $validation_composant = 1 ]
    then
       echo "Release criterion: $Composant OK"
-      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
+      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL ${!BALTIK_PROJECT_LEADER}
    else
       echo "Release criterion: $Composant KO"
       if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
@@ -3489,9 +3486,9 @@ do
       then
          if [ $tot_cible != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
+            cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL ${!BALTIK_PROJECT_LEADER}
          else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
+            cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL ${!BALTIK_PROJECT_LEADER}
          fi
       fi
    fi
