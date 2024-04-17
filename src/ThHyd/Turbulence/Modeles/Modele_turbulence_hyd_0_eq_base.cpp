@@ -44,6 +44,12 @@ void Modele_turbulence_hyd_0_eq_base::discretiser()
   champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
+void Modele_turbulence_hyd_0_eq_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+{
+  le_dom_VF_ = ref_cast(Domaine_VF, domaine_dis.valeur());
+  le_dom_Cl_ = ref_cast(Domaine_Cl_dis_base, domaine_Cl_dis.valeur());
+}
+
 int Modele_turbulence_hyd_0_eq_base::a_pour_Champ_Fonc(const Motcle& mot,
                                                        REF(Champ_base) &ch_ref) const
 {

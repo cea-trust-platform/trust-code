@@ -16,30 +16,16 @@
 #include <Modele_turbulence_hyd_LES_VEF_base.h>
 #include <distances_VEF.h>
 #include <Domaine_VEF.h>
-#include <Domaine_Cl_VEF.h>
-#include <Domaine_Cl_dis.h>
 
 Implemente_base(Modele_turbulence_hyd_LES_VEF_base, "Modele_turbulence_hyd_LES_VEF_base", Modele_turbulence_hyd_LES_base);
 
-Sortie& Modele_turbulence_hyd_LES_VEF_base::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_VEF_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_VEF_base::readOn(Entree& is)
-{
-  return Modele_turbulence_hyd_LES_base::readOn(is);
-}
-
-void Modele_turbulence_hyd_LES_VEF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VEF_ = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
-}
+Entree& Modele_turbulence_hyd_LES_VEF_base::readOn(Entree& is) { return Modele_turbulence_hyd_LES_base::readOn(is); }
 
 void Modele_turbulence_hyd_LES_VEF_base::calculer_longueurs_caracteristiques()
 {
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem_tot();
   l_.resize(nb_elem);
 

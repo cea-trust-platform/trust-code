@@ -22,12 +22,6 @@ Implemente_base(Modele_turbulence_hyd_Longueur_Melange_base, "Modele_turbulence_
 Sortie& Modele_turbulence_hyd_Longueur_Melange_base::printOn(Sortie& is) const { return Modele_turbulence_hyd_0_eq_base::printOn(is); }
 Entree& Modele_turbulence_hyd_Longueur_Melange_base::readOn(Entree& is) { return Modele_turbulence_hyd_0_eq_base::readOn(is); }
 
-void Modele_turbulence_hyd_Longueur_Melange_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VF_ = ref_cast(Domaine_VF, domaine_dis.valeur());
-  le_dom_Cl_ = ref_cast(Domaine_Cl_dis_base, domaine_Cl_dis.valeur());
-}
-
 void Modele_turbulence_hyd_Longueur_Melange_base::calculer_energie_cinetique_turb()
 {
   // PQ : 11/08/06 :    L'estimation de k repose sur les expressions :

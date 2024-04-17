@@ -22,25 +22,16 @@
  *
  *  maille WALE developpe par F. NICOUD et F. DUCROS en VEF
  *
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_base
- *
  */
 class Modele_turbulence_hyd_LES_Wale_VEF: public Modele_turbulence_hyd_LES_VEF_base
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VEF);
-
 public:
-
   Modele_turbulence_hyd_LES_Wale_VEF();
   void set_param(Param& param) override;
-
 protected:
-
+  double cw_ = 0.5;
   Champ_Fonc& calculer_viscosite_turbulente() override;
-
-  double cw_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Wale_VEF_included */

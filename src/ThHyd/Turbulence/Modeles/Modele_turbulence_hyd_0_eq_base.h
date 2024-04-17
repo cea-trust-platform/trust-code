@@ -17,6 +17,12 @@
 #define Modele_turbulence_hyd_0_eq_base_included
 
 #include <Modele_turbulence_hyd_base.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_dis_base;
+class Domaine_Cl_dis;
+class Domaine_dis;
+class Domaine_VF;
 
 /*! @brief Classe Modele_turbulence_hyd_0_eq_base Classe de base des modeles a 0 equation
  *
@@ -32,6 +38,8 @@ public:
   int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
 
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
+
   void completer() override;
   void mettre_a_jour(double) override;
   void discretiser() override;
@@ -45,6 +53,9 @@ protected:
   Champ_Fonc energie_cinetique_turb_;
   mutable Champ_Inc K_eps_sortie_;
   Nom fichier_K_eps_sortie_;
+
+  REF(Domaine_VF) le_dom_VF_;
+  REF(Domaine_Cl_dis_base) le_dom_Cl_;
 };
 
 #endif /* Modele_turbulence_hyd_0_eq_base_included */

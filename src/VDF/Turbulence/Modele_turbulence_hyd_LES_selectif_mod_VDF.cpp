@@ -14,13 +14,13 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_selectif_mod_VDF.h>
-#include <math.h>
 #include <VDF_discretisation.h>
 #include <Champ_Face_VDF.h>
+#include <Domaine_VDF.h>
+#include <Equation_base.h>
 #include <TRUSTTrav.h>
 #include <Param.h>
-#include <Equation_base.h>
-#include <Domaine_VDF.h>
+#include <math.h>
 
 #define K_DEF 0.415
 
@@ -67,17 +67,9 @@ int Modele_turbulence_hyd_LES_selectif_mod_VDF::lire_motcle_non_standard(const M
     return Modele_turbulence_hyd_LES_VDF::lire_motcle_non_standard(mot, is);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions de la classe
-//
-//           Modele_turbulence_hyd_LES_selectif_mod_VDF
-//
-/////////////////////////////////////////////////////////////////////////////////////
 
 void Modele_turbulence_hyd_LES_selectif_mod_VDF::discretiser()
 {
-  // Cerr << "Modele_turbulence_hyd_LES_selectif_mod_VDF::discretiser()" << finl;
   Modele_turbulence_hyd_LES_base::discretiser();
   const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation_->discretisation());
   dis.vorticite(mon_equation_->domaine_dis(), mon_equation_->inconnue(), la_vorticite_);
@@ -134,7 +126,7 @@ void Modele_turbulence_hyd_LES_selectif_mod_VDF::cutoff()
 {
   double Sin2Angl;
   const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleTab& xp = domaine_VDF.xp();

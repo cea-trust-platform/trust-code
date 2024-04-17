@@ -18,46 +18,34 @@
 
 #include <Modele_turbulence_hyd_LES_VDF.h>
 
-#define SIN2ANGL 11697778e-8  // sin(20 degre)
-#define SIN2ANGL_new 58526204e-9 // sin(14 degre) pour 32**3
-#define SIN2ANGL_new2 36408073e-9 // sin(11 degre) pour 64**3
-
 /*! @brief classe Modele_turbulence_hyd_LES_selectif_VDF Cette classe correspond a la mise en oeuvre du modele sous
  *
  *  maille fonction de structure selectif modifie en VDF
  *  La modification concerne l angle de coupure : il depend du pas du maillage
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_VDF
  *
  */
 class Modele_turbulence_hyd_LES_selectif_mod_VDF: public Modele_turbulence_hyd_LES_VDF
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_selectif_mod_VDF);
-
 public:
+  Modele_turbulence_hyd_LES_selectif_mod_VDF()
+  {
+    Csm1_ = 0.086;  // nelle cste pour 64^3
+    Csm2_ = 0.676;  // si CSM1 = 0.086 pour 64^3
+  }
 
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void calculer_fonction_structure() override;
   int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void discretiser() override;
-  inline Modele_turbulence_hyd_LES_selectif_mod_VDF();
 
 protected:
-
+  int kc_ = -123, ki_ = -123, thi_ = 0, canal_ = 0, dir_par_ = -123;
+  double demi_h_ = -123.;
   Champ_Fonc la_vorticite_;
-  void cutoff();
-  double demi_h_;
-  int kc_, ki_, thi_, canal_, dir_par_;
-};
 
-inline Modele_turbulence_hyd_LES_selectif_mod_VDF::Modele_turbulence_hyd_LES_selectif_mod_VDF()
-{
-  thi_ = 0;
-  canal_ = 0;
-  Csm1_ = 0.086;  // nelle cste pour 64^3
-  Csm2_ = 0.676;  // si CSM1 = 0.086 pour 64^3
-}
+  void cutoff();
+};
 
 #endif /* Modele_turbulence_hyd_LES_selectif_mod_VDF_included */

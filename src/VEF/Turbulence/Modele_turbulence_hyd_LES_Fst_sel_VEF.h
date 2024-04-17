@@ -18,36 +18,28 @@
 
 #include <Modele_turbulence_hyd_LES_Fst_VEF.h>
 
-#define SIN2ANGL 11697778e-8  // sin(20 degre)
-#define SIN2ANGL_new 58526204e-9 // sin(14 degre) pour 32**3
-#define SIN2ANGL_new2 36408073e-9 // sin(11 degre) pour 64**3
-
 /*! @brief classe Modele_turbulence_hyd_LES_Fst_sel_VEF Cette classe correspond a la mise en oeuvre du modele sous
  *
  *  maille fonction de structure selectif modifie en VEF
  *  La modification concerne l angle de coupure : il depend du pas du maillage
  *  Le calcul de la fonction de structure se fait comme dans Modele_turbulence_hyd_LES_1elt_VEF
+ *
  *  .SECTION  voir aussi
  *  Modele_turbulence_hyd_LES_1elt_VEF
  *
  */
 class Modele_turbulence_hyd_LES_Fst_sel_VEF: public Modele_turbulence_hyd_LES_Fst_VEF
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Fst_sel_VEF);
-
 public:
-
   Modele_turbulence_hyd_LES_Fst_sel_VEF();
   int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void discretiser() override;
   void calculer_racine() override;
 
 protected:
-
   Champ_Fonc la_vorticite_;
   void cutoff();
-
 };
 
 #endif /* Modele_turbulence_hyd_LES_Fst_sel_VEF_included */

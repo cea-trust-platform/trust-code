@@ -14,76 +14,29 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Smago_filtre_VEF.h>
-#include <Champ_P1NC.h>
+#include <Domaine_Cl_VEF.h>
 #include <Domaine_VEF.h>
+#include <Champ_P1NC.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_LES_Smago_filtre_VEF, "Modele_turbulence_hyd_sous_maille_Smago_filtre_VEF", Modele_turbulence_hyd_LES_Smago_VEF);
 
-Sortie& Modele_turbulence_hyd_LES_Smago_filtre_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_Smago_filtre_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_Smago_filtre_VEF::readOn(Entree& s)
-{
-  return Modele_turbulence_hyd_LES_Smago_VEF::readOn(s);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_Smago_filtre_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
-
-// PQ:07/09/05
-//Champ_Fonc& Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_energie_cinetique_turb(const DoubleTab& SMA,const DoubleVect& l)
-//{
-//  double C2 = 0.43;
-//  double temps = mon_equation->inconnue().temps();
-//  DoubleVect& k = energie_cinetique_turb_.valeurs();
-//  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-//  const int nb_elem = domaine_VEF.nb_elem();
-//  double temp;
-//
-//  if (k.size() != nb_elem)
-//    {
-//      Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
-//      exit();
-//    }
-//
-//  for (int elem=0 ; elem<nb_elem; elem++)
-//    {
-//      temp = 0.;
-//      for (int i=0 ; i<dimension ; i++)
-//        for (int j=0 ; j<dimension ; j++)
-//          temp+=SMA(elem,i,j)*SMA(elem,i,j);
-//
-//      k(elem)=C2*C2*l(elem)*l(elem)*2*temp;
-//    }
-//
-//  energie_cinetique_turb_.changer_temps(temps);
-//  return energie_cinetique_turb_;
-//}
-//
+Entree& Modele_turbulence_hyd_LES_Smago_filtre_VEF::readOn(Entree& s) { return Modele_turbulence_hyd_LES_Smago_VEF::readOn(s); }
 
 void Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_S_barre()
 {
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
 
   const DoubleVect& vol = domaine_VEF.volumes();
-  //  const DoubleTab& xgravite = domaine_VEF.xp();
   const Domaine& domaine = domaine_VEF.domaine();
-  //  const DoubleTab& xsom = domaine.domaine().coord_sommets();
-  //  int nb_som_elem=domaine.nb_som_elem();
   int nb_faces_elem = domaine.nb_faces_elem();
-  //  const IntTab& elem_som=domaine.les_elems();
 
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
-  //  const int nb_face_bord = domaine_VEF.nb_faces_bord();
   const int nb_face = domaine_VEF.nb_faces();
 
   int i, elem;
@@ -101,8 +54,6 @@ void Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_S_barre()
       int num2;
       num2 = face_voisins(fac, 1);
 
-      //DoubleVect vit(dimension);
-
       int fac1, fac2, facel;
 
       vitesse = 0.;
@@ -110,13 +61,11 @@ void Modele_turbulence_hyd_LES_Smago_filtre_VEF::calculer_S_barre()
       for (facel = 0; facel < nb_faces_elem; facel++)
         {
           fac1 = elem_faces(num1, facel);
+          //Correction pour avoir le champ de vitesse par face
           for (i = 0; i < dimension; i++)
-            ////vit(i) += la_vitesse(fac1,i)/double(2*nb_faces_elem) ;
-            //Correction pour avoir le champ de vitesse par face
             vitesse(fac, i) += la_vitesse(fac1, i) / double(2 * nb_faces_elem);
           fac2 = elem_faces(num2, facel);
           for (i = 0; i < dimension; i++)
-            ////vit(i) += la_vitesse(fac2,i)/double(2*nb_faces_elem) ;
             vitesse(fac, i) += la_vitesse(fac2, i) / double(2 * nb_faces_elem);
         }
 

@@ -15,64 +15,26 @@
 
 #include <Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF.h>
 #include <VEF_discretisation.h>
-#include <Champ_P1NC.h>
 #include <Domaine_VEF.h>
+#include <Champ_P1NC.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF, "Modele_turbulence_hyd_sous_maille_1elt_selectif_mod_VEF", Modele_turbulence_hyd_LES_1elt_VEF);
 
 Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF()
 {
   Csm1_ = 0.086;
-  // Csm2 = 1.8764;  // si CSM1 = 0.143
-  // Csm2 = 0.676;  // si CSM1 = 0.087 pour 64^3
   Csm2_ = 0.6703;  // si CSM1 = 0.086 pour 32^3
 }
-
-//// printOn
-//
 
 Sortie& Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//// readOn
-//
-
 Entree& Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::readOn(Entree& s)
 {
   return Modele_turbulence_hyd_LES_1elt_VEF::readOn(s);
 }
-
-// Entree& Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::lire(const Motcle& motlu, Entree& is)
-// {
-//   if (motlu == "regression_lineaire")
-//     {
-//       regression = 0;
-//       Cerr << "Le mot lu est :" << motlu << finl;
-//       Cerr << "Vous allez utiliser la REGRESSION LINEAIRE" <<finl;
-//       Cerr << "pour determiner l'angle" << finl;
-//     }
-//   else
-//     if (motlu == "regression_log")
-//       {
-//         regression = 1;
-//         Cerr << "Le mot lu est :" << motlu << finl;
-//         Cerr << "Vous allez utiliser la REGRESSION LOG" <<finl;
-//         Cerr << "pour determiner l'angle" << finl;
-//       }
-//     else
-//       return  Modele_turbulence_hyd_LES_VEF::lire(motlu,is);
-//   return is;
-// }
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions de la classe
-//
-//           Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF
-//
-/////////////////////////////////////////////////////////////////////////////////////
 
 void Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::discretiser()
 {
@@ -133,10 +95,9 @@ void Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::calculer_fonction_structur
 
 void Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::cutoff()
 {
-  //  static const double Sin2Angl = SIN2ANGL_new2;
   double Sin2Angl;
   const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -263,41 +224,10 @@ void Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::cutoff()
 
 void Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::calculer_angle_limite(const double rapport, double& angle)
 {
-  //   if (rapport < 1)
-  //     angle = 23.;
-  //   else
   if (rapport < 10.)
     angle = 23. * pow(rapport, -0.4);
   else
     angle = 9.;
 
   angle *= M_PI / 180.;
-
-  //  Cerr << "angle=" << angle << finl;
 }
-
-/* PQ:07/09/05
- const Champ_Fonc& Modele_turbulence_hyd_LES_1elt_selectif_mod_VEF::calculer_energie_cinetique_turb(const DoubleTab& F2)
- {
- //  static const double Csms2 = 1.8764;  // si CSMS1 = 0.143
- //  static const double Csms2 = 0.676;  // si CSMS1 = 0.087 pour 64^3
- static const double Csms2 = 0.6703;  // si CSMS1 = 0.086 pour 32^3
- //  CSMS2 = 27/8*M_PI^2*CSMS1^2*C_k^3
- double temps = mon_equation->inconnue().temps();
- DoubleVect& k = energie_cinetique_turb_.valeurs();
- int nb_poly = le_dom_VEF->domaine().nb_elem();
-
- if (k.size() != nb_poly) {
- Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
- exit();
- }
-
- for (int elem=0; elem<nb_poly; elem++)
- k[elem] = Csms2*F2[elem];
-
- //Cerr << "On est passe dans Turbulence_hyd_sous_maille_1elt_selectif_VEF::calculer_energie_cinetique_turb" <<  finl;
-
- energie_cinetique_turb_.changer_temps(temps);
- return energie_cinetique_turb_;
- }
- */

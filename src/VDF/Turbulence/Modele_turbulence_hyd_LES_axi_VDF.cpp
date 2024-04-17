@@ -14,45 +14,32 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_axi_VDF.h>
-#include <Periodique.h>
 #include <Dirichlet_entree_fluide_leaves.h>
 #include <Neumann_sortie_libre.h>
-#include <Symetrie.h>
-#include <TRUSTTrav.h>
-#include <Debog.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_VDF.h>
 #include <Domaine_Cl_VDF.h>
 #include <Equation_base.h>
+#include <Domaine_VDF.h>
+#include <Periodique.h>
+#include <TRUSTTrav.h>
+#include <Symetrie.h>
+#include <Debog.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_LES_axi_VDF, "Modele_turbulence_hyd_sous_maille_axi_VDF", Modele_turbulence_hyd_LES_VDF);
 
-Sortie& Modele_turbulence_hyd_LES_axi_VDF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_axi_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_axi_VDF::readOn(Entree& s)
-{
-  return Modele_turbulence_hyd_LES_VDF::readOn(s);
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_axi_VDF
-//
-//////////////////////////////////////////////////////////////////////////////
+Entree& Modele_turbulence_hyd_LES_axi_VDF::readOn(Entree& s) { return Modele_turbulence_hyd_LES_VDF::readOn(s); }
 
 Champ_Fonc& Modele_turbulence_hyd_LES_axi_VDF::calculer_viscosite_turbulente()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   static const double Csm1 = CSM1;
   double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   int nb_poly = domaine_VDF.domaine().nb_elem();
-  int nb_poly_tot = le_dom_VDF_->domaine().nb_elem_tot();
+  int nb_poly_tot = domaine_VDF.domaine().nb_elem_tot();
   int numfa[6];
   double delta_C_axi;
   double h_x, h_y, h_z;
@@ -92,7 +79,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_axi_VDF::calculer_viscosite_turbulente()
 void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
 {
   const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   int nb_poly = domaine_VDF.domaine().nb_elem();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
@@ -212,12 +199,12 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
       // Les aretes bords sont considerees comme des faces internes
       // par modification du tableau Qdm ( dans Domaine_VDF.cpp )
 
-      const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
+      const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
       const int nb_cond_lim = domaine_Cl_VDF.nb_cond_lim();
 
       for (int i = 0; i < nb_cond_lim; i++)
         {
-          const Cond_lim_base& cl = le_dom_Cl_VDF_->les_conditions_limites(i).valeur();
+          const Cond_lim_base& cl = domaine_Cl_VDF.les_conditions_limites(i).valeur();
 
           // Cerr << "les_conditions_limites(i).valeur() : " << cl << finl;
 
@@ -303,7 +290,7 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
 
           // pour chaque Condition Limite on regarde son type
 
-          const Cond_lim& la_cl = le_dom_Cl_VDF_->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
           if (sub_type(Dirichlet_entree_fluide, la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
@@ -342,7 +329,7 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
             }
           else if (sub_type(Symetrie, la_cl.valeur()))
             {
-              ;
+              /* Do nothing */
             }
           else
             {
@@ -366,11 +353,4 @@ void Modele_turbulence_hyd_LES_axi_VDF::calculer_fonction_structure()
       Cerr << "est utilisable uniquement en dimension 3" << finl;
       exit();
     }
-}
-void Modele_turbulence_hyd_LES_axi_VDF::calculer_longueurs_caracteristiques()
-{
-  //Ne fait rien
-  //La longueur de filtre n'est pas utilisee pour calculer l'energie cinetique
-  //de sous maille pour ce type de modele et n est pas utilisee non plus pour
-  //calculer la viscosite turbulente
 }

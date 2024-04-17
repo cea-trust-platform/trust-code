@@ -17,12 +17,7 @@
 #define Modele_turbulence_hyd_Longueur_Melange_base_included
 
 #include <Modele_turbulence_hyd_0_eq_base.h>
-#include <TRUST_Ref.h>
 
-class Domaine_Cl_dis_base;
-class Domaine_Cl_dis;
-class Domaine_dis;
-class Domaine_VF;
 
 /*! @brief Classe Modele_turbulence_hyd_Longueur_Melange_base Classe representant le modele de turbulence Longueur Melange pour les
  *
@@ -35,12 +30,9 @@ class Modele_turbulence_hyd_Longueur_Melange_base: public Modele_turbulence_hyd_
   Declare_base(Modele_turbulence_hyd_Longueur_Melange_base);
 public:
   void calculer_energie_cinetique_turb() override;
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
 
 protected:
   DoubleVect Sij2_;
-  REF(Domaine_VF) le_dom_VF_;
-  REF(Domaine_Cl_dis_base) le_dom_Cl_;
 };
 
 #endif /* Modele_turbulence_hyd_Longueur_Melange_base_included */

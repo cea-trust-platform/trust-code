@@ -20,21 +20,14 @@
 
 class Modele_turbulence_hyd_LES_1elt_VEF: public Modele_turbulence_hyd_LES_VEF_base
 {
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_1elt_VEF);
-
-public:
-
-  Modele_turbulence_hyd_LES_1elt_VEF();
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_1elt_VEF);
 protected:
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_fonction_structure();
   void calculer_delta_c(DoubleTab&);
 
   DoubleVect F2_;
-  double Csm1_, Csm2_;
-
+  double Csm1_ = CSM1, Csm2_ = CSM2;
 };
 
 #endif /* Modele_turbulence_hyd_LES_1elt_VEF_included */

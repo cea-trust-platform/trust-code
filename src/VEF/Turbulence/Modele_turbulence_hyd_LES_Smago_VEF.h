@@ -22,26 +22,19 @@
  *
  *  maille smagorinsky en VEF
  *
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_base
  *
  */
 class Modele_turbulence_hyd_LES_Smago_VEF: public Modele_turbulence_hyd_LES_VEF_base
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Smago_VEF);
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_Smago_VEF);
 public:
-
-  Modele_turbulence_hyd_LES_Smago_VEF();
   void set_param(Param& param) override;
 
 protected:
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_S_barre();
 
-  double cs_;
+  double cs_ = 0.18;
   DoubleVect SMA_barre_;
 };
 

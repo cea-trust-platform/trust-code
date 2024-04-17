@@ -14,11 +14,12 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Fst_VEF.h>
+#include <Schema_Temps_base.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 #include <TRUSTTrav.h>
 #include <Debog.h>
-#include <Schema_Temps_base.h>
-#include <Domaine_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Fst_VEF, "Modele_turbulence_hyd_sous_maille_fst_VEF", Modele_turbulence_hyd_LES_VEF_base);
 
@@ -27,27 +28,13 @@ Modele_turbulence_hyd_LES_Fst_VEF::Modele_turbulence_hyd_LES_Fst_VEF()
   C1_ = 0.777 * 0.18247 * 0.18247;
 }
 
-Sortie& Modele_turbulence_hyd_LES_Fst_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_Fst_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_Fst_VEF::readOn(Entree& is)
-{
-  return Modele_turbulence_hyd_LES_VEF_base::readOn(is);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_Fst_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
+Entree& Modele_turbulence_hyd_LES_Fst_VEF::readOn(Entree& is) { return Modele_turbulence_hyd_LES_VEF_base::readOn(is); }
 
 Champ_Fonc& Modele_turbulence_hyd_LES_Fst_VEF::calculer_viscosite_turbulente()
 {
-  //  static double C1 = 0.02587;
-  //  static double C1 =0.777*0.18247*0.18247; // PQ:07/09/05 affectation de C1 dans le Readon
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
@@ -74,35 +61,11 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Fst_VEF::calculer_viscosite_turbulente()
   return la_viscosite_turbulente_;
 }
 
-// PQ : 17/08/06 : on garde cette methode en commentaire au cas ou ...
-//
-//const Champ_Fonc& Modele_turbulence_hyd_LES_Fst_VEF::calculer_energie_cinetique_turb()
-//{
-//  static double C2 = 0.777*0.777*0.18247*0.18247*9.56;
-////  double C2 = cs*cs*9.56;
-//  double temps = mon_equation->inconnue().temps();
-//  DoubleVect& k = energie_cinetique_turb_.valeurs();
-//  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-//  const int nb_elem = domaine_VEF.nb_elem();
-//
-//  if (k.size() != nb_elem)
-//    {
-//      Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
-//      exit();
-//    }
-//
-//  for (int elem=0 ; elem<nb_elem; elem++)
-//    k(elem)=C2*C2*l(elem)*l(elem)*Racine[elem];
-//
-//  energie_cinetique_turb_.changer_temps(temps);
-//  return energie_cinetique_turb_;
-//}
-
 void Modele_turbulence_hyd_LES_Fst_VEF::calculer_racine()
 {
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const DoubleVect& vol = domaine_VEF.volumes();

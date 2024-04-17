@@ -17,16 +17,11 @@
 #define Modele_turbulence_hyd_LES_SMAGO_DYN_VDF_included
 
 #include <Modele_turbulence_hyd_LES_Smago_VDF.h>
-#include <TRUSTTab.h>
 
 class Modele_turbulence_hyd_LES_SMAGO_DYN_VDF: public Modele_turbulence_hyd_LES_Smago_VDF
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_SMAGO_DYN_VDF);
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_SMAGO_DYN_VDF);
 public:
-
-  Modele_turbulence_hyd_LES_SMAGO_DYN_VDF();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis) override;
@@ -40,20 +35,14 @@ public:
   static void calculer_Sij_vel_filt(const DoubleTab&, DoubleTab&, const Domaine_VDF&);
   static void calculer_S_norme(const DoubleTab&, DoubleVect&, int);
   static void interpole(const IntVect&, const DoubleVect&, const DoubleVect&, double&);
-
-  /////////////////////////////////////////////////////
 protected:
-
   Champ_Fonc coeff_field_;
   Motcle methode_stabilise_;
-  // variable qui vaut 6_points ou plans_parallele suivant
-  // la methode choisie pour stabiliser la constante dynamique
-  int N_c_;
+  int N_c_ = -123;
   IntVect compt_c_;
   IntVect corresp_c_;
   IntTab elem_elem_;
   DoubleTab cell_cent_vel_;
-  //         DoubleTab haut_moy,bas_moy;
 
   void calculer_filter_tensor(DoubleTab&);
   void calculer_Lij(const DoubleTab&, const DoubleTab&, DoubleTab&);
@@ -72,7 +61,6 @@ protected:
   void calcul_voisins(const int, IntVect&, DoubleVect&);
   void calc_elem_elem();
   void calcul_tableaux_correspondance(int&, IntVect&, IntVect&);
-
 };
 
 #endif /* Modele_turbulence_hyd_LES_SMAGO_DYN_VDF_included */

@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Fst_sel_VEF.h>
-#include <math.h>
 #include <VEF_discretisation.h>
-#include <Champ_P1NC.h>
 #include <Domaine_VEF.h>
+#include <Champ_P1NC.h>
+#include <math.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Fst_sel_VEF, "Modele_turbulence_hyd_sous_maille_fst_selectif_VEF", Modele_turbulence_hyd_LES_Fst_VEF);
 
@@ -35,14 +35,6 @@ Entree& Modele_turbulence_hyd_LES_Fst_sel_VEF::readOn(Entree& s)
 {
   return Modele_turbulence_hyd_LES_Fst_VEF::readOn(s);
 }
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions de la classe
-//
-//           Modele_turbulence_hyd_LES_Fst_sel_VEF
-//
-/////////////////////////////////////////////////////////////////////////////////////
 
 void Modele_turbulence_hyd_LES_Fst_sel_VEF::discretiser()
 {
@@ -105,10 +97,9 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::calculer_racine()
 
 void Modele_turbulence_hyd_LES_Fst_sel_VEF::cutoff()
 {
-  //  static const double Sin2Angl = SIN2ANGL_new2;
   double Sin2Angl;
   const Champ_P1NC& vitesse = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -185,8 +176,8 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::cutoff()
             vorti_moyen(k) += dist[elem] * vorticite(elem_nn[elem], k) / d;
         }
 
+      // On rend nul le vecteur vorti_moyen(k) ce qui provoquera la mise a zero de FS
       if (nb_elem_nn == -1)  // Cas d'un element coin ; on met FS a zero
-        // On rend nul le vecteur vorti_moyen(k) ce qui provoquera la mise a zero de FS
         {
           for (int k = 0; k < 3; k++)
             vorti_moyen(k) = 0;
@@ -220,32 +211,3 @@ void Modele_turbulence_hyd_LES_Fst_sel_VEF::cutoff()
 
     }
 }
-
-/* PQ:07/09/05
- Champ_Fonc& Modele_turbulence_hyd_LES_Fst_sel_VEF::calculer_energie_cinetique_turb(const DoubleTab& F2)
- {
- //  //  static const double Csms2 = 1.8764;  // si CSMS1 = 0.143
- //   //  static const double Csms2 = 0.676;  // si CSMS1 = 0.087 pour 64^3
- //     static const double Csms2 = 0.6703;  // si CSMS1 = 0.086 pour 32^3
- //   //  CSMS2 = 27/8*M_PI^2*CSMS1^2*C_k^3
- //   double temps = mon_equation->inconnue().temps();
- //   DoubleVect& k = energie_cinetique_turb_.valeurs();
- //   int nb_poly = le_dom_VEF->domaine().nb_elem();
-
- //   if (k.size() != nb_poly) {
- //     Cerr << "erreur dans la taille du DoubleVect valeurs de l'energie cinetique turbulente" << finl;
- //     exit();
- //   }
-
- //   for (int elem=0; elem<nb_poly; elem++)
- //     k[elem] = Csms2*F2[elem];
-
- //   Cerr << "On est passe dans Modele_turbulence_hyd_LES_Fst_sel_VEF::calculer_energie_cinetique_turb" <<  finl;
-
- //   energie_cinetique_turb_.changer_temps(temps);
- Cerr << "On ne doit normalement pas passer dans :" << finl;
- Cerr << "Modele_turbulence_hyd_LES_Fst_sel_VEF::calculer_energie_cinetique_turb" << finl;
- return energie_cinetique_turb_;
- }
- */
-

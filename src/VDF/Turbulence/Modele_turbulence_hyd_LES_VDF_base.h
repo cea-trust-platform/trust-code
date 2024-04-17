@@ -33,18 +33,9 @@ class Domaine_VDF;
  */
 class Modele_turbulence_hyd_LES_VDF_base: public Modele_turbulence_hyd_LES_base
 {
-
   Declare_base(Modele_turbulence_hyd_LES_VDF_base);
-
 public:
-
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void calculer_longueurs_caracteristiques() override;
-
-protected:
-
-  REF(Domaine_VDF) le_dom_VDF_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_VDF_base_included */

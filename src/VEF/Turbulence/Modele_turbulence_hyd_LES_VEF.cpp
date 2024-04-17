@@ -14,36 +14,24 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_VEF.h>
-#include <Periodique.h>
-#include <Debog.h>
 #include <Schema_Temps_base.h>
+#include <Domaine_Cl_VEF.h>
 #include <Equation_base.h>
 #include <Domaine_VEF.h>
-#include <Domaine_Cl_VEF.h>
+#include <Periodique.h>
+#include <Debog.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_LES_VEF, "Modele_turbulence_hyd_sous_maille_VEF", Modele_turbulence_hyd_LES_VEF_base);
 
-Sortie& Modele_turbulence_hyd_LES_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_VEF::readOn(Entree& s)
-{
-  return Modele_turbulence_hyd_LES_VEF_base::readOn(s);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
+Entree& Modele_turbulence_hyd_LES_VEF::readOn(Entree& s) { return Modele_turbulence_hyd_LES_VEF_base::readOn(s); }
 
 Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
 {
   static const double Csm1 = CSM1;
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
   double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_face = domaine_VEF.nb_faces();
@@ -113,8 +101,8 @@ Champ_Fonc& Modele_turbulence_hyd_LES_VEF::calculer_viscosite_turbulente()
 void Modele_turbulence_hyd_LES_VEF::calculer_fonction_structure()
 {
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
 
   const int nb_face = domaine_VEF.nb_faces();
   const IntTab& elem_faces = domaine_VEF.elem_faces();

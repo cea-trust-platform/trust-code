@@ -14,29 +14,18 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Smago_VEF.h>
+#include <Schema_Temps_base.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 #include <Debog.h>
-#include <Schema_Temps_base.h>
 #include <Param.h>
-#include <Domaine_VEF.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Smago_VEF, "Modele_turbulence_hyd_sous_maille_Smago_VEF", Modele_turbulence_hyd_LES_VEF_base);
+Implemente_instanciable(Modele_turbulence_hyd_LES_Smago_VEF, "Modele_turbulence_hyd_sous_maille_Smago_VEF", Modele_turbulence_hyd_LES_VEF_base);
 
-Modele_turbulence_hyd_LES_Smago_VEF::Modele_turbulence_hyd_LES_Smago_VEF()
-{
-  cs_ = 0.18;
-}
+Sortie& Modele_turbulence_hyd_LES_Smago_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Modele_turbulence_hyd_LES_Smago_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Modele_turbulence_hyd_LES_Smago_VEF::readOn(Entree& is)
-{
-  Modele_turbulence_hyd_LES_VEF_base::readOn(is);
-  return is;
-}
+Entree& Modele_turbulence_hyd_LES_Smago_VEF::readOn(Entree& is) { return Modele_turbulence_hyd_LES_VEF_base::readOn(is); }
 
 void Modele_turbulence_hyd_LES_Smago_VEF::set_param(Param& param)
 {
@@ -45,15 +34,9 @@ void Modele_turbulence_hyd_LES_Smago_VEF::set_param(Param& param)
   param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_Smago_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
-
 Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 {
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   SMA_barre_.resize(nb_elem_tot);
@@ -76,7 +59,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 
 void Modele_turbulence_hyd_LES_Smago_VEF::calculer_S_barre()
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
 
   Champ_P1NC::calcul_S_barre(la_vitesse, SMA_barre_, domaine_Cl_VEF);

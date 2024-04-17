@@ -29,14 +29,11 @@
  */
 class Modele_turbulence_hyd_LES_Fst_VEF: public Modele_turbulence_hyd_LES_VEF_base
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Fst_VEF);
-
 public:
   Modele_turbulence_hyd_LES_Fst_VEF();
 
 protected:
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_racine();
 

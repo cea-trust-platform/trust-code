@@ -18,29 +18,21 @@
 
 #include <Modele_turbulence_hyd_LES_VDF.h>
 
-#define SIN2ANGL 11697778e-8
-
 /*! @brief classe Modele_turbulence_hyd_LES_selectif_VDF Cette classe correspond a la mise en oeuvre du modele sous
  *
  *  maille fonction de structure selectif en VDF
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_VDF
  *
  */
 class Modele_turbulence_hyd_LES_selectif_VDF: public Modele_turbulence_hyd_LES_VDF
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_selectif_VDF);
-
 public:
-
   Modele_turbulence_hyd_LES_selectif_VDF();
   void calculer_fonction_structure() override;
   int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void discretiser() override;
 
 protected:
-
   Champ_Fonc la_vorticite_;
   void cutoff();
 };

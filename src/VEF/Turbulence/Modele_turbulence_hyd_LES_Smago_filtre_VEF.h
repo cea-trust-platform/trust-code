@@ -21,9 +21,7 @@
 class Modele_turbulence_hyd_LES_Smago_filtre_VEF: public Modele_turbulence_hyd_LES_Smago_VEF
 {
   Declare_instanciable(Modele_turbulence_hyd_LES_Smago_filtre_VEF);
-
 protected:
-
   void calculer_S_barre() override;
 };
 

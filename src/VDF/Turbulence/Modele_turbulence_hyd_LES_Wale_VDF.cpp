@@ -14,31 +14,24 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Wale_VDF.h>
-#include <Champ_Face_VDF.h>
-#include <TRUSTTrav.h>
 #include <Schema_Temps_base.h>
-#include <Param.h>
+#include <Champ_Face_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Equation_base.h>
 #include <Domaine_VDF.h>
+#include <TRUSTTrav.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VDF, "Modele_turbulence_hyd_sous_maille_Wale_VDF", Modele_turbulence_hyd_LES_VDF_base);
 
 Modele_turbulence_hyd_LES_Wale_VDF::Modele_turbulence_hyd_LES_Wale_VDF()
 {
   declare_support_masse_volumique(1);
-  cw_ = 0.5;
 }
 
-Sortie& Modele_turbulence_hyd_LES_Wale_VDF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_Wale_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_Wale_VDF::readOn(Entree& is)
-{
-  Modele_turbulence_hyd_LES_VDF_base::readOn(is);
-  return is;
-}
+Entree& Modele_turbulence_hyd_LES_Wale_VDF::readOn(Entree& is) { return Modele_turbulence_hyd_LES_VDF_base::readOn(is); }
 
 void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
 {
@@ -47,25 +40,17 @@ void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale_VDF model constant must be positive.");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_Wale_VDF
-//
-//////////////////////////////////////////////////////////////////////////////
-
 Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
-  double temps = mon_equation_->inconnue().temps();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
+  const double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+
   if (est_egal(cw_, 0., 1.e-15))
-    {
-      visco_turb = 0.;
-    }
+    visco_turb = 0.;
   else
     {
-      int nb_elem = domaine_VDF.domaine().nb_elem();
-      const int nb_elem_tot = domaine_VDF.nb_elem_tot();
+      const int nb_elem = domaine_VDF.domaine().nb_elem(), nb_elem_tot = domaine_VDF.nb_elem_tot();
 
       OP1_.resize(nb_elem_tot);  // OP1 est le premier operateur spatial du modele WALE.
       OP2_.resize(nb_elem_tot);  // OP2 est le deuxieme operateur spatial du modele WALE.
@@ -94,63 +79,47 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 
 void Modele_turbulence_hyd_LES_Wale_VDF::calculer_OP1_OP2()
 {
-
   Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
   const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
-  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF_.valeur();
-  int nb_elem = domaine_VDF.domaine().nb_elem_tot();
-  const int nb_elem_tot = domaine_VDF.nb_elem_tot();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
+  const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
+  const int nb_elem = domaine_VDF.domaine().nb_elem_tot(), nb_elem_tot = domaine_VDF.nb_elem_tot();
 
-  const IntTab& face_voisins = domaine_VDF.face_voisins();
-  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const IntTab& face_voisins = domaine_VDF.face_voisins(), &elem_faces = domaine_VDF.elem_faces();
 
-  int i, j, k, elem;
-  //IntVect element(4);
+  DoubleTrav gij2(dimension, dimension), sd(dimension, dimension);
 
-  DoubleTrav gij2(dimension, dimension);
-  DoubleTrav sd(dimension, dimension);
-
-  double gkk2;
-  double sd2;
-  double Sij, Sij2;
+  double gkk2, sd2, Sij, Sij2;
 
   assert(vitesse.line_size() == 1);
   DoubleTab duidxj(nb_elem_tot, dimension, dimension, vitesse.line_size());
 
   vit.calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
-  for (elem = 0; elem < nb_elem; elem++)
+  for (int elem = 0; elem < nb_elem; elem++)
     {
-
       //Calcul du terme gij2
-      for (i = 0; i < dimension; i++)
-        for (j = 0; j < dimension; j++)
+      for (int i = 0; i < dimension; i++)
+        for (int j = 0; j < dimension; j++)
           {
             gij2(i, j) = 0;
 
-            for (k = 0; k < dimension; k++)
-              {
-                gij2(i, j) += duidxj(elem, i, k, 0) * duidxj(elem, k, j, 0);
-              }
+            for (int k = 0; k < dimension; k++)
+              gij2(i, j) += duidxj(elem, i, k, 0) * duidxj(elem, k, j, 0);
           }
 
       // Calcul du terme gkk2
       gkk2 = 0;
-      for (k = 0; k < dimension; k++)
-        {
-          gkk2 += gij2(k, k);
-        }
+      for (int k = 0; k < dimension; k++)
+        gkk2 += gij2(k, k);
 
       // Calcul de sd
-      for (i = 0; i < dimension; i++)
-        for (j = 0; j < dimension; j++)
+      for (int i = 0; i < dimension; i++)
+        for (int j = 0; j < dimension; j++)
           {
             sd(i, j) = 0.5 * (gij2(i, j) + gij2(j, i));
             if (i == j)
-              {
-                sd(i, j) -= gkk2 / 3.; // Terme derriere le tenseur de Kronecker
-              }
+              sd(i, j) -= gkk2 / 3.; // Terme derriere le tenseur de Kronecker
           }
 
       // Calcul de sd2 et Sij2
@@ -160,8 +129,8 @@ void Modele_turbulence_hyd_LES_Wale_VDF::calculer_OP1_OP2()
       int face1 = 0, face2 = 0;
       int elem1, elem2;
 
-      for (i = 0; i < dimension; i++)
-        for (j = 0; j < dimension; j++)
+      for (int i = 0; i < dimension; i++)
+        for (int j = 0; j < dimension; j++)
           {
             sd2 += sd(i, j) * sd(i, j);
             //Deplacement du calcul de sij

@@ -28,22 +28,14 @@
  */
 class Modele_turbulence_hyd_LES_DSGS_VDF: public Modele_turbulence_hyd_LES_Smago_VDF
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_DSGS_VDF);
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_DSGS_VDF);
 public:
-
-  Modele_turbulence_hyd_LES_DSGS_VDF();
   void associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis) override;
 
-  /////////////////////////////////////////////////////
-
 protected:
-
   Champ_Fonc coeff_field;
   DoubleVect model_coeff;
 
-  //  void calculer_length_scale(DoubleVect& );
   void calculer_cell_cent_vel(DoubleTab&);
   void calculer_filter_field(const DoubleTab&, DoubleTab&);
   void calculer_filter_tensor(DoubleTab&);
@@ -53,9 +45,6 @@ protected:
   void calculer_Mij(const DoubleTab&, const DoubleTab&, DoubleTab&);
   void calculer_model_coefficient(const DoubleTab&, const DoubleTab&);
   Champ_Fonc& calculer_viscosite_turbulente() override;
-
-  //  void calculer_S_barre(DoubleVect& );
-
 };
 
 #endif /* Modele_turbulence_hyd_LES_DSGS_VDF_included */

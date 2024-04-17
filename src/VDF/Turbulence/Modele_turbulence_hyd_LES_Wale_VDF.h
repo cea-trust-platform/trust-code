@@ -28,21 +28,17 @@
  */
 class Modele_turbulence_hyd_LES_Wale_VDF: public Modele_turbulence_hyd_LES_VDF_base
 {
-
   Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VDF);
-
 public:
-
   Modele_turbulence_hyd_LES_Wale_VDF();
   void set_param(Param& param) override;
 
 protected:
+  double cw_ = 0.5;
+  DoubleVect OP1_, OP2_;
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_OP1_OP2();
-
-  double cw_;
-  DoubleVect OP1_, OP2_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Wale_VDF_included */

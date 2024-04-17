@@ -14,13 +14,15 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_selectif_VDF.h>
-#include <math.h>
 #include <VDF_discretisation.h>
 #include <Champ_Face_VDF.h>
 #include <Equation_base.h>
 #include <Domaine_VDF.h>
+#include <math.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_selectif_VDF, "Modele_turbulence_hyd_sous_maille_selectif_VDF", Modele_turbulence_hyd_LES_VDF);
+
+constexpr double SIN2ANGL = 11697778e-8; // sin(20 degre)
 
 Modele_turbulence_hyd_LES_selectif_VDF::Modele_turbulence_hyd_LES_selectif_VDF()
 {
@@ -39,17 +41,8 @@ Entree& Modele_turbulence_hyd_LES_selectif_VDF::readOn(Entree& s)
   return Modele_turbulence_hyd_LES_VDF::readOn(s);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//           Implementation de fonctions de la classe
-//
-//           Modele_turbulence_hyd_LES_selectif_VDF
-//
-/////////////////////////////////////////////////////////////////////////////////////
-
 void Modele_turbulence_hyd_LES_selectif_VDF::discretiser()
 {
-  // Cerr << "Modele_turbulence_hyd_LES_selectif_VDF::discretiser()" << finl;
   Modele_turbulence_hyd_LES_base::discretiser();
   const VDF_discretisation& dis = ref_cast(VDF_discretisation, mon_equation_->discretisation());
   dis.vorticite(mon_equation_->domaine_dis(), mon_equation_->inconnue(), la_vorticite_);
@@ -103,9 +96,8 @@ void Modele_turbulence_hyd_LES_selectif_VDF::calculer_fonction_structure()
 
 void Modele_turbulence_hyd_LES_selectif_VDF::cutoff()
 {
-  static const double Sin2Angl = SIN2ANGL;
   const Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   int nb_poly = domaine_VDF.domaine().nb_elem();
@@ -219,7 +211,7 @@ void Modele_turbulence_hyd_LES_selectif_VDF::cutoff()
                  + carre(vorti_moyen(0) * vorticite(num_elem, 1) - vorti_moyen(1) * vorticite(num_elem, 0));
           prod /= (norme * norme_moyen);
 
-          if (prod <= Sin2Angl)
+          if (prod <= SIN2ANGL)
             F2_(num_elem) = 0;
         }
       else
@@ -231,4 +223,3 @@ void Modele_turbulence_hyd_LES_selectif_VDF::cutoff()
   // etait different sur un des procs !!!!
   F2_.echange_espace_virtuel();
 }
-

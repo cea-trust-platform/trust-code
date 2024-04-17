@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_VDF_base.h>
-#include <Domaine_VDF.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_base(Modele_turbulence_hyd_LES_VDF_base, "Modele_turbulence_hyd_LES_VDF_base", Modele_turbulence_hyd_LES_base);
 
@@ -30,15 +30,9 @@ Entree& Modele_turbulence_hyd_LES_VDF_base::readOn(Entree& is)
   return Modele_turbulence_hyd_LES_base::readOn(is);
 }
 
-void Modele_turbulence_hyd_LES_VDF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VDF_ = ref_cast(Domaine_VDF, domaine_dis.valeur());
-  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
-}
-
 void Modele_turbulence_hyd_LES_VDF_base::calculer_longueurs_caracteristiques()
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF_.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   int nb_elem = domaine_VDF.domaine().nb_elem();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const IntVect& orientation = domaine_VDF.orientation();

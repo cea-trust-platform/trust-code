@@ -22,27 +22,19 @@
  *
  *  maille Smagorinsky en VDF
  *
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_base
- *
  */
 class Modele_turbulence_hyd_LES_Smago_VDF: public Modele_turbulence_hyd_LES_VDF_base
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Smago_VDF);
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_Smago_VDF);
 public:
-
-  Modele_turbulence_hyd_LES_Smago_VDF();
   void set_param(Param& param) override;
 
 protected:
+  double cs_ = 0.18;
+  DoubleVect SMA_barre_;
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_S_barre();
-
-  double cs_;
-  DoubleVect SMA_barre_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Smago_VDF_included */

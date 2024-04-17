@@ -14,32 +14,24 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_Wale_VEF.h>
-#include <Champ_P1NC.h>
-#include <TRUSTTrav.h>
-#include <Debog.h>
 #include <Schema_Temps_base.h>
-#include <Param.h>
 #include <Equation_base.h>
 #include <Domaine_VEF.h>
+#include <Champ_P1NC.h>
+#include <TRUSTTrav.h>
+#include <Param.h>
+#include <Debog.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VEF, "Modele_turbulence_hyd_sous_maille_Wale_VEF", Modele_turbulence_hyd_LES_VEF_base);
 
 Modele_turbulence_hyd_LES_Wale_VEF::Modele_turbulence_hyd_LES_Wale_VEF()
 {
   declare_support_masse_volumique(1);
-  cw_ = 0.5;
 }
 
-Sortie& Modele_turbulence_hyd_LES_Wale_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_hyd_LES_Wale_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_hyd_LES_Wale_VEF::readOn(Entree& is)
-{
-  Modele_turbulence_hyd_LES_VEF_base::readOn(is);
-  return is;
-}
+Entree& Modele_turbulence_hyd_LES_Wale_VEF::readOn(Entree& is) { return Modele_turbulence_hyd_LES_VEF_base::readOn(is); }
 
 void Modele_turbulence_hyd_LES_Wale_VEF::set_param(Param& param)
 {
@@ -48,22 +40,14 @@ void Modele_turbulence_hyd_LES_Wale_VEF::set_param(Param& param)
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale model constant must be positive.");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Implementation de fonctions de la classe Modele_turbulence_hyd_LES_Wale_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
-
 Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
 {
-  // cw est la constante du modele WALE qui correspond a une correction
-  //  de la constante Cs du modele de Smagorinsky.
-  const Domaine_VEF& domaine_VEF = le_dom_VEF_.valeur();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
   const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF_.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
 
   if (visco_turb.size() != nb_elem)
     {
@@ -93,7 +77,6 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
     #pragma omp distribute parallel for private(gij2, sd)
     for (int elem = 0; elem < nb_elem; elem++)
       {
-
         // Calcul du terme gij2.
         for (int i = 0; i < dimension; i++)
           for (int j = 0; j < dimension; j++)
@@ -114,9 +97,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
             {
               sd[i][j] = 0.5 * (gij2[i][j] + gij2[j][i]);
               if (i == j)
-                {
-                  sd[i][j] -= gkk2 / 3.; // Terme derriere le tenseur de Kronecker.
-                }
+                sd[i][j] -= gkk2 / 3.; // Terme derriere le tenseur de Kronecker.
             }
 
         // Calcul de sd2 et Sij2.

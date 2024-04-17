@@ -22,21 +22,20 @@
  *
  *   maille en axi en VDF
  *
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_VDF
- *
  */
 class Modele_turbulence_hyd_LES_axi_VDF: public Modele_turbulence_hyd_LES_VDF
 {
-
   Declare_instanciable(Modele_turbulence_hyd_LES_axi_VDF);
-
 public:
-
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_fonction_structure() override;
-  //Surcharge vide de calculer_longueurs_caracteristiques()
-  void calculer_longueurs_caracteristiques() override;
+
+  void calculer_longueurs_caracteristiques() override
+  {
+    // Ne fait rien
+    // La longueur de filtre n'est pas utilisee pour calculer l'energie cinetique
+    // de sous maille pour ce type de modele et n est pas utilisee non plus pour calculer la viscosite turbulente
+  }
 };
 
 #endif /* Modele_turbulence_hyd_LES_axi_VDF_included */

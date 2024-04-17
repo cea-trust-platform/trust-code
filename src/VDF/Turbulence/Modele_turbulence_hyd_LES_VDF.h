@@ -28,36 +28,22 @@
  */
 class Modele_turbulence_hyd_LES_VDF: public Modele_turbulence_hyd_LES_VDF_base
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_VDF);
-
+  Declare_instanciable(Modele_turbulence_hyd_LES_VDF);
 public:
-
-  inline Modele_turbulence_hyd_LES_VDF();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
 protected:
+  DoubleVect F2_;
+  int nb_points_ = 6;    // nb_points=4 ou 6 selon que nous utilisons la formulation de la FST en 4 ou 6 points!!
+  int dir1_ = -123, dir2_ = -123; // direction du plan dans lequel on veut calculer la FST en 4 points
+  int dir3_ = -123; // 3eme direction!!
+  double Csm1_ = CSM1; // constante du modele (differente d'une classe fille a l'autre)
+  double Csm2_ = CSM2; // constante pour calcul de l'energie ( idem )
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   void calculer_energie_cinetique_turb() override;
   virtual void calculer_fonction_structure();
-
-  int nb_points_;    // nb_points=4 ou 6 selon que nous utilisons la formulation de la FST en 4 ou 6 points!!
-  int dir1_, dir2_; // direction du plan dans lequel on veut calculer la FST en 4 points
-  int dir3_; // 3eme direction!!
-
-  DoubleVect F2_;
-
-  double Csm1_; // constante du modele (differente d'une classe fille a l'autre)
-  double Csm2_; // constante pour calcul de l'energie ( idem )
 };
-
-inline Modele_turbulence_hyd_LES_VDF::Modele_turbulence_hyd_LES_VDF()
-{
-  nb_points_ = 6;
-  Csm1_ = CSM1;
-  Csm2_ = CSM2;
-}
 
 #endif /* Modele_turbulence_hyd_LES_VDF_included */

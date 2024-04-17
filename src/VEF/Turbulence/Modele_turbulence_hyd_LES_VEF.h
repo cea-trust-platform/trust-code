@@ -22,22 +22,15 @@
  *
  *  maille fonction de structure en VEF
  *
- *  .SECTION  voir aussi
- *  Modele_turbulence_hyd_LES_base
- *
  */
 class Modele_turbulence_hyd_LES_VEF: public Modele_turbulence_hyd_LES_VEF_base
 {
-
   Declare_instanciable(Modele_turbulence_hyd_LES_VEF);
-
 protected:
+  DoubleVect F2_, r_;
 
   Champ_Fonc& calculer_viscosite_turbulente() override;
   virtual void calculer_fonction_structure();
-
-  DoubleVect F2_;
-  DoubleVect r_;
 };
 
 #endif /* Modele_turbulence_hyd_LES_VEF_included */
