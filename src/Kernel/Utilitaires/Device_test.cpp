@@ -50,6 +50,19 @@ void self_test()
         assert(a.get_data_location() == DataLocation::HostDevice);
       }
 
+      {
+        DoubleTab a(10);
+        a = 23;
+        assert(a.get_data_location() == DataLocation::HostOnly);
+        {
+          DoubleTab b;
+          b.ref(a);
+          mapToDevice(b);
+          assert(b.get_data_location() == DataLocation::HostDevice);
+          assert(a.get_data_location() == DataLocation::HostDevice);
+        }
+      }
+
       int N = 10;
       // Teste les methodes d'acces sur le device:
       DoubleTab inco(N);
@@ -374,6 +387,21 @@ void self_test()
         }
         */
       if (Process::me()==0) std::cerr << ptr_host << std::endl;
+
+      {
+        DoubleTrav b(100);
+        b = 123;
+        mapToDevice(b);
+        DoubleVect b2(b);
+        assert(b2.get_mem_storage() == STORAGE::TEMP_STORAGE);
+        assert(b2.get_data_location() == DataLocation::Device);
+
+        DoubleVect b3(b2);
+        assert(b3.get_mem_storage() == STORAGE::TEMP_STORAGE);
+        assert(b3.get_data_location() == DataLocation::Device);
+      }
+
+
     }
 #endif
 }
