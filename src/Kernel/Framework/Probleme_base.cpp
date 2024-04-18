@@ -1651,9 +1651,17 @@ int Probleme_base::newParameter()
   int size = Champs_front_Parametriques.size();
   if (size)
     {
-      // Passe au parametre suivant:
+      // Passe au champ_front_parametrique suivant:
       for (int i=0; i<size; i++)
         index = std::max(index, Champs_front_Parametriques(i)->newParameter());
+    }
+  LIST(REF(Champ_Parametrique))& Champs_Parametriques = this->Champs_Parametriques();
+  size = Champs_Parametriques.size();
+  if (size)
+    {
+      // Passe au champ_parametrique suivant:
+      for (int i=0; i<size; i++)
+        index = std::max(index, Champs_Parametriques(i)->newParameter());
     }
   return index;
 }

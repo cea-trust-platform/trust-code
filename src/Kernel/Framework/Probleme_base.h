@@ -29,6 +29,7 @@
 #include <TRUST_Ref.h>
 #include <Milieu.h>
 #include <Champ_front_Parametrique.h>
+#include <Champ_Parametrique.h>
 
 class Loi_Fermeture_base;
 class Schema_Temps_base;
@@ -195,6 +196,8 @@ public:
   // Champs parametriques:
   const LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() const { return Champs_front_Parametriques_; }
   LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() { return Champs_front_Parametriques_; }
+  const LIST(REF(Champ_Parametrique))& Champs_Parametriques() const { return Champs_Parametriques_; }
+  LIST(REF(Champ_Parametrique))& Champs_Parametriques() { return Champs_Parametriques_; }
   void reinit(int) override;
   //
 
@@ -230,7 +233,7 @@ protected :
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
   LIST(REF(Champ_front_Parametrique)) Champs_front_Parametriques_; //Champs a mettre a jour lorsque le calcul est fini
-
+  LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs a mettre a jour lorsque le calcul est fini
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

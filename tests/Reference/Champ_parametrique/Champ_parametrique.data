@@ -1,0 +1,110 @@
+# Champ parametrique sur puissance #
+# PARALLEL OK 6 #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.
+    dt_impr 1.e-6
+    seuil_statio 1.e-10
+}
+Sous_Zone zone
+Associate zone dom
+Read zone {
+    Rectangle
+    Origine 0.004 0.004
+    Cotes   0.002 0.002
+}
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
+{
+    Fluide_incompressible {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+        lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
+        gravite Champ_Uniforme 2 0 -9.81
+    }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { quick }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+            Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 0. }
+        # sources { Puissance_thermique Champ_Fonc_MED { use_existing_domain file puissance.med domain dom field TEMPERATURE_ELEM_dom loc elem last_time } } #
+        # sources { Puissance_thermique champ_uniforme_morceaux dom 1 { defaut 0 zone 10 } } #
+        sources { Puissance_thermique champ_parametrique { probleme pb fichier puissance.txt } }
+    }
+    Post_processing
+    {
+        probes
+        {
+            temperature temperature periode 0.01 points 1 0.0045 0.0045
+        }
+        format lata
+        fields dt_post 0.1
+        {
+            vitesse elem
+            temperature elem
+        }
+    }
+}
+Solve pb
+
