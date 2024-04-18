@@ -109,26 +109,22 @@ public:
    *
    * It is forbidden to deep copy a ref_data.
    */
-  TRUSTArray(const TRUSTArray& A) : Array_base(), storage_type_(STORAGE::STANDARD)
+  TRUSTArray(const TRUSTArray& A) :
+    Array_base(), storage_type_(A.storage_type_)
   {
     assert(A.mem_ != nullptr || A.span_.empty());
     const int size = A.size_array();
     if (size > 0)
       {
-        // We deep copy *only* the data span of A, not the full underlying A.mem_:
-        if (A.isDataOnDevice())
-          // Just allocate (no init.)
-          mem_ = std::make_shared<Vector_>(Vector_(A.span_.size()));
-        else
-          // Allocate and copy:
-          mem_ = std::make_shared<Vector_>(Vector_(A.span_.begin(), A.span_.end()));
-        span_ = Span_(*mem_);
+        // storage_type_ must be set properly before invoking this! So that Trav mechanism works:
+        resize_array_(size, RESIZE_OPTIONS::NOCOPY_NOINIT);
+
         data_location_ = std::make_shared<DataLocation>(A.get_data_location());
-        if (A.isDataOnDevice())
-          {
+        if (get_data_location() != DataLocation::HostOnly)   // Only allocate on device what has been at least once on device
+          // Not a Trav already allocated on device (avoid double alloc on device for Trav)
+          if(!(storage_type_ == STORAGE::TEMP_STORAGE && isAllocatedOnDevice(mem_->data())))
             allocateOnDevice(*this);
-            inject_array(A);
-          }
+        inject_array(A);
       }
   }
 
