@@ -90,24 +90,15 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
 
       // First allocation - memory space should really be malloc'd:
       if(storage_type_ == STORAGE::TEMP_STORAGE)
-        {
-          mem_ = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_size);
-          // Don't forget to init! GetFreeBlock doesn't do it ...
-          if(opt == RESIZE_OPTIONS::COPY_INIT)
-            std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
-          // TODO - should be in TRUSTTravPool logic:
-          if (get_data_location() != DataLocation::HostOnly && !isAllocatedOnDevice(*this))
-            allocateOnDevice(*this);
-        }
+        mem_ = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_size);
       else
-        {
-          mem_ = std::make_shared<Vector_>(Vector_(new_size));
-          // Initialize to 0 if needed:
-          if (!isDataOnDevice() && opt == RESIZE_OPTIONS::COPY_INIT)
-            std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
-          // Allocate on GPU if needed:
-          if (get_data_location() != DataLocation::HostOnly) allocateOnDevice(*this);
-        }
+        mem_ = std::make_shared<Vector_>(Vector_(new_size));
+
+      if(opt == RESIZE_OPTIONS::COPY_INIT)
+        std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
+
+      // We should never have to worry about device allocation here:
+      assert(get_data_location() == DataLocation::HostOnly);
       span_ = Span_(*mem_);
       data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
     }
@@ -138,32 +129,39 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               else  // Real size increase of the underlying std::vector
                 {
                   // No Trav resize (from non null size!) on GPU for now:
-                  assert(storage_type_ != STORAGE::TEMP_STORAGE || get_data_location() == DataLocation::HostOnly);
+                  assert(get_data_location() == DataLocation::HostOnly);
 
-                  // ResizeBlock in its current impl. does also the zeroing:
+                  // ResizeBlock
                   mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
                   span_ = Span_(*mem_);
+                  if (opt == RESIZE_OPTIONS::COPY_INIT)
+                    std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
                 }
             }
           else  // Normal (non Trav) arrays
             {
               _TYPE_ * prev_ad = span_.data(); // before resize!
+              Span_ prev_span = span_;
               mem_->resize(new_size);
               span_ = Span_(*mem_);
-              // Possibly set to 0 extended part, since we have a custom Vector not doing it by default (TVAlloc):
+              // Possibly set to 0 extended part, since we have a custom Vector allocator not doing it by default (TVAlloc):
               if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT && get_data_location() == DataLocation::HostOnly)
                 std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
-              if(get_data_location() != DataLocation::HostOnly)
-                {
-                  // Allocate new (bigger) block on device:
-                  allocateOnDevice(*this);
-                  // Copy data (use a dummy TRUSTArray just because of inject_array API)
-                  TRUSTArray<_TYPE_> dummy_src;
-                  dummy_src.span_ = Span_(prev_ad, prev_ad+sz_arr);
-                  inject_array(dummy_src, 0, sz_arr);
-                  // Delete former block
-                  deleteOnDevice(prev_ad, sz_arr);
-                }
+              if(get_data_location() != DataLocation::HostOnly && new_size > sz_arr)
+                if (prev_ad != span_.begin())
+                  // hiiiic, when sizing up and down an array we might end up not changing the block at all!
+                  // TODO find a nicer way to spot this ... TODO device allocation should be based on real underlying block
+                  // size, not size_array() as it is now ...
+                  {
+                    // Allocate new (bigger) block on device:
+                    allocateOnDevice(*this);
+                    // Copy data (use a dummy TRUSTArray just because of inject_array API)
+                    TRUSTArray<_TYPE_> dummy_src;
+                    dummy_src.span_ = prev_span;
+                    inject_array(dummy_src, sz_arr);
+                    // Delete former block
+                    deleteOnDevice(prev_ad, sz_arr);
+                  }
             }
         }
     }
