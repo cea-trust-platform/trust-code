@@ -27,6 +27,7 @@
 class TestTRUSTArray
 {
 public:
+
   void test_ctor();
   void test_resize();
   void test_ref_arr();
@@ -200,14 +201,26 @@ void TestTRUSTArray::test_trav()
 //    for (int i=0; i < 3000; i++)
 //       a2.append_array(1);
   }
+  {  // A normal tab might become a Trav via ref():
+    DoubleTrav a(10);
+    DoubleVect b;
+    assert(b.get_mem_storage() == STORAGE::STANDARD);
+    b.ref(a);
+    assert(b.get_mem_storage() == STORAGE::TEMP_STORAGE);
+  }
+  
 }
 
 
 /*! Not great, we just rely on 'assert' for now ... one day Google Test or something
  * similar ...
  */
-int main()
+int main(int argc, char ** argv)
 {
+#ifdef _OPENMP
+  Kokkos::initialize(argc, argv);
+#endif
+
   TestTRUSTArray tta;
 
   tta.test_ctor();
@@ -215,6 +228,10 @@ int main()
   tta.test_ref_arr();
   tta.test_ref_data();
   tta.test_trav();
+
+#ifdef _OPENMP
+  Kokkos::finalize();
+#endif
 
   return 0;
 }
