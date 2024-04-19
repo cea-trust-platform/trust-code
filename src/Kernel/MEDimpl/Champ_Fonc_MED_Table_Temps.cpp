@@ -107,7 +107,7 @@ void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName,
       Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
       Process::exit(-1);
     }
-  size = field->getNumberOfTuplesExpected();
+  size = (int)field->getNumberOfTuplesExpected();
   nbcomp = (int) field->getNumberOfComponents();
 
   if (field_type == MEDCoupling::ON_NODES)

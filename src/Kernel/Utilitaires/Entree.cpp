@@ -118,7 +118,7 @@ Entree& Entree::operator=(Entree& is)
  *    En ascii, on lit la chaine jusqu'au prochain separateur (espace, tab, fin ligne)
  *
  */
-int Entree::get(char* ob, int bufsize)
+int Entree::get(char* ob, std::streamsize bufsize)
 {
   assert(istream_!=0);
   assert(bufsize > 0);
@@ -127,7 +127,7 @@ int Entree::get(char* ob, int bufsize)
     {
       // En binaire, on lit jusqu'au prochain caractere 0
       // (y compris espaces, retours a la ligne etc)
-      int i;
+      std::streamsize i;
       for (i = 0; i < bufsize-1; i++)
         {
           (*istream_).read(ob+i, sizeof(char));
@@ -171,15 +171,14 @@ void error_convert(const char * s, const char * type)
 /*! @brief methode de conversion
  *
  */
-void convert_to(const char *s, int& ob)
+void convert_to(const char *s, True_int& ob)
 {
   errno = 0;
   char * errorptr = 0;
-  ob = (int)strtol(s, &errorptr, 0 /* base 10 par defaut */);
+  ob = (True_int)strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0) error_convert(s,"int");
 }
 
-#ifndef INT_is_64_
 void convert_to(const char *s, long& ob)
 {
   errno = 0;
@@ -187,7 +186,6 @@ void convert_to(const char *s, long& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)  error_convert(s,"long");
 }
-#endif
 
 void convert_to(const char *s, long long& ob)
 {
@@ -235,18 +233,16 @@ void convert_to(const char *s, double& ob)
 Entree& Entree::operator>>(double& ob) { return operator_template<double>(ob); }
 
 // methode virtuelle pour lire un tableau d'ints ou reels (le tableau doit avoir la bonne dimension: attention pas de verification possible)
-int Entree::get(double * ob, int n) { return get_template<double>(ob,n); }
+int Entree::get(double * ob, std::streamsize n) { return get_template<double>(ob,n); }
 
-Entree& Entree::operator>>(int& ob) { return operator_template<int>(ob); }
-int Entree::get(int * ob, int n) { return get_template<int>(ob,n); }
+Entree& Entree::operator>>(True_int& ob) { return operator_template<True_int>(ob); }
+int Entree::get(True_int * ob, std::streamsize n) { return get_template<True_int>(ob,n); }
 
 Entree& Entree::operator>>(float& ob) { return operator_template<float>(ob); }
-int Entree::get(float * ob, int n) { return get_template<float>(ob,n); }
+int Entree::get(float * ob, std::streamsize n) { return get_template<float>(ob,n); }
 
-#ifndef INT_is_64_
 Entree& Entree::operator>>(long& ob) { return operator_template<long>(ob); }
-int Entree::get(long * ob, int n) { return get_template<long>(ob,n); }
-#endif
+int Entree::get(long * ob, std::streamsize n) { return get_template<long>(ob,n); }
 
 Entree& Entree::operator >>(Objet_U& ob) { return ob.readOn(*this); }
 

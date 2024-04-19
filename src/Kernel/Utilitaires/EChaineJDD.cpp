@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ void EChaineJDD::init(const char *str)
   set_istream(istrstream_);
 }
 
-Entree& EChaineJDD::operator>>(int& ob) { return operator_template<int>(ob); }
+Entree& EChaineJDD::operator>>(True_int& ob) { return operator_template<True_int>(ob); }
 Entree& EChaineJDD::operator>>(double& ob) { return operator_template<double>(ob); }
 
-int EChaineJDD::get(char *ob, int bufsize)
+int EChaineJDD::get(char *ob, std::streamsize bufsize)
 {
   if(track_lines_)
     {

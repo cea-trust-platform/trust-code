@@ -585,7 +585,7 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
       Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
       Process::exit(-1);
     }
-  size = field->getNumberOfTuplesExpected();
+  size = (int)field->getNumberOfTuplesExpected();
   nbcomp = (int) field->getNumberOfComponents();
 
 //  nbcomp = (int)MEDCoupling::GetComponentsNamesOfField(fileName,fieldName).size();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ public:
   Entree& operator>>(const TRUST_Ref_Objet_U& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
   virtual Entree& operator>>(int& ob);
-#ifndef INT_is_64_
+#if !defined(INT_is_64_) || (INT_is_64_ == 2)
   virtual Entree& operator>>(long& ob);
 #endif
   virtual Entree& operator>>(float& ob);
@@ -73,14 +73,14 @@ public:
   // final
   virtual Entree& operator>>(Objet_U& ob) final;
 
-  virtual int get(int *ob, int n);
-#ifndef INT_is_64_
-  virtual int get(long *ob, int n);
+  virtual int get(int *ob, std::streamsize n);
+#if !defined(INT_is_64_) || (INT_is_64_ == 2)
+  virtual int get(long *ob, std::streamsize n);
 #endif
-  virtual int get(float *ob, int n);
-  virtual int get(double *ob, int n);
+  virtual int get(float *ob, std::streamsize n);
+  virtual int get(double *ob, std::streamsize n);
 
-  virtual int get(char *buf, int bufsize);
+  virtual int get(char *buf, std::streamsize bufsize);
 
   virtual int eof();
   virtual int jumpOfLines();
@@ -121,7 +121,7 @@ private:
   istream *istream_;
 
   template <typename _TYPE_>
-  int get_template(_TYPE_ *ob, int n);
+  int get_template(_TYPE_ *ob, std::streamsize n);
 
   template <typename _TYPE_>
   Entree& operator_template(_TYPE_& ob);
@@ -130,14 +130,14 @@ private:
 int is_a_binary_file(Nom&);
 
 void convert_to(const char *s, int& ob);
-#ifndef INT_is_64_
+#if !defined(INT_is_64_) || (INT_is_64_ == 2)
 void convert_to(const char *s, long& ob);
 #endif
 void convert_to(const char *s, float& ob);
 void convert_to(const char *s, double& ob);
 
 template<typename _TYPE_>
-int Entree::get_template(_TYPE_ *ob, int n)
+int Entree::get_template(_TYPE_ *ob, std::streamsize n)
 {
   static constexpr bool IS_INT = std::is_same<_TYPE_,int>::value;
 
@@ -155,8 +155,6 @@ int Entree::get_template(_TYPE_ *ob, int n)
           // En binaire: lecture optimisee en bloc:
           std::streamsize sz = sizeof(_TYPE_);
           sz *= n;
-          // Overflow checking :
-          assert(sz / (std::streamsize )sizeof(_TYPE_) == (std::streamsize )n);
           istream_->read(ptr, sz);
           error_handle(istream_->fail());
         }

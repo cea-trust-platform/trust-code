@@ -245,7 +245,9 @@ MEDDoubleField build_medfield(TrioField& triofield)
         }
       int size = triofield._nodes_per_elem;
       while (conn[size - 1] == -1) size--; //on enleve les -1 a la fin de la connectivite
+#if !defined(INT_is_64_) || INT_is_64_ == 1
       mesh->insertNextCell(elemtype,size,conn);
+#endif
     }
   delete [] conn;
   mesh->finishInsertingCells();

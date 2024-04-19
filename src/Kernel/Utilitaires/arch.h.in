@@ -73,6 +73,7 @@ double atanh(const double&);
 typedef int entier;
 typedef int integer;
 typedef int True_int;
+typedef unsigned int True_uint;  // Rarely used but still
 
 extern char* pwd();
 

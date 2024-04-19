@@ -49,25 +49,23 @@ Entree& Entree_complete::get_input()
   return *entree2_;
 }
 
-int Entree_complete::get(char* ob, int bufsize)
+int Entree_complete::get(char* ob, std::streamsize bufsize)
 {
   Entree& is = get_input();
   return is.get(ob, bufsize);
 }
 
-Entree& Entree_complete::operator>>(int& ob) { return operator_template<int>(ob); }
-int Entree_complete::get(int * ob, int n) { return get_template<int>(ob,n); }
+Entree& Entree_complete::operator>>(True_int& ob) { return operator_template<True_int>(ob); }
+int Entree_complete::get(True_int * ob, std::streamsize n) { return get_template<True_int>(ob,n); }
 
-#ifndef INT_is_64_
 Entree& Entree_complete::operator>>(long& ob) { return operator_template<long>(ob); }
-int Entree_complete::get(long * ob, int n) { return get_template<long>(ob,n); }
-#endif
+int Entree_complete::get(long * ob, std::streamsize n) { return get_template<long>(ob,n); }
 
 Entree& Entree_complete::operator>>(float& ob) { return operator_template<float>(ob); }
-int Entree_complete::get(float * ob, int n) { return get_template<float>(ob,n); }
+int Entree_complete::get(float * ob, std::streamsize n) { return get_template<float>(ob,n); }
 
 Entree& Entree_complete::operator>>(double& ob) { return operator_template<double>(ob); }
-int Entree_complete::get(double * ob, int n) { return get_template<double>(ob,n); }
+int Entree_complete::get(double * ob, std::streamsize n) { return get_template<double>(ob,n); }
 
 int Entree_complete::eof()
 {

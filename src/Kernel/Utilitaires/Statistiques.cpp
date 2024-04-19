@@ -1404,7 +1404,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
                   if(avg_communication_of_type_j)
                     {
-#ifdef INT_is_64_
+#if INT_is_64_ == 1  // Only when replacing all 'int' by 'long'
                       snprintf(desc, BUFLEN + 100, "%10s %-25s %.2e s (%2li%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);
 #else
                       snprintf(desc, BUFLEN + 100, "%10s %-25s %.2e s (%2i%%)\n", "\tdont", si.description[counter_id], avg_communication_of_type_j,avg_communication_type_pourcentage);

@@ -90,21 +90,18 @@ int Sortie::add_col(const char * ob)
   return ostream_->good();
 }
 
-int Sortie::put(const unsigned * ob, int n, int nb_col) { return put_template<unsigned>(ob,n,nb_col); }
-int Sortie::put(const int * ob, int n, int nb_col) { return put_template<int>(ob,n,nb_col); }
-int Sortie::put(const float * ob, int n, int nb_col) { return put_template<float>(ob,n,nb_col); }
-int Sortie::put(const double * ob, int n, int nb_col) { return put_template<double>(ob,n,nb_col); }
+int Sortie::put(const unsigned * ob, std::streamsize n, std::streamsize nb_col) { return put_template<unsigned>(ob,n,nb_col); }
+int Sortie::put(const True_int * ob, std::streamsize n, std::streamsize nb_col) { return put_template<True_int>(ob,n,nb_col); }
+int Sortie::put(const long * ob, std::streamsize n, std::streamsize nb_col) { return put_template<long>(ob,n,nb_col); }
+int Sortie::put(const float * ob, std::streamsize n, std::streamsize nb_col) { return put_template<float>(ob,n,nb_col); }
+int Sortie::put(const double * ob, std::streamsize n, std::streamsize nb_col) { return put_template<double>(ob,n,nb_col); }
 
-Sortie& Sortie::operator<<(const unsigned int ob) { return operator_template<unsigned int>(ob); }
-Sortie& Sortie::operator<<(const int ob) { return operator_template<int>(ob); }
+Sortie& Sortie::operator<<(const True_uint ob) { return operator_template<True_uint>(ob); }
+Sortie& Sortie::operator<<(const True_int ob) { return operator_template<True_int>(ob); }
 Sortie& Sortie::operator<<(const float ob) { return operator_template<float>(ob); }
 Sortie& Sortie::operator<<(const double ob) { return operator_template<double>(ob); }
-
-#ifndef INT_is_64_
 Sortie& Sortie::operator<<(const long ob) { return operator_template<long>(ob); }
 Sortie& Sortie::operator<<(const unsigned long ob) { return operator_template<unsigned long>(ob); }
-int Sortie::put(const long * ob, int n, int nb_col) { return put_template<long>(ob,n,nb_col); }
-#endif
 
 Sortie& Sortie::operator <<(ostream& (*f)(ostream&))
 {

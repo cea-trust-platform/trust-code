@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,20 +97,27 @@ Nom::Nom(char c)
  *
  * @param (int i) l'entier a utiliser
  */
-Nom::Nom(int i)
+Nom::Nom(True_int i)
 {
   nb_noms++;
   nom_ = "";
-  // 20 caracteres suffisent pour stocker n'importe quel entier
-
+  // 22 caracteres suffisent pour stocker n'importe quel entier
   char chaine[22];
-#ifdef INT_is_64_
-  snprintf(chaine, 22, "%ld", i);
-#else
   snprintf(chaine, 22, "%d", i);
-#endif
   operator=(chaine);
 }
+
+Nom::Nom(long i)
+{
+  nb_noms++;
+  nom_ = "";
+  // 22 caracteres suffisent pour stocker n'importe quel entier
+  char chaine[22];
+  snprintf(chaine, 22, "%ld", i);
+  operator=(chaine);
+}
+
+
 /*! @brief Construction d'un nom a partir d'une chaine de caracteres La chaine est copiee
  *
  * @param (const char* nom) la chaine de caracteres a utiliser

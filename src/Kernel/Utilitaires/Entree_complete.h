@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,20 +33,16 @@ public:
 
   using Entree::operator>>;
 
-  Entree& operator>>(int& ob) override;
-#ifndef INT_is_64_
+  Entree& operator>>(True_int& ob) override;
   Entree& operator>>(long& ob) override;
-#endif
   Entree& operator>>(float& ob) override;
   Entree& operator>>(double& ob) override;
 
-  int get(int *ob, int n) override;
-#ifndef INT_is_64_
-  int get(long *ob, int n) override;
-#endif
-  int get(float *ob, int n) override;
-  int get(double *ob, int n) override;
-  int get(char *buf, int bufsize) override;
+  int get(True_int *ob, std::streamsize n) override;
+  int get(long *ob, std::streamsize n) override;
+  int get(float *ob, std::streamsize n) override;
+  int get(double *ob, std::streamsize n) override;
+  int get(char *buf, std::streamsize bufsize) override;
 
   int eof() override;
   int fail() override;
@@ -67,17 +63,17 @@ protected:
 
 private:
   template <typename _TYPE_>
-  int get_template(_TYPE_ *ob, int n);
+  int get_template(_TYPE_ *ob, std::streamsize n);
 
   template <typename _TYPE_>
   Entree& operator_template(_TYPE_&ob);
 };
 
 template<typename _TYPE_>
-int Entree_complete::get_template(_TYPE_ *ob, int n)
+int Entree_complete::get_template(_TYPE_ *ob, std::streamsize n)
 {
   // Je fais une boucle pour permettre au tableau de valeurs d'etre a cheval sur les deux entrees:
-  for (int i = 0; i < n; i++)
+  for (std::streamsize i = 0; i < n; i++)
     {
       Entree& is = get_input();
       if (! is.get(ob+i, 1))

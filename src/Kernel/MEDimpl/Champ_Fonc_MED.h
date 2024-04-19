@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ protected:
 #endif
   Champ_Fonc vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
-  std::vector<int> filter;
+  std::vector<trustIdType> filter;
   ArrOfDouble temps_sauv_;
 
   virtual void set_param(Param& param);

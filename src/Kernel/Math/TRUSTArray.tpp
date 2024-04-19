@@ -207,7 +207,7 @@ inline void TRUSTArray<_TYPE_, _SIZE_>::append_array(_TYPE_ valeur)
 {
   this->checkDataOnHost();
   // Call the official resize, with all its checks and management of Trav:
-  const int sz = size_array();
+  const _SIZE_ sz = size_array();
   resize_array_(sz+1, RESIZE_OPTIONS::NOCOPY_NOINIT);
   operator[](sz) = valeur;
 }

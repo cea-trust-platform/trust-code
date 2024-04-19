@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,20 +40,16 @@ class Lec_Diffuse_base: public EFichier
 public:
   using Entree::operator>>;
 
-  Entree& operator>>(int& ob) override;
-#ifndef INT_is_64_
+  Entree& operator>>(True_int& ob) override;
   Entree& operator>>(long& ob) override;
-#endif
   Entree& operator>>(float& ob) override;
   Entree& operator>>(double& ob) override;
 
-  int get(int *ob, int n) override;
-#ifndef INT_is_64_
-  int get(long *ob, int n) override;
-#endif
-  int get(float *ob, int n) override;
-  int get(double *ob, int n) override;
-  int get(char *buf, int bufsize) override;
+  int get(True_int *ob, std::streamsize n) override;
+  int get(long *ob, std::streamsize n) override;
+  int get(float *ob, std::streamsize n) override;
+  int get(double *ob, std::streamsize n) override;
+  int get(char *buf, std::streamsize bufsize) override;
 
   int eof() override;
   int good() override;
@@ -72,14 +68,14 @@ protected:
 
 private:
   template <typename _TYPE_>
-  int get_template(_TYPE_ *ob, int n);
+  int get_template(_TYPE_ *ob, std::streamsize n);
 
   template <typename _TYPE_>
   Entree& operator_template(_TYPE_&ob);
 };
 
 template <typename _TYPE_>
-int Lec_Diffuse_base::get_template(_TYPE_ *ob, int n)
+int Lec_Diffuse_base::get_template(_TYPE_ *ob, std::streamsize n)
 {
   int ok = 0;
   if (Process::je_suis_maitre())
@@ -96,8 +92,9 @@ int Lec_Diffuse_base::get_template(_TYPE_ *ob, int n)
   if (diffuse_)
     {
       envoyer_broadcast(ok, 0);
+      assert(n < std::numeric_limits<True_int>::max());
       if (ok)
-        envoyer_broadcast_array(ob, n, 0);
+        envoyer_broadcast_array(ob, (True_int)n, 0);
     }
   return error_handle(!ok);
 }

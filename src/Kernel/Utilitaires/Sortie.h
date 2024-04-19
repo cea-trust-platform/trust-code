@@ -84,12 +84,10 @@ public:
 
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
-  virtual Sortie& operator<<(const int    ob);
-  virtual Sortie& operator<<(const unsigned int ob);
-#ifndef INT_is_64_
+  virtual Sortie& operator<<(const True_int    ob);
+  virtual Sortie& operator<<(const True_uint ob);
   virtual Sortie& operator<<(const long      ob);
   virtual Sortie& operator<<(const unsigned long      ob);
-#endif
   virtual Sortie& operator<<(const float     ob);
   virtual Sortie& operator<<(const double    ob);
   virtual Sortie& operator<<(const char      * ob);
@@ -99,12 +97,14 @@ public:
   virtual int add_col(const double ob);
   virtual int add_col(const char * ob);
 
-  virtual int put(const unsigned* ob, int n, int nb_colonnes=1);
-  virtual int put(const int* ob, int n, int nb_colonnes=1);
-  virtual int put(const float * ob, int n, int nb_colonnes=1);
-  virtual int put(const double* ob, int n, int nb_colonnes=1);
-#ifndef INT_is_64_
-  virtual int put(const long  * ob, int n, int nb_colonnes=1);
+  // The put methods can potentially write long stream of data (std::streamsize == ptrdiff_t == long)
+  // but in many derived classes only used after the Scatter (e.g. LecFicDiffuse) we downcast to int.
+  virtual int put(const unsigned* ob, std::streamsize n, std::streamsize nb_colonnes=1);
+  virtual int put(const int* ob, std::streamsize n, std::streamsize nb_colonnes=1);
+  virtual int put(const float * ob, std::streamsize n, std::streamsize nb_colonnes=1);
+  virtual int put(const double* ob, std::streamsize n, std::streamsize nb_colonnes=1);
+#if !defined(INT_is_64_) || (INT_is_64_ == 2)
+  virtual int put(const long  * ob, std::streamsize n, std::streamsize nb_colonnes=1);
 #endif
 
   virtual ~Sortie() {}
@@ -123,7 +123,7 @@ protected:
 
 private:
   template <typename _TYPE_>
-  int put_template(const _TYPE_* ob, int n, int nb_col);
+  int put_template(const _TYPE_* ob, std::streamsize n, std::streamsize nb_col);
 
   template <typename _TYPE_>
   Sortie& operator_template(const _TYPE_& );
@@ -138,21 +138,19 @@ private:
  *
  */
 template<typename _TYPE_>
-int Sortie::put_template(const _TYPE_ *ob, int n, int nb_col)
+int Sortie::put_template(const _TYPE_ *ob, std::streamsize n, std::streamsize nb_col)
 {
   assert(n >= 0);
   if (bin_)
     {
       std::streamsize sz = sizeof(_TYPE_);
       sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize) sizeof(_TYPE_) == (std::streamsize) n);
       ostream_->write((const char*) ob, sz);
     }
   else
     {
-      int j = nb_col;
-      for (int i = 0; i < n; i++)
+      std::streamsize j = nb_col;
+      for (std::streamsize i = 0; i < n; i++)
         {
           (*ostream_) << (ob[i]) << (' ');
           j--;

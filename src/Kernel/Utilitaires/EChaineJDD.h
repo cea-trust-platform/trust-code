@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,9 @@ public:
 
   using Entree::operator>>;
   using Entree::get;
-  Entree& operator>>(int& ob) override;
+  Entree& operator>>(True_int& ob) override;
   Entree& operator>>(double& ob) override;
-  int get(char *ob, int bufsize) override;
+  int get(char *ob, std::streamsize bufsize) override;
 
   void set_track_lines(bool b) { track_lines_ = b ;}
 
