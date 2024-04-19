@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
-XX/04/24 (TRUST) New Keywords : 'Fields_file', 'Statistics_file', 'Serial_statistics_file', 'Mobile_Probes_file', 'Int_Probes_file' and 'Int_Arrays_file'
+30/04/24 (TRUST) New Keywords : 'Fields_file', 'Statistics_file', 'Serial_statistics_file', 'Mobile_Probes_file', 'Int_Probes_file' and 'Int_Arrays_file'
                                 can now be used to define post-processing blocs in an annex datafile. See 'postpro_annex_file' test case
 12/04/24 (TRUST) Keyword      : .xyz file may be written in ASCII format with "EcritureLectureSpecial EcrFicPartage" keyword. Fields are written in "x(i) y(i) z(i) value(i)" format
 10/04/24 (TRUST) Fix          : Element-wall distance is now correctly calculated in the diffusion-operator for multi-component cases

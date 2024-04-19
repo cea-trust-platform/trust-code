@@ -403,24 +403,45 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sub_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
-  param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
+  param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P definition_champs_fichier Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read from a file.
   param.ajouter_non_std("Sondes_mobiles|Mobile_probes",(this)); // XD_ADD_P sondes Mobile probes useful for ALE, their positions will be updated in the mesh.
-  param.ajouter_non_std("Sondes_mobiles_fichier|Mobile_probes_file",(this)); // XD_ADD_P mobile_probes_file Mobile probes read in a file
+  param.ajouter_non_std("Sondes_mobiles_fichier|Mobile_probes_file",(this)); // XD_ADD_P sondes_fichier Mobile probes read in a file
   param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P entier Flag to not remove duplicated probes in .son files (1: keep duplicate probes, 0: remove duplicate probes)
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
-  param.ajouter_non_std("champs_fichier|fields_file",(this));// XD_ADD_P Fields_file  Fields read from file.
+  param.ajouter_non_std("champs_fichier|fields_file",(this));// XD_ADD_P champs_posts_fichier  Fields read from file.
   param.ajouter_non_std("Statistiques|statistics",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
-  param.ajouter_non_std("statistiques_fichier|statistics_file",(this));// XD_ADD_P Statistics_file  Statistics read from file.
+  param.ajouter_non_std("statistiques_fichier|statistics_file",(this));// XD_ADD_P stats_posts_fichier Statistics read from file.
   param.ajouter_non_std("Sondes_Int|Int_Probes",(this));
   param.ajouter_non_std("Sondes_Int_fichier|Int_probes_file",(this));
   param.ajouter_non_std("Tableaux_Int|Int_array",(this));
   param.ajouter_non_std("Tableaux_Int_fichier|Int_array_file",(this));
   param.ajouter_non_std("Statistiques_en_serie|Serial_statistics",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
-  param.ajouter_non_std("Statistiques_en_serie_fichier|Serial_statistics_file",(this));// XD_ADD_P Serial_statistics_file Serial_statistics read from a file
+  param.ajouter_non_std("Statistiques_en_serie_fichier|Serial_statistics_file",(this));// XD_ADD_P stats_serie_posts_fichier Serial_statistics read from a file
   param.ajouter("suffix_for_reset", &suffix_for_reset_); // XD_ADD_P chaine Suffix used to modify the postprocessing file name if the ICoCo resetTime() method is invoked.
 }
+
+// XD sondes_fichier objet_lecture nul 1 Keyword to read probes from a file
+// XD attr fichier chaine file 0 name of file
+// XD definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
+// XD attr fichier chaine file 0 name of file
+
+// XD champs_posts_fichier objet_lecture nul 0 Field\'s write mode.
+// XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr fichier chaine file 0 name of file
+
+// XD stats_posts_fichier objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr fichier chaine file 0 name of file
+
+// XD stats_serie_posts_fichier objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
+// XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
+// XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
+// XD   attr fichier chaine file 0 name of file
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 {
