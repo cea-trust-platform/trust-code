@@ -63,20 +63,16 @@ public:
 
   Entree& operator>>(const TRUST_Ref_Objet_U& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
-  virtual Entree& operator>>(int& ob);
-#if !defined(INT_is_64_) || (INT_is_64_ == 2)
+  virtual Entree& operator>>(True_int& ob);
   virtual Entree& operator>>(long& ob);
-#endif
   virtual Entree& operator>>(float& ob);
   virtual Entree& operator>>(double& ob);
 
   // final
   virtual Entree& operator>>(Objet_U& ob) final;
 
-  virtual int get(int *ob, std::streamsize n);
-#if !defined(INT_is_64_) || (INT_is_64_ == 2)
+  virtual int get(True_int *ob, std::streamsize n);
   virtual int get(long *ob, std::streamsize n);
-#endif
   virtual int get(float *ob, std::streamsize n);
   virtual int get(double *ob, std::streamsize n);
 
@@ -112,7 +108,7 @@ protected:
 
   virtual int error_handle_(int fail_flag);
   int bin_;
-  bool is_different_int_size_; // File with int32 (or int64) whereas version is int64 (or int32)
+  bool is_different_int_size_; // File with int32 (resp. int64) whereas binary version is int64 (resp. int32)
   int check_types_;
   Error_Action error_action_;
   int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes
@@ -129,10 +125,8 @@ private:
 
 int is_a_binary_file(Nom&);
 
-void convert_to(const char *s, int& ob);
-#if !defined(INT_is_64_) || (INT_is_64_ == 2)
+void convert_to(const char *s, True_int& ob);
 void convert_to(const char *s, long& ob);
-#endif
 void convert_to(const char *s, float& ob);
 void convert_to(const char *s, double& ob);
 
@@ -171,19 +165,27 @@ int Entree::get_template(_TYPE_ *ob, std::streamsize n)
 template <typename _TYPE_>
 Entree& Entree::operator_template(_TYPE_& ob)
 {
-  static constexpr bool IS_INT = std::is_same<_TYPE_,int>::value;
+  static constexpr bool IS_INT  = std::is_same<_TYPE_,True_int>::value,
+                        IS_LONG = std::is_same<_TYPE_,std::int64_t>::value;
 
   assert(istream_!=0);
   if (bin_)
     {
-      if (is_different_int_size_ && IS_INT)
+      // Have the current binary and the file we are trying to read the same bit-ness (not worrying about double,float,etc.) ?
+      if (is_different_int_size_ && (IS_INT || IS_LONG))
         {
-#ifdef INT_is_64_
-          True_int pr;
-          char * ptr = (char*) &pr;
-          istream_->read(ptr, sizeof(True_int));
-          ob=pr;
-#else
+          // No, then two cases:
+          // 1. binary is 64b and file is 32b -> this is always OK, just need True_int to make sure we really read a 32b value
+          // 2. binary is 32b and file is 64b -> only OK if read value is actually within the 32b range
+#ifdef INT_is_64_   // Case 1
+          if (IS_INT || IS_LONG)  // a 'if (constexpr ...)' really - just to make sure compiler doesn't see the following lines for _TYPE_=float or double,etc.
+            {
+              True_int pr;
+              char * ptr = (char*) &pr;
+              istream_->read(ptr, sizeof(True_int));
+              ob=pr;
+            }
+#else              // Case 2
           long pr;
           char *ptr = (char*) &pr;
           istream_->read(ptr, sizeof(long));
@@ -196,7 +198,7 @@ Entree& Entree::operator_template(_TYPE_& ob)
           ob = (_TYPE_)pr;
 #endif
         }
-      else
+      else  // File has the same bit-ness as binary, or we are trying to read a non-problematic type - all OK.
         {
           char *ptr = (char*) &ob;
           istream_->read(ptr, sizeof(_TYPE_));
