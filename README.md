@@ -12,7 +12,7 @@ You can visit **[TRUST website](https://cea-trust-platform.github.io/)**
 
 ```bash
 # Check out the sources for TRUST
-git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.3
+git clone git@github.com:cea-trust-platform/trust-code.git TRUST-1.9.3
 # Move to the cloned TRUST folder
 cd TRUST-1.9.3
 # Download the required external packages
@@ -42,6 +42,8 @@ type mpicxx
 ```bash
 # Download the sources for TRUST
 wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.3/TRUST-1.9.3.tar.gz
+# or:
+# curl ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.3/TRUST-1.9.3.tar.gz > TRUST-1.9.3.tar.gz
 # Unzip the downloaded folder
 tar xzf TRUST-1.9.3.tar.gz
 # Move to the unziped TRUST folder
@@ -57,7 +59,7 @@ cd TRUST-1.9.3
 
 ```bash
 # Check out the sources for TRUST
-git clone https://github.com/cea-trust-platform/trust-code.git TRUST-next
+git clone git@github.com:cea-trust-platform/trust-code.git TRUST-next
 # Move to the cloned TRUST folder
 cd TRUST-next
 # Checkout the developement TRUST branch
