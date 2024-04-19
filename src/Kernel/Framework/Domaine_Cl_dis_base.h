@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ public:
   const Cond_lim_base& condition_limite_de_la_frontiere(Nom frontiere) const;
   Cond_lim_base& condition_limite_de_la_frontiere(Nom frontiere);
   void changer_temps_futur(double temps,int i);
-  void Gpoint(double t1, double t2);
+  void calculer_derivee_en_temps(double t1, double t2);
   void set_temps_defaut(double temps);
   int avancer(double temps);
   int reculer(double temps);

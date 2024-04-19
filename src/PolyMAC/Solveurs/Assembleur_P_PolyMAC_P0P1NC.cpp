@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_instationnaire_base.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Assembleur_P_PolyMAC_P0P1NC.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>

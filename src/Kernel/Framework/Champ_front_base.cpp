@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,3 +160,34 @@ void Champ_front_base::changer_temps_futur(double temps,int i)
 {
   les_valeurs->futur(i).changer_temps(temps);
 }
+
+/*! @brief Calcule le taux d'accroissement du champ entre t1 et t2 et le stocke dans Gpoint_
+ *
+ */
+void Champ_front_base::calculer_derivee_en_temps(double t1, double t2)
+{
+  const DoubleTab& v1 = valeurs_au_temps(t1);
+  if (v1.dimension(0)==1)
+    {
+      // Champ instationnaire uniforme
+      const DoubleTab& v2 = valeurs_au_temps(t2);
+      int dim = v1.dimension(1);
+      Gpoint_.resize(dim); // ToDo necessaire ?
+      for (int i = 0; i < dim; i++)
+        Gpoint_(i) = (v2(0, i) - v1(0, i)) / (t2 - t1);
+    }
+  else
+    {
+      // Champs instationnaire variable
+      if (t2 > t1 + DMINFLOAT)
+        {
+          Gpoint_ = valeurs_au_temps(t1);
+          Gpoint_ *= -1;
+          Gpoint_ += valeurs_au_temps(t2);
+          Gpoint_ /= (t2 - t1);
+        }
+      else
+        Gpoint_ = 0;
+    }
+}
+

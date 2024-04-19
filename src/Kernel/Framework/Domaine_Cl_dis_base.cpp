@@ -17,8 +17,6 @@
 #include <Equation_base.h>
 #include <Frontiere_dis_base.h>
 #include <Schema_Temps_base.h>
-#include <Champ_front_var_instationnaire.h>
-#include <Champ_front_instationnaire_base.h>
 #include <Cond_lim_utilisateur_base.h>
 #include <Probleme_base.h>
 
@@ -390,24 +388,12 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_frontiere(Nom f
 /*! @brief Calcule le taux d'accroissement des CLs instationnaires entre t1 et t2.
  *
  */
-void Domaine_Cl_dis_base::Gpoint(double t1, double t2)
+void Domaine_Cl_dis_base::calculer_derivee_en_temps(double t1, double t2)
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
       Champ_front_base& champ=les_conditions_limites(i)->champ_front().valeur();
-
-      if (sub_type(Champ_front_var_instationnaire,champ))
-        {
-          Champ_front_var_instationnaire& champ_insta=ref_cast(Champ_front_var_instationnaire,champ);
-          champ_insta.Gpoint(t1,t2);
-        }
-
-      if (sub_type(Champ_front_instationnaire_base,champ))
-        {
-          Champ_front_instationnaire_base& champ_insta=ref_cast(Champ_front_instationnaire_base,champ);
-          champ_insta.Gpoint(t1,t2);
-        }
-
+      if (champ.instationnaire()) champ.calculer_derivee_en_temps(t1,t2);
     }
 }
 

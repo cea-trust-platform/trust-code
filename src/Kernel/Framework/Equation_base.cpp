@@ -969,7 +969,7 @@ bool Equation_base::updateGivenFields()
       domaine_Cl_dis().mettre_a_jour(tps);
     }
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
-  domaine_Cl_dis()->Gpoint(temps_present,temps_futur);
+  domaine_Cl_dis()->calculer_derivee_en_temps(temps_present,temps_futur);
 
   //MaJ des operateurs
   for (int i = 0; i < nombre_d_operateurs(); i++)

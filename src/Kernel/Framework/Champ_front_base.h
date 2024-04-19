@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -99,6 +99,9 @@ public:
   virtual void changer_temps_futur(double temps, int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
+  virtual bool instationnaire() const final { return instationnaire_; }
+  virtual inline const DoubleTab& derivee_en_temps() const { return Gpoint_; }
+  virtual void calculer_derivee_en_temps(double t1, double t2);
 
 protected:
   double temps_defaut ; // Le temps pris par defaut quand le parametre
@@ -107,6 +110,8 @@ protected:
   // solveurs.
   REF(Frontiere_dis_base) la_frontiere_dis;
   Roue_ptr les_valeurs; // Les valeurs du champ
+  bool instationnaire_ = false; // Par defaut champ stationnaire
+  DoubleTab Gpoint_; // Derivee en temps des valeurs conditions limites
 };
 
 

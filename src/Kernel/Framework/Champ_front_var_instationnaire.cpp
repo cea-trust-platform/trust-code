@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,10 +58,10 @@ int Champ_front_var_instationnaire::initialiser(double temps, const Champ_Inc_ba
 
   temps_defaut=temps;
   changer_temps_futur(temps,0);
-
+// ToDo remonter dans Champ_front
   Gpoint_=valeurs(); // pour dimensionner
   Gpoint_=0.;
-
+  instationnaire_ = true;
   return 1;
 }
 
@@ -164,21 +164,4 @@ int Champ_front_var_instationnaire::reculer(double temps)
   print(les_valeurs);
   exit();
   return 0;
-}
-
-/*! @brief Calcule le taux d'accroissement du champ entre t1 et t2 et le stocke dans Gpoint_
- *
- */
-void Champ_front_var_instationnaire::Gpoint(double t1, double t2)
-{
-  Gpoint_=valeurs_au_temps(t1);
-  if (t2>t1+DMINFLOAT)
-    {
-      Gpoint_ *= -1;
-      Gpoint_ += valeurs_au_temps(t2);
-      Gpoint_ /= (t2-t1);
-    }
-  else
-    Gpoint_=0;
-  //Gpoint_.echange_espace_virtuel(); PL inutile
 }

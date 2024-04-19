@@ -20,7 +20,6 @@
 #include <Dirichlet_homogene.h>
 #include <Dirichlet_entree_fluide_leaves.h>
 #include <Neumann_sortie_libre.h>
-#include <Champ_front_instationnaire_base.h>
 #include <Milieu_base.h>
 #include <Navier_Stokes_std.h>
 #include <TRUSTLists.h>
@@ -30,7 +29,6 @@
 #include <Champ_Fonc_P1NC.h>
 #include <SolveurPP1B.h>
 #include <Check_espace_virtuel.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Solv_Petsc.h>
 #include <Matrice_Petsc.h>
 
@@ -478,39 +476,17 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
           const int nfin = ndeb+front_VF.nb_faces();
 
           /* Test sur la nature du champ au bord du domaine */
-          if (sub_type(Entree_fluide_vitesse_imposee, cl_base))
+          if (sub_type(Entree_fluide_vitesse_imposee, cl_base) && champ_front.instationnaire())
             {
-              if (sub_type(Champ_front_instationnaire_base,champ_front))
-                {
-                  Gpoint_nul = 0;
-                  const DoubleTab& gpoint =
-                    ref_cast(Champ_front_instationnaire_base,champ_front).Gpoint();
+              Gpoint_nul = 0;
+              const DoubleTab& gpoint = champ_front.derivee_en_temps();
+              bool ch_unif = (gpoint.nb_dim()==1);
 
-                  assert(gpoint.nb_dim()==1);
-
-                  for (int num_face=ndeb; num_face<nfin; num_face++)
-                    for (int dim=0; dim<Objet_U::dimension; dim++)
-                      Gpoint(num_face,dim)=porosite_face(num_face)*gpoint(dim);
-
-                }//fin du if sur "sub_type(Champ_front_instationnaire_base)"
-
-              else if (sub_type(Champ_front_var_instationnaire,champ_front))
-                {
-                  Gpoint_nul = 0;
-                  const DoubleTab& gpoint =
-                    ref_cast(Champ_front_var_instationnaire,champ_front).Gpoint();
-
-                  assert(gpoint.nb_dim()==2);
-
-                  for (int num_face=ndeb; num_face<nfin; num_face++)
-                    for (int dim=0; dim<Objet_U::dimension; dim++)
-                      Gpoint(num_face,dim)=porosite_face(num_face)*gpoint(num_face-ndeb,dim);
-
-                }//fin du if sur "sub_type(Champ_front_var_instationnaire)"
-
-            }//fin du if sur "sub_type(Entree_fluide_vitesse_imposee)"
-
-        }//fin du for sur "cond_lim"
+              for (int num_face=ndeb; num_face<nfin; num_face++)
+                for (int dim=0; dim<Objet_U::dimension; dim++)
+                  Gpoint(num_face,dim)=porosite_face(num_face) * (ch_unif ? gpoint(dim) : gpoint(num_face-ndeb,dim));
+            }
+        }
 
       //Pour le parallele
       if (!Gpoint_nul) Gpoint.echange_espace_virtuel();
@@ -555,25 +531,19 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
       const Champ_front_base& champ_front = cl_base.champ_front().valeur();
 
       /* Test sur la nature du champ au bord du domaine */
-      if (sub_type(Entree_fluide_vitesse_imposee, cl_base))
+      if (sub_type(Entree_fluide_vitesse_imposee, cl_base)  && champ_front.instationnaire() )
         {
-          if ( sub_type(Champ_front_instationnaire_base,champ_front) ||
-               sub_type(Champ_front_var_instationnaire,champ_front)
-             )
+          // Construction de la liste des faces a traiter (reelles + virtuelles)
+          const int nb_faces_bord_tot = front_VF.nb_faces_tot();
 
+          for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
             {
-              // Construction de la liste des faces a traiter (reelles + virtuelles)
-              const int nb_faces_bord_tot = front_VF.nb_faces_tot();
+              const int num_face =  front_VF.num_face(ind_face);
+              const int elem = face_voisins(num_face,0);
+              assert(elem!=-1);
 
-              for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
-                {
-                  const int num_face =  front_VF.num_face(ind_face);
-                  const int elem = face_voisins(num_face,0);
-                  assert(elem!=-1);
-
-                  for (int dim=0; dim<Objet_U::dimension; dim++)
-                    b(elem)-=Gpoint(num_face,dim)*face_normales(num_face,dim);
-                }
+              for (int dim=0; dim<Objet_U::dimension; dim++)
+                b(elem)-=Gpoint(num_face,dim)*face_normales(num_face,dim);
             }
         }
     }
@@ -609,62 +579,54 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
       const Champ_front_base& champ_front = cl_base.champ_front().valeur();
 
       /* Test sur la nature du champ au bord du domaine */
-      if (sub_type(Entree_fluide_vitesse_imposee, cl_base))
+      if (sub_type(Entree_fluide_vitesse_imposee, cl_base)  && champ_front.instationnaire())
         {
-          if ( sub_type(Champ_front_instationnaire_base,champ_front) ||
-               sub_type(Champ_front_var_instationnaire,champ_front)
-             )
+          // Construction de la liste des faces a traiter (reelles + virtuelles)
+          const int nb_faces_bord_tot = front_VF.nb_faces_tot();
 
+          for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
             {
-              // Construction de la liste des faces a traiter (reelles + virtuelles)
-              const int nb_faces_bord_tot = front_VF.nb_faces_tot();
+              const int num_face =  front_VF.num_face(ind_face);
+              const int elem = face_voisins(num_face,0);
+              assert(elem!=-1);
 
-              for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
+              //Calcul de la vitesse au centre de l'element
+              sigma=0.;
+              for (int face_loc=0; face_loc<nb_faces_elem; face_loc++)
                 {
-                  const int num_face =  front_VF.num_face(ind_face);
-                  const int elem = face_voisins(num_face,0);
-                  assert(elem!=-1);
+                  const int face = elem_faces(elem,face_loc);
 
-                  //Calcul de la vitesse au centre de l'element
-                  sigma=0.;
-                  for (int face_loc=0; face_loc<nb_faces_elem; face_loc++)
-                    {
-                      const int face = elem_faces(elem,face_loc);
-
-                      for(int comp=0; comp<dimension; comp++)
-                        sigma[comp]+=Gpoint(face,comp);
-                    }
-
-                  //Calcul de la divergence de la vitesse
-                  for(int face_loc=0; face_loc<nb_faces_elem; face_loc++)
-                    {
-                      const int som = nb_elem_tot+domaine.get_renum_som_perio(elem_sommets(elem,face_loc));
-                      const int face = elem_faces(elem,face_loc);
-
-                      double psc=0;
-                      double signe=1.;
-                      if(elem!=face_voisins(face,0)) signe=-1.;
-
-                      for(int comp=0; comp<dimension; comp++)
-                        psc+=sigma[comp]*face_normales(face,comp);
-
-                      b(som)-=signe*psc/coeff_dim;
-                    }
-
-                  double flux = 0. ;
-                  for (int comp=0; comp<dimension; comp++)
-                    flux += Gpoint(num_face,comp) * face_normales(num_face,comp) ;
-
-                  flux*=1./dimension;
-                  for(int som_loc=0; som_loc<nb_faces_elem-1; som_loc++)
-                    {
-                      const int som=domaine.get_renum_som_perio(face_sommets(num_face,som_loc));
-                      b(nb_elem_tot+som)-=flux;
-                    }
-                  //Fin du calcul de la divergence de la vitesse
-
+                  for(int comp=0; comp<dimension; comp++)
+                    sigma[comp]+=Gpoint(face,comp);
                 }
 
+              //Calcul de la divergence de la vitesse
+              for(int face_loc=0; face_loc<nb_faces_elem; face_loc++)
+                {
+                  const int som = nb_elem_tot+domaine.get_renum_som_perio(elem_sommets(elem,face_loc));
+                  const int face = elem_faces(elem,face_loc);
+
+                  double psc=0;
+                  double signe=1.;
+                  if(elem!=face_voisins(face,0)) signe=-1.;
+
+                  for(int comp=0; comp<dimension; comp++)
+                    psc+=sigma[comp]*face_normales(face,comp);
+
+                  b(som)-=signe*psc/coeff_dim;
+                }
+
+              double flux = 0. ;
+              for (int comp=0; comp<dimension; comp++)
+                flux += Gpoint(num_face,comp) * face_normales(num_face,comp) ;
+
+              flux*=1./dimension;
+              for(int som_loc=0; som_loc<nb_faces_elem-1; som_loc++)
+                {
+                  const int som=domaine.get_renum_som_perio(face_sommets(num_face,som_loc));
+                  b(nb_elem_tot+som)-=flux;
+                }
+              //Fin du calcul de la divergence de la vitesse
             }
         }
     }

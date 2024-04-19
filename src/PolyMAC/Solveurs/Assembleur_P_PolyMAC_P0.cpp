@@ -13,8 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_instationnaire_base.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Assembleur_P_PolyMAC_P0.h>
 #include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Neumann_sortie_libre.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Dirichlet_entree_fluide_leaves.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Sortie_libre_pression_imposee.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_paroi_fixe.h>

@@ -17,7 +17,6 @@
 #ifndef Champ_front_Parametrique_included
 #define Champ_front_Parametrique_included
 
-#include <Champ_front_instationnaire_base.h>
 #include <Champ_front_Tabule.h>
 
 class Champ_front_Parametrique : public Champ_front_Tabule

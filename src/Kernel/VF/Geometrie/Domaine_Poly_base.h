@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #ifndef Domaine_Poly_base_included
 #define Domaine_Poly_base_included
 
-#include <Champ_front_var_instationnaire.h>
 #include <Domaine_Poly_tools.h>
 #include <Static_Int_Lists.h>
 #include <Elem_poly_base.h>

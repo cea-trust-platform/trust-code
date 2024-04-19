@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_instationnaire_base.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Neumann_sortie_libre.h>
 #include <Assembleur_P_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
@@ -232,6 +230,7 @@ int Assembleur_P_PolyMAC::modifier_secmem(DoubleTab& secmem)
     {
       const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(i).valeur();
       const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl_base.frontiere_dis());
+      const Champ_front_base& champ_front = la_cl_base.champ_front().valeur();
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
 
@@ -250,42 +249,19 @@ int Assembleur_P_PolyMAC::modifier_secmem(DoubleTab& secmem)
               secmem[face_voisins(num_face, 0)] += coPolyMAC;
             }
         }
-      else if (sub_type(Champ_front_instationnaire_base,
-                        la_cl_base.champ_front().valeur()) && (get_resoudre_en_u()))
+      else if (sub_type(Dirichlet, la_cl_base) && champ_front.instationnaire() && get_resoudre_en_u() )
         {
-          if (sub_type(Dirichlet, la_cl_base))
+          const DoubleTab& Gpt = champ_front.derivee_en_temps();
+          bool ch_unif = (Gpt.nb_dim() == 1);
+          for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              // Cas Dirichlet variable dans le temps
-              // N'est utile que pour des champs front. variables dans le temps
-              const Champ_front_instationnaire_base& le_ch_front = ref_cast(Champ_front_instationnaire_base, la_cl_base.champ_front().valeur());
-              const DoubleTab& Gpt = le_ch_front.Gpoint();
-
-              for (int num_face = ndeb; num_face < nfin; num_face++)
+              double Stt = 0.;
+              for (int k = 0; k < dimension; k++)
                 {
-                  //for num_face
-                  double Stt = 0.;
-                  for (int k = 0; k < dimension; k++)
-                    Stt -= Gpt(k) * le_dom.face_normales(num_face, k);
-                  secmem(face_voisins(num_face, 0)) += Stt;
+                  double Gpoint = ch_unif ? Gpt(k) : Gpt(num_face - ndeb, k);
+                  Stt -= Gpoint * le_dom.face_normales(num_face, k);
                 }
-            }
-        }
-      else if (sub_type(Champ_front_var_instationnaire,
-                        la_cl_base.champ_front().valeur()) && (get_resoudre_en_u()))
-        {
-          if (sub_type(Dirichlet, la_cl_base))
-            {
-              //cas instationaire et variable
-              const Champ_front_var_instationnaire& le_ch_front = ref_cast(Champ_front_var_instationnaire, la_cl_base.champ_front().valeur());
-              const DoubleTab& Gpt = le_ch_front.Gpoint();
-
-              for (int num_face = ndeb; num_face < nfin; num_face++)
-                {
-                  double Stt = 0.;
-                  for (int k = 0; k < dimension; k++)
-                    Stt -= Gpt(num_face - ndeb, k) * le_dom.face_normales(num_face, k);
-                  secmem(face_voisins(num_face, 0)) += Stt;
-                }
+              secmem(face_voisins(num_face, 0)) += Stt;
             }
         }
     }

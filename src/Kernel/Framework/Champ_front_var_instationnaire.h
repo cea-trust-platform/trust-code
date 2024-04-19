@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,6 @@ class Champ_front_var_instationnaire : public Champ_front_var
 public:
   void fixer_nb_valeurs_temporelles(int nb_cases) override;
   int initialiser(double temps, const Champ_Inc_base& inco) override;
-  inline DoubleTab& Gpoint();
-  inline const DoubleTab& Gpoint() const;
-  void Gpoint(double t1, double t2);
   DoubleTab& valeurs_au_temps(double temps) override;
   const DoubleTab& valeurs_au_temps(double temps) const override;
   int avancer(double temps) override;
@@ -63,18 +60,6 @@ public:
     return 0;
   };
 protected :
-  DoubleTab Gpoint_; // Taux d'accroissement du champ
-
 };
-
-inline DoubleTab& Champ_front_var_instationnaire::Gpoint()
-{
-  return Gpoint_;
-}
-
-inline const DoubleTab& Champ_front_var_instationnaire::Gpoint() const
-{
-  return Gpoint_;
-}
 
 #endif

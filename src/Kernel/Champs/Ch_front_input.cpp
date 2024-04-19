@@ -149,7 +149,7 @@ void Ch_front_input::setValue(const TrioField& afield)
 {
   for (int i=1; i<les_valeurs->nb_cases(); i++)
     Champ_Input_Proto::setValueOnTab(afield,les_valeurs[i].valeurs());
-  Gpoint(afield._time1,afield._time2);
+  calculer_derivee_en_temps(afield._time1,afield._time2);
 }
 
 int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)

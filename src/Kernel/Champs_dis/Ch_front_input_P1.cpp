@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -152,5 +152,5 @@ void Ch_front_input_P1::setValue(const TrioField& afield)
   for (int i=1; i<les_valeurs_som->nb_cases(); i++)
     Champ_Input_Proto::setValueOnTab(afield,les_valeurs_som[i].valeurs());
   //Cout<<" IIIIIIII "<<les_valeurs_som[1].valeurs()<<finl;
-  Gpoint(afield._time1,afield._time2);
+  calculer_derivee_en_temps(afield._time1,afield._time2);
 }
