@@ -1,0 +1,5 @@
+t_deb 0.
+t_fin 10.
+moyenne pression
+ecart_type pression
+correlation pression pression

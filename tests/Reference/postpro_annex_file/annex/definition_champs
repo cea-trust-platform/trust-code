@@ -1,0 +1,15 @@
+v_scal_v transformation
+{
+    methode produit_scalaire
+    sources
+    { 
+        refChamp { Pb_champ pb vitesse } ,
+        refChamp { Pb_champ pb vitesse }
+    }
+}
+
+v_scal_v_som interpolation
+{
+    localisation som
+    sources_reference { v_scal_v }
+}

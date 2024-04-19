@@ -30,7 +30,7 @@ regroupebord dom Wall { Left Right }
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool tranche { tranches 2 1 }
+    Partition_tool tranche { tranches 1 2 }
     Larg_joint 2
     zones_name DOM
 }
@@ -85,18 +85,15 @@ Lire pb
 
     Postraitement
     {
-        champs dt_post 1.e-4
-        {
-            pression som
-        }
-        champs_fichier dt_post 1.e-4 { fichier fields_def }
-        statistiques dt_post 1.e-4
-        {
-            t_deb 0.
-            t_fin 10.
-            moyenne pression
-        }
-        statistiques_fichier dt_post 1.e-4 { fichier stats_def }
+        Definition_champs_fichier                      { fichier annex/definition_champs } 
+        champs_fichier                 dt_post   1.e-4 { fichier annex/fields }
+        sondes_fichier                                 { fichier annex/probes }
+        sondes_mobiles_fichier                         { fichier annex/mobile_probes }
+        # sondes_int_fichier                             { fichier annex/int_probes } # # no int probe available #
+        # tabeaux_int_fichier                            { fichier annex/int_arrays } # # no int array available #
+        statistiques_fichier           dt_post   1.e-4 { fichier annex/stats }
+        statistiques_en_serie_fichier  dt_integr 1.    { fichier annex/serial_stats }
+        
     }
 }
 Solve pb
