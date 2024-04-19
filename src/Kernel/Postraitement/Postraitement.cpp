@@ -334,8 +334,29 @@ Entree& Postraitement::readOn(Entree& s)
   return s;
 }
 
+static const std::map<std::string, std::string> keyword_dictionnary
+{
+  {"CHAMPS" 		 		 , "FIELDS"},
+  {"STATISTIQUES"   		 , "STATISTICS"},
+  {"STATISTIQUES_EN_SERIE"   , "SERIAL_STATISTICS"},
+  {"SONDES"		 	         , "PROBES"},
+  {"SONDES_MOBILES" 		 , "MOBILE_PROBES"},
+  {"SONDES_INT" 			 , "INT_PROBES"},
+  {"TABLEAUX_INT" 		     , "INT_ARRAYS"}
+};
 
-
+static Nom translate_keyword(const Nom& french_keyword)
+{
+  bool has_file_suffix = french_keyword.finit_par("_FICHIER") || french_keyword.finit_par("_FILE");
+  Nom english_keyword = french_keyword;
+  english_keyword.prefix("_FICHIER").prefix("_FILE");
+  auto i = keyword_dictionnary.find(english_keyword.getString());
+  if (i!=keyword_dictionnary.end())
+    english_keyword = i->second;
+  if (has_file_suffix)
+    english_keyword += "_FILE";
+  return english_keyword;
+}
 
 static EChaineJDD read_and_broadcast_file(const Nom& filename)
 {
@@ -384,16 +405,20 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
+  param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read from a file.
   param.ajouter_non_std("Sondes_mobiles|Mobile_probes",(this)); // XD_ADD_P sondes Mobile probes useful for ALE, their positions will be updated in the mesh.
-  param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
+  param.ajouter_non_std("Sondes_mobiles_fichier|Mobile_probes_file",(this)); // XD_ADD_P mobile_probes_file Mobile probes read in a file
   param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P entier Flag to not remove duplicated probes in .son files (1: keep duplicate probes, 0: remove duplicate probes)
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
   param.ajouter_non_std("champs_fichier|fields_file",(this));// XD_ADD_P Fields_file  Fields read from file.
   param.ajouter_non_std("Statistiques|statistics",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
   param.ajouter_non_std("statistiques_fichier|statistics_file",(this));// XD_ADD_P Statistics_file  Statistics read from file.
-  param.ajouter_non_std("Sondes_Int",(this));
-  param.ajouter_non_std("Tableaux_Int",(this));
-  param.ajouter_non_std("Statistiques_en_serie",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
+  param.ajouter_non_std("Sondes_Int|Int_Probes",(this));
+  param.ajouter_non_std("Sondes_Int_fichier|Int_probes_file",(this));
+  param.ajouter_non_std("Tableaux_Int|Int_array",(this));
+  param.ajouter_non_std("Tableaux_Int_fichier|Int_array_file",(this));
+  param.ajouter_non_std("Statistiques_en_serie|Serial_statistics",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
+  param.ajouter_non_std("Statistiques_en_serie_fichier|Serial_statistics_file",(this));// XD_ADD_P Serial_statistics_file Serial_statistics read from a file
   param.ajouter("suffix_for_reset", &suffix_for_reset_); // XD_ADD_P chaine Suffix used to modify the postprocessing file name if the ICoCo resetTime() method is invoked.
 }
 
@@ -424,7 +449,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   }
 
   Motcle motlu;
-  if (mot=="Sondes|Probes")
+  Motcle keyword = mot;
+  keyword = translate_keyword(keyword.majuscule());
+  if (keyword=="Probes")
     {
       Cerr << "Reading of probes" << finl;
       les_sondes_.associer_post(*this);
@@ -432,7 +459,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       sondes_demande_ = 1;
       return 1;
     }
-  if (mot=="Sondes_mobiles|Mobile_probes")
+  else if (keyword=="Mobile_probes")
     {
       Cerr << "Reading of mobile probes" << finl;
       les_sondes_.associer_post(*this);
@@ -441,15 +468,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       sondes_demande_ = 1;
       return 1;
     }
-
-  if (mot=="Sondes_fichier|Probes_file")
-    {
-      Nom associated_word("Probes");
-      EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
-      this->lire_motcle_non_standard(associated_word, file_content);
-      return 1;
-    }
-  else if (mot=="champs|fields|champs_fichier|fields_file")
+  else if (keyword=="Fields|Fields_file")
     {
       Cerr << "Reading of fields to be postprocessed" << finl;
       Noms liste_noms;
@@ -488,7 +507,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
-      if (mot=="champs_fichier|fields_file")
+      if (keyword=="Fields_file")
         {
           Nom associated_word("Fields");
           EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
@@ -499,7 +518,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       champs_demande_ = 1;
       return 1;
     }
-  else if (mot=="Statistiques|statistics|statistiques_fichier|statistics_file")
+  else if (keyword=="Statistics|Statistics_file")
     {
       Cerr << "Reading of the statistics block" << finl;
       s >> motlu;
@@ -525,9 +544,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       //La methode lire_champs_stat_a_postraiter() va generer auatomatiquement un Champ_Generique
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
-      if (mot=="statistiques_fichier|statistics_file")
+      if (keyword=="Statistics_file")
         {
-          Nom associated_word("statistics");
+          Nom associated_word("Statistics");
           EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
           lire_champs_stat_a_postraiter(file_content);
         }
@@ -538,7 +557,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       stat_demande_ = 1;
       return 1;
     }
-  else if (mot=="Domaine")
+  else if (keyword=="Domaine")
     {
       if (champs_demande_ || stat_demande_ || sondes_demande_)
         {
@@ -551,7 +570,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       le_domaine=ref_cast(Domaine,Interprete::objet(nom_du_domaine));
       return 1;
     }
-  else if (mot=="Sous_domaine" || mot == "Sous_zone")
+  else if (keyword=="Sous_domaine|Sous_zone")
     {
       // Sanity check
       if (champs_demande_ || stat_demande_ || sondes_demande_)
@@ -596,7 +615,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       return 1;
     }
-  else if (mot=="Sondes_Int")
+  else if (keyword=="Int_Probes")
     {
       Cerr << "Reading of probes related to integers arrays" << finl;
       les_sondes_int_.associer_post(*this);
@@ -605,7 +624,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       sondes_demande_ = 1;
       return 1;
     }
-  else if (mot=="Tableaux_Int")
+  else if (keyword=="Int_array|Int_array_file")
     {
       Cerr << "Reading of integers arrays to be postprocessed "<< finl;
       s >> motlu;
@@ -616,11 +635,18 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           exit();
         }
       s >> dt_post_tab;
-      lire_tableaux_a_postraiter(s);
+
+      if (keyword=="Int_array_file")
+        {
+          EChaineJDD file_content = get_file_content_for_bloc(Nom("Int_array"), s);
+          lire_tableaux_a_postraiter(file_content);
+        }
+      else
+        lire_tableaux_a_postraiter(s);
       tableaux_demande_ = 1;
       return 1;
     }
-  else if (mot=="Statistiques_en_serie")
+  else if (keyword=="Serial_statistics|Serial_statistics_file")
     {
       Cerr << "Reading of the serial statistics block" << finl;
       s >> motlu;
@@ -633,23 +659,30 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       s >> dt_integr_serie_;
       dt_post_stat_ = dt_post_ch_;
-      lire_champs_stat_a_postraiter(s);
+
+      if (keyword=="Serial_statistics_file")
+        {
+          EChaineJDD file_content = get_file_content_for_bloc(Nom("Serial_statistics"), s);
+          lire_champs_stat_a_postraiter(file_content);
+        }
+      else
+        lire_champs_stat_a_postraiter(s);
       stat_demande_ = 1;
       lserie_=1;
       return 1;
     }
-  else if (mot=="Definition_champs")
+  else if (keyword=="Definition_champs")
     {
       //La methode lire_champs_operateurs() permet la lecture d un champ a postraiter avec
       //la nouvelle formulation dans le jeu de donnees
       lire_champs_operateurs(s);
       return 1;
     }
-  else if (mot=="Definition_champs_fichier|Definition_champs_file")
+  else if (keyword.finit_par("_file"))
     {
-      Nom associated_word("Definition_champs");
-      EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
-      this->lire_motcle_non_standard(associated_word, file_content);
+      Nom keyword_prefix = keyword.getPrefix("_file");
+      EChaineJDD file_content = get_file_content_for_bloc(keyword_prefix, s);
+      this->lire_motcle_non_standard(keyword_prefix, file_content);
       return 1;
     }
 
