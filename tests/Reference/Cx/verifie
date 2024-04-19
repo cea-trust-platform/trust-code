@@ -1,5 +1,5 @@
 # Verification du fichier de decoupage sur veymont
-if [ $HOST = $TRUST_HOST_ADMIN ] && [ -f decoupage.metis ] && [ -f Cx.metis ]
+if [ -f decoupage.metis ] && [ -f Cx.metis ]
 then
    diff Cx.metis decoupage.metis 1>/dev/null 2>&1
    [ $? != 0 ] && echo "Metis partitionning has changed!" && exit -1
@@ -23,20 +23,17 @@ done
 [ $err != 0 ] && exit $err
 
 ########################################
-# Comparaison de l'utilisation de la RAM avec $exec_opt
+# Comparaison de l'utilisation de la RAM avec $exec
+# On verifie entre le premier pas de temps et le dernier
+# pas de temps (initialization + postraitement pas pris en compte)
 ########################################
-if [ $HOST = $TRUST_HOST_ADMIN ] && [ "$exec" = "$exec_opt" ] && [ -f PAR_Cx.out ]
-then
-   echo "Verification de la RAM, limite a 253+1 Mo Mo pour le moment en sequentiel"
-   grep "MBytes of RAM taken by the calculation" Cx.out | tail -1
-   err_seq=`grep "MBytes of RAM taken by the calculation" Cx.out | tail -1 | awk '/MBytes of RAM taken by the calculation/{if ($0<255) print 0;else print 1}'`
-   exit $err_seq
+echo $ECHO_OPTS "Memory usage check for $1 ...\c"
+ram_after_10dt=`grep "MBytes of RAM taken by the calculation" $1.out | tail -n 11 | head -1 | awk '/MBytes of RAM taken by the calculation/{print $1}'`
+ram_at_1dt=`grep "MBytes of RAM taken by the calculation" $1.out | tail -n 2 | head -1 | awk '/MBytes of RAM taken by the calculation/{print $1}'`
+[ $ram_after_10dt -gt $ram_at_1dt ] && echo "RAM is increasing from $ram_at_1dt to $ram_after_10dt" && exit 255
+echo $ECHO_OPTS "ok ($ram_after_10dt  $ram_at_1dt)"
 
-   echo "Verification de la RAM, limite a 523+1 Mo en parallele sur 4 procs"
-   grep "MBytes of RAM taken by the calculation" PAR_Cx.out | tail -1
-   err_seq=`grep "MBytes of RAM taken by the calculation" PAR_Cx.out | tail -1 | awk '/MBytes of RAM taken by the calculation/{if ($0<524) print 0;else print 1}'`
-   exit $err_seq
-fi
+
 
 #######################################################
 # Comparaison non regression des echange_espace_virtuel
