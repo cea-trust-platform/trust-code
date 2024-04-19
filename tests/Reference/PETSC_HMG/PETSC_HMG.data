@@ -1,4 +1,5 @@
 # PARALLEL OK 8 #
+# OPENMP NOT #
 dimension 2
 pb_hydraulique_concentration pbt
 Domaine dom
