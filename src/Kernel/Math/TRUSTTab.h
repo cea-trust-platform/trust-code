@@ -121,22 +121,6 @@ public:
     for (int i = 0; i < MAXDIM_TAB; i++) dimensions_[i] = dbt.dimensions_[i];
   }
 
-#ifdef INT_is_64_
-  TRUSTTab(_SIZE_ n1, True_int n2) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2), nb_dim_(2), dimension_tot_0_(n1)
-  {
-    assert(n1 >= 0 && n2 >= 0);
-    if (std::is_same<_TYPE_,int>::value && n1*n2 < 0)
-      {
-        Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << (int)n2 << finl;
-        Process::exit();
-      }
-    init_dimensions(dimensions_);
-    dimensions_[0]=n1;
-    dimensions_[1]=n2;
-    TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2);
-  }
-#endif
-
   TRUSTTab(_SIZE_ n) : TRUSTVect<_TYPE_,_SIZE_>(n), nb_dim_(1), dimension_tot_0_(n)
   {
     init_dimensions(dimensions_);
@@ -146,7 +130,7 @@ public:
   TRUSTTab(_SIZE_ n1, int n2): TRUSTVect<_TYPE_,_SIZE_>(n1*n2), nb_dim_(2), dimension_tot_0_(n1)
   {
     assert(n1 >= 0 && n2 >= 0);
-    if (std::is_same<_TYPE_,int>::value && n1*n2 < 0)
+    if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2 > (long)std::numeric_limits<int>::max())
       {
         Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << finl;
         Process::exit();
@@ -160,7 +144,7 @@ public:
   TRUSTTab(_SIZE_ n1, int n2, int n3) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3), nb_dim_(3), dimension_tot_0_(n1)
   {
     assert(n1 >= 0 && n2 >= 0 && n3 >= 0);
-    if (std::is_same<_TYPE_,int>::value && n1*n2*n3 < 0)
+    if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2*(long)n3 > (long)std::numeric_limits<int>::max())
       {
         Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << finl;
         Process::exit();
@@ -175,7 +159,7 @@ public:
   TRUSTTab(_SIZE_ n1, int n2, int n3, int n4) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3*n4), nb_dim_(4), dimension_tot_0_(n1)
   {
     assert(n1 >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
-    if (std::is_same<_TYPE_,int>::value && n1*n2*n3*n4 < 0)
+    if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2*(long)n3*(long)n4 > (long)std::numeric_limits<int>::max())
       {
         Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << " and n3=" << n3 << finl;
         Process::exit();
