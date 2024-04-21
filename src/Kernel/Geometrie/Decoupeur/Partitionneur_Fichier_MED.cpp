@@ -79,6 +79,8 @@ void Partitionneur_Fichier_MED::initialiser(const char *filename)
  */
 void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   if (! ref_domaine_.non_nul())
     {
       Cerr << "Error in Partitionneur_Fichier_MED::construire_partition\n";
@@ -187,4 +189,5 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       nb_parts_tot = 1+int(local_max_vect(partition_field_outer_domain.valeurs()));
       return;
     }
+#endif
 }

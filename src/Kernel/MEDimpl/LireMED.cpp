@@ -146,7 +146,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
           if (da->getNumberOfTuples() != 1)
             Process::exit("WOOOPS ?");
           const mcIdType *daP = da->begin();
-          corres_joint_j[c] = daP[1];
+          corres_joint_j[c] = (int)daP[1];
         }
     }
   Cerr << "  Done reading joint informations ... "<<finl;
@@ -392,6 +392,7 @@ void LireMED::retrieve_MC_objects()
 #ifdef MEDCOUPLING_
 void LireMED::prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2)
 {
+#if !defined(INT_is_64_) || INT_is_64_ == 1
   // Get the nodes: size and fill sommets2:
   int nnodes = mcumesh_->getNumberOfNodes();
   const double *coord = mcumesh_->getCoords()->begin();
@@ -484,6 +485,7 @@ void LireMED::prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2)
             les_elems2(i, j) = conn[index + j];
         }
     }
+#endif
 }
 #endif
 
@@ -544,6 +546,9 @@ void LireMED::finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) co
 void LireMED::write_sub_dom_datasets() const
 {
 #ifdef MEDCOUPLING_
+
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   unsigned nb_volume_groups = (unsigned)mfumesh_->getGroupsOnSpecifiedLev(0).size();
   if (nb_volume_groups>0 && Process::je_suis_maitre())
     {
@@ -582,6 +587,7 @@ void LireMED::write_sub_dom_datasets() const
         }
     }
 #endif
+#endif
 }
 
 /*! @brief Handles the boundaries found in the MED file.
@@ -591,6 +597,9 @@ void LireMED::write_sub_dom_datasets() const
 void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
 {
 #ifdef MEDCOUPLING_
+
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   constexpr bool CELL_FROM_BOUNDARY = true;
 
   // Get boundary mesh:
@@ -668,6 +677,7 @@ void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
       Cerr << "Lire_MED: Warning: no boundary detected for the mesh." << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
     }
+#endif
 #endif
 }
 

@@ -83,6 +83,8 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "PARMETIS is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   if (!ref_domaine_.non_nul())
     {
       Cerr << "Error in Partitionneur_Parmetis::construire_partition\n";
@@ -173,7 +175,7 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
   elem_part.echange_espace_virtuel();
-
+#endif
 #endif
 }
 

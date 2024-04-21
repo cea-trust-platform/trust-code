@@ -125,6 +125,8 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   SCOTCH_randomReset();
   SCOTCH_Dgraph scotch_graph;
   SCOTCH_dgraphInit(&scotch_graph, Comm_Group_MPI::get_trio_u_world());
+  // TODO IG
+#if !defined(INT_is_64_) || INT_is_64_ == 1
   SCOTCH_dgraphBuild(&scotch_graph,
                      0,             // baseval               , base first indice 0
                      n,   // vertlocnbr            , nb of local graph nodes
@@ -138,12 +140,13 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
                      graph.adjncy.addr(),        // edgeloctab[edgelocnbr], global indexes of edges
                      graph.edgegsttab.addr(),   // edgegsttab            , optional, should be computed internally, set to zero
                      0); // edloloctab            , graph edges loads, set to zero
-
+#endif
   SCOTCH_Strat scotch_strategy;
   SCOTCH_stratInit(&scotch_strategy);
 
+#if !defined(INT_is_64_) || INT_is_64_ == 1
   SCOTCH_dgraphPart(&scotch_graph,nb_parties_,&scotch_strategy,partition);
-
+#endif
 
   SCOTCH_stratExit(&scotch_strategy);
   SCOTCH_dgraphExit(&scotch_graph);

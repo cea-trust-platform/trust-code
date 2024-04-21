@@ -66,6 +66,7 @@ int Decouper_multi::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 Entree& Decouper_multi::interpreter(Entree& is)
 {
+#if !defined(INT_is_64_) || INT_is_64_ == 1
   int i, j, k, l, d, s, ns, count = 0;
   //lecture des domaines et des raccords
   Param param(que_suis_je());
@@ -148,5 +149,6 @@ Entree& Decouper_multi::interpreter(Entree& is)
         }
       v_dec[d]->ecrire(v_proc[d], &som_raccord); // * heavier lifting *
     }
+#endif
   return is;
 }

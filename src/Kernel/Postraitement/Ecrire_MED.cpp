@@ -47,6 +47,8 @@ Implemente_instanciable(Ecrire_MED,"Write_MED|ecrire_med",Interprete);
 namespace
 {
 
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
 /*! @brief Loop on bords,raccords,joints
  */
 const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
@@ -55,6 +57,7 @@ const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
   return i<nb_std ? domaine.frontiere(i) : domaine.joint(i-nb_std);
 }
 
+#endif
 } // namespace
 
 Sortie& Ecrire_MED::printOn(Sortie& os) const
@@ -208,6 +211,8 @@ void Ecrire_MED::ecrire_domaine(bool append)
  */
 void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base)
 {
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   // Fill arrays all_faces_bords and noms_bords
   Noms noms_bords_and_jnts;
   ArrOfInt sz_bords_and_jnts;
@@ -298,6 +303,7 @@ void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_
 //    }
   // Save all this:
   mfumesh_->setGroupsAtLevel(-1, grps);
+#endif
 }
 
 /*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
