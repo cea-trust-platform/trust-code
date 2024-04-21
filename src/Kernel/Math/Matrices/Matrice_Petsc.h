@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,51 +18,58 @@
 
 #include <petsc_for_kernel.h>
 #include <Matrice_Base.h>
+
 class Matrice_Petsc : public Matrice_Base
 {
+
   Declare_instanciable(Matrice_Petsc);
+
 public:
+
   int ordre() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
-    MatGetSize(Mat_, &m, &n);
-    return m == n ? m : 0;
+    MatGetLocalSize(Mat_, &m, &n);
+    return m == n ? (int)m : 0;
 #else
     Cerr << "Matrice_Petsc non disponible." << finl;
     Process::exit();
     return 0;
 #endif
-  };
+  }
+
   int nb_lignes() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
-    MatGetSize(Mat_, &m, &n);
-    return m;
+    MatGetLocalSize(Mat_, &m, &n);
+    return (int)m;
 #else
     Cerr << "Matrice_Petsc non disponible." << finl;
     Process::exit();
     return 0;
 #endif
   }
+
   int nb_colonnes() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
-    MatGetSize(Mat_, &m, &n);
-    return n;
+    MatGetLocalSize(Mat_, &m, &n);
+    return (int)n;
 #else
     Cerr << "Matrice_Petsc non disponible." << finl;
     Process::exit();
     return 0;
 #endif
   }
+
   void scale(const double x) override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
-  };
+  }
 
   DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override
   {
@@ -70,18 +77,21 @@ public:
     Process::exit(-1);
     return r;
   }
+
   DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
     return r;
   }
+
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
     return r;
   }
+
 #ifdef PETSCKSP_H
   inline const Mat& getMat() const
   {

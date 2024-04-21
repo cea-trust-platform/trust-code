@@ -36,9 +36,12 @@ class Matrice_Base : public Objet_U
   Declare_base(Matrice_Base);
 
 public :
-  virtual int ordre() const =0;
-  virtual int nb_lignes() const =0;
-  virtual int nb_colonnes() const =0;
+  /// If square matrix, returns number of lines, otherwise 0
+  virtual int ordre() const=0;
+  /// Return local number of lines (=size on the current proc)
+  virtual int nb_lignes() const=0;
+  /// Return local number of columns (=size on the current proc)
+  virtual int nb_colonnes() const=0;
 
   // Methodes pour le calcul de r+=Ax codees dans les classes filles
   virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const =0;
