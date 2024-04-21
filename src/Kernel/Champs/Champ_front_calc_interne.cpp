@@ -95,13 +95,13 @@ void Champ_front_calc_interne::completer()
             coo->setIJSilent(i, d, xv(num_f, d));
         }
 
-      DataArrayInt *cP, *cIP;
+      DataArrayIdType *cP, *cIP;
       coo->findCommonTuples(Objet_U::precision_geom, 0, cP, cIP);
-      int nb_faces_dup = cP->getNumberOfTuples();
+      int nb_faces_dup = (int)cP->getNumberOfTuples();
       if (nb_faces_dup == nbfaces)
         {
           // Faces dupliquees -> singularite au niveau du gap
-          MCAuto<DataArrayInt> dsi(cIP->deltaShiftIndex());
+          MCAuto<DataArrayIdType> dsi(cIP->deltaShiftIndex());
 
           if (!dsi->isUniform(2))
             {
@@ -109,11 +109,12 @@ void Champ_front_calc_interne::completer()
               Process::exit(1);
             }
 
-          const int *p(cP->begin());
+          const mcIdType *p(cP->begin());
           for (int i = 0; i < nbfaces / 2; i++, p += 2)
             {
-              face_map_(*p) = *(p + 1);
-              face_map_(*(p + 1)) = *p;
+              int pi1 = (int)(*p), pi2 = (int)(*(p+1));
+              face_map_(pi1) = pi2;
+              face_map_(pi2) = pi1;
             }
         }
       else
@@ -141,11 +142,11 @@ void Champ_front_calc_interne::completer()
 
           double eps = 1e-10;
 
-          MCAuto<DataArrayInt> Idpos = fnorm->findIdsInRange(1-eps,1+eps);
-          MCAuto<DataArrayInt> Idneg = fnorm->findIdsInRange(-1-eps,-1+eps);
+          MCAuto<DataArrayIdType> Idpos = fnorm->findIdsInRange(1-eps,1+eps);
+          MCAuto<DataArrayIdType> Idneg = fnorm->findIdsInRange(-1-eps,-1+eps);
 
-          int n1 = Idpos->getNumberOfTuples();
-          int n2 = Idneg->getNumberOfTuples();
+          mcIdType n1 = Idpos->getNumberOfTuples();
+          mcIdType n2 = Idneg->getNumberOfTuples();
 
           if ((n1!=n2) || (n1+n2)!=nbfaces)
             {
@@ -155,18 +156,18 @@ void Champ_front_calc_interne::completer()
           MCAuto<DataArrayDouble> coo_pos = coo->selectByTupleId(*Idpos);
           MCAuto<DataArrayDouble> coo_neg = coo->selectByTupleId(*Idneg);
 
-          const int* pIdpos = Idpos->getConstPointer();
-          const int* pIdneg = Idneg->getConstPointer();
+          const mcIdType* pIdpos = Idpos->getConstPointer();
+          const mcIdType* pIdneg = Idneg->getConstPointer();
 
-          MCAuto<DataArrayInt> idx = coo_pos->findClosestTupleId(coo_neg);
+          MCAuto<DataArrayIdType> idx = coo_pos->findClosestTupleId(coo_neg);
 
-          const int* pidx = idx->getConstPointer();
+          const mcIdType* pidx = idx->getConstPointer();
 
           for (int i=0; i<nbfaces/2; i++)
             {
-              int j2 = pIdneg[i];
-              int k = pidx[i];
-              int j1 = pIdpos[k];
+              int j2 = (int)pIdneg[i];
+              int k = (int)pidx[i];
+              int j1 = (int)pIdpos[k];
 
               face_map_(j1) = j2;
               face_map_(j2) = j1;

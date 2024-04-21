@@ -825,7 +825,9 @@ DoubleTab Domaine_VF::calculer_xgr() const
   return xgr;
 }
 
-void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
+/*! Methode inspiree de Raccord_distant_homogene::initialise
+ */
+void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim)
 {
   if(dist_paroi_initialisee_) return;
 
@@ -889,7 +891,8 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
-            for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = domaine_.xv(f, d); // Remplissage des faces
+            for (int d=0 ; d<D ; d++)
+              remote_xv[moi](ind_tab,d) = domaine_.xv(f, d); // Remplissage des faces
             ind_tab++;
 
             if (D==3) // Remplissage des aretes
@@ -897,11 +900,13 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
                 int id_som = 1 ;
                 while ( (id_som < nb_som_face()) && (f_s(f, id_som) != -1))
                   {
-                    for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, id_som), d) + xs(f_s(f, id_som-1), d)) / 2;
+                    for (int d=0 ; d<D ; d++)
+                      remote_xv[moi](ind_tab,d) = (xs(f_s(f, id_som), d) + xs(f_s(f, id_som-1), d)) / 2;
                     id_som++;
                     ind_tab++;
                   }
-                for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, 0), d) + xs(f_s(f, id_som-1), d)) / 2;
+                for (int d=0 ; d<D ; d++)
+                  remote_xv[moi](ind_tab,d) = (xs(f_s(f, 0), d) + xs(f_s(f, id_som-1), d)) / 2;
                 ind_tab++;
               }
           }
@@ -909,7 +914,8 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
 
   for (auto som:soms) // Remplissage des sommets
     {
-      for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = xs(som, d);
+      for (int d=0 ; d<D ; d++)
+        remote_xv[moi](ind_tab,d) = xs(som, d);
       ind_tab++;
     }
 
@@ -944,15 +950,22 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
       local_xs->setIJ(nf+e, d, local_xp(e, d));
 
   //indices des points de remote_xvs les plus proches de chaque point de local_xv
-  MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
+  MCAuto<DataArrayIdType> glob_idx(DataArrayIdType::New());
   glob_idx = remote_xvs->findClosestTupleId(local_xs);
 
   //pour chaque element et face de local_xs : remplissage des tableaux
   for (int fe = 0; fe<nf+ne; fe++)
     {
       //retour de l'indice global (glob_idx(ind_face)) au couple (proc, ind_face2)
-      int proc = 0, fe2 = glob_idx->getIJ(fe, 0);
-      while (fe2 >= remote_xv[proc].dimension(0)) fe2 -= remote_xv[proc].dimension(0), proc++;
+      int proc = 0;
+      mcIdType fe2_big = glob_idx->getIJ(fe, 0);
+      while (fe2_big >= remote_xv[proc].dimension(0))
+        {
+          fe2_big -= remote_xv[proc].dimension(0);
+          proc++;
+        }
+      assert(fe2_big < std::numeric_limits<int>::max());
+      int fe2 = (int)fe2_big;
       assert(fe2 <  remote_xv[proc].dimension(0));
 
       double distance2 = 0;
@@ -968,13 +981,15 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
       if (fe<nf)
         {
           y_faces_(fe) = std::sqrt(distance2);
-          if (y_faces_(fe)>1.e-8)
-            for (int d = 0 ; d<D ; d++) n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
+          if (y_faces_(fe) > Objet_U::precision_geom)
+            for (int d = 0 ; d<D ; d++)
+              n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
         }
       else
         {
           y_elem_(fe-nf)  = std::sqrt(distance2);
-          for (int d = 0 ; d<D ; d++) n_y_elem_(fe-nf, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
+          for (int d = 0 ; d<D ; d++)
+            n_y_elem_(fe-nf, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
         }
     }
 
