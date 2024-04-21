@@ -4,7 +4,11 @@ lib=$(TRUST_ROOT)/lib/src/LIBOSQP/include/osqp/osqp_configure.h
 
 TRUST_INT64_="OFF"
 ifeq ($(TRUST_INT64),1)
-        TRUST_INT64_="ON"
+    TRUST_INT64_="ON"
+endif
+# OSQP shoud not be compiled in 64b with the new build process:
+ifeq ($(TRUST_INT64_NEW),1)
+    TRUST_INT64_="OFF"
 endif
 ifdef TRUST_cc_BASE_EXTP
     cc=$(TRUST_cc_BASE_EXTP)
