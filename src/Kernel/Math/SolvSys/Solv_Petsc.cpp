@@ -1577,7 +1577,7 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
       mtx << "%%matrix" << finl;
       mtx << (int)rows << " " << (int)rows << " " << (int)ia[rows] << finl;
       for (int row=0; row<rows; row++)
-        for (int j=ia[row]; j<ia[row+1]; j++)
+        for (PetscInt j=ia[row]; j<ia[row+1]; j++)
           mtx << row+1 << " " << (int)ja[j]+1 << " " << v[j] << finl;
       // Sauve b au format matrix market
       filename = Objet_U::nom_du_cas();
@@ -2046,6 +2046,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   if (Reason<0 && !return_on_error_) exit();
   PetscInt nbiter=-1;
   KSPGetIterationNumber(SolveurPetsc_, &nbiter);
+  int nbit = (int)nbiter;  // always an int actually
   if (limpr()>-1)
     {
       // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
@@ -2063,12 +2064,12 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           // Calcul de residu(nbiter)=||Ax-B||
           VecScale(SecondMembrePetsc_, -1);
           MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
-          VecNorm(SecondMembrePetsc_, NORM_2, &residu[nbiter]);
+          VecNorm(SecondMembrePetsc_, NORM_2, &residu[nbit]);
         }
     }
   if (verbose) Cout << finl << "[Petsc] Time to solve system:    \t" << Statistiques::get_time_now() - start << finl;
   PetscLogStagePop();
-  return Reason < 0 ? (int)Reason : nbiter;
+  return Reason < 0 ? (int)Reason : nbit;
 }
 #endif
 
@@ -3029,9 +3030,9 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
               const int k1 = tab1[i + 1] - 1;
               for (int k = k0; k < k1; k++)
                 if (coeff[k] != 0) nnz_row++;
-              const int kk0 = rowOffsets[RowLocal];
-              const int kk1 = rowOffsets[RowLocal + 1];
-              if (nnz_row != kk1 - kk0)
+              const PetscInt kk0 = rowOffsets[RowLocal];
+              const PetscInt kk1 = rowOffsets[RowLocal + 1];
+              if (nnz_row != (int)(kk1 - kk0))
                 {
                   //Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
                   new_stencil = 1;
@@ -3046,7 +3047,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
                           bool found = false;
                           const int col = renum_array[tab2[k] - 1];
                           const int RowGlobal = decalage_local_global_+RowLocal;
-                          for (int kk = kk0; kk < kk1; kk++)
+                          for (PetscInt kk = kk0; kk < kk1; kk++)
                             {
                               if (colIndices[kk] == col)
                                 {
