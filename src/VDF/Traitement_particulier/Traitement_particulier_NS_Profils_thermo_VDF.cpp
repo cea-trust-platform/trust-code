@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,8 @@
 #include <communications.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Profils_thermo_VDF,"Traitement_particulier_NS_Profils_thermo_VDF",Traitement_particulier_NS_Profils_VDF);
+// XD profils_thermo traitement_particulier_base profils_thermo 0 non documente
+// XD attr bloc bloc_lecture bloc 0 not_set
 
 Traitement_particulier_NS_Profils_thermo_VDF::Traitement_particulier_NS_Profils_thermo_VDF():oui_repr_stats_thermo(0)
 {

@@ -18,7 +18,7 @@
 #include <Param.h>
 
 Implemente_base(Modele_turbulence_hyd_2_eq_base, "Modele_turbulence_hyd_2_eq_base", Modele_turbulence_hyd_base);
-// X_D mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for Navier-Stokes equations.
+// XD mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for Navier-Stokes equations.
 
 Sortie& Modele_turbulence_hyd_2_eq_base::printOn(Sortie& is) const { return Modele_turbulence_hyd_base::printOn(is); }
 Entree& Modele_turbulence_hyd_2_eq_base::readOn(Entree& is) { return Modele_turbulence_hyd_base::readOn(is); }
@@ -26,7 +26,7 @@ Entree& Modele_turbulence_hyd_2_eq_base::readOn(Entree& is) { return Modele_turb
 void Modele_turbulence_hyd_2_eq_base::set_param(Param& param)
 {
   Modele_turbulence_hyd_base::set_param(param);
-  param.ajouter("k_min", &K_MIN_); // XD_ADD_P double Lower limitation of k (default value 1.e-10).
+  param.ajouter("k_min", &K_MIN_); // XD_ADD_P floattant Lower limitation of k (default value 1.e-10).
   param.ajouter_flag("quiet", &lquiet_); // XD_ADD_P flag To disable printing of information about K and Epsilon/Omega.
 }
 

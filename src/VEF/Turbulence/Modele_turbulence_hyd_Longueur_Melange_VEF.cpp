@@ -26,7 +26,13 @@
 #include <Param.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_Longueur_Melange_VEF, "Modele_turbulence_hyd_Longueur_Melange_VEF", Modele_turbulence_hyd_Longueur_Melange_base);
-
+// XD longueur_melange mod_turb_hyd_ss_maille longueur_melange -1 This model is based on mixing length modelling. For a non academic configuration, formulation used in the code can be expressed basically as : NL2 $nu_t=(Kappa.y)^2$.dU/dy NL2 Till a maximum distance (dmax) set by the user in the data file, y is set equal to the distance from the wall (dist_w) calculated previously and saved in file Wall_length.xyz. [see Distance_paroi keyword] NL2 Then (from y=dmax), y decreases as an exponential function : y=dmax*exp[-2.*(dist_w-dmax)/dmax]
+// XD attr canalx floattant canalx 1 [height] : plane channel according to Ox direction (for the moment, formulation in the code relies on fixed heigh : H=2).
+// XD attr tuyauz floattant tuyauz 1 [diameter] : pipe according to Oz direction (for the moment, formulation in the code relies on fixed diameter : D=2).
+// XD attr verif_dparoi chaine verif_dparoi 1 not_set
+// XD attr dmax floattant dmax 1 Maximum distance.
+// XD attr fichier chaine fichier 1 not_set
+// XD attr fichier_ecriture_K_Eps chaine fichier_ecriture_K_Eps 1 When a resume with k-epsilon model is envisaged, this keyword allows to generate external MED-format file with evaluation of k and epsilon quantities (based on eddy turbulent viscosity and turbulent characteristic length returned by mixing length model). The frequency of the MED file print is set equal to dt_impr_ustar. Moreover, k-eps MED field is automatically saved at the last time step. MED file is then used for resuming a K-Epsilon calculation with the Champ_Fonc_Med keyword.
 Sortie& Modele_turbulence_hyd_Longueur_Melange_VEF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();

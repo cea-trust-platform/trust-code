@@ -28,27 +28,18 @@
 class Modele_turbulence_scal_Schmidt: public Modele_turbulence_scal_diffturb_base
 {
 
-  Declare_instanciable_sans_constructeur(Modele_turbulence_scal_Schmidt);
+  Declare_instanciable(Modele_turbulence_scal_Schmidt);
 
 public:
-  Modele_turbulence_scal_Schmidt();
   virtual int comprend_champ(const Motcle&) const;
   virtual int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void mettre_a_jour(double) override;
   void set_param(Param&) override;
-  inline double get_Scturb() const;
+  inline double get_Scturb() const { return LeScturb; }
+
 protected:
-  double LeScturb;
+  double LeScturb = 0.7;
   Champ_Fonc& calculer_diffusion_turbulente();
 };
 
-/*! @brief Renvoie de la valeur du Prandtl
- *
- * @return (la valeur Prdt)
- */
-inline double Modele_turbulence_scal_Schmidt::get_Scturb() const
-{
-  return LeScturb;
-}
-
-#endif
+#endif /* Modele_turbulence_scal_Schmidt_included */

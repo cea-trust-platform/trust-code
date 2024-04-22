@@ -24,6 +24,8 @@
 
 Implemente_instanciable(Modele_turbulence_hyd_LES_Smago_VDF, "Modele_turbulence_hyd_sous_maille_Smago_VDF", Modele_turbulence_hyd_LES_VDF_base);
 
+// XD sous_maille_smago mod_turb_hyd_ss_maille sous_maille_smago -1 Smagorinsky sub-grid turbulence model. NL2 Nut=Cs1*Cs1*l*l*sqrt(2*S*S) NL2 K=Cs2*Cs2*l*l*2*S
+
 Sortie& Modele_turbulence_hyd_LES_Smago_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Modele_turbulence_hyd_LES_Smago_VDF::readOn(Entree& is) { return Modele_turbulence_hyd_LES_VDF_base::readOn(is); }
@@ -31,7 +33,8 @@ Entree& Modele_turbulence_hyd_LES_Smago_VDF::readOn(Entree& is) { return Modele_
 void Modele_turbulence_hyd_LES_Smago_VDF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VDF_base::set_param(param);
-  param.ajouter("cs", &cs_);
+  param.ajouter("cs", &cs_); // XD_ADD_P floattant This is an optional keyword and the value is used to set the constant used in the Smagorinsky model (This is currently only valid for Smagorinsky models and it is set to 0.18 by default) .
+
   param.ajouter_condition("value_of_cs_ge_0", "sous_maille_smago model constant must be positive.");
 }
 

@@ -24,6 +24,9 @@
 
 Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbulence_hyd_LES_base", Modele_turbulence_hyd_0_eq_base);
 
+// XD mod_turb_hyd_ss_maille modele_turbulence_hyd_deriv mod_turb_hyd_ss_maille -1 Class for sub-grid turbulence model for Navier-Stokes equations.
+// XD attr formulation_a_nb_points form_a_nb_points formulation_a_nb_points 1 The structure fonction is calculated on nb points and we should add the 2 directions (0:OX, 1:OY, 2:OZ) constituting the homegeneity planes. Example for channel flows, planes parallel to the walls.
+
 Modele_turbulence_hyd_LES_base::Modele_turbulence_hyd_LES_base()
 {
   methode_ = "volume"; // Parametre par defaut pour calculer la longueur caracteristique
@@ -42,7 +45,8 @@ Entree& Modele_turbulence_hyd_LES_base::readOn(Entree& is)
 void Modele_turbulence_hyd_LES_base::set_param(Param& param)
 {
   Modele_turbulence_hyd_base::set_param(param);
-  param.ajouter("longueur_maille", &methode_);
+  param.ajouter("longueur_maille", &methode_); // XD_ADD_P chaine(into=["volume","volume_sans_lissage","scotti","arrete"]) Different ways to calculate the characteristic length may be specified : NL2 volume : It is the default option. Characteristic length is based on the cubic root of the volume cells. A smoothing procedure is applied to avoid discontinuities of this quantity in VEF from a cell to another. NL2 volume_sans_lissage : For VEF only. Characteristic length is based on the cubic root of the volume cells (without smoothing procedure).NL2 scotti : Characteristic length is based on the cubic root of the volume cells and the Scotti correction is applied to take into account the stretching of the cell in the case of anisotropic meshes. NL2 arete : For VEF only. Characteristic length relies on the max edge (+ smoothing procedure) is taken into account.
+
 }
 
 int Modele_turbulence_hyd_LES_base::preparer_calcul()

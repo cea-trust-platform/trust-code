@@ -24,6 +24,8 @@
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_LES_Wale_VDF, "Modele_turbulence_hyd_sous_maille_Wale_VDF", Modele_turbulence_hyd_LES_VDF_base);
 
+// XD sous_maille_wale mod_turb_hyd_ss_maille sous_maille_wale -1 This is the WALE-model. It is a new sub-grid scale model for eddy-viscosity in LES that has the following properties : NL2 - it goes naturally to 0 at the wall (it doesn\'t need any information on the wall position or geometry) NL2 - it has the proper wall scaling in o(y3) in the vicinity of the wall NL2 - it reproduces correctly the laminar to turbulent transition.
+
 Modele_turbulence_hyd_LES_Wale_VDF::Modele_turbulence_hyd_LES_Wale_VDF()
 {
   declare_support_masse_volumique(1);
@@ -36,7 +38,7 @@ Entree& Modele_turbulence_hyd_LES_Wale_VDF::readOn(Entree& is) { return Modele_t
 void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
 {
   Modele_turbulence_hyd_LES_VDF_base::set_param(param);
-  param.ajouter("cw", &cw_);
+  param.ajouter("cw", &cw_); // XD_ADD_P floattant The unique parameter (constant) of the WALE-model (by default value 0.5).
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale_VDF model constant must be positive.");
 }
 

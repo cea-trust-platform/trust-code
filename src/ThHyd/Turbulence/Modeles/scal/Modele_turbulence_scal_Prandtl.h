@@ -28,19 +28,13 @@
  */
 class Modele_turbulence_scal_Prandtl: public Modele_turbulence_scal_diffturb_base
 {
-
-  Declare_instanciable_sans_constructeur(Modele_turbulence_scal_Prandtl);
-
+  Declare_instanciable(Modele_turbulence_scal_Prandtl);
 public:
-  Modele_turbulence_scal_Prandtl();
-
-  ///virtual int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)& ) const;
   void mettre_a_jour(double) override;
-
   void set_param(Param&) override;
-//  inline double get_Prdt() const;
+
 protected:
-  double LePrdt;
+  double LePrdt = 0.9;
   Nom LePrdt_fct; // stockage de la chaine de caractere pour le prandtl du jdd
   Nom definition_fonction; // stockage de la chaine du jdd
   Parser_U fonction; // fonction de calcul de alpha_t
@@ -48,4 +42,4 @@ protected:
   virtual Champ_Fonc& calculer_diffusivite_turbulente();
 };
 
-#endif
+#endif /* Modele_turbulence_scal_Prandtl_included */
