@@ -1,4 +1,5 @@
 # TRUST_DISABLE_MPI4PY #
+# OPENMP NOT #
 Nom ok
 
 Read_file ok is_ok
