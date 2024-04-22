@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_scal_base.h>
-#include <Probleme_base.h>
-#include <Discretisation_base.h>
-#include <Convection_Diffusion_std.h>
 #include <Modele_turbulence_hyd_base.h>
-#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
+#include <Convection_Diffusion_std.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_base(Modele_turbulence_scal_base, "Modele_turbulence_scal_base", Objet_U);
@@ -32,14 +32,6 @@ Sortie& Modele_turbulence_scal_base::printOn(Sortie& s) const
   return s << que_suis_je() << " " << le_nom();
 }
 
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- *     Appelle Entree& lire(const Motcle&,Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws accolade ouvrante attendue
- */
 Entree& Modele_turbulence_scal_base::readOn(Entree& is)
 {
   Cerr << "Reading of data for a " << que_suis_je() << " scalar turbulence model" << finl;
@@ -47,12 +39,12 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is)
   Motcle mot = "turbulence_paroi";
   set_param(param);
   param.lire_avec_accolades_depuis(is);
-  const Probleme_base& le_pb = mon_equation->probleme();
+  const Probleme_base& le_pb = mon_equation_->probleme();
   // lp loi de paroi du modele de turbulence de l'hydraulique
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   const Turbulence_paroi& lp = mod_turb_hydr.loi_paroi();
-  if (loipar.est_nul() && lp.non_nul())
+  if (loipar_.est_nul() && lp.non_nul())
     {
       Cerr << finl;
       Cerr << "Mot cle " << mot << "non trouve !" << finl;
@@ -73,9 +65,9 @@ int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, E
   Motcle mot = "turbulence_paroi";
   if (motlu == mot)
     {
-      loipar.associer_modele(*this);
-      is >> loipar;
-      is >> loipar.valeur();
+      loipar_.associer_modele(*this);
+      is >> loipar_;
+      is >> loipar_.valeur();
       return 1;
     }
   else
@@ -95,7 +87,7 @@ int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, E
  */
 void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 {
-  mon_equation = ref_cast(Convection_Diffusion_std, eqn);
+  mon_equation_ = ref_cast(Convection_Diffusion_std, eqn);
 }
 
 /*! @brief NE FAIT RIEN
@@ -114,9 +106,9 @@ void Modele_turbulence_scal_base::associer(const Domaine_dis&, const Domaine_Cl_
 void Modele_turbulence_scal_base::discretiser()
 {
   Cerr << "Turbulence scalar model discretization" << finl;
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
-  const Discretisation_base& dis = mon_equation->discretisation();
-  const Domaine_dis& z = mon_equation->domaine_dis();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
+  const Discretisation_base& dis = mon_equation_->discretisation();
+  const Domaine_dis& z = mon_equation_->domaine_dis();
   dis.discretiser_champ("champ_elem", z.valeur(), "diffusivite_turbulente", "m2/s", 1, sch.temps_courant(), diffusivite_turbulente_);
   dis.discretiser_champ("champ_elem", z.valeur(), "conductivite_turbulente", "W/m/K", 1, sch.temps_courant(), conductivite_turbulente_);
   champs_compris_.ajoute_champ(diffusivite_turbulente_);
@@ -143,8 +135,8 @@ bool Modele_turbulence_scal_base::initTimeStep(double dt)
  */
 int Modele_turbulence_scal_base::preparer_calcul()
 {
-  if (loipar.non_nul())
-    loipar.init_lois_paroi();
+  if (loipar_.non_nul())
+    loipar_.init_lois_paroi();
   mettre_a_jour(0.);
   return 1;
 }
@@ -156,8 +148,8 @@ int Modele_turbulence_scal_base::preparer_calcul()
  */
 int Modele_turbulence_scal_base::sauvegarder(Sortie& os) const
 {
-  if (loipar.non_nul())
-    return loipar->sauvegarder(os);
+  if (loipar_.non_nul())
+    return loipar_->sauvegarder(os);
   else
     return 0;
 }
@@ -195,16 +187,16 @@ int Modele_turbulence_scal_base::reprendre(Entree& is)
    if (!loipar.non_nul())
    loipar.typer(typ);        */
 
-  if (loipar.non_nul())
-    loipar->reprendre(is);
+  if (loipar_.non_nul())
+    loipar_->reprendre(is);
   return 1;
 }
 
 void Modele_turbulence_scal_base::creer_champ(const Motcle& motlu)
 {
-  if (loipar.non_nul())
+  if (loipar_.non_nul())
     {
-      loipar->creer_champ(motlu);
+      loipar_->creer_champ(motlu);
     }
 }
 
@@ -218,11 +210,11 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
     {
     }
 
-  if (loipar.non_nul())
+  if (loipar_.non_nul())
     {
       try
         {
-          return loipar->get_champ(nom);
+          return loipar_->get_champ(nom);
         }
       catch (Champs_compris_erreur&)
         {
@@ -238,8 +230,8 @@ void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom, Optio
   else
     nom.add(champs_compris_.liste_noms_compris());
 
-  if (loipar.non_nul())
-    loipar->get_noms_champs_postraitables(nom, opt);
+  if (loipar_.non_nul())
+    loipar_->get_noms_champs_postraitables(nom, opt);
 }
 
 /*! @brief Indique s'il faut imprimer ou non le Nusselt local
@@ -249,7 +241,7 @@ void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom, Optio
  */
 int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temps_prec, double dt) const
 {
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
   if (sch.nb_pas_dt() == 0)
     return 0;
   if (dt_impr_nusselt_ <= dt
@@ -272,9 +264,9 @@ int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temp
  */
 void Modele_turbulence_scal_base::imprimer(Sortie& os) const
 {
-  const Schema_Temps_base& sch = mon_equation->schema_temps();
+  const Schema_Temps_base& sch = mon_equation_->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
   if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt))
-    loipar.imprimer_nusselt(os);
+    loipar_.imprimer_nusselt(os);
 }

@@ -31,30 +31,30 @@ Sortie& Modele_turbulence_scal_null::printOn(Sortie& s) const
 Entree& Modele_turbulence_scal_null::readOn(Entree& is)
 {
   // Creation d'une loi de paroi nulle:
-  const Nom& discr = mon_equation->discretisation().que_suis_je();
-  const Probleme_base& le_pb = mon_equation->probleme();
+  const Nom& discr = mon_equation_->discretisation().que_suis_je();
+  const Probleme_base& le_pb = mon_equation_->probleme();
   // lp loi de paroi du modele de turbulence de l'hydraulique
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   if (!sub_type(Modele_turbulence_hyd_null, mod_turb_hydr))
     {
       Cerr << "Error in Modele_turbulence_scal_null::readOn !!!" << finl;
-      Cerr << "You use a NUL turbulence model for the scalar equation " << mon_equation->que_suis_je() << " together with a non NUL turbulence model for " << le_pb.equation(0).que_suis_je() << finl;
+      Cerr << "You use a NUL turbulence model for the scalar equation " << mon_equation_->que_suis_je() << " together with a non NUL turbulence model for " << le_pb.equation(0).que_suis_je() << finl;
       Cerr << "This is impossible !!! Replace the model " << mod_turb_hydr.que_suis_je() << " by the NUL model !!!" << finl;
       Process::exit();
     }
 
-  loipar.associer_modele(*this);
-  if (discr == "VEF" || discr == "VEFPreP1B") loipar.typer("negligeable_scalaire_VEF");
-  else if (discr == "VDF") loipar.typer("negligeable_scalaire_VDF");
-  else if (discr == "EF") loipar.typer("negligeable_scalaire_EF");
+  loipar_.associer_modele(*this);
+  if (discr == "VEF" || discr == "VEFPreP1B") loipar_.typer("negligeable_scalaire_VEF");
+  else if (discr == "VDF") loipar_.typer("negligeable_scalaire_VDF");
+  else if (discr == "EF") loipar_.typer("negligeable_scalaire_EF");
   else
     {
       Cerr << "Erreur dans Modele_turbulence_scal_null::readOn : la discretisation " << discr << " n'est pas prise en charge" << finl;
       Process::exit();
     }
-  loipar.valeur().associer_modele(*this);
-  loipar.valeur().associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
+  loipar_.valeur().associer_modele(*this);
+  loipar_.valeur().associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
 
   // Pas envie de debugger XDATA ... je penalise tt le monde alors
   Param param(que_suis_je());

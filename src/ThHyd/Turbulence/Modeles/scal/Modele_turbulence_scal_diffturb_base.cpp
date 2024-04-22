@@ -19,15 +19,9 @@
 
 Implemente_base(Modele_turbulence_scal_diffturb_base, "Modele_turbulence_scal_diffturb_base", Modele_turbulence_scal_base);
 
-Sortie& Modele_turbulence_scal_diffturb_base::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Modele_turbulence_scal_diffturb_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Modele_turbulence_scal_diffturb_base::readOn(Entree& is)
-{
-  return Modele_turbulence_scal_base::readOn(is);
-}
+Entree& Modele_turbulence_scal_diffturb_base::readOn(Entree& is) { return Modele_turbulence_scal_base::readOn(is); }
 
 /*! @brief Associe une viscosite turbulente au modele de turbulence.
  *
@@ -35,7 +29,7 @@ Entree& Modele_turbulence_scal_diffturb_base::readOn(Entree& is)
  */
 void Modele_turbulence_scal_diffturb_base::associer_viscosite_turbulente(const Champ_Fonc& visc_turb)
 {
-  la_viscosite_turbulente = visc_turb;
+  la_viscosite_turbulente_ = visc_turb;
 }
 
 /*! @brief Complete le modele de turbulence: Appelle Modele_turbulence_scal_base::completer()
@@ -54,11 +48,6 @@ void Modele_turbulence_scal_diffturb_base::completer()
   associer_viscosite_turbulente(visc_turb);
 }
 
-/*! @brief NE FAIT RIEN
- *
- * @param (Entree&) un flot d'entree
- * @return (int) renvoie toujours 1
- */
 int Modele_turbulence_scal_diffturb_base::reprendre(Entree&)
 {
   return 1;

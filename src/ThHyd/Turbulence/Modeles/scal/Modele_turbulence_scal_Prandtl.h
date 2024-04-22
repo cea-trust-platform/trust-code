@@ -34,11 +34,11 @@ public:
   void set_param(Param&) override;
 
 protected:
-  double LePrdt = 0.9;
-  Nom LePrdt_fct; // stockage de la chaine de caractere pour le prandtl du jdd
-  Nom definition_fonction; // stockage de la chaine du jdd
-  Parser_U fonction; // fonction de calcul de alpha_t
-  Parser_U fonction1; // fonction de calcul de Prandtl variant en espace
+  double LePrdt_ = 0.9;
+  Nom LePrdt_fct_; // stockage de la chaine de caractere pour le prandtl du jdd
+  Nom definition_fonction_; // stockage de la chaine du jdd
+  Parser_U fonction_; // fonction de calcul de alpha_t
+  Parser_U fonction1_; // fonction de calcul de Prandtl variant en espace
   virtual Champ_Fonc& calculer_diffusivite_turbulente();
 };
 

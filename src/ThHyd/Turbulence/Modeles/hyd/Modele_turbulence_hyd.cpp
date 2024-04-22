@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd.h>
 #include <Discretisation_base.h>
 #include <Equation_base.h>
-#include <Modele_turbulence_hyd.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Modele_turbulence_hyd, "Modele_turbulence_hyd", DERIV(Modele_turbulence_hyd_base));
@@ -25,18 +25,8 @@ Sortie& Modele_turbulence_hyd::printOn(Sortie& s) const
   return DERIV(Modele_turbulence_hyd_base)::printOn(s);
 }
 
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- *     Lit le type de modele, type l'objet et appelle
- *     une lecture specifique (par polymorphisme)
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws Les modeles sous maille sont utilisables uniquement en dimension 3
- */
 Entree& Modele_turbulence_hyd::readOn(Entree& s)
 {
-  //  Cerr << " Modele_turbulence_hyd::readOn" << finl;
   Motcle typ;
   s >> typ;
   Motcle nom1("Modele_turbulence_hyd_");
@@ -48,12 +38,12 @@ Entree& Modele_turbulence_hyd::readOn(Entree& s)
         {
           Cerr << "Vous traitez un cas turbulent en dimension 2 avec un modele sous maille" << finl;
           Cerr << "Attention a l'interpretation des resultats !!" << finl;
-          //         exit();
         }
 
       nom1 += "_";
       // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-      if (discr == "VEFPreP1B") discr = "VEF";
+      if (discr == "VEFPreP1B")
+        discr = "VEF";
       nom1 += discr;
     }
   if (nom1 == "MODELE_TURBULENCE_HYD_SOUS_MAILLE_LM_VEF")
@@ -65,6 +55,6 @@ Entree& Modele_turbulence_hyd::readOn(Entree& s)
   DERIV(Modele_turbulence_hyd_base)::typer(nom1);
   valeur().associer_eqn(equation());
   valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
-  s >> valeur();
+  s >> valeur(); // on lit !
   return s;
 }

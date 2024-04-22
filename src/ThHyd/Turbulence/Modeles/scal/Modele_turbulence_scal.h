@@ -24,75 +24,20 @@
  *  derivee de Modele_turbulence_scal_base
  *
  */
-class Modele_turbulence_scal : public MorEqn, public DERIV(Modele_turbulence_scal_base)
+class Modele_turbulence_scal: public MorEqn, public DERIV(Modele_turbulence_scal_base)
 {
   Declare_instanciable(Modele_turbulence_scal);
 public:
-  //  inline Modele_turbulence_scal(Modele_turbulence_scal_base& );
-  inline Modele_turbulence_scal& operator=(const Modele_turbulence_scal_base& );
-  inline int preparer_calcul();
-  inline void completer();
-  inline void mettre_a_jour(double );
-  inline const Champ_Fonc& conductivite_turbulente() const;
-  inline const Turbulence_paroi_scal& loi_paroi() const;
-  inline int loi_paroi_non_nulle() const;
-  inline int sauvegarde(Sortie& ) const;
-  inline int reprise(Entree& );
-
-  inline void discretiser();
-  inline int sauvegarder(Sortie& ) const override;
-  inline int reprendre(Entree& ) override;
-  inline void imprimer(Sortie& os) const;
+  inline const Champ_Fonc& conductivite_turbulente() const { return valeur().conductivite_turbulente(); }
+  inline const Turbulence_paroi_scal& loi_paroi() const { return valeur().loi_paroi(); }
+  inline void completer() { valeur().completer(); }
+  inline void mettre_a_jour(double t) { valeur().mettre_a_jour(t); }
+  inline void discretiser() { valeur().discretiser(); }
+  inline void imprimer(Sortie &os) const { valeur().imprimer(os); }
+  inline int preparer_calcul() { return valeur().preparer_calcul(); }
+  inline int loi_paroi_non_nulle() const { return valeur().loi_paroi_non_nulle(); }
+  inline int sauvegarder(Sortie &os) const override { return valeur().sauvegarder(os); }
+  inline int reprendre(Entree &is) override { return valeur().reprendre(is); }
 };
 
-inline void Modele_turbulence_scal::completer()
-{
-  valeur().completer();
-}
-
-inline void Modele_turbulence_scal::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-inline const Champ_Fonc& Modele_turbulence_scal::conductivite_turbulente() const
-{
-  return valeur().conductivite_turbulente();
-}
-
-inline const Turbulence_paroi_scal& Modele_turbulence_scal::loi_paroi() const
-{
-  return valeur().loi_paroi();
-}
-
-inline int Modele_turbulence_scal::loi_paroi_non_nulle() const
-{
-  return valeur().loi_paroi_non_nulle();
-}
-
-inline int Modele_turbulence_scal::preparer_calcul()
-{
-  return valeur().preparer_calcul();
-}
-
-inline void Modele_turbulence_scal::discretiser()
-{
-  valeur().discretiser();
-}
-
-inline int Modele_turbulence_scal::sauvegarder(Sortie& os) const
-{
-  return valeur().sauvegarder(os);
-}
-
-inline int Modele_turbulence_scal::reprendre(Entree& is)
-{
-  return valeur().reprendre(is);
-}
-
-inline void Modele_turbulence_scal::imprimer(Sortie& os) const
-{
-  valeur().imprimer(os);
-}
-
-#endif
+#endif /* Modele_turbulence_scal_included */

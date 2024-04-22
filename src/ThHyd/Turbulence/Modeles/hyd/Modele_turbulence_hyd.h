@@ -19,87 +19,37 @@
 #include <Modele_turbulence_hyd_base.h>
 #include <TRUST_Deriv.h>
 
-/*! @brief Classe Modele_turbulence_hyd Classe generique de la hierarchie des modeles de turbulence utilises
+/*! @brief Classe Modele_turbulence_hyd Classe generique de la hierarchie des modeles de turbulence utilises par une equation_base
+ *     un objet Modele_turbulence_hyd peut referencer n'importe quel objet derivant de Modele_turbulence_hyd_base.
  *
- *     par une equation_base
- *     un objet Modele_turbulence_hyd peut referencer n'importe quel objet derivant de
- *     Modele_turbulence_hyd_base.
- *     La plupart des methodes appellent les methodes de l'objet Modele_turbulence_hyd
- *     sous-jacent via la methode valeur() declaree grace a la macro
+ *     La plupart des methodes appellent les methodes de l'objet Modele_turbulence_hyd sous-jacent via la methode valeur() declaree grace a la macro
  *
  * @sa Modele_turbulence_hyd_base MorEqn
  */
 class Modele_turbulence_hyd: public MorEqn, public DERIV(Modele_turbulence_hyd_base)
 {
   Declare_instanciable(Modele_turbulence_hyd);
-
 public:
+  inline const Champ_Fonc& viscosite_turbulente() const { return valeur().viscosite_turbulente(); }
+  inline const Turbulence_paroi& loi_paroi() const { return valeur().loi_paroi(); }
+  inline void mettre_a_jour(double t) { valeur().mettre_a_jour(t); }
+  inline void discretiser() { valeur().discretiser(); }
+  inline void imprimer(Sortie &os) const { valeur().imprimer(os); }
+  inline int sauvegarder(Sortie &os) const override { return valeur().sauvegarder(os); }
+  inline int reprendre(Entree &is) override { return valeur().reprendre(is); }
+  inline int preparer_calcul() { return valeur().preparer_calcul(); }
 
-  inline Modele_turbulence_hyd& operator=(const Modele_turbulence_hyd_base&);
-  inline const Champ_Fonc& viscosite_turbulente() const;
-  /*Modification pour utilisation des fonctions de la classe MorEqn*/
-  inline const Turbulence_paroi& loi_paroi() const;
+  inline void completer()
+  {
+    valeur().completer();
+    valeur().loi_paroi()->completer();
+  }
 
-  inline int preparer_calcul();
-  inline void mettre_a_jour(double);
-  inline void discretiser();
-  inline void completer();
-  inline int sauvegarder(Sortie &os) const override;
-  inline int reprendre(Entree &is) override;
-  inline void imprimer(Sortie &os) const;
+  inline Modele_turbulence_hyd& operator=(const Modele_turbulence_hyd_base &x)
+  {
+    DERIV(Modele_turbulence_hyd_base)::operator=(x);
+    return *this;
+  }
 };
 
-inline Modele_turbulence_hyd& Modele_turbulence_hyd::operator=(const Modele_turbulence_hyd_base& x)
-{
-  DERIV(Modele_turbulence_hyd_base)::operator=(x);
-  return *this;
-}
-
-inline const Champ_Fonc& Modele_turbulence_hyd::viscosite_turbulente() const
-{
-  return valeur().viscosite_turbulente();
-}
-
-inline const Turbulence_paroi& Modele_turbulence_hyd::loi_paroi() const
-{
-  return valeur().loi_paroi();
-}
-
-inline int Modele_turbulence_hyd::preparer_calcul()
-{
-  return valeur().preparer_calcul();
-}
-
-inline void Modele_turbulence_hyd::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-inline int Modele_turbulence_hyd::sauvegarder(Sortie& os) const
-{
-  return valeur().sauvegarder(os);
-}
-
-inline int Modele_turbulence_hyd::reprendre(Entree& is)
-{
-  return valeur().reprendre(is);
-}
-
-inline void Modele_turbulence_hyd::discretiser()
-{
-  valeur().discretiser();
-}
-
-inline void Modele_turbulence_hyd::completer()
-{
-  valeur().completer();
-  valeur().loi_paroi()->completer();
-}
-
-inline void Modele_turbulence_hyd::imprimer(Sortie& os) const
-{
-  valeur().imprimer(os);
-}
-
-#endif
-
+#endif /* Modele_turbulence_hyd_included */

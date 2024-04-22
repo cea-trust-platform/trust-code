@@ -70,8 +70,8 @@ public:
 
 protected:
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
-  REF(Convection_Diffusion_std) mon_equation;
-  Turbulence_paroi_scal loipar;
+  REF(Convection_Diffusion_std) mon_equation_;
+  Turbulence_paroi_scal loipar_;
   double dt_impr_nusselt_ = DMAXFLOAT;
 
 protected:
@@ -84,7 +84,7 @@ protected:
  */
 inline const Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi() const
 {
-  return loipar;
+  return loipar_;
 }
 
 /*! @brief Renvoie si oui ou non loi de paroi (version const)
@@ -93,7 +93,7 @@ inline const Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi() con
  */
 inline int Modele_turbulence_scal_base::loi_paroi_non_nulle() const
 {
-  return loipar.non_nul();
+  return loipar_.non_nul();
 }
 
 /*! @brief Renvoie la loi de turbulence sur la paroi
@@ -102,27 +102,27 @@ inline int Modele_turbulence_scal_base::loi_paroi_non_nulle() const
  */
 inline Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi()
 {
-  return loipar;
+  return loipar_;
 }
 
 inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
 {
-  if (mon_equation.non_nul() == 0)
+  if (mon_equation_.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
-  return mon_equation.valeur();
+  return mon_equation_.valeur();
 }
 
 inline const Convection_Diffusion_std& Modele_turbulence_scal_base::equation() const
 {
-  if (mon_equation.non_nul() == 0)
+  if (mon_equation_.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
-  return mon_equation.valeur();
+  return mon_equation_.valeur();
 }
 
 #endif

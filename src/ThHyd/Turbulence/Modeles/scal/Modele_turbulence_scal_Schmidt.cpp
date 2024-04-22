@@ -26,13 +26,13 @@ Sortie& Modele_turbulence_scal_Schmidt::printOn(Sortie& s) const { return Modele
 Entree& Modele_turbulence_scal_Schmidt::readOn(Entree& is)
 {
   Modele_turbulence_scal_diffturb_base::readOn(is);
-  Cerr << "La valeur du nombre de Schmidt turbulent est de " << LeScturb << finl;
+  Cerr << "La valeur du nombre de Schmidt turbulent est de " << LeScturb_ << finl;
   return is;
 }
 
 void Modele_turbulence_scal_Schmidt::set_param(Param& param)
 {
-  param.ajouter("ScTurb", &LeScturb); // XD_ADD_P floattant Keyword to modify the constant (Sct) of Schmlidt model : Dt=Nut/Sct Default value is 0.7.
+  param.ajouter("ScTurb", &LeScturb_); // XD_ADD_P floattant Keyword to modify the constant (Sct) of Schmlidt model : Dt=Nut/Sct Default value is 0.7.
   Modele_turbulence_scal_base::set_param(param);
 }
 
@@ -78,9 +78,8 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
   const Milieu_base& mil = equation().probleme().milieu();
   const Turbulence_paroi_scal& lp = loi_paroi();
   if (lp.non_nul())
-    {
-      loipar->calculer_scal(diffusivite_turbulente_);
-    }
+    loipar_->calculer_scal(diffusivite_turbulente_);
+
   DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
   lambda_t = diffusivite_turbulente_.valeurs();
   if (equation().probleme().is_dilatable())
@@ -100,8 +99,8 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
 Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
 {
   DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
-  const DoubleTab& nu_t = la_viscosite_turbulente->valeurs();
-  double temps = la_viscosite_turbulente->temps();
+  const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
+  double temps = la_viscosite_turbulente_->temps();
   int n = alpha_t.size();
   if (nu_t.size() != n)
     {
@@ -111,7 +110,7 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
     }
 
   for (int i = 0; i < n; i++)
-    alpha_t[i] = nu_t[i] / LeScturb;
+    alpha_t[i] = nu_t[i] / LeScturb_;
   diffusivite_turbulente_.changer_temps(temps);
   if (equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());

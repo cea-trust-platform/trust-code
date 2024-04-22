@@ -32,19 +32,14 @@ class Champ_Fonc;
  */
 class Modele_turbulence_scal_diffturb_base: public Modele_turbulence_scal_base
 {
-
   Declare_base(Modele_turbulence_scal_diffturb_base);
-
 public:
-
-  //virtual int comprend_mot(const Motcle& ) const;
   void associer_viscosite_turbulente(const Champ_Fonc&);
   void completer() override;
   int reprendre(Entree&) override;
 
 protected:
-
-  REF(Champ_Fonc) la_viscosite_turbulente;
+  REF(Champ_Fonc) la_viscosite_turbulente_;
 };
 
 #endif /* Modele_turbulence_scal_diffturb_base_included */

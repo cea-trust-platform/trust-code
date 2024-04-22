@@ -31,36 +31,36 @@ Entree& Modele_turbulence_scal_Prandtl::readOn(Entree& is)
 {
   Modele_turbulence_scal_diffturb_base::readOn(is);
   // si on  a lu une fonction, on initialise le Parser
-  if (definition_fonction != Nom())
+  if (definition_fonction_ != Nom())
     {
-      fonction.setNbVar(2);
-      fonction.addVar("alpha");
-      fonction.addVar("nu_t");
-      fonction.setString(definition_fonction);
-      fonction.parseString();
+      fonction_.setNbVar(2);
+      fonction_.addVar("alpha");
+      fonction_.addVar("nu_t");
+      fonction_.setString(definition_fonction_);
+      fonction_.parseString();
     }
 
-  if (LePrdt_fct != Nom())
+  if (LePrdt_fct_ != Nom())
     {
-      fonction1.setNbVar(3);
-      fonction1.addVar("x");
-      fonction1.addVar("y");
-      fonction1.addVar("z");
-      fonction1.setString(LePrdt_fct);
-      fonction1.parseString();
-      Cerr << "L'expression du nombre de Prandtl turbulent est " << LePrdt_fct << finl;
+      fonction1_.setNbVar(3);
+      fonction1_.addVar("x");
+      fonction1_.addVar("y");
+      fonction1_.addVar("z");
+      fonction1_.setString(LePrdt_fct_);
+      fonction1_.parseString();
+      Cerr << "L'expression du nombre de Prandtl turbulent est " << LePrdt_fct_ << finl;
     }
   else
-    Cerr << "La valeur par defaut du nombre de Prandtl turbulent est " << LePrdt << finl;
+    Cerr << "La valeur par defaut du nombre de Prandtl turbulent est " << LePrdt_ << finl;
 
-  Cerr << "L'expression du nombre de Prandtl turbulent est " << LePrdt_fct << finl;
+  Cerr << "L'expression du nombre de Prandtl turbulent est " << LePrdt_fct_ << finl;
   return is;
 }
 
 void Modele_turbulence_scal_Prandtl::set_param(Param& param)
 {
-  param.ajouter("Prdt", &LePrdt_fct); // XD_ADD_P chaine Keyword to modify the constant (Prdt) of Prandtl model : Alphat=Nut/Prdt Default value is 0.9
-  param.ajouter("Prandt_turbulent_fonction_nu_t_alpha", &definition_fonction); // XD_ADD_P chaine Optional keyword to specify turbulent diffusivity (by default, alpha_t=nu_t/Prt) with another formulae, for example: alpha_t=nu_t2/(0,7*alpha+0,85*nu_tt) with the string nu_t*nu_t/(0,7*alpha+0,85*nu_t) where alpha is the thermal diffusivity.
+  param.ajouter("Prdt", &LePrdt_fct_); // XD_ADD_P chaine Keyword to modify the constant (Prdt) of Prandtl model : Alphat=Nut/Prdt Default value is 0.9
+  param.ajouter("Prandt_turbulent_fonction_nu_t_alpha", &definition_fonction_); // XD_ADD_P chaine Optional keyword to specify turbulent diffusivity (by default, alpha_t=nu_t/Prt) with another formulae, for example: alpha_t=nu_t2/(0,7*alpha+0,85*nu_tt) with the string nu_t*nu_t/(0,7*alpha+0,85*nu_t) where alpha is the thermal diffusivity.
   Modele_turbulence_scal_base::set_param(param);
 }
 
@@ -74,10 +74,9 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
   const Milieu_base& mil = equation().probleme().milieu();
   const Turbulence_paroi_scal& lp = loi_paroi();
   if (lp.non_nul())
-    {
-      loipar->calculer_scal(diffusivite_turbulente_);
-    }
-  const Probleme_base& mon_pb = mon_equation->probleme();
+    loipar_->calculer_scal(diffusivite_turbulente_);
+
+  const Probleme_base& mon_pb = mon_equation_->probleme();
   DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
   lambda_t = diffusivite_turbulente_.valeurs();
   const bool Ccp = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
@@ -91,7 +90,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
         multiplier_par_rho_si_dilatable(lambda_t, mil);
     }
   else
-    lambda_t *= mon_equation->domaine_dis()->nb_elem() > 0 ? tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
+    lambda_t *= mon_equation_->domaine_dis()->nb_elem() > 0 ? tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
   lambda_t.echange_espace_virtuel();
   diffusivite_turbulente_->valeurs().echange_espace_virtuel();
 }
@@ -107,9 +106,9 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
 Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 {
   DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
-  const DoubleTab& nu_t = la_viscosite_turbulente->valeurs();
-  double temps = la_viscosite_turbulente->temps();
-  const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation->domaine_dis().valeur()).xp();
+  const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
+  double temps = la_viscosite_turbulente_->temps();
+  const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis().valeur()).xp();
 
   int n = alpha_t.size();
   if (nu_t.size() != n)
@@ -119,13 +118,13 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
       exit();
     }
 
-  if (definition_fonction != Nom())
+  if (definition_fonction_ != Nom())
     {
       // modif VB pour utiliser l'equation qui approche Yakhot : LePrdt = 0.7/Pe-t + 0.85
       // Pe-t est un nombre de Peclet turbulent defini par Pr*(nut/nu)
       // On a alors alpha_t = nut * nut / ( 0.7 alpha + 0.85 nut )
 
-      const Milieu_base& milieu = mon_equation.valeur().milieu();
+      const Milieu_base& milieu = mon_equation_.valeur().milieu();
       const Champ_Don& alpha = milieu.diffusivite();
       if (!alpha.non_nul())
         {
@@ -139,21 +138,21 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
       if (is_alpha_unif)
         {
           d_alpha = alpha(0, 0);
-          fonction.setVar("alpha", d_alpha);
+          fonction_.setVar("alpha", d_alpha);
         }
       for (int i = 0; i < n; i++)
         {
           if (!is_alpha_unif)
-            fonction.setVar("alpha", alpha(i));
-          fonction.setVar("nu_t", nu_t[i]);
+            fonction_.setVar("alpha", alpha(i));
+          fonction_.setVar("nu_t", nu_t[i]);
 
-          alpha_t[i] = fonction.eval();
+          alpha_t[i] = fonction_.eval();
         }
     }
   else
     for (int i = 0; i < n; i++)
       {
-        if (LePrdt_fct != Nom())
+        if (LePrdt_fct_ != Nom())
           {
             double x = xp(i, 0);
             double y = xp(i, 1);
@@ -162,15 +161,15 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
               {
                 z = xp(i, 2);
               }
-            fonction1.setVar("x", x);
-            fonction1.setVar("y", y);
-            fonction1.setVar("z", z);
-            double NbPrandtlCell = fonction1.eval();
+            fonction1_.setVar("x", x);
+            fonction1_.setVar("y", y);
+            fonction1_.setVar("z", z);
+            double NbPrandtlCell = fonction1_.eval();
             alpha_t[i] = nu_t[i] / NbPrandtlCell;
           }
         else
           {
-            alpha_t[i] = nu_t[i] / LePrdt;
+            alpha_t[i] = nu_t[i] / LePrdt_;
           }
       }
 

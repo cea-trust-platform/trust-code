@@ -35,10 +35,10 @@ public:
   virtual int a_pour_Champ_Fonc(const Motcle&, REF(Champ_base)&) const;
   void mettre_a_jour(double) override;
   void set_param(Param&) override;
-  inline double get_Scturb() const { return LeScturb; }
+  inline double get_Scturb() const { return LeScturb_; }
 
 protected:
-  double LeScturb = 0.7;
+  double LeScturb_ = 0.7;
   Champ_Fonc& calculer_diffusion_turbulente();
 };
 

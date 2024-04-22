@@ -19,10 +19,7 @@
 
 Implemente_instanciable(Modele_turbulence_scal, "Modele_turbulence_scal", DERIV(Modele_turbulence_scal_base));
 
-Sortie& Modele_turbulence_scal::printOn(Sortie& s) const
-{
-  return s << valeur().que_suis_je() << finl;
-}
+Sortie& Modele_turbulence_scal::printOn(Sortie& s) const { return s << valeur().que_suis_je() << finl; }
 
 Entree& Modele_turbulence_scal::readOn(Entree& s)
 {
