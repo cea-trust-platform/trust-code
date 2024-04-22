@@ -3,7 +3,6 @@
 [ "$rep_dev" = "" ] && rep_dev=`pwd`
 export rep_dev
 name=TRUST
-[ "$DIPHA_ROOT" != "" ] && name=dipha
 export exec=$rep_dev/exec/${name}${COMM}
 export exec_opt=$rep_dev/exec_opt/${name}${COMM}_opt
 export exec_optd=$rep_dev/exec_opt/${name}${COMM}_opt_dyn

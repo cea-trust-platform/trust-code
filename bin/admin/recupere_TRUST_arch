@@ -1,7 +1,6 @@
 #!/bin/bash
 # Recuperation des rapports sur les machines distantes
 [ ${#TRUST_ROOT} = 0 ] && echo "The TRUST_ROOT variable is not definied !" && exit
-export DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique
 
 machine="" && [ ${#1} != 0 ] && machine=$1
 [ ${#Version} = 0 ] && echo "\$Version empty !" && exit
@@ -48,12 +47,10 @@ fi
 REP_NUIT=/home/trust_trio/triou/tmptrust/tmptrust/Historique/NUIT
 [ ! -d $REP_NUIT ] && mkdir -p $REP_NUIT
 NUIT=$REP_NUIT/NUIT.html
-NUIT_DIPHA=$REP_NUIT/NUIT_dipha.html
 echo > $NUIT
 ################################
 # Debut boucle sur les modules #
 ################################
-#MODULES="TRUST Diphasique"
 MODULES="TRUST"
 for MODULE in $MODULES
 do

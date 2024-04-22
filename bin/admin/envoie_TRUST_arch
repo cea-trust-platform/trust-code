@@ -47,9 +47,6 @@ echo "------------------------------------"
 a_jour_TRUST_tar_files=0
 a_jour_TRUST_tar=0
 
-#LISTE_DIPHA_ROOT="Diphasique.tar.gz lib.tar.gz"
-[ ${#DIPHA_ROOT} = 0 ] && DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique && export DIPHA_ROOT
-
 liste_machines=$TRUST_ROOT/bin/admin/liste.machines
 
 ######################
