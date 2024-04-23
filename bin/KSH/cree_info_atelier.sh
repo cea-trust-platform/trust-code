@@ -29,7 +29,8 @@ tr = os.path.join(os.getenv('TRUST_ROOT'), 'src')
 for dirpath, dirnames, filenames in os.walk(tr):
       if filenames:
         lst.extend(filenames)
-inter = set(lst).intersection(set(ffs))
+inter = list(set(lst).intersection(set(ffs)))
+inter.sort()
 print(' '.join(list(inter)))
 "
 
