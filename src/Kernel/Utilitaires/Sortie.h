@@ -98,14 +98,12 @@ public:
   virtual int add_col(const char * ob);
 
   // The put methods can potentially write long stream of data (std::streamsize == ptrdiff_t == long)
-  // but in many derived classes only used after the Scatter (e.g. LecFicDiffuse) we downcast to int.
+  // but in many derived classes only used after the Scatter (e.g. LecFicDiffuse) we downcast to int inside impl.
   virtual int put(const unsigned* ob, std::streamsize n, std::streamsize nb_colonnes=1);
-  virtual int put(const int* ob, std::streamsize n, std::streamsize nb_colonnes=1);
+  virtual int put(const True_int* ob, std::streamsize n, std::streamsize nb_colonnes=1);
   virtual int put(const float * ob, std::streamsize n, std::streamsize nb_colonnes=1);
   virtual int put(const double* ob, std::streamsize n, std::streamsize nb_colonnes=1);
-#if !defined(INT_is_64_) || (INT_is_64_ == 2)
   virtual int put(const long  * ob, std::streamsize n, std::streamsize nb_colonnes=1);
-#endif
 
   virtual ~Sortie() {}
   virtual int set_bin(int bin);

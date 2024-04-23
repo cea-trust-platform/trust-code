@@ -162,7 +162,7 @@ inline void Parser_U::setVar(const std::string& v, double val)
 /**
  * Fixe la valeur de la variable de numero specifie. Ce numero correspond a l'ordre de l'ajout des variables par la methode addVar().
  */
-inline void Parser_U::setVar(int i, double val)
+inline void Parser_U::setVar(True_int i, double val)
 {
   parser->setVar(i, val);
 }

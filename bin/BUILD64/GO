@@ -10,9 +10,13 @@ cp -r bin/BUILD64/patch/*  .
 cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 
 # Apply Modifie script and exclude many file extensions that should not be edited if possible
-# arch.h is already compatible with BUILD64, it provides from patch, so we do not edit it
 # ICoCo should also remain out of the process.
-./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h" -not -name "ProblemTrio.*")
+./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h*" -not -name "ProblemTrio.*")
+
+# arch.h is very specific - this where we need to keep just one int (True_int)
+arch_f=$(find src -name "arch.h")
+sed -i 's/int /long /g' $arch_f
+sed -i 's/ long True_/ int True_/' $arch_f
 
 ./Modifie $(find Outils/lata_tools/src -not -name "*.py" )
 
