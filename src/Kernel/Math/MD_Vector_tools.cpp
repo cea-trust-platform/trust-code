@@ -21,7 +21,6 @@
 #include <stat_counters.h>
 #include <Schema_Comm.h>
 #include <TRUSTTrav.h>
-#include <ArrOfBit.h>
 #include <vector>
 
 static Schema_Comm_Vecteurs comm;

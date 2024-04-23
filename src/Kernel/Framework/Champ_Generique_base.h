@@ -19,8 +19,8 @@
 #include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <Champ.h>
+#include <ArrOfBit.h>
 
-class ArrOfBit;
 class Postraitement_base;
 class Discretisation_base;
 class Param;

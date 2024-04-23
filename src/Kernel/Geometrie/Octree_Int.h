@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 
 #include <TRUSTArrays.h>
 #include <TRUSTTab.h>
+#include <ArrOfBit.h>
 
 struct IntBoxData;
-class ArrOfBit;
 
 /*! @brief : Un octree permettant de retrouver des objets ponctuels ou parallelipipediques dans un espace 1D, 2D ou 3D et des coordonnees entieres
  *

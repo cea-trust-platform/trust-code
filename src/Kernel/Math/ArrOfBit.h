@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,33 +19,44 @@
 #include <assert.h>
 #include <Objet_U.h>
 
-class ArrOfBit : public Objet_U
+#ifdef setbit
+#undef setbit   // setbit is also a macro in /usr/include/sys/param.h .... too bad ...
+#endif
+
+template <typename _SIZE_>
+class ArrOfBit_32_64 : public Objet_U
 {
-  Declare_instanciable_sans_constructeur_ni_destructeur(ArrOfBit);
+
+  Declare_instanciable_sans_constructeur_ni_destructeur_32_64(ArrOfBit_32_64);
+
 public:
-  ArrOfBit(int n=0);
-  ArrOfBit(const ArrOfBit& array);              // Constructeur par copie
-  ~ArrOfBit() override;                                  // Destructeur
-  ArrOfBit& operator=(const ArrOfBit& array);   // Operateur copie
-  ArrOfBit& operator=(int i);
-  inline int operator[](int i) const;
-  inline void setbit(int i) const;
-  inline int testsetbit(int i) const;
-  inline void clearbit(int i) const;
-  inline int size_array() const;
-  ArrOfBit& resize_array(int n);
+  using int_t = _SIZE_;
+
+  ArrOfBit_32_64(int_t n=0);
+  ArrOfBit_32_64(const ArrOfBit_32_64& array);              // Constructeur par copie
+  ~ArrOfBit_32_64() override;                                  // Destructeur
+  ArrOfBit_32_64& operator=(const ArrOfBit_32_64& array);   // Operateur copie
+  ArrOfBit_32_64& operator=(int_t i);
+  inline int operator[](int_t i) const;
+  inline void setbit(int_t i) const;
+  inline int testsetbit(int_t i) const;
+  inline void clearbit(int_t i) const;
+  /// Renvoie la taille du tableau en bits
+  inline int_t size_array() const { return taille; }
+  ArrOfBit_32_64& resize_array(int_t n);
 protected:
-  int calculer_int_size(int taille) const;
-  int taille;
+  int_t calculer_int_size(int_t taille) const;
+  int_t taille;
   unsigned int *data;
-  static const unsigned int SIZE_OF_INT_BITS;
-  static const unsigned int DRAPEAUX_INT;
+  static constexpr unsigned int SIZE_OF_INT_BITS = 5;
+  static constexpr unsigned int DRAPEAUX_INT = 31;
 };
 
 /*! @brief Renvoie 1 si le bit e est mis, 0 sinon.
  *
  */
-inline int ArrOfBit::operator[](int e) const
+template <typename _SIZE_>
+inline int ArrOfBit_32_64<_SIZE_>::operator[](int_t e) const
 {
   assert(e >= 0 && e < taille);
   unsigned int i = (unsigned int) e;
@@ -58,7 +69,8 @@ inline int ArrOfBit::operator[](int e) const
 /*! @brief Met le bit e a 1.
  *
  */
-inline void ArrOfBit::setbit(int e) const
+template <typename _SIZE_>
+inline void ArrOfBit_32_64<_SIZE_>::setbit(int_t e) const
 {
   assert(e >= 0 && e < taille);
   unsigned int i = (unsigned int) e;
@@ -69,7 +81,8 @@ inline void ArrOfBit::setbit(int e) const
 /*! @brief Renvoie la valeur du bit e, puis met le bit e a 1.
  *
  */
-inline int ArrOfBit::testsetbit(int e) const
+template <typename _SIZE_>
+inline int ArrOfBit_32_64<_SIZE_>::testsetbit(int_t e) const
 {
   assert(e >= 0 && e < taille);
   unsigned int i = (unsigned int) e;
@@ -83,7 +96,8 @@ inline int ArrOfBit::testsetbit(int e) const
 /*! @brief Met le bit e a 0.
  *
  */
-inline void ArrOfBit::clearbit(int e) const
+template <typename _SIZE_>
+inline void ArrOfBit_32_64<_SIZE_>::clearbit(int_t e) const
 {
   assert(e >= 0 && e < taille);
   unsigned int i = (unsigned int) e;
@@ -91,12 +105,7 @@ inline void ArrOfBit::clearbit(int e) const
   data[i >> SIZE_OF_INT_BITS] &= ~flag;
 }
 
-/*! @brief Renvoie la taille du tableau en bits
- *
- */
-inline int ArrOfBit::size_array() const
-{
-  return taille;
-}
+using ArrOfBit = ArrOfBit_32_64<int>;
+using BigArrOfBit = ArrOfBit_32_64<trustIdType>;
 
 #endif

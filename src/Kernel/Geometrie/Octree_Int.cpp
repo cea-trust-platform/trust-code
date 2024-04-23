@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 #include <Octree_Int.h>
-#include <ArrOfBit.h>
 
 static const int max_levels_ = 32; // 1 de plus que le nombre de bits=1 dans coords_max
 // La valeur suivante doit etre une puissance de deux

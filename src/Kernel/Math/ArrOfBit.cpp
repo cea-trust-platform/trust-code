@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,18 +13,16 @@
 *
 *****************************************************************************/
 
+#include <arch.h>
 #include <ArrOfBit.h>
 #include <cstring>
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfBit,"ArrOfBit",Objet_U);
-
-const unsigned int ArrOfBit::SIZE_OF_INT_BITS = 5;
-const unsigned int ArrOfBit::DRAPEAUX_INT = 31;
+Implemente_instanciable_sans_constructeur_ni_destructeur_32_64(ArrOfBit_32_64,"ArrOfBit",Objet_U);
 
 /*! @brief Constructeur d'un tableau de taille n, non initialise
- *
  */
-ArrOfBit::ArrOfBit(int n)
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>::ArrOfBit_32_64(int_t n)
 {
   taille = 0;
   data = 0;
@@ -32,9 +30,9 @@ ArrOfBit::ArrOfBit(int n)
 }
 
 /*! @brief Destructeur.
- *
  */
-ArrOfBit::~ArrOfBit()
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>::~ArrOfBit_32_64()
 {
   if (data)
     delete[] data;
@@ -42,9 +40,9 @@ ArrOfBit::~ArrOfBit()
 }
 
 /*! @brief Constructeur par copie (deep copy)
- *
  */
-ArrOfBit::ArrOfBit(const ArrOfBit& array):Objet_U(array)
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>::ArrOfBit_32_64(const ArrOfBit_32_64& array):Objet_U(array)
 {
   taille = 0;
   data = 0;
@@ -52,12 +50,12 @@ ArrOfBit::ArrOfBit(const ArrOfBit& array):Objet_U(array)
 }
 
 /*! @brief Taille en "int" du tableau requis pour stocker un tableau de bits de taille donnees.
- *
  */
-int ArrOfBit::calculer_int_size(int la_taille) const
+template <typename _SIZE_>
+typename ArrOfBit_32_64<_SIZE_>::int_t ArrOfBit_32_64<_SIZE_>::calculer_int_size(int_t la_taille) const
 {
   assert(la_taille >= 0);
-  int siz = la_taille >> SIZE_OF_INT_BITS;
+  int_t siz = la_taille >> SIZE_OF_INT_BITS;
   if (la_taille & DRAPEAUX_INT)
     siz++;
   return siz;
@@ -68,19 +66,19 @@ int ArrOfBit::calculer_int_size(int la_taille) const
  * Si la taille est plus petite, les donnees sont
  *  tronquees, et si la taille est plus grande, les nouveaux elements
  *  ne sont pas initialises.
- *
  */
-ArrOfBit& ArrOfBit::resize_array(int n)
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>& ArrOfBit_32_64<_SIZE_>::resize_array(int_t n)
 {
   if (taille == n)
     return *this;
   assert(n >= 0);
   if (n > 0)
     {
-      int oldsize = calculer_int_size(taille);
-      int newsize = calculer_int_size(n);
+      int_t oldsize = calculer_int_size(taille);
+      int_t newsize = calculer_int_size(n);
       unsigned int * newdata = new unsigned int[newsize];
-      int size_copy = (newsize > oldsize) ? oldsize : newsize;
+      int_t size_copy = (newsize > oldsize) ? oldsize : newsize;
       if (size_copy)
         {
           memcpy(newdata, data, size_copy);
@@ -99,11 +97,11 @@ ArrOfBit& ArrOfBit::resize_array(int n)
 }
 
 /*! @brief Operateur copie (deep copy).
- *
  */
-ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>& ArrOfBit_32_64<_SIZE_>::operator=(const ArrOfBit_32_64& array)
 {
-  int newsize = calculer_int_size(array.taille);
+  int_t newsize = calculer_int_size(array.taille);
   if (taille != array.taille)
     {
       if (data)
@@ -121,15 +119,13 @@ ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
 }
 
 /*! @brief Si la valeur est non nulle, met la valeur 1 dans tous les elements du tableau, sinon met la valeur 0.
- *
  */
-
-ArrOfBit& ArrOfBit::operator=(int val)
+template <typename _SIZE_>
+ArrOfBit_32_64<_SIZE_>& ArrOfBit_32_64<_SIZE_>::operator=(int_t val)
 {
   unsigned int valeur = val ? (~((unsigned int) 0)) : 0;
-  int size = calculer_int_size(taille);
-  int i;
-  for (i = 0; i < size; i++)
+  int_t size = calculer_int_size(taille);
+  for (int_t i = 0; i < size; i++)
     data[i] = valeur;
   return *this;
 }
@@ -140,14 +136,15 @@ ArrOfBit& ArrOfBit::operator=(int val)
  *  0 1 0 0 1 0 ... (n valeurs)
  *
  */
-Sortie& ArrOfBit::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& ArrOfBit_32_64<_SIZE_>::printOn(Sortie& os) const
 {
 #ifndef LATATOOLS
   os << taille << finl;
-  int i;
   // Un retour a la ligne tous les 32 bits,
   // Une espace tous les 8 bits
-  for (i = 0; i < taille; i++)
+  int_t i = 0;
+  for (; i < taille; i++)
     {
       os << operator[](i);
       if ((i & 7) == 7)
@@ -168,16 +165,16 @@ Sortie& ArrOfBit::printOn(Sortie& os) const
  *  0 1 0 0 1 0 ... (n valeurs)
  *
  */
-Entree& ArrOfBit::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& ArrOfBit_32_64<_SIZE_>::readOn(Entree& is)
 {
 #ifndef LATATOOLS
-  int newsize;
+  int_t newsize;
   is >> newsize;
   resize_array(newsize);
   operator=(0);
 
-  int i;
-  for (i = 0; i < taille; i++)
+  for (int_t i = 0; i < taille; i++)
     {
       int bit;
       is >> bit;
@@ -186,3 +183,13 @@ Entree& ArrOfBit::readOn(Entree& is)
 #endif
   return is;
 }
+
+/////////////////////////////////////////////////
+//// Template instanciations
+/////////////////////////////////////////////////
+
+template class ArrOfBit_32_64<int>;
+#if INT_is_64_ == 2
+template class ArrOfBit_32_64<trustIdType>;
+#endif
+
