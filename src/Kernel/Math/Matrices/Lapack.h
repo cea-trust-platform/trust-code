@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,6 +83,15 @@ extern "C"
                           const int*    const  // INFO
                          );
 
+  void F77DECLARE(DGESV)(const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const int*    const, // IPIV
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
   // FIN MODIF ELI LAUCOIN (26/11/2007)
 
   // MULTIPLICATION MATRICIELLE C = alpha*op( A )*op( B ) + beta*C
@@ -335,6 +344,15 @@ extern "C"
                           const int*    const  // INFO
                          );
 
+  void F77DECLARE(dgesv)(const int*    const, // N
+                         const int*    const, // NRHS
+                         const double* const, // A
+                         const int*    const, // LDA
+                         const int*    const, // IPIV
+                         const double* const, // B
+                         const int*    const, // LDB
+                         const int*    const  // INFO
+                        );
   // FIN MODIF ELI LAUCOIN (26/11/2007)
 
   // MULTIPLICATION MATRICIELLE C = alpha*op( A )*op( B ) + beta*C
