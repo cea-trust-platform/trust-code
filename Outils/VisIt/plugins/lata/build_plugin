@@ -64,12 +64,12 @@ if [ ! -d ${Build} ]; then
    env LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH $local/xml2cmake  lata.xml
    dlocal=`dirname $local`
    # Puree VisIt pas capable de proposer de fixer VISIT_PLUGIN_DIR...
-   sed "s?$HOME/.visit?$dlocal?" CMakeLists.txt
+   # CMakeLists.txt should be updated to build plugins in visit install directory, otherwise plugins will be
+   # installed in $HOME/.visit/version/...
+   sed -i "s?$HOME/.visit?$dlocal?" CMakeLists.txt
    # Switch to c++14
    sed -i 's/PROJECT(lata_database)/PROJECT(lata_database)\n set(CMAKE_CXX_STANDARD 14)/' CMakeLists.txt
 
-   #sed "s?$HOME/.visit/2.?$dlocal/2.?;s?$HOME/.visit?$dlocal/current?" CMakeLists.txt > p
-   #tkdiff  CMakeLists.txt p
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
       export OMPI_CXX=$TRUST_CC_BASE_EXTP
