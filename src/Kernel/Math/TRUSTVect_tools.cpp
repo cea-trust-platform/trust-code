@@ -68,8 +68,10 @@ Block_Iter<_SIZE_> determine_blocks(Mp_vect_options opt, const MD_Vector& md, co
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      // Should never use paralle patterns in 64b:
+#if INT_is_64_ == 2
+      // Should never use parallel patterns in 64b:
       assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
+#endif
       const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;

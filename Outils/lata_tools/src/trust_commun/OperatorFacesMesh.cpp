@@ -33,9 +33,9 @@ void build_geometry_(OperatorFacesMesh& op, const DomainUnstructured& src, LataD
       Journal() << "Error in OperatorFacesMesh::build_geometry: cannot operate on unstructured mesh with this element type" << endl;
       throw;
     }
-  //  const entier nb_som = src.nodes_.dimension(0);
-  // const entier nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
-  //const entier dim = src.dimension();
+  //  const int nb_som = src.nodes_.dimension(0);
+  // const int nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
+  //const int dim = src.dimension();
 
   DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
@@ -50,7 +50,7 @@ void build_geometry_(OperatorFacesMesh& op, const DomainUnstructured& src, LataD
   dest.nodes_ = src.nodes_;
   dest.elements_ = src.faces_;
 
-  const entier nb_elem_virt = src.nb_virt_items(LataField_base::FACES);
+  const trustIdType nb_elem_virt = src.nb_virt_items(LataField_base::FACES);
   dest.set_nb_virt_items(LataField_base::ELEM, nb_elem_virt);
 }
 

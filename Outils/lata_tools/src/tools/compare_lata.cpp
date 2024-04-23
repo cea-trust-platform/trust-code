@@ -29,7 +29,7 @@ double gepsilon = 1e-05;
 double gepsilon_champs = 1e-05;
 double gerr = 0.0;
 double gemax = 0; /* Erreur maximum rencontree */
-DoubleTab xp;
+BigDoubleTab xp;
 double xmax = 0.0;
 double ymax = 0.0;
 double zmax = 0.0;
@@ -79,7 +79,7 @@ void open(Nom& filename, LataFilter& filter, LataOptions& opt, LataDB& lata_db)
       read_any_format(filename, opt.path_prefix, lata_db);
       filter.initialize(opt, lata_db);
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << " error while opening " << filename << " " << err.describe() << endl;
       exit(-1);
@@ -98,13 +98,13 @@ const Domain& get_domain(LataFilter& filter, Domain_Id& id, Nom& filename)
     {
       return filter.get_geometry(id);
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << " error while loading " << id.name_ << " in file " << filename << " " << err.describe() << endl;
       exit(-1);
 
     }
-  catch (LataError err)
+  catch (LataError& err)
     {
       cerr << " error while opening " << id.name_ << " in file " << filename << endl;
       exit(-1);
@@ -118,30 +118,30 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 //  cerr << "conversion domaijk ";
   DomainUnstructured dom;
   dom.elt_type_ = ijk.elt_type_;
-  int nx = 1, ny = 1, nz = 1;
+  trustIdType nx = 1, ny = 1, nz = 1;
 
-  FloatTab& som = dom.nodes_;
+  BigFloatTab& som = dom.nodes_;
   const int dim = ijk.coord_.size();
-  nx = ijk.coord_[0].size_array();
-  ny = ijk.coord_[1].size_array();
+  nx = (trustIdType)ijk.coord_[0].size_array();
+  ny = (trustIdType)ijk.coord_[1].size_array();
   nz = 1;
   if (dim > 2)
-    nz = ijk.coord_[2].size_array();
+    nz =(trustIdType) ijk.coord_[2].size_array();
 
   som.resize(nx * ny * nz, dim);
 
-  for (int i = 0; i < nx; i++)
-    for (int j = 0; j < ny; j++)
-      for (int k = 0; k < nz; k++)
+  for (trustIdType i = 0; i < nx; i++)
+    for (trustIdType j = 0; j < ny; j++)
+      for (trustIdType k = 0; k < nz; k++)
         {
-          int nn = i * ny * nz + j * nz + k;
+          trustIdType nn = i * ny * nz + j * nz + k;
           som(nn, 0) = ijk.coord_[0][i];
           som(nn, 1) = ijk.coord_[1][j];
           if (dim > 2)
             som(nn, 2) = ijk.coord_[2][k];
         }
 
-  IntTab& elems = dom.elements_;
+  BigTIDTab& elems = dom.elements_;
   int nb_som_elem = 4;
   if (dim == 3)
     {
@@ -149,11 +149,11 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 
       elems.resize((nx - 1) * (ny - 1) * (nz - 1), nb_som_elem);
 
-      for (int i = 0; i < nx - 1; i++)
-        for (int j = 0; j < ny - 1; j++)
-          for (int k = 0; k < nz - 1; k++)
+      for (trustIdType i = 0; i < nx - 1; i++)
+        for (trustIdType j = 0; j < ny - 1; j++)
+          for (trustIdType k = 0; k < nz - 1; k++)
             {
-              int nn = i + j * (nx - 1) + k * ((nx - 1) * (ny - 1));
+              trustIdType nn = i + j * (nx - 1) + k * ((nx - 1) * (ny - 1));
               elems(nn, 0) = i * ny * nz + j * nz + k;
               elems(nn, 1) = (i + 1) * ny * nz + j * nz + k;
               elems(nn, 2) = (i) * ny * nz + (j + 1) * nz + k;
@@ -169,10 +169,10 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 
       elems.resize((nx - 1) * (ny - 1), nb_som_elem);
 
-      for (int i = 0; i < nx - 1; i++)
-        for (int j = 0; j < ny - 1; j++)
+      for (trustIdType i = 0; i < nx - 1; i++)
+        for (trustIdType j = 0; j < ny - 1; j++)
           {
-            int nn = i + j * (nx - 1);
+            trustIdType nn = i + j * (nx - 1);
             elems(nn, 0) = i * ny + j;
             elems(nn, 1) = (i + 1) * ny + j;
             elems(nn, 2) = (i) * ny + (j + 1);
@@ -268,24 +268,23 @@ int compare_noms(const Field_UNames& geoms, const Field_UNames& geoms2, Field_UN
   return status;
 }
 
-void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& dom2, ArrOfInt& ielem, ArrOfInt& iseq)
+void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& dom2, BigArrOfTID& ielem, BigArrOfTID& iseq)
 {
-
   /* On verifie que tous les sommets sont identiques sur chaque grille */
   xmax = 0.0;
   ymax = 0.0;
   zmax = 0.0;
-  const FloatTab& coord1 = dom.nodes_;
-  const FloatTab& coord2 = dom2.nodes_;
-  int nb_nodes = coord1.dimension(0);
-  int nb_nodes2 = coord2.dimension(0);
-  const IntTab& connect = dom.elements_;
-  int nb_maille = connect.dimension(0);
-  const IntTab& connect2 = dom2.elements_;
-  int nb_maille2 = connect2.dimension(0);
-  int dimension = coord1.dimension(1);
+  const BigFloatTab& coord1 = dom.nodes_;
+  const BigFloatTab& coord2 = dom2.nodes_;
+  trustIdType nb_nodes = coord1.dimension(0);
+  trustIdType nb_nodes2 = coord2.dimension(0);
+  const BigTIDTab& connect = dom.elements_;
+  trustIdType nb_maille = connect.dimension(0);
+  const BigTIDTab& connect2 = dom2.elements_;
+  trustIdType nb_maille2 = connect2.dimension(0);
+  int dimension = (int)coord1.dimension(1);
 
-  for (int j = 0; j < nb_nodes; j++)
+  for (trustIdType j = 0; j < nb_nodes; j++)
     {
       if (fabs(coord1(j, 0)) >= xmax)
         xmax = fabs(coord1(j, 0));
@@ -298,21 +297,16 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
   // cherche_element
 
   xp.resize(nb_maille, 3);
-  int connect_max = connect.dimension(1);
-  //int nb_som_elem=0;
-  //for (int ii=0; ii<connect_max; ii++)
-  //  if (connect(0,ii) != -1) nb_som_elem=ii;
-  //nb_som_elem++;
-  //cerr<<nb_som_elem;	exit(-1);
-  ArrOfInt index_sort(nb_maille);
+  int connect_max = (int)connect.dimension(1);
+  BigArrOfTID index_sort(nb_maille);
   // calcul du centre de gravite de la grille seq
-  for (int k = 0; k < nb_maille; k++)
+  for (trustIdType k = 0; k < nb_maille; k++)
     {
       index_sort[k] = k;
       int nb_som_elem = 0;
       for (int ii = 0; ii < connect_max; ii++)
         {
-          int som = connect(k, ii);
+          trustIdType som = connect(k, ii);
           if (som >= 0)
             {
               nb_som_elem++;
@@ -326,11 +320,11 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
         xp(k, ii) /= nb_som_elem;
       //cerr<<k<<" xp "<<xp(k,0)<<" "<<xp(k,1)<<" "<<xp(k,2)<<endl;
     }
-  Octree_Double octree;
+  Octree_Double_64 octree;
 
-  octree.build_elements<FloatTab>(coord1, connect, 1e-15, 0);
+  octree.build_elements<BigFloatTab>(coord1, connect, 1e-15, 0);
 
-  int nb_elem_1 = nb_maille;
+  trustIdType nb_elem_1 = nb_maille;
 
   ielem.resize_array(nb_maille2);
   iseq.resize_array(nb_nodes2);
@@ -339,17 +333,15 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
 
   // pour chaque element de 2 on fait une dichotomie
 
-  for (int j = 0; j < nb_maille2; j++)
+  for (trustIdType j = 0; j < nb_maille2; j++)
     {
-      //cerr<<((double)j)/contenu2.nb_maille[i2]<<endl;
-      //equiv[i2].ielem[j]= -1;
       double pos[3];
       for (int ii = 0; ii < 3; ii++)
         pos[ii] = 0;
       int nb_som_elem = 0;
       for (int ii = 0; ii < connect_max; ii++)
         {
-          int som = connect2(j, ii);
+          trustIdType som = connect2(j, ii);
           if (som >= 0)
             {
               nb_som_elem++;
@@ -362,52 +354,36 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
       for (int ii = 0; ii < 3; ii++)
         pos[ii] /= nb_som_elem;
       // equiv[i2].ielem[j]= -1;
-      int corres_l = -1;
+      trustIdType corres_l = -1;
 
-      int index;
-      int n = octree.search_elements(pos[0], pos[1], pos[2], index);
+      trustIdType index;
+      trustIdType n = octree.search_elements(pos[0], pos[1], pos[2], index);
       for (int kk = 0; kk < n; kk++)
         {
-          int k = octree.floor_elements()[index + kk];
-
+          trustIdType k = octree.floor_elements()[index + kk];
           if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
             {
-
               corres_l = k;
               break;
             }
-
-          // Cerr<<octree.floor_elements()[k]<<finl;
         }
       if (corres_l != -1)
         if ((Ecart(xp(corres_l, 0), pos[0], xmax)) || (Ecart(xp(corres_l, 1), pos[1], ymax)) || (Ecart(xp(corres_l, 2), pos[2], zmax)))
-          {
-            if (0)
-              {
-                cerr << j << " pb  " << corres_l << endl;
-                for (int ii = 0; ii < 3; ii++)
-                  {
-                    cerr << "pos " << xp(corres_l, ii) << " " << pos[ii] << endl;
-                  }
-                exit(-1);
-              }
-            corres_l = -1;
-          }
+          corres_l = -1;
       // si on a pas trouve par l amethode optimisee on essaye toutes les mailles , mais avant on essaye le suivant du precedent (s'il existe!!!)
       if (corres_l == -1)
         {
           //cerr<<"on cherche l'elt a la main"<<endl;
-          int k = j;
+          trustIdType k = j;
           if (j > 0)
             k = ielem[j - 1] + 1;
           if (k<xp.dimension(0))
-             if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
-                 corres_l = k;
+            if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
+              corres_l = k;
         }
       if (corres_l == -1)
         {
-
-          for (int k = 0; k < nb_maille2; k++)
+          for (trustIdType k = 0; k < nb_maille2; k++)
             if (!((Ecart(xp(k, 0), pos[0], xmax)) || (Ecart(xp(k, 1), pos[1], ymax)) || (Ecart(xp(k, 2), pos[2], zmax))))
               {
                 corres_l = k;
@@ -420,13 +396,13 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
       if (corres_l != -1)
         for (int s_par = 0; s_par < nb_som_elem; s_par++)
           {
-            int som_par = connect2(j, s_par);
+            trustIdType som_par = connect2(j, s_par);
             if (som_par >= 0)
               {
                 if (iseq[som_par] == -1)
                   for (int s_seq = 0; s_seq < nb_som_elem; s_seq++)
                     {
-                      int som_seq = connect(corres_l, s_seq);
+                      trustIdType som_seq = connect(corres_l, s_seq);
                       if (som_seq >= 0)
                         {
                           if (!Ecart(coord1(som_seq, 0), coord2(som_par, 0), xmax))
@@ -442,9 +418,8 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
           }
     }
 
-//cerr<<"ouf"<<endl;
 
-  for (int j = 0; j < nb_nodes2; j++)
+  for (trustIdType j = 0; j < nb_nodes2; j++)
     {
       if (iseq[j] == -1)
         {
@@ -456,8 +431,8 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
           // on essaye la methode en n (mais sur pas trop de case)
 
           // equiv[i2].iseq[j] = -1;
-          int loc = -1;
-          for (int k = 0; k < nb_nodes; k++)
+          trustIdType loc = -1;
+          for (trustIdType k = 0; k < nb_nodes; k++)
             if (!Ecart(coord1(k, 0), coord2(j, 0), xmax))
               if (!Ecart(coord1(k, 1), coord2(j, 1), ymax))
                 if ((dimension < 3) || (!Ecart(coord1(k, 2), coord2(j, 2), zmax)))
@@ -473,17 +448,16 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
               if (dimension == 3)
                 cerr << " " << coord2(j, 2);
               cerr << endl;
-              printf(" Pas trouve le sommet %d Topologie : %s \n", j + 1, "oups");
+              cerr << " -> This vertex not found (index #" << j + 1 << ")!!" << endl;
               exit(1);
             }
         }
       /*printf("j i equiv[i2].iseq[j] isto= %d %d %d %d\n", j, i, equiv[i2].iseq[j], isto);*/
     }
-  //cerr<<"ouf2"<<endl;
 
   gemax = 0; /* Erreur maximum rencontree */
-  /* On verifie le nombre de mailles sur chaque grille */
 
+  /* On verifie le nombre de mailles sur chaque grille */
   if (nb_maille != nb_maille2)
     {
       printf(" Le nombre de mailles n'est pas le meme dans le premier fichier que dans le second\n");
@@ -491,35 +465,31 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
     }
 
   /* On verifie qu'on trouve les memes elements sur chaque grille */
-
-  for (int j = 0; j < nb_maille2; j++)
+  for (trustIdType j = 0; j < nb_maille2; j++)
     {
       if (ielem[j] == -1)
         {
-          if (0)
-            cerr << "element " << j << " pas trouve avec la nouvelle methode" << endl;
           // le tri sur les xp peut etre un peu faux
           // si on a pas trouve par la methode en log n
           // on essaye la methode en n (mais sur pas trop de case)
 
           //equiv[i2].ielem[j]= -1;
-          for (int k = 0; k < nb_maille; k++)
+          for (trustIdType k = 0; k < nb_maille; k++)
             {
-              int m = 1;
+              bool m = true;
               for (int ii = 0; ii < connect_max; ii++)
                 {
                   if (connect(k, ii) == -1)
                     break;
                   if (connect(k, ii) != iseq[connect2(j, ii)])
                     {
-                      m = 0;
+                      m = false;
                       break;
                     }
                 }
-              if (m == 1)
+              if (m)
                 {
                   ielem[j] = k;
-
                   break;
                 }
             }
@@ -527,25 +497,23 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
           /*printf("j i equiv[i2].ielem[j] isto= %d %d %d %d\n", j, i, equiv[i2].ielem[j], isto);*/
           if (ielem[j] == -1)
             {
-              printf("pas trouve l elt %d\n", j + 1);
+              cerr << "Element not found : index #" << j + 1 << endl;
               for (int ii = 0; ii < connect_max; ii++)
-                printf("%d ", connect2(j, ii));
-              printf("\n");
+                cerr << connect2(j, ii) << " ";
+              cerr << endl;
               exit(-1);
             }
         }
     }
-  // cerr<<"ouf3"<<endl;
-
   xp.resize(0, 0);
 }
 
 struct Ecarts
 {
-  ArrOfFloat min, max, min2, max2, delta, val, val2;
-  ArrOfInt loc, loc2;
+  BigArrOfFloat min, max, min2, max2, delta, val, val2;
+  BigArrOfInt loc, loc2;
   double t;
-  void dimensionne(int n)
+  void dimensionne(trustIdType n)
   {
     min.resize_array(n);
     max.resize_array(n);
@@ -565,7 +533,7 @@ struct EcartField
   LataVector<Ecarts> les_ecarts_;
 };
 
-void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& ecarts, const ArrOfInt& ielem, const ArrOfInt& isom)
+void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& ecarts, const BigArrOfTID& ielem, const BigArrOfTID& isom)
 {
   if (field.localisation_ != field2.localisation_)
     exit(-1);
@@ -574,18 +542,18 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
       cerr << "compare_fields not coded for this localisation " << LataField_base::localisation_to_string(field.localisation_) << endl;
       exit(-1);
     }
-  const ArrOfInt& renum = (field.localisation_ == LataField_base::ELEM ? ielem : isom);
-  const FloatTab& tab = field.data_;
-  int nv = tab.dimension(0);
-  const FloatTab& tab2 = field2.data_;
-  int nv2 = tab2.dimension(0);
-  int nc = tab.dimension(1);
+  const BigArrOfTID& renum = (field.localisation_ == LataField_base::ELEM ? ielem : isom);
+  const BigFloatTab& tab = field.data_;
+  trustIdType nv = tab.dimension(0);
+  const BigFloatTab& tab2 = field2.data_;
+  trustIdType nv2 = tab2.dimension(0);
+  int nc = (int)tab.dimension(1);
   ecarts.dimensionne(nc);
   for (int c = 0; c < nc; c++)
     {
       float max = -1e30;
       float min = 1e30;
-      for (int i = 0; i < nv; i++)
+      for (trustIdType i = 0; i < nv; i++)
         {
           const double& val = tab(i, c);
           if (val > max)
@@ -602,9 +570,9 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
       float max = -1e30;
       float min = 1e30;
       float delta = 0;
-      for (int i = 0; i < nv2; i++)
+      for (trustIdType i = 0; i < nv2; i++)
         {
-          int iseq = renum[i];
+          trustIdType iseq = renum[i];
           const float& val = tab(iseq, c);
           const float& val2 = tab2(i, c);
           float dval = fabs(val2 - val);
@@ -628,7 +596,8 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
       //      cerr<<"ici "<<delta<<" " <<min<<" "<<max<<endl;
     }
 }
-int test_nom_champ_vitesse(const Nom& nom_champ, const char Y)
+
+bool test_nom_champ_vitesse(const Nom& nom_champ, const char Y)
 {
   if ((strstr(nom_champ, "vitesse") || strstr(nom_champ, "VITESSE")))
     {
@@ -636,16 +605,14 @@ int test_nom_champ_vitesse(const Nom& nom_champ, const char Y)
       titi[0] = Y;
 
       if (strstr(nom_champ, titi))
-        {
-          return 1;
-        }
+        return true;
     }
-  return 0;
-
+  return false;
 }
+
+
 int main(int argc, char **argv)
 {
-
   LataOptions opt, opt2;
   LataDB lata_db, lata_db2;
   LataFilter filter, filter2;
@@ -659,13 +626,11 @@ int main(int argc, char **argv)
       usage(argv[0]);
       exit(-1);
     }
-  int dernier_only = 0;
+  bool dernier_only = false;
   for (int i = 3; i < argc; i++)
     {
       if (strcmp(argv[i], "--dernier") == 0)
-        {
-          dernier_only = 1;
-        }
+        dernier_only = true;
       else
         {
           if (strcmp(argv[i], "--seuil") == 0)
@@ -676,9 +641,7 @@ int main(int argc, char **argv)
           else
             {
               if (strcmp(argv[i], "--max_delta") == 0)
-                {
-                  max_delta = 1;
-                }
+                max_delta = 1;
               else
                 {
                   if (strcmp(argv[i], "--valmin") == 0)
@@ -686,11 +649,9 @@ int main(int argc, char **argv)
                       i++;
                       seuil = atof(argv[i]);
                     }
-
                   else
                     {
                       cerr << argv[i] << " incompris " << endl;
-                      ;
                       usage(argv[0]);
                       exit(-1);
                     }
@@ -727,7 +688,7 @@ int main(int argc, char **argv)
   //
   // Nom des champs
   //
-  for (entier i = 0; i < geoms3.size(); i++)
+  for (int i = 0; i < geoms3.size(); i++)
     {
       Domain_Id id(geoms3[i], 1, -1);
       Field_UNames fields = filter.get_exportable_field_unames(geoms3[i]);
@@ -750,7 +711,7 @@ int main(int argc, char **argv)
   //
   int nbtimes = filter.get_nb_timesteps();
   // timestep
-  if (dernier_only == 0)
+  if (!dernier_only)
     {
       int nbtimes2 = filter2.get_nb_timesteps();
       if (nbtimes != nbtimes2)
@@ -779,7 +740,7 @@ int main(int argc, char **argv)
   // Comparaison domaines et champs
   //
   LataVector<EcartField> les_ecarts;
-  for (entier i = 0; i < geoms3.size(); i++)
+  for (int i = 0; i < geoms3.size(); i++)
     {
       Domain_Id id(geoms3[i], 1, -1);
       const bool is_fixed_domain = (geoms3[i] != Nom("INTERFACES"));
@@ -788,28 +749,22 @@ int main(int argc, char **argv)
 
       // Most of the time the domain is fixed, but if not this structure holds the vertex and element correspondance
       // for each timestep:
-      std::map<int, ArrOfInt> map_ielem, map_isom;
-      map_ielem[-1] = ArrOfInt();
-      map_isom[-1] = ArrOfInt();
+      std::map<int, BigArrOfTID> map_ielem, map_isom;
+      map_ielem[-1] = BigArrOfTID();
+      map_isom[-1] = BigArrOfTID();
 
-      ArrOfInt &ielem = map_ielem[-1], &isom=map_isom[-1];
+      BigArrOfTID &ielem = map_ielem[-1], &isom=map_isom[-1];
       // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
       // C'est aussi la que se fait la comparaison des geometries:
       construit_corres(((dom.get_domain_type() == Domain::UNSTRUCTURED) ? dom.cast_DomainUnstructured() : convertIJKtoUnstructured(dom.cast_DomainIJK())),
                        (dom2.get_domain_type() == Domain::UNSTRUCTURED) ? dom2.cast_DomainUnstructured() : convertIJKtoUnstructured(dom2.cast_DomainIJK()), ielem, isom);
-
-      /*
-       cerr<<dom.get_domain_type()<<endl;
-       cerr<<"ici "<< geoms3[i]<< " "<<dom.cast_DomainUnstructured().elements_.dimension(1)<<endl;
-       cerr<<"ici "<< geoms3[i]<< " "<<dom2.cast_DomainUnstructured().elements_.dimension(1)<<endl;
-       */
 
       Field_UNames fields = filter.get_exportable_field_unames(geoms3[i]);
       Field_UNames fields2 = filter2.get_exportable_field_unames(geoms3[i]);
       Field_UNames fields3;
       compare_noms(fields, fields2, fields3);
 
-      for (entier j = 0; j < fields3.size(); j++)
+      for (int j = 0; j < fields3.size(); j++)
         {
           EcartField& un_ecart = les_ecarts.add();
           un_ecart.name_ = fields3[j];
@@ -819,10 +774,8 @@ int main(int argc, char **argv)
           for (int kt = 1; kt < nbtimes; kt++)
             {
               int t1, t2;
-              if (dernier_only == 0)
-                {
-                  t1 = t2 = kt;
-                }
+              if (!dernier_only)
+                t1 = t2 = kt;
               else
                 {
                   t1 = nbtimes - 1;
@@ -832,14 +785,14 @@ int main(int argc, char **argv)
               // Rebuild vertex/elem correspondances if needed
               if (!is_fixed_domain)
                 {
-                  map_ielem[kt] = ArrOfInt();
-                  map_isom[kt] = ArrOfInt();
+                  map_ielem[kt] = BigArrOfTID();
+                  map_isom[kt] = BigArrOfTID();
 
                   Domain_Id id_t(geoms3[i], kt, -1);
                   const Domain& dom_t = get_domain(filter, id_t, filename);
                   const Domain& dom_t_2 = get_domain(filter2, id_t, filename2);
 
-                  ArrOfInt &ielem2 = map_ielem[kt], &isom2=map_isom[kt];
+                  BigArrOfTID &ielem2 = map_ielem[kt], &isom2=map_isom[kt];
                   // on construit les tableux de ocnnectivites elem2 -> elem et som2 -> som
                   // C'est aussi la que se fait la comparaison des geometries:
                   construit_corres(((dom_t.get_domain_type() == Domain::UNSTRUCTURED) ? dom_t.cast_DomainUnstructured() : convertIJKtoUnstructured(dom_t.cast_DomainIJK())),
@@ -847,7 +800,7 @@ int main(int argc, char **argv)
                                     ielem2, isom2);
                 }
               int key = is_fixed_domain ? -1 : kt; // fixed domain
-              ArrOfInt &ielem3 = map_ielem[key], &isom3=map_isom[key];
+              BigArrOfTID &ielem3 = map_ielem[key], &isom3=map_isom[key];
 
               Field_Id id(fields3[j], t1, -1);
               Field_Id id2(fields3[j], t2, -1);
@@ -869,9 +822,7 @@ int main(int argc, char **argv)
               catch (LataError& err)
                 {
                   if (err.code_ == LataError::NOT_A_FLOAT_FIELD)
-                    {
-                      cerr << "Field '" << id.uname_ << "' is not a float field. No comparison done." << endl;
-                    }
+                    cerr << "Field '" << id.uname_ << "' is not a float field. No comparison done." << endl;
                   else
                     {
                     cerr << "error loading field" << endl;
@@ -987,19 +938,15 @@ int main(int argc, char **argv)
                   int c = c0;
                   Nom type_case(un_ecart.name_.get_localisation());
 
-                  printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %d=%15.8e %s par %d=%15.8e  gmax %15.8e composante %d\n", (const char*) get_long_field_name(un_ecart.name_),
+                  printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %ld=%15.8e %s par %ld=%15.8e  gmax %15.8e composante %ld\n", (const char*) get_long_field_name(un_ecart.name_),
                          ecarts.t, em, (const char*) type_case, ecarts.loc[c], ecarts.val[c], (const char*) type_case, ecarts.loc2[c], ecarts.val2[c], max, c);
                   gnerr_field++;
                   gnerrf++;
                   em = 0.0;
                 }
               else if (gnerrf != -1)
-                {
-                  printf("    OK pour %s au temps:%15.8e\n", (const char*) get_long_field_name(un_ecart.name_), ecarts.t);
-                }
-
+                printf("    OK pour %s au temps:%15.8e\n", (const char*) get_long_field_name(un_ecart.name_), ecarts.t);
             }
-
           }
     }
 

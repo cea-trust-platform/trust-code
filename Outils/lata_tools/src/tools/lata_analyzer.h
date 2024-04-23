@@ -23,7 +23,7 @@ class LataAnalyzerOptions: public LataOptions
 public:
   LataAnalyzerOptions();
   void describe();
-  entier parse_option(const Nom& s);
+  int parse_option(const Nom& s);
   void parse_options(int argc, char **argv);
 
   // Input filter: when reading the input file, timesteps, domains and components not mentionned in these vectors are not read. If empty list, write all items.
@@ -36,7 +36,7 @@ public:
   // Which parallel subdomain shall we load (default = -1, load all subdomains)
   int load_subdomain;
   // Output file will be written in binary format
-  int binary_out;
+  bool binary_out;
   // For OpenDX: include the output Field object in a group
   int forcegroup;
 
@@ -50,10 +50,10 @@ public:
   Nom output_filename;
 
   // Shall we dump the list of available timesteps, domains and fields ?
-  int dump_list;
+  bool dump_list;
 
   // Add virtual elements information in the lata file
-  int compute_virtual_elements;
+  bool compute_virtual_elements;
 
   // Lata output options:
   // split all: one file for each LataDB entry (one file for mesh nodes, another for mesh elements, etc)
@@ -64,13 +64,13 @@ public:
   // split none: one big file with everything
   Lata_file_splitting lata_file_splitting;
   // Include fortran blocs markers
-  int fortran_blocs;
+  bool fortran_blocs;
   // Ordering of data in components files
-  int use_fortran_data_ordering; // 1->fortran 0->c
+  bool use_fortran_data_ordering; // 1->fortran 0->c
   // Indexes begin at 1 (fortran_indexing=1) or 0
-  int use_fortran_indexing;
+  bool use_fortran_indexing;
   // Shall we compute the rms fluctuations ?
-  int rms_fluctuations;
+  bool rms_fluctuations;
 };
 
 #endif /* LataAnalyzer_H_ */

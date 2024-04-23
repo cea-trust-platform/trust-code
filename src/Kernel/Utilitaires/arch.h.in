@@ -13,6 +13,12 @@
 *
 *****************************************************************************/
 
+/*****************************************************************************/
+/* WARNING: this file is generated automatically from arch.h.in !!           */
+/* DO NOT EDIT MANUALLY.                                                     */
+/*****************************************************************************/
+
+
 /*! @brief Gestion des dependances machines pour l'appel a FORTRAN La macro F77DECLARE(TOTO) permet de declarer une routine FORTRAN.
  *
  *   La macro F77NAME(TOTO) permet d'appeler une routine FORTRAN.
@@ -65,34 +71,60 @@ double atanh(const double&);
 #define F77NAME(x) x
 #endif
 
-// Pour eviter problemes de portage 32/64bits
-// avec les appels Fortran a partir du C++
-// on definit les integer comme des int (4 octets)
-// et non plus des long int (4 octets sur 32bits ou 8 octets sur 64bits)
-// typedef mieux que #define pour definir un type
-typedef int entier;
+// Used for FORTRAN interfaces:
 typedef int integer;
+// This one always remain an int, even when replacing all int by long in the historical (find/replace)
+// 64b building mode:
 typedef int True_int;
 typedef unsigned int True_uint;  // Rarely used but still
 
 extern char* pwd();
 
-// Definition of the trustIdType storing all entity indices (element index, node index, ...)
-// that might be in 32 or 64bits
-// This is configured at the end of 'configurer_env' script.
+/* **************************************
+            32b / 64b management
+  **************************************
+  Here we define 'trustIdType', type used to store all geometrical entity indices (element index, node index, ...) that might 
+  exceed the 32b limit.
+  
+  All the TRUST libraries (LIBLATAFILTER notably) and all the main C++ source code can be compiled in either 32b or 64b depending 
+  on the flag set at configure time.
+  
+  However the lata_tools and VisIt plugin are **only** 64b for simplicity, and because it will be provided to VisIt team for integration.
+
+  In the core TRUST C++ code, the strategy is as follows: all the C++ classes that are potentially used before the Scatter keyword 
+  should support both 32 or 64b mode. This is typically done by having them templatized on the SIZE parameter. In practice however 
+  some classes are not yet ported to 64b and will remain only functional in 32b.
+  The idea is that once the computation is distributed on several processors, each proc will never need to use 64b indices. And everything
+  happening after Scatter (like the operator computations, etc.) is done on one proc only. 
+  (note that there are some exceptions for the postprocessing).
+  
+  At the time of writing, there are two ways to produce a 64b version of the code:
+    - either with configure flag '-with-64-bit-indices' which brutally replace all 'int' in the source code with 'long' (historical). 
+    When done so, C++ define tag 'INT_is_64_' is set to 1.
+    - or with configure flag '-64-bit-new' (the final target), defining trustIdType to int64. In this case C++ define tag 
+    'INT_is_64_' is set to 2.
+*/
+
 #include <cstdint>
 // We will often rely on std::numeric_limits<int>::max(), so need this:
 #include <limits>
 
-#if @TRUST_INT64@ 
+#if @TRUST_INT64@          // are we in 64b mode?
 using trustIdType = std::int64_t;
-#  if  @TRUST_INT64_NEW@
-#    define INT_is_64_ 2
-#  else
-#    define INT_is_64_ 1
+#  ifndef INT_is_64_           // it might have been already defined by the CMake (e.g. in lata_tools compilation)
+#    if  @TRUST_INT64_NEW@     // are we in 64b mode, new way of doing it?
+#      define INT_is_64_ 2
+#    else
+#      define INT_is_64_ 1
+#    endif
 #  endif
 #else
-using trustIdType = int ;
+#  ifdef LATATOOLS
+using trustIdType = std::int64_t;   // In lata_tools and VisIt lata plugin, trustIdType is always 64b, so that the tools 
+                                    // can deal with any type of lata files (32b or 64b)
+#  else
+using trustIdType = int;
+#  endif
 #endif
 
 #endif // _ARCH_H_

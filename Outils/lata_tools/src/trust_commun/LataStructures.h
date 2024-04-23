@@ -44,7 +44,7 @@ public:
 class Field_Id
 {
 public:
-  Field_Id() : timestep_(0) { }
+  Field_Id() : timestep_(0), block_(-1) { }
   Field_Id(const Field_UName& uname, int timestep, int block) : timestep_(timestep), block_(block), uname_(uname) { }
 
   int timestep_;
@@ -94,13 +94,13 @@ public:
   DomainType get_domain_type() const;
   const DomainUnstructured& cast_DomainUnstructured() const;
   const DomainIJK& cast_DomainIJK() const;
-  virtual entier dimension() const = 0;
-  virtual entier nb_nodes() const = 0;
-  virtual entier nb_elements() const = 0;
-  virtual entier nb_faces() const = 0;
-  virtual entier nb_items(const LataField_base::Elem_som) const;
-  virtual entier lata_block_offset(const LataField_base::Elem_som) const;
-  virtual void set_lata_block_offset(const LataField_base::Elem_som, entier n);
+  virtual int dimension() const = 0;
+  virtual trustIdType nb_nodes() const = 0;
+  virtual trustIdType nb_elements() const = 0;
+  virtual trustIdType nb_faces() const = 0;
+  virtual trustIdType nb_items(const LataField_base::Elem_som) const;
+  virtual trustIdType lata_block_offset(const LataField_base::Elem_som) const;
+  virtual void set_lata_block_offset(const LataField_base::Elem_som, trustIdType n);
 
   virtual void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const = 0;
 
@@ -111,9 +111,9 @@ public:
 protected:
   // If the Domain has been loaded from a lata file and it's not the
   // first block this is the offset in the lata file:
-  entier decal_nodes_lata_;
-  entier decal_elements_lata_;
-  entier decal_faces_lata_;
+  trustIdType decal_nodes_lata_;
+  trustIdType decal_elements_lata_;
+  trustIdType decal_faces_lata_;
   bool is_rectangle_ = false;
 };
 
@@ -127,30 +127,31 @@ public:
     nb_virt_faces_ = 0;
   }
 
-  FloatTab nodes_;
+  BigFloatTab nodes_;
   // For each element, indexes of the nodes (first node is at index 0)
   // Nodes ordering in an element is the same as in TRUST
-  IntTab elements_;
+  BigTIDTab elements_;
   // For each face, indexes of the nodes (if present in lata file)
-  IntTab faces_;
+  BigTIDTab faces_;
   // For each elements, indexes of the faces (first face at index 0, if present in lata file)
   // Faces ordering in an element is the same as in TRUST
-  IntTab elem_faces_;
+  BigTIDTab elem_faces_;
 
-  entier dimension() const override { return nodes_.dimension(1); }
-  entier nb_nodes() const override { return nodes_.dimension(0); }
-  entier nb_elements() const override { return elements_.dimension(0); }
-  entier nb_faces() const override { return faces_.dimension(0); }
+  int dimension() const override { return (int)nodes_.dimension(1); }
+  trustIdType nb_nodes() const override { return nodes_.dimension(0); }
+  trustIdType nb_elements() const override { return elements_.dimension(0); }
+  trustIdType nb_faces() const override { return faces_.dimension(0); }
   // Tests if the geometry contains faces description
-  entier faces_ok() const { return elem_faces_.dimension(0) == elements_.dimension(0); }
+  bool faces_ok() const { return elem_faces_.dimension(0) == elements_.dimension(0); }
 
   template<typename TabType>
-  void compute_cell_center_coordinates(TabType& coord, entier index_begin) const;
+  void compute_cell_center_coordinates(TabType& coord, trustIdType index_begin) const;
 
   BigEntier compute_memory_size() const override { return memory_size(nodes_) + memory_size(elements_) + memory_size(faces_) + memory_size(elem_faces_); }
-  const IntTab& get_joints(LataField_base::Elem_som loc) const
+
+  const BigTIDTab& get_joints(LataField_base::Elem_som loc) const
   {
-    const IntTab *ptr = 0;
+    const BigTIDTab *ptr = 0;
     switch(loc)
       {
       case LataField_base::SOM:
@@ -169,9 +170,10 @@ public:
       throw;
     return *ptr;
   }
-  IntTab& set_joints(LataField_base::Elem_som loc)
+
+  BigTIDTab& set_joints(LataField_base::Elem_som loc)
   {
-    IntTab *ptr = 0;
+    BigTIDTab *ptr = 0;
     switch(loc)
       {
       case LataField_base::SOM:
@@ -188,7 +190,8 @@ public:
       }
     return *ptr;
   }
-  const ArrOfInt& get_virt_items(LataField_base::Elem_som loc) const
+
+  const BigArrOfTID& get_virt_items(LataField_base::Elem_som loc) const
   {
     switch(loc)
       {
@@ -202,7 +205,8 @@ public:
         throw;
       }
   }
-  void set_virt_items(LataField_base::Elem_som loc, const ArrOfInt& list)
+
+  void set_virt_items(LataField_base::Elem_som loc, const BigArrOfTID& list)
   {
     switch(loc)
       {
@@ -223,7 +227,7 @@ public:
       }
   }
 
-  void set_nb_virt_items(LataField_base::Elem_som loc, entier n)
+  void set_nb_virt_items(LataField_base::Elem_som loc, trustIdType n)
   {
     switch(loc)
       {
@@ -241,7 +245,7 @@ public:
       }
   }
 
-  entier nb_virt_items(LataField_base::Elem_som loc) const
+  trustIdType nb_virt_items(LataField_base::Elem_som loc) const
   {
     switch(loc)
       {
@@ -256,20 +260,20 @@ public:
       }
   }
 
-  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, entier load_faces = 1, entier merge_virtual_elements = 0);
+  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, bool load_faces=true, bool merge_virtual_elements=false);
   virtual void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const override;
 
 protected:
   // data not always filled:
-  IntTab joints_sommets_;
-  IntTab joints_elements_;
-  IntTab joints_faces_;
-  ArrOfInt virt_nodes_; // Global indexes of virtual nodes to load
-  ArrOfInt virt_elements_; // Global indexes of virtual elements to load
-  ArrOfInt virt_faces_; // Global indexes of virtual faces to load
-  entier nb_virt_nodes_;
-  entier nb_virt_elements_;
-  entier nb_virt_faces_;
+  BigTIDTab joints_sommets_;
+  BigTIDTab joints_elements_;
+  BigTIDTab joints_faces_;
+  BigArrOfTID virt_nodes_; // Global indexes of virtual nodes to load
+  BigArrOfTID virt_elements_; // Global indexes of virtual elements to load
+  BigArrOfTID virt_faces_; // Global indexes of virtual faces to load
+  trustIdType nb_virt_nodes_;
+  trustIdType nb_virt_elements_;
+  trustIdType nb_virt_faces_;
 };
 
 // This is a structured grid, grid axes aligned on X, Y and Z.
@@ -282,6 +286,9 @@ protected:
 //  The number of a particular face is the smallest number of its nodes.
 //  Hence some numbers are not used (le last face of each "row" depending on the
 //  direction)
+//
+//  For IJK we make a strong assumption: the total number of elements, or faces, or nodes can be big (greater than 32bits)
+//  **but** in each direction, the number of steps (or points) always fits within 32 bits.
 class DomainIJK: public Domain
 {
 public:
@@ -292,50 +299,56 @@ public:
   // For each node and each element, flag indicates if it is valid or not
   // (eg, has usable field values)
   // If array is empty, all data is valid.
-  ArrOfBit invalid_positions_;
-  ArrOfBit invalid_connections_;
+  BigArrOfBit invalid_positions_;
+  BigArrOfBit invalid_connections_;
 
-  entier dimension() const override { return coord_.size(); }
-  entier nb_nodes() const override
+  int dimension() const override { return coord_.size(); }
+  trustIdType nb_nodes() const override
   {
-    entier n = 1, d = coord_.size();
-    for (entier i = 0; i < d; i++)
+    trustIdType n = 1;
+    int d = coord_.size();
+    for (int i = 0; i < d; i++)
       n *= coord_[i].size_array();
     return n;
   }
-  entier nb_elements() const override
+
+  trustIdType nb_elements() const override
   {
-    entier n = 1, d = coord_.size();
-    for (entier i = 0; i < d; i++)
+    trustIdType n = 1;
+    int d = coord_.size();
+    for (int i = 0; i < d; i++)
       n *= coord_[i].size_array() - 1;
     return n;
   }
+
   // Dimension(0) des tableaux de valeurs aux faces
   //  (voir convention sur la numerotation des faces)
   //  les champs associes aux faces des differentes directions sont
   //  stockes dans les composantes du champ.
-  entier nb_faces() const override { return nb_nodes(); }
+  trustIdType nb_faces() const override { return nb_nodes(); }
+
   BigEntier compute_memory_size() const override
   {
     BigEntier x = 0;
-    const entier n = coord_.size();
-    for (entier i = 0; i < n; i++)
+    const int n = coord_.size();
+    for (int i = 0; i < n; i++)
       x += memory_size(coord_[i]);
     return x + memory_size(invalid_positions_) + memory_size(invalid_connections_);
   }
 
   // renvoie le nombre de sommets dans la direction dir
   //  (renvoie 1 si dir >= dimension())
-  entier nb_som_dir(entier dir) const
+  int nb_som_dir(int dir) const
   {
     if (dir >= dimension())
       return 1;
     else
       return coord_[dir].size_array();
   }
+
   // renvoie le nombre d'elements dans la direction dir
   //  (renvoie 1 si dir >= dimension())
-  entier nb_elem_dir(entier dir) const
+  int nb_elem_dir(int dir) const
   {
     if (dir >= dimension())
       return 1;
@@ -343,17 +356,17 @@ public:
       return coord_[dir].size_array() - 1;
   }
 
-  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, const entier split_in_nparts = 1, const entier virt_layer_size = 1);
+  virtual void fill_domain_from_lataDB(const LataDB& lataDB, const Domain_Id& id, const int split_in_nparts=1, const int virt_layer_size=1);
   void fill_field_from_lataDB(const LataDB& lataDB, const Field_Id& id, LataDeriv<LataField_base>& field) const override;
 
   // when loading fields, we will load elements (i,j,k) with
   //   part_begin_ <= k < part_end_
   // (or j in 2D), part_begin_ and part_end_ include the virtual layer
-  entier part_begin_;
-  entier part_end_;
+  int part_begin_;
+  int part_end_;
   // number of layers of virtual elements at each side:
-  entier virtual_layer_begin_;
-  entier virtual_layer_end_;
+  int virtual_layer_begin_;
+  int virtual_layer_end_;
 };
 
 template<class TabType>

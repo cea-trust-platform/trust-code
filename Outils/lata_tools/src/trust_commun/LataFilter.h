@@ -20,7 +20,7 @@
 #include <LataStructures.h>
 #include <UserFields.h>
 
-typedef Field<FloatTab> FieldFloat;
+using FieldFloat = Field<BigFloatTab>;
 
 // This file provides the LataFilter class: it is a dynamic mesh
 //  and field generator which is able to load data from a lata file,
@@ -33,7 +33,7 @@ class LataOptions
 {
 public:
   static void extract_path_basename(const char *s, Nom& path_prefix, Nom& basename);
-  static entier read_int_opt(const Nom& s);
+  static int read_int_opt(const Nom& s);
   static double read_float_opt(const Nom& s);
   static Nom read_string_opt(const Nom& s);
 
@@ -70,7 +70,7 @@ public:
   UserFields_options user_fields_options_;
 
   LataOptions();
-  virtual entier parse_option(const Nom&);
+  virtual int parse_option(const Nom&);
   virtual void describe();
   virtual ~LataOptions() { }
 };
@@ -87,13 +87,13 @@ struct LataGeometryMetaData
 {
   Nom internal_name_; // Internal full name (eg DOM_IJK)
   Nom displayed_name_; // Short name showed to the user (DOM for DOM_IJK, ?? if the geometry should not be exported)
-  entier dynamic_; // Is the geometry changing at each timestep ?
-  entier dimension_; // spatial dimension of coordinates
+  bool dynamic_; // Is the geometry changing at each timestep ?
+  int dimension_; // spatial dimension of coordinates
   Domain::Element element_type_;
-  entier nblocks_; // Number of sub_blocks in the geometry (parallel computation)
+  int nblocks_; // Number of sub_blocks in the geometry (parallel computation)
   Motcle source_; // How to build this domain ("latadb", "operator_ijk", "operator_dual", "operator_boundary", "user_fields")
   Nom source_domain_;
-  entier is_ijk_;
+  bool is_ijk_;
 };
 
 struct LataFieldMetaData
@@ -102,8 +102,8 @@ struct LataFieldMetaData
   Nom name_;
   Nom geometry_name_;
   Noms component_names_;
-  entier nb_components_;
-  entier is_vector_; // Yes => nb_components is equal to spatial dimension
+  int nb_components_;
+  bool is_vector_; // Yes => nb_components is equal to spatial dimension
   LataField_base::Elem_som localisation_;
   Nom source_localisation_; // Localisation of source field (for displayed name in visit)
   Motcle source_; // How to build this field ("latadb", "operator_ijk", "operator_dual", "operator_boundary", "user_fields")
@@ -116,12 +116,12 @@ public:
   DataCacheItem() : tstep_(-1), last_access_time_(0), lock_(0), memory_size_(0) { }
   LataDeriv<LataObject> item_; // The cached item
   Nom id_; // The id for this item
-  entier tstep_; // The timestep of the cached data (for cache cleanup)
+  int tstep_; // The timestep of the cached data (for cache cleanup)
   BigEntier last_access_time_; // Last time this item has been accessed (for cache cleanup)
   // Is the item locked ? => cannot be deleted by clear_cache()
   // This is a counter: get_item increases, release_item dereases.
   // (this is when we simultaneously need several items, we must lock them to be sure)
-  entier lock_;
+  int lock_;
   // The memory size is computed when the item is released
   BigEntier memory_size_;
 };
@@ -135,8 +135,8 @@ public:
     data_.reset();
     cache_data_access_count_ = 0;
   }
-  void set_cache_properties(entier clear_on_tstep_change, BigEntier mem_limit);
-  template<class C> C& get_item(const Nom& id, entier tstep)
+  void set_cache_properties(bool clear_on_tstep_change, BigEntier mem_limit);
+  template<class C> C& get_item(const Nom& id, int tstep)
   {
     LataDeriv<LataObject>& obj = get_item_(id, tstep);
     if (obj.non_nul())
@@ -146,16 +146,17 @@ public:
   }
   void release_item(const Nom& id);
   void remove_item(const Nom& id);
-  void cleanup_cache(entier tstep_to_keep);
+  void cleanup_cache(int tstep_to_keep);
+
 protected:
-  LataDeriv<LataObject>& get_item_(const Nom& id, entier tstep);
+  LataDeriv<LataObject>& get_item_(const Nom& id, int tstep);
   // Stored data (depends on caching strategy)
   // data_ grows when needed.
   LataVector<DataCacheItem> data_;
   BigEntier cache_data_access_count_;
   // If nonzero, whenever we ask a timestep,
   //  remove all cached data from other timesteps
-  entier clear_cache_on_tstep_change_;
+  bool clear_cache_on_tstep_change_;
   // If before getting a new geometry or field, the data cache
   //  uses more than the limit, remove old data until we are below.
   // -1 means "no limit"
@@ -179,13 +180,13 @@ class LataFilter
 public:
   LataFilter() : lataDB__(0) { }
   void initialize(const LataOptions& opt, const LataDB& db);
-  void set_cache_properties(BigEntier max_memory, const entier keep_all_timesteps);
+  void set_cache_properties(BigEntier max_memory, bool keep_all_timesteps);
   Noms get_exportable_geometry_names() const;
   const LataGeometryMetaData& get_geometry_metadata(const char *geometry) const;
   LataVector<Field_UName> get_exportable_field_unames(const char *geometry) const;
   const LataFieldMetaData& get_field_metadata(const Field_UName& uname) const;
-  entier get_nb_timesteps() const;
-  double get_timestep(entier i) const;
+  int get_nb_timesteps() const;
+  double get_timestep(int i) const;
 
   const Domain& get_geometry(const Domain_Id&);
 
@@ -198,6 +199,7 @@ public:
   const LataDB& get_lataDB() const { return lataDB(); }
 
   const LataOptions& get_options() const { return opt_; }
+
 protected:
   Operator& get_set_operator(const Domain_Id& id);
   LataDeriv<LataField_base>& get_cached_field(const Field_Id&);

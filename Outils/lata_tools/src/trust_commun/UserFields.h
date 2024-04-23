@@ -21,7 +21,7 @@
 #include <TRUSTArray.h>
 
 template<class F> class Field;
-typedef Field<FloatTab> FieldType;
+typedef Field<BigFloatTab> FieldType;
 class Field_Id;
 class LataFilter;
 struct LataFieldMetaData;
@@ -42,7 +42,7 @@ public:
   void set(LataFilter &filter, const Domain_Id&);
   const DomainUnstructured& geom();
   const DomainIJK& geom_ijk();
-  entier test_ijk();
+  bool test_ijk();
 protected:
   void reset();
   LataRef<LataFilter> lata_filter_;
@@ -53,23 +53,20 @@ class UserFields_options
 {
 public:
   UserFields_options();
-  entier parse_option(const Nom&);
+  bool parse_option(const Nom&);
   void print_help_option() const;
 
   // Exemple de parametre en option (commentaires bienvenus !)
   // demie-largeur du filtre_boite en mailles
-  entier demie_largeur_filtre_boite_;
+  int demie_largeur_filtre_boite_;
 };
 
 class UserFields
 {
 public:
   void set_options(const UserFields_options &opt) { opt_ = opt; }
-
   void new_fields_metadata(LataFilter &filter, LataVector<LataFieldMetaData> &fields_data);
-
   FieldType get_field(const Field_Id &id);
-
   BigEntier compute_memory_size() { return 0; }
 
 protected:

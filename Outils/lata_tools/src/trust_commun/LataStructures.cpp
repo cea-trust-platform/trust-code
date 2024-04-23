@@ -15,12 +15,12 @@
 #include <LataStructures.h>
 #include <LataDB.h>
 #include <stdlib.h>
-static const entier info_level = 4;
+static const int info_level = 4;
 
 // Description: returns the number of items of the given type
-entier Domain::nb_items(const LataField_base::Elem_som loc) const
+trustIdType Domain::nb_items(const LataField_base::Elem_som loc) const
 {
-  entier n = -1;
+  trustIdType n = -1;
   switch (loc)
     {
     case LataField_base::SOM:
@@ -42,9 +42,9 @@ entier Domain::nb_items(const LataField_base::Elem_som loc) const
 // Description: returns the offset in the lata block on disk of the first
 //  item for this Domain.id_.block_ (parallel computation).
 //  (this value must be set with set_lata_block_offset)
-entier Domain::lata_block_offset(const LataField_base::Elem_som loc) const
+trustIdType Domain::lata_block_offset(const LataField_base::Elem_som loc) const
 {
-  entier n = -1;
+  trustIdType n = -1;
   switch (loc)
     {
     case LataField_base::SOM:
@@ -69,7 +69,7 @@ entier Domain::lata_block_offset(const LataField_base::Elem_som loc) const
 }
 
 // Description: set the lata_block_offset (see lata_block_offset)
-void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, entier n)
+void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, trustIdType n)
 {
   switch (loc)
     {
@@ -89,21 +89,21 @@ void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, entier n)
 }
 
 template<class TabType>
-void DomainUnstructured::compute_cell_center_coordinates(TabType& coord, entier index_begin) const
+void DomainUnstructured::compute_cell_center_coordinates(TabType& coord, trustIdType index_begin) const
 {
   using TYPE = typename TabType::Value_type_;
-  const entier dim = nodes_.dimension(1);
-  const entier nb_elem = elements_.dimension(0);
-  const entier nb_som_elem = elements_.dimension(1);
+  const int dim = (int)nodes_.dimension(1);
+  const trustIdType nb_elem = elements_.dimension(0);
+  const int nb_som_elem = (int)elements_.dimension(1);
   const TYPE facteur = (TYPE)(1.0 / (double)nb_som_elem);
   TYPE tmp[3];
-  for (int i = 0; i < nb_elem; i++)
+  for (trustIdType i = 0; i < nb_elem; i++)
     {
       int j, k;
       tmp[0] = tmp[1] = tmp[2] = 0.;
       for (j = 0; j < nb_som_elem; j++)
         {
-          int som = elements_(i, j);
+          trustIdType som = elements_(i, j);
           for (k = 0; k < loop_max(dim, 3); k++)
             {
               tmp[k] += nodes_(som, k);
@@ -118,11 +118,8 @@ void DomainUnstructured::compute_cell_center_coordinates(TabType& coord, entier 
     }
 }
 
-template
-void DomainUnstructured::compute_cell_center_coordinates(FloatTab& coord, entier index_begin) const;
-template
-void DomainUnstructured::compute_cell_center_coordinates(DoubleTab& coord, entier index_begin) const;
-
+template void DomainUnstructured::compute_cell_center_coordinates(BigFloatTab& coord, trustIdType index_begin) const;
+template void DomainUnstructured::compute_cell_center_coordinates(BigDoubleTab& coord, trustIdType index_begin) const;
 
 LataField_base::Elem_som LataField_base::localisation_from_string(const Motcle& loc)
 {
@@ -273,8 +270,8 @@ Nom Domain::element_type_to_string(Element type)
 //   merges these elements to the requested block.
 void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
                                                  const Domain_Id& id,
-                                                 entier load_faces,
-                                                 entier merge_virtual_elements)
+                                                 bool load_faces,
+                                                 bool merge_virtual_elements)
 {
   operator=(DomainUnstructured()); // Reset all data.
 
@@ -283,19 +280,19 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
 
   // ********************************
   // 1) Look for the sub-block items to read (parallel computation)
-  entier decal_nodes = 0;
-  entier decal_elements = 0;
-  entier decal_faces = 0;
-  entier nb_sommets = -1;
-  entier nbelements = -1;
-  entier nbfaces = -1;
+  trustIdType decal_nodes = 0;
+  trustIdType decal_elements = 0;
+  trustIdType decal_faces = 0;
+  trustIdType nb_sommets = -1;
+  trustIdType nbelements = -1;
+  trustIdType nbfaces = -1;
 
-  entier domain_has_faces = load_faces && lataDB.field_exists(id.timestep_, id.name_, "FACES");
+  bool domain_has_faces = load_faces && lataDB.field_exists(id.timestep_, id.name_, "FACES");
 
   // Tableau de 3 joints (SOM, ELEM et FACES)
-  LataVector<IntTab> joints;
-  entier nproc = 1;
-  for (entier i_item = 0; i_item < 3; i_item++)
+  LataVector<BigTIDTab> joints;
+  int nproc = 1;
+  for (int i_item = 0; i_item < 3; i_item++)
     {
       //    LataField_base::Elem_som loc = LataField_base::SOM;
       Nom nom("JOINTS_SOMMETS");
@@ -313,16 +310,16 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
           nom2 = "FACES";
         }
 
-      IntTab& joint = joints.add();
+      BigTIDTab& joint = joints.add();
       if (lataDB.field_exists(id.timestep_, id.name_, nom))
         {
-          entier nbitems = (entier)lataDB.get_field(id.timestep_, id.name_, nom2, "*").size_;
-          IntTab tmp;
+          trustIdType nbitems = lataDB.get_field(id.timestep_, id.name_, nom2, "*").size_;
+          BigTIDTab tmp;
           lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, nom, "*"), tmp);
-          nproc = tmp.dimension(0);
+          nproc = (int)tmp.dimension(0);
           // Recalcule la deuxieme colonne en fonction de la premiere
           joint.resize(nproc, 2);
-          for (entier i = 0; i < nproc; i++)
+          for (int i = 0; i < nproc; i++)
             {
               joint(i, 0) = tmp(i, 0);
               if (i < nproc-1)
@@ -348,7 +345,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
                     << " in geometry " << id.name_ << endl;
           throw;
         }
-      const entier n = id_.block_;
+      const int n = id_.block_;
       decal_nodes = joints[0](n, 0);
       nb_sommets = joints[0](n, 1);
       decal_elements = joints[1](n, 0);
@@ -393,44 +390,44 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
     {
       Journal(info_level) << " Merging virtual elements" << endl;
       // joints_virt_elems(sub_block, 0) = index of first virtual element in the VIRTUAL_ELEMENTS array
-      IntTab joints_virt_elems;
+      BigTIDTab joints_virt_elems;
       // Load the virtual elements (nodes are in global numbering)
       //  First: find the index and number of virtual elements for block number id.block_:
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "JOINTS_VIRTUAL_ELEMENTS", "*"), joints_virt_elems);
-      entier nb_virt_elems;
+      trustIdType nb_virt_elems;
       if (id.block_ < nproc-1)
         nb_virt_elems = joints_virt_elems(id.block_+1, 0) - joints_virt_elems(id.block_, 0);
       else
-        nb_virt_elems = (entier)lataDB.get_field(id.timestep_, id.name_, "VIRTUAL_ELEMENTS", "*").size_ - joints_virt_elems(id.block_, 0);
+        nb_virt_elems = (int)lataDB.get_field(id.timestep_, id.name_, "VIRTUAL_ELEMENTS", "*").size_ - joints_virt_elems(id.block_, 0);
       Journal(info_level+1) << " Number of virtual elements for block " << id.block_ << "=" << nb_virt_elems << endl;
       //  Second: load the indexes of the virtual elements to load:
-      IntTab virt_elems;
+      BigTIDTab virt_elems;
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "VIRTUAL_ELEMENTS", "*"), virt_elems, joints_virt_elems(id.block_,0), nb_virt_elems);
       set_virt_items(LataField_base::ELEM, virt_elems);
 
       {
         //  Third: load the virtual elements (virt_elems contains the global indexes of the elements to
         //  load and virt_elem_som will contain global nodes indexes of the virtual elements)
-        IntTab virt_elem_som;
+        BigTIDTab virt_elem_som;
         lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "ELEMENTS", "*"), virt_elem_som, virt_elems);
         // Find which virtual nodes are required and load them: virtual nodes to load are
         // all nodes of the virtual elements (they have duplicates).
-        ArrOfInt index;
-        ArrOfInt& virt_elem_som_array = virt_elem_som;  // Array seen as monodimensionnal
+        BigArrOfTID index;
+        BigTIDTab& virt_elem_som_array = virt_elem_som;  // Array seen as monodimensionnal
         array_sort_indirect(virt_elem_som_array, index);
         // Global nodes indexes of needed virtual nodes
-        ArrOfInt nodes_to_read;
+        BigArrOfTID nodes_to_read;
         {
-          const entier n = index.size_array();
+          const trustIdType n = index.size_array();
           // Global index of the last loaded node:
-          entier last_node = -1;
+          trustIdType last_node = -1;
           // Local index of the new loaded node:
-          entier new_node_index = nodes_.dimension(0)-1;
-          for (entier i = 0; i < n; i++)
+          trustIdType new_node_index = nodes_.dimension(0)-1;
+          for (trustIdType i = 0; i < n; i++)
             {
               // Take nodes to load in ascending order of their global numbers:
-              const entier idx = index[i];
-              const entier node = virt_elem_som_array[idx];
+              const trustIdType idx = index[i];
+              const trustIdType node = virt_elem_som_array[idx];
               if (node != last_node)
                 {
                   // Node not yet encountered
@@ -443,17 +440,17 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
         }
         set_virt_items(LataField_base::SOM, nodes_to_read);
         // Copy virtual elements to elements_
-        entier debut = elements_.size_array();
+        trustIdType debut = elements_.size_array();
         elements_.resize(elements_.dimension(0) + virt_elem_som.dimension(0),
-                         elements_.dimension(1));
+                         (int)elements_.dimension(1));
         elements_.inject_array(virt_elem_som, virt_elem_som.size_array(), debut);
         // Load virtual nodes
-        FloatTab tmp_nodes;
+        BigFloatTab tmp_nodes;
         lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "SOMMETS", "*"), tmp_nodes, nodes_to_read);
         // Copy to nodes_
         debut = nodes_.size_array();
         nodes_.resize(nodes_.dimension(0) + tmp_nodes.dimension(0),
-                      nodes_.dimension(1));
+                      (int)nodes_.dimension(1));
         nodes_.inject_array(tmp_nodes, tmp_nodes.size_array(), debut);
       }
 
@@ -461,24 +458,24 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
         {
           // Find which virtual faces are required and load them
           // For each virtual element, index of its faces (like virt_elem_som)
-          IntTab virt_elem_faces;
+          BigTIDTab virt_elem_faces;
           lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "ELEM_FACES", "*"), virt_elem_faces, virt_elems);
           // Build the list of missing faces:
-          ArrOfInt index;
-          ArrOfInt& virt_elem_faces_array = virt_elem_faces;  // Array seen as monodimensionnal
+          BigArrOfTID index;
+          BigArrOfTID& virt_elem_faces_array = virt_elem_faces;  // Array seen as monodimensionnal
           array_sort_indirect(virt_elem_faces_array, index);
-          ArrOfInt faces_to_read;
+          BigArrOfTID faces_to_read;
           {
-            const entier n = index.size_array();
+            const trustIdType n = index.size_array();
             // Global index of the last loaded face:
-            entier last_face = -1;
+            trustIdType last_face = -1;
             // Local index of the new loaded node:
-            entier new_face_index = faces_.dimension(0)-1;
-            for (entier i = 0; i < n; i++)
+            trustIdType new_face_index = faces_.dimension(0)-1;
+            for (trustIdType i = 0; i < n; i++)
               {
                 // Take nodes to load in ascending order of their global numbers:
-                const entier idx = index[i];
-                const entier face = virt_elem_faces_array[idx];
+                const trustIdType idx = index[i];
+                const trustIdType face = virt_elem_faces_array[idx];
                 if (face != last_face)
                   {
                     // Node not yet encountered
@@ -491,32 +488,32 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
           }
           set_virt_items(LataField_base::FACES, faces_to_read);
           // Copy virtual elem_faces to elem_faces
-          entier debut = elem_faces_.size_array();
+          trustIdType debut = elem_faces_.size_array();
           elem_faces_.resize(elem_faces_.dimension(0) + virt_elem_faces.dimension(0),
-                             elem_faces_.dimension(1));
+                             (int)elem_faces_.dimension(1));
           elem_faces_.inject_array(virt_elem_faces, virt_elem_faces.size_array(), debut);
 
           // Load virtual faces
-          IntTab tmp_faces_nodes;
+          BigTIDTab tmp_faces_nodes;
           lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "FACES", "*"), tmp_faces_nodes, faces_to_read);
           // Convert global nodes indexes to local loaded nodes indexes in tmp_faces_nodes
           {
             // sort tmp_faces in ascending order so that the search requires linear time
-            ArrOfInt& array_tmp_faces_nodes = tmp_faces_nodes;
+            BigArrOfTID& array_tmp_faces_nodes = tmp_faces_nodes;
             index.reset();
             array_sort_indirect(array_tmp_faces_nodes, index);
-            const entier n = array_tmp_faces_nodes.size_array();
+            const trustIdType n = array_tmp_faces_nodes.size_array();
             // Take nodes in tmp_faces_nodes in ascending order and find the corresponding node in nodes_to_read
             // (which is also in sorted)
-            entier i1; // index in array_tmp_faces_nodes (the current node to convert)
-            entier i2 = 0; // index in nodes_to_read
-            const entier index_of_first_virtual_node = nodes_.dimension(0) - nb_virt_items(LataField_base::SOM);
-            const ArrOfInt& nodes_to_read = get_virt_items(LataField_base::SOM);
-            const entier max_i2 = nodes_to_read.size_array();
+            trustIdType i1; // index in array_tmp_faces_nodes (the current node to convert)
+            trustIdType i2 = 0; // index in nodes_to_read
+            const trustIdType index_of_first_virtual_node = nodes_.dimension(0) - nb_virt_items(LataField_base::SOM);
+            const BigArrOfTID& nodes_to_read = get_virt_items(LataField_base::SOM);
+            const trustIdType max_i2 = nodes_to_read.size_array();
             for (i1 = 0; i1 < n; i1++)
               {
-                const entier j = index[i1];
-                const entier global_node_index_to_find = array_tmp_faces_nodes[j];
+                const trustIdType j = index[i1];
+                const trustIdType global_node_index_to_find = array_tmp_faces_nodes[j];
                 // find the matching node in nodes_to_read (nodes_to_read is in ascending order)
                 while (nodes_to_read[i2] != global_node_index_to_find)
                   {
@@ -534,7 +531,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
           // Copy to faces_ array
           debut = faces_.size_array();
           faces_.resize(faces_.dimension(0) + tmp_faces_nodes.dimension(0),
-                        faces_.dimension(1));
+                        (int)faces_.dimension(1));
           faces_.inject_array(tmp_faces_nodes, tmp_faces_nodes.size_array(), debut);
         }
     }
@@ -556,39 +553,39 @@ void DomainUnstructured::fill_field_from_lataDB(const LataDB& lataDB,
 {
   const LataDBField& lata_field = lataDB.get_field(id.timestep_, id.uname_);
   LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
-  const entier decal = lata_block_offset(loc);
+  const trustIdType decal = lata_block_offset(loc);
 
-  const ArrOfInt& virt_items = get_virt_items(loc);
-  const entier virt_size = virt_items.size_array();
-  const entier size = nb_items(loc) - virt_size;
+  const BigArrOfTID& virt_items = get_virt_items(loc);
+  const trustIdType virt_size = virt_items.size_array();
+  const trustIdType size = nb_items(loc) - virt_size;
 
   const LataDBDataType& type = lata_field.datatype_;
   switch(type.type_)
     {
     case LataDBDataType::REAL32:
       {
-        FloatTab& data = field.instancie(Field<FloatTab> ).data_;
+        BigFloatTab& data = field.instancie(Field<BigFloatTab> ).data_;
         lataDB.read_data(lata_field, data, decal, size);
         if (virt_size > 0)
           {
-            FloatTab tmp;
+            BigFloatTab tmp;
             lataDB.read_data(lata_field, tmp, virt_items);
-            const entier debut = data.size_array();
-            data.resize(data.dimension(0)+virt_size, data.dimension(1));
+            const trustIdType debut = data.size_array();
+            data.resize(data.dimension(0)+virt_size, (int)data.dimension(1));
             data.inject_array(tmp, virt_size, debut);
           }
         break;
       }
     case LataDBDataType::REAL64:
       {
-        DoubleTab& data = field.instancie(Field<DoubleTab> ).data_;
+        BigDoubleTab& data = field.instancie(Field<BigDoubleTab> ).data_;
         lataDB.read_data(lata_field, data, decal, size);
         if (virt_size > 0)
           {
-            DoubleTab tmp;
+            BigDoubleTab tmp;
             lataDB.read_data(lata_field, tmp, virt_items);
-            const entier debut = data.size_array();
-            data.resize(data.dimension(0)+virt_size, data.dimension(1));
+            const trustIdType debut = data.size_array();
+            data.resize(data.dimension(0)+virt_size, (int)data.dimension(1));
             data.inject_array(tmp, virt_size, debut);
           }
         break;
@@ -596,14 +593,14 @@ void DomainUnstructured::fill_field_from_lataDB(const LataDB& lataDB,
     case LataDBDataType::INT32:
     case LataDBDataType::INT64:
       {
-        IntTab& data = field.instancie(Field<IntTab> ).data_;
+        BigTIDTab& data = field.instancie(Field<BigTIDTab> ).data_;
         lataDB.read_data(lata_field, data, decal, size);
         if (virt_size > 0)
           {
-            IntTab tmp;
+            BigTIDTab tmp;
             lataDB.read_data(lata_field, tmp, virt_items);
-            const entier debut = data.size_array();
-            data.resize(data.dimension(0)+virt_size, data.dimension(1));
+            const trustIdType debut = data.size_array();
+            data.resize(data.dimension(0)+virt_size, (int)data.dimension(1));
             data.inject_array(tmp, virt_size, debut);
           }
         break;
@@ -628,8 +625,8 @@ DomainIJK::DomainIJK()
 
 void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
                                         const Domain_Id& id,
-                                        entier split_in_N_parts,
-                                        const entier virt_layer_size)
+                                        int split_in_N_parts,
+                                        const int virt_layer_size)
 {
   if (virt_layer_size < 0)
     {
@@ -640,39 +637,45 @@ void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
 
   Journal(info_level) << "Filling ijk domain " << id.name_ << " tstep " << id.timestep_ << " block " << id.block_ << endl;
   coord_.reset();
-  entier dim3 = lataDB.field_exists(id.timestep_, id.name_, "SOMMETS_IJK_K", LataDB::FIRST_AND_CURRENT /* timestep */);
+  int dim3 = lataDB.field_exists(id.timestep_, id.name_, "SOMMETS_IJK_K", LataDB::FIRST_AND_CURRENT /* timestep */);
   {
     const LataDBField& coord = lataDB.get_field(id.timestep_,
                                                 Field_UName(id.name_, "SOMMETS_IJK_I", ""),
                                                 LataDB::FIRST_AND_CURRENT /* timestep */);
-    FloatTab tmp;
+    BigFloatTab tmp;
     lataDB.read_data(coord, tmp);
     coord_.add();
-    coord_[0] = tmp;
+    FloatTab tmp2;
+    tmp.ref_as_small(tmp2);
+    coord_[0] = tmp2;
   }
   {
     const LataDBField& coord = lataDB.get_field(id.timestep_,
                                                 Field_UName(id.name_, "SOMMETS_IJK_J", ""),
                                                 LataDB::FIRST_AND_CURRENT /* timestep */);
-    FloatTab tmp;
+    BigFloatTab tmp;
     lataDB.read_data(coord, tmp);
     coord_.add();
-    coord_[1] = tmp;
+    FloatTab tmp2;
+    tmp.ref_as_small(tmp2);
+    coord_[1] = tmp2;
   }
   if (dim3)
     {
       const LataDBField& coord = lataDB.get_field(id.timestep_,
                                                   Field_UName(id.name_, "SOMMETS_IJK_K", ""),
                                                   LataDB::FIRST_AND_CURRENT /* timestep */);
-      FloatTab tmp;
+      BigFloatTab tmp;
       lataDB.read_data(coord, tmp);
       coord_.add();
-      coord_[2] = tmp;
+      FloatTab tmp2;
+      tmp.ref_as_small(tmp2);
+      coord_[2] = tmp2;
     }
 
   elt_type_ = dim3 ? hexa : quadri;
 
-  entier block = (id.block_) < 0 ? 0 : id.block_;
+  int block = (id.block_) < 0 ? 0 : id.block_;
 
   if (id.block_ >= split_in_N_parts)
     {
@@ -682,10 +685,10 @@ void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
 
   // Load the N-th part
   //  The ijk domain is virtually split in the Z direction (or Y en 2D)
-  entier maxdim = coord_.size() - 1;
+  int maxdim = coord_.size() - 1;
   // Number of elements in the Z direction:
-  const entier nelem = coord_[maxdim].size_array() - 1;
-  entier part_size = nelem / split_in_N_parts;
+  const int nelem = coord_[maxdim].size_array() - 1;
+  int part_size = nelem / split_in_N_parts;
   if (part_size * split_in_N_parts < nelem)
     part_size++;
 
@@ -708,13 +711,13 @@ void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
 
   // Extract coordinates:
   ArrOfFloat tmp(coord_[maxdim]);
-  const entier n = part_end_ - part_begin_ + 1;
+  const int n = part_end_ - part_begin_ + 1;
   coord_[maxdim].resize_array(n);
-  for (entier i = 0; i < n; i++)
+  for (int i = 0; i < n; i++)
     coord_[maxdim][i] = tmp[i + part_begin_];
 
   Journal(info_level) << "Domain " << id.name_ << " has number of nodes: [ ";
-  for (entier dim = 0; dim < coord_.size(); dim++)
+  for (int dim = 0; dim < coord_.size(); dim++)
     Journal(info_level) << coord_[dim].size_array() << " ";
   Journal(info_level) << "]" << endl;
 
@@ -722,8 +725,8 @@ void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
       && lataDB.field_exists(id.timestep_, id.name_, "INVALID_CONNECTIONS", LataDB::FIRST_AND_CURRENT /* timestep */))
     {
       Journal(info_level) << " loading invalid_connections" << endl;
-      IntTab Itmp;
-      entier ij = 0, offset = 0, sz = 0;
+      BigIntTab Itmp;
+      trustIdType ij = 0, offset = 0, sz = 0;
       // Product of number of elements in directions I and J
       ij = coord_[0].size_array() - 1;
       if (coord_.size() > 2)
@@ -739,7 +742,7 @@ void DomainIJK::fill_domain_from_lataDB(const LataDB& lataDB,
       invalid_connections_.resize_array(nb_elements());
       invalid_connections_ = 0; // everything valid by default
 
-      for (entier i = 0; i < sz; i++)
+      for (int i = 0; i < sz; i++)
         {
           if (Itmp(i, 0) != 0)
             invalid_connections_.setbit(i);
@@ -754,7 +757,7 @@ void DomainIJK::fill_field_from_lataDB(const LataDB& lataDB,
   const LataDBField& lata_field = lataDB.get_field(id.timestep_, id.uname_);
   LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
 
-  entier ij = 0, offset = 0, sz = 0;
+  int ij = 0, offset = 0, sz = 0;
   switch(loc)
     {
     case LataField_base::ELEM:
@@ -785,20 +788,20 @@ void DomainIJK::fill_field_from_lataDB(const LataDB& lataDB,
     {
     case LataDBDataType::REAL32:
       {
-        FloatTab& data = field.instancie(Field<FloatTab> ).data_;
+        BigFloatTab& data = field.instancie(Field<BigFloatTab> ).data_;
         lataDB.read_data(lata_field, data, offset, sz);
         break;
       }
     case LataDBDataType::REAL64:
       {
-        DoubleTab& data = field.instancie(Field<DoubleTab> ).data_;
+        BigDoubleTab& data = field.instancie(Field<BigDoubleTab> ).data_;
         lataDB.read_data(lata_field, data, offset, sz);
         break;
       }
     case LataDBDataType::INT32:
     case LataDBDataType::INT64:
       {
-        IntTab& data = field.instancie(Field<IntTab> ).data_;
+        BigTIDTab& data = field.instancie(Field<BigTIDTab> ).data_;
         lataDB.read_data(lata_field, data, offset, sz);
         break;
       }
@@ -823,10 +826,12 @@ Domain::DomainType Domain::get_domain_type() const
     return IJK;
   throw ("Not implemeneted");
 }
+
 const DomainUnstructured& Domain::cast_DomainUnstructured() const
 {
   return dynamic_cast<const DomainUnstructured&>(*this);
 }
+
 const DomainIJK&   Domain::cast_DomainIJK() const
 {
   return dynamic_cast<const DomainIJK&>(*this);

@@ -59,6 +59,7 @@ void Geometry_handle::reset()
   geom_.reset();
   lata_filter_.reset();
 }
+
 const DomainUnstructured & Geometry_handle::geom()
 {
   if (!geom_.non_nul()) {
@@ -73,6 +74,7 @@ const DomainUnstructured & Geometry_handle::geom()
   }
   return *ptr;
 }
+
 const DomainIJK & Geometry_handle::geom_ijk()
 {
   if (!geom_.non_nul()) {
@@ -87,7 +89,8 @@ const DomainIJK & Geometry_handle::geom_ijk()
   }
   return *ptr;
 }
-entier Geometry_handle::test_ijk()
+
+bool Geometry_handle::test_ijk()
 {
   if (!geom_.non_nul()) {
     Journal() << "Internal error in Geometry_handle::geom() : nul pointer" << endl;
@@ -95,83 +98,9 @@ entier Geometry_handle::test_ijk()
   }
   const DomainIJK* ptr = dynamic_cast<const DomainIJK *>(&geom_.valeur());
   if (ptr)
-    return 1;
+    return true;
   else
-    return 0;
-}
-
-// Petite fonction outil qui construit l'objet LataFieldMetaData en changeant uniquement 
-//  le nom du champ (dimension, localisation, geometrie, nombre de composantes sont identiques)
-//  Le champ "source" est rempli avec une reference a source, on pourra donc appeler
-//  get_champ_source() (voir interpoler_elem_vers_som pour un exemple)
-// Voir new_fields_metadata() pour un exemple d'utilisation.
-static LataFieldMetaData declare_new_name(const LataFieldMetaData & source, 
-                                          const char * name)
-{
-  LataFieldMetaData dest = source;
-  // Lorsqu'on demandera ce champ, on saura que c'est UserFields qui devra le calculer
-  dest.source_ = "user_fields";
-  // On change le nom du champ:
-  dest.name_ = name;
-  dest.uname_.set_field_name(name);
-  // On remplit le champ source
-  dest.source_field_ = source.uname_;
-  
-  return dest;
-}
-
-// Fonction identique a declare_new_name, mais pour declarer un champ avec une localisation
-//  differente.
-// Voir new_fields_metadata() pour un exemple d'utilisation.
-static LataFieldMetaData declare_new_name_localisation(const LataFieldMetaData & source, 
-                                                       const char * name,
-                                                       LataField_base::Elem_som loc)
-{
-  LataFieldMetaData dest = source;
-  // Lorsqu'on demandera ce champ, on saura que c'est UserFields qui devra le calculer
-  dest.source_ = "user_fields";
-  // On change le nom du champ et la localisation:
-  dest.name_ = name;
-  dest.uname_ = Field_UName(source.uname_.get_geometry(),
-                            name,
-                            LataField_base::localisation_to_string(loc));
-  // On remplit le champ source
-  dest.source_field_ = source.uname_;
-
-  // En plus: je change la localisation:
-  dest.localisation_ = loc;
-
-  return dest;
-}
-
-// Fonction identique a declare_new_name, mais pour declarer un champ avec une localisation
-//  differente de type vectoriel.
-// Voir new_fields_metadata() pour un exemple d'utilisation.
-static LataFieldMetaData declare_new_vector_field(const LataFieldMetaData & source, 
-                                                  const char * name,
-                                                  LataField_base::Elem_som loc,
-                                                  const entier dim)
-{
-  LataFieldMetaData dest = source;
-  // Lorsqu'on demandera ce champ, on saura que c'est UserFields qui devra le calculer
-  dest.source_ = "user_fields";
-  // On change le nom du champ et la localisation:
-  dest.name_ = name;
-  dest.uname_ = Field_UName(source.uname_.get_geometry(),
-                            name,
-                            LataField_base::localisation_to_string(loc));
-  // On remplit le champ source
-  dest.source_field_ = source.uname_;
-
-  // En plus: je change la localisation:
-  dest.localisation_ = loc;
-
-  // et le type (vecteur)
-  dest.component_names_.reset();
-  dest.nb_components_ = dim;
-  dest.is_vector_ = 1;
-
-  return dest;
+    return false;
 }
 
 // Description: demande a la classe LataFilter le champ source du champ "id"
@@ -280,41 +209,41 @@ FieldType UserFields::interpoler_elem_vers_som(const Field_Id & id)
   //  le champ source:
   Geometry_handle geom;
   get_geometry(id, geom);
-  ArrOfFloat poids;
+  BigArrOfFloat poids;
 
   if (geom.test_ijk()) {
     const DomainIJK & dom = geom.geom_ijk();
     // Le code suivant marche en 1D, 2D et 3D:
-    const entier nbsom = dom.nb_nodes();
-    const entier nbcompo = source.data_.dimension(1);
+    const trustIdType nbsom = dom.nb_nodes();
+    const int nbcompo = (int)source.data_.dimension(1);
     resu.data_.resize(nbsom, nbcompo);
-    const entier nsom_x = dom.nb_som_dir(0);
-    const entier nsom_y = dom.nb_som_dir(1);
-    const entier nelem_x = dom.nb_elem_dir(0);
-    const entier nelem_y = dom.nb_elem_dir(1);
-    const entier nelem_z = dom.nb_elem_dir(2);
+    const int nsom_x = dom.nb_som_dir(0);
+    const int nsom_y = dom.nb_som_dir(1);
+    const int nelem_x = dom.nb_elem_dir(0);
+    const int nelem_y = dom.nb_elem_dir(1);
+    const int nelem_z = dom.nb_elem_dir(2);
     poids.resize_array(nbsom);
-    const entier ni = 2;
-    const entier nj = (dom.dimension() > 1) ? 2 : 1;
-    const entier nk = (dom.dimension() > 2) ? 2 : 1;
+    const int ni = 2;
+    const int nj = (dom.dimension() > 1) ? 2 : 1;
+    const int nk = (dom.dimension() > 2) ? 2 : 1;
 
     // Avec les boucles imbriquees comme ceci, on parcourt tous les
     //  elements dans l'ordre croissant:
     // (l'indice de l'element (i,j,k) est :
     //    elem = (k * nelem_y + j) * nelem_x + i
-    entier elem = 0;
-    for (entier k = 0; k < nelem_z; k++) {
-      for (entier j = 0; j < nelem_y; j++) {
-        for (entier i = 0; i < nelem_x; i++) {
+    int elem = 0;
+    for (int k = 0; k < nelem_z; k++) {
+      for (int j = 0; j < nelem_y; j++) {
+        for (int i = 0; i < nelem_x; i++) {
           if (dom.invalid_connections_.size_array() == 0 || dom.invalid_connections_[elem] == 0) {
             // Element valide:
             // Boucle sur les sommets de l'element
-            const entier som0 = (k * nsom_y + j) * nsom_x + i;
-            for (entier kk = 0; kk < nk; kk++) {
-              for (entier jj = 0; jj < nj; jj++) {
-                for (entier ii = 0; ii < ni; ii++) {
-                  entier som = som0 + (kk * nsom_y + jj) * nsom_x + ii;
-                  for (entier compo = 0; compo < nbcompo; compo++)
+            const trustIdType som0 = (k * nsom_y + j) * nsom_x + i;
+            for (int kk = 0; kk < nk; kk++) {
+              for (int jj = 0; jj < nj; jj++) {
+                for (int ii = 0; ii < ni; ii++) {
+                  trustIdType som = som0 + (kk * nsom_y + jj) * nsom_x + ii;
+                  for (int compo = 0; compo < nbcompo; compo++)
                     resu.data_(som, compo) += source.data_(elem, compo);
                   poids[som] += 1.0f;
                 }
@@ -328,17 +257,17 @@ FieldType UserFields::interpoler_elem_vers_som(const Field_Id & id)
   } else {
     const DomainUnstructured & dom = geom.geom();
 
-    const entier nbsom = dom.nb_nodes();
-    const entier nbcompo = source.data_.dimension(1);
+    const trustIdType nbsom = dom.nb_nodes();
+    const int nbcompo = (int)source.data_.dimension(1);
     resu.data_.resize(nbsom, nbcompo);
     poids.resize_array(nbsom);
-    const IntTab & les_elem = dom.elements_;
-    const entier n = les_elem.dimension(0);
-    const entier m = les_elem.dimension(1);
+    const BigTIDTab & les_elem = dom.elements_;
+    const trustIdType n = les_elem.dimension(0);
+    const int m = (int)les_elem.dimension(1);
     int i, j, k;
     for ( i = 0; i < n; i++) {
       for (j = 0; j < m; j++) {
-        entier som = les_elem(i,j);
+          trustIdType som = les_elem(i,j);
         for (k = 0; k < nbcompo; k++) {
           float x = source.data_(i, k);
           resu.data_(som, k) += x;
@@ -347,17 +276,14 @@ FieldType UserFields::interpoler_elem_vers_som(const Field_Id & id)
       }
     }
   }
-  const entier nbsom = poids.size_array();
-  const entier nbcompo = resu.data_.dimension(1);
-  for (entier i = 0; i < nbsom; i++)
-    for (entier k = 0; k < nbcompo; k++)
+  const trustIdType nbsom = poids.size_array();
+  const int nbcompo = (int)resu.data_.dimension(1);
+  for (trustIdType i = 0; i < nbsom; i++)
+    for (int k = 0; k < nbcompo; k++)
       resu.data_(i, k) /= poids[i];
 
   return resu;
 }
-
-
-
 
 
 //  Attention: le constructeur par defaut n'initialise pas le vecteur !
@@ -375,7 +301,7 @@ public:
     v[0] = x; v[1] = y; v[2] = z;
   }
   double length() const { return sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]); };
-  Vecteur3(const DoubleTab & tab, entier i) {
+  Vecteur3(const DoubleTab & tab, int i) {
     //assert(tab.line_size() == 3);
     assert(i >= 0 && i < tab.dimension_tot(0));
     const double *ptr = tab.addr() + i * 3;
@@ -396,8 +322,8 @@ public:
     v[0] = w.v[0]; v[1] = w.v[1]; v[2] = w.v[2];
     return *this;
   }
-  double               operator[](entier i) const { assert(i>=0 && i<3); return v[i]; }
-  double &             operator[](entier i)       { assert(i>=0 && i<3); return v[i]; }
+  double               operator[](int i) const { assert(i>=0 && i<3); return v[i]; }
+  double &             operator[](int i)       { assert(i>=0 && i<3); return v[i]; }
   inline        double norme_Linfini();
   static inline void   produit_vectoriel(const Vecteur3 & x, const Vecteur3 & y, Vecteur3 & resu);
   static inline double produit_scalaire(const Vecteur3 & x, const Vecteur3 & y);
@@ -441,7 +367,6 @@ inline Vecteur3 operator-(const Vecteur3 & x, const Vecteur3 & y)
 }
 
 double largest_angle_2(const DoubleTab& coords)
-        
 {
   if (((coords.dimension(0)!=4)&&(coords.dimension(0)!=3))||(coords.dimension(1)!=3))
     {
@@ -460,7 +385,6 @@ double largest_angle_2(const DoubleTab& coords)
       int compteur=0;
       for (int s=0;s<nb_face;s++)
         {
-
           if ((s!=n) && (s!=prem))
             {
               edge[compteur].set(coords(s,0)-coords(prem,0),
@@ -496,7 +420,6 @@ double largest_angle_2(const DoubleTab& coords)
 }
 
 
-
 FieldType UserFields::calculer_angle(const Field_Id & id)
 {
   // Recupere le champ a filtrer (champ aux elements)
@@ -520,24 +443,22 @@ FieldType UserFields::calculer_angle(const Field_Id & id)
     throw;
   } else {
     const DomainUnstructured & dom = geom.geom();
-    const entier nbcompo = dom.dimension();
+    const int nbcompo = dom.dimension();
     //poids.resize_array(nbsom);
-    const IntTab & les_elem = dom.elements_;
-    const entier n = les_elem.dimension(0);
+    const BigTIDTab & les_elem = dom.elements_;
+    const trustIdType n = les_elem.dimension(0);
  
     resu.data_.resize(n, nbcompo);
     
-    const FloatTab& nodes_=dom.nodes_;
-    int nb_som_elem=les_elem.dimension(1);
+    const BigFloatTab& nodes_=dom.nodes_;
+    int nb_som_elem=(int)les_elem.dimension(1);
     DoubleTab coords(nb_som_elem,3);
-    for ( int i = 0; i < n; i++) {
+    for ( trustIdType i = 0; i < n; i++) {
       for (int s=0;s<nb_som_elem;s++)
-        for (int d=0;d<nodes_.dimension(1);d++)
+        for (int d=0;d<(int)nodes_.dimension(1);d++)
           coords(s,d)=nodes_(les_elem(i,s),d);
       resu.data_(i, 0) = (float)largest_angle_2(coords);
-        
     }
-  
   }
   return resu;
 }
@@ -566,25 +487,25 @@ FieldType UserFields::calculer_normale(const Field_Id & id)
     throw;
   } else {
     const DomainUnstructured & dom = geom.geom();
-    const entier nbcompo = dom.dimension();
-    const IntTab & les_elem = dom.elements_;
-    const entier n = les_elem.dimension(0);
+    const int nbcompo = dom.dimension();
+    const BigTIDTab & les_elem = dom.elements_;
+    const trustIdType n = les_elem.dimension(0);
  
     resu.data_.resize(n, nbcompo);
     
-    const FloatTab& nodes_=dom.nodes_;
+    const BigFloatTab& nodes_=dom.nodes_;
     
     ArrOfFloat v1( nbcompo),v2(nbcompo);
     ArrOfDouble nor(nbcompo);
-    for ( int i = 0; i < n; i++) {
+    for ( trustIdType i = 0; i < n; i++) {
       // calcul de la normale
-      entier som0 = les_elem(i,0);
-      entier som1 = les_elem(i,1);
+      trustIdType som0 = les_elem(i,0);
+      trustIdType som1 = les_elem(i,1);
       for (int j=0;j<nbcompo;j++)
         v1[j]=nodes_(som1,j)-nodes_(som0,j);
       if (nbcompo==3)
         {
-          entier som2 = les_elem(i,2);
+          trustIdType som2 = les_elem(i,2);
           for (int j=0;j<nbcompo;j++)
             v2[j]=nodes_(som2,j)-nodes_(som0,j);
           
@@ -598,17 +519,13 @@ FieldType UserFields::calculer_normale(const Field_Id & id)
           assert(nbcompo==2);
           nor[0]=v1[1];
           nor[1]=-v1[0];
-          
         }
       for (int k = 0; k < nbcompo; k++) {
         resu.data_(i, k) = (float)nor[k];
       }
-       
     }
-    
   }
   
-
   return resu;
 }
 
@@ -639,9 +556,9 @@ FieldType UserFields::interpoler_faces_vdf_vers_elem(const Field_Id & id)
   }
   const DomainIJK & dom = geom.geom_ijk();
 
-  const entier dim = dom.dimension();
+  const int dim = dom.dimension();
   
-  if (source.data_.dimension(1) != dim) {
+  if ((int)source.data_.dimension(1) != dim) {
     Journal() << "Error in UserFields::interpoler_faces_vdf_vers_elem: source field " << id.uname_.build_string()
               << " must have " << dim << " components !" << endl;
     throw;
@@ -655,29 +572,29 @@ FieldType UserFields::interpoler_faces_vdf_vers_elem(const Field_Id & id)
   resu.nature_ = LataDBField::VECTOR;
 
   // Le code suivant marche en 1D, 2D et 3D:
-  const entier nbelem = dom.nb_elements();
-  const entier nbcompo = dim;
+  const trustIdType nbelem = dom.nb_elements();
+  const int nbcompo = dim;
   resu.data_.resize(nbelem, nbcompo);
-  const entier nelem_x = dom.nb_elem_dir(0);
-  const entier nelem_y = dom.nb_elem_dir(1);
-  const entier nelem_z = dom.nb_elem_dir(2);
-  const entier nfaces_x = dom.nb_som_dir(0);
-  const entier nfaces_y = dom.nb_som_dir(1);
+  const int nelem_x = dom.nb_elem_dir(0);
+  const int nelem_y = dom.nb_elem_dir(1);
+  const int nelem_z = dom.nb_elem_dir(2);
+  const int nfaces_x = dom.nb_som_dir(0);
+  const int nfaces_y = dom.nb_som_dir(1);
   // Avec les boucles imbriquees comme ceci, on parcourt tous les
   //  elements dans l'ordre croissant:
   // (l'indice de l'element (i,j,k) est :
   //    elem = (k * nelem_y + j) * nelem_x + i
-  entier elem = 0;
-  for (entier k = 0; k < nelem_z; k++) {
-    for (entier j = 0; j < nelem_y; j++) {
-      for (entier i = 0; i < nelem_x; i++) {
+  int elem = 0;
+  for (int k = 0; k < nelem_z; k++) {
+    for (int j = 0; j < nelem_y; j++) {
+      for (int i = 0; i < nelem_x; i++) {
         if (dom.invalid_connections_.size_array() == 0 || dom.invalid_connections_[elem] == 0) {
           // Element valide:
           // Boucle sur les trois directions:
-          for (entier dir = 0; dir < dim; dir++) {
+          for (int dir = 0; dir < dim; dir++) {
             // indices des deux faces opposees de l'element dan la direction dir:
-            const entier face1 = (k * nfaces_y + j) * nfaces_x + i;
-            entier face2;
+            const trustIdType face1 = (k * nfaces_y + j) * nfaces_x + i;
+            trustIdType face2;
             if (dir == 0)
               face2 = face1 + 1;
             else if (dir == 1)
@@ -710,14 +627,14 @@ UserFields_options::UserFields_options()
 
 // Cette methode est appelee avec les options en ligne de commande ou sur la troisieme
 //  ligne. Il faut renvoyer 0 si on ne comprend pas l'option, sinon 1.
-entier UserFields_options::parse_option(const Nom & option)
+bool UserFields_options::parse_option(const Nom & option)
 {
   if (option.debute_par("demie_largeur_filtre_boite=")) {
     demie_largeur_filtre_boite_ = LataOptions::read_int_opt(option);
   } else {
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 // Cette methode est appelee par lata_analyzer en ligne de commande pour afficher une aide.
@@ -743,7 +660,7 @@ void UserFields::new_fields_metadata(LataFilter & filter,
 
   const Noms geoms = filter.get_exportable_geometry_names();
   
-  const entier nb_geometries = geoms.size();
+  const int nb_geometries = geoms.size();
   
   for (int i = 0; i < nb_geometries; i++) {
     const LataGeometryMetaData data = filter.get_geometry_metadata(geoms[i]);
@@ -773,7 +690,7 @@ void UserFields::new_fields_metadata(LataFilter & filter,
       dest.component_names_.reset() ;
       
       dest.nb_components_ = data.dimension_;
-      dest.is_vector_ = 1;
+      dest.is_vector_ = true;
       dest.localisation_ = LataField_base::ELEM;
       dest.source_localisation_ = "ELEM";
       dest.source_ = "user_fields";
@@ -795,7 +712,7 @@ void UserFields::new_fields_metadata(LataFilter & filter,
          dest.component_names_.reset() ;
       
          dest.nb_components_ = 1;
-         dest.is_vector_ = 0;
+         dest.is_vector_ = false;
          dest.localisation_ = LataField_base::ELEM;
          dest.source_localisation_ = "ELEM";
          dest.source_ = "user_fields";
@@ -806,52 +723,6 @@ void UserFields::new_fields_metadata(LataFilter & filter,
                                    LataField_base::localisation_to_string(dest.localisation_));
          fields_data.add(dest);
       }
-  }
-  // on laisse les lignes pour verifier la compilation
-  if ( 0) {
-  const entier nb_fields_debut = fields_data.size();
-  
-  // On fait une boucle sur tous les champs disponibles dans le filtre
-  //  (nb_fields_debut est le nombre de champs existant avant qu'on 
-  //   commence a en ajouter dans le tableau fields_data)
-
-  for (int i_in = 0; i_in < nb_fields_debut; i_in++) 
-    {
-      // On cherche si le champ de temperature aux elements existe
-      //  sur une geometrie IJK (Motcle permet d'ignorer majuscule/minuscule)
-      const LataFieldMetaData data = fields_data[i_in];
-
-      // Les deux if suivants sont des EXEMPLES
-
-      if (Motcle(data.name_) == "TEMPERATURE"
-          && data.localisation_ == LataField_base::ELEM
-          && Motcle(data.geometry_name_).finit_par("_IJK"))
-        {
-          // On declare un champ identique qui s'appelle MOYENNE_TEMPERATURE
-          fields_data.add(declare_new_name(data, "MOYENNE_TEMPERATURE"));
-        }
-
-      // Si le champ est aux elements, on propose une interpolation aux sommets
-      // On reconnaitra le champ parce que son nom finira par elem_vers_som (voir get_field())
-      if (data.localisation_ == LataField_base::ELEM)
-        {
-          Nom nom = data.name_;
-          nom += "_elem_vers_som";
-          fields_data.add(declare_new_name_localisation(data, nom, LataField_base::SOM));
-        }
-
-      // Si le champ est aux faces et le maillage est ijk, on propose
-      //  une interpolation aux elements
-      if (data.localisation_ == LataField_base::FACES
-          && Motcle(data.geometry_name_).finit_par("_IJK"))
-        {
-          Nom nom = data.name_;
-          nom += "_faces_vers_elem";
-          // Le champ aux faces a deja dimension composantes
-          const entier dim = data.nb_components_;
-          fields_data.add(declare_new_vector_field(data, nom, LataField_base::ELEM, dim));
-        }
-    }
   }
 }
 
@@ -881,7 +752,7 @@ FieldType UserFields::get_field(const Field_Id & id)
 class FiltreSpatial
 {   
 public:
-  FiltreSpatial(LataFilter & lata, const Domain_Id & id, entier demi_pas) :
+  FiltreSpatial(LataFilter & lata, const Domain_Id & id, int demi_pas) :
     demi_pas_(-1), pbDim_(-1), nx_(-1), ny_(-1), nz_(-1), dx_(-1.), dy_(-1.), dz_(-1.)
   {
     init(lata, id, demi_pas); 
@@ -890,10 +761,10 @@ public:
   FieldType gradient(const FieldType & f, const Field_Id & id) const;
   float volume() const { return dx_ * dy_ * dz_; }
 protected:
-  void init(LataFilter & lata, const Domain_Id & id, entier demi_pas);
-  FloatTab calculer_somme_dir(const FloatTab & src, const int dir) const;
-  FloatTab annu_bord(const FloatTab & input, int epaisseur) const;
-  int ijk_index(int i, int j, int k) const {
+  void init(LataFilter & lata, const Domain_Id & id, int demi_pas);
+  BigFloatTab calculer_somme_dir(const BigFloatTab & src, const int dir) const;
+  BigFloatTab annu_bord(const BigFloatTab & input, int epaisseur) const;
+  trustIdType ijk_index(int i, int j, int k) const {
     if (i < 0)
       i = 0;
     else if (i >= nx_)
@@ -906,13 +777,13 @@ protected:
       k = 0;
     else if (k >= nz_)
       k = nz_-1; 
-    return k * ny_ * nx_ + j * nx_ + i;
+    return (trustIdType)k*(trustIdType)ny_*(trustIdType)nx_ + (trustIdType)j*(trustIdType)nx_ + (trustIdType)i;
   } 
 
   // Tableau: pour chaque element, 1 s'il est INVALIDE, 0 s'il est OK
-  ArrOfBit invalid_connections_;
+  BigArrOfBit invalid_connections_;
 
-  entier demi_pas_;
+  int demi_pas_;
   int pbDim_; // dimension
   int nx_;
   int ny_;
@@ -922,7 +793,7 @@ protected:
   float dz_;
 };
 
-void FiltreSpatial::init(LataFilter & lata, const Domain_Id & id, entier demi_pas)
+void FiltreSpatial::init(LataFilter & lata, const Domain_Id & id, int demi_pas)
 {
   const Domain & dom = lata.get_geometry(id);
   const DomainIJK * ptr = dynamic_cast<const DomainIJK *>(&dom);
@@ -956,11 +827,11 @@ void FiltreSpatial::init(LataFilter & lata, const Domain_Id & id, entier demi_pa
   lata.release_geometry(dom);
 }
 
-FloatTab FiltreSpatial::calculer_somme_dir(const FloatTab & src, const int dir) const
+BigFloatTab FiltreSpatial::calculer_somme_dir(const BigFloatTab & src, const int dir) const
 {
-  const int n = src.dimension(0);
-  const int nb_compo = src.dimension(1);
-  FloatTab tmp;
+  const trustIdType n = src.dimension(0);
+  const int nb_compo = (int)src.dimension(1);
+  BigFloatTab tmp;
   tmp.resize(n, nb_compo);
 
   int index_resu = 0;
@@ -968,7 +839,7 @@ FloatTab FiltreSpatial::calculer_somme_dir(const FloatTab & src, const int dir) 
     for (int j = 0; j < ny_; j++) {
       for (int i = 0; i < nx_; i++) {
         for (int count = -demi_pas_; count <= demi_pas_; count++) {
-          int index;
+          trustIdType index;
           switch(dir) {
           case 0: index = ijk_index(i+count, j, k); break;
           case 1: index = ijk_index(i, j+count, k); break;
@@ -998,14 +869,14 @@ FieldType FiltreSpatial::filtrer(const FieldType & source, const Field_Id & id) 
   FieldType resu = source;
   resu.id_ = id;
 
-  FloatTab somme_x = calculer_somme_dir(source.data_, 0);
-  FloatTab somme_y = calculer_somme_dir(somme_x, 1);
+  BigFloatTab somme_x = calculer_somme_dir(source.data_, 0);
+  BigFloatTab somme_y = calculer_somme_dir(somme_x, 1);
   if (pbDim_ == 3)
     resu.data_ = calculer_somme_dir(somme_y, 2);
   else
     resu.data_ = somme_y;
 
-  entier pas = demi_pas_ * 2 + 1;
+  int pas = demi_pas_ * 2 + 1;
   double fact = pas * pas;
   if (pbDim_ == 3)
     fact *= pas;
@@ -1017,9 +888,7 @@ FieldType FiltreSpatial::filtrer(const FieldType & source, const Field_Id & id) 
 FieldType UserFields::filtre_boite(const Field_Id & id)
 {
   FieldType source = get_champ_source(id);
-
   FiltreSpatial filtre(lata_filter_.valeur(), id, opt_.demie_largeur_filtre_boite_);
-
   FieldType resu = filtre.filtrer(source, id);
 
   return resu;

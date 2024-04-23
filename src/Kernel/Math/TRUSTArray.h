@@ -74,6 +74,7 @@ protected:
 
 public:
   using Value_type_ = _TYPE_;
+  using int_t = _SIZE_;
   using Iterator_ = typename tcb::span<_TYPE_>::iterator;
   using Vector_ = std::vector<_TYPE_, TVAlloc<_TYPE_> >;
   using Span_ = tcb::span<_TYPE_>;

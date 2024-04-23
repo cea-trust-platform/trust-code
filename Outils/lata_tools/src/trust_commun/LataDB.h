@@ -15,7 +15,9 @@
 
 #ifndef LataDB_include_
 #define LataDB_include_
+
 #include <LataTools.h>
+#include <TRUSTArray.h>
 #include <sstream>
 
 // This file describes the LataDB class and all associated data structures.
@@ -99,7 +101,7 @@ public:
   Nom name_;
   // Type of elements
   Motcle elem_type_;
-  entier timestep_;
+  int timestep_;
 };
 
 // This is a unique identifier for fields
@@ -117,7 +119,8 @@ public:
   const Motcle& get_localisation() const { return loc_; }
   const Motcle& get_field_name() const { return field_name_; }
   const Nom& get_geometry() const { return geometry_; }
-  void        set_field_name(const Nom&);
+  void set_field_name(const Nom&);
+
 protected:
   Nom geometry_;       // WARNING: geometry name might be lower-case e.g. 'dom'
   Motcle field_name_;
@@ -145,7 +148,7 @@ public:
   // Special names: memory_buffer_file() => data stored in the LataDB memory buffer.
   Nom filename_;
   // Number of components
-  entier nb_comp_;
+  int nb_comp_;
   // LataDBGeometry
   Nom geometry_;
   // Name of the components
@@ -161,7 +164,7 @@ public:
   // Ref
   Nom reference_;
   // Size (number of lines)
-  long long size_;
+  trustIdType size_;
 
   static const char * memory_buffer_file();
 };
@@ -172,6 +175,7 @@ class LataDBTimestep
 public:
   LataDBTimestep() { time_ = -1.; }
   double time_;
+
 protected:
   friend class LataDB;
   LataVector<LataDBGeometry> geoms_;
@@ -179,7 +183,6 @@ protected:
 };
 
 class LataDataFile;
-#include <TRUSTArray.h>
 class LataDB
 {
 public:
@@ -208,15 +211,15 @@ public:
                          const Motcles& field_names,
                          const ArrOfInt& timesteps);
 
-  entier                 nb_timesteps() const;
-  double                 get_time(entier tstep) const;
+  int                 nb_timesteps() const;
+  double                 get_time(int tstep) const;
   enum TStepSelector { CURRENT, FIRST_AND_CURRENT };
-  Noms                   geometry_names(entier tstep, TStepSelector which_tstep = CURRENT) const;
-  Field_UNames           field_unames(entier tstep, const char * geometry, const char * name, TStepSelector which_tstep = CURRENT) const;
-  const LataDBGeometry& get_geometry(entier tstep, const char * name, TStepSelector which_tstep = CURRENT) const;
-  entier                 field_exists(entier tstep, const char *geom, const char *name, TStepSelector which_tstep = CURRENT) const;
-  const LataDBField&     get_field(entier tstep, const Field_UName& uname, TStepSelector which_tstep = CURRENT) const;
-  const LataDBField&     get_field(entier tstep, const char *geom, const char *name, const char *loc, TStepSelector which_tstep = CURRENT) const;
+  Noms                   geometry_names(int tstep, TStepSelector which_tstep = CURRENT) const;
+  Field_UNames           field_unames(int tstep, const char * geometry, const char * name, TStepSelector which_tstep = CURRENT) const;
+  const LataDBGeometry&  get_geometry(int tstep, const char * name, TStepSelector which_tstep = CURRENT) const;
+  bool                   field_exists(int tstep, const char *geom, const char *name, TStepSelector which_tstep = CURRENT) const;
+  const LataDBField&     get_field(int tstep, const Field_UName& uname, TStepSelector which_tstep = CURRENT) const;
+  const LataDBField&     get_field(int tstep, const char *geom, const char *name, const char *loc, TStepSelector which_tstep = CURRENT) const;
   const Nom&             path_prefix() const { return path_prefix_; };
   void                   set_path_prefix(const char * s);
 
@@ -231,12 +234,18 @@ public:
   LataDBDataType default_type_int_;
   LataDBDataType::Type default_float_type_;
 
-  virtual void read_data(const LataDBField&, DoubleTab& data, long long debut = 0, entier n = -1) const;
-  virtual void read_data(const LataDBField&, FloatTab& data, long long debut = 0, entier n = -1) const;
-  virtual void read_data(const LataDBField&, IntTab& data, long long debut = 0, entier n = -1) const;
-  virtual void read_data(const LataDBField&, DoubleTab& data, const ArrOfInt& lines_to_read) const;
-  virtual void read_data(const LataDBField&, FloatTab& data, const ArrOfInt& lines_to_read) const;
-  virtual void read_data(const LataDBField&, IntTab& data, const ArrOfInt& lines_to_read) const;
+  virtual void read_data(const LataDBField&, BigDoubleTab& data, BigEntier debut=0, BigEntier n=-1) const;
+  virtual void read_data(const LataDBField&, BigFloatTab& data, BigEntier debut=0, BigEntier n=-1) const;
+  virtual void read_data(const LataDBField&, BigIntTab& data, BigEntier debut=0, BigEntier n=-1) const;
+
+  virtual void read_data(const LataDBField&, BigDoubleTab& data, const BigArrOfTID& lines_to_read) const;
+  virtual void read_data(const LataDBField&, BigFloatTab& data, const BigArrOfTID& lines_to_read) const;
+  virtual void read_data(const LataDBField&, BigIntTab& data, const BigArrOfTID& lines_to_read) const;
+
+#if INT_is_64_ == 2
+  virtual void read_data(const LataDBField&, BigTIDTab& data, BigEntier debut=0, BigEntier n=-1) const;
+  virtual void read_data(const LataDBField&, BigTIDTab& data, const BigArrOfTID& lines_to_read) const;
+#endif
 
   enum Element { line, triangle, quadri, tetra, hexa, triangle_3D, quadri_3D, polyedre,polygone, unspecified };
   static Element element_type_from_string(const Motcle& type_elem);
@@ -244,32 +253,35 @@ public:
   // Tools to create/update the database and write lata data to disk
   void   change_all_data_types(const LataDBDataType& old_type, const LataDBDataType& new_type);
   void   change_all_data_filenames(const Nom& old_prefix, const Nom& new_prefix);
-  void   check_all_data_fileoffsets(entier split_files);
-  entier add_timestep(double time);
+  void   check_all_data_fileoffsets(bool split_files);
+  int    add_timestep(double time);
   void   add_geometry(const LataDBGeometry& geom);
-  void   set_elemtype(entier tstep, const char *geom_name, const char *elem_type);
-  entier check_duplicate_filename(const char *filename) const;
+  void   set_elemtype(int tstep, const char *geom_name, const char *elem_type);
+  bool   check_duplicate_filename(const char *filename) const;
   void   add_field(const LataDBField& field);
   void   write_master_file(const char *filename) const;
-  FileOffset write_data(entier tstep, const Field_UName&, const DoubleTab&);
-  FileOffset write_data(entier tstep, const Field_UName&, const FloatTab&);
-  FileOffset write_data(entier tstep, const Field_UName&, const IntTab&);
+  FileOffset write_data(int tstep, const Field_UName&, const BigDoubleTab&);
+  FileOffset write_data(int tstep, const Field_UName&, const BigFloatTab&);
+  FileOffset write_data(int tstep, const Field_UName&, const BigIntTab&);
+#if INT_is_64_ == 2
+  FileOffset write_data(int tstep, const Field_UName&, const BigTIDTab&);
+#endif
 
 protected:
-  LataDBField& getset_field(entier tstep, const Field_UName& uname, TStepSelector which_tstep = CURRENT);
+  LataDBField& getset_field(int tstep, const Field_UName& uname, TStepSelector which_tstep = CURRENT);
   void          read_master_file_header(const char *filename, EFichier& is);
-  static entier lata_v1_dim_from_elem_type(const Motcle& elem_type);
-  static entier lata_v1_get_nb_comp(const Nom& fieldname, const Motcle& localisation, const LataDBGeometry& dom, entier dim, LataDBField::Nature& nature, LataDBDataType::DataOrdering&);
-  static void get_element_data(const Motcle& elemtype, entier& dimension, entier& elem_shape, entier& face_shape, entier& nb_elem_faces);
+  static int lata_v1_dim_from_elem_type(const Motcle& elem_type);
+  static int lata_v1_get_nb_comp(const Nom& fieldname, const Motcle& localisation, const LataDBGeometry& dom, int dim, LataDBField::Nature& nature, LataDBDataType::DataOrdering&);
+  static void get_element_data(const Motcle& elemtype, int& dimension, int& elem_shape, int& face_shape, int& nb_elem_faces);
 
-  const LataDBTimestep& get_tstep(entier i) const;
-  void add(entier tstep, const LataDBGeometry& item);
-  void add(entier tstep, const LataDBField& item);
-  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, long long debut, entier n) const;
-  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, const ArrOfInt& lines_to_read) const;
-  template <class C_Tab> void read_data2_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, long long debut = 0, entier n = -1, const ArrOfInt *lines_to_read = 0) const;
-  template <class C_Tab> void read_data2_med_( const LataDBField& fld, C_Tab * const data, entier debut = 0, entier n = -1, const ArrOfInt *lines_to_read = 0) const;
-  template <class C_Tab> FileOffset write_data_(entier tstep, const Field_UName& uname, const C_Tab&);
+  const LataDBTimestep& get_tstep(int i) const;
+  void add(int tstep, const LataDBGeometry& item);
+  void add(int tstep, const LataDBField& item);
+  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, BigEntier debut, BigEntier n) const;
+  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, const BigArrOfTID& lines_to_read) const;
+  template <class C_Tab> void read_data2_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, BigEntier debut=0, BigEntier n=-1, const BigArrOfTID *lines_to_read=nullptr) const;
+  template <class C_Tab> void read_data2_med_( const LataDBField& fld, C_Tab * const data, BigEntier debut=0, BigEntier n=-1) const;
+  template <class C_Tab> FileOffset write_data_(int tstep, const Field_UName& uname, const C_Tab&);
 
   // Timestep 0 contains global domains and field definition
   // Timestep 1..size()-1 contain the data for each "TEMPS" entry
@@ -279,11 +291,11 @@ protected:
   Nom path_prefix_;
 
   // Is this an old-style lata file ? (with INTERFACES special files and 2D elements expanded to 3D elements)
-  entier old_style_lata_;
+  bool old_style_lata_;
 
   // This flag tells if some write_data calls have been made since the last write_master_file
   // If yes, issue a message to say that's wrong !
-  mutable entier write_master_file_to_call_;
+  mutable bool write_master_file_to_call_;
 
   // This is a memory buffer where data can be written to create a temporary data base
   mutable std::stringstream internal_data_buffer_;

@@ -25,9 +25,9 @@
 class Reconnect
 {
 public:
-  static void reconnect_geometry(DomainUnstructured& geom, double tolerance, entier nb_nodes_untouched = 0);
-  static void apply_renumbering(const ArrOfInt& nodes_renumber, ArrOfInt& data);
-  static void search_duplicate_nodes(const FloatTab& src_coord, ArrOfInt& nodes_renumber, double eps, entier nb_nodes_untouched = 0);
+  static void reconnect_geometry(DomainUnstructured& geom, double tolerance, trustIdType nb_nodes_untouched = 0);
+  static void apply_renumbering(const BigArrOfTID& nodes_renumber, BigArrOfTID& data);
+  static void search_duplicate_nodes(const BigFloatTab& src_coord, BigArrOfTID& nodes_renumber, double eps, trustIdType nb_nodes_untouched = 0);
 };
 
 class OperatorClipbox: public Operator
@@ -38,18 +38,15 @@ public:
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
   // La renumerotation vient de clip_box et de regularize
-  ArrOfInt renum_nodes_;
-  ArrOfInt renum_elements_;
-  ArrOfInt renum_faces_;
+  BigArrOfInt renum_nodes_;
+  BigArrOfInt renum_elements_;
+  BigArrOfInt renum_faces_;
 };
 
 class OperatorBoundary: public Operator
 {
 public:
-  OperatorBoundary()
-  {
-    geom_init_ = 0;
-  }
+  OperatorBoundary() : geom_init_(false) { }
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
   BigEntier compute_memory_size() const override
@@ -59,10 +56,10 @@ public:
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
   // La renumerotation vient de clip_box et de regularize
-  ArrOfInt src_nodes_; // for each boundary node, which node is it in source domain ?
-  ArrOfInt src_element_; // same for boundary face vs source domain element
-  ArrOfInt src_face_; // local face number on src_element_
-  entier geom_init_;
+  BigArrOfTID src_nodes_; // for each boundary node, which node is it in source domain ?
+  BigArrOfTID src_element_; // same for boundary face vs source domain element
+  BigArrOfInt src_face_; // local (hence 'int', not 'TID') face number on src_element_
+  bool geom_init_;
 };
 
 class OperatorRegularize: public Operator
@@ -71,14 +68,14 @@ public:
   OperatorRegularize()
   {
     tolerance_ = -1.;
-    geom_init_ = 0;
+    geom_init_ = false;
     extend_layer_ = 0;
   }
   void set_tolerance(double epsilon)
   {
     tolerance_ = epsilon;
   }
-  void set_extend_layer(entier n)
+  void set_extend_layer(int n)
   {
     if (n >= 0)
       extend_layer_ = n;
@@ -94,18 +91,18 @@ public:
   }
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[old_index] = new_index;
-  ArrOfInt renum_nodes_;
-  ArrOfInt renum_elements_;
+  BigArrOfTID renum_nodes_;
+  BigArrOfTID renum_elements_;
   // Pour les faces: les faces de chaque direction du domaine ijk sont numerotees
   //  separement: faces de normales X entre 0 et N, faces de normales Y entre 0 et N, etc...
   // Le numero d'une face est egal au plus petit des numeros de ses sommets du le maillage ijk.
   // Renum faces contient le codage suivant:
   //  numero de la face = renum_faces_[i] >> 2;
   //  direction de la face  = (renum_faces_ & 3)
-  ArrOfInt renum_faces_;
+  BigArrOfTID renum_faces_;
   double tolerance_;
-  entier extend_layer_;
-  entier geom_init_;
+  int extend_layer_;
+  bool geom_init_;
 };
 
 class OperatorDualMesh: public Operator
@@ -151,13 +148,9 @@ void apply_geometry(Op& op, const Domain& src_domain, LataDeriv<Domain>& dest)
   const DomainIJK *src2 = dynamic_cast<const DomainIJK*>(&src_domain);
 
   if (src1)
-    {
-      build_geometry_(op, *src1, dest);
-    }
+    build_geometry_(op, *src1, dest);
   else if (src2)
-    {
-      build_geometry_(op, *src2, dest);
-    }
+    build_geometry_(op, *src2, dest);
   else
     {
       Journal() << "Error in OperatorDualMesh::build_geometry: unsupported domain type" << endl;
@@ -169,16 +162,20 @@ void apply_geometry(Op& op, const Domain& src_domain, LataDeriv<Domain>& dest)
 template<class Op, class DomSrc, class DomDest>
 void apply_field3(Op& op, const DomSrc& src_domain, const LataField_base& src_field, const DomDest& dest_domain, LataDeriv<LataField_base>& dest)
 {
-  const Field<DoubleTab> *src1 = dynamic_cast<const Field<DoubleTab>*>(&src_field);
-  const Field<FloatTab> *src2 = dynamic_cast<const Field<FloatTab>*>(&src_field);
-  const Field<IntTab> *src3 = dynamic_cast<const Field<IntTab>*>(&src_field);
+  const Field<BigDoubleTab> *src1 = dynamic_cast<const Field<BigDoubleTab>*>(&src_field);
+  const Field<BigFloatTab> *src2 = dynamic_cast<const Field<BigFloatTab>*>(&src_field);
+  const Field<BigIntTab> *src3 = dynamic_cast<const Field<BigIntTab>*>(&src_field);
+  const Field<BigTIDTab> *src4 = dynamic_cast<const Field<BigTIDTab>*>(&src_field);
+
 
   if (src1)
-    build_field_(op, src_domain, dest_domain, *src1, dest.instancie(Field<DoubleTab> ));
+    build_field_(op, src_domain, dest_domain, *src1, dest.instancie(Field<BigDoubleTab> ));
   else if (src2)
-    build_field_(op, src_domain, dest_domain, *src2, dest.instancie(Field<FloatTab> ));
+    build_field_(op, src_domain, dest_domain, *src2, dest.instancie(Field<BigFloatTab> ));
   else if (src3)
-    build_field_(op, src_domain, dest_domain, *src3, dest.instancie(Field<IntTab> ));
+    build_field_(op, src_domain, dest_domain, *src3, dest.instancie(Field<BigIntTab> ));
+  else if (src4)
+    build_field_(op, src_domain, dest_domain, *src3, dest.instancie(Field<BigTIDTab> ));
   else
     {
       Journal() << "Error in apply_field3: unsupported field type" << endl;

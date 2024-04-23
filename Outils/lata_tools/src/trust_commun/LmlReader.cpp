@@ -20,6 +20,7 @@
 #include <LataFilter.h>
 #include <stdlib.h>
 #include <string.h>
+
 // lml files contain double precision values that can overflow or underflow
 //  if converted to float. Check for overflow, ignore underflow
 static inline float double_to_float(double x)
@@ -48,7 +49,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
   else
     filename_in_master_file = data_filename;
 
-  const entier lmllevel = 4;
+  const int lmllevel = 4;
   EFichier is;
   Journal(lmllevel) << "lml_reader: " << endl;
   is.ouvrir(lmlfilename);
@@ -84,13 +85,13 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
   // but we must tell write_data() if it must put the data at the beginning
   //  (file_offset==0) or append the data at the end of the file (file_offset!=0)
   // file_offset is 0 for the first data block and it is incremented for each block.
-  entier file_offset = 0;
+  FileOffset file_offset = 0;
   LataDBField sommets;
-  FloatTab nodes;
-  int tmp; // tmp variable
+  BigFloatTab nodes;
+  trustIdType tmp; // tmp variable
   while (1)
     {
-      const entier tstep = lata_db.nb_timesteps() - 1;
+      const int tstep = lata_db.nb_timesteps() - 1;
       Motcle motlu;
       is >> motlu;
       if (!is.good())
@@ -107,7 +108,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
           Journal(lmllevel) << "lml_reader: GRILLE " << geom.name_ << endl;
           is >> sommets.nb_comp_;
           is >> tmp;
-          sommets.size_ = tmp; // size_ est long long...
+          sommets.size_ = tmp;
 
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
@@ -115,9 +116,9 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
           sommets.uname_ = Field_UName(sommets.geometry_, sommets.name_, "");
           sommets.datatype_ = lata_db.default_type_float();
           sommets.datatype_.file_offset_ = file_offset++; // see file_offset_blurb
-          nodes.resize((int) sommets.size_, sommets.nb_comp_);
-          for (entier i = 0; i < sommets.size_; i++)
-            for (entier j = 0; j < sommets.nb_comp_; j++)
+          nodes.resize(sommets.size_, sommets.nb_comp_);
+          for (trustIdType i = 0; i < sommets.size_; i++)
+            for (int j = 0; j < sommets.nb_comp_; j++)
               {
                 double x;
                 is >> x;
@@ -212,9 +213,9 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
             }
 
           Journal(lmllevel + 1) << " " << elements.size_ << " elements " << motlu << endl;
-          IntTab elems;
-          elems.resize((int) elements.size_, elements.nb_comp_);
-          for (entier i = 0; i < elements.size_; i++)
+          BigTIDTab elems;
+          elems.resize(elements.size_, elements.nb_comp_);
+          for (trustIdType i = 0; i < elements.size_; i++)
             {
               if (i != 0)
                 {
@@ -222,7 +223,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
                   if (!is.good())
                     throw LataDBError(LataDBError::READ_ERROR);
                 }
-              entier j;
+              int j;
               for (j = 0; j < elements.nb_comp_; j++)
                 {
                   is >> elems(i, j);
@@ -247,7 +248,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
         }
       else if (motlu == "FACE")
         {
-          int n;
+          trustIdType n;
           is >> n;
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
@@ -280,7 +281,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
           if (!is.good())
             throw LataDBError(LataDBError::READ_ERROR);
 
-          const entier rang_topo = liste_noms_topo.rang(nom_topo);
+          const int rang_topo = liste_noms_topo.rang(nom_topo);
           if (rang_topo < 0)
             {
               Journal() << "Error reading lml file : unknown topology name " << nom_topo << endl;
@@ -329,15 +330,15 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
             }
           field.datatype_ = lata_db.default_type_float();
           field.datatype_.file_offset_ = file_offset++; // see file_offset_blurb
-          FloatTab tab;
-          tab.resize((int) field.size_, field.nb_comp_);
-          for (entier i = 0; i < field.size_; i++)
+          BigFloatTab tab;
+          tab.resize(field.size_, field.nb_comp_);
+          for (trustIdType i = 0; i < field.size_; i++)
             {
-              entier n;
+              trustIdType n;
               is >> n;
               if (!is.good())
                 throw LataDBError(LataDBError::READ_ERROR);
-              for (entier j = 0; j < field.nb_comp_; j++)
+              for (int j = 0; j < field.nb_comp_; j++)
                 {
                   double x;
                   is >> x;
@@ -363,9 +364,9 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
     }
 }
 
-void lml_to_lata(const char *lmlname, const char *latafilename, entier ascii, entier fortran_blocs, entier fortran_ordering, entier fortran_indexing)
+void lml_to_lata(const char *lmlname, const char *latafilename, bool ascii, bool fortran_blocs, bool fortran_ordering, bool fortran_indexing)
 {
-  const entier lmllevel = 4;
+  const int lmllevel = 4;
   Journal(lmllevel) << "lml_to_lata " << lmlname << " -> " << latafilename << endl;
   LataDB lata_db;
   Nom dest_prefix, dest_name;

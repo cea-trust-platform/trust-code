@@ -39,7 +39,7 @@ typedef __int64 BigEntier;
 
 // This must be able to contain a total memory size
 // or a very big operation counter.
-typedef long long BigEntier;
+typedef std::int64_t BigEntier;
 #endif
 
 #ifndef __BYTE_ORDER
@@ -64,10 +64,11 @@ const bool mymachine_msb =  false;
 
 #include <TRUSTArray.h>
 #include <ArrOfBit.h>
-BigEntier memory_size(const ArrOfInt&);
-BigEntier memory_size(const ArrOfDouble&);
-BigEntier memory_size(const ArrOfFloat&);
-BigEntier memory_size(const ArrOfBit&);
+
+template<typename _TYPE_, typename _SIZE_>
+BigEntier memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab);
+
+BigEntier memory_size(const BigArrOfBit&);
 
 class LataObject
 {
@@ -99,7 +100,7 @@ public:
   LataDeriv() : ptr_(0) { };
   ~LataDeriv() { delete ptr_; ptr_ = 0; }
   void reset() { delete ptr_; ptr_ = 0; }
-  entier non_nul() const { return ptr_ != 0; }
+  bool non_nul() const { return ptr_ != 0; }
   // operator C &() { return valeur(); }
   // operator const C &() const { return valeur(); }
   C& valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }
@@ -133,7 +134,7 @@ protected:
   C *ptr_;
 };
 
-// This is a reference to an object of type C, but thr reference can be null
+// This is a reference to an object of type C, but the reference can be null
 template<class C>
 class LataRef
 {
@@ -148,12 +149,12 @@ public:
   void reset() { ptr_ = 0; }
   operator C& () { if (!ptr_) throw ERROR_NULL; return *ptr_; }
   C& valeur() { if (!ptr_) throw ERROR_NULL; return *ptr_; }
-  entier non_nul() const { return ptr_ != 0; }
+  bool non_nul() const { return ptr_ != 0; }
 protected:
   C *ptr_;
 };
 
-void array_sort_indirect(const ArrOfInt& array_to_sort, ArrOfInt& index);
+void array_sort_indirect(const BigArrOfTID& array_to_sort, BigArrOfTID& index);
 
 class Nom;
 void split_path_filename(const char *full_name, Nom& path, Nom& filename);
@@ -171,6 +172,6 @@ void split_path_filename(const char *full_name, Nom& path, Nom& filename);
 #include <Motcle.h>
 #include <Noms.h>
 
-  Motcles noms_to_motcles(const Noms& noms);
+Motcles noms_to_motcles(const Noms& noms);
 
 #endif

@@ -46,7 +46,7 @@ void LataWriter::write_time(double t)
 void LataWriter::write_geometry(const Domain& dom)
 {
   // Index of the last timestep:
-  const entier tstep = db_.nb_timesteps() - 1;
+  const int tstep = db_.nb_timesteps() - 1;
 
   // Build a geometry database entry and add it to database
   LataDBGeometry geom;
@@ -132,7 +132,7 @@ void LataWriter::write_geometry(const Domain& dom)
             }
         }
 
-      field.nb_comp_ = domain.elements_.dimension(1);
+      field.nb_comp_ = (int)domain.elements_.dimension(1);
       field.geometry_ = geom.name_;
       field.datatype_ = db_.default_type_int_;
       field.localisation_ = "";
@@ -167,7 +167,7 @@ void LataWriter::write_geometry(const Domain& dom)
                 }
             }
 
-          field.nb_comp_ = domain.faces_.dimension(1);
+          field.nb_comp_ = (int)domain.faces_.dimension(1);
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_int_;
           field.localisation_ = "";
@@ -199,7 +199,7 @@ void LataWriter::write_geometry(const Domain& dom)
                 }
             }
 
-          field.nb_comp_ = domain.elem_faces_.dimension(1);
+          field.nb_comp_ = (int)domain.elem_faces_.dimension(1);
           field.geometry_ = geom.name_;
           field.datatype_ = db_.default_type_int_;
           field.localisation_ = "";
@@ -221,7 +221,7 @@ void LataWriter::write_geometry(const Domain& dom)
 
       const DomainIJK& domain = *dom2_ptr;
       // Write coordinates
-      const entier dim = domain.coord_.size();
+      const int dim = domain.coord_.size();
       if (dim > 3)
         {
           Journal() << "Error in LataWriter::write_geometry: dimension > 3" << endl;
@@ -231,14 +231,14 @@ void LataWriter::write_geometry(const Domain& dom)
       dir_names[0] = "I";
       dir_names[1] = "J";
       dir_names[2] = "K";
-      for (entier i_dim = 0; i_dim < dim; i_dim++)
+      for (int i_dim = 0; i_dim < dim; i_dim++)
         {
-          FloatTab coord;
+          BigFloatTab coord;  // Big just because write method is not coded for FloatTab
           {
             const ArrOfFloat& x = domain.coord_[i_dim];
-            const entier n = x.size_array();
+            const int n = x.size_array();
             coord.resize(n, 1);
-            for (entier i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
               coord(i, 0) = x[i];
           }
 
@@ -284,9 +284,9 @@ void LataWriter::write_geometry(const Domain& dom)
 
       if (domain.invalid_connections_.size_array() > 0)
         {
-          const entier n = domain.invalid_connections_.size_array();
-          IntTab tmp(n, 1);
-          for (entier i = 0; i < n; i++)
+          const trustIdType n = domain.invalid_connections_.size_array();
+          BigTIDTab tmp(n, 1);
+          for (trustIdType i = 0; i < n; i++)
             tmp(i, 0) = domain.invalid_connections_[i];
 
           Nom fieldname = "INVALID_CONNECTIONS";
@@ -339,7 +339,7 @@ void LataWriter::write_geometry(const Domain& dom)
 void LataWriter::write_component(const LataField_base& field)
 {
   // Index of the last timestep:
-  const entier tstep = db_.nb_timesteps() - 1;
+  const int tstep = db_.nb_timesteps() - 1;
 
   LataDBField lata_field;
 
@@ -371,11 +371,12 @@ void LataWriter::write_component(const LataField_base& field)
   lata_field.localisation_ = LataField_base::localisation_to_string(field.localisation_);
   lata_field.nature_ = field.nature_;
 
-  const Field<FloatTab> *float_f = dynamic_cast<const Field<FloatTab>*>(&field);
-  const Field<IntTab> *int_f = dynamic_cast<const Field<IntTab>*>(&field);
+  const Field<BigFloatTab> *float_f = dynamic_cast<const Field<BigFloatTab>*>(&field);
+  const Field<BigIntTab> *int_f = dynamic_cast<const Field<BigIntTab>*>(&field);
+  const Field<BigTIDTab> *long_f = dynamic_cast<const Field<BigTIDTab>*>(&field);
   if (int_f)
     {
-      lata_field.nb_comp_ = int_f->data_.dimension(1);
+      lata_field.nb_comp_ = (int)int_f->data_.dimension(1);
       lata_field.size_ = int_f->data_.dimension(0);
       lata_field.datatype_ = db_.default_type_int_;
       lata_field.datatype_.array_index_ = LataDBDataType::NOT_AN_INDEX;
@@ -386,9 +387,22 @@ void LataWriter::write_component(const LataField_base& field)
       db_.add_field(lata_field);
       offset_ += db_.write_data(tstep, lata_field.uname_, int_f->data_);
     }
+  else if (long_f)
+    {
+      lata_field.nb_comp_ = (int)long_f->data_.dimension(1);
+      lata_field.size_ = long_f->data_.dimension(0);
+      lata_field.datatype_ = db_.default_type_int_;
+      lata_field.datatype_.array_index_ = LataDBDataType::NOT_AN_INDEX;
+
+      if (lata_option_ == SINGLE_LATA_FILE) // unique file
+        lata_field.datatype_.file_offset_ = offset_;
+
+      db_.add_field(lata_field);
+      offset_ += db_.write_data(tstep, lata_field.uname_, long_f->data_);
+    }
   else if (float_f)
     {
-      lata_field.nb_comp_ = float_f->data_.dimension(1);
+      lata_field.nb_comp_ = (int)float_f->data_.dimension(1);
       lata_field.size_ = float_f->data_.dimension(0);
       lata_field.datatype_ = db_.default_type_float();
 

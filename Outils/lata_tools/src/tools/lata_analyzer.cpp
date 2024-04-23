@@ -32,18 +32,18 @@ using namespace std;
 LataAnalyzerOptions::LataAnalyzerOptions()
 {
   load_subdomain = -1; // load all subdomains
-  binary_out = 1;
-  forcegroup = 0;
+  binary_out = true;
+  forcegroup = false;
   processing_option = WRITE_LATA_MASTER;
-  dump_list = 0;
+  dump_list = false;
   lata_file_splitting = DEFAULT;
-  compute_virtual_elements = 0;
+  compute_virtual_elements = false;
   lata_file_splitting = DEFAULT;
-  fortran_blocs = 1;
-  use_fortran_data_ordering = 0;
-  use_fortran_indexing = 1;
+  fortran_blocs = true;
+  use_fortran_data_ordering = false;
+  use_fortran_indexing = true;
   time_average_ = NO_TIME_AVERAGE;
-  rms_fluctuations = 0;
+  rms_fluctuations = false;
 }
 
 void LataAnalyzerOptions::describe()
@@ -121,56 +121,32 @@ void LataAnalyzerOptions::describe()
   LataOptions::describe();
 }
 
-entier LataAnalyzerOptions::parse_option(const Nom& s)
+int LataAnalyzerOptions::parse_option(const Nom& s)
 {
   if (s == "binout")
-    {
-      binary_out = 1;
-    }
+    binary_out = true;
   else if (s == "asciiout")
-    {
-      binary_out = 0;
-    }
+    binary_out = false;
   else if (s == "splitfiles=none")
-    {
-      lata_file_splitting = SPLIT_NONE;
-    }
+    lata_file_splitting = SPLIT_NONE;
   else if (s == "splitfiles=all")
-    {
-      lata_file_splitting = SPLIT_ALL;
-    }
+    lata_file_splitting = SPLIT_ALL;
   else if (s == "fortranblocs=no")
-    {
-      fortran_blocs = 0;
-    }
+    fortran_blocs = false;
   else if (s == "fortranblocs=yes")
-    {
-      fortran_blocs = 1;
-    }
+    fortran_blocs = true;
   else if (s == "fortranindex=yes")
-    {
-      use_fortran_indexing = 1;
-    }
+    use_fortran_indexing = true;
   else if (s == "fortranindex=no")
-    {
-      use_fortran_indexing = 0;
-    }
+    use_fortran_indexing = false;
   else if (s == "forcegroup")
-    {
-      forcegroup = 1;
-    }
+    forcegroup = true;
   else if (s == "dumplist")
-    {
-      dump_list = 1;
-    }
+    dump_list = true;
   else if (s == "compute_virtual_elements")
-    {
-      compute_virtual_elements = 1;
-    }
+    compute_virtual_elements = true;
   else if (s.debute_par("subdomain="))
-    {
-      load_subdomain = read_int_opt(s);
-    }
+    load_subdomain = read_int_opt(s);
   else if (s.debute_par("writelata="))
     {
       processing_option = WRITE_LATA_ALL;
@@ -197,46 +173,26 @@ entier LataAnalyzerOptions::parse_option(const Nom& s)
       output_filename = "??";
     }
   else if (s.debute_par("timestep="))
-    {
-      // Internally, first timestep is 1.
-      input_timesteps_filter.append_array(read_int_opt(s)+1);
-    }
+    // Internally, first timestep is 1.
+    input_timesteps_filter.append_array(read_int_opt(s)+1);
   else if (s.debute_par("domain="))
-    {
-      input_domains_filter.add(read_string_opt(s));
-    }
+    input_domains_filter.add(read_string_opt(s));
   else if (s.debute_par("component="))
-    {
-      input_components_filter.add(read_string_opt(s));
-    }
+    input_components_filter.add(read_string_opt(s));
   else if (s.debute_par("export_domain="))
-    {
-      output_domains_filter.add(read_string_opt(s));
-    }
+    output_domains_filter.add(read_string_opt(s));
   else if (s.debute_par("export_component="))
-    {
-      output_components_filter.add(read_string_opt(s));
-    }
+    output_components_filter.add(read_string_opt(s));
   else if (s.debute_par("mergelata="))
-    {
-      merge_files.add(read_string_opt(s));
-    }
+    merge_files.add(read_string_opt(s));
   else if (s == "timeaverage=simple")
-    {
-      time_average_ = SIMPLE_TIME_AVERAGE;
-    }
+    time_average_ = SIMPLE_TIME_AVERAGE;
   else if (s == "timeaverage=linear")
-    {
-      time_average_ = LINEAR_TIME_AVERAGE;
-    }
+    time_average_ = LINEAR_TIME_AVERAGE;
   else if (s == "timeaverage=rectangles")
-    {
-      time_average_ = RECTANGLES_TIME_AVERAGE;
-    }
+    time_average_ = RECTANGLES_TIME_AVERAGE;
   else if (s == "rms_fluctuations")
-    {
-      rms_fluctuations = 1;
-    }
+    rms_fluctuations = true;
   else
     return LataOptions::parse_option(s);
   return 1;
@@ -269,10 +225,10 @@ void LataAnalyzerOptions::parse_options(int argc, char **argv)
 void write_prmfile(const char *source_file, LataDB& lata_db)
 {
   Journal() << "Writing a .prm file with all fields to stdout " << endl;
-  const entier last_tstep = lata_db.nb_timesteps() - 1;
+  const int last_tstep = lata_db.nb_timesteps() - 1;
   // Get all meshes:
   Noms meshes = lata_db.geometry_names(last_tstep, LataDB::FIRST_AND_CURRENT);
-  entier i;
+  int i;
   for (i = 0; i < meshes.size(); i++)
     {
       Journal() << "plotting mesh " << meshes[i] << endl;
@@ -286,9 +242,9 @@ void write_prmfile(const char *source_file, LataDB& lata_db)
       const LataDBField& field = lata_db.get_field(last_tstep, fields[i], LataDB::FIRST_AND_CURRENT);
       Nom geom(field.geometry_);
       Nom loc(field.localisation_);
-      entier is_vector = 0;
+      bool is_vector = false;
       if (field.nature_ == LataDBField::VECTOR)
-        is_vector = 1;
+        is_vector = true;
       if (field.localisation_ == "FACES")
         {
           // fields at faces must be plot on the dual mesh:
@@ -299,7 +255,7 @@ void write_prmfile(const char *source_file, LataDB& lata_db)
           if (latageom.elem_type_ == "QUADRANGLE" || latageom.elem_type_ == "RECTANGLE")
             is_vector = 1;
         }
-      entier nb_comp = field.nb_comp_;
+      int nb_comp = field.nb_comp_;
       if (is_vector)
         nb_comp = lata_db.get_field(last_tstep, field.geometry_, "SOMMETS", "*", LataDB::FIRST_AND_CURRENT).nb_comp_;
 
@@ -311,7 +267,7 @@ void write_prmfile(const char *source_file, LataDB& lata_db)
         {
           Journal() << "plotting field " << field.uname_.build_string() << endl;
           // Plot each component
-          for (entier j = 0; j < nb_comp; j++)
+          for (int j = 0; j < nb_comp; j++)
             {
               // The name built here must be identical to the name built in the visit/lata plugin
               Nom name(field.name_);
@@ -370,10 +326,10 @@ static void write_lata_master(const LataDB& lata_db, const LataAnalyzerOptions& 
   if (opt.compute_virtual_elements)
     {
       // Loop on all timesteps and geometries:
-      for (entier t = 0; t < lata_db.nb_timesteps(); t++)
+      for (int t = 0; t < lata_db.nb_timesteps(); t++)
         {
           Noms geoms = lata_db.geometry_names(t);
-          for (entier i = 0; i < geoms.size(); i++)
+          for (int i = 0; i < geoms.size(); i++)
             rebuild_virtual_layer(dest_db, Domain_Id(geoms[i], t), opt.reconnect_tolerance);
         }
     }
@@ -422,21 +378,25 @@ static void write_lata_convert(const LataDB& lata_db, const LataAnalyzerOptions&
     }
 
   // Loop on timesteps and fields and write everything
-  IntTab tmp_int;
-  FloatTab tmp_float;
-  DoubleTab tmp_double;
-  for (entier i = 0; i < lata_db.nb_timesteps(); i++)
+  BigIntTab tmp_int;
+  BigTIDTab tmp_tid;
+  BigFloatTab tmp_float;
+  BigDoubleTab tmp_double;
+  for (int i = 0; i < lata_db.nb_timesteps(); i++)
     {
       Field_UNames fields = lata_db.field_unames(i, "*", "*");
-      for (entier k = 0; k < fields.size(); k++)
+      for (int k = 0; k < fields.size(); k++)
         {
           const LataDBField& fld = lata_db.get_field(i, fields[k]);
           switch(fld.datatype_.type_)
             {
             case LataDBDataType::INT32:
-            case LataDBDataType::INT64:
               lata_db.read_data(fld, tmp_int);
               dest_db.write_data(i, fields[k], tmp_int);
+              break;
+            case LataDBDataType::INT64:
+              lata_db.read_data(fld, tmp_tid);
+              dest_db.write_data(i, fields[k], tmp_tid);
               break;
             case LataDBDataType::REAL32:
               lata_db.read_data(fld, tmp_float);
@@ -479,16 +439,16 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
   lata_file.set_file_splitting_option(LataWriter::SINGLE_LATA_FILE); // BOOM BOOM !
   lata_file.init_file(dest_prefix, dest_name, type, LataDBDataType::REAL32);
 
-  const entier ntimesteps = filter.get_nb_timesteps();
+  const int ntimesteps = filter.get_nb_timesteps();
 
   Journal(2) << "ntimesteps =  " << ntimesteps << endl;
 
   // Build list of geometries to export
   Noms geometries;
     {
-      const entier take_all_geoms = (opt.output_domains_filter.size() == 0);
+      bool take_all_geoms = (opt.output_domains_filter.size() == 0);
       Noms names = filter.get_exportable_geometry_names();
-      for (entier i = 0; i < names.size(); i++)
+      for (int i = 0; i < names.size(); i++)
         if (take_all_geoms || opt.output_domains_filter.rang(names[i]) >= 0)
           {
             geometries.add(names[i]);
@@ -498,7 +458,7 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
           Journal(2) << " Geometry rejected (output selection): " << names[i] << endl;
     }
 
-  for (entier tstep = 0; tstep < ntimesteps; tstep++)
+  for (int tstep = 0; tstep < ntimesteps; tstep++)
     {
       if (tstep > 0)
         {
@@ -508,7 +468,7 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
           lata_file.write_time(t);
         }
 
-      for (entier i = 0; i < geometries.size(); i++)
+      for (int i = 0; i < geometries.size(); i++)
         {
           const LataGeometryMetaData &md = filter.get_geometry_metadata(geometries[i]);
 
@@ -527,7 +487,7 @@ static void write_single_lata(LataFilter &filter, const LataAnalyzerOptions &opt
             {
               // Output fields
               LataVector<Field_UName> field_names = filter.get_exportable_field_unames(md.internal_name_);
-              for (entier j = 0; j < field_names.size(); j++)
+              for (int j = 0; j < field_names.size(); j++)
                 {
                   const Nom &fieldname = field_names[j].get_field_name();
                   const Nom &complete_field_name = field_names[j].build_string();
@@ -554,7 +514,7 @@ static void write_med(LataFilter& filter, const LataAnalyzerOptions& opt)
   MEDWriter writer;
   writer.init_file(opt.medfilename);
   Noms geoms = filter.get_exportable_geometry_names();
-  for (entier i = 0; i < geoms.size(); i++)
+  for (int i = 0; i < geoms.size(); i++)
     {
       if (opt.domains_filter.size() > 0 && opt.domains_filter.rang(geoms[i]) < 0)
         continue;
@@ -563,7 +523,7 @@ static void write_med(LataFilter& filter, const LataAnalyzerOptions& opt)
       writer.write_geometry(dom);
 
       Noms fields = filter.get_exportable_field_names(geoms[i]);
-      for (entier j = 0; j < fields.size(); j++)
+      for (int j = 0; j < fields.size(); j++)
         {
           if (opt.components_filter.size() > 0 && opt.components_filter.rang(fields[j]) < 0)
             continue;
@@ -602,8 +562,8 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
   if (opt.export_fields_at_faces_) lata_writer.write_faces_fields();
   lata_writer.init_file(new_prefix, new_basename, default_int, LataDBDataType::REAL32);
 
-  const entier time_average = (opt.time_average_ != LataAnalyzerOptions::NO_TIME_AVERAGE);
-  const entier ntimesteps = time_average ? 2 : filter.get_nb_timesteps();
+  const int time_average = (opt.time_average_ != LataAnalyzerOptions::NO_TIME_AVERAGE);
+  const int ntimesteps = time_average ? 2 : filter.get_nb_timesteps();
 
   if (time_average && filter.get_nb_timesteps() < 3)
     {
@@ -614,9 +574,9 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
   // Build list of geometries to export
   Noms geometries;
   {
-    const entier take_all_geoms = (opt.output_domains_filter.size() == 0);
+    const int take_all_geoms = (opt.output_domains_filter.size() == 0);
     Noms names = filter.get_exportable_geometry_names();
-    for (entier i = 0; i < names.size(); i++)
+    for (int i = 0; i < names.size(); i++)
       if (take_all_geoms || opt.output_domains_filter.rang(names[i]) >= 0)
         {
           if (time_average && filter.get_geometry_metadata(names[i]).dynamic_)
@@ -635,7 +595,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
         }
   }
 
-  for (entier tstep = 0; tstep < ntimesteps; tstep++)
+  for (int tstep = 0; tstep < ntimesteps; tstep++)
     {
       if (tstep > 0)
         {
@@ -644,8 +604,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
           Journal(2) << " Writing timestep to lata: " << t << endl;
           lata_writer.write_time(t);
         }
-      entier i;
-      for (i = 0; i < geometries.size(); i++)
+      for (int i = 0; i < geometries.size(); i++)
         {
           const LataGeometryMetaData& md = filter.get_geometry_metadata(geometries[i]);
           if ((md.dynamic_ && tstep > 0) || ((!md.dynamic_) && tstep == 0))
@@ -660,8 +619,8 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
             {
               // Output fields
               LataVector<Field_UName> field_names = filter.get_exportable_field_unames(md.internal_name_);
-              const entier n = field_names.size();
-              for (entier j = 0; j < n; j++)
+              const int n = field_names.size();
+              for (int j = 0; j < n; j++)
                 {
                   const Nom& fieldname = field_names[j].get_field_name();
                   const Nom& complete_field_name = field_names[j].build_string();
@@ -674,22 +633,22 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                     {
                       // Compute time average of all timesteps (if type float)
                       const LataField_base& field = filter.get_field(Field_Id(field_names[j], tstep, -1));
-                      const Field<FloatTab> * fld_ptr = dynamic_cast<const Field<FloatTab> *> (&field);
+                      const Field<BigFloatTab> * fld_ptr = dynamic_cast<const Field<BigFloatTab> *> (&field);
                       if (fld_ptr)
                         {
                           Journal(2) << "Computing time average of field " << field_names[j].build_string() << endl;
                           // take a copy:
-                          Field<FloatTab> fld(*fld_ptr);
+                          Field<BigFloatTab> fld(*fld_ptr);
                           filter.release_field(field);
 
                           // Compute in double precision:
-                          ArrOfDouble data_array(fld.data_.size_array());
+                          BigArrOfDouble data_array(fld.data_.size_array());
                           // Integral of the square (for rms fluctuations)
-                          ArrOfDouble square_data_array;
+                          BigArrOfDouble square_data_array;
                           if (opt.rms_fluctuations)
                             square_data_array.resize_array(fld.data_.size_array());
 
-                          const entier nt = filter.get_nb_timesteps();
+                          const int nt = filter.get_nb_timesteps();
                           double f;
                           double total_time = 0.;
                           switch(opt.time_average_)
@@ -719,15 +678,15 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                               exit(-1);
                             }
 
-                          const entier sz = data_array.size_array();
+                          const trustIdType sz = data_array.size_array();
                           if (opt.time_average_ != LataAnalyzerOptions::RECTANGLES_TIME_AVERAGE)
                             Journal(3) << "Adding timestep 1, factor " << f << endl;
                           else
                             Journal(3) << "Timestep 1 not used for time integration (only time position)" << endl;
 
-                          entier k;
+                          trustIdType k;
                           {
-                            const ArrOfFloat& fld_data = fld.data_;
+                            const BigArrOfFloat& fld_data = fld.data_;
                             for (k = 0; k < sz; k++)
                               {
                                 double x = fld_data[k];
@@ -738,10 +697,10 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                           }
 
                           // Loop on other timesteps
-                          for (entier tstep2 = 2; tstep2 < nt; tstep2++)
+                          for (int tstep2 = 2; tstep2 < nt; tstep2++)
                             {
                               const LataField_base& field = filter.get_field(Field_Id(field_names[j], tstep2, -1));
-                              const ArrOfFloat& arr2 = (*dynamic_cast<const Field<FloatTab> *> (&field)).data_;
+                              const BigArrOfFloat& arr2 = (*dynamic_cast<const Field<BigFloatTab> *> (&field)).data_;
                               switch(opt.time_average_)
                                 {
                                 case LataAnalyzerOptions::SIMPLE_TIME_AVERAGE:
@@ -749,7 +708,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                                 case LataAnalyzerOptions::LINEAR_TIME_AVERAGE:
                                   {
                                     // Compute coefficient for this timestep for piecewise linear interpolation
-                                    const entier x = (tstep2 < nt - 1) ? (tstep2 + 1) : tstep2;
+                                    const int x = (tstep2 < nt - 1) ? (tstep2 + 1) : tstep2;
                                     f = 0.5 * (filter.get_timestep(x) - filter.get_timestep(tstep2-1)) / total_time;
                                     break;
                                   }
@@ -777,7 +736,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                             }
 
                           // Write field
-                          ArrOfFloat& fld_data = fld.data_;
+                          BigArrOfFloat& fld_data = fld.data_;
 
                           for (k = 0; k < sz; k++)
                             fld_data[k] = data_array[k];
@@ -830,21 +789,21 @@ template <class TAB>
 static void merge_tab(const LataVector<LataDB>& lata_db, LataDB& dest_db, const LataDBField& dest_fld)
 {
   TAB tmp, tab;
-  const entier n = lata_db.size();
-  entier offset = 0;
-  for (entier i = 0; i < n; i++)
+  const int n = lata_db.size();
+  trustIdType offset = 0;
+  for (int i = 0; i < n; i++)
     {
       const LataDBField& fld = lata_db[i].get_field(dest_fld.timestep_, dest_fld.uname_);
       lata_db[i].read_data(fld, tmp);
       if (offset)
         tmp += offset;
-      const entier sz = tab.dimension(0);
+      const trustIdType sz = tab.dimension(0);
       if (i > 0 && tmp.dimension(1) != tab.dimension(1))
         {
           cerr << "Error while merging arrays: dimensions mismatch for field " << dest_fld.uname_.build_string() << endl;
           exit(-1);
         }
-      const entier old_sz = tab.size_array();
+      const trustIdType old_sz = tab.size_array();
       tab.resize(sz + tmp.dimension(0), tmp.dimension(1));
       tab.inject_array(tmp, tmp.size_array(), old_sz, 0);
       if (dest_fld.name_ == "ELEMENTS" || dest_fld.name_ == "FACES")
@@ -866,10 +825,10 @@ static void merge_lata_geometries(const LataAnalyzerOptions& opt)
       cerr << "Error in merge_lata_geometries: must have at least one lata file" << endl;
       exit(-1);
     }
-  const entier nb_db = filenames.size();
+  const int nb_db = filenames.size();
   LataVector<LataDB> lata_db(nb_db);
 
-  for (entier i = 0; i < nb_db; i++)
+  for (int i = 0; i < nb_db; i++)
     {
       LataDB input;
       Nom a, b;
@@ -898,32 +857,34 @@ static void merge_lata_geometries(const LataAnalyzerOptions& opt)
   dest_db.default_type_int_   = dest_db1.default_type_int_;
   dest_db.default_float_type_ = dest_db1.default_float_type_;
 
-  for (entier i = 0; i < dest_db1.nb_timesteps(); i++)
+  for (int i = 0; i < dest_db1.nb_timesteps(); i++)
     {
       dest_db.add_timestep(dest_db1.get_time(i));
 
       // Copy geometries from dest_db1 to dest_db
       Noms geoms = dest_db1.geometry_names(i);
-      for (entier j = 0; j < geoms.size(); j++)
+      for (int j = 0; j < geoms.size(); j++)
         dest_db.add_geometry(dest_db1.get_geometry(i, geoms[j]));
 
       // Copy and merge fields
       Field_UNames fields = dest_db1.field_unames(i, "*", "*");
-      for (entier k = 0; k < fields.size(); k++)
+      for (int k = 0; k < fields.size(); k++)
         {
           // Make a copy of the field
           LataDBField fld = dest_db1.get_field(i, fields[k]);
           switch(fld.datatype_.type_)
             {
             case LataDBDataType::INT32:
+              merge_tab<BigIntTab>(lata_db, dest_db, fld);
+              break;
             case LataDBDataType::INT64:
-              merge_tab<IntTab>(lata_db, dest_db, fld);
+              merge_tab<BigTIDTab>(lata_db, dest_db, fld);
               break;
             case LataDBDataType::REAL32:
-              merge_tab<FloatTab>(lata_db, dest_db, fld);
+              merge_tab<BigFloatTab>(lata_db, dest_db, fld);
               break;
             case LataDBDataType::REAL64:
-              merge_tab<DoubleTab>(lata_db, dest_db, fld);
+              merge_tab<BigDoubleTab>(lata_db, dest_db, fld);
               break;
             default:
               Journal() << "Error in lata_analyzer: type not implemented !" << endl;
@@ -979,7 +940,7 @@ int main(int argc,char **argv)
       Noms list_all_unames;
       {
         Field_UNames fields = lata_db_input.field_unames(lata_db_input.nb_timesteps()-1, "*", "*", LataDB::FIRST_AND_CURRENT);
-        for (entier i = 0; i < fields.size(); i++)
+        for (int i = 0; i < fields.size(); i++)
           {
             const Nom& n = fields[i].get_field_name();
             if (list_all_fields.rang(n) < 0)
@@ -991,7 +952,7 @@ int main(int argc,char **argv)
       }
       Journal() << "Input database dump:" << endl;
       Journal() << " List of available timesteps:" << endl;
-      entier i;
+      int i;
       for (i = 1; i < lata_db_input.nb_timesteps(); i++)
         Journal() << "  " << i-1 << "  " << lata_db_input.get_time(i) << endl;
       Journal() << " List of available geometries:" << endl;
@@ -1029,11 +990,11 @@ int main(int argc,char **argv)
           Noms geoms = filter.get_exportable_geometry_names();
           Journal() << "Available output data:" << endl;
           Journal() << " List of available geometries and fields:" << endl;
-          for (entier i = 0; i < geoms.size(); i++)
+          for (int i = 0; i < geoms.size(); i++)
             {
               Journal() << "  Geometry " << geoms[i] << endl;
               Field_UNames fields = filter.get_exportable_field_unames(geoms[i]);
-              for (entier i = 0; i < fields.size(); i++)
+              for (int i = 0; i < fields.size(); i++)
                 Journal() << "   Field     " << fields[i].get_field_name()
                           << "     (" << fields[i].build_string() << ")" << endl;
             }

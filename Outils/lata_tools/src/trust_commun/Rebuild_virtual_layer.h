@@ -17,11 +17,12 @@
 #define LataLoader_H
 
 #include <TRUSTTab.h>
+
 class DomainUnstructured;
 class Domain_Id;
 class LataDB;
 
-void find_virtual_layer(DomainUnstructured& domain, IntTab& virtual_elements, IntTab& joints_virtual_elements, double tolerance);
-entier rebuild_virtual_layer(LataDB& lataDB, Domain_Id id, double reconnect_tolerance);
+void find_virtual_layer(DomainUnstructured& domain, BigTIDTab& virtual_elements, BigTIDTab& joints_virtual_elements, double tolerance);
+int rebuild_virtual_layer(LataDB& lataDB, Domain_Id id, double reconnect_tolerance);
 
 #endif /* LataLoader_H */

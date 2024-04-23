@@ -55,6 +55,7 @@
 #include <vtkFloatArray.h>
 #include <vtkInformation.h>
 #include <vtkIntArray.h>
+#include <vtkLongArray.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkStructuredGrid.h>
@@ -94,7 +95,7 @@ avtlataFileFormat::avtlataFileFormat(const char *filename)
         read_any_format(filename, opt.path_prefix, lata_db_);
         filter_.initialize(opt, lata_db_);
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in LataFilter::initialize " << filename << " " << err.describe() << endl;
         throw;
     }
@@ -125,7 +126,7 @@ avtlataFileFormat::GetNTimesteps(void)
         if (n > 1)
             n--;
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in getntimesteps " << filename << " " << err.describe() << endl;
         throw;
     }
@@ -143,7 +144,7 @@ void avtlataFileFormat::GetTimes(std::vector<double>& times)
             for (int i = 1; i < n; i++)
                 times.push_back(filter_.get_timestep(i));
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in gettimes " << filename << " " << err.describe() << endl;
         throw;
     }
@@ -232,11 +233,11 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
                 throw;
             }
 
-            int mesh_faces=0;
+            bool mesh_faces=false;
             if  (data.internal_name_.finit_par("_centerfaces"))
             {
                 //cerr<<"la "<<data.internal_name_<<endl;
-                mesh_faces=1;
+                mesh_faces=true;
             }
             double *extents = NULL;
             const std::string geom_name(data.displayed_name_);
@@ -273,16 +274,16 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
                     // Scalar field
                     // We append the geometry name to the component name:
                     register_fieldname(varname.c_str(), fields[i_field], 0);
-                    if (mesh_faces==0)
+                    if (!mesh_faces)
                         AddScalarVarToMetaData(md, varname, geom_name, cent);
                 } else if (data2.is_vector_ && data2.nb_components_ == data.dimension_) {
                     // Vector field
                     register_fieldname(varname.c_str(), fields[i_field], -1);
                     AddVectorVarToMetaData(md, varname, geom_name, cent, data2.nb_components_);
-                    if (mesh_faces==0)
+                    if (!mesh_faces)
                     {
                         std::string n;
-                        for (entier i = 0; i < data2.nb_components_; i++) {
+                        for (int i = 0; i < data2.nb_components_; i++) {
                             Expression v;
                             n = data2.name_;
                             n += suffix_vector_names[i];
@@ -315,9 +316,9 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
                 } else {
                     // Multiscalar field
                     // I chose to postfix the varname with the component name, perhaps not the best choice.
-                    if (mesh_faces==0)
+                    if (!mesh_faces)
                     {
-                        for (entier i_compo = 0; i_compo < data2.nb_components_; i_compo++) {
+                        for (int i_compo = 0; i_compo < data2.nb_components_; i_compo++) {
                             std::string varname2(data2.name_);
                             varname2 += "_";
                             if (data2.component_names_.size() == data2.nb_components_) {
@@ -339,7 +340,7 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
         }
         debug1 << "End avtlataFileFormat::PopulateDatabaseMetaData" << endl;
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in PopulateDatabaseMetaData " << err.describe() << endl;
         throw;
     }
@@ -404,7 +405,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
         if (filter_.get_nb_timesteps() > 1)
             timestate++;
 
-        const entier index = mesh_username_.rang(meshname);
+        const int index = mesh_username_.rang(meshname);
         if (index < 0) {
             cerr << "internal error in avtlataFileFormat::GetMesh: name " << meshname << " not found" << endl;
             throw;
@@ -420,13 +421,12 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
 
             vtkUnstructuredGrid *ugrid = vtkUnstructuredGrid::New();
             vtkPoints *points = vtkPoints::New();
-            const FloatTab & pos = geom.nodes_;
-            const int nnodes = pos.dimension(0);
-            const int dim3 = pos.dimension(1) == 3;
+            const BigFloatTab & pos = geom.nodes_;
+            const trustIdType nnodes = pos.dimension(0);
+            const bool dim3 = (int)pos.dimension(1) == 3;
             points->SetNumberOfPoints(nnodes);
             float* pts = (float *) points->GetVoidPointer(0);
-            int jl=0;
-            int i;
+            trustIdType i, jl=0;
             for (i = 0; i < nnodes; i++) {
                 pts[jl]   = pos(i,0);
                 pts[jl+1] = pos(i,1);
@@ -436,11 +436,11 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
             ugrid->SetPoints(points);
             points->Delete();
 
-            const IntTab & conn = geom.elements_;
-            const IntTab & elem_faces = geom.elem_faces_;
-            const IntTab & faces = geom.faces_;
-            const int ncells = conn.dimension(0);
-            int nverts = conn.dimension(1);
+            const BigTIDTab & conn = geom.elements_;
+            const BigTIDTab & elem_faces = geom.elem_faces_;
+            const BigTIDTab & faces = geom.faces_;
+            const trustIdType ncells = conn.dimension(0);
+            int nverts = (int)conn.dimension(1);
 
             int type_cell;
             switch (geom.elt_type_) {
@@ -511,10 +511,20 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                         //polyhedra, face by face
                         int j, nfaces = 0, npts = 0, k, i_f, s, f;
                         poly_p.resize(0), poly_f.resize(0);
-                        for (j = 0; j < conn.dimension(1); j++) if ((s = conn(i, j)) >= 0) poly_p.push_back(s), npts++;
-                        for (j = 0; j < elem_faces.dimension(1); j++) if ((f = elem_faces(i, j)) >= 0)
-                                for (k = 0, nfaces++, i_f = poly_f.size(), poly_f.push_back(0); k < faces.dimension(1) ; k++) if ((s = faces(f, k)) >= 0)
-                                        poly_f.push_back(s), poly_f[i_f]++;
+                        for (j = 0; j < (int)conn.dimension(1); j++)
+                          if ((s = conn(i, j)) >= 0)
+                            {
+                              poly_p.push_back(s);
+                              npts++;
+                            }
+                        for (j = 0; j < (int)elem_faces.dimension(1); j++)
+                          if ((f = elem_faces(i, j)) >= 0)
+                            for (k = 0, nfaces++, i_f = poly_f.size(), poly_f.push_back(0); k < (int)faces.dimension(1) ; k++)
+                              if ((s = faces(f, k)) >= 0)
+                                {
+                                  poly_f.push_back(s);
+                                  poly_f[i_f]++;
+                                }
                         ugrid->InsertNextCell(type_cell, npts, &poly_p[0], nfaces, &poly_f[0]);
                     } else if ((type_cell==VTK_CONVEX_POINT_SET)||(type_cell==VTK_POLYGON)) {
                         int nverts_loc=nverts;
@@ -576,9 +586,9 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                 }
             }
             delete [] verts;
-            verts = 0;
+            verts = nullptr;
             // Declare ghost elements:
-            const int n = geom.nb_virt_items(LataField_base::ELEM);
+            const trustIdType n = geom.nb_virt_items(LataField_base::ELEM);
             if (n > 0) {
                 unsigned char realVal = 0;
                 unsigned char ghost   = 0; // Sera modifie par AddGhostZoneType
@@ -643,9 +653,9 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
             }
             // Create "invalid cells" data (GettingDataIntoVisit.pdf, page 136)
             // and "ghost cells"
-            const int n = geom.invalid_connections_.size_array();
+            const trustIdType n = geom.invalid_connections_.size_array();
             if (n > 0 || geom.virtual_layer_begin_ || geom.virtual_layer_end_) {
-                const int ncells = geom.nb_elements();
+                const trustIdType ncells = geom.nb_elements();
                 unsigned char realVal = 0;
                 unsigned char invalid = 0; // Sera modifie par AddGhostZoneType
                 unsigned char ghost   = 0;
@@ -656,19 +666,19 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                 ghostcells->SetNumberOfTuples(ncells);
                 unsigned char *dat = (unsigned char *) ghostcells->GetVoidPointer(0);
 
-                for (i = 0; i < ncells; i++)
-                    dat[i] = realVal;
+                for (trustIdType ii = 0; ii < ncells; i++)
+                    dat[ii] = realVal;
 
                 if (n > 0) {
                     // invalid cells
-                    for (i = 0; i < ncells; i++) {
-                        if (geom.invalid_connections_[i])
-                            dat[i] = invalid;
+                    for (trustIdType ii = 0; ii < ncells; ii++) {
+                        if (geom.invalid_connections_[ii])
+                            dat[ii] = invalid;
                     }
                 }
 
                 // ghost cells
-                entier ij = 1;
+                trustIdType ij = 1;
                 for (i = 0; i < dim-1; i++)
                     ij *= ncoord[i]-1;
                 if (geom.virtual_layer_begin_) {
@@ -678,8 +688,8 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                 }
                 if (geom.virtual_layer_end_) {
                     // last layer of cells is ghost
-                    for (i = ncells - ij * geom.virtual_layer_end_; i < ncells; i++)
-                        dat[i] += ghost;
+                    for (trustIdType ii = ncells - ij * (trustIdType)geom.virtual_layer_end_; ii < ncells; ii++)
+                        dat[ii] += ghost;
                 }
 
                 sgrid->GetCellData()->AddArray(ghostcells);
@@ -696,7 +706,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
 
         filter_.release_geometry(geometry);
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in getmesh " << timestate << " " << block << " " << meshname << " " << err.describe() << endl;
         throw;
     }
@@ -751,27 +761,38 @@ avtlataFileFormat::GetVar(int timestate, int block, const char *varname)
 
         const LataField_base & field = filter_.get_field(id);
 
-        const Field<FloatTab> * float_field_ptr = dynamic_cast<const Field<FloatTab>*>(&field);
-        const Field<IntTab> * int_field_ptr = dynamic_cast<const Field<IntTab>*>(&field);
+        const Field<BigFloatTab> * float_field_ptr = dynamic_cast<const Field<BigFloatTab>*>(&field);
+        const Field<BigIntTab> * int_field_ptr = dynamic_cast<const Field<BigIntTab>*>(&field);
+        const Field<BigTIDTab> * tid_field_ptr = dynamic_cast<const Field<BigTIDTab>*>(&field);
 
         if (float_field_ptr) {
             vtkFloatArray *rv = vtkFloatArray::New();
-            const Field<FloatTab> & fld = *float_field_ptr;
-            const FloatTab & values = fld.data_;
-            int ntuples = values.dimension(0);
+            const Field<BigFloatTab> & fld = *float_field_ptr;
+            const BigFloatTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
             rv->SetNumberOfTuples(ntuples);
             float * data = rv->GetPointer(0);
-            for (int i = 0; i < ntuples; i++)
+            for (trustIdType i = 0; i < ntuples; i++)
                 data[i] = values(i, component);
             return_value = rv;
         } else if (int_field_ptr) {
             vtkIntArray *rv = vtkIntArray::New();
-            const Field<IntTab> & fld = *int_field_ptr;
-            const IntTab & values = fld.data_;
-            int ntuples = values.dimension(0);
+            const Field<BigIntTab> & fld = *int_field_ptr;
+            const BigIntTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
             rv->SetNumberOfTuples(ntuples);
             int * data = rv->GetPointer(0);
-            for (int i = 0; i < ntuples; i++)
+            for (trustIdType i = 0; i < ntuples; i++)
+                data[i] = values(i, component);
+            return_value = rv;
+        } else if (tid_field_ptr) {
+            vtkLongArray *rv = vtkLongArray::New();
+            const Field<BigTIDTab> & fld = *tid_field_ptr;
+            const BigTIDTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
+            rv->SetNumberOfTuples(ntuples);
+            trustIdType * data = rv->GetPointer(0);
+            for (trustIdType i = 0; i < ntuples; i++)
                 data[i] = values(i, component);
             return_value = rv;
         } else {
@@ -780,7 +801,7 @@ avtlataFileFormat::GetVar(int timestate, int block, const char *varname)
         }
         filter_.release_field(field);
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in getvar " << timestate << " " << block << " " << varname << " " << err.describe() << endl;
         throw;
     }
@@ -833,32 +854,46 @@ avtlataFileFormat::GetVectorVar(int timestate, int block, const char *varname)
 
         const LataField_base & field = filter_.get_field(id);
 
-        const Field<FloatTab> * float_field_ptr = dynamic_cast<const Field<FloatTab>*>(&field);
-        const Field<IntTab> * int_field_ptr = dynamic_cast<const Field<IntTab>*>(&field);
+        const Field<BigFloatTab> * float_field_ptr = dynamic_cast<const Field<BigFloatTab>*>(&field);
+        const Field<BigIntTab> * int_field_ptr = dynamic_cast<const Field<BigIntTab>*>(&field);
+        const Field<BigTIDTab> * tid_field_ptr = dynamic_cast<const Field<BigTIDTab>*>(&field);
 
         if (float_field_ptr) {
             vtkFloatArray *rv = vtkFloatArray::New();
-            const Field<FloatTab> & fld = *float_field_ptr;
-            const FloatTab & values = fld.data_;
-            int ntuples = values.dimension(0);
-            int dim = values.dimension(1);
+            const Field<BigFloatTab> & fld = *float_field_ptr;
+            const BigFloatTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
+            int dim = (int)values.dimension(1);
             rv->SetNumberOfComponents(3);
             rv->SetNumberOfTuples(ntuples);
             float* data= rv->WritePointer(0,3*ntuples);
-            for (int i = 0; i < ntuples; i++)
+            for (trustIdType i = 0; i < ntuples; i++)
                 for (int j = 0; j < 3; j++)
                     data[i*3+j] = (j<dim) ? values(i, j) : 0.;
             return_value = rv;
         } else if (int_field_ptr) {
             vtkIntArray *rv = vtkIntArray::New();
-            const Field<IntTab> & fld = *int_field_ptr;
-            const IntTab & values = fld.data_;
-            int ntuples = values.dimension(0);
-            int dim = values.dimension(1);
+            const Field<BigIntTab> & fld = *int_field_ptr;
+            const BigIntTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
+            int dim = (int)values.dimension(1);
             rv->SetNumberOfComponents(3);
             rv->SetNumberOfTuples(ntuples);
             int* data= rv->WritePointer(0,3*ntuples);
-            for (int i = 0; i < ntuples; i++)
+            for (trustIdType i = 0; i < ntuples; i++)
+                for (int j = 0; j < 3; j++)
+                    data[i*3+j] = (j<dim) ? values(i, j) : 0;
+            return_value = rv;
+        } else if (tid_field_ptr) {
+            vtkLongArray *rv = vtkLongArray::New();
+            const Field<BigTIDTab> & fld = *tid_field_ptr;
+            const BigTIDTab & values = fld.data_;
+            trustIdType ntuples = values.dimension(0);
+            int dim = (int)values.dimension(1);
+            rv->SetNumberOfComponents(3);
+            rv->SetNumberOfTuples(ntuples);
+            trustIdType* data= rv->WritePointer(0,3*ntuples);
+            for (trustIdType i = 0; i < ntuples; i++)
                 for (int j = 0; j < 3; j++)
                     data[i*3+j] = (j<dim) ? values(i, j) : 0;
             return_value = rv;
@@ -868,7 +903,7 @@ avtlataFileFormat::GetVectorVar(int timestate, int block, const char *varname)
         }
         filter_.release_field(field);
     }
-    catch (LataDBError err) {
+    catch (LataDBError& err) {
         cerr << "Error in getvectorvar " << timestate << " " << block << " " << varname << " " << err.describe() << endl;
         throw;
     }

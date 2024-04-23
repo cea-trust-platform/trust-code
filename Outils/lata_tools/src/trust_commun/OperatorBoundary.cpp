@@ -22,8 +22,8 @@
 
 void build_ref_elem_face(const Domain::Element elt_type, IntTab& ref_elem_face)
 {
-  static entier faces_sommets_tetra[4][3] = { { 1, 2, 3 }, { 0, 3, 2 }, { 3, 0, 1 }, { 0, 2, 1 } };
-  static entier faces_sommets_hexa[6][4] = { { 0, 2, 4, 6 }, { 0, 1, 4, 5 }, { 0, 1, 2, 3 }, { 1, 3, 5, 7 }, { 2, 3, 6, 7 }, { 4, 5, 6, 7 } };
+  static int faces_sommets_tetra[4][3] = { { 1, 2, 3 }, { 0, 3, 2 }, { 3, 0, 1 }, { 0, 2, 1 } };
+  static int faces_sommets_hexa[6][4] = { { 0, 2, 4, 6 }, { 0, 1, 4, 5 }, { 0, 1, 2, 3 }, { 1, 3, 5, 7 }, { 2, 3, 6, 7 }, { 4, 5, 6, 7 } };
 
   int i, j;
   switch(elt_type)
@@ -62,8 +62,8 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
       throw;
     }
 
-  Static_Int_Lists som_elem;
-  construire_connectivite_som_elem(src.nb_nodes(), src.elements_, som_elem, 0);
+  Static_Int_Lists_64 som_elem;
+  construire_connectivite_som_elem<trustIdType>(src.nb_nodes(), src.elements_, som_elem, 0);
   // For each element:
   //  for each face of this element
   //    how many neighbouring elements ?
@@ -74,19 +74,19 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
   const int nb_nodes_per_face = element_faces.dimension(1);
   const int nb_faces_per_element = element_faces.dimension(0);
 
-  ArrOfInt one_face(nb_nodes_per_face);
-  ArrOfInt adjacent_elements;
+  ArrOfTID one_face(nb_nodes_per_face);
+  ArrOfTID adjacent_elements;
 
   // For each node in the source domain, node number on the boundary:
-  ArrOfInt nodes_renumber;
+  BigArrOfTID nodes_renumber;
   nodes_renumber.resize_array(src.nb_nodes());
   nodes_renumber = -1;
 
-  entier element_index, local_face_index;
+  int element_index, local_face_index;
   // Browse only real elements (so we don't see boundaries between processors)
-  const entier nelem = src.nb_elements() - src.nb_virt_items(LataField_base::ELEM);
-  entier i;
-  entier count = 0;
+  const trustIdType nelem = src.nb_elements() - src.nb_virt_items(LataField_base::ELEM);
+  int i;
+  trustIdType count = 0;
   for (element_index = 0; element_index < nelem; element_index++)
     {
       for (local_face_index = 0; local_face_index < nb_faces_per_element; local_face_index++)
@@ -94,7 +94,7 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
           for (i = 0; i < nb_nodes_per_face; i++)
             {
               int local_node = element_faces(local_face_index, i);
-              int node = src.elements_(element_index, local_node);
+              trustIdType node = src.elements_(element_index, local_node);
               one_face[i] = node;
             }
           find_adjacent_elements(som_elem, one_face, adjacent_elements);
@@ -104,8 +104,8 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
               op.src_face_.append_array(local_face_index);
               for (i = 0; i < nb_nodes_per_face; i++)
                 {
-                  const entier node = one_face[i];
-                  entier dest_node = nodes_renumber[node];
+                  trustIdType node = one_face[i];
+                  trustIdType dest_node = nodes_renumber[node];
                   if (dest_node < 0)
                     {
                       dest_node = count++;
@@ -118,26 +118,26 @@ void build_geometry_(OperatorBoundary& op, const DomainUnstructured& src, LataDe
     }
 
   // Build nodes
-  const entier nb_nodes = op.src_nodes_.size_array();
-  const entier dim = src.nodes_.dimension(1);
+  const trustIdType nb_nodes = op.src_nodes_.size_array();
+  const int dim = (int)src.nodes_.dimension(1);
   dest.nodes_.resize(nb_nodes, dim);
   for (i = 0; i < nb_nodes; i++)
     {
-      const entier n = op.src_nodes_[i];
-      for (entier j = 0; j < dim; j++)
+      const trustIdType n = op.src_nodes_[i];
+      for (int j = 0; j < dim; j++)
         dest.nodes_(i, j) = src.nodes_(n, j);
     }
 
   // Build elements
-  const entier nb_elems = op.src_element_.size_array();
+  const trustIdType nb_elems = op.src_element_.size_array();
   dest.elements_.resize(nb_elems, nb_nodes_per_face);
   for (i = 0; i < nb_elems; i++)
     {
-      const entier elem = op.src_element_[i];
-      const entier face = op.src_face_[i];
-      for (entier j = 0; j < nb_nodes_per_face; j++)
+      const trustIdType elem = op.src_element_[i];
+      const int face = op.src_face_[i];
+      for (int j = 0; j < nb_nodes_per_face; j++)
         {
-          const entier src_node = src.elements_(elem, element_faces(face, j));
+          const trustIdType src_node = src.elements_(elem, element_faces(face, j));
           dest.elements_(i, j) = nodes_renumber[src_node];
         }
     }
@@ -159,8 +159,8 @@ void build_field_(OperatorBoundary& op, const DomainUnstructured& src_domain, co
   if (dest.localisation_ == LataField_base::FACES)
     dest.localisation_ = LataField_base::ELEM;
 
-  const entier nb_compo = src.data_.dimension(1);
-  entier i, sz = 0;
+  const int nb_compo = (int)src.data_.dimension(1);
+  trustIdType i, sz = 0;
   switch(src.localisation_)
     {
     case LataField_base::ELEM:
@@ -168,8 +168,8 @@ void build_field_(OperatorBoundary& op, const DomainUnstructured& src_domain, co
       dest.data_.resize(sz, nb_compo);
       for (i = 0; i < sz; i++)
         {
-          const entier old_i = op.src_element_[i];
-          for (entier j = 0; j < nb_compo; j++)
+          const trustIdType old_i = op.src_element_[i];
+          for (int j = 0; j < nb_compo; j++)
             dest.data_(i, j) = src.data_(old_i, j);
         }
       break;
@@ -178,8 +178,8 @@ void build_field_(OperatorBoundary& op, const DomainUnstructured& src_domain, co
       dest.data_.resize(sz, nb_compo);
       for (i = 0; i < sz; i++)
         {
-          const entier old_i = op.src_nodes_[i];
-          for (entier j = 0; j < nb_compo; j++)
+          const trustIdType old_i = op.src_nodes_[i];
+          for (int j = 0; j < nb_compo; j++)
             dest.data_(i, j) = src.data_(old_i, j);
         }
       break;
@@ -188,8 +188,8 @@ void build_field_(OperatorBoundary& op, const DomainUnstructured& src_domain, co
       dest.data_.resize(sz, nb_compo);
       for (i = 0; i < sz; i++)
         {
-          const entier old_i = src_domain.elem_faces_(op.src_element_[i], op.src_face_[i]);
-          for (entier j = 0; j < nb_compo; j++)
+          const trustIdType old_i = src_domain.elem_faces_(op.src_element_[i], op.src_face_[i]);
+          for (int j = 0; j < nb_compo; j++)
             dest.data_(i, j) = src.data_(old_i, j);
         }
       break;

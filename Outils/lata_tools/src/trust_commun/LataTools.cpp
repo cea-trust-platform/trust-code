@@ -14,14 +14,13 @@
 *****************************************************************************/
 
 #include <LataTools.h>
-#include <ArrOfBit.h>
 #include <sstream>
 #include <string.h>
 #include <stdlib.h>
 
 static int journal_level = 0;
 
-void set_Journal_level(entier level)
+void set_Journal_level(int level)
 {
   if (journal_level==level) return;
   journal_level = level;
@@ -30,7 +29,7 @@ void set_Journal_level(entier level)
 
 static std::ostringstream junk_journal;
 
-std::ostream& Journal(entier level)
+std::ostream& Journal(int level)
 {
   if (level <= journal_level)
     {
@@ -52,28 +51,24 @@ BigEntier LataObject::compute_memory_size() const
   throw;
 }
 
-BigEntier memory_size(const ArrOfInt& tab)
+template<typename _TYPE_, typename _SIZE_>
+BigEntier memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-  // On ne tient pas compte du caractere smart_resize ou ref du tableau
-  // c'est pas tres grave pour l'instant pour ce qu'on en fait...
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(entier);
+  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(_TYPE_);
 }
 
-BigEntier memory_size(const ArrOfDouble& tab)
-{
-  // on ne tient pas compte du caractere smart_resize ou ref du tableau
-  // c'est pas tres grave pour l'instant pour ce qu'on en fait...
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(double);
-}
+template BigEntier memory_size<int,trustIdType>(const TRUSTArray<int,trustIdType>& tab);
+template BigEntier memory_size<float,int>(const TRUSTArray<float,int>& tab);
+template BigEntier memory_size<double,int>(const TRUSTArray<double,int>& tab);
 
-BigEntier memory_size(const ArrOfFloat& tab)
-{
-  // on ne tient pas compte du caractere smart_resize ou ref du tableau
-  // c'est pas tres grave pour l'instant pour ce qu'on en fait...
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(float);
-}
+#if INT_is_64_ == 2
+template BigEntier memory_size<trustIdType,trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab);
+template BigEntier memory_size<float,trustIdType>(const TRUSTArray<float,trustIdType>& tab);
+template BigEntier memory_size<double,trustIdType>(const TRUSTArray<double,trustIdType>& tab);
+#endif
 
-BigEntier memory_size(const ArrOfBit& tab)
+
+BigEntier memory_size(const BigArrOfBit& tab)
 {
   return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(int) / 32;
 }
@@ -93,21 +88,22 @@ void split_path_filename(const char *s, Nom& path, Nom& filename)
   filename = s+i+1;
 }
 
-static const ArrOfInt * array_to_sort_ptr = 0;
+// [ABN] The below is so uuuuuglyy ! TODO: std::sort() please ...
+static const BigArrOfTID * array_to_sort_ptr = 0;
 int compare_indirect(const void *ptr1, const void *ptr2)
 {
-  entier i1 = *(const entier*)ptr1;
-  entier i2 = *(const entier*)ptr2;
-  entier diff = (*array_to_sort_ptr)[i1] - (*array_to_sort_ptr)[i2];
+  trustIdType i1 = *(const int*)ptr1;
+  trustIdType i2 = *(const int*)ptr2;
+  trustIdType diff = (*array_to_sort_ptr)[i1] - (*array_to_sort_ptr)[i2];
   return (diff>0) ? 1 : ((diff==0) ? 0 : -1);
 }
 
-void array_sort_indirect(const ArrOfInt& array_to_sort, ArrOfInt& index)
+void array_sort_indirect(const BigArrOfTID& array_to_sort, BigArrOfTID& index)
 {
-  const entier n = array_to_sort.size_array();
+  const trustIdType n = array_to_sort.size_array();
   index.resize_array(n);
-  for (entier i = 0; i < n; i++)
+  for (trustIdType i = 0; i < n; i++)
     index[i] = i;
   array_to_sort_ptr = &array_to_sort;
-  qsort(index.addr(), n, sizeof(entier), compare_indirect);
+  qsort(index.addr(), n, sizeof(int), compare_indirect);
 }

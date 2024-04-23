@@ -49,7 +49,7 @@ LataLoader::LataLoader(const char *file)
       read_any_format(filename, opt.path_prefix, lata_db_);
       filter_.initialize(opt, lata_db_);
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in LataFilter::initialize " << filename << " " << err.describe() << endl;
       throw err;
@@ -70,7 +70,7 @@ int LataLoader::GetNTimesteps(void)
       if (n > 1)
         n--;
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in getntimesteps " << filename << " " << err.describe() << endl;
       throw;
@@ -90,7 +90,7 @@ void LataLoader::GetTimes(std::vector<double>& times)
         for (int i = 1; i < n; i++)
           times.push_back(filter_.get_timestep(i));
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in gettimes " << filename << " " << err.describe() << endl;
       throw;
@@ -115,11 +115,11 @@ void LataLoader::PopulateDatabaseMetaData(int timeState)
           cerr << " Domain : " << geoms[i_geom] << endl;
           const LataGeometryMetaData data = filter_.get_geometry_metadata(geoms[i_geom]);
 
-          int mesh_faces = 0;
+          bool mesh_faces = false;
           if (data.internal_name_.finit_par("_centerfaces"))
             {
               //cerr<<"la "<<data.internal_name_<<endl;
-              mesh_faces = 1;
+              mesh_faces = true;
             }
 
           const std::string geom_name(data.displayed_name_);
@@ -152,15 +152,14 @@ void LataLoader::PopulateDatabaseMetaData(int timeState)
                   // Vector field
                   register_fieldname(varname.c_str(), fields[i_field], -1);
                   //AddVectorVarToMetaData(md, varname, geom_name, cent, data2.nb_components_);
-
                 }
               else
                 {
                   // Multiscalar field
                   // I chose to postfix the varname with the component name, perhaps not the best choice.
-                  if (mesh_faces == 0)
+                  if (!mesh_faces)
                     {
-                      for (entier i_compo = 0; i_compo < data2.nb_components_; i_compo++)
+                      for (int i_compo = 0; i_compo < data2.nb_components_; i_compo++)
                         {
                           std::string varname2(data2.name_);
                           varname2 += "_";
@@ -186,7 +185,7 @@ void LataLoader::PopulateDatabaseMetaData(int timeState)
         }
       cerr << "End LataLoader::PopulateDatabaseMetaData" << endl;
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in PopulateDatabaseMetaData " << err.describe() << endl;
       throw;
@@ -252,10 +251,10 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
         {
           const DomainUnstructured& geom = *geom_ptr;
 
-          const FloatTab& pos = geom.nodes_;
-          const int nnodes = pos.dimension(0);
+          const BigFloatTab& pos = geom.nodes_;
+          const trustIdType nnodes = pos.dimension(0);
           //   const int dim3 = pos.dimension(1) == 3;
-          const int dim = pos.dimension(1);
+          const int dim = (int)pos.dimension(1);
           //ugrid->setMeshDimension(dim);
           MEDCouplingUMesh *ugrid = MEDCouplingUMesh::New(meshname, dim);
           DataArrayDouble *points = DataArrayDouble::New();
@@ -265,9 +264,9 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           ugrid->setCoords(points);
           points->decrRef();
 
-          const IntTab& conn = geom.elements_;
-          const int ncells = conn.dimension(0);
-          int nverts = conn.dimension(1);
+          const BigTIDTab& conn = geom.elements_;
+          const trustIdType ncells = conn.dimension(0);
+          int nverts = (int)conn.dimension(1);
 
           INTERP_KERNEL::NormalizedCellType type_cell;
           switch(geom.elt_type_)
@@ -307,7 +306,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
               throw;
               break;
             }
-          int *verts = new int[nverts];
+          mcIdType *verts = new mcIdType[nverts];
           if (type_cell == INTERP_KERNEL::NORM_POINT1 && ncells == 0)
             {
               throw;
@@ -315,19 +314,19 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           else
             {
               ugrid->allocateCells(ncells);
-              for (int i = 0; i < ncells; i++)
+              for (trustIdType i = 0; i < ncells; i++)
                 {
                   if ((1) && (type_cell == INTERP_KERNEL::NORM_TETRA4))
                     {
-                      const int som_Z = conn(i, 0);
-                      const int som_A = conn(i, 1);
-                      const int som_B = conn(i, 2);
-                      const int som_C = conn(i, 3);
+                      const trustIdType som_Z = conn(i, 0),
+                                        som_A = conn(i, 1),
+                                        som_B = conn(i, 2),
+                                        som_C = conn(i, 3);
                       int test = 1;
                       if (1)
                         {
                           float ZA[3], ZB[3], ZC[3], pdtvect[3], pdtscal;
-                          entier k;
+                          int k;
                           for (k = 0; k < 3; k++)
                             {
                               ZA[k] = pos(som_A, k) - pos(som_Z, k);
@@ -431,7 +430,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                     }
                   else
                     {
-                      for (int j = 0; j < nverts; j++)
+                      for (trustIdType j = 0; j < nverts; j++)
                         verts[j] = conn(i, j);
                     }
                   if (type_cell != INTERP_KERNEL::NORM_POLYHED)
@@ -502,7 +501,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
 
       filter_.release_geometry(geometry);
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in getmesh " << timestate << " " << block << " " << meshname << " " << err.describe() << endl;
       throw;
@@ -534,19 +533,20 @@ DataArray* LataLoader::GetVectorVar(int timestate, int block, const char *varnam
 
       const LataField_base& field = filter_.get_field(id);
 
-      const Field<FloatTab> *float_field_ptr = dynamic_cast<const Field<FloatTab>*>(&field);
-      const Field<IntTab> *int_field_ptr = dynamic_cast<const Field<IntTab>*>(&field);
+      const Field<BigFloatTab> *float_field_ptr = dynamic_cast<const Field<BigFloatTab>*>(&field);
+      const Field<BigTIDTab> *tid_field_ptr = dynamic_cast<const Field<BigTIDTab>*>(&field);
+      const Field<BigIntTab> *int_field_ptr = dynamic_cast<const Field<BigIntTab>*>(&field);
 
       if (float_field_ptr)
         {
           DataArrayDouble *rv = DataArrayDouble::New();
-          const Field<FloatTab>& fld = *float_field_ptr;
-          const FloatTab& values = fld.data_;
-          int ntuples = values.dimension(0);
-          int dim = values.dimension(1);
+          const Field<BigFloatTab>& fld = *float_field_ptr;
+          const BigFloatTab& values = fld.data_;
+          trustIdType ntuples = values.dimension(0);
+          int dim = (int)values.dimension(1);
           rv->alloc(ntuples, dim);
           double *data = rv->getPointer();
-          for (int i = 0; i < ntuples; i++)
+          for (trustIdType i = 0; i < ntuples; i++)
             for (int j = 0; j < dim; j++)
               data[i * dim + j] = values(i, j);
           return_value = rv;
@@ -563,7 +563,7 @@ DataArray* LataLoader::GetVectorVar(int timestate, int block, const char *varnam
         }
       filter_.release_field(field);
     }
-  catch (LataDBError err)
+  catch (LataDBError& err)
     {
       cerr << "Error in getvectorvar " << timestate << " " << block << " " << varname << " " << err.describe() << endl;
       throw;
@@ -587,7 +587,6 @@ void LataLoader::get_field_info_from_visitname(const char *varname, Field_UName&
 
 MEDCouplingFieldDouble* LataLoader::GetFieldDouble(const char *varname, int timestate, int block)
 {
-
   if (timestate == -1)
     timestate = filter_.get_nb_timesteps() - 2;
   const Noms geoms = filter_.get_exportable_geometry_names();

@@ -20,18 +20,15 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
   Journal() << "MED PLUGIN not compiled!" << endl;
   throw;
 }
-template <class C_Tab> void LataDB::read_data2_med_(
-  const LataDBField& fld,
-  C_Tab * const data, // const pointer to non const data !
-  entier debut, entier n, const ArrOfInt *lines_to_read) const
+
+template <class C_Tab>
+void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // const pointer to non const data !
+                             BigEntier debut, BigEntier n) const
 {
   Journal() << "MED PLUGIN not compiled!" << endl;
-
   throw;
 }
 #else
-
-#undef space // 'space' is used in TRUST (Separateur.h / Sortie.cpp), but also in HDF5 ... grrrr should scope better in TRUST
 
 #include <medcoupling++.h>
 #include <MEDLoader.hxx>
@@ -98,14 +95,11 @@ ArrOfInt renum_conn(const LataDB::Element& type)
       filter[1] = 2 ;
       filter[2] = 3 ;
       filter[3] = 1 ;
-
-
     }
 
   if (type== LataDB::hexa  )
     {
       filter.resize_array(8) ;
-
 
       filter[0] = 0 ;
       filter[1] = 2 ;
@@ -115,25 +109,25 @@ ArrOfInt renum_conn(const LataDB::Element& type)
       filter[5] = 6 ;
       filter[6] = 7 ;
       filter[7] = 5 ;
-
     }
-
-
   return filter;
-
 }
 
 extern med_geometry_type typmai3[MED_N_CELL_FIXED_GEO];
 
-void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim, int& nbcomp,int& is_structured, std::vector<int>& NIJK)
+void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,trustIdType& ncells,
+                              trustIdType& nnodes,True_int& spacedim, True_int& nbcomp,bool& is_structured, std::vector<int>& NIJK)
 {
-  is_structured=0;
-  int meshDim;
-  int i;
+  using namespace MEDCoupling;
+
+  is_structured=false;
+  True_int meshDim;
   try
     {
-      std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);
-
+      // In 32b, MEDCoupling is 32b, but if we are in LATATOOLS mode (lata_tools and VisIt plugin, trustIdType is 64b ...)
+      mcIdType tmp_nod;
+      auto res = GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, tmp_nod);
+      nnodes = tmp_nod;
 
       // on prend que la dimension la plus grande et on verifie que l'on a qu'un type elt
       if (res.size()>1)
@@ -151,12 +145,16 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
       if ((type_geo==MED_POLYGON)||(type_geo==MED_POLYHEDRON))
         {
           //on est force de lire le maillage pour avoir le bon nombre de cellules
-          MEDCoupling::MEDCouplingUMesh * mesh=  MEDCoupling::ReadUMeshFromFile(filename,meshname);
+          MCAuto<MEDCouplingUMesh> mesh(ReadUMeshFromFile(filename,meshname));
           ncells = mesh->getNumberOfCells();
-          const int *idx = mesh->getNodalConnectivityIndex()->getConstPointer();
-          for (i = 0, nbcomp = 0; i < ncells; i++)
-            if (nbcomp < idx[i + 1] - idx[i] - 1) nbcomp = idx[i + 1] - idx[i] - 1;
-          mesh->decrRef();
+          const mcIdType *idx = mesh->getNodalConnectivityIndex()->getConstPointer();
+          nbcomp = 0;
+          for (trustIdType i = 0; i < ncells; i++)
+            {
+              int c = (int)(idx[i + 1] - idx[i] - 1);
+              if (nbcomp < c)
+                nbcomp = c;
+            }
         }
       else
         ncells=res[0][0].second;
@@ -164,20 +162,25 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
   catch (...)
     {
       // No UMesh try CMesh
-      MEDCoupling::MEDCouplingMesh* mesh=  MEDCoupling::ReadMeshFromFile(filename, meshname);
+      MEDCouplingMesh* mesh = ReadMeshFromFile(filename, meshname);
       /*
         type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp
        */
-      MEDCoupling::MEDCouplingCMesh* cmesh = dynamic_cast<MEDCoupling::MEDCouplingCMesh*>(mesh);
+      MCAuto<MEDCouplingCMesh> cmesh (dynamic_cast<MEDCouplingCMesh*>(mesh));
+      if (cmesh == nullptr)
+        {
+          cerr << "Error: can not read CMesh ... " << meshname << endl;
+          throw;
+        }
       spacedim=cmesh-> getSpaceDimension() ;
 
-      NIJK= cmesh->getNodeGridStructure();
+      // See comment of DomainIJK:
+      std::vector<mcIdType> nijk_64 = cmesh->getNodeGridStructure();
+      for (int i=0; i<nijk_64.size(); i++)
+        NIJK[i] = (int)nijk_64[i]; // downcast
+
       ncells=mesh->getNumberOfCells();
       nnodes=mesh->getNumberOfNodes();
-
-
-      // std::cout << ncells<< " "<<sizes[2]<<std::endl;
-      mesh->decrRef();
 
       if (spacedim==3)
         type_geo =MED_HEXA8;
@@ -185,12 +188,11 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
         type_geo =MED_QUAD4;
       else
         abort();
-      is_structured=1;
+      is_structured=true;
       //abort();
       return;
     }
 }
-
 
 
 // Description: Reads the .lata database in the given file indicating than the
@@ -204,8 +206,6 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
 //  FILE_NOT_FOUND means that, well, the lata file could not be opened
 void LataDB::read_master_file_med(const char *prefix, const char *filename)
 {
-
-
   Journal() << "MED " << MED_NUM_MAJEUR << "." << MED_MINOR_NUM << "." << MED_RELEASE_NUM << " PLUGIN ! " << endl;
 
   // Defaults for lataV1
@@ -217,11 +217,8 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
   default_type_int_.bloc_marker_type_ = LataDBDataType::INT32;
   default_float_type_ = LataDBDataType::REAL32;
 
-
-
   // Create timestep 0 (global domain and fields)
   timesteps_.add(LataDBTimestep());
-
 
   // on ajoute les geom
   // on verra apres pour les champs elem et som
@@ -229,7 +226,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
   vector<double> times;
   LataDBTimestep  table;
-  int first=1;
+  bool first=true;
 
   for (int i=0; i<geoms.size(); i++)
     {
@@ -237,15 +234,15 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
       dom.timestep_ = timesteps_.size()-1;
       dom.name_=geoms[i];
       med_geometry_type type_geo;
-      int ncells,nnodes, nbcomp;
-      int spacedim;
-      int is_structured;
+      trustIdType ncells,nnodes;
+      True_int nbcomp, spacedim;
+      bool is_structured;
       std::vector<int> NIJK;
       latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim,nbcomp,is_structured,NIJK);
 
       dom.elem_type_=latadb_name_from_type_geo(type_geo);
 
-      if (is_structured==0)
+      if (!is_structured)
         {
           LataDBField som;
           som.name_ = "SOMMETS";
@@ -306,22 +303,16 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
         }
 
-
       vector<string> fields;
       fields= MEDCoupling::GetAllFieldNamesOnMesh(filename,dom.name_.getString());
-
 
       for (int i=0; i<fields.size(); i++)
         {
           LataDBField som;
           som.name_ = fields[i];
-
           som.filename_ = filename;
-
           som.datatype_ = default_type_float(); // ??
-
           som.nature_ = LataDBField::SCALAR;
-
 
           const Nom& meshname = dom.name_;
           som.geometry_ = meshname;
@@ -331,11 +322,10 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
           // cerr<<"field " <<fields[i]<< " "<< meshname<<" ";
           vector< MEDCoupling::TypeOfField > ltypes=MEDCoupling::GetTypesOfField(filename,meshname.getString(),fields[i].c_str());
           //if (ltypes.size()!=1) throw;
-          for (int t=0; t<ltypes.size(); t++)
+          for (int t=0; t < (int)ltypes.size(); t++)
             {
               switch (ltypes[t])
                 {
-                  //	case :
                 case MEDCoupling::ON_CELLS :
                   //cerr<<"elem"<<endl;
                   som.size_=ncells;
@@ -356,7 +346,6 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
               som.nb_comp_=MEDCoupling::GetComponentsNamesOfField(filename,fields[i].c_str()).size();
 
-
               if (spacedim==som.nb_comp_)
                 som.nature_ = LataDBField::VECTOR;
               ajout+=som.localisation_;
@@ -370,97 +359,73 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
               table.fields_.add(som);
 
-              if (1)
+              if (ltypes.size()>1)
                 {
-                  if (ltypes.size()>1)
+                  auto iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());
+                  for (int iter=0; iter< (int)iters.size(); iter++)
                     {
-                      vector<pair< int, int > > iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());
-                      for (int iter=0; iter<iters.size(); iter++)
+                      double t= MEDCoupling::GetTimeAttachedOnFieldIteration(filename,fields[i].c_str(),iters[iter].first,iters[iter].second);
+                      if (first)
+                        times.push_back(t);
+                      else
                         {
-                          double t= MEDCoupling::GetTimeAttachedOnFieldIteration(filename,fields[i].c_str(),iters[iter].first,iters[iter].second);
-                          if (first==1)
-                            {
-                              times.push_back(t);
-                              //cerr<<"M ici  "<<t <<" "<<iters[iter].first<<" "<<iters[iter].second<<endl;
-                            }
-                          else
-                            {
-                              if (times[iter]!=t)
-                                {
-                                  cerr<<"field " <<fields[i]<<" M time "<< t << " diff "<<times[iter] << endl;
-                                  //throw;
-                                }
-                            }
+                          if (times[iter]!=t)
+                            cerr<<"field " <<fields[i]<<" M time "<< t << " diff "<<times[iter] << endl;
                         }
-
                     }
-                  else
+
+                }
+              else
+                {
+                  auto vtimes=MEDCoupling::GetAllFieldIterations(filename,/*meshname,*/fields[i].c_str());
+                  for (int it=0; it<vtimes.size(); it++)
                     {
-                      //std::cout << "TOTO 2 "<< std::endl;
-                      vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,/*meshname,*/fields[i].c_str());
-                      for (int it=0; it<vtimes.size(); it++)
+                      double t=vtimes[it].second;
+                      if (first)
+                        times.push_back(t);
+                      else
                         {
-
-                          double t=vtimes[it].second;
-                          if (first==1)
-                            {
-                              times.push_back(t);
-                              //  cerr<<" ici  "<<t <<endl;
-                            }
-                          else
-                            {
-                              if (times[it]!=t)
-                                {
-                                  cerr<<"field " <<fields[i]<<" time "<< t << " diff "<<times[it] << endl;
-                                  //throw;
-                                }
-                            }
+                          if (times[it]!=t)
+                            cerr<<"field " <<fields[i]<<" time "<< t << " diff "<<times[it] << endl;
                         }
-
                     }
                 }
-              first=0;
+              first=false;
             }
         }
     }
-  if (times.size()>0)
-    for (int i=0; i<times.size(); i++)
-      {
 
+  if (times.size()>0)
+    for (int i=0; i<(int)times.size(); i++)
+      {
         //LataDBTimestep & t = timesteps_.add(table);
         LataDBTimestep& t = timesteps_.add(LataDBTimestep());
         t.time_=times[i];
-        for (int f=0; f<table.fields_.size(); f++)
+        for (int f=0; f<(int)table.fields_.size(); f++)
           add(i+1,table.fields_[f]);
-
       }
-  for (int i=0; i<times.size()*0; i++)
+
+  for (int i=0; i<(int)times.size()*0; i++)
     cerr<<" time "<<times[i]<<endl;
 }
 
 
 template <class C_Tab>
-void LataDB::read_data2_med_(
-  const LataDBField& fld,
-  C_Tab * const data, // const pointer to non const data !
-  entier debut, entier n, const ArrOfInt *lines_to_read) const
+void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // const pointer to non const data !
+                             BigEntier debut, BigEntier n) const
 {
+  using namespace MEDCoupling;
   assert(debut==0);
-  //assert(n==-1);
-  assert(lines_to_read==NULL);
 
   if (fld.name_=="SOMMETS")
     {
       //    cerr<<"load sommets "<<endl;
-      MEDCoupling::MEDCouplingUMesh * mesh=  MEDCoupling::ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
-      const  MEDCoupling::DataArrayDouble* coords=mesh->getCoords();
+      MCAuto<MEDCouplingUMesh> mesh = ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
+      const DataArrayDouble* coords=mesh->getCoords();
       data->resize(fld.size_,fld.nb_comp_);
-      for (int i=0; i<fld.size_; i++)
+      for (trustIdType i=0; i<fld.size_; i++)
         for (int j=0; j<fld.nb_comp_; j++)
-          {
-            (*data)(i,j)=coords->getIJ(i,j);
-          }
-      mesh->decrRef();
+          (*data)(i,j)=coords->getIJ(i,j);
 
     }
   else if (fld.name_=="ELEMENTS")
@@ -469,28 +434,32 @@ void LataDB::read_data2_med_(
       Nom type_elem=get_geometry(fld.timestep_,fld.geometry_).elem_type_;
       LataDB::Element type =LataDB::element_type_from_string(type_elem);
       ArrOfInt filter=renum_conn(type);
-      MEDCoupling::MEDCouplingUMesh * mesh=  MEDCoupling::ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
-      const  MEDCoupling::DataArrayInt *elems = mesh->getNodalConnectivity(), *idx = mesh->getNodalConnectivityIndex();
-      const int *ptr_elems=elems->getConstPointer(), *ptr_idx = idx->getConstPointer();
+      MCAuto<MEDCouplingUMesh> mesh = ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
+      const DataArrayIdType *elems = mesh->getNodalConnectivity(), *idx = mesh->getNodalConnectivityIndex();
+      const mcIdType *ptr_elems=elems->getConstPointer(), *ptr_idx = idx->getConstPointer();
       data->resize(fld.size_,fld.nb_comp_);
-      int compt=0;
-      for (int i=0; i<fld.size_; i++)
+      trustIdType compt=0;
+      for (trustIdType i=0; i<fld.size_; i++)
         {
           compt++;
           for (int j=0; j<fld.nb_comp_; j++)
             {
-              int reel = j + ptr_idx[i] + 1 < ptr_idx[i + 1];
+              bool reel = (trustIdType)j + ptr_idx[i] + 1 < ptr_idx[i + 1];
               (*data)(i,filter.size_array()>0 ? filter[j] : j) = reel ? ptr_elems[compt] + 1 : 0;
-              compt += reel;
+              if (reel) compt++;
             }
         }
-      mesh->decrRef();
     }
   else if (fld.name_.debute_par("SOMMETS_IJK_"))
     {
-      MEDCoupling::MEDCouplingMesh * mesh=  MEDCoupling::ReadMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
+      MEDCouplingMesh * mesh = ReadMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
       data->resize(fld.size_,fld.nb_comp_);
-      MEDCoupling::MEDCouplingCMesh* cmesh = dynamic_cast<MEDCoupling::MEDCouplingCMesh*>(mesh);
+      MCAuto<MEDCouplingCMesh> cmesh = dynamic_cast<MEDCouplingCMesh*>(mesh);
+      if (cmesh == nullptr)
+        {
+          cerr << "Error: can not read CMesh ... " << endl;
+          throw;
+        }
       int dir;
       if (fld.name_=="SOMMETS_IJK_I")
         dir=0;
@@ -500,18 +469,14 @@ void LataDB::read_data2_med_(
         dir=2;
       else
         abort();
-      const MEDCoupling::DataArrayDouble* coords=cmesh->getCoordsAt(dir);
-      for (int i=0; i<fld.size_; i++)
+      const DataArrayDouble* coords=cmesh->getCoordsAt(dir);
+      for (trustIdType i=0; i<fld.size_; i++)
         for (int j=0; j<fld.nb_comp_; j++)
-          {
-            (*data)(i,j)=coords->getIJ(i,j);
-          }
-      mesh->decrRef();
+          (*data)(i,j)=coords->getIJ(i,j);
     }
 
   else
     {
-
       data->resize(fld.size_,fld.nb_comp_);
 
       //  if (fld.timestep_==1) iter.first=1;
@@ -522,35 +487,29 @@ void LataDB::read_data2_med_(
       fieldname+="_";
       fieldname+=fld.geometry_;
 
-      int ok=0;
+      bool ok=false;
 
-      vector<string> fields= MEDCoupling::GetAllFieldNamesOnMesh(fld.filename_.getString(),fld.geometry_.getString());
+      vector<string> fields = GetAllFieldNamesOnMesh(fld.filename_.getString(),fld.geometry_.getString());
 
-      for (int f=0; f<fields.size(); f++)
-        {
-          if (fieldname==fields[f].c_str())
-            {
-              ok=1;
-              break;
-            }
-        }
-      if (ok==0)
-        {
-          fieldname=fld.name_;
-        }
-      //std:cout << "TOTO " << fieldname.getString() << std::endl;
-      vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());
+      for (int f=0; f<(int)fields.size(); f++)
+        if (fieldname==fields[f].c_str())
+          {
+            ok=true;
+            break;
+          }
+      if (!ok)
+        fieldname=fld.name_;
+      auto vtimes = GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());
 
       int it=fld.timestep_-1;
-      pair <int,int> iter(fld.timestep_-1,-1);
+      pair<True_int, True_int> iter(fld.timestep_-1,-1);
       if (fld.timestep_==1) it=0;
       //Cerr<<iter.first <<" 00 "<<vtimes.size()<<finl;
 
       iter.first=vtimes[it].first.first;
       iter.second=vtimes[it].first.second;
       // Cerr<<"iiii"<<iter.first<<" "<< it<<finl;
-      double t=MEDCoupling::GetTimeAttachedOnFieldIteration(fld.filename_.getString(),fieldname.getString(),iter.first,iter.second);
-
+      double t = GetTimeAttachedOnFieldIteration(fld.filename_.getString(),fieldname.getString(),iter.first,iter.second);
 
       MEDCoupling::TypeOfField type;
       if (fld.localisation_=="ELEM")
@@ -560,12 +519,8 @@ void LataDB::read_data2_med_(
           type=MEDCoupling::ON_NODES;
           assert(fld.localisation_=="SOM");
         }
-      MEDCoupling::MEDFileField1TS *  field ;
-
-
-      field =  MEDCoupling::MEDFileField1TS::New(fld.filename_.getString(),fieldname.getString(),iter.first,iter.second);
-
-      const MEDCoupling::DataArrayDouble * values=field->getUndergroundDataArray();
+      MCAuto<MEDFileField1TS> field = MEDFileField1TS::New(fld.filename_.getString(),fieldname.getString(),iter.first,iter.second);
+      const DataArrayDouble *values=field->getUndergroundDataArray();
 
       if (field->getNumberOfComponents()!=fld.nb_comp_)
         {
@@ -576,15 +531,10 @@ void LataDB::read_data2_med_(
         {
           assert(field->getNumberOfComponents()==fld.nb_comp_);
           const double* ptr=values->getConstPointer();
-          for (int i=0; i<fld.size_; i++)
-            {
-              for (int j=0; j<fld.nb_comp_; j++)
-                {
-                  (*data)(i,j)=ptr[i*fld.nb_comp_+j];
-                }
-            }
+          for (trustIdType i=0; i<fld.size_; i++)
+            for (int j=0; j<fld.nb_comp_; j++)
+              (*data)(i,j)=ptr[i*fld.nb_comp_+j];
         }
-      field->decrRef();
     }
 }
 #endif

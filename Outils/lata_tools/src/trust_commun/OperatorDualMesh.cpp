@@ -33,9 +33,9 @@ void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDe
       Journal() << "Error in OperatorDualMesh::build_geometry: cannot operate on unstructured mesh with this element type" << endl;
       throw;
     }
-  const entier nb_som = src.nodes_.dimension(0);
-  const entier nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
-  const entier dim = src.dimension();
+  const trustIdType nb_som = src.nodes_.dimension(0);
+  const trustIdType nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
+  const int dim = src.dimension();
 
   DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
@@ -46,17 +46,17 @@ void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDe
   dest.nodes_.resize(nb_som + nb_elem, dim);
   src.compute_cell_center_coordinates(dest.nodes_, nb_som);
 
-  const entier nb_faces_elem = src.elem_faces_.dimension(1);
-  const entier nb_som_face = src.faces_.dimension(1);
-  const entier nb_som_elem = src.elements_.dimension(1);
+  const int nb_faces_elem = (int)src.elem_faces_.dimension(1);
+  const int nb_som_face = (int)src.faces_.dimension(1);
+  const int nb_som_elem = (int)src.elements_.dimension(1);
   dest.elements_.resize(nb_elem * nb_faces_elem, nb_som_elem);
-  int index = 0;
-  for (int i = 0; i < nb_elem; i++)
+  trustIdType index = 0;
+  for (trustIdType i = 0; i < nb_elem; i++)
     {
-      const int central_node = nb_som + i;
+      const trustIdType central_node = nb_som + i;
       for (int j = 0; j < nb_faces_elem; j++)
         {
-          const int face = src.elem_faces_(i, j);
+          const trustIdType face = src.elem_faces_(i, j);
           dest.elements_(index, 0) = central_node;
           for (int k = 0; k < loop_max(nb_som_face, max_nb_som_face); k++)
             {
@@ -66,7 +66,7 @@ void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDe
           index++;
         }
     }
-  const entier nb_elem_virt = src.nb_virt_items(LataField_base::ELEM);
+  const trustIdType nb_elem_virt = src.nb_virt_items(LataField_base::ELEM);
   dest.set_nb_virt_items(LataField_base::ELEM, nb_elem_virt * nb_faces_elem);
 }
 
@@ -81,16 +81,16 @@ void build_field_(OperatorDualMesh& op, const DomainUnstructured& src_domain, co
   dest.component_names_ = src.component_names_;
   dest.localisation_ = LataField_base::ELEM;
   dest.nature_ = src.nature_;
-  const entier nb_elem = src_domain.elements_.dimension(0);
-  const entier nb_face_elem = src_domain.elem_faces_.dimension(1);
-  const entier nb_comp = src.data_.dimension(1);
+  const trustIdType nb_elem = src_domain.elements_.dimension(0);
+  const int nb_face_elem = (int)src_domain.elem_faces_.dimension(1);
+  const int nb_comp = (int)src.data_.dimension(1);
   dest.data_.resize(nb_elem * nb_face_elem, nb_comp);
-  int index = 0;
-  for (int i = 0; i < nb_elem; i++)
+  trustIdType index = 0;
+  for (trustIdType i = 0; i < nb_elem; i++)
     {
       for (int j = 0; j < nb_face_elem; j++)
         {
-          const int face = src_domain.elem_faces_(i, j);
+          const trustIdType face = src_domain.elem_faces_(i, j);
           for (int k = 0; k < nb_comp; k++)
             dest.data_(index, k) = src.data_(face, k);
           index++;
@@ -109,8 +109,8 @@ void build_geometry_(OperatorDualMesh& op, const DomainIJK& src, LataDeriv<Domai
 
   DomainIJK& dest = dest_domain.instancie(DomainIJK);
   dest.elt_type_ = src.elt_type_;
-  const entier dim = src.dimension();
-  for (entier i_dim = 0; i_dim < dim; i_dim++)
+  const int dim = src.dimension();
+  for (int i_dim = 0; i_dim < dim; i_dim++)
     {
       const ArrOfFloat& c1 = src.coord_[i_dim];
       ArrOfFloat& c2 = dest.coord_.add(ArrOfFloat());
@@ -130,21 +130,21 @@ void build_geometry_(OperatorDualMesh& op, const DomainIJK& src, LataDeriv<Domai
       dest.invalid_connections_ = 0;
       int index = 0;
 
-      const entier ni = dest.coord_[0].size_array() - 1;
-      const entier nj = dest.coord_[1].size_array() - 1;
-      const entier nk = (dim == 3) ? (dest.coord_[2].size_array() - 1) : 1;
-      const entier ni_src = src.coord_[0].size_array() - 1;
-      const entier nj_src = src.coord_[1].size_array() - 1;
+      const int ni = dest.coord_[0].size_array() - 1;
+      const int nj = dest.coord_[1].size_array() - 1;
+      const int nk = (dim == 3) ? (dest.coord_[2].size_array() - 1) : 1;
+      const int ni_src = src.coord_[0].size_array() - 1;
+      const int nj_src = src.coord_[1].size_array() - 1;
       for (int k = 0; k < nk; k++)
         {
           const int k_src = k / 2;
           for (int j = 0; j < nj; j++)
             {
               const int j_src = j / 2;
-              const int idx_source = (k_src * nj_src + j_src) * ni_src;
+              const trustIdType idx_source = ((trustIdType)k_src * (trustIdType)nj_src + (trustIdType)j_src) * (trustIdType)ni_src;
               for (int i = 0; i < ni; i++)
                 {
-                  const int idx = idx_source + i / 2;
+                  const trustIdType idx = idx_source + i / 2;
                   if (src.invalid_connections_[idx])
                     dest.invalid_connections_.setbit(index);
                   index++;
@@ -155,7 +155,8 @@ void build_geometry_(OperatorDualMesh& op, const DomainIJK& src, LataDeriv<Domai
   dest.virtual_layer_begin_ = 2 * src.virtual_layer_begin_;
   dest.virtual_layer_end_ = 2 * src.virtual_layer_end_;
 }
-#define IJK(i,j,k) (k*nj_ni_src + j*ni_src + i)
+
+#define IJK(i,j,k) ((trustIdType)k*nj_ni_src + (trustIdType)j*(trustIdType)ni_src + (trustIdType)i)
 
 template<class TabType>
 void build_field_(OperatorDualMesh& op, const DomainIJK& src_domain, const DomainIJK& dest_domain, const Field<TabType>& src, Field<TabType>& dest)
@@ -164,16 +165,16 @@ void build_field_(OperatorDualMesh& op, const DomainIJK& src_domain, const Domai
   dest.component_names_ = src.component_names_;
   dest.localisation_ = LataField_base::ELEM;
   dest.nature_ = LataDBField::VECTOR;
-  const entier dim = src_domain.dimension();
-  int index = 0;
+  const int dim = src_domain.dimension();
+  trustIdType index = 0;
 
   // Loop on destination elements
-  const entier ni = dest_domain.coord_[0].size_array() - 1;
-  const entier nj = dest_domain.coord_[1].size_array() - 1;
-  const entier nk = (dim == 3) ? (dest_domain.coord_[2].size_array() - 1) : 1;
+  const int ni = dest_domain.coord_[0].size_array() - 1;
+  const int nj = dest_domain.coord_[1].size_array() - 1;
+  const int nk = (dim == 3) ? (dest_domain.coord_[2].size_array() - 1) : 1;
   dest.data_.resize(ni * nj * nk, dim);
-  const entier ni_src = src_domain.coord_[0].size_array();
-  const entier nj_ni_src = src_domain.coord_[1].size_array() * ni_src;
+  const int ni_src = src_domain.coord_[0].size_array();
+  const trustIdType nj_ni_src = (trustIdType)src_domain.coord_[1].size_array() * (trustIdType)ni_src;
   for (int k = 0; k < nk; k++)
     {
       const int k2 = k / 2;

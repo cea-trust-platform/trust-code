@@ -61,7 +61,7 @@ const StdComponents std_components[] =
 
 int latav1_component_shape(const Motcle& compo)
 {
-  entier i = 0;
+  int i = 0;
   while (std_components[i].name[0] != 0)
     {
       if (compo.debute_par(std_components[i].name))

@@ -80,12 +80,17 @@ foreach(dir ${listdir})
 endforeach()
 
 #
-# Extra sources from TRUST :
+# Compile definitions. Notably lata_tools is compiled in 64b, whatever the choice
+# indicated at configure time.
 #
 add_definitions("-DLATATOOLS")
+add_definitions("-DINT_is_64_=2")   # For example will make sure all template instanciation include trustIdType signatures
 add_definitions("$ENV{TRUST_DEFINES}")
 
+#
+# Extra sources from TRUST :
 # The extra sources coming from TRUST kernel - see env variable defined in root makefile:
+#
 set(trust_kern "$ENV{TRUST_ROOT}/src/Kernel")
 set(extra_src)
 string (REPLACE " " ";" extra_src $ENV{EXTRA_SRCS})

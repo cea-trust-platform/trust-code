@@ -35,8 +35,8 @@
 //  Dump detailed subbloc interpretation at level+1
 #define verb_level_data_bloc 5
 
-typedef int LataDBInt32;
-typedef long long int LataDBInt64;
+typedef std::int32_t LataDBInt32;
+typedef std::int64_t LataDBInt64;
 
 void arch_check()
 {
@@ -147,7 +147,7 @@ LataDB::Element LataDB::element_type_from_string(const Motcle& type_elem)
   return type;
 }
 
-void LataDB::get_element_data(const Motcle& elemtype, entier& dimension, entier& elem_shape, entier& face_shape, entier& nb_elem_faces)
+void LataDB::get_element_data(const Motcle& elemtype, int& dimension, int& elem_shape, int& face_shape, int& nb_elem_faces)
 {
   Element elem = element_type_from_string(elemtype);
   switch(elem)
@@ -202,12 +202,12 @@ void LataDB::get_element_data(const Motcle& elemtype, entier& dimension, entier&
 
 // Description: in lata v1 format, the number of components in a Champ entry
 //  is implicitely defined by the field name and the discretisation
-entier LataDB::lata_v1_get_nb_comp(const Nom& fieldname, const Motcle& localisation,
-                                   const LataDBGeometry& dom, entier dim, LataDBField::Nature& nature,
+int LataDB::lata_v1_get_nb_comp(const Nom& fieldname, const Motcle& localisation,
+                                   const LataDBGeometry& dom, int dim, LataDBField::Nature& nature,
                                    LataDBDataType::DataOrdering& ordering)
 {
   // Search component name in std_components
-  entier nb_comp = latav1_component_shape(fieldname);
+  int nb_comp = latav1_component_shape(fieldname);
   //Motcle maj_field(fieldname);
   ordering = LataDBDataType::C_ORDERING;
   nature = LataDBField::SCALAR;
@@ -282,9 +282,9 @@ class LataDataFile
 {
 public:
   enum Mode { READ, WRITE, APPEND };
-  LataDataFile(std::iostream& mem_buffer, const char *prefix, const char *name, const LataDBDataType::MSB& msb, Mode mode = READ)
+  LataDataFile(std::iostream& mem_buffer, const char *prefix, const char *name, const LataDBDataType::MSB& msb, Mode mode=READ)
   {
-    exception_ = 1;
+    exception_ = true;
     msb_=msb;
     if (strcmp(name, LataDBField::memory_buffer_file()) == 0)
       {
@@ -372,9 +372,13 @@ public:
           }
       }
   }
-  void set_exception(int i) { exception_ = i; }
-  FileOffset position() { return (*stream_).tellp(); };
+
+  void set_exception(bool i) { exception_ = i; }
+
+  FileOffset position() { return (*stream_).tellp(); }
+
   enum SeekType { ABSOLUTE, RELATIVE };
+
   void seek(FileOffset pos, SeekType seekt)
   {
     Journal(verb_level_data_bloc+1) << "Seeking file " << fname_
@@ -391,10 +395,23 @@ public:
         throw LataDBError(LataDBError::DATA_ERROR);
       }
   }
-  void set_encoding(LataDBDataType::MSB msb, LataDBDataType::Type type) { msb_ = msb; type_ = type; };
-  void set_err_message(const char *message) { message_ = message; };
-  LataDataFile& operator>>(LataDBInt32& x) { read(&x, 1); return *this; };
-  LataDataFile& operator>>(float& x) { read(&x, 1); return *this; };
+
+  void set_encoding(LataDBDataType::MSB msb, LataDBDataType::Type type) { msb_ = msb; type_ = type; }
+
+  void set_err_message(const char *message) { message_ = message; }
+
+
+  ///////////////////////////////////
+  ///      Read
+  ///////////////////////////////////
+  // _LATA_T_ in { LataDBInt32, LataDBInt64, float }
+  template<typename _LATA_T_> void read(_LATA_T_ *ptr, BigEntier n);
+  template<typename _LATA_T_> LataDataFile& operator>>(_LATA_T_& x)
+  {
+    read<_LATA_T_>(&x, 1);
+    return *this;
+  }
+
   LataDataFile& operator>>(Nom& n)
   {
     n = "";
@@ -429,12 +446,25 @@ public:
       }
     return *this;
   }
-  void read(LataDBInt32 *ptr, BigEntier n);
-  void read(float *ptr, BigEntier n);
-  LataDataFile& operator<<(LataDBInt32& x) { write(&x, 1, 1); return *this; };
-  LataDataFile& operator<<(float& x) { write(&x, 1, 1); return *this; };
-  void write(const LataDBInt32 *ptr, BigEntier n, BigEntier col);
-  void write(const float *ptr, BigEntier n, BigEntier col);
+
+  LataDataFile& operator>>(Motcle& n)
+  {
+    Nom n2;
+    operator>>(n2);
+    n = n2;
+    return *this;
+  }
+
+
+  ///////////////////////////////////
+  ///      Write
+  ///////////////////////////////////
+  template<typename _LATA_T_> void write(const _LATA_T_ *ptr, BigEntier n, BigEntier col);
+  template<typename _LATA_T_> LataDataFile& operator<<(_LATA_T_& x)
+  {
+    write<_LATA_T_>(&x, 1, 1);
+    return *this;
+  }
 
 protected:
   Nom fname_;
@@ -443,25 +473,42 @@ protected:
   std::iostream *stream_; // Points to fstream_ or mem_buffer passed to constructor
   LataDBDataType::MSB msb_;
   LataDBDataType::Type type_;
-  int exception_;
+  bool exception_;
 };
 
-void LataDataFile::read(LataDBInt32 *ptr, BigEntier n)
+template<typename _LATA_T_>
+void LataDataFile::read(_LATA_T_ *ptr, BigEntier n)
 {
-  if (type_ != LataDBDataType::INT32 && type_ != LataDBDataType::INT64)
+  constexpr bool IS_INT32 = std::is_same<_LATA_T_, LataDBInt32>::value;
+  constexpr bool IS_INT64 = std::is_same<_LATA_T_, LataDBInt64>::value;
+  constexpr bool IS_FLOAT32 = std::is_same<_LATA_T_, float>::value;
+  constexpr bool IS_FLOAT64 = std::is_same<_LATA_T_, double>::value;
+  constexpr const char *TYP_NAM = IS_INT32 ? "int32" : (IS_INT64 ? "int64" : (IS_FLOAT32 ? "float" : "double"));
+
+  if(IS_INT32 || IS_INT64)
     {
-      Journal() << "Error in lataDB bloc read: trying to read non integer data into integer array" << endl;
+      if(type_ != LataDBDataType::INT32 && type_ != LataDBDataType::INT64)
+        {
+          Journal() << "Error in lataDB bloc read: trying to read non-integer data into integer array!!" << endl;
+          throw LataDBError(LataDBError::DATA_ERROR);
+        }
+      if(IS_INT32 && type_ == LataDBDataType::INT64)
+        {
+          Journal() << "Error in lataDB bloc read: trying to read 64b-integer data into 32b-integer array!!" << endl;
+          throw LataDBError(LataDBError::DATA_ERROR);
+        }
+    }
+  if ((IS_FLOAT32 || IS_FLOAT64) && type_ != LataDBDataType::REAL32 && type_ != LataDBDataType::REAL64)
+    {
+      Journal() << "Error in lataDB bloc read: trying to read integer data into a non-integer array!!" << endl;
       throw LataDBError(LataDBError::DATA_ERROR);
     }
+
   if (msb_ == LataDBDataType::ASCII)
     {
-      BigEntier i;
-      if (ptr)
-        Journal(verb_level_data_bloc+1) << "Reading ascii int data bloc size=" << n << endl;
-      else
-        Journal(verb_level_data_bloc+1) << "Skipping ascii int data bloc size=" << n << endl;
-      LataDBInt32 toto;
-      for (i = 0; i < n; i++)
+      Journal(verb_level_data_bloc+1) << (ptr ? "Reading" : "Skipping") << " ascii " << TYP_NAM << " data bloc size=" << n << endl;
+      _LATA_T_ toto;
+      for (BigEntier i = 0; i < n; i++)
         {
           if (ptr)
             (*stream_) >> ptr[i];
@@ -469,7 +516,7 @@ void LataDataFile::read(LataDBInt32 *ptr, BigEntier n)
             (*stream_) >> toto;
           if (exception_ && !(*stream_).good())
             {
-              Journal() << "Error reading ascii file " << fname_ << " LataDBInt32[" << n << "] at index "
+              Journal() << "Error reading ascii file " << fname_ << " " << TYP_NAM << "[" << n << "] at index "
                         << i << endl << (message_?message_:"") << endl;
               throw LataDBError(LataDBError::DATA_ERROR);
             }
@@ -477,100 +524,66 @@ void LataDataFile::read(LataDBInt32 *ptr, BigEntier n)
     }
   else
     {
-      if (type_ != LataDBDataType::INT32)
+      if (msb_ != LataDBDataType::machine_msb_)
         {
-          Journal() << "Internal error in LataDB.cpp LataDataFile::read(LataDBInt32) : size conversion not coded" << endl;
+          Journal() << "LataDB LataDataFile::read(_LATA_T_) not coded for reverse binary msb" << endl;
           throw;
+          // Put code here (and test !) to reverse bytes in the binary bloc:
         }
+      // Read data in binary, potentially converting int32 into int64:
+      const int SZOF = type_ == LataDBDataType::INT32 ? sizeof(LataDBInt32) : (type_ == LataDBDataType::INT64 ? sizeof(LataDBInt64) : sizeof(_LATA_T_));
       if (ptr)
         {
-          Journal(verb_level_data_bloc+1) << "Reading binary int data bloc size=" << n << endl;
-          (*stream_).read((char*)ptr, n * sizeof(LataDBInt32));
+          Journal(verb_level_data_bloc+1) << "Reading binary " << TYP_NAM << " data bloc size=" << n << endl;
+          // No conversion needed
+          if (!(type_ == LataDBDataType::INT32 && IS_INT64))  // case "LDBType::INT64 && IS_INT32" excluded above in the method
+            (*stream_).read((char*)ptr, n * SZOF);
+          else  // Need to convert: file is INT32 but we want to store in an array which is INT64
+            {
+              Journal(verb_level_data_bloc+1) << "Converting binary data (int32 to int64) bloc size=" << n << endl;
+              std::vector<LataDBInt32> tmp(n);
+              LataDBInt32 * tmp_p = tmp.data();
+              (*stream_).read((char*)tmp_p, n * sizeof(LataDBInt32));  // read as 32b
+              std::copy(tmp_p, tmp_p+n, ptr);  // copy into the 64b array
+            }
         }
       else
         {
-          Journal(verb_level_data_bloc+1) << "Skipping binary int data bloc size=" << n << endl;
-          seek(n * sizeof(LataDBInt32), RELATIVE);
+          Journal(verb_level_data_bloc+1) << "Skipping binary " << TYP_NAM << " data bloc size=" << n << endl;
+          seek(n * SZOF, RELATIVE);
         }
+      // Error checking:
       if (exception_ && !(*stream_).good())
         {
-          Journal() << "Error reading binary file " << fname_ << " LataDBInt32[" << n << "]"
+          Journal() << "Error reading binary file " << fname_ << " " << TYP_NAM << "[" << n << "]"
                     << endl << (message_?message_:"") << endl;
           throw LataDBError(LataDBError::DATA_ERROR);
         }
-      if (msb_ != LataDBDataType::machine_msb_)
-        {
-          Journal() << "LataDB LataDataFile::read(LataDBInt32) not coded for reverse binary msb" << endl;
-          throw;
-          // Put code here (and test !) to reverse bytes in the binary bloc:
-        }
     }
 }
 
-void LataDataFile::read(float *ptr, BigEntier n)
+template<typename _LATA_T_>
+void LataDataFile::write(const _LATA_T_ *ptr, BigEntier n, BigEntier columns)
 {
-  if (type_ != LataDBDataType::REAL32)
-    {
-      Journal() << "Error in lataDB bloc read: trying to read non float data into float array" << endl;
-      throw LataDBError(LataDBError::DATA_ERROR);
-    }
-  if (msb_ == LataDBDataType::ASCII)
-    {
-      BigEntier i;
-      if (ptr)
-        Journal(verb_level_data_bloc+1) << "Reading ascii float data bloc size=" << n << endl;
-      else
-        Journal(verb_level_data_bloc+1) << "Skipping ascii float data bloc size=" << n << endl;
-      float toto;
-      for (i = 0; i < n; i++)
-        {
-          if (ptr)
-            (*stream_) >> ptr[i];
-          else
-            (*stream_) >> toto;
-          if (exception_ && !(*stream_).good())
-            {
-              Journal() << "Error reading ascii file " << fname_ << " float[" << n << "] at index "
-                        << i << endl << message_ << endl;
-              throw LataDBError(LataDBError::DATA_ERROR);
-            }
-        }
-    }
-  else
-    {
-      if (ptr)
-        {
-          Journal(verb_level_data_bloc+1) << "Reading binary float data bloc size=" << n << endl;
-          (*stream_).read((char*)ptr, n * sizeof(float));
-        }
-      else
-        {
-          Journal(verb_level_data_bloc+1) << "Skipping binary float data bloc size=" << n << endl;
-          seek(n * sizeof(float), RELATIVE);
-        }
-      if (exception_ && !(*stream_).good())
-        {
-          Journal() << "Error reading binary file " << fname_ << " float[" << n << "]"
-                    << endl << message_ << endl;
-          throw LataDBError(LataDBError::DATA_ERROR);
-        }
-      if (msb_ != LataDBDataType::machine_msb_)
-        {
-          Journal() << "LataDB LataDataFile::read(float) not coded for reverse binary msb" << endl;
-          throw;
-          // Put code here (and test !) to reverse bytes in the binary bloc:
-        }
-    }
-}
+  constexpr bool IS_INT32 = std::is_same<_LATA_T_, LataDBInt32>::value;
+  constexpr bool IS_INT64 = std::is_same<_LATA_T_, LataDBInt64>::value;
+  constexpr bool IS_FLOAT32 = std::is_same<_LATA_T_, float>::value;
+  constexpr bool IS_FLOAT64 = std::is_same<_LATA_T_, double>::value;
+  constexpr const char *TYP_NAM = IS_INT32 ? "int32" : (IS_INT64 ? "int64" : (IS_FLOAT32 ? "float" : "double"));
 
-void LataDataFile::write(const LataDBInt32 *ptr, BigEntier n, BigEntier columns)
-{
-  Journal(verb_level_data_bloc+1) << "Writing int data bloc size=" << n << endl;
-  if (type_ != LataDBDataType::INT32)
+  Journal(verb_level_data_bloc+1) << "Writing " << TYP_NAM << " data bloc size=" << n << endl;
+
+  if ((IS_INT32 || IS_INT64) && type_ != LataDBDataType::INT32 && type_ != LataDBDataType::INT64)
     {
-      Journal() << "Error in lataDB bloc write: trying to write integer data to non integer file block" << endl;
+      Journal() << "Error in lataDB bloc read: trying to write integer data into non-integer file block" << endl;
       throw LataDBError(LataDBError::DATA_ERROR);
     }
+  if ((IS_FLOAT32 || IS_FLOAT64) && type_ != LataDBDataType::REAL32 && type_ != LataDBDataType::REAL64)
+    {
+      Journal() << "Error in lataDB bloc read: trying to write non-integer data into integer file block" << endl;
+      throw LataDBError(LataDBError::DATA_ERROR);
+    }
+
   if (msb_ == LataDBDataType::ASCII)
     {
       for (BigEntier i = 0; i < n; i+=columns)
@@ -583,59 +596,68 @@ void LataDataFile::write(const LataDBInt32 *ptr, BigEntier n, BigEntier columns)
     }
   else
     {
+      // Nothing to write? Bye!
+      if (!ptr || n == 0) return;
+
       if (msb_ != LataDBDataType::machine_msb_)
         {
           Journal() << "LataDB LataDataFile::write(int) not coded for reverse binary msb" << endl;
           throw;
           // Put code here (and test !) to reverse bytes in the binary bloc:
         }
-      (*stream_).write((char*)ptr, n * sizeof(LataDBInt32));
-    }
-  (*stream_).seekg(0, std::ios::end);
-  if (exception_ && !(*stream_).good())
-    {
-      Journal() << "Error writing file " << fname_ << " int[" << n << "]"
-                << endl << message_ << endl;
-      throw LataDBError(LataDBError::DATA_ERROR);
+
+      Journal(verb_level_data_bloc+1) << "Reading binary " << TYP_NAM << " data bloc size=" << n << endl;
+
+      const int SZOF = type_ == LataDBDataType::INT32 ? sizeof(LataDBInt32) : (type_ == LataDBDataType::INT64 ? sizeof(LataDBInt64) : sizeof(_LATA_T_));
+      if (! ((type_ == LataDBDataType::INT32 && IS_INT64) || (type_ == LataDBDataType::INT64 && IS_INT32)))
+        // No int conversion needed, or float or double
+        (*stream_).write((char*)ptr, n * SZOF);
+      else
+        {
+          // Read data in binary, potentially converting int32 <-> int64:
+          if (type_ == LataDBDataType::INT32 && IS_INT64)  // the nasty case :-)
+            {
+              Journal(verb_level_data_bloc+1) << "Converting binary data (int64 -> int32) bloc size=" << n << endl;
+              // We will downcast, so lots of checks:
+              if (n > std::numeric_limits<LataDBInt32>::max())
+                {
+                  Journal() << "Error casting down 64b array to 32b - array is too big!" << endl;
+                  throw;
+                }
+              LataDBInt32 in = (LataDBInt32)n;
+              std::vector<LataDBInt32> tmp(in);
+              // Now check min/max (cast to _LATA_T_ just for compile - we know that _LATA_T_ = 64b here):
+              if (! (    *std::min_element(ptr, ptr+n) > (_LATA_T_)std::numeric_limits<LataDBInt32>::min()
+                      || *std::max_element(ptr, ptr+n) < (_LATA_T_)std::numeric_limits<LataDBInt32>::max()))
+                {
+                  Journal() << "Error casting down 64b array to 32b - array contains values that do not fit into an int32!" << endl;
+                  throw;
+                }
+              LataDBInt32 * tmp_p = tmp.data();
+              std::copy(ptr, ptr+n, tmp_p);  // copy into the 32b array, downcasting.
+              (*stream_).write((char*)tmp_p, n * sizeof(LataDBInt32)); // write as 32b
+            }
+          else   // type_==LataDBType::INT64 && IS_INT32
+            { // Here we up cast, no check needed
+              Journal(verb_level_data_bloc+1) << "Converting binary data (int32 -> int64) bloc size=" << n << endl;
+              std::vector<LataDBInt64> tmp(n);
+              LataDBInt64 * tmp_p = tmp.data();
+              std::copy(ptr, ptr+n, tmp_p);  // copy into the 64b array, implicitly upcasting.
+              (*stream_).write((char*)tmp_p, n * sizeof(LataDBInt64));  // write as 64b
+
+            }
+        }
+
+      // Exception checking:
+      (*stream_).seekg(0, std::ios::end);
+      if (exception_ && !(*stream_).good())
+        {
+          Journal() << "Error writing file " << fname_ << " " << TYP_NAM << "[" << n << "]" << endl << message_ << endl;
+          throw LataDBError(LataDBError::DATA_ERROR);
+        }
     }
 }
 
-void LataDataFile::write(const float *ptr, BigEntier n, BigEntier columns)
-{
-  Journal(verb_level_data_bloc+1) << "Writing float data bloc size=" << n << endl;
-  if (type_ != LataDBDataType::REAL32)
-    {
-      Journal() << "Error in lataDB bloc write: trying to write float data to non float file block" << endl;
-      throw LataDBError(LataDBError::DATA_ERROR);
-    }
-  if (msb_ == LataDBDataType::ASCII)
-    {
-      for (BigEntier i = 0; i < n; i+=columns)
-        {
-          BigEntier j;
-          for (j = 0; j < columns-1; j++)
-            (*stream_) << ptr[i+j] << " ";
-          (*stream_) << ptr[i+j] << endl;
-        }
-    }
-  else
-    {
-      if (msb_ != LataDBDataType::machine_msb_)
-        {
-          Journal() << "LataDB LataDataFile::write(float) not coded for reverse binary msb" << endl;
-          throw;
-          // Put code here (and test !) to reverse bytes in the binary bloc:
-        }
-      (*stream_).write((char*)ptr, n * sizeof(float));
-    }
-  (*stream_).seekg(0, std::ios::end);
-  if (exception_ && !(*stream_).good())
-    {
-      Journal() << "Error writing file " << fname_ << " float[" << n << "]"
-                << endl << message_ << endl;
-      throw LataDBError(LataDBError::DATA_ERROR);
-    }
-}
 
 // Description: skips a fortran bloc size descriptor.
 void skip_blocksize(LataDataFile& f, const LataDBDataType& type)
@@ -644,27 +666,24 @@ void skip_blocksize(LataDataFile& f, const LataDBDataType& type)
     return;
   f.set_err_message("Error reading fortran blocsize");
   f.set_encoding(type.msb_, type.bloc_marker_type_);
-  int i;
+  BigEntier i;
   f >> i;
   Journal(verb_level_data_bloc+1) << "Skipping blocsize marker value=" << i << endl;
 }
 
 template<class DEST_TYPE>
-DEST_TYPE int_conversion(LataDBInt64 x, const char * err_msg = 0)
+DEST_TYPE int_conversion(LataDBInt64 x, const char * err_msg=nullptr)
 {
   DEST_TYPE result = (DEST_TYPE) x;
   if ((LataDBInt64) result != x)
     {
-      if (err_msg)
-        Journal() << "LataDB integer conversion failed: " << err_msg << endl;
-      else
-        Journal() << "LataDB integer conversion failed: " << endl;
+      Journal() << "LataDB integer conversion failed: " << (err_msg ? err_msg : "") << endl;
       throw(LataDBError(LataDBError::INTEGER_OVERFLOW));
     }
   return result;
 }
 
-void write_blocksize(LataDataFile& f, const LataDBDataType& type, entier sz)
+void write_blocksize(LataDataFile& f, const LataDBDataType& type, BigEntier sz)
 {
   if (type.fortran_bloc_markers_ == LataDBDataType::NO_BLOC_MARKER)
     return;
@@ -683,8 +702,14 @@ void bloc_read_skip(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Ty
     case LataDBDataType::INT32:
       f.read((LataDBInt32*) 0, size);
       break;
+    case LataDBDataType::INT64:
+      f.read((LataDBInt64*) 0, size);
+      break;
     case LataDBDataType::REAL32:
       f.read((float*) 0, size);
+      break;
+    case LataDBDataType::REAL64:
+      f.read((double*) 0, size);
       break;
     default:
       Journal() << "Internal error: bloc read skip not code for this type" << endl;
@@ -694,29 +719,15 @@ void bloc_read_skip(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Ty
 
 // Description: Read "tab.size_array()" values from file "f" at current file location
 //  into the "tab" array. "msb" and "type" must match the data type written in the file.
-void bloc_read(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type,
-               ArrOfInt& tab)
+template <typename _TAB_>
+void bloc_read(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type, _TAB_& tab)
 {
   f.set_encoding(msb, type);
   f.read(tab.addr(), tab.size_array());
 }
 
-void bloc_read(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type,
-               ArrOfFloat& tab)
-{
-  f.set_encoding(msb, type);
-  f.read(tab.addr(), tab.size_array());
-}
-
-void bloc_write(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type,
-                const ArrOfInt& tab, int columns)
-{
-  f.set_encoding(msb, type);
-  f.write(tab.addr(), tab.size_array(), columns);
-}
-
-void bloc_write(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type,
-                const ArrOfFloat& tab, int columns)
+template <typename _TAB_>
+void bloc_write(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type type, const _TAB_& tab, BigEntier columns)
 {
   f.set_encoding(msb, type);
   f.write(tab.addr(), tab.size_array(), columns);
@@ -724,7 +735,7 @@ void bloc_write(LataDataFile& f, LataDBDataType::MSB msb, LataDBDataType::Type t
 
 LataDBDataType::MSB LataDBDataType::machine_msb_ = (mymachine_msb) ? LataDBDataType::MSB_BIG_ENDIAN : LataDBDataType::MSB_LITTLE_ENDIAN;
 
-void LataDB::add(entier tstep, const LataDBGeometry& item)
+void LataDB::add(int tstep, const LataDBGeometry& item)
 {
   Noms names = geometry_names(tstep);
   if (names.rang(item.name_) >= 0)
@@ -735,7 +746,7 @@ void LataDB::add(entier tstep, const LataDBGeometry& item)
   timesteps_[tstep].geoms_.add(item);
 }
 
-void LataDB::add(entier tstep, const LataDBField& item)
+void LataDB::add(int tstep, const LataDBField& item)
 {
   LataDBField& field = timesteps_[tstep].fields_.add(item);
   field.timestep_ = tstep;
@@ -747,14 +758,14 @@ void LataDB::add(entier tstep, const LataDBField& item)
 //  (timestep 0 contains geometries and fields defined before the first TEMPS entry,
 //   hence nb_timesteps() == number of TEMPS entries plus 1)
 // Exceptions: BAD_TIMESTEP
-entier LataDB::nb_timesteps() const
+int LataDB::nb_timesteps() const
 {
   return timesteps_.size();
 }
 
 // Description: returns the physical time for this timestep
 // Exceptions: BAD_TIMESTEP
-double LataDB::get_time(entier tstep) const
+double LataDB::get_time(int tstep) const
 {
   return get_tstep(tstep).time_;
 }
@@ -763,16 +774,15 @@ double LataDB::get_time(entier tstep) const
 //  "where" tells where to seach this geometry (in the current timestep or
 //  also in the first timestep.
 // Exceptions: BAD_TIMESTEP NAME_NOT_FOUND
-const LataDBGeometry& LataDB::get_geometry(entier tstep, const char* name,
-                                           TStepSelector where) const
+const LataDBGeometry& LataDB::get_geometry(int tstep, const char* name, TStepSelector where) const
 {
   if (!name)
     throw(LataDBError(LataDBError::NAME_NOT_FOUND));
   while (1)
     {
       const LataDBTimestep& t = get_tstep(tstep);
-      const entier n = t.geoms_.size();
-      for (entier i = 0; i < n; i++)
+      const int n = t.geoms_.size();
+      for (int i = 0; i < n; i++)
         {
           const LataDBGeometry& geom = t.geoms_[i];
           if (geom.name_ == name)
@@ -788,14 +798,13 @@ const LataDBGeometry& LataDB::get_geometry(entier tstep, const char* name,
 
 // Description: returns the requested field in the requested timestep.
 // Exceptions: BAD_TIMESTEP NAME_NOT_FOUND
-const LataDBField& LataDB::get_field(entier tstep, const Field_UName& uname,
-                                     TStepSelector where) const
+const LataDBField& LataDB::get_field(int tstep, const Field_UName& uname, TStepSelector where) const
 {
   while (1)
     {
       const LataDBTimestep& t = get_tstep(tstep);
-      const entier n = t.fields_.size();
-      for (entier i = 0; i < n; i++)
+      const int n = t.fields_.size();
+      for (int i = 0; i < n; i++)
         {
           const LataDBField& field = t.fields_[i];
           if (field.uname_ == uname)
@@ -810,8 +819,7 @@ const LataDBField& LataDB::get_field(entier tstep, const Field_UName& uname,
 }
 
 // Description: shortcut, works only if the specified field exists and is unique.
-const LataDBField& LataDB::get_field(entier tstep, const char *geom, const char *name, const char *loc,
-                                     TStepSelector which_tstep) const
+const LataDBField& LataDB::get_field(int tstep, const char *geom, const char *name, const char *loc, TStepSelector which_tstep) const
 {
   Field_UNames fields = field_unames(tstep, geom, name, which_tstep);
   if (fields.size() > 1)
@@ -823,15 +831,14 @@ const LataDBField& LataDB::get_field(entier tstep, const char *geom, const char 
 
 // Description: return 1 if the field exists AND is unique. (means you can call get_field with the
 //  same parameters)
-entier LataDB::field_exists(entier tstep, const char *geom, const char *name,
-                            TStepSelector which_tstep) const
+bool LataDB::field_exists(int tstep, const char *geom, const char *name, TStepSelector which_tstep) const
 {
   Field_UNames fields = field_unames(tstep, geom, name, which_tstep);
   return fields.size() == 1;
 }
 
 
-LataDBField& LataDB::getset_field(entier tstep, const Field_UName& uname, TStepSelector which_tstep)
+LataDBField& LataDB::getset_field(int tstep, const Field_UName& uname, TStepSelector which_tstep)
 {
   return (LataDBField&) get_field(tstep, uname, which_tstep);
 }
@@ -839,18 +846,18 @@ LataDBField& LataDB::getset_field(entier tstep, const Field_UName& uname, TStepS
 // Description: returns the names of all geometries defined in the timestep
 //  which_tstep tell where to search for geometries.
 // Exceptions: BAD_TIMESTEP
-Noms LataDB::geometry_names(entier tstep, TStepSelector which_tstep) const
+Noms LataDB::geometry_names(int tstep, TStepSelector which_tstep) const
 {
   Noms names;
   const LataDBTimestep& t = get_tstep(tstep);
-  entier n = t.geoms_.size();
-  for (entier i = 0; i < n; i++)
+  int n = t.geoms_.size();
+  for (int i = 0; i < n; i++)
     names.add(t.geoms_[i].name_);
   if (which_tstep == FIRST_AND_CURRENT && tstep > 0)
     {
       const LataDBTimestep& t0 = get_tstep(0);
-      entier n2 = t0.geoms_.size();
-      for (entier i = 0; i < n2; i++)
+      int n2 = t0.geoms_.size();
+      for (int i = 0; i < n2; i++)
         // add if not:
         if (names.rang(t0.geoms_[i].name_) < 0)
           names.add(t0.geoms_[i].name_);
@@ -864,7 +871,7 @@ Noms LataDB::geometry_names(entier tstep, TStepSelector which_tstep) const
 //  If geometry="*", returns list for all geometries
 //  If name="*", returns list for all field names
 // Exceptions: BAD_TIMESTEP
-LataVector<Field_UName> LataDB::field_unames(entier tstep, const char * geometry, const char * name, TStepSelector which_tstep) const
+LataVector<Field_UName> LataDB::field_unames(int tstep, const char * geometry, const char * name, TStepSelector which_tstep) const
 {
   LataVector<Field_UName> unames;
   if (!geometry)
@@ -872,8 +879,8 @@ LataVector<Field_UName> LataDB::field_unames(entier tstep, const char * geometry
   for (;;)
     {
       const LataDBTimestep& t = get_tstep(tstep);
-      entier n = t.fields_.size();
-      for (entier i = 0; i < n; i++)
+      int n = t.fields_.size();
+      for (int i = 0; i < n; i++)
         {
           const LataDBField& field = t.fields_[i];
           if ((field.geometry_ == geometry || strcmp(geometry, "*")==0 )
@@ -895,6 +902,7 @@ void check(Entree& is, const char * msg)
       throw(LataDBError(LataDBError::READ_ERROR));
     }
 }
+
 void read_keyword_nom(Entree& is, Nom& motlu)
 {
   is >> motlu;
@@ -956,6 +964,16 @@ void read_int_param(Entree& is, const Motcle& motlu, LataDBInt32& param, const c
   param = int_conversion<LataDBInt32>(i, err_msg);
 }
 
+inline void read_tid_param(Entree& is, const Motcle& motlu, trustIdType& param, const char * err_msg)
+{
+  // trustIdType is 'long' if compiling in 64b, or if in lata_tools stuff:
+#if defined(INT_is_64_)
+  read_long_param(is, motlu, param, err_msg);
+#else
+  read_int_param(is, motlu, param, err_msg);
+#endif
+}
+
 
 // Idem que read_int_param pour des chaines de caracteres.
 void read_string_param(Entree& is, const Nom& motlu, Nom& param, const char * err_msg)
@@ -981,45 +999,11 @@ void read_noms_param(Entree& is, const Nom& motlu, Noms& param, const char * err
 {
   Nom tmp;
   read_string_param(is,motlu,tmp,err_msg);
-  /*
-
-  a faire extraire pour de vrai les differents mots de motlu
-  Nom motlu2(tmp);
-  int nb_comp=1;
-  {
-    const char *s = tmp;
-    int p=0;
-    while ( ((*s) != 0))
-      {
-        if ((*s) == (','))
-          {
-            nb_comp++;
-            //    motlu2[p]='\0';
-          }
-        p++;
-        s++;
-      }
-  }
-  //  cerr<<nb_comp<<" "<<motlu2<<endl;
-  // provisoire non fini
-  param=Noms(nb_comp);
-  {
-    const char *s=motlu2;
-    for (int i=0;i<nb_comp;i++)
-      {
-
-        int j=motlu2.find(",");
-        if (j==-1) j=0;
-        param[i]=(s+j);
-        cerr<<param[i]<<endl;
-      }
-  }
-  */
 }
 
 // Description: internal tool: checks for valid i and returns the timestep
 // Exceptions: BAD_TIMESTEP
-const LataDBTimestep& LataDB::get_tstep(entier i) const
+const LataDBTimestep& LataDB::get_tstep(int i) const
 {
   if (i < 0 || i >= timesteps_.size())
     {
@@ -1044,8 +1028,7 @@ void LataDB::reset()
 // We update only fields found in the string
 // A string can contain both an int type and a float type: we get both in int_type and float_type
 static void read_format_string(const Motcle& n, LataDBDataType& data_type,
-                               LataDBDataType::Type& int_type,
-                               LataDBDataType::Type& float_type)
+                               LataDBDataType::Type& int_type, LataDBDataType::Type& float_type)
 {
   int_type = LataDBDataType::UNKNOWN_TYPE;
   float_type = LataDBDataType::UNKNOWN_TYPE;
@@ -1100,9 +1083,7 @@ static void read_format_string(const Motcle& n, LataDBDataType& data_type,
 }
 
 // This must work together with read_format_string:
-void build_format_string(const LataDBDataType& default_type,
-                         const LataDBDataType& type,
-                         Motcle& n)
+void build_format_string(const LataDBDataType& default_type, const LataDBDataType& type, Motcle& n)
 {
   n = "";
   if (type.msb_ != default_type.msb_)
@@ -1261,22 +1242,22 @@ void LataDB::read_master_file_header(const char *filename, EFichier& is)
   Journal(verb_level-1) << "Trying to read master lata file format LATA "
                         << filename << endl;
 
-  const entier bufsize=1024;
+  const int bufsize=1024;
   char s[bufsize+1];
   // Lecture de l'entete:
   is.get_istream().getline(s, bufsize);
   check(is, "failed reading line 1");
   const char * lata_header = "LATA_V2.";
-  old_style_lata_ = 0;
+  old_style_lata_ = false;
   if (strncmp(s, lata_header, strlen(lata_header)) == 0)
     {
       Journal(2) << "LataDB::read_master_file found lata format " << lata_header << endl;
-      old_style_lata_ = 0;
+      old_style_lata_ = false;
     }
   else if ((Motcle(s).debute_par("Trio_U"))||(Motcle(s).debute_par("TRUST")))
     {
       Journal(2) << "LataDB::read_master_file found old style lata format" << endl;
-      old_style_lata_ = 1;
+      old_style_lata_ = true;
     }
   else
     {
@@ -1293,13 +1274,10 @@ void LataDB::read_master_file_header(const char *filename, EFichier& is)
   software_id_ = s;
 }
 
-int is_med(const char* filename)
+bool is_med(const char* filename)
 {
   Motcle motcle_nom_fic(filename);
-
-  if (motcle_nom_fic.finit_par(".med"))
-    return 1;
-  return 0;
+  return motcle_nom_fic.finit_par(".med");
 }
 
 // Description: Reads the .lata database in the given file indicating than the
@@ -1342,7 +1320,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
 
   // Create timestep 0 (global domain and fields)
   timesteps_.add(LataDBTimestep());
-  entier interface_file_not_found = 0;
+  bool interface_file_not_found = false;
   Nom nomlu;
   Motcle motlu;
   read_keyword(is, nomlu,motlu);
@@ -1366,7 +1344,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
       else if (motlu == "Temps")
         {
           LataDBTimestep& t = timesteps_.add(LataDBTimestep());
-          const entier i = timesteps_.size() - 1;
+          const int i = timesteps_.size() - 1;
           is >> t.time_;
           check(is, "failed reading time parameter");
           Journal(verb_level) << "Reading timestep " << i << " t=" << t.time_ << endl;
@@ -1417,9 +1395,9 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
           is >> n;
           check(is, "failed reading domain filename");
           som.filename_ = n;
-          long long nb_elem = -1;
-          long long nb_faces = -1;
-          entier nproc = -1;
+          trustIdType nb_elem = -1;
+          trustIdType nb_faces = -1;
+          LataDBInt32 nproc = -1;
           Nom file_decal_som;
           Nom file_decal_elem;
           Nom file_decal_faces;
@@ -1428,11 +1406,11 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
               read_keyword(is, nomlu, motlu);
               if (motlu.debute_par("nb_som_tot="))
                 {
-                  read_long_param(is, motlu, som.size_, "bad nb_som_tot parameter");
+                  read_tid_param(is, motlu, som.size_, "bad nb_som_tot parameter");
                 }
               else if (motlu.debute_par("nb_elem_tot="))
                 {
-                  read_long_param(is, motlu, nb_elem, "bad nb_elem_tot parameter");
+                  read_tid_param(is, motlu, nb_elem, "bad nb_elem_tot parameter");
                 }
               else if (motlu.debute_par("type_elem="))
                 {
@@ -1440,7 +1418,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                 }
               else if (motlu.debute_par("nb_faces_tot="))
                 {
-                  read_long_param(is, motlu, nb_faces, "bad nb_elem_tot parameter");
+                  read_tid_param(is, motlu, nb_faces, "bad nb_elem_tot parameter");
                 }
               else if (motlu.debute_par("format="))
                 {
@@ -1514,7 +1492,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
           {
             Journal(verb_level) << " Parsing geometry file to find file offset of data blocs" << endl;
             LataDataFile f(internal_data_buffer_, path_prefix_, som.filename_,som.datatype_.msb_);
-            IntTab * null = 0; // Null pointer => don't actually read the data
+            BigTIDTab * null = nullptr; // Null pointer => don't actually read the data
             read_data2_(f, som, null);
             elem.datatype_.file_offset_ = f.position();
             Journal(verb_level+1) << "  elements at file offset " << elem.datatype_.file_offset_ << endl;
@@ -1594,9 +1572,9 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                   som.geometry_ = field.name_;
                   som.datatype_ = default_type_float();
                   som.datatype_.fortran_bloc_markers_ = LataDBDataType::NO_BLOC_MARKER;
-                  ArrOfInt tmptab(2);
+                  ArrOfTID tmptab(2);
                   bloc_read(f, msb, int_type, tmptab);
-                  som.nb_comp_ = tmptab[0]; // dimension
+                  som.nb_comp_ = (int)tmptab[0]; // dimension
                   som.size_ = tmptab[1]; // nb nodes
                   Journal(verb_level+1) << " Nb nodes=" << som.size_ << " dimension=" << som.nb_comp_ << endl;
                   som.datatype_.file_offset_ = f.position();
@@ -1609,7 +1587,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                   elem.datatype_.fortran_bloc_markers_ = LataDBDataType::NO_BLOC_MARKER;
                   elem.datatype_.array_index_ = LataDBDataType::C_INDEXING;
                   bloc_read(f, msb, int_type, tmptab);
-                  elem.nb_comp_ = tmptab[0];
+                  elem.nb_comp_ = (int)tmptab[0];
                   elem.size_ = tmptab[1];
                   Journal(verb_level+1) << " Nb elements=" << elem.size_ << " shape=" << elem.nb_comp_ << endl;
                   if (field.name_ == "PARTICULES")
@@ -1636,6 +1614,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                   add(timesteps_.size() - 1, som);
                   add(timesteps_.size() - 1, elem);
                   // Read components:
+                  ArrOfInt tmptab2(1);
                   while(1)
                     {
                       LataDBField fieldbis;
@@ -1648,9 +1627,9 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                       fieldbis.filename_ = som.filename_;
                       fieldbis.geometry_ = som.geometry_;
                       fieldbis.datatype_ = som.datatype_;
-                      tmptab.resize_array(1);
-                      bloc_read(f, msb, int_type, tmptab);
-                      fieldbis.nb_comp_ = tmptab[0];
+                      tmptab2.resize_array(1);
+                      bloc_read(f, msb, int_type, tmptab2);
+                      fieldbis.nb_comp_ = tmptab2[0];
                       if (fieldbis.nb_comp_ == som.nb_comp_)
                         fieldbis.nature_ = LataDBField::VECTOR;
                       else
@@ -1671,13 +1650,13 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                       add(timesteps_.size() - 1, fieldbis);
                     }
                 }
-              catch (LataDBError err)
+              catch (LataDBError& err)
                 {
                   // If file is missing, issue the "missing file" message and continue
                   if (err.err_ != LataDBError::FILE_NOT_FOUND)
                     throw;
                   else
-                    interface_file_not_found++;
+                    interface_file_not_found=true;
                 }
               // Read next keyword:
               read_keyword(is, nomlu, motlu);
@@ -1692,8 +1671,8 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                   // Extract other data from filename (nb_comp_, localisation_, etc)
                   // find geometry name
                   Noms dom_names = geometry_names(0 /* timestep */);
-                  const entier nb_geom = dom_names.size();
-                  entier i;
+                  const int nb_geom = dom_names.size();
+                  int i;
                   for (i = 0; i < nb_geom; i++)
                     {
                       Nom testname(".");
@@ -1713,7 +1692,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                   lata_v1_get_localisation(n, field.localisation_);
                   Journal(verb_level+1) << " localisation=" << field.localisation_ << endl;
                   const LataDBField& sommets = get_field(0 /* timestep */, dom_names[i], "SOMMETS", "*");
-                  const entier dim = sommets.nb_comp_;
+                  const int dim = sommets.nb_comp_;
                   field.nb_comp_ = lata_v1_get_nb_comp(field.name_, field.localisation_, dom, dim, field.nature_, field.datatype_.data_ordering_);
                   Journal(verb_level+1) << " composantes=" << field.nb_comp_ << endl;
                   if (field.localisation_.debute_par("SOM"))
@@ -1748,7 +1727,9 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                         }
                       else if (motlu.debute_par("composantes="))
                         {
-                          read_int_param(is, motlu, field.nb_comp_, "bad composantes parameter");
+                          LataDBInt32 nc; // TODO this workaround to remove once in new int 64
+                          read_int_param(is, motlu, nc, "bad composantes parameter");
+                          field.nb_comp_ = (int)nc;
                         }
                       else if (motlu.debute_par("localisation="))
                         {
@@ -1762,7 +1743,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                         }
                       else if (motlu.debute_par("size="))
                         {
-                          read_long_param(is, motlu, field.size_, "error reading size parameter");
+                          read_tid_param(is, motlu, field.size_, "error reading size parameter");
                         }
                       else if (motlu.debute_par("file_offset="))
                         {
@@ -1841,15 +1822,14 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
 //  at the beginning of the next data bloc (used to parse the geometry file if file_offset
 //  are not specified in the lata master file)
 template <class C_Tab>
-void LataDB::read_data2_(LataDataFile& f,
-                         const LataDBField& fld,
+void LataDB::read_data2_(LataDataFile& f, const LataDBField& fld,
                          C_Tab * const data, // const pointer to non const data !
-                         long long debut, entier n, const ArrOfInt *lines_to_read) const
+                         BigEntier debut, BigEntier n, const BigArrOfTID *lines_to_read) const
 {
 
   if (is_med(fld.filename_))
     {
-      read_data2_med_(fld,data, (entier)debut,n,lines_to_read);
+      read_data2_med_(fld,data, debut,n);
       return;
     }
   // Si file_offset_ vaut 0 on y va car on peut avoir lu a un autre endroit avant.
@@ -1863,14 +1843,19 @@ void LataDB::read_data2_(LataDataFile& f,
       if (lines_to_read)
         n = lines_to_read->size_array();
       else
-        n = (entier)fld.size_;
+        n = fld.size_;
     }
+
+  // The assert below is only useful in 32b, where BigEntier is 64b, but trustIdType is 32b. Still even then, it should always be
+  // the case (checking that: 1. we are not in LATATOOLS, 2. we have not opened a 64b file with a 32b exec)
+  assert(n < std::numeric_limits<trustIdType>::max());
+  trustIdType n_tid = (trustIdType)n;
 
   // in old lata format, 2d data is written as 3d:
   // Yeah: dirty specs make dirty code...
-  long long size_in_file = fld.size_;
-  entier nb_comp_in_file = fld.nb_comp_;
-  // entier old_lata_hack = 0;
+  FileOffset size_in_file = fld.size_;
+  int nb_comp_in_file = fld.nb_comp_;
+  // int old_lata_hack = 0;
   if (old_style_lata_ && (Motcle(fld.geometry_) != "INTERFACES") && (Motcle(fld.geometry_) != "PARTICULES"))
     {
       const LataDBField& som = get_field(0, fld.geometry_, "SOMMETS", "*");
@@ -1905,7 +1890,7 @@ void LataDB::read_data2_(LataDataFile& f,
     }
 
   if (data)
-    data->resize(n, nb_comp_in_file);
+    data->resize(n_tid, nb_comp_in_file);
 
   switch (fld.datatype_.data_ordering_)
     {
@@ -1921,21 +1906,21 @@ void LataDB::read_data2_(LataDataFile& f,
         {
           if (!lines_to_read)
             {
-              bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (FileOffset)debut * nb_comp_in_file);
+              bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, debut * nb_comp_in_file);
               bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, *data);
-              bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (FileOffset)(size_in_file - debut - n) * nb_comp_in_file);
+              bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (size_in_file - debut - n) * nb_comp_in_file);
             }
           else
             {
               C_Tab tmp;
               // Read 1024 lines chunks at a time even if only some values are needed inside
-              long long chunk_size = 0;
-              long long current_chunk_pos = 0;
-              long long current_file_pos = 0;
-              const entier nl = lines_to_read->size_array();
-              for (entier i = 0; i < nl; i++)
+              FileOffset chunk_size = 0;
+              FileOffset current_chunk_pos = 0;
+              FileOffset current_file_pos = 0;
+              const trustIdType nl = lines_to_read->size_array();
+              for (trustIdType i = 0; i < nl; i++)
                 {
-                  const long long next_line = (*lines_to_read)[i];
+                  const trustIdType next_line = (*lines_to_read)[i];
                   // Is this line in the current chunk ?
                   if (next_line >= current_chunk_pos + chunk_size)
                     {
@@ -1943,16 +1928,18 @@ void LataDB::read_data2_(LataDataFile& f,
                       chunk_size = size_in_file - next_line;
                       if (chunk_size > 1024)
                         chunk_size = 1024;
-                      tmp.resize((entier)chunk_size, nb_comp_in_file);
+                      tmp.resize((int)chunk_size, nb_comp_in_file);
                       bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (next_line - current_file_pos) * nb_comp_in_file);
                       bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
                       current_chunk_pos = next_line;
                       current_file_pos = next_line + chunk_size;
                     }
                   // Extract data from tmp array
-                  const long long tmp_index = next_line - current_chunk_pos;
-                  for (entier j = 0; j < nb_comp_in_file; j++)
-                    (*data)(i, j) = tmp((entier)tmp_index, j);
+                  const FileOffset tmp_index0 = next_line - current_chunk_pos;
+                  assert(tmp_index0 < std::numeric_limits<trustIdType>::max());  // See similar check above
+                  const trustIdType tmp_index = (trustIdType)tmp_index0;
+                  for (int j = 0; j < nb_comp_in_file; j++)
+                    (*data)(i, j) = tmp(tmp_index, j);
                 }
               if (current_file_pos != size_in_file)
                 bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (size_in_file - current_file_pos) * nb_comp_in_file);
@@ -1968,12 +1955,12 @@ void LataDB::read_data2_(LataDataFile& f,
     case LataDBDataType::F_ORDERING:
       {
         // data written like this: tab(0,0) tab(1,0) tab(2,0) ... tab(0,1) tab(1,1) tab(2,1) ... tab(0,2) tab(1,2) tab(2,2) ...
-        entier multiple_bloc_markers = (fld.datatype_.fortran_bloc_markers_ == LataDBDataType::BLOC_MARKERS_MULTIPLE_WRITES);
+        int multiple_bloc_markers = (fld.datatype_.fortran_bloc_markers_ == LataDBDataType::BLOC_MARKERS_MULTIPLE_WRITES);
         // reverse rows and columns of the array
         C_Tab tmp;
         if (!multiple_bloc_markers)
           skip_blocksize(f, fld.datatype_);
-        for (entier i = 0; i < nb_comp_in_file; i++)
+        for (int i = 0; i < nb_comp_in_file; i++)
           {
             if (multiple_bloc_markers)
               skip_blocksize(f, fld.datatype_);
@@ -1981,24 +1968,23 @@ void LataDB::read_data2_(LataDataFile& f,
               {
                 if (!lines_to_read)
                   {
-                    tmp.resize(n, 1);
+                    tmp.resize(n_tid, 1);
                     bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, debut);
                     bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
                     bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, size_in_file - debut - n);
-                    for (entier j = 0; j < n; j++)
+                    for (trustIdType j = 0; j < n_tid; j++)
                       (*data)(j, i) = tmp(j, 0);
                   }
                 else
                   {
-
                     // Read 1024 lines chunks at a time even if only some values are needed inside
-                    long long chunk_size = 0;
-                    long long current_chunk_pos = 0;
-                    long long current_file_pos = 0;
-                    const entier nl = lines_to_read->size_array();
-                    for (entier j = 0; j < nl; j++)
+                    FileOffset chunk_size = 0;
+                    FileOffset current_chunk_pos = 0;
+                    FileOffset current_file_pos = 0;
+                    const trustIdType nl = lines_to_read->size_array();
+                    for (trustIdType j = 0; j < nl; j++)
                       {
-                        const long long next_line = (*lines_to_read)[j];
+                        const trustIdType next_line = (*lines_to_read)[j];
                         // Is this line in the current chunk ?
                         if (next_line >= current_chunk_pos + chunk_size)
                           {
@@ -2006,14 +1992,16 @@ void LataDB::read_data2_(LataDataFile& f,
                             chunk_size = size_in_file - next_line;
                             if (chunk_size > 1024)
                               chunk_size = 1024;
-                            tmp.resize((entier)chunk_size, 1);
+                            tmp.resize((int)chunk_size, 1);
                             bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (next_line - current_file_pos));
                             bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
                             current_chunk_pos = next_line;
                             current_file_pos = next_line + chunk_size;
                           }
                         // Extract data from tmp array
-                        const entier tmp_index = (entier)(next_line - current_chunk_pos);
+                        const FileOffset tmp_index0 = next_line - current_chunk_pos;
+                        assert(tmp_index0 < std::numeric_limits<trustIdType>::max());  // See similar check above
+                        const trustIdType tmp_index = (trustIdType)tmp_index0;
                         (*data)(j, i) = tmp(tmp_index, 0);
                       }
                     if (current_file_pos != size_in_file)
@@ -2041,18 +2029,17 @@ void LataDB::read_data2_(LataDataFile& f,
     {
       // drop column in data array
       C_Tab tmp(*data);
-      data->resize(n, fld.nb_comp_);
-      for (entier i = 0; i < n; i++)
-        for (entier j = 0; j < fld.nb_comp_; j++)
+      data->resize(n_tid, fld.nb_comp_);
+      for (trustIdType i = 0; i < n_tid; i++)
+        for (int j = 0; j < fld.nb_comp_; j++)
           (*data)(i,j) = tmp(i,j);
     }
 }
 
 // Description:
 //  Read n * fld.nb_comp_ values in the file filename_, starting from debut * fld.nb_comp_
-template <class C_Tab>
-void LataDB::read_data_(const LataDBField& fld,
-                        C_Tab& data, long long debut, entier n) const
+template <typename C_Tab>
+void LataDB::read_data_(const LataDBField& fld, C_Tab& data, BigEntier debut, BigEntier n) const
 {
   Journal(verb_level_data_bloc) << "LataDB::read_data(" << fld.timestep_ << "," << fld.uname_
                                 << ") Reading " << path_prefix_ << fld.filename_ << " start at " << debut << " size "
@@ -2066,8 +2053,7 @@ void LataDB::read_data_(const LataDBField& fld,
 // Description:
 //  Read n * fld.nb_comp_ values in the file filename_, starting from debut * fld.nb_comp_
 template <class C_Tab>
-void LataDB::read_data_(const LataDBField& fld,
-                        C_Tab& data, const ArrOfInt& lines_to_read) const
+void LataDB::read_data_(const LataDBField& fld, C_Tab& data, const BigArrOfTID& lines_to_read) const
 {
   Journal(verb_level_data_bloc) << "LataDB::read_data(" << fld.timestep_ << "," << fld.uname_
                                 << ") Reading " << path_prefix_ << fld.filename_ << ",  " << lines_to_read.size_array() << " non contiguous lines"
@@ -2079,53 +2065,81 @@ void LataDB::read_data_(const LataDBField& fld,
 
 // Description: reads n * nb_comp values in the file filename_ starting from debut*nb_comp_
 //  If array_index is F_STYLE, substract 1 to all values.
-void LataDB::read_data(const LataDBField& fld, IntTab& data, long long debut, entier n) const
+void LataDB::read_data(const LataDBField& fld, BigIntTab& data, BigEntier debut, BigEntier n) const
 {
   read_data_(fld, data, debut, n);
   if (fld.datatype_.array_index_ == LataDBDataType::F_INDEXING)
     {
-      ArrOfInt& data2 = data;
-      const entier n2 = data2.size_array();
-      for (entier i = 0; i < n2; i++)
+      BigIntTab& data2 = data;
+      const trustIdType n2 = data2.size_array();
+      for (trustIdType i = 0; i < n2; i++)
         data2[i]--;
     }
 }
 
+#if INT_is_64_ == 2
+void LataDB::read_data(const LataDBField& fld, BigTIDTab& data, BigEntier debut, BigEntier n) const
+{
+  read_data_(fld, data, debut, n);
+  if (fld.datatype_.array_index_ == LataDBDataType::F_INDEXING)
+    {
+      BigTIDTab& data2 = data;
+      const trustIdType n2 = data2.size_array();
+      for (trustIdType i = 0; i < n2; i++)
+        data2[i]--  ;
+    }
+}
+#endif
+
 // Description: reads n * nb_comp values in the file filename_ starting from debut*nb_comp_
-void LataDB::read_data(const LataDBField& fld, DoubleTab& data, long long debut, entier n) const
+void LataDB::read_data(const LataDBField& fld, BigDoubleTab& data, BigEntier debut, BigEntier n) const
 {
   Journal() << "LataDB::read_data not coded for double" << endl;
   throw;
 }
 
-void LataDB::read_data(const LataDBField& fld, FloatTab& data, long long debut, entier n) const
+void LataDB::read_data(const LataDBField& fld, BigFloatTab& data, BigEntier debut, BigEntier n) const
 {
   read_data_(fld, data, debut, n);
 }
 
 // Description: reads lines_to_read.size_array() * nb_comp values.
 //  If array_index is F_STYLE, substract 1 to all values.
-void LataDB::read_data(const LataDBField& fld, IntTab& data, const ArrOfInt& lines_to_read) const
+void LataDB::read_data(const LataDBField& fld, BigIntTab& data, const BigArrOfTID& lines_to_read) const
 {
   read_data_(fld, data, lines_to_read);
   if (fld.datatype_.array_index_ == LataDBDataType::F_INDEXING)
     {
-      ArrOfInt& data2 = data;
-      const entier n = data2.size_array();
-      for (entier i = 0; i < n; i++)
+      BigIntTab& data2 = data;
+      const trustIdType n = data2.size_array();
+      for (trustIdType i = 0; i < n; i++)
         data2[i]--;
     }
 }
 
+#if INT_is_64_ == 2
+void LataDB::read_data(const LataDBField& fld, BigTIDTab& data, const BigArrOfTID& lines_to_read) const
+{
+  read_data_(fld, data, lines_to_read);
+  if (fld.datatype_.array_index_ == LataDBDataType::F_INDEXING)
+    {
+      BigTIDTab& data2 = data;
+      const trustIdType n = data2.size_array();
+      for (trustIdType i = 0; i < n; i++)
+        data2[i]--;
+    }
+}
+#endif
+
 // Description: reads lines_to_read.size_array() * nb_comp values.
-void LataDB::read_data(const LataDBField& fld, DoubleTab& data, const ArrOfInt& lines_to_read) const
+void LataDB::read_data(const LataDBField& fld, BigDoubleTab& data, const BigArrOfTID& lines_to_read) const
 {
   Journal() << "LataDB::read_data not coded for double" << endl;
   throw;
 }
 
 // Description: reads lines_to_read.size_array() * nb_comp values.
-void LataDB::read_data(const LataDBField& fld, FloatTab& data, const ArrOfInt& lines_to_read) const
+void LataDB::read_data(const LataDBField& fld, BigFloatTab& data, const BigArrOfTID& lines_to_read) const
 {
   read_data_(fld, data, lines_to_read);
 }
@@ -2135,10 +2149,8 @@ void LataDB::read_data(const LataDBField& fld, FloatTab& data, const ArrOfInt& l
 //  that are specified (timestep 0 is always included, do not put it in the list).
 //  field_nms can contain field.name_ (like VITESSE), or extended name with localisation
 //  (like VITESSE_ELEM)
-void LataDB::filter_db(const LataDB& source,
-                       const Noms& geometry_nms,
-                       const Motcles& field_nms,
-                       const ArrOfInt& timesteps)
+void LataDB::filter_db(const LataDB& source, const Noms& geometry_nms,
+                       const Motcles& field_nms, const ArrOfInt& timesteps)
 {
   path_prefix_ = source.path_prefix_;
   header_ = source.header_;
@@ -2148,17 +2160,17 @@ void LataDB::filter_db(const LataDB& source,
   default_type_int_ = source.default_type_int_;
   default_float_type_ = source.default_float_type_;
 
-  const entier nb_tsteps = timesteps.size_array();
-  for (entier it = 0; it < nb_tsteps + 1; it++)
+  const int nb_tsteps = timesteps.size_array();
+  for (int it = 0; it < nb_tsteps + 1; it++)
     {
-      entier src_tstep = 0;
+      int src_tstep = 0;
       if (it > 0)
         src_tstep = timesteps[it-1];
       LataDBTimestep& tstep = timesteps_.add(LataDBTimestep());
       tstep.time_ = source.get_time(src_tstep);
       // Copy geometries
       const Noms& geoms = source.geometry_names(src_tstep);
-      entier ig;
+      int ig;
       for (ig = 0; ig < geoms.size(); ig++)
         if (geometry_nms.rang(geoms[ig]) >= 0)
           tstep.geoms_.add(source.get_geometry(src_tstep, geoms[ig]));
@@ -2168,7 +2180,7 @@ void LataDB::filter_db(const LataDB& source,
       for (ig = 0; ig < geoms2.size(); ig++)
         {
           LataVector<Field_UName> unames = source.field_unames(src_tstep, geoms2[ig], "*");
-          for (entier i_f = 0; i_f < unames.size(); i_f++)
+          for (int i_f = 0; i_f < unames.size(); i_f++)
             {
               const LataDBField& src = source.get_field(src_tstep, unames[i_f]);
               Nom name_loc = src.name_;
@@ -2206,12 +2218,12 @@ void LataDB::set_path_prefix(const char * s)
 //   new_type.msb_ = LataDBDataType::REAL64;
 void LataDB::change_all_data_types(const LataDBDataType& old_type, const LataDBDataType& new_type)
   {
-    const entier nb_tsteps = timesteps_.size();
-    for (entier src_tstep = 0; src_tstep < nb_tsteps; src_tstep++)
+    const int nb_tsteps = timesteps_.size();
+    for (int src_tstep = 0; src_tstep < nb_tsteps; src_tstep++)
       {
         LataVector<LataDBField>& fields = timesteps_[src_tstep].fields_;
-        const entier nb_fields = fields.size();
-        for (entier i_field = 0; i_field < nb_fields; i_field++)
+        const int nb_fields = fields.size();
+        for (int i_field = 0; i_field < nb_fields; i_field++)
           {
             LataDBDataType& type = fields[i_field].datatype_;
             // For each field, if "old_type" is "unknown" or equal to the previous value,
@@ -2229,22 +2241,22 @@ void LataDB::change_all_data_types(const LataDBDataType& old_type, const LataDBD
 
 void LataDB::change_all_data_filenames(const Nom& old_prefix, const Nom& new_prefix)
 {
-  const entier nb_tsteps = timesteps_.size();
-  for (entier i = 0; i < nb_tsteps; i++)
+  const int nb_tsteps = timesteps_.size();
+  for (int i = 0; i < nb_tsteps; i++)
     {
       LataVector<LataDBField>& fields = timesteps_[i].fields_;
       // Browse all fields:
-      const entier nb_fields = fields.size();
-      for (entier j = 0; j < nb_fields; j++)
+      const int nb_fields = fields.size();
+      for (int j = 0; j < nb_fields; j++)
         {
           Nom& filename = fields[j].filename_;
           Nom old_filename = filename;
           filename = new_prefix;
           if (old_filename.debute_par(old_prefix))
             {
-              const entier n = old_filename.longueur()-1;
+              const int n = old_filename.longueur()-1;
               const char * s = old_filename;
-              for (entier ii = old_prefix.longueur()-1; ii < n; ii++)
+              for (int ii = old_prefix.longueur()-1; ii < n; ii++)
                 filename += Nom(s[ii]);
             }
           else if (old_filename == LataDBField::memory_buffer_file())
@@ -2266,21 +2278,21 @@ void LataDB::change_all_data_filenames(const Nom& old_prefix, const Nom& new_pre
 //  - then for all subsequent files referring to the same name:
 //      If split_files != 0, rename the files by appending a "_number" and set file_offset to 0
 //      otherwise set file_offset_ to 1
-void LataDB::check_all_data_fileoffsets(entier split_files)
+void LataDB::check_all_data_fileoffsets(bool split_files)
 {
   Noms existing_filenames;
   ArrOfInt counts; // For each filenames, number of fields referring to it
 
-  const entier nb_tsteps = timesteps_.size();
-  for (entier i = 0; i < nb_tsteps; i++)
+  const int nb_tsteps = timesteps_.size();
+  for (int i = 0; i < nb_tsteps; i++)
     {
       LataVector<LataDBField>& fields = timesteps_[i].fields_;
       // Browse all fields:
-      const entier nb_fields = fields.size();
-      for (entier j = 0; j < nb_fields; j++)
+      const int nb_fields = fields.size();
+      for (int j = 0; j < nb_fields; j++)
         {
           LataDBField& field = fields[j];
-          const entier rank = existing_filenames.rang(field.filename_);
+          const int rank = existing_filenames.rang(field.filename_);
           if (rank < 0)
             {
               // New filename
@@ -2295,7 +2307,7 @@ void LataDB::check_all_data_fileoffsets(entier split_files)
               // Existing filename
               if (split_files)
                 {
-                  entier n = counts[rank]++;
+                  int n = counts[rank]++;
                   field.filename_ += "_";
                   field.filename_ += Nom(n);
                   field.datatype_.file_offset_ = 0;
@@ -2314,9 +2326,9 @@ void LataDB::check_all_data_fileoffsets(entier split_files)
 }
 
 // Returns the rank of the created timestep (always at the end)
-entier LataDB::add_timestep(double time)
+int LataDB::add_timestep(double time)
 {
-  const entier n = nb_timesteps();
+  const int n = nb_timesteps();
   // Timestep 0 can have any time: test only versus other timesteps:
   if (n > 1 && time <= get_time(n-1))
     {
@@ -2330,7 +2342,7 @@ entier LataDB::add_timestep(double time)
   return n;
 }
 
-static void add_geom_check(const LataDBGeometry& geom, entier test_flag, const char *message)
+static void add_geom_check(const LataDBGeometry& geom, int test_flag, const char *message)
 {
   if (!test_flag)
     {
@@ -2350,14 +2362,14 @@ void LataDB::add_geometry(const LataDBGeometry& geom)
   Journal(verb_level+1) << "LataDB::add_geometry " << geom.name_ << endl;
 }
 
-void LataDB::set_elemtype(entier tstep, const char *geom_name, const char *elem_type)
+void LataDB::set_elemtype(int tstep, const char *geom_name, const char *elem_type)
 {
   LataDBGeometry& geom = (LataDBGeometry&) get_geometry(tstep, geom_name);
   geom.elem_type_ = elem_type;
 }
 
 
-static void add_field_check(const LataDBField& field, entier test_flag, const char *message)
+static void add_field_check(const LataDBField& field, int test_flag, const char *message)
 {
   if (!test_flag)
     {
@@ -2442,15 +2454,15 @@ void LataDB::write_master_file(const char *filename) const
 
   // ***************************************************************
   // Writing timesteps:
-  const entier nb_tsteps = nb_timesteps();
-  for (entier tstep = 0; tstep < nb_tsteps; tstep++)
+  const int nb_tsteps = nb_timesteps();
+  for (int tstep = 0; tstep < nb_tsteps; tstep++)
     {
       if (tstep > 0)
         os << "TEMPS " << get_time(tstep) << endl;
 
       Noms geoms = geometry_names(tstep);
-      const entier nb_geoms = geoms.size();
-      for (entier i_geom = 0; i_geom < nb_geoms; i_geom++)
+      const int nb_geoms = geoms.size();
+      for (int i_geom = 0; i_geom < nb_geoms; i_geom++)
         {
           const LataDBGeometry& geom = get_geometry(tstep, geoms[i_geom], FIRST_AND_CURRENT);
           // Do not write geometries of the first timestep
@@ -2458,7 +2470,7 @@ void LataDB::write_master_file(const char *filename) const
             os << "GEOM  " << geom.name_ << " type_elem=" << geom.elem_type_ << endl;
         }
       Field_UNames unames = field_unames(tstep, "*", "*");
-      for (entier i_field = 0; i_field < unames.size(); i_field++)
+      for (int i_field = 0; i_field < unames.size(); i_field++)
         {
           const LataDBField& field = get_field(tstep, unames[i_field]);
           os << "CHAMP " << field.name_
@@ -2472,8 +2484,8 @@ void LataDB::write_master_file(const char *filename) const
           if (field.component_names_.size() > 0)
             {
               os << " noms_compo=";
-              const entier n = field.component_names_.size();
-              for (entier i = 0; i < n; i++)
+              const int n = field.component_names_.size();
+              for (int i = 0; i < n; i++)
                 {
                   os << field.component_names_[i];
                   if (i < n-1)
@@ -2506,14 +2518,15 @@ void LataDB::write_master_file(const char *filename) const
         }
     }
   os << "FIN" << endl;
-  write_master_file_to_call_ = 0;
+  write_master_file_to_call_ = false;
 }
 
 // Description: internal template to write a data block. We provide explicit methods write_data()
 //  to the user instead of a template.
 template <class C_Tab>
-FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_Tab& data)
+FileOffset LataDB::write_data_(int tstep, const Field_UName& uname, const C_Tab& data)
 {
+  using int_t = typename C_Tab::int_t;
   LataDBField& fld = getset_field(tstep, uname);
 
   LataDataFile f(internal_data_buffer_, path_prefix_, fld.filename_,
@@ -2527,7 +2540,7 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_T
       throw;
     }
 
-  const entier n = (entier)fld.size_;
+  const trustIdType n = fld.size_;
 
   switch (fld.datatype_.data_ordering_)
     {
@@ -2538,7 +2551,7 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_T
             Journal() << "Error in LataDB::write_data_: fortran_bloc_markers_=MULTIPLE_WRITES is incompatible with data_ordering=C" << endl;
             throw LataDBError(LataDBError::DATA_ERROR);
           }
-        const entier sz = data.size_array();
+        const int_t sz = data.size_array();
         write_blocksize(f, fld.datatype_, sz);
         bloc_write(f, fld.datatype_.msb_, fld.datatype_.type_, data, fld.nb_comp_);
         write_blocksize(f, fld.datatype_, sz);
@@ -2546,17 +2559,17 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_T
       }
     case LataDBDataType::F_ORDERING:
       {
-        entier multiple_bloc_markers = (fld.datatype_.fortran_bloc_markers_ == LataDBDataType::BLOC_MARKERS_MULTIPLE_WRITES);
+        int multiple_bloc_markers = (fld.datatype_.fortran_bloc_markers_ == LataDBDataType::BLOC_MARKERS_MULTIPLE_WRITES);
         // reverse rows and columns of the array
         C_Tab tmp;
         tmp.resize(n, 1);
         if (!multiple_bloc_markers)
           write_blocksize(f, fld.datatype_, data.size_array());
-        for (entier i = 0; i < fld.nb_comp_; i++)
+        for (int i = 0; i < fld.nb_comp_; i++)
           {
             if (multiple_bloc_markers)
               write_blocksize(f, fld.datatype_, n);
-            for (entier j = 0; j < n; j++)
+            for (trustIdType j = 0; j < n; j++)
               tmp(j, 0) = data(j, i);
             bloc_write(f, fld.datatype_.msb_, fld.datatype_.type_, tmp, 1);
             if (multiple_bloc_markers)
@@ -2570,7 +2583,7 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_T
       Journal() << "Error in LataDB::write_data_: data_ordering not implemented" << endl;
       throw;
     }
-  write_master_file_to_call_ = 1;
+  write_master_file_to_call_ = true;
   return f.position();
 }
 
@@ -2581,34 +2594,52 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName& uname, const C_T
 // otherwise the data is written at the end of the file and file_offset_ for this field is updated.
 // Returns the FileOffset of the file pointer after writing the data (points to the end of the file)
 // The call to write_master_file() must be done after all write_data (otherwise the file_offset_ might be wrong)
-FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const DoubleTab& tab)
+FileOffset LataDB::write_data(int tstep, const Field_UName& uname, const BigDoubleTab& tab)
 {
   Journal() << " LataDB::write_data not coded for double" << endl;
   throw;
 }
 
 // See write_data(..., const DoubleTab &)
-FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const FloatTab& tab)
+FileOffset LataDB::write_data(int tstep, const Field_UName& uname, const BigFloatTab& tab)
 {
   return write_data_(tstep, uname, tab);
 }
 
 // See write_data(..., const DoubleTab &)
-FileOffset LataDB::write_data(entier tstep, const Field_UName& uname, const IntTab& tab)
+FileOffset LataDB::write_data(int tstep, const Field_UName& uname, const BigIntTab& tab)
 {
   if (get_field(tstep, uname).datatype_.array_index_ == LataDBDataType::F_INDEXING)
     {
-      IntTab tmp;
-      tmp.resize(tab.dimension(0), tab.dimension(1));
-      ArrOfInt& array = tmp;
-      const ArrOfInt& src = tab;
-      for (entier i = 0; i < array.size_array(); i++)
+      BigIntTab tmp;
+      tmp.resize(tab.dimension(0), (int)tab.dimension(1));
+      BigArrOfInt& array = tmp;
+      const BigArrOfInt& src = tab;
+      for (trustIdType i = 0; i < array.size_array(); i++)
         array[i] = src[i] + 1;
       return write_data_(tstep, uname, tmp);
     }
 
   return write_data_(tstep, uname, tab);
 }
+
+#if INT_is_64_ == 2
+FileOffset LataDB::write_data(int tstep, const Field_UName& uname, const BigTIDTab& tab)
+{
+  if (get_field(tstep, uname).datatype_.array_index_ == LataDBDataType::F_INDEXING)
+    {
+      BigTIDTab tmp;
+      tmp.resize(tab.dimension(0), (int)tab.dimension(1));
+      BigArrOfTID& array = tmp;
+      const BigArrOfTID& src = tab;
+      for (trustIdType i = 0; i < array.size_array(); i++)
+        array[i] = src[i] + 1;
+      return write_data_(tstep, uname, tmp);
+    }
+
+  return write_data_(tstep, uname, tab);
+}
+#endif
 
 LataDB::~LataDB()
 {

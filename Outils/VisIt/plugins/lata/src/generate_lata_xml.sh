@@ -12,7 +12,7 @@ if [ "$2" = "-with_med" ]; then
 fi
 
 extra_incl=" -I${TRUST_ROOT}/src/Kernel/Utilitaires -I${TRUST_ROOT}/src/Kernel/Math -I${TRUST_ROOT}/src/Kernel/Geometrie "
-def_latatools=" -DLATATOOLS=1 "
+def_latatools=" -DLATATOOLS=1 -DINT_is_64_=2 "
 
 # -Wno-deprecated ne marche pas sous windows
 cat > lata.xml <<EOF

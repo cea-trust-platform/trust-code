@@ -21,11 +21,12 @@
 
 template<class T, class Tab> int search_in_ordered_vect(T x, const Tab& v, const T epsilon)
 {
+  using int_t = typename Tab::int_t;
   if (!v.size_array())
     return -1;
-  int i1 = 0;
-  int i;
-  int i2 = (int) v.size_array() - 1;
+  int_t i1 = 0;
+  int_t i;
+  int_t i2 = v.size_array() - 1;
   while (i1 != i2)
     {
       i = (i1 + i2) / 2;
@@ -45,9 +46,10 @@ template<class T, class Tab> int search_in_ordered_vect(T x, const Tab& v, const
 template<class T, class Tab>
 static void retirer_doublons(Tab& tab, const T epsilon)
 {
-  int i = 0;
-  int j;
-  const int n = tab.size_array();
+  using int_t = typename Tab::int_t;
+  int_t i = 0;
+  int_t j;
+  const int_t n = tab.size_array();
   T last_tab_i = -std::numeric_limits<T>::max();
   for (j = 0; j < n; j++)
     {
@@ -74,39 +76,48 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
 
   DomainIJK& dest = dest_domain.instancie(DomainIJK);
   dest.elt_type_ = src.elt_type_;
-  const entier nsom = src.nodes_.dimension(0);
-  const entier dim = src.nodes_.dimension(1);
+  const trustIdType nsom = src.nodes_.dimension(0);
+  const int dim = (int)src.nodes_.dimension(1);
   ArrOfInt nb_som_dir(dim);
   {
     double product_n = 1.;
-    for (entier i_dim = 0; i_dim < dim; i_dim++)
+    for (int i_dim = 0; i_dim < dim; i_dim++)
       {
-        ArrOfFloat& coord = dest.coord_.add(ArrOfFloat());
-        coord.resize_array(nsom);
-        entier i;
+        BigArrOfFloat coord_big;
+        coord_big.resize_array(nsom);
+        trustIdType i;
         for (i = 0; i < nsom; i++)
-          coord[i] = src.nodes_(i, i_dim);
-        coord.ordonne_array();
-        retirer_doublons(coord, (float) op.tolerance_);
-        product_n *= coord.size_array();
+          coord_big[i] = src.nodes_(i, i_dim);
+        coord_big.ordonne_array();
+        retirer_doublons(coord_big, (float) op.tolerance_);
+        product_n *= (double)coord_big.size_array();
         // Add extended domain layer:
-        if (coord.size_array() > 1)
+        if (coord_big.size_array() > 1)
           {
-            const entier n = coord.size_array();
-            const entier l = op.extend_layer_;
-            coord.resize_array(n + l * 2);
-            float x0 = coord[n - 1];
-            float delta = coord[n - 2] - x0;
+            const trustIdType n = coord_big.size_array();
+            const trustIdType l = op.extend_layer_;
+            coord_big.resize_array(n + l * 2);
+            float x0 = coord_big[n - 1];
+            float delta = coord_big[n - 2] - x0;
             for (i = 1; i <= l; i++)
-              coord[n + l + i] = x0 + delta * (float) i;
+              coord_big[n + l + i] = x0 + delta * (float) i;
             for (i = l - 1; i >= 0; i--)
-              coord[i + l] = coord[i];
-            x0 = coord[l];
-            delta = coord[l + 1] - x0;
+              coord_big[i + l] = coord_big[i];
+            x0 = coord_big[l];
+            delta = coord_big[l + 1] - x0;
             for (i = 1; i <= l; i++)
-              coord[l - i] = x0 - delta * (float) i;
+              coord_big[l - i] = x0 - delta * (float) i;
           }
-        nb_som_dir[i_dim] = coord.size_array();
+        int sz = (int)coord_big.size_array();
+        nb_som_dir[i_dim] = (int)sz;
+        if(sz<0)
+          {
+            Journal() << "Positions do not seem regular !" << endl;
+            throw;
+          }
+        // Register final (reduced) coord_big in coord:
+        ArrOfFloat& coord = dest.coord_.add(ArrOfFloat());
+        coord_big.ref_as_small(coord);
       }
     // Verifying that unique has deleted many points...
     // If well organised, nsom=nx*ny*nz
@@ -114,17 +125,16 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
     // We want to verify that we are nearer to organisation than to chaos !
     if (product_n > (double) nsom * (double) nsom - 1.)
       {
-        Journal() << "Positions do not seam regular !" << endl;
+        Journal() << "Positions do not seem regular !" << endl;
         throw;
       }
   }
-  int i;
   op.renum_nodes_.resize_array(nsom);
-  IntTab ijk_indexes;
+  BigIntTab ijk_indexes;  // Not BigTIDTab ...
   ijk_indexes.resize(nsom, dim);
-  for (i = 0; i < nsom; i++)
+  for (trustIdType i = 0; i < nsom; i++)
     {
-      entier ijk_index = 0;
+      trustIdType ijk_index = 0;
       for (int j = dim - 1; j >= 0; j--)
         {
           const double x = src.nodes_(i, j);
@@ -142,25 +152,25 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
       op.renum_nodes_[i] = ijk_index;
     }
   const int max_index = max_array(nb_som_dir);
-  int nb_elems_ijk = 1;
-  for (i = 0; i < dim; i++)
+  trustIdType nb_elems_ijk = 1;
+  for (int i = 0; i < dim; i++)
     nb_elems_ijk *= nb_som_dir[i] - 1;
   dest.invalid_connections_.resize_array(nb_elems_ijk);
   dest.invalid_connections_ = 1; // Everything invalid by default
-  const int nelem = src.elements_.dimension(0);
-  const int nb_som_elem = src.elements_.dimension(1);
+  const trustIdType nelem = src.elements_.dimension(0);
+  const int nb_som_elem = (int)src.elements_.dimension(1);
   op.renum_elements_.resize_array(nelem);
   // Pour chaque element, indice dans le maillage ijk du plus sommet le plus proche de l'origine
   // (pour les faces...)
-  ArrOfInt idx_elem_som;
+  BigArrOfTID idx_elem_som;
   idx_elem_som.resize_array(nelem);
   int min_index[3];
-  for (i = 0; i < nelem; i++)
+  for (trustIdType i = 0; i < nelem; i++)
     {
       min_index[0] = min_index[1] = min_index[2] = max_index;
       for (int j = 0; j < nb_som_elem; j++)
         {
-          int node = src.elements_(i, j);
+          trustIdType node = src.elements_(i, j);
           for (int k = 0; k < loop_max(dim, 3); k++)
             {
               int idx = ijk_indexes(node, k);
@@ -168,8 +178,8 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
               break_loop(k, dim);
             }
         }
-      entier idx = 0;
-      entier idx_som = 0;
+      trustIdType idx = 0;
+      trustIdType idx_som = 0;
       if (dim == 1)
         {
           idx = min_index[0];
@@ -177,13 +187,13 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
         }
       else if (dim == 2)
         {
-          idx = min_index[1] * (nb_som_dir[0] - 1) + min_index[0];
-          idx_som = min_index[1] * nb_som_dir[0] + min_index[0];
+          idx = (trustIdType)min_index[1] * ((trustIdType)nb_som_dir[0] - 1) + (trustIdType)min_index[0];
+          idx_som = (trustIdType)min_index[1] * (trustIdType)nb_som_dir[0] + (trustIdType)min_index[0];
         }
       else if (dim == 3)
         {
-          idx = (min_index[2] * (nb_som_dir[1] - 1) + min_index[1]) * (nb_som_dir[0] - 1) + min_index[0];
-          idx_som = (min_index[2] * nb_som_dir[1] + min_index[1]) * nb_som_dir[0] + min_index[0];
+          idx = ((trustIdType)min_index[2] * ((trustIdType)nb_som_dir[1] - 1) + (trustIdType)min_index[1]) * ((trustIdType)nb_som_dir[0] - 1) + (trustIdType)min_index[0];
+          idx_som = ((trustIdType)min_index[2] * (trustIdType)nb_som_dir[1] + (trustIdType)min_index[1]) * (trustIdType)nb_som_dir[0] + (trustIdType)min_index[0];
         }
       else
         throw;
@@ -194,27 +204,27 @@ void build_geometry_(OperatorRegularize& op, const DomainUnstructured& src, Lata
 
   if (src.faces_ok())
     {
-      const int nfaces = src.faces_.dimension(0);
+      const trustIdType nfaces = src.faces_.dimension(0);
       op.renum_faces_.resize_array(nfaces);
       op.renum_faces_ = -1;
-      const int nb_elem_face = src.elem_faces_.dimension(1);
+      const int nb_elem_face = (int)src.elem_faces_.dimension(1);
       ArrOfInt delta_dir(dim);
       delta_dir[0] = 1;
-      for (i = 1; i < dim; i++)
+      for (int i = 1; i < dim; i++)
         delta_dir[i] = delta_dir[i - 1] * nb_som_dir[i - 1];
-      for (i = 0; i < nelem; i++)
+      for (trustIdType i = 0; i < nelem; i++)
         {
           // Les faces haut, gauche et arriere du cube a l'origine portent le numero 0
           // Voir DomaineIJK pour la convention sur la numerotation des faces
-          for (entier j = 0; j < nb_elem_face; j++)
+          for (int j = 0; j < nb_elem_face; j++)
             {
-              const entier i_face = src.elem_faces_(i, j);
-              entier dir = j % dim;
-              entier index = idx_elem_som[i];
+              const trustIdType i_face = src.elem_faces_(i, j);
+              int dir = (int)(j % dim);
+              trustIdType index = idx_elem_som[i];
               if (j >= dim)
-                index += delta_dir[dir];
+                index += (trustIdType)delta_dir[dir];
               // Encodage du numero de la face et de la direction
-              index = (index << 2) + dir;
+              index = (index << 2) + (trustIdType)dir;
               if (op.renum_faces_[i_face] < 0)
                 {
                   op.renum_faces_[i_face] = index;
@@ -243,17 +253,17 @@ void build_field_(OperatorRegularize& op, const DomainUnstructured& src_domain, 
   dest.component_names_ = src.component_names_;
   dest.localisation_ = src.localisation_;
   dest.nature_ = src.nature_;
-  const entier sz = src.data_.dimension(0);
-  const entier nb_compo = src.data_.dimension(1);
-  entier i;
+  const trustIdType sz = src.data_.dimension(0);
+  const int nb_compo = (int)src.data_.dimension(1);
+  trustIdType i;
   switch(src.localisation_)
     {
     case LataField_base::ELEM:
       dest.data_.resize(dest_domain.nb_elements(), nb_compo);
       for (i = 0; i < sz; i++)
         {
-          const entier new_i = op.renum_elements_[i];
-          for (entier j = 0; j < nb_compo; j++)
+          const trustIdType new_i = op.renum_elements_[i];
+          for (int j = 0; j < nb_compo; j++)
             dest.data_(new_i, j) = src.data_(i, j);
         }
       break;
@@ -261,8 +271,8 @@ void build_field_(OperatorRegularize& op, const DomainUnstructured& src_domain, 
       dest.data_.resize(dest_domain.nb_nodes(), nb_compo);
       for (i = 0; i < sz; i++)
         {
-          const entier new_i = op.renum_nodes_[i];
-          for (entier j = 0; j < nb_compo; j++)
+          const trustIdType new_i = op.renum_nodes_[i];
+          for (int j = 0; j < nb_compo; j++)
             dest.data_(new_i, j) = src.data_(i, j);
         }
       break;
@@ -274,15 +284,15 @@ void build_field_(OperatorRegularize& op, const DomainUnstructured& src_domain, 
             throw;
           }
         dest.nature_ = LataDBField::VECTOR;
-        const entier nb_dim = dest_domain.dimension();
+        const int nb_dim = dest_domain.dimension();
         dest.data_.resize(dest_domain.nb_faces(), nb_dim);
         // Field is interpreted as normal component to the face
         for (i = 0; i < sz; i++)
           {
-            const entier code = op.renum_faces_[i];
+            const trustIdType code = op.renum_faces_[i];
             // decodage numero et direction de la face:
-            const entier new_i = code >> 2;
-            const entier direction = (code & 3);
+            const trustIdType new_i = code >> 2;
+            const int direction = (int)(code & 3);
             dest.data_(new_i, direction) = src.data_(i, 0);
           }
       }
