@@ -208,7 +208,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
       if (nb_accolade!=0)
         {
           if (nb_accolade<0)
-            Cerr<<"Error perhaps  extra \"}\" in data file"<<finl;
+            Cerr<<"Error perhaps extra \"}\" or missing \"#\" in data file"<<finl;
           else
             Cerr<<"Error check for missing \"}\" in data file"<<finl;
           Process::exit();
