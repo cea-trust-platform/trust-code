@@ -409,6 +409,9 @@ then
    [ $compile_opt -eq 0 ] && echo "No opt compilation, so stop"  | tee -a $COMPILE && exit 0
    echo >>$COMPILE
 fi
+# Do not exit immediately if a pipeline returns non zero return code
+# This will allow carrying on tools build even if a tool fails
+set +e
 
 ############################
 # Creation des outils TRUST
