@@ -19,11 +19,11 @@ __pycache__
 .toto
 .check_sources.ok
 .form.md5sum
+Validation/Rapports_automatiques/.check_of_all_validation_forms
 make.lock
 .ipynb_checkpoints/
 instancie_src_*.cpp
 src/**/CMakeLists.txt
-src/MAIN/instancie_appel*
 *.swp
 .idea/
 

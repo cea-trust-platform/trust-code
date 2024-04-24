@@ -226,6 +226,12 @@ is_link_or_double_link()
 
 add_test_case_from_validation()
 {
+   check_all_forms_file="$Rapports_auto_root/Validation/Rapports_automatiques/.check_of_all_validation_forms"
+   if [ -f $check_all_forms_file ] && [ "`find $Rapports_auto_root/Validation/Rapports_automatiques -newer $check_all_forms_file 2>/dev/null | grep -v build | grep -v ppms | grep -v '.log'`" = "" ]
+   then
+      return
+   fi
+
    erreur=0
    FICHES=`mktemp_`
    let NB_FICHES=0
@@ -547,6 +553,7 @@ add_test_case_from_validation()
       fi
    done
    rm -f $FICHES
+   touch $check_all_forms_file
 }
 ###################
 # Debut du script #
