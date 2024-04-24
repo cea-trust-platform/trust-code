@@ -51,7 +51,7 @@ class PbDescription(GenericSection):
                     figure = Figure(verbose=self.verbose, output=self.gestMsg)
                     figure.lireParametres(fichier)
                     self.listeFigures.append(figure)
-                    print(self.listeFigures)
+                    #print(self.listeFigures)
                 elif motcle=='geometrie':
                     verifie_accolade_suivante(ligne,fichier,self.gestMsg)
                     sousChapitre = SousChapitre(verbose=self.verbose, output=self.gestMsg)
