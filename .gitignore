@@ -24,6 +24,7 @@ make.lock
 .ipynb_checkpoints/
 instancie_src_*.cpp
 src/**/CMakeLists.txt
+src/MAIN/instancie_appel*
 *.swp
 .idea/
 
