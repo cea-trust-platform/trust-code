@@ -50,7 +50,7 @@ then
 else
     echo "  TRUST not configured with EOS. Cleaning include/EOS ..."
     echo "#undef HAS_EOS" > $TRUST_TMP/eos++.h.tmp
-    [ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf EOS/* && cp $TRUST_TMP/eos++.h.tmp EOS/eos++.h
+    [ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf EOS/* && cat $TRUST_TMP/eos++.h.tmp > EOS/eos++.h
     rm $TRUST_TMP/eos++.h.tmp
 fi
 
@@ -75,7 +75,8 @@ then
 else
     echo "  TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
     echo "#undef HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
-    [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CoolProp/* && cp $TRUST_TMP/coolprop++.h.tmp CoolProp/coolprop++.h
+    [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CoolProp/* && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h
+    rm $TRUST_TMP/coolprop++.h.tmp
 fi
 
 # Kokkos tag:
@@ -87,8 +88,9 @@ else
 fi
 #    Update only if different than existing to avoid re-compilation at each configure:
 if [ ! -f $kokkos_hdr ] || diff $kokkos_hdr $TRUST_TMP/kokkos++.h 1>/dev/null; then
-    cp $TRUST_TMP/kokkos++.h $kokkos_hdr
+    cat $TRUST_TMP/kokkos++.h > $kokkos_hdr
 fi
+rm $TRUST_TMP/kokkos++.h
 
 # current dir is $TRUST_ROOT/include:
 for finc in `find ../src -type f -name "*.h" -or -name "*.tpp" -or -name "*.hpp"`; do

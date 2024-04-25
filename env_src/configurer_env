@@ -1609,6 +1609,8 @@ else
    fi
    m="# Path to mpirun command"; e="Mpirun=\"$Mpirun\" && export Mpirun"; ecrit $m"|"$e"|"$env
    m="# COMM variable"; e="COMM=\"$COMM\" && export COMM"; ecrit $m"|"$e"|"$env
+   # ND : j'ajoute le rm ici car sinon trop de reps dans $TRUST_TMP
+   rm -rf $rep_test_mpi
 fi
 ###########
 # Fin MPI #

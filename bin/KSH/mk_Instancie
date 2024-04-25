@@ -20,7 +20,7 @@ then
 # (main is handled in Createcmakefile.py #
 #######################
    # No .h file, nothing to do, exit:
-   ls *.h 1>/dev/null 2>&1 || exit 0
+   [ "`ls *.h 1>/dev/null 2>&1; echo $?`" != "0" ] && rm -r -f $tmp && exit 0
 
    ROOT=$org
    while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
