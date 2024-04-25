@@ -632,7 +632,7 @@ do
    LIBS="" && [ `uname -s` = Darwin ] && LIBS=--LIBS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
    export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
-   cp ../configure.help $DIR
+   cp ../configure.help $PETSC_ROOT/
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
    # en etudiant ce qu'il y'a dans ./$CONFIG
    # On prend with-errorchecking=1 meme en optimise (ne degrade pas les performances)
@@ -655,7 +655,7 @@ do
    $with_64bit_indices \
    $options
    err=$?
-   log=$DIR/configure_$PETSC_ARCH.log
+   log=$PETSC_ROOT/$PETSC_ARCH/configure_$PETSC_ARCH.log
    cp configure.log $log
    echo "Created $log"
    [ $err != 0 ] && exit $?

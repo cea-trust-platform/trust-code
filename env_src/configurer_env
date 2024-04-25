@@ -514,6 +514,9 @@ then
    rm -f $TRUST_ROOT/src/MAIN/instancie_appel*
    rm -f $(find $TRUST_ROOT/src -name CMakeLists.txt)
    rm -f $(find $TRUST_ROOT/Validation/Rapports_automatiques -name .form.md5sum)
+   rm -f $(find $TRUST_ROOT/src -name .check_sources.ok)
+   rm -f $TRUST_ROOT/Validation/Rapports_automatiques/.check_of_all_validation_forms
+   rm -rf $(find $TRUST_ROOT/Validation -name build)
    exit 0
 else
    rm -f prog.log
@@ -2449,13 +2452,13 @@ echo "File Cmake.env created."
 cd $TRUST_ROOT/bin
 
 # Update/create instancie_xxx files - MAIN must be done last!!
-echo -n "Updating instancie_xxx files... "
+echo $ECHO_OPTS "Updating instancie_xxx files..."
 for ze_dir in `find $TRUST_ROOT/src -type d -not -wholename $TRUST_ROOT/src/MAIN -not -wholename $TRUST_ROOT/src`
 do
    (cd $ze_dir; mk_Instancie) #&   # Go parallel crash on mezel
 done
 (cd $TRUST_ROOT/src/MAIN; mk_Instancie)
-echo "done."
+echo $ECHO_OPTS "done."
 
 # Mise a jour du fichier $TRUST_ENV/Cmake.libs
 ./mklibs

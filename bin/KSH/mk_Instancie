@@ -86,14 +86,14 @@ then
 
    if [ ! -f instancie_appel.h ] || [ "`diff instancie_appel.h $tmp/instancie_appel.h`" != "" ]
    then
-      echo "Fichier instancie_appel.h modifie:"
-      [ -f instancie_appel.h ] && diff instancie_appel.h $tmp/instancie_appel.h
+      echo "   File instancie_appel.h updated/created"
+      #[ -f instancie_appel.h ] && diff instancie_appel.h $tmp/instancie_appel.h
       cat $tmp/instancie_appel.h > instancie_appel.h
    fi
    if [ ! -f instancie_appel_c.h ] || [ "`diff instancie_appel_c.h $tmp/instancie_appel_c.h`" != "" ]
    then
-      echo "Fichier instancie_appel_c.h modifie:"
-      [ -f instancie_appel_c.h ] && diff instancie_appel_c.h $tmp/instancie_appel_c.h
+      echo "   File instancie_appel_c.h updated/created"
+      #[ -f instancie_appel_c.h ] && diff instancie_appel_c.h $tmp/instancie_appel_c.h
       cat $tmp/instancie_appel_c.h > instancie_appel_c.h
    fi
 fi

@@ -6,3 +6,4 @@ rm -rf */local/ */build
 rm -f */liste_pb
 rm -f basic_rapport/share/Validation/Rapports_automatiques/test_rapport*/.form.md5sum
 rm -rf basic_rapport/tests/Reference/Validation/test_rapport_*
+rm -f $( find . -name .check_of_all_validation_forms)

@@ -48,6 +48,7 @@ Outils/TRIOXDATA/XTriou/traces
 Outils/TRIOXDATA/XTriou/triou.py
 Outils/TRIOXDATA/XTriou/update_xd
 Outils/TRIOXDATA/XTriou/TRAD_2.mod
+Outils/trustpy/install/
 
 # ICoCo
 Outils/ICoCo/ICoCo_src/README.BALTIK
@@ -97,6 +98,7 @@ Outils/VisIt/visit-install3_3_0/
 ThirdPart/src/LIBROCALUTION/rocALUTION/
 Outils/valgrind/configure.help
 Outils/valgrind/valgrind-3.18.1/
+Outils/Gmsh/fltk/
 
 # VisIt installed version
 Outils/VisIt/src/*.tar.gz
