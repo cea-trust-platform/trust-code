@@ -32,6 +32,6 @@ cp patch/makefile SPARSKIT2/makefile && echo SPARSKIT2/makefile modifie
 cd SPARSKIT2
 $TRUST_MAKE || exit -1
 cd ..
-rm -r -f SPARSKIT2
 [ "$TRUST_BUILD_IN_TMP" = "1" ] && rm -rf $build_dir
+rm -r -f SPARSKIT2
 exit
