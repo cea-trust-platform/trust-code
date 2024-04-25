@@ -758,5 +758,5 @@ if [ $TRUST_WITHOUT_DOC -eq 1 ]
 then
    (cd $PETSC_ROOT/$TRUST_ARCH"_opt" ; rm -rf docs share src)
 fi
-
+[ "$TRUST_BUILD_IN_TMP" = "1" ] && rm -rf $build_dir
 exit 0

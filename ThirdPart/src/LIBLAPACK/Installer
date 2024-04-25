@@ -165,4 +165,5 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
+[ "$TRUST_BUILD_IN_TMP" = "1" ] && rm -rf $build_dir
 exit 0

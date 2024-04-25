@@ -19,6 +19,7 @@ cree_syno()
           echo -n \"$mottrio"\":\""$new"\"", >> $TRUST_TMP/syno.py
        done
        echo "}" >> $TRUST_TMP/syno.py
+       rm -f existepas.stop
     else
        echo "Pas de fichier hierarchie.dump genere !"
     fi
@@ -30,7 +31,8 @@ cree_syno $exec
 if [ -f $TRUST_TMP/syno.py ] 
 then
    # Mise a jour eventuelle de syno.py
-   diff $TRUST_TMP/syno.py syno.py 1>/dev/null 2>&1 || cp $TRUST_TMP/syno.py syno.py
+   diff $TRUST_TMP/syno.py syno.py 1>/dev/null 2>&1 || cat $TRUST_TMP/syno.py > syno.py
+   rm -f $TRUST_TMP/syno.py
 fi
 exit 0
 
