@@ -203,23 +203,15 @@ inline void TRUSTVect<_TYPE_>::resize_tab(int n, RESIZE_OPTIONS opt)
   resize(n, opt);
 }
 
-//  voir ArrOfDouble/Int::ref_data(). (cree un tableau sans structure parallele)
+/*! See TRUSTArray::ref_data().
+ * Create an array without any parallel structure.
+ */
 template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
+inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int size)
 {
-  if (new_size<0)
-    {
-      new_size=-new_size;
-      if (ptr[new_size]!=((std::is_same<_TYPE_,int>::value) ? 123456789 : 123456789.123456789 ))
-        {
-          Cerr << "size in ad" << ptr[new_size]<< " "<<new_size<<finl;
-          assert(0);
-          Process::exit();
-        }
-    }
   md_vector_.detach();
-  TRUSTArray<_TYPE_>::ref_data(ptr, new_size);
-  size_reelle_ = new_size;
+  TRUSTArray<_TYPE_>::ref_data(ptr, size);
+  size_reelle_ = size;
   line_size_ = 1;
 }
 
