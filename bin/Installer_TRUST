@@ -469,7 +469,6 @@ then
 fi
 echo | tee -a $LOG
 source $TRUST_ROOT/env_TRUST.sh
-mklibs >> $LOG
 
 # Message de detection :
 [ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST" | tee -a $LOG
@@ -584,10 +583,7 @@ echo | tee -a $LOG
 echo "**************************" | tee -a $LOG
 echo "HOW TO INITIALIZE TRUST ?:" | tee -a $LOG
 echo "**************************" | tee -a $LOG
-echo "Add the following lines in your $HOME/.profile or $HOME/.bashrc file:" | tee -a $LOG
-echo "# TRUST environment:" | tee -a $LOG
-echo "export TRUST_ROOT=$TRUST_ROOT" | tee -a $LOG
-echo "source \$TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1" | tee -a $LOG
+echo "export TRUST_ROOT=$TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1" | tee -a $LOG
 cd $ROOT
 echo  | tee -a $LOG
 echo "********************" | tee -a $LOG
@@ -596,12 +592,7 @@ echo "********************" | tee -a $LOG
 #echo $ECHO_OPTS "[Fast] Run the command 'trust -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
 echo $ECHO_OPTS "[Fast] Run the command 'trust -check Kernel', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
 echo $ECHO_OPTS "[Long] Run the command 'trust -check all', if you want to check the TRUST binary on test cases. It may take several hours." | tee -a $LOG
-echo  | tee -a $LOG
-echo "**********************************" | tee -a $LOG
-echo "HOW TO BUILD TRUST IN DEBUG MODE?" | tee -a $LOG
-echo "**********************************" | tee -a $LOG
-echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
-echo $ECHO_OPTS "make debug" | tee -a $LOG
+echo $ECHO_OPTS "[Fast using ctest] Run the command 'trust -ctest all', if you want to check the TRUST binary using ctest (not adapted for clusters).\n" | tee -a $LOG
 echo  | tee -a $LOG
 echo "************************" | tee -a $LOG
 echo "HOW TO RE-BUILD TRUST ?" | tee -a $LOG
@@ -609,8 +600,9 @@ echo "************************" | tee -a $LOG
 echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
 echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
 echo $ECHO_OPTS "./configure -help   # Then check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
+echo $ECHO_OPTS "./configure \$OPTIONS" | tee -a $LOG
 echo $ECHO_OPTS "source env_TRUST.sh # Initialize the new environment" | tee -a $LOG
-echo $ECHO_OPTS "make clean;make     # Then clean and rebuild TRUST" | tee -a $LOG
+echo $ECHO_OPTS "make     # rebuild TRUST" | tee -a $LOG
 echo | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "HOW TO USE TRUST ?" | tee -a $LOG

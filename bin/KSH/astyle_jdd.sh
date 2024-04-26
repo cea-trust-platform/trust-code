@@ -45,7 +45,8 @@ do
 	 sed -i "s?//?#?g" $tmp
 	 sed -i "s?twoslashes?//?g" $tmp
 	 sed -i "s?ascii_fieldsplit?ascii:fieldsplit?g" $tmp
-	 cp $tmp $file
+	 cat $tmp > $file
+	 rm $tmp
       fi
    fi
 done

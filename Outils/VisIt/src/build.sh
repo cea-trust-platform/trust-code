@@ -14,8 +14,8 @@ clean()
       [ -d ${paquet%.tar.xz} ] && rm -r -f ${paquet%.tar.xz}
       rm -f $paquet
    done
-   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
-   rm -f build_visit2_5_2* build_visit*help
+   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-src* llvm-* clang*
+   rm -f build_visit*help
    rm -f build_visit*"_log" *.cmake *.conf tmp* *.py releases
    rm -f visit-install
    echo "OK"

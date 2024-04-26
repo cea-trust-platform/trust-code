@@ -504,7 +504,7 @@ then
    cd $TRUST_ROOT
    rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir* $TRUST_ROOT/build
    rm -f $TRUST_ROOT/configure.log
-   rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log $TRUST_ROOT/License.txt_*
+   rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log
    rm -f $TRUST_ROOT/.toto
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
@@ -513,10 +513,17 @@ then
    rm -f $(find $TRUST_ROOT/src -name instancie_src_*)
    rm -f $TRUST_ROOT/src/MAIN/instancie_appel*
    rm -f $(find $TRUST_ROOT/src -name CMakeLists.txt)
-   rm -f $(find $TRUST_ROOT/Validation/Rapports_automatiques -name .form.md5sum)
    rm -f $(find $TRUST_ROOT/src -name .check_sources.ok)
+   # on efface aussi les fichiers ignores et log
+   rm -f $(find $TRUST_ROOT/Validation/Rapports_automatiques -name .form.md5sum)
    rm -f $TRUST_ROOT/Validation/Rapports_automatiques/.check_of_all_validation_forms
    rm -rf $(find $TRUST_ROOT/Validation -name build)
+   rm -rf $(find $TRUST_ROOT/Validation -name Run.log)
+   rm -f $(find $TRUST_ROOT/Outils/VisIt/ -name visit-install"*" | grep -v 3_3_3)
+   rm -f $TRUST_ROOT/doc/TRUST/exercices/Tutorial_solutions/Tutorial_solutions.pdf
+   rm -f $TRUST_ROOT/doc/TRUST/Tutorial/*_tutorial.pdf
+   rm -f $TRUST_ROOT/Outils/TRIOXDATA/test_complet/lance_test_modif
+
    exit 0
 else
    rm -f prog.log
@@ -1832,7 +1839,7 @@ case $TRUST_ARCH_CC in
 	[ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
         SYSLIBS=$SYSLIBS" ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}" # Librairie GTL necessaire pour activer GPU-Direct
         F77Flags="-O3 -fPIC"
-        F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
+        F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
         ccFLAGS="-O3 -fPIC"
@@ -2311,6 +2318,8 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    CppFlags=`echo $CppFlags | sed "1,$ s?-O[0-9]?-g -O0?g"`
    ### Sur gcc >= 11, -g utilise dwarf5 qui empeche addr2line des versions < 2.35.2 de binutils de convertir les adresses des binaires en numero ligne du code source
    [[ $(echo $TRUST_VERSION_GNU | cut -d '.' -f 1) -ge 11 ]] && CppFlags=${CppFlags/-g /-gdwarf-4 }
+   ### sur Adastra-gpu avec crayftn, il faut passer -O0 sinon make debug passe pas( _dger_ undefined reference dans dlsode.f)
+   [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && F77Flags=`echo $F77Flags | sed "1,$ s?-g?-g -O0?g"`
    #############################
    # Creation du fichier profile
    #############################

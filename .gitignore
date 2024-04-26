@@ -56,8 +56,6 @@ Outils/ICoCo/ICoCo_src/README.BALTIK
 Outils/ICoCo/ICoCo_src/configure
 Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh
 Outils/ICoCo/ICoCo_src/full_env_MEDICoCo.sh
-Outils/Python_modules/distribute-0.6.28/
-Outils/Python_modules/distribute-0.7.3/
 Outils/ICoCo/ICoCo_src/share/swig/install/
 Outils/ICoCo/ICoCo_src/.tests_ICoCo_opt.html
 Outils/ICoCo/ICoCo_src/ICoCo
@@ -82,6 +80,7 @@ src/Readme_eclipse.pdf
 doc/TRUST/Tutorial/ICoCo_tutorial.pdf
 doc/TRUST/Tutorial/TRUST_tutorial.pdf
 doc/TRUST/Tutorial/Baltik_tutorial.pdf
+doc/TRUST/exercices/Tutorial_solutions/Tutorial_solutions.pdf
 doc/tmp
 doc/tmp_files
 
