@@ -17,7 +17,7 @@ all: $(trg)
 OPT=_opt
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
  
-$(trg): $(tools_src)/CMakeLists.txt $(tools_src)/tools/CMakeLists.txt $(tools_src)/scripts/CMakeLists.txt $(tools_src)/build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a $(SRCS)
+$(trg): $(tools_src)/CMakeLists.txt $(tools_src)/tools/CMakeLists.txt $(tools_src)/scripts/CMakeLists.txt $(tools_src)/build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a $(SRCS) $(EXTRA_SRCS)
 	(cd $(tools_src);env TRUST_DEFINES="$(Defines)" EXTRA_SRCS="$(EXTRA_SRCS)" ./build.sh)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata_tools/bin/lata_analyzer .)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata_tools/bin/compare_lata .)
