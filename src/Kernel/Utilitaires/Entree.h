@@ -93,7 +93,6 @@ public:
 
   inline operator istream& () { return get_istream(); }
   inline istream& putback(char ch) { return get_istream().putback(ch); }
-  inline istream& ignore(int n = 1, int delim = EOF) { return get_istream().ignore(n, delim); }
   inline int get_diffuse() { return diffuse_; }
 
   virtual void set_diffuse(int diffuse);
