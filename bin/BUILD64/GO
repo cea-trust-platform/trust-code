@@ -36,6 +36,7 @@ sed -i "s/long spacedim;/int spacedim;/" Outils/lata_tools/src/trust_commun/Lata
 sed -i "s/vector<pair< long, long > > iters= MEDCoupling::GetFieldIterations(ltypes\[t\],filename,meshname.getString(),fields\[i\].c_str());/vector<pair< int, int > > iters= MEDCoupling::GetFieldIterations(ltypes[t],filename,meshname.getString(),fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields\[i\].c_str());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,\/\*meshname,\*\/fields[i].c_str());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
 sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());/" Outils/lata_tools/src/trust_commun/LataDBmed.h
+sed -i "s/%d/%ld/g" Outils/lata_tools/src/tools/compare_lata.cpp
 
 #
 # TRUST src

@@ -27,13 +27,14 @@ if [ "x$exec" == "x$exec_debug" ]; then
    echo "lata_tools will be built in DEBUG mode!!"
    build_mode="Debug" 
 fi
-if [ "$TRUST_CC_BASE_EXTP" != "" ]
+if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "`basename $TRUST_CC_BASE`" != crayCC ] # Sur adastra GNU ici ne marche pas... tout comme medcoupling
 then
    export OMPI_CXX=$TRUST_CC_BASE_EXTP
    export OMPI_CC=$TRUST_cc_BASE_EXTP
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
-fi 
+fi
+[ "`basename $TRUST_CC_BASE`" != crayCC ] && export CXXFLAGS="-Wno-inconsistent-missing-override" # to suppress warnings from medcoupling
 
 # CMake option + implicit use of TRUST_DEFINES and EXTRA_SRCS env var:
 cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc " 
