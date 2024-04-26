@@ -160,8 +160,8 @@ class Base_common_Tru(object):
 
   def _checkToken(self, key, expec, typ=str):
     """ Used in toDatasetTokens() method: consider the following:
-      - a dataset has been loaded in Python: while doing so the original tokens are stored in self.tokens
-      - a value is modified in the data (for ex: "ds.get("sch").tmax = 23") -> at this point the underyling value in self.token
+      - a dataset has been loaded in Python: while doing so the original tokens are stored in self._tokens
+      - a value is modified in the data (for ex: "ds.get("sch").tmax = 23") -> at this point the underyling value in self._tokens
       still contains what was initially read!
      So this method checks whether the value stored in the token (as a string) is consistent with the actual value of the attribute.
     """
@@ -179,13 +179,10 @@ class Base_common_Tru(object):
     def no_tru_low(s):
       # Class name without the "_Tru"
       return s[:-_LEN_TRIOU_SUFFIX].lower()
+
     if self._read_type:
-      cls = self.__class__
-      expec = [cls.__name__] + cls._synonyms
-      for e in expec:
-        v = no_tru_low(e)
-        if self._checkToken("cls_nam", v):
-          return self._tokens["cls_nam"].orig()
+      if not self._checkToken("cls_nam", ""):  # The class name is not the empty string
+        return self._tokens["cls_nam"].orig()
       return [" " + no_tru_low(cls.__name__)]
     return []
 
@@ -457,6 +454,15 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
     return invert_syno
 
   @classmethod
+  def HandleUnexpectedAttribute(cls, stream, tok, nams, ret):
+    """ Error handler when encountering an unexpected attribute for a keyword with curly braces.
+    By default we raise, but in some specific cases (see problem_read_generic in trust_hacks.py for example)
+    we might actually parse further.
+    """
+    err = cls.GenErr(stream, f"Unexpected attribute '{tok}' in keyword '{nams}'")
+    raise ValueError(err) from None
+
+  @classmethod
   def _ReadFromTokens_braces(cls, stream):
     """ Read from a stream of tokens using the key/value syntax of TRUST keyword, i.e. keywords
     using opening and closing braces.
@@ -470,10 +476,10 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
     ret._tokens["{"] = stream.lastReadTokens()
 
     # Identify mandatory attributes:
-    attr_ok = {}
+    ret._attr_ok = {}   # Append a temporay working attribute (starting with '_')
     for attr_nam, _ in cls._attributesList:
       if not cls.IsOptional(attr_nam):
-        attr_ok[attr_nam] = False  # False="was not read yet"
+        ret._attr_ok[attr_nam] = False  # False="was not read yet"
     tok = stream.probeNextLow()
     while tok != "}":
       stream.validateNext()
@@ -497,14 +503,13 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
         if attr_cls._plainType: attr_cls._infoMain = []
         cls._Dbg(f"@FUNC@ setting attribute '{attr_nam}' with val '%s'" % str(val))
         ret.__setattr__(attr_nam, val)
-        if attr_nam in attr_ok:
-          attr_ok[attr_nam] = True
+        if attr_nam in ret._attr_ok:
+          ret._attr_ok[attr_nam] = True
       else:
-        err = cls.GenErr(stream, f"Unexpected attribute '{tok}' in keyword '{nams}'")
-        raise ValueError(err) from None
+        cls.HandleUnexpectedAttribute(stream, tok, nams, ret)
       tok = stream.probeNextLow()
     # Have we parsed all mandatory attributes?
-    for k, v in attr_ok.items():
+    for k, v in ret._attr_ok.items():
       if not v:
         err = cls.GenErr(stream, f"Attribute '{k}' is mandatory for keyword '{nams}' and was not read", attr=k)
         raise ValueError(err) from None
@@ -851,7 +856,7 @@ class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
   def toDatasetTokens(self):
     """ Override. See doc in mother class. """
     ret = []
-    dft_com = TRUSTTokens(orig=[" ,\n"])
+    dft_com = TRUSTTokens(orig=[" ,\n"])  # Default token for comma if none was provided
     if self.MustReadSize():  # if size must be read, it must be written out too ...
       self._extendWithSize(ret)
     if self.WithBraces():

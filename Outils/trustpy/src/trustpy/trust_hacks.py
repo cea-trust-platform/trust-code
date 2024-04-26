@@ -99,3 +99,65 @@ try:
   listeqn_Tru.toDatasetTokens = toDSToken_hack
 except:
   pass
+
+#
+# Specificities for FT problems, and all generic problems which may contain an arbitrary number of equations after the
+# other medium/constituants attributes:
+# (see for example dataset in Trio: tests/Reference/Multiphase/Front_tracking_discontinu/Front_tracking_discontinu/Rotation_IBC_3D_Reaction_M1)
+#
+
+# 1. Add a hidden attribute to store the list of equations:
+for c in packagespy_classes:
+  if issubclass(c, problem_read_generic_Tru):
+    c._attributesList.append(('liste_equations', 'listeqn_Tru'))
+
+# 2. Override the behavior happening when we encounter an unknown attribute to see if this
+# actually corresponds to one of the equation added. If so add this equation to the hidden list.
+@classmethod
+def HandleUnexpectedAttribute_pb_generic(cls, stream, tok, nams, ret):
+  # Check provided name is in the list of 'solved_equations'
+  slv_eq = {}
+  slv_eq_att = []
+  # This attribute might not exist if user forgot block "solved_equations"!
+  try:     slv_eq_att = ret.solved_equations
+  except:  pass
+  for two_words in slv_eq_att:
+    slv_eq[two_words.mot_2] = two_words.mot_1
+  if tok not in slv_eq:
+    err = cls.GenErr(stream, f"Unexpected attribute or equation alias '{tok}' in keyword '{nams}'")
+    raise ValueError(err) from None
+  # Save the full description of the token that brought us here (=the equation alias):
+  tok_full = stream.lastReadTokens()
+  # At least one equation has been read:
+  ret._attr_ok['liste_equations'] = True
+  # Now parse the coming block as an equation of the proper type:
+  eq_cls_nam = slv_eq[tok] + "_Tru"
+  nam = cls._GetBaseClassName(eq_cls_nam)
+  ze_cls = CLFX.getXyzClassFromName(nam)
+  cls._Dbg(f"@FUNC@ About to ReadFromTokens class '{eq_cls_nam}' alias '{tok}'")
+  obj = ze_cls.ReadFromTokens(stream)
+  # Hack the tokens so that when the equation will be written out again,
+  # the alias will be used instead of the class name ...
+  obj._tokens['cls_nam'] = tok_full
+  # Create the list attribute itself if not there (first equation read typically):
+  try:
+    ret.liste_equations
+  except:
+    leqn_cls = CLFX.getXyzClassFromName("listeqn_Tru")
+    ret.liste_equations = leqn_cls()
+    # Make sure the equation list will appear at the right place:
+    ret._attrInOrder.append("liste_equations")
+    # Hack the tokens for the attribute itself:
+    #  - the attribute name ('liste_equations') should not be written
+    #  - nor the braces '{' and '}'
+    ret._tokens["liste_equations"] = TRUSTTokens()
+    def dummyGetBrace(br):
+      return ""
+    ret.liste_equations._getBraceTokens = dummyGetBrace
+  # Append equation instance in this list:
+  ret.liste_equations.append(obj)
+
+try:
+  problem_read_generic_Tru.HandleUnexpectedAttribute = HandleUnexpectedAttribute_pb_generic
+except:
+  pass
