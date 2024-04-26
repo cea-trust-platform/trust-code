@@ -34,7 +34,9 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
@@ -107,7 +109,9 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left_size = 1, one_bloc[2];
   const int *bloc_ptr;
@@ -321,7 +325,9 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
@@ -489,7 +495,9 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
@@ -564,6 +572,7 @@ template float local_operations_vect_bis_generic<float, TYPE_OPERATION_VECT_BIS:
 template <typename _TYPE_>
 void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
 {
+#ifndef LATATOOLS
   _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : (std::is_same<_TYPE_,float>::value) ? -987654.321f : -987654.321 ;
 
   const MD_Vector& md = resu.get_md_vector();
@@ -587,6 +596,7 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
   if (timer) end_gpu_timer(kernelOnDevice, "invalidate_data(x)");
+#endif
 }
 // FIN code pour debug
 // ==================================================================================================================================
@@ -606,7 +616,9 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size && vy.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;

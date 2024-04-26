@@ -183,7 +183,9 @@ inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, RESIZE_OPTIONS opt)
   assert(&v != this); // Il faut avoir fait le test avant !
   // Si le vecteur a deja une structure parallele, la copie n'est autorisee que si
   // le vecteur source a la meme structure. Si ce n'est pas le cas, utiliser inject_array() pour copier uniquement les valeurs, ou faire d'abord reset() si on veut ecraser la structure.
+#ifndef LATATOOLS
   assert((!md_vector_.non_nul()) || (md_vector_ == v.md_vector_));
+#endif
   TRUSTArray<_TYPE_>::resize_array_(v.size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   if (v.isDataOnDevice()) allocateOnDevice(*this); // Alloue de la memoire sur le device si v est deja alloue sur le device
   if (opt != RESIZE_OPTIONS::NOCOPY_NOINIT)
