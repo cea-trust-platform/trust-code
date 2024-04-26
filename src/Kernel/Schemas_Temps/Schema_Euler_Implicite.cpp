@@ -70,6 +70,7 @@ void Schema_Euler_Implicite::calcul_fac_sec(double& residu,double& residu_old,do
     {
       facsec_fn_.setVar(0, temps_courant());
       facsec = facsec_fn_.eval();
+      facsec=std::min(facsec,facsec_max_);
     }
   else if ((residu_old>rapport_residus_*residu)||(nb_ite_sans_accel_>nb_ite_sans_accel_max_))
     {
@@ -105,7 +106,6 @@ void Schema_Euler_Implicite::set_param(Param& param)
   // XD attr facsec_max floattant facsec_max 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
   // XD attr rapport_residus floattant rapport_residus 1 Ratio between the residual at time n and the residual at time n+1 above which the facsec is increased by multiplying by sqrt(rapport_residus) (1.2 by default).
   // XD attr nb_ite_sans_accel_max entier nb_ite_sans_accel_max 1 Maximum number of iterations without facsec increases (20000 by default): if facsec does not increase with the previous condition (ration between 2 consecutive residuals too high), we increase it by force after nb_ite_sans_accel_max iterations.
-  // XD attr expression chaine expression 1 Definition of facsec as a function of time.
 }
 
 int Schema_Euler_Implicite::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -154,7 +154,6 @@ Entree& Schema_Euler_Implicite::lire_facsec(Entree& is)
       facsec_mots[1]="facsec_max";
       facsec_mots[2]="rapport_residus";
       facsec_mots[3]="nb_ite_sans_accel_max";
-      facsec_mots[4]="expression";
       is >> m;
       while(m!="}")
         {
@@ -173,13 +172,6 @@ Entree& Schema_Euler_Implicite::lire_facsec(Entree& is)
             case 3:
               is >> nb_ite_sans_accel_max_;
               break;
-            case 4:
-              {
-                Nom facsec_str;
-                is >> facsec_str;
-                lire_facsec_func(facsec_str);
-                break;
-              }
             default :
               {
                 Cerr<<" We do not understand "<<m <<"in Schema_Euler_Implicite::lire_facsec"<<finl;
@@ -194,6 +186,18 @@ Entree& Schema_Euler_Implicite::lire_facsec(Entree& is)
     lire_facsec_func(m);
   return is;
 }
+
+void Schema_Euler_Implicite::lire_facsec_func(Nom& facsec_str)
+{
+  facsec_fn_.setNbVar(1);
+  facsec_fn_.setString(facsec_str);
+  facsec_fn_.addVar("t");
+  facsec_fn_.parseString();
+  facsec_ = facsec_fn_.eval();
+  if(facsec_str.majuscule().contient("T"))
+    facsec_func_ = true;
+}
+
 
 bool Schema_Euler_Implicite::initTimeStep(double dt)
 {

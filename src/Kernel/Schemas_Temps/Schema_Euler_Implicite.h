@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,9 +70,12 @@ public :
   inline void completer(void) override { } ;
   int resolution_monolithique(const Nom& nom) const;
   Entree& lire_facsec(Entree&) override;
+  void lire_facsec_func(Nom&);
   void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_);
 
 protected:
+  Parser_U facsec_fn_;           // parser to set facsec as a function of time
+  bool facsec_func_ = false;                      // is the facsec a function of time (true) or a constant (false)
   int nb_ite_max = 200;
   double residu_old_ = 0, facsec_max_ = DMAXFLOAT;
   int nb_ite_sans_accel_ = -1;

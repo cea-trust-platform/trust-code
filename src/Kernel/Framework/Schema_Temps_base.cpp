@@ -70,12 +70,6 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
       dt_max_fn_.setVar(0, temps_courant());
       dt_max_ = dt_max_fn_.eval();
     }
-  // reevaluation de facsec_ si fonction du temps
-  if(facsec_func_)
-    {
-      facsec_fn_.setVar(0, temps_courant());
-      facsec_ = facsec_fn_.eval();
-    }
   is_stop=false;
   // Correction en premier du pas de temps
   double dt = dt_stab_;
@@ -477,23 +471,9 @@ Entree& Schema_Temps_base::lire_residuals(Entree& is)
 
 Entree& Schema_Temps_base::lire_facsec(Entree& is)
 {
-  Nom facsec_str;
-  is >> facsec_str;
-  lire_facsec_func(facsec_str);
+  is >> facsec_;
   return is;
 }
-
-void Schema_Temps_base::lire_facsec_func(Nom& facsec_str)
-{
-  facsec_fn_.setNbVar(1);
-  facsec_fn_.setString(facsec_str);
-  facsec_fn_.addVar("t");
-  facsec_fn_.parseString();
-  facsec_ = facsec_fn_.eval();
-  if(facsec_str.majuscule().contient("T"))
-    facsec_func_ = true;
-}
-
 
 /*! @brief Constructeur par defaut d'un schema en temps.
  *
@@ -540,7 +520,6 @@ Schema_Temps_base::Schema_Temps_base()
   disable_dt_ev_ = 0;
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
-  facsec_func_ = false;
 }
 
 

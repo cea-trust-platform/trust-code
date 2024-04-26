@@ -7,7 +7,7 @@ Release notes version 1.9.4_beta : Enhancements, modifications and corrected bug
 10/04/24 (TRUST) New feature  : Add series of problems XXX_Cloned_Concenration & XXX_Cloned_Concenration_Turbulent that can be used to state only a single concentration equation in the .data but clone N equations. We assume here that the same BC are used. Possible to define different diffusion coefficients for each cloned equation.
 08/04/24 (TRUST) Keyword      : Keyword 'ecrire_fichier_xyz_valeur' is now used in a single block, with attributes 'dt', 'fields' and 'boundaries'
 20/03/24 (TRUST) New feature  : CoolProp and EOS can now be used with Dilatable flows problems
-07/03/24 (TRUST) New feature  : New syntax for facsec with Euler implicit scheme: more options allowed in datafile to monitor facsec behavior
+07/03/24 (TRUST) New feature  : New syntax available for facsec with Euler implicit scheme, more options allowed in datafile to monitor facsec behavior: facsec { [facsec_ini] [facsec_max] [rapport_residus] [nb_ite_sans_accel_max] }. It can also be a function of time, as follows: facsec expression(t)
 07/03/24 (TRUST) Keyword      : Obsolete syntax for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, and Sutherland (pre v1.8.4) is not accepted anymore.
 07/03/24 (TRUST) Keyword      : Obsolete syntax for Champ_Fonc_tabule (pre v1.8.4) is not accepted anymore. Syntax should be on the form Champ_fonc_tabule { pb field } nbcomp { table }
 07/03/24 (TRUST) Change       : EcritureLectureSpecial is forced to 0 for PolyMAC_P0 simulations; ie: for resuming a simulation, only binary sauv files are accepted for this discretization.
