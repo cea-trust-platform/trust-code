@@ -245,61 +245,15 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
   operator[](sz) = valeur;
 }
 
-/**  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
- */
-template<typename _TYPE_ /* double ou float */ >
-static True_int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
-{
-  const _TYPE_ x = *(const _TYPE_*)data1;
-  const _TYPE_ y = *(const _TYPE_*)data2;
-  if (x < y) return -1;
-  else if (x > y) return 1;
-  else return 0;
-}
-
-/**  Fonction de comparaison utilisee pour trier le tableau dans ArrOfInt::trier(). Voir man qsort
- */
-static True_int fonction_compare_arrofint_ordonner(const void * data1, const void * data2)
-{
-  const int x = *(const int*)data1;
-  const int y = *(const int*)data2;
-#ifndef INT_is_64_
-  return x - y;
-#else
-  if (x < y) return -1;
-  else if (x > y) return 1;
-  else return 0;
-#endif
-}
 
 /**  Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
  */
-/// \cond DO_NOT_DOCUMENT
-template <typename _TYPE_ /* double ou float */ >
+template <typename _TYPE_ >
 inline void TRUSTArray<_TYPE_>::ordonne_array()
 {
   checkDataOnHost();
-  const int size = size_array();
-  if (size > 1)
-    {
-      _TYPE_ * data = span_.data();
-      //  TODO: what's the difference with std::sort  (also in N.log(N))?
-      qsort(data, size, sizeof(_TYPE_), fonction_compare_arrofdouble_ordonner<_TYPE_>);
-    }
+  std::sort(span_.begin(), span_.end());
 }
-
-template <>
-inline void TRUSTArray<int>::ordonne_array()
-{
-  checkDataOnHost();
-  const int size = size_array();
-  if (size > 1)
-    {
-      int * data = span_.data();
-      qsort(data, size, sizeof(int), fonction_compare_arrofint_ordonner);
-    }
-}
-/// \endcond
 
 /**  Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
  */
