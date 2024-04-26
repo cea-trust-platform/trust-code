@@ -1365,6 +1365,10 @@ then
 fi
 echo>>$verif_log
 cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
+if [ $verif_error = 0 ]
+then
+   rm -rf $TRUST_TMP/Verifie_pere
+fi
 
 echo " "
 echo "------------------------------------------------------"
