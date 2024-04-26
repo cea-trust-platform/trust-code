@@ -707,8 +707,7 @@ void Statistiques::dump(const char * message, int mode_append)
   int max_nb_of_counters = (int) Process::mp_max(si.nb_counters);
   int is_comm =0; ///< Equal to 1 if the counter is a communication counter, 0 otherwise
 
-  char* theValue = getenv("STAT_PER_PROC_PERF_LOG"); ///< For calculation on a large number of processor, set the environment variable STAT_PER_PROC_PERF_LOG == 1 in order to print details per processor in the perf log file
-  if (theValue != nullptr)
+  if (Objet_U::stat_per_proc_perf_log)
     {
       print_local = 1 ;
     }

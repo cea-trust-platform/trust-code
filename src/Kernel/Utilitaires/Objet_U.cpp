@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ bool Objet_U::computeOnDevice=true;
 Interprete* Objet_U::l_interprete=0;
 
 int Objet_U::disable_TU=0; // Flag to disable or not the writing of the .TU files
-
+bool Objet_U::stat_per_proc_perf_log=false; // Flag to enable the writing of the statistics detailed per processor in _csv.TU file
 Type_info Objet_U::info_obj("Objet_U");
 
 // Permet de debugger en remontant a la creation d'un objet donne:

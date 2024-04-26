@@ -29,17 +29,8 @@ static const int GET_COMM_DETAILS = 1; ///< If equal to 1, enable to track the c
 
 class Statistiques
 {
-//private:
-
-
-
-  //static std::unordered_map<std::string, StatCntObject> ze_map_;
-
 public:
-// static void CreateCounter(std::string short_name, std::string long_name, int lvl)
-// {
-//   ze_map_[short_name] = StatCntObject();
-// }
+
   Statistiques();
   ~Statistiques();
   /*!@brief Function that change the debug level
