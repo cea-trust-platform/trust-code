@@ -389,16 +389,10 @@ then
       status=${PIPESTATUS[0]}
       if [ $status != 0 ]
       then
-         echo 'Problem of compiling -> try to suppress lib* of CmakeCache '
-         # on retire les librairies du cache
-         cmake . -Ulib*
-         $MAKE 2>&1 | tee -a $COMPILE
-         status=${PIPESTATUS[0]}
-         if [ $status != 0 ]
-         then
-            echo "BUILD_EXEC=KO" | tee -a $COMPILE && rm -f $exec_debug$opt && exit -1
-            break
-         fi
+         echo 'Problem of compiling, contact TRUST support team'
+         echo "BUILD_EXEC=KO" | tee -a $COMPILE
+         rm -f $exec_debug$opt
+         exit -1
       fi
    done
 
