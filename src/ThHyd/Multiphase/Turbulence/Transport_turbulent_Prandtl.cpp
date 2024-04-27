@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Transport_turbulent_Prandtl, "Transport_turbulent_Prandtl", Transport_turbulent_base);
+// XD type_diffusion_turbulente_multiphase_Prandtl type_diffusion_turbulente_multiphase_deriv Prandtl 1 Scalar Prandtl model.
 
 Sortie& Transport_turbulent_Prandtl::printOn(Sortie& os) const
 {
@@ -27,7 +28,7 @@ Sortie& Transport_turbulent_Prandtl::printOn(Sortie& os) const
 Entree& Transport_turbulent_Prandtl::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("Pr_t|Prandtl_turbulent", &prdl_);
+  param.ajouter("Pr_t|Prandtl_turbulent", &prdl_); // XD_ADD_P floattant Prandtl's model constant. By default it is se to 0.9.
   param.lire_avec_accolades_depuis(is);
 
   if (prdl_ < 0.) Process::exit("The turbulent Prandlt's number must be positive !");

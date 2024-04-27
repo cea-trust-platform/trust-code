@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Viscosite_turbulente_WALE, "Viscosite_turbulente_WALE", Viscosite_turbulente_base);
+// XD type_diffusion_turbulente_multiphase_wale type_diffusion_turbulente_multiphase_deriv wale 1 LES WALE type.
 
 Sortie& Viscosite_turbulente_WALE::printOn(Sortie& os) const { return os; }
 
@@ -28,7 +29,7 @@ Entree& Viscosite_turbulente_WALE::readOn(Entree& is)
 {
   mod_const_ = 0.5; // par default
   Param param(que_suis_je());
-  param.ajouter("cw", &mod_const_);
+  param.ajouter("cw", &mod_const_); // XD_ADD_P floattant WALE's model constant. By default it is se to 0.5.
   param.lire_avec_accolades_depuis(is);
 
   if (mod_const_ < 0.) Process::exit("The WALE's constant must be positive !");
