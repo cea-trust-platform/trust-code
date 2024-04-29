@@ -1053,7 +1053,6 @@ then
    echo $ECHO_OPTS "unit:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_debug\" monodir)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "opt_avx:\n\t@echo opt_avx target not available since TRUST v1.9.2" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && env TRUST_ENABLE_DOC_DOXYGEN=1 make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "validation:\n\t(source ./env_TRUST.sh && cd Validation/Rapports_automatiques && ./lance_tout)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
