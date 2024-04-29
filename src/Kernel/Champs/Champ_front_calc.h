@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ public:
   const Nom& nom_bord_oppose() const;
   const Equation_base& equation() const;
   const Milieu_base& milieu() const;
-  const Domaine_dis_base& domaine_dis() const;
+  const Domaine_dis_base& domaine_dis() const override;
   const Domaine_Cl_dis_base& domaine_Cl_dis() const;
   const Frontiere_dis_base& front_dis() const;
   inline void set_distant(int d) { distant_=d ; }

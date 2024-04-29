@@ -49,9 +49,6 @@ int Champ_front_instationnaire_base::initialiser(double temps, const Champ_Inc_b
     {
       les_valeurs[i].valeurs().resize(1,nb_comp());
     }
-  // ToDo remonter dans Champ_front
-  Gpoint_=valeurs(); // pour dimensionner
-  Gpoint_=0.;
   instationnaire_ = true;
   return 1;
 }
@@ -121,7 +118,6 @@ const DoubleTab& Champ_front_instationnaire_base::valeurs_au_temps(double temps)
  */
 int Champ_front_instationnaire_base::avancer(double temps)
 {
-
   // S"agit-il bien d'une avance en temps ?
   assert(temps>les_valeurs->temps());
 

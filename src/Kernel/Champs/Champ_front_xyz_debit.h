@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
   virtual void update_coeff(double temps) { };
   void mettre_a_jour(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override;
-  void set_temps_defaut(double temps);
+  virtual void set_temps_defaut(double temps) override;
   void fixer_nb_valeurs_temporelles(int nb_cases) override;
   void changer_temps_futur(double temps,int i) override;
   int avancer(double temps) override;

@@ -1644,19 +1644,26 @@ void Probleme_base::finir()
     sauver_xyz(1);
 }
 
+// ToDo: newParameter or newCalculation ?
 int Probleme_base::newParameter()
 {
   int index = 0;
-  LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques = this->Champs_front_Parametriques();
-  int size = Champs_front_Parametriques.size();
-  if (size)
+  for (int i = 0; i < nombre_d_equations(); i++)
     {
-      // Passe au champ_front_parametrique suivant:
-      for (int i=0; i<size; i++)
-        index = std::max(index, Champs_front_Parametriques(i)->newParameter());
+      const Equation_base& eq = equation(i);
+      const Conds_lim& condsLim = eq.domaine_Cl_dis().les_conditions_limites();
+      for (auto &condLim : condsLim)
+        {
+          const Cond_lim_base& la_cl_base = condLim.valeur();
+          if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front().valeur()))
+            {
+              const Champ_front_Parametrique& champ_front = ref_cast(Champ_front_Parametrique, la_cl_base.champ_front().valeur());
+              index = std::max(index, champ_front.newParameter());
+            }
+        }
     }
   LIST(REF(Champ_Parametrique))& Champs_Parametriques = this->Champs_Parametriques();
-  size = Champs_Parametriques.size();
+  int size = Champs_Parametriques.size();
   if (size)
     {
       // Passe au champ_parametrique suivant:
@@ -1673,9 +1680,15 @@ void Probleme_base::reinit(int calcul)
   Sortie_Fichier_base::newDirectory(calcul); // Cree un nouveau repertoire pour le prochain calcul
   schema_temps().reinit();
   // See Probleme_base_interface_proto::initialize_impl:
-  // ToDo: resetTime(0)
-  //preparer_calcul(); // ToDo change
-  schema_temps().initialize();
+  // See Probleme_base_interface_proto::resetTime_impl;
+  //resetTime(schema_temps().temps_init()); Non car strategie differente pour postraitement
+  double time = schema_temps().temps_init();
+  schema_temps().resetTime(time);
+  milieu().resetTime(time);
+  for (int i = 0; i < nombre_d_equations(); i++)
+    equation(i).resetTime(time);  // will also reset fields there
+
+  schema_temps().initialize(); // ToDo merge 3 calls reinit(), resetTime(), initialize()
   init_postraitements();
   initialized = true;
 }

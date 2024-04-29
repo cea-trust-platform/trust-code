@@ -43,7 +43,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
     {
       fic >> ch;
       champs_.add(ch);
-      Cerr << "[Parameter] Reading: " << ch.que_suis_je() << finl;
+      Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl;
       fic >> motlu;
     }
   // Associer au schema temps:
@@ -74,7 +74,7 @@ int Champ_Parametrique::newParameter()
       index_++;
       // ToDo ameliorer message avec les caracteristiques du champ
       Cerr << "================================================" << finl;
-      Cerr << "Mise a jour d'un parametre:" << champ() << finl;
+      Cerr << "[Parameter] Updating to: " << champ().valeur() << finl;
       Cerr << "================================================" << finl;
       return index_;
     }

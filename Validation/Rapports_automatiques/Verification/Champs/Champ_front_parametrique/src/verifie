@@ -1,0 +1,16 @@
+#!/bin/bash
+jdd=$1
+if [ $jdd = cfp ] || [ $jdd = Champ_front_parametrique_jdd1 ]
+then
+   exit 0 # La verification est faite au niveau de la fiche de validation
+fi
+echo "Checking results for $jdd.."
+# Verification que tout le monde est bien la:
+grep TRUST $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
+grep GEOM $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
+grep $jdd *.son 	1>/dev/null 2>&1 || exit -1 	# son
+grep temps $jdd.dt_ev 	1>/dev/null 2>&1 || exit -1 	# dt_ev
+# compare la derniere valeur de chaque sonde de sortie:
+compare_sonde cfp_OUT.son $jdd"_OUT".son -type statio || exit -1
+exit 0
+

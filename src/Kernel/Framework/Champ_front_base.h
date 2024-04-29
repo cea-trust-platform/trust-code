@@ -81,25 +81,25 @@ public:
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
   virtual void associer_fr_dis_base(const Frontiere_dis_base&);
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs() override;
-  inline const DoubleTab& valeurs() const override;
+  inline virtual DoubleTab& valeurs() override;
+  inline virtual const DoubleTab& valeurs() const override;
   virtual DoubleTab& valeurs_au_temps(double temps)=0;
   virtual const DoubleTab& valeurs_au_temps(double temps) const = 0;
-  inline const Frontiere_dis_base& frontiere_dis() const;
-  inline Frontiere_dis_base& frontiere_dis();
-  const Domaine_dis_base& domaine_dis() const;
+  virtual const Frontiere_dis_base& frontiere_dis() const;
+  virtual Frontiere_dis_base& frontiere_dis();
+  virtual const Domaine_dis_base& domaine_dis() const;
   virtual Champ_front_base& affecter_(const Champ_front_base& ch) = 0;
   virtual void fixer_nb_valeurs_temporelles(int nb_cases);
   virtual void mettre_a_jour(double temps);
   virtual void calculer_coeffs_echange(double temps);
   virtual void valeurs_face(int, DoubleVect&) const;
   virtual inline void verifier(const Cond_lim_base& la_cl) const;
-  double get_temps_defaut() const { return temps_defaut; }
-  void set_temps_defaut(double temps) { temps_defaut = temps; }
+  virtual double get_temps_defaut() const { return temps_defaut; }
+  virtual void set_temps_defaut(double temps) { temps_defaut = temps; }
   virtual void changer_temps_futur(double temps, int i);
   virtual int avancer(double temps);
   virtual int reculer(double temps);
-  virtual bool instationnaire() const final { return instationnaire_; }
+  virtual bool instationnaire() const { return instationnaire_; }
   virtual inline const DoubleTab& derivee_en_temps() const { return Gpoint_; }
   virtual void calculer_derivee_en_temps(double t1, double t2);
 

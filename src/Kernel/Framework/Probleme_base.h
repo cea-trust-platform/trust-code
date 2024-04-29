@@ -194,8 +194,6 @@ public:
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
   // Champs parametriques:
-  const LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() const { return Champs_front_Parametriques_; }
-  LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques() { return Champs_front_Parametriques_; }
   const LIST(REF(Champ_Parametrique))& Champs_Parametriques() const { return Champs_Parametriques_; }
   LIST(REF(Champ_Parametrique))& Champs_Parametriques() { return Champs_Parametriques_; }
   void reinit(int) override;

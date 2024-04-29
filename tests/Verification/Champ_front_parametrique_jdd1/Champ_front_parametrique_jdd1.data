@@ -1,0 +1,135 @@
+# Teste Champ_front_parametrique #
+# PARALLEL NOT #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom 
+{
+	Pave Entree
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 6 23
+		Longueurs 0.1 0.22
+		}
+		{
+		bord Entree X = 0. 0. <= Y <= 0.22 
+		bord Symetrie Y = 0.22 0. <= X <= 0.1 
+		bord Symetrie Y = 0. 0. <= X <= 0.1 
+		bord Obstacle X = 0.1 0.1 <= Y <= 0.12
+		} ,
+
+	Pave Haut
+		{
+		Origine 0.1 0.12
+		Nombre_de_Noeuds 2 11
+		Longueurs 0.02 0.1
+		}
+		{
+		bord Symetrie Y = 0.22 0.1 <= X <= 0.12 
+		bord Obstacle Y = 0.12 0.1 <= X <= 0.12
+		} ,
+
+	Pave Bas
+		{
+		Origine 0.1 0.
+		Nombre_de_Noeuds 2 11
+		Longueurs 0.02 0.1
+		}
+		{
+		bord Symetrie Y = 0. 0.1 <= X <= 0.12 
+		bord Obstacle Y = 0.1 0.1 <= X <= 0.12
+		} ,
+
+	Pave Sortie
+		{
+		Origine 0.12 0.
+		Nombre_de_Noeuds 41 23
+		Longueurs 0.8 0.22
+		}
+		{
+		bord Sortie X = 0.92 0. <= Y <= 0.22 
+		bord Symetrie Y = 0. 0.12 <= X <= 0.92 
+		bord Symetrie Y = 0.22 0.12 <= X <= 0.92 
+		bord Obstacle X = 0.12 0.1 <= Y <= 0.12
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lml
+    domaine dom
+}
+
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_impr 5.e-1
+    seuil_statio 1.e-3
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2
+    }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Obstacle paroi_fixe
+            Symetrie symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee champ_front_parametrique { fichier champ_front.txt }
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            IN vitesse periode 0.005 point 1 0.0 0.11
+            OUT vitesse periode 0.005 point 1 0.92 0.11
+        }
+
+        Format lml
+        fields dt_post 1
+        {
+            pression elem
+            vitesse elem
+        }
+    }
+}
+Solve pb
+End
+

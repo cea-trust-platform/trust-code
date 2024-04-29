@@ -4,8 +4,56 @@ dimension 2
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Read_file upwind.geo ;
+Mailler dom 
+{
+	Pave Entree
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 6 23
+		Longueurs 0.1 0.22
+		}
+		{
+		bord Entree X = 0. 0. <= Y <= 0.22 
+		bord Symetrie Y = 0.22 0. <= X <= 0.1 
+		bord Symetrie Y = 0. 0. <= X <= 0.1 
+		bord Obstacle X = 0.1 0.1 <= Y <= 0.12
+		} ,
 
+	Pave Haut
+		{
+		Origine 0.1 0.12
+		Nombre_de_Noeuds 2 11
+		Longueurs 0.02 0.1
+		}
+		{
+		bord Symetrie Y = 0.22 0.1 <= X <= 0.12 
+		bord Obstacle Y = 0.12 0.1 <= X <= 0.12
+		} ,
+
+	Pave Bas
+		{
+		Origine 0.1 0.
+		Nombre_de_Noeuds 2 11
+		Longueurs 0.02 0.1
+		}
+		{
+		bord Symetrie Y = 0. 0.1 <= X <= 0.12 
+		bord Obstacle Y = 0.1 0.1 <= X <= 0.12
+		} ,
+
+	Pave Sortie
+		{
+		Origine 0.12 0.
+		Nombre_de_Noeuds 41 23
+		Longueurs 0.8 0.22
+		}
+		{
+		bord Sortie X = 0.92 0. <= Y <= 0.22 
+		bord Symetrie Y = 0. 0.12 <= X <= 0.92 
+		bord Symetrie Y = 0.22 0.12 <= X <= 0.92 
+		bord Obstacle X = 0.12 0.1 <= Y <= 0.12
+		}
+}
 # END MESH #
 # BEGIN PARTITION
 Postraiter_domaine
@@ -25,7 +73,7 @@ End
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter ../upwind/DOM.Zones dom
+Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
@@ -35,7 +83,7 @@ Read sch
 {
     tinit 0
     dt_impr 5.e-1
-    seuil_statio 1.e-2
+    seuil_statio 1.e-3
 }
 
 Associate pb dom
@@ -61,7 +109,7 @@ Read pb
             Obstacle paroi_fixe
             Symetrie symetrie
             Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-            Entree frontiere_ouverte_vitesse_imposee champ_front_parametrique { probleme pb fichier velocity.txt }
+            Entree frontiere_ouverte_vitesse_imposee _champ_
         }
     }
 
@@ -69,9 +117,8 @@ Read pb
     {
         Probes
         {
-            sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-            sonde_vitesse_entree vitesse periode 0.005 point 1 0.0 0.11
-            sonde_vitesse_centre vitesse periode 0.005 point 1 0.13 0.105
+            IN vitesse periode 0.005 point 1 0.0 0.11
+            OUT vitesse periode 0.005 point 1 0.92 0.11
         }
 
         Format lata

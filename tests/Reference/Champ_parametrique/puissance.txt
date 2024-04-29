@@ -1,7 +1,6 @@
 {
-Champ_Fonc_MED { use_existing_domain file puissance.med domain dom field TEMPERATURE_ELEM_dom loc elem last_time }
-,
-Champ_Fonc_MED_Table_Temps {
+	Champ_Fonc_MED { use_existing_domain file puissance.med domain dom field TEMPERATURE_ELEM_dom loc elem last_time } ,
+	Champ_Fonc_MED_Table_Temps {
                         table_temps                        
                         { 201
                         0.000000E+00 1.000000E-01 2.000000E-01 3.000000E-01 4.000000E-01 

@@ -1,5 +1,0 @@
-champ_front_uniforme 2 1 0
-champ_front_uniforme 2 2 0
-champ_front_tabule 2 { 3   0 5 10   1 0  2 0  3 0 }
-champ_front_tabule 2 { 1 0 1 0 }
-

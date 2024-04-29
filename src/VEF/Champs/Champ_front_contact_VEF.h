@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ public:
   void creer(const Nom&, const Nom&,const Nom&, const Nom&, const Motcle&);
   const Champ_Inc_base& inconnue() const;
   const Equation_base& equation() const;
-  const Domaine_dis_base& domaine_dis() const;
+  const Domaine_dis_base& domaine_dis() const override;
   const Domaine_Cl_dis_base& domaine_Cl_dis() const ;
   const Frontiere_dis_base& front_dis() const ;
   void associer_ch_inc_base(const Champ_Inc_base&);

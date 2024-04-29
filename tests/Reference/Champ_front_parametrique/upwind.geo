@@ -1,1 +1,0 @@
-../upwind/upwind.geo

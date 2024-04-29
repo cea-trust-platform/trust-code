@@ -29,7 +29,6 @@ class Champ_Parametrique : public Champ_Don_base
 public:
   // Methodes surchargees:
   void mettre_a_jour(double temps) override { champ().mettre_a_jour(temps); }
-  void dimensionner(int i, int j) { champ()->dimensionner(i,j); }
   int imprime(Sortie& os, int j) const override { return champ()->imprime(os,j); }
   int fixer_nb_valeurs_nodales(int nb_noeuds) override { return champ().fixer_nb_valeurs_nodales(nb_noeuds); }
   int reprendre(Entree& is) override { return champ().reprendre(is); }

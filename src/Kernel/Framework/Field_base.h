@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ public:
   inline void add_synonymous(const Nom& nom) { noms_synonymes_.add(nom); }
 
   // Component management
-  inline int nb_comp() const { return nb_compo_ ; } // Renvoie le nombre de composantes du champ.
+  virtual int nb_comp() const { return nb_compo_ ; } // Renvoie le nombre de composantes du champ.
   virtual void fixer_nb_comp(int i);
 
   const Noms& noms_compo() const;
@@ -69,7 +69,7 @@ public:
   virtual const Nom& fixer_unite(int i, const Nom&);
 
   // Field nature management
-  inline Nature_du_champ nature_du_champ() const { return nature_; } // Renvoie la nature d'un champ (scalaire, multiscalaire, vectoriel).
+  virtual Nature_du_champ nature_du_champ() const { return nature_; } // Renvoie la nature d'un champ (scalaire, multiscalaire, vectoriel).
   virtual Nature_du_champ fixer_nature_du_champ(Nature_du_champ nat);
 
 protected:

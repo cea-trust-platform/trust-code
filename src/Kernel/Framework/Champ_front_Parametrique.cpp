@@ -16,43 +16,37 @@
 #include <Champ_front_Parametrique.h>
 #include <Param.h>
 #include <Probleme_base.h>
-#include <Champ_front_uniforme.h>
 #include <EFichier.h>
 #include <EChaine.h>
-#include <string>
-#include <Champ_front.h>
 
-Implemente_instanciable(Champ_front_Parametrique,"Champ_front_Parametrique",Champ_front_Tabule);
+
+Implemente_instanciable(Champ_front_Parametrique,"Champ_front_Parametrique",Champ_front_base);
 // ToDo XDATA
 
 Sortie& Champ_front_Parametrique::printOn(Sortie& os) const
 {
-  return Champ_front_Tabule::printOn(os);
+  return Champ_front_base::printOn(os);
 }
 
 Entree& Champ_front_Parametrique::readOn(Entree& is)
 {
-  Nom pb, fichier;
+  Nom fichier;
   Param param(que_suis_je());
-  param.ajouter("probleme", &pb, Param::REQUIRED);
   param.ajouter("fichier", &fichier, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   // Lecture de tous les lignes du fichier parametrique:
-  std::string line;
-  EFichier file(fichier);
-  while (std::getline(file.get_ifstream(), line) && !line.empty()) parametres_.add(line);
-  // Associer au schema temps:
-  Probleme_base& pb_base = ref_cast(Probleme_base, Interprete::objet(pb));
-  // Verifie que tous les champs parametriques ont le meme nombre
-  LIST(REF(Champ_front_Parametrique))& Champs_front_Parametriques = pb_base.Champs_front_Parametriques();
-  int nb_champs_parametriques = Champs_front_Parametriques.size();
-  if (nb_champs_parametriques && Champs_front_Parametriques.dernier()->size()!=size())
+  EFichier fic(fichier);
+  Motcle motlu;
+  fic >> motlu;
+  if (motlu!="{") Process::exit("Waiting { !");
+  while (motlu!="}")
     {
-      Cerr << "Erreur, le champ parametrique lu dans le fichier " << fichier << " a " << size() << " elements." << finl;
-      Cerr << "Les autres champs parametriques ont " << Champs_front_Parametriques.dernier()->size() << " elements." << finl;
-      Process::exit("Cela doit etre identique.");
+      Champ_front ch;
+      fic >> ch;
+      champs_.add(ch);
+      Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl; //" " << ch.valeur() << finl;
+      fic >> motlu;
     }
-  Champs_front_Parametriques.add(*this);
   // On fixe le premier parametre:
   int calcul = newParameter();
   assert(calcul>0);
@@ -60,41 +54,61 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
   return is;
 }
 
-int Champ_front_Parametrique::newParameter()
+int Champ_front_Parametrique::newParameter() const
 {
-  if (parametres_.size()==index_)
-    {
-      return 0;
-    }
+  if (champs_.size()==index_)
+    return 0;
   else
     {
-      Cerr << "================================================" << finl;
-      Cerr << "Mise a jour d'un parametre:" << parametres_[index_] << finl;
-      Cerr << "================================================" << finl;
-      EChaine nouveau_champ_front(parametres_[index_]);
-      Champ_front ch_front;
-      nouveau_champ_front >> ch_front;
-      int nb_comp = ch_front.nb_comp();
-      fixer_nb_comp(nb_comp);
-      if (sub_type(Champ_front_Tabule, ch_front.valeur()))
-        {
-          la_table = ref_cast(Champ_front_Tabule, ch_front.valeur()).getTable();
-        }
-      else if (sub_type(Champ_front_uniforme, ch_front.valeur()))
-        {
-          DoubleVect param(1);
-          param(0)=0;
-          DoubleTab tab_valeurs(1, nb_comp);
-          tab_valeurs=ch_front->valeurs_au_temps(0);
-          la_table.remplir(param,tab_valeurs);
-        }
-      else
-        {
-          Cerr << "Champ " << ch_front.que_suis_je() << " non supporte!" << finl;
-          Process::exit();
-        }
       index_++;
+      // ToDo ameliorer message avec les caracteristiques du champ
+      Cerr << "================================================" << finl;
+      Cerr << "[Parameter] Updating to: " << champ().valeur().que_suis_je() << finl; //" " << champ().valeur() << finl;
+      Cerr << "================================================" << finl;
       return index_;
     }
 }
 
+void Champ_front_Parametrique::calculer_derivee_en_temps(double t1, double t2)
+{
+  if (t1<last_t2_ && index_>1)
+    {
+      // Pour assurer la continuite avec le champ precedent:
+      if (std::abs(t2-t1) < DMINFLOAT)
+        {
+          Gpoint_ = 0;
+        }
+      else
+        {
+          const DoubleTab& v1 = champs_[index_-2]->valeurs_au_temps(last_t2_);
+          const DoubleTab& v2 = valeurs_au_temps(t2);
+          if (v1.dimension(0) == 1)
+            {
+              // Champ instationnaire uniforme
+              int dim = v1.dimension(1);
+              if (Gpoint_.size() != dim) Gpoint_.resize(dim);
+              for (int i = 0; i < dim; i++)
+                Gpoint_(i) = (v2(0, i) - v1(0, i)) / (t2 - t1);
+            }
+          else
+            {
+              // Champs instationnaire variable
+              Gpoint_ = v1;
+              Gpoint_ *= -1;
+              Gpoint_ += v2;
+              Gpoint_ /= (t2 - t1);
+            }
+        }
+    }
+  else
+    {
+      champ()->calculer_derivee_en_temps(t1, t2);
+      Gpoint_ = champ()->derivee_en_temps();
+    }
+  last_t2_ = t2;
+}
+
+const DoubleTab& Champ_front_Parametrique::derivee_en_temps() const
+{
+  return Gpoint_;
+}

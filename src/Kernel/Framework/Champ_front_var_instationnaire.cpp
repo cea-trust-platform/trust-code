@@ -58,9 +58,6 @@ int Champ_front_var_instationnaire::initialiser(double temps, const Champ_Inc_ba
 
   temps_defaut=temps;
   changer_temps_futur(temps,0);
-// ToDo remonter dans Champ_front
-  Gpoint_=valeurs(); // pour dimensionner
-  Gpoint_=0.;
   instationnaire_ = true;
   return 1;
 }

@@ -166,28 +166,30 @@ void Champ_front_base::changer_temps_futur(double temps,int i)
  */
 void Champ_front_base::calculer_derivee_en_temps(double t1, double t2)
 {
-  const DoubleTab& v1 = valeurs_au_temps(t1);
-  if (v1.dimension(0)==1)
+  if (std::abs(t2-t1) < DMINFLOAT)
     {
-      // Champ instationnaire uniforme
-      const DoubleTab& v2 = valeurs_au_temps(t2);
-      int dim = v1.dimension(1);
-      Gpoint_.resize(dim); // ToDo necessaire ?
-      for (int i = 0; i < dim; i++)
-        Gpoint_(i) = (v2(0, i) - v1(0, i)) / (t2 - t1);
+      Gpoint_ = 0;
     }
   else
     {
-      // Champs instationnaire variable
-      if (t2 > t1 + DMINFLOAT)
+      const DoubleTab& v1 = valeurs_au_temps(t1);
+      const DoubleTab& v2 = valeurs_au_temps(t2);
+      if (v1.dimension(0) == 1)
         {
-          Gpoint_ = valeurs_au_temps(t1);
-          Gpoint_ *= -1;
-          Gpoint_ += valeurs_au_temps(t2);
-          Gpoint_ /= (t2 - t1);
+          // Champ instationnaire uniforme
+          int dim = v1.dimension(1);
+          if (Gpoint_.dimension(0) != dim) Gpoint_.resize(dim);
+          for (int i = 0; i < dim; i++)
+            Gpoint_(i) = (v2(0, i) - v1(0, i)) / (t2 - t1);
         }
       else
-        Gpoint_ = 0;
+        {
+          // Champs instationnaire variable
+          Gpoint_ = v1;
+          Gpoint_ *= -1;
+          Gpoint_ += v2;
+          Gpoint_ /= (t2 - t1);
+        }
     }
 }
 
