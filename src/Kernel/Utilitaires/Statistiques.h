@@ -17,6 +17,7 @@
 #define Statistiques_included
 
 #include <assert.h>
+#include <string>
 class Stat_Counter_Id;
 class Stat_Results;
 class Stat_Internals;
@@ -87,7 +88,6 @@ public:
    * @param message_info String that state the overall step of calculation we are in : initialization, resolution or post-processing
    */
   void dump(const char * message_info, int mode_append);
-
 
   /*! @brief Reset all counters
    *
@@ -192,7 +192,6 @@ protected:
   // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
   void begin_count_(const int id_);
   void end_count_(const int id_, int quantity, int count);
-
   int debug_level_;
   Stat_Internals * stat_internals;
   double total_time_;

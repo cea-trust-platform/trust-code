@@ -49,7 +49,6 @@ Entree& Stat_per_proc_perf_log::readOn(Entree& is)
 Entree& Stat_per_proc_perf_log::interpreter(Entree& is)
 {
   int tmp;
-  assert(tmp>0);
   is >> tmp; // If is ==0 no statistics detailed per processor in the _csv.TU file, if is == 1 then the detailed statistics are printed
   stat_per_proc_perf_log = (tmp != 0);
   Cerr << "Stat_per_proc_perf_log::interpreter : stat_per_proc_perf_log = " << (int)stat_per_proc_perf_log << finl;
