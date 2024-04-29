@@ -13,32 +13,51 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_PolyMAC_P0_Face_included
-#define Op_Diff_Turbulent_PolyMAC_P0_Face_included
+#ifndef Op_Dift_Multiphase_proto_included
+#define Op_Dift_Multiphase_proto_included
 
-#include <Op_Dift_Multiphase_proto.h>
-#include <Op_Diff_PolyMAC_P0_Face.h>
+#include <Viscosite_turbulente_base.h>
+#include <Correlation.h>
+#include <Champ_Fonc.h>
+#include <TRUST_Ref.h>
+#include <vector>
 
-/*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Face
- *
- *  Operateur de diffusion de vitesse prenant en compte l'effet de la turbulence par le biais d'une correlation de type Viscosite_turbulente_base.
- *
- *
- */
+class Champs_compris;
+class Pb_Multiphase;
+class Equation_base;
 
-class Op_Diff_Turbulent_PolyMAC_P0_Face: public Op_Diff_PolyMAC_P0_Face, public Op_Dift_Multiphase_proto
+class Op_Dift_Multiphase_proto
 {
-  Declare_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Face );
-
 public:
-  void creer_champ(const Motcle& motlu) override;
-  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
-  void preparer_calcul() override;
-  void mettre_a_jour(double temps) override;
-  void completer() override;
-  void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
-  bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
+  void associer_proto(const Pb_Multiphase&, Champs_compris& );
+
+  inline const Correlation& correlation() const { return corr_ ; }
+
+  void ajout_champs_op_face();
+
+  void get_noms_champs_postraitables_proto(const Nom& , Noms& nom, Option opt) const;
+
+  void creer_champ_proto(const Motcle& );
+
+  void completer_proto();
+
+  void mettre_a_jour_proto(const double);
+
+  inline DoubleTab& viscosite_turbulente() { return nu_t_; }
+
+  inline void call_compute_nu_turb()
+  {
+    // remplissage par la correlation : ICI c'est NU_T ET PAS MU_T => m2/s et pas kg/ms
+    ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_t_);
+  }
+
+protected:
+  DoubleTab nu_t_; // comme le nom dit
+  Correlation corr_; // correlation de viscosite/transport turbulente
+  std::vector<Champ_Fonc> nu_t_post_; // champ de postraitement
+  Motcles noms_nu_t_post_; //leurs noms
+  REF(Pb_Multiphase) pbm_;
+  REF(Champs_compris) le_chmp_compris_;
 };
 
-#endif /* Op_Diff_PolyMAC_P0_Face_included */
+#endif /* Op_Dift_Multiphase_proto_included */

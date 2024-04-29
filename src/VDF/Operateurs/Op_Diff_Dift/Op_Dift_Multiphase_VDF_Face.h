@@ -16,37 +16,32 @@
 #ifndef Op_Dift_Multiphase_VDF_Face_included
 #define Op_Dift_Multiphase_VDF_Face_included
 
+#include <Op_Dift_Multiphase_proto.h>
 #include <Op_Dift_VDF_Face_base.h>
 #include <Eval_Dift_VDF_leaves.h>
 #include <Op_Diff_Dift_VDF.h>
-#include <Correlation.h>
-#include <Champ_Fonc.h>
 
-// XXX : TODO : a toi CoCo !!! factorise via une classe base :)
-
-class Op_Dift_Multiphase_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_Multiphase_VDF_Face>
+class Op_Dift_Multiphase_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_Multiphase_VDF_Face>, public Op_Dift_Multiphase_proto
 {
-  Declare_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Face);
+  Declare_instanciable(Op_Dift_Multiphase_VDF_Face);
 public:
-  Op_Dift_Multiphase_VDF_Face();
-
   void creer_champ(const Motcle& motlu) override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
   void completer() override;
-
   void mettre_a_jour(double ) override;
-
+  void preparer_calcul() override;
   void modifier_mu(DoubleTab& ) const { throw; }
+  void associer_diffusivite_turbulente(const Champ_Fonc& ch) = delete;
 
-  inline const Correlation& correlation() const { return corr_ ; }
+  double calculer_dt_stab() const override;
+  bool is_turb() const override { return true; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override
   {
     associer_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(zd, zcd, ch);
   }
-
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { throw; }
 
   inline void associer_diffusivite(const Champ_base& ch) override
   {
@@ -62,16 +57,6 @@ public:
   {
     return get_diffusivite_turbulente_multiphase_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE,Eval_Dift_Multiphase_VDF_Face>();
   }
-
-  double calculer_dt_stab() const override;
-  bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
-
-protected :
-  DoubleTab nu_t_;
-  Correlation corr_; //correlation de viscosite turbulente
-  std::vector<Champ_Fonc> nu_t_post_; //flux massiques (kg/m2/s)
-  Motcles noms_nu_t_post_; //leurs noms
 };
 
 #endif /* Op_Dift_Multiphase_VDF_Face_included */
