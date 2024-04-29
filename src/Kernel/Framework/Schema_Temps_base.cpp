@@ -88,7 +88,8 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
   if (this->stop())
     {
       is_stop=true;
-      return 0;
+      //return 0; Why ?
+      return dt;
     }
   else
     return dt;
