@@ -1091,6 +1091,14 @@ then
           i=""
        fi
 
+       # Discard test case with RefProp if disabled:
+       if [ "$i" != "" ] && [ "$TRUST_USE_REFPROP" != "1" ] && [ "`grep -i refprop $REP/* 2>/dev/null`" != "" ]
+       then
+          echo "Test $i skipped (TRUST is not built with RefProp)"
+          liste_skipped=$liste_skipped" $i"
+          i=""
+       fi
+
        if [ -f $REP/skipped ]
        then
           echo "Test $i skipped (file skipped)"

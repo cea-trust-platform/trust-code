@@ -44,16 +44,14 @@ then
     ln -nsf $TRUST_EOS_HOME_DIR/include/EOS EOS/.
     ln -nsf $TRUST_EOS_HOME_DIR/include/Common EOS/.
     ln -nsf $TRUST_EOS_HOME_DIR/include/Language EOS/.
-    echo "#define HAS_EOS" > EOS/eos++.h
+    echo "#define HAS_EOS" > TRUST_TMP/eos++.h.tmp
     echo "  TRUST configured with the EOS library found in $TRUST_EOS_HOME_DIR"
     echo "  EOS header files added in $TRUST_ROOT/include/EOS !"
 else
     echo "  TRUST not configured with EOS. Cleaning include/EOS ..."
     echo "#undef HAS_EOS" > $TRUST_TMP/eos++.h.tmp
-    [ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf EOS/* && cat $TRUST_TMP/eos++.h.tmp > EOS/eos++.h
-    rm $TRUST_TMP/eos++.h.tmp
 fi
-
+[ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && rm -rf EOS/* && cat $TRUST_TMP/eos++.h.tmp > EOS/eos++.h && rm -f $TRUST_TMP/eos++.h.tmp
 # CoolProp includes in CoolProp if 
 if [ "$TRUST_COOLPROP_HOME_DIR" != "" ]
 then
@@ -69,15 +67,14 @@ then
     else
       echo "fmtlib is no more a prerequis for CoolProp?"
     fi
-    echo "#define HAS_COOLPROP" > CoolProp/coolprop++.h
+    echo "#define HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
     echo "  TRUST configured with the CoolProp library found in $TRUST_COOLPROP_HOME_DIR"
     echo "  CoolProp header files added in $TRUST_ROOT/include/CoolProp !"
 else
     echo "  TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
     echo "#undef HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
-    [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>/dev/null; echo $?`" != 0 ] && rm -rf CoolProp/* && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h
-    rm $TRUST_TMP/coolprop++.h.tmp
 fi
+[ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && rm -rf CoolProp/* && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h && rm -f $TRUST_TMP/coolprop++.h.tmp
 
 # Kokkos tag:
 kokkos_hdr=$TRUST_ROOT/src/Kernel/Utilitaires/kokkos++.h
