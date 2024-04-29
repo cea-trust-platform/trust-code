@@ -29,7 +29,7 @@ DISTCC_HOSTS=""
 export CMAKE_C_FLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
 
 # Modification du Makefile de Metis pour dire renseigner CMAKE_C_FLAGS 
-echo $ECHO_OPTS "1,$ s?DCMAKE_VERBOSE_MAKEFILE=1?DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_C_FLAGS=\"$CMAKE_C_FLAGS\"?g\nw" | ed Makefile 1>/dev/null 2>&1 || exit -1
+sed -i "s?DCMAKE_VERBOSE_MAKEFILE=1?DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_C_FLAGS=\"$CMAKE_C_FLAGS\"?g" Makefile || exit -1
 
 make config cc=$TRUST_cc prefix=$TRUST_LIB/src/LIBMETIS || exit -1
 #On prend $TRUST_cc_BASE au lieu de $TRUST_cc car sur platine cela plante...
@@ -45,7 +45,7 @@ cd ..
 rm -r -f $package $metis_dir
 
 # Correction d'une virgule mal placee dans metis.h
-echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $METIS_ROOT/include/metis.h 1>/dev/null 2>&1 || exit -1
+sed -i "s?2048,?2048?g" $METIS_ROOT/include/metis.h || exit -1
 
 # touch des includes Metis pour les makefiles 
 touch  $METIS_ROOT/include/*

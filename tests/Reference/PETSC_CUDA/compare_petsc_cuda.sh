@@ -43,7 +43,7 @@ then
       new_line_solver="solveur_pression petsc`[ $device = gpu ] && echo _gpu` $line"
       options=$options" `[ $device = gpu ] && echo -cuda_synchronize`" # cuda_synchronize is necessary to have correct timings with GPU on several routines, eg MatMult (KSPSolv seems fine though, but slower with -cuda_synchronize) 
       #core_per_node="-c 4" # To map one CPU on one GPU if 4CPU+1GPU on a socket
-      echo $ECHO_OPTS "1,$ s?$line_solver?$new_line_solver?g\nw $device"_"$cas.data" | ed $cas.data 1>/dev/null 2>&1 || exit -1
+      sed "s?$line_solver?$new_line_solver?g" $cas.data >  $device"_"$cas.data
       echo $ECHO_OPTS "Running test case on $device with $NPROCS core ($line): $device"_"$cas $options ... \c"
       trust $core_per_node $device"_"$cas $NPROCS $options 1>$device"_"$cas.out_err 2>&1 || exit -1
       if [ $? != 0 ]

@@ -6,7 +6,7 @@ trust -copy Obstacle 1>>$log 2>&1
 cd `pwd`/Obstacle
 trust -clean 1>>$log 2>&1
 make_PAR.data Obstacle 1>>$log 2>&1
-echo $ECHO_OPTS "1,$ s?tmax 5.0?tmax 100.0?g\nw" | ed PAR_Obstacle.data 1>>$log 2>&1
+sed -i "s?tmax 5.0?tmax 100.0?g" PAR_Obstacle.data
 trust -create_sub_file PAR_Obstacle 2 1>>$log 2>&1
 echo "Launch step..."
 reprise_auto -test 1>>$log 2>&1

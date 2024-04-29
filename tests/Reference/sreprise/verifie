@@ -12,18 +12,18 @@ jdd=`pwd`
 jdd=`basename $jdd`
 [ ! -f PAR_$jdd.dt_ev ] && exit 0
 # Create a datafile to test tinit_from_last_time option
-echo $ECHO_OPTS "1,$ s?tinit 0.2??g\nw tinit_from_last_time.data" | ed sreprise.data
-echo $ECHO_OPTS "1,$ s?reprise ?resume_last_time ?g\nw" | ed tinit_from_last_time.data
-echo $ECHO_OPTS "1,$ s?sreprise?tinit_from_last_time?g\nw" | ed tinit_from_last_time.data
+sed "s?tinit 0.2??g" sreprise.data > tinit_from_last_time.data
+sed -i "s?reprise ?resume_last_time ?g" tinit_from_last_time.data
+sed -i "s?sreprise?tinit_from_last_time?g" tinit_from_last_time.data
 trust tinit_from_last_time
 compare_lata sreprise.lml tinit_from_last_time.lml || exit -1
 
 # Creation d'un calcul continu de t=0 a t=1.2
 cp -f $jdd.data continu.data
 chmod +w continu.data
-echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed continu.data
-echo $ECHO_OPTS "1,$ s?reprise ?sauvegarde ?g\nw" | ed continu.data
-echo $ECHO_OPTS "1,$ s?fichier sreprise?fichier continu?g\nw" | ed continu.data
+sed -i "s?tinit 0.2?tinit 0.?g" continu.data
+sed -i "s?reprise ?sauvegarde ?g" continu.data
+sed -i "s?fichier sreprise?fichier continu?g" continu.data
 make_PAR.data continu
 trust continu
 trust PAR_continu 2
@@ -33,8 +33,8 @@ err=0
 for file in *continu_pb*.out
 do
    fichier=`echo $file | awk '{gsub("continu","sreprise",$0);print $0}'`
-   echo $ECHO_OPTS "1,$ s?sreprise?continu?g\nw" | ed $fichier 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s?sauve?continu?g\nw" | ed $fichier 1>/dev/null 2>&1
+   sed -i "s?sreprise?continu?g" $fichier
+   sed -i "s?sauve?continu?g\nw" $fichier
    awk '/#/ {print $0} !/#/ {print $1}' $fichier > tmp_fichier
    awk '/#/ {print $0} !/#/ {print $1}' $file > tmp_file
    if [ "`diff tmp_file tmp_fichier`" != "" ]
@@ -57,8 +57,8 @@ do
    # On accorde les noms de fichiers
    for name in sauve sreprise
    do
-      echo $ECHO_OPTS "1,$ s?$name?continu?g\nw" | ed reconstruit.lata 1>/dev/null 2>&1
-      echo $ECHO_OPTS "1,$ s?$name?continu?g\nw" | ed $file.lata 1>/dev/null 2>&1
+      sed -i "s?$name?continu?g" reconstruit.lata
+      sed -i "s?$name?continu?g" $file.lata
    done
    # On compare le fichier reconstruit avec le calcul continu
    teste_difference reconstruit.lata ${file%sreprise}continu.lata

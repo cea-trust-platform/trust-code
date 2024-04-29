@@ -2,13 +2,13 @@ gunzip -c cylindre.geom.gz > cylindre.geom || exit -1
 
 # Run first calculation to create the matrix and save it with largeur_joint 2
 # Change the largeur_joint value from 1 to 2:
-echo $ECHO_OPTS "1,$ s?Larg_joint 1?Larg_joint 2?g\nw Save_matrix.data" | ed Read_matrix.data
+sed "s?Larg_joint 1?Larg_joint 2?g" Read_matrix.data > Save_matrix.data
 # Change the data file to save the matrix:
-echo $ECHO_OPTS "1,$ s?read_matrix?save_matrix_petsc_format?g\nw" | ed Save_matrix.data
+sed -i "s?read_matrix?save_matrix_petsc_format?g" Save_matrix.data
 # Change to 0 time steps:
-echo $ECHO_OPTS "1,$ s?nb_pas_dt_max 10?nb_pas_dt_max 0?g\nw" | ed Save_matrix.data
+sed -i "s?nb_pas_dt_max 10?nb_pas_dt_max 0?g" Save_matrix.data
 # Change DOM1 to DOM2 to compare size of .Zones with largeur_joint 1 and 2:
-echo $ECHO_OPTS "1,$ s?DOM1?DOM2?g\nw" | ed Save_matrix.data
+sed -i "s?DOM1?DOM2?g" Save_matrix.data
 
 
 if [ "$TRUST_DISABLE_MPI" != 1 ]

@@ -248,7 +248,7 @@ fi
 #if [ -d $CONFIG ]
 #then
 #   #echo "Change some python scripts to force parallel build of external packages..."
-#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1
+#   sed -i "s?make install?$TRUST_MAKE install?g" $CONFIG/hypre.py  #  on ne sarrete plus car si pas hypre...|| exit -1
 #else
    # Config directory has moved (for PETSc 3.6?)
 #   CONFIG=config/BuildSystem/config/packages
@@ -707,7 +707,7 @@ do
 	    echo "make install failed." && exit -1
 	 fi
 	 # Correction du fichier metis.h
-	 echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $PETSC_ROOT/$PETSC_ARCH/include/metis.h 1>/dev/null 2>&1
+	 sed -i "s?2048,?2048?g" $PETSC_ROOT/$PETSC_ARCH/include/metis.h
 	 if [ $? != 0 ]
 	 then
 	    echo "Change of the file $PETSC_ROOT/$PETSC_ARCH/include/metis.h failed." && exit -1

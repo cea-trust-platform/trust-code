@@ -2,9 +2,9 @@ jdd=`pwd`
 jdd=`basename $jdd`
 # Creation d'un calcul de t=0 a t=0.2 pour une reprise de t=0.2 a t=1.2
 cp -f $jdd.data sauve.data
-echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed sauve.data
-echo $ECHO_OPTS "1,$ s?tmax 1.2?tmax 0.2?g\nw" | ed sauve.data
-echo $ECHO_OPTS "1,$ s?resume_last_time ?sauvegarde ?g\nw" | ed sauve.data
+sed -i "s?tinit 0.2?tinit 0.?g" sauve.data
+sed -i "s?tmax 1.2?tmax 0.2?g" sauve.data
+sed -i "s?resume_last_time ?sauvegarde ?g" sauve.data
 
 rm -f *out *son
 
@@ -12,7 +12,7 @@ if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    trust sauve || exit -1
    make_PAR.data sauve
-   echo $ECHO_OPTS "1,$ s?$jdd?PAR_$jdd?g\nw" | ed PAR_sauve.data
+   sed -i "s?$jdd?PAR_$jdd?g" PAR_sauve.data
    trust PAR_sauve 2 || exit -1
 else
    trust sauve || exit -1

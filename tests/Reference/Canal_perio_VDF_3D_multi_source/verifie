@@ -9,7 +9,7 @@ bords=`$TRUST_Awk '($2=="periodique") {print $1}' $jdd.data`
 
 cp -f $jdd.data sauvegarde_reprise.data
 chmod +w sauvegarde_reprise.data
-echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.04?g\nw" | ed sauvegarde_reprise.data
+sed -i "s?tmax 0.08?tmax 0.04?g" sauvegarde_reprise.data
 
 # Premiere partie du calcul 
 if [ ! -f PAR_$jdd.dt_ev ]
@@ -20,9 +20,9 @@ else
    trust PAR_sauvegarde_reprise `ls *Zones | wc -l`
 fi
 # Deuxieme partie du calcul (reprise)
-echo $ECHO_OPTS "1,$ s?tinit 0.0?tinit 0.04?g\nw" | ed sauvegarde_reprise.data
-echo $ECHO_OPTS "1,$ s?tmax 0.04?tmax 0.08?g\nw"  | ed sauvegarde_reprise.data
-echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed sauvegarde_reprise.data
+sed -i "s?tinit 0.0?tinit 0.04?g" sauvegarde_reprise.data
+sed -i "s?tmax 0.04?tmax 0.08?g" sauvegarde_reprise.data
+sed -i "s?sauvegarde ?reprise ?g" sauvegarde_reprise.data
 
 if [ ! -f PAR_$jdd.dt_ev ]
 then

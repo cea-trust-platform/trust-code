@@ -119,24 +119,24 @@ do
          OUTPUT_DIRECTORY=$PROJECT_DOC/tmp_html
          rm -r -f $OUTPUT_DIRECTORY
          mkdir -p $OUTPUT_DIRECTORY
-         echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-         echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-         echo $ECHO_OPTS "1,$ s?PROJECT_NAME           =?PROJECT_NAME           = $PROJECT?g\nw"                 | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-         echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         sed -i "s?INPUT                  =?INPUT                  = $INPUT?g"                     $TRUST_DOXYFILE || exit -1
+         sed -i "s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g"                     $TRUST_DOXYFILE || exit -1
+         sed -i "s?PROJECT_NAME           =?PROJECT_NAME           = $PROJECT?g"                   $TRUST_DOXYFILE || exit -1
+         sed -i "s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g"             $TRUST_DOXYFILE || exit -1
          PREDEFINED=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
          [ "`grep __PETSCKSP_H $PETSC_ROOT/$TRUST_ARCH/include/petscksp.h 2>/dev/null`" != "" ] && PREDEFINED=$PREDEFINED" __PETSCKSP_H"
-         echo $ECHO_OPTS "1,$ s?PREDEFINED             =?PREDEFINED             = $PREDEFINED?g\nw"                | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         sed -i "s?PREDEFINED             =?PREDEFINED             = $PREDEFINED?g"                $TRUST_DOXYFILE || exit -1
          if [ "$GENERATE_TAGFILE" = 1 ]
          then
-            echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = NO?g\nw"                         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-            echo $ECHO_OPTS "1,$ s?GENERATE_TAGFILE       =?GENERATE_TAGFILE       = $PROJECT_TAG?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            sed -i "s?GENERATE_HTML          =?GENERATE_HTML          = NO?g"                      $TRUST_DOXYFILE || exit -1
+            sed -i "s?GENERATE_TAGFILE       =?GENERATE_TAGFILE       = $PROJECT_TAG?g"            $TRUST_DOXYFILE || exit -1
          else
-            echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = YES?g\nw"                         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-            echo $ECHO_OPTS "1,$ s?TAGFILES               =?TAGFILES               = $TAGFILES?g\nw"                 | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-            echo $ECHO_OPTS "1,$ s?OUTPUT_DIRECTORY       =?OUTPUT_DIRECTORY       = $OUTPUT_DIRECTORY?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-            echo $ECHO_OPTS "1,$ s?STRIP_FROM_PATH        =?STRIP_FROM_PATH        = $TRUST_DOXYGEN/?g\nw"          | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            sed -i "s?GENERATE_HTML          =?GENERATE_HTML          = YES?g"                     $TRUST_DOXYFILE || exit -1
+            sed -i "s?TAGFILES               =?TAGFILES               = $TAGFILES?g"               $TRUST_DOXYFILE || exit -1
+            sed -i "s?OUTPUT_DIRECTORY       =?OUTPUT_DIRECTORY       = $OUTPUT_DIRECTORY?g"       $TRUST_DOXYFILE || exit -1
+            sed -i "s?STRIP_FROM_PATH        =?STRIP_FROM_PATH        = $TRUST_DOXYGEN/?g"         $TRUST_DOXYFILE || exit -1
             # To list external classes in index (eg: Kernel classes in TRUST index classes):
-            echo $ECHO_OPTS "1,$ s?ALLEXTERNALS           =?ALLEXTERNALS           = YES?g\nw"                  | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            sed -i "s?ALLEXTERNALS           =?ALLEXTERNALS           = YES?g"                     $TRUST_DOXYFILE || exit -1
          fi
          echo OK
 

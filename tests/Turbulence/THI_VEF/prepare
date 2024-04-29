@@ -6,7 +6,7 @@ do
    NODES=`echo $PARTITION | awk -F"@" '{gsub(","," ",$1);print $1}'`
    CORES=`echo $PARTITION | awk -F"@" '{print $2}'`
    sed "s?3 3 3?$NODES?" THI_VEF.data > tmp.data
-   echo $ECHO_OPTS "1,$ s?nb_parts 9?nb_parts $CORES?g\nw" | ed tmp.data 1>/dev/null 2>&1
+   sed -i "s?nb_parts 9?nb_parts $CORES?g" tmp.data
    make_PAR.data tmp 1>/dev/null 2>&1
    CORES=$?
    echo $NODES on $CORES

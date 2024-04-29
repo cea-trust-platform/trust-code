@@ -283,7 +283,7 @@ add_test_case_from_validation()
                         for cas_test in `\ls | grep $FICHE"_jdd" 2>/dev/null`
                         do
                            CHECKOUT $cas_test/lien_fiche_validation 1>/dev/null 2>&1
-                           echo $ECHO_OPTS "1,$ s?$FICHE_ROOT?$NEW_FICHE_ROOT?g\nw" | ed $cas_test/lien_fiche_validation 1>/dev/null 2>&1
+                           sed -i "s?$FICHE_ROOT?$NEW_FICHE_ROOT?g" $cas_test/lien_fiche_validation
                            echo "So $cas_test/lien_fiche_validation is updated."
                         done
                         FICHE_ROOT=$NEW_FICHE_ROOT

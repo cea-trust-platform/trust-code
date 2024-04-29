@@ -19,7 +19,7 @@ then
    echo "Installing $package..."
    tar xfz $package
    # 1er patch (erreur sur machines de Saclay)
-   echo -e "1,$ s?\-g \$(USER)??g\nw" | ed astyle/build/gcc/Makefile 1>/dev/null 2>&1
+   sed -i "s?\-g \$(USER)??g" astyle/build/gcc/Makefile
    # 2eme patch (car sinon plante avec 4.1.2)
    if [ `uname -s` != "Darwin" ]; then
    (

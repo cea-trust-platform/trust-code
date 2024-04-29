@@ -7,7 +7,7 @@ then
    do
       option=`echo $option | awk '{gsub("@"," ",$0);print $0}'`
       echo "Test solve PETSc with only: $option"
-      echo $ECHO_OPTS "1,$ s?petsc_decide 1?$option?g\nw test.data" | ed PAR_PETSC_DECIDE.data 1>/dev/null 2>&1 || exit -1
+      sed "s?petsc_decide 1?$option?g" PAR_PETSC_DECIDE.data > test.data
       trust test 4 1>test.out 2>test.err || exit -1
       compare_lata test.lml PAR_PETSC_DECIDE.lml 1>/dev/null 2>&1 || exit -1
    done

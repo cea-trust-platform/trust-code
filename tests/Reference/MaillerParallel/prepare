@@ -1,7 +1,7 @@
 trust prepare || exit -1
 
 # Verication que les domaines cree par Mailler et MaillerParallel en sequentiel sont identiques
-echo $ECHO_OPTS "1,$ s?dom2?dom?g\nw" | ed dom2.lml 1>/dev/null 2>&1
+sed -i "s?dom2?dom?g" dom2.lml
 #diff dom.geom dom2.geom || exit -1
 compare_lata dom.lml dom2.lml || exit -1
 # Ecriture des fichier Coord? pour le parallele

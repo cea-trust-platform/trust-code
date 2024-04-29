@@ -59,8 +59,8 @@ chmod -R +w .
 # GF le / apres le REP permet de suivre les liens
 for file in `find $ref/$REP/ -type l`
 do
-   arrivee=`ls -l $file | $TRUST_Awk '{print $NF}'`
-   depart=`ls -l $file | $TRUST_Awk '{print $(NF-2)}'`
+   arrivee=`\ls -l $file | $TRUST_Awk '{print $NF}'`
+   depart=`\ls -l $file | $TRUST_Awk '{print $(NF-2)}'`
    # Est ce que le fichier pointe est non vide ?
    # Si oui on fait un lien absolu
    if [ -s `dirname $depart`/$arrivee ]
@@ -178,26 +178,26 @@ then
    ' $old > $test.data
    rm -f $old
    # On n'est pas la pour tester le parallelisme donc:
-   #echo $ECHO_OPTS "1,$ s?PARALLEL OK ?PARALLEL NOT ?g\nw" | ed $test.data 1>/dev/null 2>&1
+   #sed -i "s?PARALLEL OK ?PARALLEL NOT ?g" $test.data
    # Change le format en lml
-   echo $ECHO_OPTS "1,$ s?ormat[ \t]lata_v2?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s?ormat[ \t]lata?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
+   sed -i "s?ormat[ \t]lata_v2?ormat lml?g" $test.data
+   sed -i "s?ormat[ \t]lata?ormat lml?g" $test.data
    # Pas le med bazar dans G+
-   #echo $ECHO_OPTS "1,$ s?ormat[ \t]med?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
+   #sed -i "s?ormat[ \t]med?ormat lml?g" $test.data
    # Pas de postraitement aux faces (a ameliorer, cela devient trop complique):
-   echo $ECHO_OPTS "1,$ s/[ \t]temperature_physique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]erreur_energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]energie_cinetique_analytique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]erreur_relative_energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]erreur_relative_energie_cinetique[ \t]som$//g\nw" | ed $test.data 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s/[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   sed -i "s/[ \t]temperature_physique[ \t]faces$//g" $test.data
+   sed -i "s/[ \t]energie_cinetique[ \t]faces$//g" $test.data
+   sed -i "s/[ \t]erreur_energie_cinetique[ \t]faces$//g" $test.data
+   sed -i "s/[ \t]energie_cinetique_analytique[ \t]faces$//g" $test.data
+   sed -i "s/[ \t]erreur_relative_energie_cinetique[ \t]faces$//g" $test.data
+   sed -i "s/[ \t]erreur_relative_energie_cinetique[ \t]som$//g" $test.data
+   sed -i "s/[ \t]faces$//g" $test.data
    # Suppression de tparoi:
-   echo $ECHO_OPTS "1,$ s/[ \t]tparoi$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   sed -i "s/[ \t]tparoi$//g" $test.data
    # Pas de bruit comme CI
-   echo $ECHO_OPTS "1,$ s/ampli_bruit[ \t][0-9].[0-9]*/ampli_bruit 0.0/g\nw" | ed $test.data 1>/dev/null 2>&1
+   sed -i "s/ampli_bruit[ \t][0-9].[0-9]*/ampli_bruit 0.0/g" $test.data
    # on remplace # lata convert # par lata_to_other
-   echo $ECHO_OPTS "1,$ s/# lata convert #/Lata_to_other lml NOM_DU_CAS NOM_DU_CAS/g\nw" | ed $test.data 1>/dev/null 2>&1
+   sed -i "s/# lata convert #/Lata_to_other lml NOM_DU_CAS NOM_DU_CAS/g" $test.data
    # Met en gestion de configuration du .data si possible
    # L'utilisateur possede le repertoire
    #if [ $TRUST_LOGIN = `whoami` ]
@@ -253,9 +253,9 @@ Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
       mv pre_run prepare
       chmod +x prepare
       # On change certains jeux de donnees executes par le prepare #
-      for data in `ls *.data 2>/dev/null`
+      for data in `\ls *.data 2>/dev/null`
       do
-	 [ "`grep '# nb_pas_dt_max 3 #' $data`" != "" ] && echo $ECHO_OPTS "1,$ s?# nb_pas_dt_max 3 #?nb_pas_dt_max 3?g\nw" | ed $data 1>/dev/null 2>&1
+	 [ "`grep '# nb_pas_dt_max 3 #' $data`" != "" ] && sed -i "s?# nb_pas_dt_max 3 #?nb_pas_dt_max 3?g" $data
       done
    fi
 fi

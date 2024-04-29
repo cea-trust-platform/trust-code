@@ -36,6 +36,7 @@ patch -version 1>/dev/null 2>&1
 
 # The previous test checks if 'ed' and 'bc' commands exist. if it doesn't, we add its binary to path. Is it still necessay to keep both in list_prerequis?
 list_prerequis="bc ed sed awk unzip"
+[ `uname -s` = Darwin ] && list_prerequis="bc sed awk unzip"
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
 do

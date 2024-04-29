@@ -265,30 +265,30 @@ then
    # Par defaut aucune machine ne supporte -l nodes=???:ppn=??? donc on hacke le fichier
    if [ "`grep 'useppn = 0' $file`" = "" ]
    then
-      echo $ECHO_OPTS "1,$ s?useppn = 1?useppn = 0?g\nw" | ed $file 1>/dev/null 2>&1
+      sed -i "s?useppn = 1?useppn = 0?g" $file
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1           
    fi
    # Les 2 modifications sont necessaires (useppn=0 ne suffit pas...)
    if [ "`grep '#parcmd = parcmd + self.SetupPPN' $file`" = "" ]
    then
-      echo $ECHO_OPTS "1,$ s? parcmd = parcmd + self.SetupPPN?#parcmd = parcmd + self.SetupPPN?g\nw" | ed $file 1>/dev/null 2>&1
+      sed -i "1,$ s? parcmd = parcmd + self.SetupPPN?#parcmd = parcmd + self.SetupPPN?g" $file
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1   
    fi
    # On callisto, --ppn with sbatch/mpirun should also be deactivated cause unknown by mpirun
    if [ "`grep '\-\-ppn' $file`" != "" ]
    then
-      echo $ECHO_OPTS "1,$ s?\-\-ppn??g\nw" | ed $file 1>/dev/null 2>&1
+      sed -i "s?\-\-ppn??g" $file
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1      
    fi
    if [ "`grep 'str(ppn)' $file`" != "" ]
    then
-      echo $ECHO_OPTS "1,$ s?str(ppn)?\"\"?g\nw" | ed $file 1>/dev/null 2>&1
+      sed -i "s?str(ppn)?\"\"?g" $file
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1      
    fi
    # On change la date (car pb sur castor/eris): Colon (':') not allowed in objectname.
    if [ "`grep 'root, tuser, string.replace' $file`" = "" ]
    then
-      echo $ECHO_OPTS "1,$ s?root, tuser, tdate?root, tuser, string.replace(tdate, \":\", \"-\")?g\nw" | ed $file 1>/dev/null 2>&1
+      sed -i "s?root, tuser, tdate?root, tuser, string.replace(tdate, \":\", \"-\")?g" $file
       [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1   
    fi
    ########################################################################
@@ -297,8 +297,8 @@ then
    if [ "$version" != 3_2_1 ]
    then
       # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
-      echo $ECHO_OPTS "1,$ s?TRUST_ROOT?$TRUST_ROOT?g\nw customlauncher.tmp" | ed customlauncher 1>/dev/null 2>&1
-      echo $ECHO_OPTS "1,$ s?MPI_ROOT?$MPI_ROOT?g\nw" | ed customlauncher.tmp 1>/dev/null 2>&1
+      sed "s?TRUST_ROOT?$TRUST_ROOT?g" customlauncher > customlauncher.tmp
+      sed -i "s?MPI_ROOT?$MPI_ROOT?g" customlauncher.tmp
       if [ "`diff customlauncher customlauncher.tmp`" != "" ]
       then
          echo "current/bin/customlauncher updated."

@@ -5,7 +5,7 @@ cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/*.geom .
 cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/$jdd .
 
 chmod +w $jdd
-echo $ECHO_OPTS "1,$ s?nb_pas_dt_max 10?nb_pas_dt_max 1?g\nw" | ed $jdd
+sed -i "s?nb_pas_dt_max 10?nb_pas_dt_max 1?g" $jdd
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $jdd
 # On lance un calcul en sequentiel et parallele pour generer
 # un .dat en sequentiel et un .dat en parallele pour tester

@@ -209,14 +209,13 @@ then
 	   	!/solveur_pression/ || (nb!=nb_solveur_pression) {print $0} 
          	' test_solveur_$ref.data > $tmp_data
       mv -f $tmp_data test_solveur_$ref.data
-      # echo -e "/solveur_pression/ s?{[ \t]?{ save_matrice ?\nw" | ed test_solveur_$ref.data 1>/dev/null 2>&1
    fi
    if [ $resolution = solveur_implicite ]
    then
-      echo -e "1,$ s?seuil_convergence_solveur.*? solveur gmres { save_matrice seuil $seuil controle_residu 1 diag impr }?g\nw" | ed test_solveur_$ref.data 1>/dev/null 2>&1
+      sed -i "s?seuil_convergence_solveur.*? solveur gmres { save_matrice seuil $seuil controle_residu 1 diag impr }?g" test_solveur_$ref.data
    fi
    # On fait 1 seul pas de temps pour creer la matrice et le second membre
-   echo -e "1,$ s?nb_pas_dt_max .*?nb_pas_dt_max 1?g\nw" | ed test_solveur_$ref.data 1>/dev/null 2>&1
+   sed -i "s?nb_pas_dt_max .*?nb_pas_dt_max 1?g" test_solveur_$ref.data
    # On lance le calcul (qui fera un pas de temps puis qui testera les solveurs apres la resolution)
    output=test_solveur_$ref.out_err
    trust test_solveur_$ref $NB_PROCS 1>out 2>err
@@ -259,7 +258,7 @@ do
 
          else
             # Changement du solveur implicite dans le jeu de donnees (Fonctionne que si c'est sur une seule ligne)
-            echo $ECHO_OPTS "1,$ s?$solveur_initial?$keyword $solver?g\nw $jdd.data" | ed $ref.data 1>/dev/null 2>&1
+            sed "s?$solveur_initial?$keyword $solver?g" $ref.data > $jdd.data
          fi
          # Changement de dt_impr pour imprimer a chaque pas de temps
          dt_impr=`grep -i dt_impr $jdd.data`
@@ -305,7 +304,7 @@ done
 echo "********"
 echo "RANKING:"
 echo "********"
-echo $ECHO_OPTS "1,$ s?$HOST?$HOST $size?g\nw" | ed rank 1>/dev/null 2>&1
+sed -i "s?$HOST?$HOST $size?g" rank
 head -2 rank | tee ranking.$$
 # tail +3 pas portable
 awk '(NR>2) && ($6=="OK" || $7=="OK")' rank | sort -n | tee -a ranking.$$

@@ -91,7 +91,7 @@ do
          sed "s/opt_compile/$OPT/" $TRUST_ROOT/env/Makefile.atelier > $rep_exec/Makefile
          chmod 755 $rep_exec/Makefile
          # Pour portabilite sur RS6000-AIX:
-         [ $TRUST_ARCH = RS6000 ] && echo $ECHO_OPTS "1,$ s?LIB = \$(TRUST_LIB)/TRUST?LIB = TRUST?g\nw" | ed $rep_exec/Makefile 1>/dev/null 2>&1
+         [ $TRUST_ARCH = RS6000 ] && sed -i "s?LIB = \$(TRUST_LIB)/TRUST?LIB = TRUST?g" $rep_exec/Makefile
          cp $TRUST_ROOT/env/make.include.atelier $rep_exec/.
          chmod 755 $rep_exec/make.include.atelier
          [ -f $rep_dev/make.include.atelier ] && cp $rep_dev/make.include.atelier $rep_exec/make.include.atelier

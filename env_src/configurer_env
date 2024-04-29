@@ -2328,10 +2328,10 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    # 30/08/04: Pour les makefile avec profile, rajout de -a (profile par ligne avec gprof -l) : non gcc 3.2 n'accepte pas...
    # Il semble qu'il faille utiliser -g pour cela ou -fprofile-arcs -ftest-coverage pour gcov (en tout -g pour valgrind --tool=cachegrind
    # et de -fno-inline pour Linux afin de voir le + plus precisement possible ou est depense le CPU
-   #echo $ECHO_OPTS "1,$ s?$O?-pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline -fprofile-arcs -ftest-coverage"` $O?g\nw" | ed make.$suffixe2 1>/dev/null 2>&1
+   #sed -i "s?$O?-pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline -fprofile-arcs -ftest-coverage"` $O?g" make.$suffixe2
    # On vire -fprofile-arcs -ftest-coverage car plante sur tantale en parallele....
    # On vire -fno-inline car on peut compiler fichier par fichier
-   #echo $ECHO_OPTS "1,$ s?$O?-g -pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline"` $O?g\nw" | ed make.$suffixe2 1>/dev/null 2>&1
+   #sed -i "s?$O?-g -pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline"` $O?g" make.$suffixe2
    option_profile="-pg" && [ "`uname -m`" = ia64 ] && option_profile="-p" # -qp devient obsolete Intel 10
    if [ "`uname -m`" = i686 ] || [ "`uname -m | grep 64`" != "" ]
    then
@@ -2341,9 +2341,9 @@ LINK_MALIB = $LINK_MALIB" > $tmp
       # Avec icpc l'inlining ne se fait pas avec -pg on le force:
       [ "`basename $TRUST_CC_BASE`" = icpc ] && option_profile=$option_profile" -inline-forceinline"
    fi
-   echo $ECHO_OPTS "1,$ s?-O?-g $option_profile -O?g\nw" | ed $tmp 1>/dev/null 2>&1
+   sed -i "s?-O?-g $option_profile -O?g" $tmp
    # Pour le link il faut -pg !
-   echo $ECHO_OPTS "1,$ s?SYSLIBS =?SYSLIBS = $option_profile?g\nw" | ed $tmp 1>/dev/null 2>&1
+   sed -i "s?SYSLIBS =?SYSLIBS = $option_profile?g" $tmp
 
    suffixe2=$TRUST_ARCH_CC${suffixe#$TRUST_ARCH_CC}"_pg"
    update_file $tmp make.$suffixe2
@@ -2357,13 +2357,13 @@ LINK_MALIB = $LINK_MALIB" > $tmp
       # Creation d'un fichier d'environnement pour la compilation avec -ftest-coverage -fprofile-arcs
       cp -f make.$suffixe $tmp
       GCOV_FLAG="-fno-inline -ftest-coverage -fprofile-arcs"
-      echo $ECHO_OPTS "1,$ s?CppFlags =?CppFlags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
-      echo $ECHO_OPTS "1,$ s?F77Flags =?F77Flags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
-      echo $ECHO_OPTS "1,$ s?ccFLAGS =?ccFLAGS = $GCOV_FLAG?g\nw"   | ed $tmp 1>/dev/null 2>&1
+      sed -i "s?CppFlags =?CppFlags = $GCOV_FLAG?g" $tmp
+      sed -i "s?F77Flags =?F77Flags = $GCOV_FLAG?g" $tmp
+      sed -i "s?ccFLAGS =?ccFLAGS = $GCOV_FLAG?g"  $tmp
       # O3 -> O0 pour cachegrind:
       sed -i "1,$ s?-O3?-g -O0?g" $tmp
       # Attention mpiCC --showme:link depend de MPI (-link_info sur castor): a ameliorer si necessaire
-      echo $ECHO_OPTS "1,$ s?SYSLIBS =?SYSLIBS = `$TRUST_CC --showme:link 2>/dev/null` -ftest-coverage -fprofile-arcs ?g\nw" | ed $tmp 1>/dev/null 2>&1
+      sed -i "s?SYSLIBS =?SYSLIBS = `$TRUST_CC --showme:link 2>/dev/null` -ftest-coverage -fprofile-arcs ?g" $tmp
       suffixe3=$TRUST_ARCH_CC${suffixe#$TRUST_ARCH_CC}"_gcov"
       update_file $tmp make.$suffixe3
    fi
@@ -2372,12 +2372,12 @@ done
 # vite pour les tests de non regression
 tmp=`mktemp_`
 cp -f make.$TRUST_ARCH_CC"_opt" $tmp
-echo $ECHO_OPTS "1,$ s?-DNDEBUG??g\nw"  | ed $tmp 1>/dev/null 2>&1
+sed -i "s?-DNDEBUG??g" $tmp
 # PL: Ajout sur GNU semi_opt de -fsanitize=address : https://www.osc.edu/resources/getting_started/howto/howto_use_address_sanitizer
 # Non affreusement lent a l'execution
 # fsan="" && [ "$GNU_VERSION" != "" ] && fsan=-fsanitize=address
 # On ne met pas -g car augmente la taille du semi-opt et de toutes les facons variables non debugable -> optimized-out
-#echo $ECHO_OPTS "1,$ s?-O3?-g -O3 $fsan?g\nw" | ed $tmp 1>/dev/null 2>&1
+#sed -i "s?-O3?-g -O3 $fsan?g" $tmp
 suffixe4=$TRUST_ARCH_CC"_semi_opt"
 update_file $tmp make.$suffixe4
 
@@ -2386,8 +2386,8 @@ if [ "$AVX_SUPPORTED" = 0 ]
 then
    tmp=`mktemp_`
    cp -f make.$TRUST_ARCH_CC"_opt" $tmp
-   echo $ECHO_OPTS "1,$ s?-O3?-O3 $AVX_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s?Defines =?Defines = -DWITH_SSE?g\nw" | ed $tmp 1>/dev/null 2>&1
+   sed -i "s?-O3?-O3 $AVX_FLAG?g" $tmp
+   sed -i "s?Defines =?Defines = -DWITH_SSE?g" $tmp
    suffixe5=$TRUST_ARCH_CC"_opt_avx"
    update_file $tmp make.$suffixe5
 fi

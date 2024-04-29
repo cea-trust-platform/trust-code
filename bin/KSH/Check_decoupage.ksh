@@ -20,13 +20,13 @@ send_and_exit()
 }
 change_timestep()
 {
-   echo $ECHO_OPTS "1,$ s?nb_pas_dt_max [0-9]*?nb_pas_dt_max 3?g\nw" | ed $1 1>/dev/null 2>&1
+   sed -i "s?nb_pas_dt_max [0-9]*?nb_pas_dt_max 3?g" $1
    if [ $? != 0 ]
    then
-      echo $ECHO_OPTS "1,$ s?tinit ?nb_pas_dt_max 3 tinit ?g\nw" | ed $1 1>/dev/null 2>&1
+      sed -i "s?tinit ?nb_pas_dt_max 3 tinit ?g" $1
       if [ $? != 0 ]
       then
-         echo $ECHO_OPTS "1,$ s?tmax ?nb_pas_dt_max 3 tmax ?g\nw" | ed $1 1>/dev/null 2>&1
+         sed -i "s?tmax ?nb_pas_dt_max 3 tmax ?g" $1
       else
          echo "Impossible d'appliquer change_timestep sur $1."
 	 send_and_exit -1
@@ -247,7 +247,7 @@ then
       else
          PARALLEL_NEW="# PARALLEL OK $NB_PROCS #"
       fi
-      echo $ECHO_OPTS "1,$ s?$PARALLEL?$PARALLEL_NEW?g\nw" | ed $cas.data 1>/dev/null 2>&1
+      sed -i "s?$PARALLEL?$PARALLEL_NEW?g" $cas.data
    fi
 fi
 send_and_exit

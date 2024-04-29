@@ -70,13 +70,13 @@ else
    # Construction de la liste des repertoires
    ch=`cd $TRUST_ROOT;find src -type d | $TRUST_Awk '{gsub("\\\./","",$1);ch=ch"$(TRUST_TMP)/TRUST_dox/"$1" "} END {print ch " $(TRUST_TMP)/TRUST_dox/baltik/"}'`
    echo "Changing $TRUST_TMP/Doxyfile..."
-   echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $ch?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
-   echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   sed -i "s?INPUT                  =?INPUT                  = $ch?g" $TRUST_TMP/Doxyfile || exit -1
+   sed -i "s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g" $TRUST_TMP/Doxyfile || exit -1
    # Attention depuis quelques versions INCLUDE_PATH = $(TRUST_ROOT)/include ne marche pas...
-   echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $ch?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   sed -i "s?INCLUDE_PATH           =?INCLUDE_PATH           = $ch?g" $TRUST_TMP/Doxyfile || exit -1
    Defines=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
    [ "`grep __PETSCKSP_H $PETSC_ROOT/$TRUST_ARCH/include/petscksp.h 2>/dev/null`" != "" ] && Defines=$Defines" __PETSCKSP_H"
-   echo $ECHO_OPTS "1,$ s?PREDEFINED             =?PREDEFINED             = $Defines?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   sed -i "s?PREDEFINED             =?PREDEFINED             = $Defines?g" $TRUST_TMP/Doxyfile || exit -1
    #################################
    # Parsing particulier des sources
    #################################
@@ -103,7 +103,7 @@ else
    echo "OK Documentation at $TRUST_ROOT/doc/html/index.html finished !"      
    )      
    # On cree le bouton pour regenerer la doc
-   echo $ECHO_OPTS "1,$ s?<p>?<p><form METHOD=Change ACTION=$TRUST_ROOT/form/make_Doxyfile.ksh\?><input type=submit value=Generate>  Recreate the TRUST documentation with Doxygen.</form>?g\nw" | ed $TRUST_ROOT/doc/html/index.html 1>/dev/null 2>&1
+   sed -i "s?<p>?<p><form METHOD=Change ACTION=$TRUST_ROOT/form/make_Doxyfile.ksh\?><input type=submit value=Generate>  Recreate the TRUST documentation with Doxygen.</form>?g" $TRUST_ROOT/doc/html/index.html
 fi
 [ "$GUI" = 1 ] && eval $FIN
 exit 0

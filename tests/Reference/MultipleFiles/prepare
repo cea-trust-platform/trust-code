@@ -5,7 +5,7 @@ if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    #make_PAR.data sauve
    #NP=$?
-   #echo $ECHO_OPTS "1,$ s? $jdd? PAR_$jdd?g\nw" | ed PAR_sauve.data
+   #sed -i "s? $jdd? PAR_$jdd?g" PAR_sauve.data
    trust PAR_sauve 4 || exit -1
 fi
 

@@ -84,6 +84,6 @@ then
 elif [ "`grep filetype=TRUST $ftdetect`" = "" ]
 then 
    # Change the load:
-   echo $ECHO_OPTS "1,$ s?filetype=TRUST_\(.*\)?filetype=TRUST?g\nw" | ed $ftdetect 1>/dev/null 2>&1
+   sed -i "s?filetype=TRUST_\(.*\)?filetype=TRUST?g" $ftdetect
    echo "$ftdetect updated..."
 fi

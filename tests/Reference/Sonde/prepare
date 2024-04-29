@@ -11,19 +11,19 @@ rm -f ?_SONDE.son
 for periode in 0.001 0.005 0.01 1
 do
    let i=$i+1
-   echo $ECHO_OPTS "1,$ s?periode 0.01 ?periode $periode ?g\nw $i.data" | ed Sonde.data
+   sed "s?periode 0.01 ?periode $periode ?g" Sonde.data > $i.data
    trust $i || exit -1
 done
 # On teste une reprise sans le .son
 trust Sonde || exit -1
 let i=$i+1
 cat Sonde.data > $i.data
-echo $ECHO_OPTS "1,$ s?tinit 0?tinit 0.05?g\nw $i.data" | ed Sonde.data
-echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed $i.data
+sed "s?tinit 0?tinit 0.05?g" Sonde.data > $i.data
+sed -i "s?sauvegarde ?reprise ?g" $i.data
 trust $i || exit -1
 # On teste une reprise avec le .son
 let i=$i+1
 cat Sonde_SONDE.son > $i"_SONDE".son
-echo $ECHO_OPTS "1,$ s?tinit 0?tinit 0.05?g\nw $i.data" | ed Sonde.data
-echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed $i.data
+sed "s?tinit 0?tinit 0.05?g" Sonde.data > $i.data
+sed -i "s?sauvegarde ?reprise ?g" $i.data
 trust $i

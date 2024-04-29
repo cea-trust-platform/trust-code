@@ -5,7 +5,7 @@ second=`basename $second`
 first=first
 # Run first calculation to create the matrix and save it
 # Suppress resume
-echo $ECHO_OPTS "1,$ s?resume_last_time binaire $first"_pb.sauv"??g\nw $first.data" | ed $second.data
+sed "s?resume_last_time binaire $first"_pb.sauv"??g" $second.data > $first.data
 
 # Run sequential calculation:
 trust $first || exit -1

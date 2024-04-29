@@ -18,10 +18,10 @@ do
    fi
    if [ $format = lata ]
    then
-      echo $ECHO_OPTS "1,$ s?format lml?format lata?g\nw lata_$cas.data" | ed $cas.data 1>/dev/null 2>&1
+      sed "s?format lml?format lata?g" $cas.data > lata_$cas.data
       cas=lata_$cas.data
-      echo $ECHO_OPTS "1,$ s?vitesse elem?vitesse elem vitesse faces?g\nw" | ed $cas.data 1>/dev/null 2>&1
-      echo $ECHO_OPTS "1,$ s?vitesse som?vitesse som vitesse faces?g\nw" | ed $cas.data 1>/dev/null 2>&1
+      sed -i "s?vitesse elem?vitesse elem vitesse faces?g" $cas.data
+      sed -i "s?vitesse som?vitesse som vitesse faces?g" $cas.data
    fi
    # Menage
    rm -f *.$format

@@ -6,7 +6,7 @@ jdd=`basename $jdd`
 # on teste les mots-cles reprise et resume_last_time
 cp -f $jdd.data sauvegarde.data
 chmod +w sauvegarde.data
-echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.004?g\nw" | ed sauvegarde.data
+sed -i "s?tmax 0.08?tmax 0.004?g" sauvegarde.data
 
 # Premiere partie du calcul 
 if [ ! -f PAR_$jdd.dt_ev ]
@@ -24,9 +24,9 @@ fi
 # Deuxieme partie du calcul (reprise)
 cp -f $jdd.data reprise.data
 chmod +w reprise.data
-echo $ECHO_OPTS "1,$ s?tinit 0.0?tinit 0.004?g\nw" | ed reprise.data
-echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.012?g\nw" | ed reprise.data
-echo $ECHO_OPTS "1,$ s?sauvegarde_simple ?reprise ?g\nw" | ed reprise.data
+sed -i "s?tinit 0.0?tinit 0.004?g" reprise.data
+sed -i "s?tmax 0.08?tmax 0.012?g" reprise.data
+sed -i "s?sauvegarde_simple ?reprise ?g" reprise.data
 
 if [ ! -f PAR_$jdd.dt_ev ]
 then
@@ -44,8 +44,8 @@ fi
 # Deuxieme partie du calcul (resume_last_time)
 cp -f $jdd.data resume_last_time.data
 chmod +w resume_last_time.data
-echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.012?g\nw" | ed resume_last_time.data
-echo $ECHO_OPTS "1,$ s?sauvegarde_simple ?resume_last_time ?g\nw" | ed resume_last_time.data
+sed -i "s?tmax 0.08?tmax 0.012?g" resume_last_time.data
+sed -i "s?sauvegarde_simple ?resume_last_time ?g" resume_last_time.data
 
 if [ ! -f PAR_$jdd.dt_ev ]
 then

@@ -30,7 +30,7 @@ do
        echo "Schema_$time_scheme sch"	>>	test.data
        cat ../$kind.data 		>> 	test.data
        cat ../template.data 		>> 	test.data
-       [ "$kind" = "SemiImplicit" ] && echo $ECHO_OPTS "1,$ s?diffusion {?Parametre_equation Parametre_diffusion_implicite { crank 1 } diffusion {?g\nw" | ed test.data 1>/dev/null 2>&1
+       [ "$kind" = "SemiImplicit" ] && sed -i "s?diffusion {?Parametre_equation Parametre_diffusion_implicite { crank 1 } diffusion {?g" test.data
        ln -sf ../post_run .
        cd ..
    done
