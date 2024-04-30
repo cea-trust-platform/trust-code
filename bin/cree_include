@@ -50,8 +50,15 @@ then
 else
     echo "  TRUST not configured with EOS. Cleaning include/EOS ..."
     echo "#undef HAS_EOS" > $TRUST_TMP/eos++.h.tmp
+    if [ -d EOS ] && [ "`find EOS -type l 2>/dev/null`" != "" ]
+    then
+       for f in `find EOS -type l 2>/dev/null`
+       do
+          unlink $f
+       done
+    fi
 fi
-[ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && rm -rf EOS/* && cat $TRUST_TMP/eos++.h.tmp > EOS/eos++.h && rm -f $TRUST_TMP/eos++.h.tmp
+[ "`diff EOS/eos++.h $TRUST_TMP/eos++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && cat $TRUST_TMP/eos++.h.tmp > EOS/eos++.h && rm -f $TRUST_TMP/eos++.h.tmp
 # CoolProp includes in CoolProp if 
 if [ "$TRUST_COOLPROP_HOME_DIR" != "" ]
 then
@@ -73,8 +80,15 @@ then
 else
     echo "  TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
     echo "#undef HAS_COOLPROP" > $TRUST_TMP/coolprop++.h.tmp
+    if [ -d CoolProp ] && [ "`find CoolProp -type l 2>/dev/null`" != "" ]
+    then
+       for f in `find CoolProp -type l 2>/dev/null`
+       do
+          unlink $f
+       done
+    fi
 fi
-[ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && rm -rf CoolProp/* && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h && rm -f $TRUST_TMP/coolprop++.h.tmp
+[ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h && rm -f $TRUST_TMP/coolprop++.h.tmp
 
 # Kokkos tag:
 kokkos_hdr=$TRUST_ROOT/src/Kernel/Utilitaires/kokkos++.h
