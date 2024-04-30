@@ -243,7 +243,7 @@ then
    do
       if [ -d $rep ]
       then
-         # On compile TOUTES les librairies en optimise:
+         # On compile TOUTES les librairies en optimise, sauf si flags debug pour PETSc
          \cd $rep
          echo>>$COMPILE
          echo "$MESSAGE library: $rep" 1>>$COMPILE 2>&1

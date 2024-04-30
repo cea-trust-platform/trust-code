@@ -6,14 +6,15 @@ all_srcs=$1  # All plugin sources ...
 if [ "$2" = "-with_med" ]; then
     echo "  -> with MED support"
     med_extension="*.med"
-    med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I"${TRUST_MEDCOUPLING_ROOT}"/include/ -I"${TRUST_MED_ROOT}"/include"
-    med_libs="${TRUST_MEDCOUPLING_ROOT}/lib/libmedloader.a    ${TRUST_MEDCOUPLING_ROOT}/lib/libmedcouplingremapper.a ${TRUST_MEDCOUPLING_ROOT}/lib/libmedcoupling.a  ${TRUST_MEDCOUPLING_ROOT}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_MED_ROOT}/lib/libhdf5.a -lz -lm  "  
+    medc_root="${TRUST_MEDCOUPLING_ROOT}/${TRUST_ARCH}_opt"
+    med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I${medc_root}/include/ -I${TRUST_MED_ROOT}/include"
+    med_libs="${medc_root}/lib/libmedloader.a  ${medc_root}/lib/libmedcouplingremapper.a ${medc_root}/lib/libmedcoupling.a ${medc_root}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_MED_ROOT}/lib/libhdf5.a -lz -lm  "  
 fi
 
 extra_incl=" -I${TRUST_ROOT}/src/Kernel/Utilitaires -I${TRUST_ROOT}/src/Kernel/Math -I${TRUST_ROOT}/src/Kernel/Geometrie "
 def_latatools=" -DLATATOOLS=1 "
 
-# -Wno-depreacted ne marche pas sous windows
+# -Wno-deprecated ne marche pas sous windows
 cat > lata.xml <<EOF
 <?xml version="1.0"?>
   <Plugin name="lata" type="database" label="lata import file" version="1.0" enabled="true" mdspecificcode="false" onlyengine="false" noengine="false" dbtype="MTMD" haswriter="false" hasoptions="false">

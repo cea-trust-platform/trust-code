@@ -12,7 +12,8 @@ We provide here a python package that can be used to deeply analyze the .med fil
 import sys, os
 
 mcr = os.environ["TRUST_MEDCOUPLING_ROOT"]
-sub = "lib/python%d.%d/site-packages" % (sys.version_info.major, sys.version_info.minor)
+arch = os.environ["TRUST_ARCH"]
+sub = "%s_opt/lib/python%d.%d/site-packages" % (arch, sys.version_info.major, sys.version_info.minor)
 sys.path.append(os.path.join(mcr, sub))
 sys.path.append(os.path.join(mcr, "bin"))
 try:

@@ -303,6 +303,7 @@ echo " "
 echo -e "\033[1m\033[4mOptions to enable/disable libraries/tools\033[0m"
 echo " "
 echo "   -enable-petsc-debug               Enable PETSc library debug only with \$exec_debug of TRUST."
+echo "   -enable-mc-debug                  Enable MEDCoupling library debug only with \$exec_debug of TRUST."
 echo "   -with-doxygen-doc                 Enable the build of HTML documentation of TRUST sources."
 echo " "
 echo "   -disable-petsc-optionals          Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
@@ -389,6 +390,7 @@ done
 export TRUST_DISABLE_HWLOC=0
 export TRUST_DISABLE_PETSC_OPTIONALS=0
 export TRUST_ENABLE_PETSC_DEBUG=0
+export TRUST_ENABLE_MC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CGNS=0
 export TRUST_DISABLE_CHECK_SRC=0
@@ -525,6 +527,10 @@ do
    elif [ "${1#-enable-petsc-debug}" != "$1" ]
    then
       export TRUST_ENABLE_PETSC_DEBUG=1
+
+   elif [ "${1#-enable-mc-debug}" != "$1" ]
+   then
+      export TRUST_ENABLE_MC_DEBUG=1
 
    elif [ "${1#-disable-avx}" != "$1" ]
    then
@@ -780,6 +786,7 @@ echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# D
 echo "TRUST_DISABLE_CGNS=$TRUST_DISABLE_CGNS && export TRUST_DISABLE_CGNS  # Disable/enable CGNS library."   >> $var
 echo "TRUST_DISABLE_PETSC_OPTIONALS=$TRUST_DISABLE_PETSC_OPTIONALS && export TRUST_DISABLE_PETSC_OPTIONALS	# Disable/enable PETSc visualization features"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
+echo "TRUST_ENABLE_MC_DEBUG=$TRUST_ENABLE_MC_DEBUG && export TRUST_ENABLE_MC_DEBUG # Disable/enable MEDCoupling debug" >> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
 echo "TRUST_DISABLE_MPI4PY=$TRUST_DISABLE_MPI4PY && export TRUST_DISABLE_MPI4PY  # disable mpi4py build." >> $var

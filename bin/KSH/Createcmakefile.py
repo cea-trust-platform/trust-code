@@ -42,7 +42,7 @@ endif(COMPIL_DYN)
 def full_path(root_dir, ze_dir):
     """ From src/titi -> /a/b/c/TRUST/src/titi """
     return os.path.join(root_dir, ze_dir)
-    
+
 def short_path(root_dir, ze_dir):
     """ Opposite of full_path() above """
     return ze_dir.replace(os.path.join(root_dir, ""), "")
@@ -130,7 +130,7 @@ def list_dir_containing_compilable(root_dir):
             if f.endswith(e):
                 return True
         return False
-        
+
     listdirorg = []
     for dirpath, dirnames, filenames in os.walk(root_dir):
         if filenames:
@@ -154,14 +154,14 @@ def generate_cmake_files(root_dir, atelier):
     _full_physic_inc = []
     for d in PHYSICAL_MODULES:
       _full_physic_inc.extend(all_sub_dirs(root_dir, d))
-    
+
     # Generate sub CMakeLists.txt for each sub-directory in the TRUST sources:
     #
     for d in listdirorg:
         d_short = short_path(root_dir, d)
         cmake_fnam = os.path.join(d, 'CMakeLists.txt')
         with open(cmake_fnam, "w") as f:
-            d_short = short_path(root_dir, d)          
+            d_short = short_path(root_dir, d)
             s = generate_subdir_cmake(root_dir, d_short, cmake_fnam)
             f.write(s)
 
@@ -361,7 +361,6 @@ set(syslib ${libs} ${linker_flag} )
 #
 # Include directories and extra flags:
 #
-
 # PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:
 
 # Metis might come from PETSc or be installed standalone:
@@ -372,7 +371,7 @@ endif()
 include_directories(SYSTEM 
     ${TRUST_MED_ROOT}/include 
     ${TRUST_CGNS_ROOT}/include 
-    ${TRUST_MEDCOUPLING_ROOT}/include 
+    ${TRUST_MEDCOUPLING_ROOT}/${TRUST_ARCH}${OPT}/include 
     ${MPI_INCLUDE} 
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include 
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include 
@@ -651,7 +650,7 @@ if  __name__ == '__main__':
     dirs = []
     if len(args) != 0:
         raise ValueError("Unexpected command line argument(s): %s" % ' '.join(args))
-        
+
     root_dir = os.environ.get("TRUST_ROOT")
     generate_cmake_files(root_dir, atelier)
 

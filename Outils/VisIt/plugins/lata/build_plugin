@@ -51,7 +51,7 @@ if [ ! -d ${Build} ]; then
     echo "# Compiling $plugin plugin..."
     # Regroupement des sources du plugin depuis le Kernel:
     MED="-with_med"
-    [ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
+    [ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH}_opt/lib/libmedloader.a ] && MED=""
     $DIR/src/generate_lata_xml.sh "$all_srcs" $MED
 
    env LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH $local/xml2info lata.xml 

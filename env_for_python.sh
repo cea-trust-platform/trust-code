@@ -25,7 +25,7 @@ then
 fi
 
 # Chargement MEDCoupling
-if [ "`echo $PYTHONPATH | grep -i LIBMEDCOUPLING/install/bin`" = "" ]
+if [ "`echo $PYTHONPATH | grep -i LIBMEDCOUPLING/${TRUST_ARCH}_opt/bin`" = "" ]
 then
   if [ -f $TRUST_MEDCOUPLING_ROOT/env.sh ]
   then

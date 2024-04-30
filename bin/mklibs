@@ -224,7 +224,7 @@ fi
 # MEDCoupling (before MED!!)
 #############
 LISTP="" && [ "$TRUST_DISABLE_MPI" != 1 ] && LISTP="paramedmem paramedloader"
-ALL_P=$ALL_P" \$ENV{TRUST_MEDCOUPLING_ROOT}/lib"
+ALL_P=$ALL_P" \$ENV{TRUST_MEDCOUPLING_ROOT}/\$ENV{TRUST_ARCH}\${OPT}/lib"
 ALL_L=$ALL_L" medloader medcouplingremapper medcoupling medicoco $LISTP interpkernel"
 
 #####

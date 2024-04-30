@@ -519,7 +519,7 @@ do
       ##############################
       # MEDCOUPLING est il compile ?
       ##############################
-      if [ -f $TRUST_MEDCOUPLING_ROOT/lib/libmedcoupling.a ]
+      if [ -f $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH}_opt/lib/libmedcoupling.a ]
       then
          echo "MEDCOUPLING=OK"
       else

@@ -55,7 +55,8 @@ def useMEDCoupling():
     import sys
 
     mcr = os.environ["TRUST_MEDCOUPLING_ROOT"]
-    sub = "lib/python%d.%d/site-packages" % (sys.version_info.major, sys.version_info.minor)
+    arch = os.environ["TRUST_ARCH"]
+    sub = "%s_opt/lib/python%d.%d/site-packages" % (arch, sys.version_info.major, sys.version_info.minor)
     sys.path.append(os.path.join(mcr, sub))
     sys.path.append(os.path.join(mcr, "bin"))
     try:
@@ -413,9 +414,9 @@ class TRUSTCase(object):
             err = getLastLines_(err_file)
 
         os.chdir(path)
-        
+
         baseName = os.path.join(self.dir_, self.dataFileName_)
-        
+
         saveFileAccumulator(f"{baseName}.dt_ev")
         saveFileAccumulator(f"{baseName}.data")
         saveFileAccumulator(f"{baseName}.out")
@@ -469,7 +470,7 @@ class TRUSTCase(object):
             passed in parameter.
         """
         os.chdir(self._fullDir())
- 
+
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
         # Very specific to the validation process - we need to keep build there:
         if not opt is None and "-not_run" in opt:
@@ -491,7 +492,7 @@ class TRUSTCase(object):
 
         zeTable.addLine([row], self.dir_ + "/" + self.dataFileName_)
         os.chdir(ORIGIN_DIRECTORY)
-        
+
         ## Save the file
         saveFileAccumulator(self.dir_ + "/" + self.dataFileName_ + ".perf")
 
@@ -524,13 +525,13 @@ class TRUSTSuite(object):
         for image in image_files:
             saveFileAccumulator(str(image))
 
-        
+
 
     def addCase(self, case):
         self.cases_.append(case)
-        
+
         baseName = os.path.join(case.dir_, case.name_)
-        
+
         saveFileAccumulator(f"{baseName}.dt_ev")
         saveFileAccumulator(f"{baseName}.data")
         saveFileAccumulator(f"{baseName}.out")
@@ -702,7 +703,7 @@ class TRUSTSuite(object):
         """
         text = "### Test cases \n"
         for c in self.getCases():
-            text += "* " + c.dir_ + "/" + c.dataFileName_ + ".data " 
+            text += "* " + c.dir_ + "/" + c.dataFileName_ + ".data "
             if (int(c.nbProcs_) > 1):
                 text += "with " + str(c.nbProcs_)  + " procs"
             text += "\n"
@@ -714,11 +715,11 @@ def readFile(data):
     """
     path = os.getcwd()
     os.chdir(BUILD_DIRECTORY)
-    
+
     f = open(data,"r")
     print(f.read())
     f.close()
-    
+
     os.chdir(path)
 
     saveFileAccumulator(data)
@@ -1072,5 +1073,5 @@ def tablePerf():
 def initBuildDirectory():
     """ triggers build directory creation and copy src stuff into it
     """
-    global defaultSuite_ 
+    global defaultSuite_
     defaultSuite_ = TRUSTSuite()
