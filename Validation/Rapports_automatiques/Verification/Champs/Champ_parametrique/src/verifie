@@ -1,0 +1,16 @@
+#!/bin/bash
+jdd=$1
+if [ $jdd = cp ] || [ $jdd = Champ_parametrique_jdd1 ]
+then
+   exit 0 # La verification est faite au niveau de la fiche de validation
+fi
+echo "Checking results for $jdd.."
+# Verification que tout le monde est bien la:
+grep TRUST $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
+grep GEOM $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
+grep $jdd *.son 	1>/dev/null 2>&1 || exit -1 	# son
+grep temps $jdd.dt_ev 	1>/dev/null 2>&1 || exit -1 	# dt_ev
+# compare la derniere valeur de chaque sonde de temperature:
+compare_sonde cp_T.son $jdd"_T".son -type statio || exit -1
+exit 0
+

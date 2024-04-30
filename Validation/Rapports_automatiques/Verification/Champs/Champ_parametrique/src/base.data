@@ -67,7 +67,6 @@ Read pb
         solveur_pression petsc cholesky { }
         convection { quick }
         diffusion { }
-        sources { boussinesq_temperature { T0 5. } }
         initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
         boundary_conditions {
             Haut paroi_fixe
@@ -88,18 +87,16 @@ Read pb
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
         initial_conditions { Temperature Champ_Uniforme 1 0. }
-        # sources { Puissance_thermique Champ_Fonc_MED { use_existing_domain file puissance.med domain dom field TEMPERATURE_ELEM_dom loc elem last_time } } #
-        # sources { Puissance_thermique champ_uniforme_morceaux dom 1 { defaut 0 zone 10 } } #
-        sources { Puissance_thermique champ_parametrique { probleme pb fichier puissance.txt } }
+        sources { Puissance_thermique _champ_ }
     }
     Post_processing
     {
         probes
         {
-            temperature temperature periode 0.01 points 1 0.0045 0.0045
+            T temperature periode 0.01 points 1 0.0045 0.0045
         }
         format lata
-        fields dt_post 0.1
+        fields dt_post 10
         {
             vitesse elem
             temperature elem
