@@ -396,7 +396,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
                     }
                   else
                     {
-                      std::cout << "TOTO 2 "<< std::endl;
+                      //std::cout << "TOTO 2 "<< std::endl;
                       vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(filename,/*meshname,*/fields[i].c_str());
                       for (int it=0; it<vtimes.size(); it++)
                         {
@@ -538,7 +538,7 @@ void LataDB::read_data2_med_(
         {
           fieldname=fld.name_;
         }
-      std:cout << "TOTO " << fieldname.getString() << std::endl;
+      //std:cout << "TOTO " << fieldname.getString() << std::endl;
       vector<pair<pair<int,int>,double> > vtimes=MEDCoupling::GetAllFieldIterations(fld.filename_.getString(),fieldname.getString());
 
       int it=fld.timestep_-1;
