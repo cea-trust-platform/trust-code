@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,10 +15,6 @@
 
 #include <Op_Diff_Turbulent_PolyMAC_P0_Elem.h>
 #include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
-#include <PolyMAC_P0_discretisation.h>
-#include <Viscosite_turbulente_base.h>
-#include <Transport_turbulent_base.h>
-#include <Champ_Elem_PolyMAC_P0.h>
 #include <Pb_Multiphase.h>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyMAC_P0_Elem|Op_Diff_Turbulente_PolyMAC_P0_Elem", Op_Diff_PolyMAC_P0_Elem );
@@ -27,40 +23,59 @@ Sortie& Op_Diff_Turbulent_PolyMAC_P0_Elem::printOn(Sortie& os) const { return Op
 
 Entree& Op_Diff_Turbulent_PolyMAC_P0_Elem::readOn(Entree& is)
 {
-  //lecture de la correlation de viscosite turbulente
-  corr.typer_lire(equation().probleme(), "transport_turbulent", is);
+  //lecture de la correlation de diffusivite turbulente
+  corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
+  associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
+  ajout_champs_op_elem();
   return is;
+}
+
+void Op_Diff_Turbulent_PolyMAC_P0_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Op_Diff_PolyMAC_P0_Elem::get_noms_champs_postraitables(nom,opt);
+  get_noms_champs_postraitables_proto_elem(que_suis_je(), nom, opt);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::creer_champ(const Motcle& motlu)
 {
   Op_Diff_PolyMAC_P0_Elem::creer_champ(motlu);
+  creer_champ_proto_elem(motlu);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::mettre_a_jour(double temps)
 {
   Op_Diff_PolyMAC_P0_Elem::mettre_a_jour(temps);
+  const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
+
+  if (!sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm))
+    {
+      Cerr << "Error in " << que_suis_je() << ": no turbulent momentum diffusion found!" << finl;
+      Process::exit();
+    }
+
+  const Correlation& corr_visc_qdm = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
+  if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc_qdm.valeur()))
+    {
+      Cerr << "Error in " << que_suis_je() << ": no turbulent viscosity correlation found!" << finl;
+      Process::exit();
+    }
+
+  // on calcule d_t_
+  d_t_ = 0.; // XXX : pour n'avoir pas la partie laminaire
+  call_compute_diff_turb(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()));
+  mettre_a_jour_proto_elem(temps);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
 {
   Op_Diff_PolyMAC_P0_Elem::completer();
-  //si la correlation a besoin du gradient de u, on doit le creer maintenant
-  if (corr.non_nul() && ref_cast(Transport_turbulent_base, corr.valeur()).gradu_required())
-    equation().probleme().creer_champ("gradient_vitesse");
+  completer_proto_elem();
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
 {
-  if (corr.est_nul()) return; //rien a faire
+  if (corr_.est_nul()) return; //rien a faire
 
-  const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
-  if (!sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm))
-    Process::exit(que_suis_je() + ": no turbulent momentum diffusion found!");
-  const Correlation& corr_visc = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
-  if (corr.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc.valeur()))
-    Process::exit(que_suis_je() + ": no turbulent viscosity correlation found!");
-  //un "simple" appel a la correlation!
-  ref_cast(Transport_turbulent_base, corr.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), mu);
+  mu += d_t_;
   mu.echange_espace_virtuel();
 }

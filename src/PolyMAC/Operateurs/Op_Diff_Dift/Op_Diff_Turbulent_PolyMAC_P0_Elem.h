@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,8 @@
 #ifndef Op_Diff_Turbulent_PolyMAC_P0_Elem_included
 #define Op_Diff_Turbulent_PolyMAC_P0_Elem_included
 
+#include <Op_Dift_Multiphase_proto.h>
 #include <Op_Diff_PolyMAC_P0_Elem.h>
-#include <Correlation.h>
-#include <Transport_turbulent_base.h>
 
 /*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Elem
  *
@@ -27,26 +26,22 @@
  *
  */
 
-class Op_Diff_Turbulent_PolyMAC_P0_Elem: public Op_Diff_PolyMAC_P0_Elem
+class Op_Diff_Turbulent_PolyMAC_P0_Elem: public Op_Diff_PolyMAC_P0_Elem, public Op_Dift_Multiphase_proto
 {
   Declare_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Elem );
   int dimension_min_nu() const override //pour que la correlation force l'anisotrope (cf. GGDH)
   {
-    return ref_cast(Transport_turbulent_base, corr.valeur()).dimension_min_nu();
+    return ref_cast(Transport_turbulent_base, corr_.valeur()).dimension_min_nu();
   }
-  void completer() override;
-  void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
 
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
+  void completer() override;
+  void modifier_mu(DoubleTab&) const override; // prend en compte la diffusivite turbulente
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;
+
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
-
-protected:
-  Correlation corr; //correlation de transport turbulent
-
-  Champ_Fonc secmem_diff_; //gradient des vitesses de chaque phase
-  Motcle nom_secmem_diff_; //leurs noms
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 };
 
 #endif /* Op_Diff_PolyMAC_P0_Elem_included */

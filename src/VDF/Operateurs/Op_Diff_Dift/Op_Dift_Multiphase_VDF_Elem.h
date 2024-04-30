@@ -17,37 +17,33 @@
 #define Op_Dift_Multiphase_VDF_Elem_included
 
 #include <Transport_turbulent_base.h>
+#include <Op_Dift_Multiphase_proto.h>
 #include <Op_Dift_VDF_Elem_base.h>
 #include <Eval_Dift_VDF_leaves.h>
 #include <Op_Diff_Dift_VDF.h>
-#include <Correlation.h>
-#include <Champ_Fonc.h>
 
-// XXX : TODO : a toi CoCo !!! factorise via une classe base :)
-
-class Op_Dift_Multiphase_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_Multiphase_VDF_Elem>
+class Op_Dift_Multiphase_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_Multiphase_VDF_Elem>, public Op_Dift_Multiphase_proto
 {
-  Declare_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Elem);
+  Declare_instanciable(Op_Dift_Multiphase_VDF_Elem);
 public:
-  Op_Dift_Multiphase_VDF_Elem();
-
   void creer_champ(const Motcle& motlu) override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
+  void completer() override;
+  void mettre_a_jour(double ) override;
+  void associer_loipar(const Turbulence_paroi_scal& ) { throw; }
+  void associer_diffusivite_turbulente(const Champ_Fonc& ch) { throw; }
 
+  bool is_turb() const override { return true; }
   double calculer_dt_stab() const override;
-
-  inline double alpha_(const int i) const override { throw; }
-
+  double alpha_(const int i) const override { throw; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
+  inline const Correlation& correlation() const { return corr_ ;};
   inline const DoubleTab& alpha_() const { return tab_alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(); }
-
-  inline void associer_loipar(const Turbulence_paroi_scal& ) { throw; }
 
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override
   {
     associer_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(zd, zcd, ch);
   }
-
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { throw; }
 
   inline void associer_diffusivite(const Champ_base& ch) override
   {
@@ -59,30 +55,15 @@ public:
     return diffusivite_impl<Eval_Dift_Multiphase_VDF_Elem>();
   }
 
-  int dimension_min_nu() const //pour que la correlation force l'anisotrope (cf. GGDH)
+  int dimension_min_nu() const // pour que la correlation force l'anisotrope (cf. GGDH)
   {
     throw;
-//    return ref_cast(Transport_turbulent_base, corr_.valeur()).dimension_min_nu();
   }
 
   inline const DoubleTab& get_diffusivite_turbulente() const
   {
     return get_diffusivite_turbulente_multiphase_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM,Eval_Dift_Multiphase_VDF_Elem>();
   }
-
-  bool is_turb() const override { return true; }
-
-  void completer() override;
-
-  void mettre_a_jour(double ) override;
-  inline const Correlation& correlation() const { return corr_ ;};
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
-
-protected :
-  DoubleTab d_t_; // diffusivite turbulente
-  Correlation corr_; //correlation de viscosite turbulente
-  std::vector<Champ_Fonc> d_t_post_;
-  Motcles noms_d_t_post_; //leurs noms
 };
 
 #endif /* Op_Dift_Multiphase_VDF_Elem_included */
