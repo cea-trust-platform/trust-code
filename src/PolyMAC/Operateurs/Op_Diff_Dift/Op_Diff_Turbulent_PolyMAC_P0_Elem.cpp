@@ -45,8 +45,20 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::creer_champ(const Motcle& motlu)
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::mettre_a_jour(double temps)
 {
   Op_Diff_PolyMAC_P0_Elem::mettre_a_jour(temps);
-  const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
+  mettre_a_jour_proto_elem(temps);
+}
 
+void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
+{
+  Op_Diff_PolyMAC_P0_Elem::completer();
+  completer_proto_elem();
+}
+
+void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
+{
+  if (corr_.est_nul()) return; //rien a faire
+
+  const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
   if (!sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent momentum diffusion found!" << finl;
@@ -61,21 +73,15 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::mettre_a_jour(double temps)
     }
 
   // on calcule d_t_
-  d_t_ = 0.; // XXX : pour n'avoir pas la partie laminaire
-  call_compute_diff_turb(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()));
-  mettre_a_jour_proto_elem(temps);
-}
+  DoubleTab& diff_turb = ref_cast_non_const(DoubleTab, d_t_);
+  diff_turb = 0.; // XXX : pour postraitement et pour n'a pas avoir la partie laminaire
+  diff_turb -= mu;
 
-void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
-{
-  Op_Diff_PolyMAC_P0_Elem::completer();
-  completer_proto_elem();
-}
+  // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
+  ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()),
+                                                                 ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()),
+                                                                 mu);
 
-void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
-{
-  if (corr_.est_nul()) return; //rien a faire
-
-  mu += d_t_;
   mu.echange_espace_virtuel();
+  diff_turb += mu;
 }
