@@ -20,7 +20,7 @@
 #include <Domaine_VF.h>
 #include <Param.h>
 
-Implemente_instanciable(Viscosite_turbulente_WALE, "Viscosite_turbulente_WALE", Viscosite_turbulente_base);
+Implemente_instanciable(Viscosite_turbulente_WALE, "Viscosite_turbulente_WALE", Viscosite_turbulente_LES_base);
 // XD type_diffusion_turbulente_multiphase_wale type_diffusion_turbulente_multiphase_deriv wale 1 LES WALE type.
 
 Sortie& Viscosite_turbulente_WALE::printOn(Sortie& os) const { return os; }
@@ -138,8 +138,10 @@ void Viscosite_turbulente_WALE::eddy_viscosity(DoubleTab& nu_t) const
             }
         }
 
-      for (int i = 0; i < nu_t.dimension_tot(0); i++)
+      for (int i = 0; i < nu_t.dimension(0); i++)
         for (int n = 0; n < nu_t.dimension(1); n++)
           nu_t(i, n) = mod_const_ * mod_const_ * l_(i) * l_(i) * num_sur_denom(i, n);
+
+      nu_t.echange_espace_virtuel();
     }
 }
