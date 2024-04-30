@@ -363,8 +363,13 @@ set(syslib ${libs} ${linker_flag} )
 #
 
 # PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:
+
+# Metis might come from PETSc or be installed standalone:
+if ("$ENV{TRUST_DISABLE_PETSC}" STREQUAL "1")
+  include_directories(SYSTEM ${METIS_ROOT}/include)
+endif()
+
 include_directories(SYSTEM 
-    ${METIS_ROOT}/include 
     ${TRUST_MED_ROOT}/include 
     ${TRUST_CGNS_ROOT}/include 
     ${TRUST_MEDCOUPLING_ROOT}/include 
