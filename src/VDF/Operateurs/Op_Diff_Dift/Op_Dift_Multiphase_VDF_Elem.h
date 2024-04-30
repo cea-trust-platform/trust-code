@@ -24,8 +24,10 @@
 
 class Op_Dift_Multiphase_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_Multiphase_VDF_Elem>, public Op_Dift_Multiphase_proto
 {
-  Declare_instanciable(Op_Dift_Multiphase_VDF_Elem);
+  Declare_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Elem);
 public:
+  Op_Dift_Multiphase_VDF_Elem() : Op_Dift_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Dift_Multiphase_VDF_Elem>()) { }
+
   void creer_champ(const Motcle& motlu) override;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   void completer() override;

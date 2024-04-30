@@ -17,7 +17,7 @@
 #include <VDF_discretisation.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Op_Dift_Multiphase_VDF_Face,"Op_Diff_VDFTURBULENTE_Face|Op_Diff_VDFTURBULENT_Face",Op_Dift_VDF_Face_base);
+Implemente_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Face,"Op_Diff_VDFTURBULENTE_Face|Op_Diff_VDFTURBULENT_Face",Op_Dift_VDF_Face_base);
 
 Sortie& Op_Dift_Multiphase_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_Multiphase_VDF_Face::readOn(Entree& is)
