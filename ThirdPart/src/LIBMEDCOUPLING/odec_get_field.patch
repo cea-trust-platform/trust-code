@@ -1,0 +1,13 @@
+diff --git a/src/ParaMEDMEM/OverlapDEC.hxx b/src/ParaMEDMEM/OverlapDEC.hxx
+index e7ac3d2..28eca7f 100644
+--- a/src/ParaMEDMEM/OverlapDEC.hxx
++++ b/src/ParaMEDMEM/OverlapDEC.hxx
+@@ -258,6 +258,8 @@ namespace MEDCoupling
+     void setWorkSharingAlgo(int method)  { _load_balancing_algo = method; }
+ 
+     void debugPrintWorkSharing(std::ostream & ostr) const;
++    ParaFIELD* getSourceLocalField() { return _source_field; }
++    ParaFIELD* getTargetLocalField() { return _target_field; }
+   private:
+     int _load_balancing_algo;
+ 

@@ -42,6 +42,11 @@
 using MEDCoupling::MEDCouplingRemapper;
 using MEDCoupling::MEDCouplingUMesh;
 using MEDCoupling::MCAuto;
+#ifdef MPI_
+#include <OverlapDEC.hxx>
+using MEDCoupling::OverlapDEC;
+using MEDCoupling::MEDCouplingFieldDouble;
+#endif
 #endif
 
 #include <list>
@@ -316,7 +321,11 @@ public:
   inline const MEDCouplingUMesh* get_mc_face_mesh() const;
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  {   mc_mesh_ = m;   };
   // remapper with other domains
-  MEDCouplingRemapper* get_remapper(Domaine&);
+  MEDCouplingRemapper* get_remapper(const Domaine& other_dom);
+  // DEC with other domains
+#ifdef MPI_
+  OverlapDEC* get_dec(const Domaine& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc);
+#endif
 #endif
   void build_mc_mesh() const;
   void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
@@ -392,15 +401,20 @@ protected:
   mutable MCAuto<MEDCouplingUMesh> mc_mesh_;
   ///! MEDCoupling version of the face domain:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
+  // One remapper per distant domain...
   std::map<const Domaine*, MEDCoupling::MEDCouplingRemapper> rmps;
-
+#ifdef MPI_
+  // ... but one DEC per (distant domain, field nature)
+  std::map<std::pair<const Domaine*, MEDCoupling::NatureOfField>, OverlapDEC> decs;
+#endif
   mutable bool mc_mesh_ready_ = false;
 #endif
 
   void duplique_bords_internes();
 
 private:
-  void prepare_rmp_with(Domaine& );
+  void prepare_rmp_with(const Domaine& other_dom);
+  void prepare_dec_with(const Domaine& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc);
   // Volume total du domaine (somme sur tous les processeurs)
   double volume_total_;
   // Cached infos to accelerate Domaine::chercher_elements():

@@ -68,8 +68,10 @@ build_and_test_mc()
     (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/tetra_mc.patch)
     echo "Applying patch for dpIndex ..."
     (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_tri.patch)
-    echo "Applying patch for OverlapDEC (again) ..."
+    echo "Applying patch for OverlapDEC bug (again) ..."
     (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_odec.patch)
+    echo "Applying patch for OverlapDEC getField methods ..."
+    (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/odec_get_field.patch)
     
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`

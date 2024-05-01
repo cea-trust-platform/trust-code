@@ -21,16 +21,10 @@
 #include <Comm_Group_MPI.h>
 #include <Param.h>
 #include <MEDLoader.hxx>
+#include <ParaFIELD.hxx>
 
-Implemente_instanciable_sans_destructeur(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
 // XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 1 Field that is interpolated from a distant domain via MEDCoupling (remapper).
-
-Champ_Fonc_Interp::~Champ_Fonc_Interp()
-{
-#ifdef MPI_
-  if (dec_) dec_->release();
-#endif
-}
 
 Sortie& Champ_Fonc_Interp::printOn(Sortie& os) const { return Champ_Fonc_P0_base::printOn(os); }
 
@@ -47,7 +41,6 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   param.ajouter("dom_loc", &nom_dom_loc); // XD_ADD_P chaine Name of the local domain.
   param.ajouter("dom_dist", &nom_dom_dist); // XD_ADD_P chaine Name of the distant domain.
   param.ajouter("default_value", &default_value_); // XD_ADD_P chaine Name of the distant domain.
-  param.ajouter("sharing_algo", &sharing_algo_); // XD_ADD_P entier Setting the DEC sharing algo : 0,1,2
   param.ajouter("nature", &nat, Param::REQUIRED); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.ajouter("use_overlapdec", &use_dec_); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.lire_avec_accolades_depuis(is);
@@ -75,18 +68,6 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
     Option_Interpolation::USE_DEC = use_dec_;
   else
     use_dec_= Option_Interpolation::USE_DEC;
-
-  if (sharing_algo_ != -123)
-    Option_Interpolation::SHARING_ALGO = sharing_algo_;
-  else
-    sharing_algo_ = Option_Interpolation::SHARING_ALGO;
-
-  if (sharing_algo_ < 0 || sharing_algo_ > 2)
-    {
-      Cerr << "Champ_Front_Interp : wrong sharing_algo read : " << sharing_algo_ << finl;
-      Cerr << "Available values are 0, 1 or 2 ! See the MEDCoupling Doc ! " << finl;
-      Process::exit();
-    }
 
   return is;
 #else
@@ -199,25 +180,17 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   if (Process::nproc() > 1 && use_dec_)
     {
 #ifdef MPI_
-      std::set<True_int> pcs;
-      for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
-
-      if (! is_dec_initialized_)
-        dec_ = std::make_shared<MEDCoupling::OverlapDEC>(pcs, ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_trio_u_world());
 
       if (dom_loc_->get_mc_mesh() == nullptr) dom_loc_->build_mc_mesh();
       if (dom_dist_->get_mc_mesh() == nullptr) dom_dist_->build_mc_mesh();
 
       update_fields();
-      if (! is_dec_initialized_)
-        {
-          dec_->setWorkSharingAlgo(sharing_algo_);
-          dec_->attachSourceLocalField(distant_field_);
-          dec_->attachTargetLocalField(local_field_);
-          dec_->synchronize();
-          is_dec_initialized_ = true;
-        }
-      dec_->sendRecvData(true);
+      OverlapDEC *dec = dom_loc_->get_dec(dom_dist_.valeur(), distant_field_, local_field_);
+      /* the fields given to OverlapDEC can not be changed without calling synchronize... but we can change where they point to! */
+      dec->setDefaultValue(default_value_);
+      dec->getSourceLocalField()->getField()->setArray(distant_array_);
+      dec->getTargetLocalField()->getField()->setArray(local_array_);
+      dec->sendRecvData(true);
 #endif
     }
   else

@@ -38,6 +38,8 @@
 #include <NettoieNoeuds.h>
 #include <Polyedre.h>
 #include <TRUST_2_MED.h>
+#include <Comm_Group_MPI.h>
+#include <Option_Interpolation.h>
 
 #ifdef MEDCOUPLING_
 using MEDCoupling::DataArrayInt;
@@ -2342,7 +2344,7 @@ void Domaine::init_renum_perio()
   set_renum_som_perio(renum);
 }
 
-void Domaine::prepare_rmp_with(Domaine& other_domain)
+void Domaine::prepare_rmp_with(const Domaine& other_domain)
 {
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
@@ -2361,10 +2363,42 @@ void Domaine::prepare_rmp_with(Domaine& other_domain)
 #endif
 }
 
-#ifdef MEDCOUPLING_
-MEDCoupling::MEDCouplingRemapper* Domaine::get_remapper(Domaine& other_domain)
+void Domaine::prepare_dec_with(const Domaine& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc)
 {
-  if (!rmps.count(&other_domain)) prepare_rmp_with(other_domain);
+#if defined(MEDCOUPLING_) && defined(MPI_)
+  using namespace MEDCoupling;
+
+  Cerr << "Building DEC of nature " << (int)dist->getNature() << " between " << le_nom() << " and " << other_domain.le_nom() << " : ";
+  std::set<True_int> pcs;
+  for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
+  /* a bit technical */
+  decs.emplace(std::piecewise_construct,
+               std::forward_as_tuple(&other_domain, dist->getNature()),
+               std::forward_as_tuple(pcs, ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_trio_u_world()));
+  OverlapDEC& dec = decs.at({ &other_domain, dist->getNature()});
+  dec.setWorkSharingAlgo(Option_Interpolation::SHARING_ALGO);
+  dec.attachSourceLocalField(dist);
+  dec.attachTargetLocalField(loc);
+  dec.synchronize();
+
+  Cerr << "OK" << finl;
+#else
+  Process::exit("Domaine::prepare_dec_with() should not be called since it requires a TRUST version compiled with MEDCoupling and MPI!");
+#endif
+}
+
+#ifdef MEDCOUPLING_
+MEDCoupling::MEDCouplingRemapper* Domaine::get_remapper(const Domaine& other_domain)
+{
+  if (!rmps.count(&other_domain))
+    prepare_rmp_with(other_domain);
   return &rmps.at(&other_domain);
+}
+
+MEDCoupling::OverlapDEC* Domaine::get_dec(const Domaine& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc)
+{
+  if (!decs.count({ &other_domain, dist->getNature() } ))
+    prepare_dec_with(other_domain, dist, loc);
+  return &decs.at({ &other_domain, dist->getNature() });
 }
 #endif
