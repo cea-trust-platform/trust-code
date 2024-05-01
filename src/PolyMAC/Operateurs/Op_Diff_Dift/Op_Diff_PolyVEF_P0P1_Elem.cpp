@@ -268,9 +268,26 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                     (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n) += A(i, j, n);
                 }
 
-      /* flux de Neumann -> injection aux sommets */
-
-
+      /* CLs non Dirichlet -> injection aux sommets */
+      if (fcl[0](f, 0) && fcl[0](f, 0) < 5)
+        for (i = 0; i < n_sf; i++)
+          if ((s = f_s[0](f, i)) < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
+            {
+              double surf = dom[0].get().dot(&nf[0](f, 0), &Sa(i, 1, 0)) / fs[0](f); //partie de la surface vers le sommet
+              if (fcl[0](f, 0) == 1)
+                for (n = 0; n < N[0]; n++)
+                  {
+                    const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
+                    double sh = surf * ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
+                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * (v_aux[0](s, n) - T);
+                    if (mat[0])
+                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n) += sh;
+                  }
+              else if (fcl[0](f, 0) == 4)
+                for (n = 0; n < N[0]; n++)
+                  secmem(!aux_only * ne_tot[0] + s, n) -= surf * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
+              else abort();
+            }
     }
 
   /* autres equations : sommets de Dirichlet */
