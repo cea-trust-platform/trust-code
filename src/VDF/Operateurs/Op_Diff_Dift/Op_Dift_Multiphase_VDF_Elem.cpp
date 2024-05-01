@@ -26,14 +26,14 @@ Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
   corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
   associer_corr_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(corr_);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
-  ajout_champs_op_elem();
+  ajout_champs_proto_elem();
   return is;
 }
 
 void Op_Dift_Multiphase_VDF_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Op_Dift_VDF_Elem_base::get_noms_champs_postraitables(nom,opt);
-  get_noms_champs_postraitables_proto_elem(que_suis_je(), nom, opt);
+  get_noms_champs_postraitables_proto(que_suis_je(), nom, opt);
 }
 
 void Op_Dift_Multiphase_VDF_Elem::creer_champ(const Motcle& motlu)
@@ -48,7 +48,7 @@ void Op_Dift_Multiphase_VDF_Elem::completer()
   completer_Op_Dift_VDF_base();
   associer_pb<Eval_Dift_Multiphase_VDF_Elem>(equation().probleme());
   completer_proto_elem();
-  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
+  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(nu_ou_lambda_turb_);
 }
 
 void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
@@ -70,9 +70,9 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
     }
 
   // on calcule d_t_
-  d_t_ = 0.; // XXX : pour n'avoir pas la partie laminaire
+  nu_ou_lambda_turb_ = 0.; // XXX : pour n'avoir pas la partie laminaire
   call_compute_diff_turb(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()));
-  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
+  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(nu_ou_lambda_turb_);
   mettre_a_jour_proto_elem(temps);
 }
 
@@ -99,7 +99,7 @@ double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
         }
 
       // TODO : FIXME : peut etre si alp > 1 e-3 pour eviter dt <<<< ??
-      double alpha_diff_physique = alp(elem, 0) * lambda(!cL * elem, 0), alpha_diff_turbulent = alp(elem, 0) * d_t_(elem, 0),
+      double alpha_diff_physique = alp(elem, 0) * lambda(!cL * elem, 0), alpha_diff_turbulent = alp(elem, 0) * nu_ou_lambda_turb_(elem, 0),
              diff_physique = lambda(!cL * elem, 0), diffu_ = diffu(!cD * elem, 0);
 
       for (int ncomp = 1; ncomp < lambda.line_size(); ncomp++)
@@ -108,8 +108,8 @@ double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
           diff_physique = std::max(diff_physique, lambda(!cL * elem, ncomp));
         }
 
-      for (int ncomp = 1; ncomp < d_t_.line_size(); ncomp++)
-        alpha_diff_turbulent = std::max(alpha_diff_turbulent, alp(elem, ncomp) * d_t_(elem, ncomp));
+      for (int ncomp = 1; ncomp < nu_ou_lambda_turb_.line_size(); ncomp++)
+        alpha_diff_turbulent = std::max(alpha_diff_turbulent, alp(elem, ncomp) * nu_ou_lambda_turb_(elem, ncomp));
 
       for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++)
         diffu_ = std::max(diffu_, diffu(!cD * elem, ncomp));

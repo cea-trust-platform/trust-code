@@ -29,53 +29,53 @@ class Equation_base;
 
 class Op_Dift_Multiphase_proto
 {
+private:
+  void ajout_champs_(const bool /* is_face */);
+  void creer_champ_(const Motcle& , const bool /* is_face */);
+  void completer_(const bool /* is_face */);
+  void mettre_a_jour_(const double, const bool /* is_face */);
+
 public:
   void associer_proto(const Pb_Multiphase&, Champs_compris& );
 
   inline const Correlation& correlation() const { return corr_ ; }
 
-  void ajout_champs_op_face();
-  void ajout_champs_op_elem();
+  void ajout_champs_proto_face() { ajout_champs_(true); }
+  void ajout_champs_proto_elem() { ajout_champs_(false); }
 
   void get_noms_champs_postraitables_proto(const Nom& , Noms& nom, Option opt) const;
-  void get_noms_champs_postraitables_proto_elem(const Nom& , Noms& nom, Option opt) const;
 
-  void creer_champ_proto(const Motcle& );
-  void creer_champ_proto_elem(const Motcle& );
+  void creer_champ_proto_face(const Motcle& motlu) { creer_champ_(motlu, true); }
+  void creer_champ_proto_elem(const Motcle& motlu) { creer_champ_(motlu, false); }
 
-  void completer_proto();
-  void completer_proto_elem();
+  void completer_proto_face() { completer_(true); }
+  void completer_proto_elem() { completer_(false); }
 
-  void mettre_a_jour_proto(const double);
-  void mettre_a_jour_proto_elem(const double);
+  void mettre_a_jour_proto_face(const double temps) { mettre_a_jour_(temps, true); }
+  void mettre_a_jour_proto_elem(const double temps) { mettre_a_jour_(temps, false); }
 
-  inline DoubleTab& viscosite_turbulente() { return nu_t_; }
-  inline DoubleTab& diffusivite_turbulente() { return d_t_; }
+  inline DoubleTab& viscosite_turbulente() { return nu_ou_lambda_turb_; }
+  inline DoubleTab& diffusivite_turbulente() { return nu_ou_lambda_turb_; }
 
+  // remplissage par la correlation : ICI c'est NU_T ET PAS MU_T => m2/s et pas kg/ms
   inline void call_compute_nu_turb()
   {
-    // remplissage par la correlation : ICI c'est NU_T ET PAS MU_T => m2/s et pas kg/ms
-    ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_t_);
+    ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_ou_lambda_turb_);
   }
 
+  // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
   inline void call_compute_diff_turb(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb)
   {
-    // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
-    ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(eq, visc_turb, d_t_);
+    ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(eq, visc_turb, nu_ou_lambda_turb_);
   }
 
 protected:
-  DoubleTab nu_t_; // comme le nom dit
+  DoubleTab nu_ou_lambda_turb_; // comme le nom dit
   Correlation corr_; // correlation de viscosite/transport turbulente
-  std::vector<Champ_Fonc> nu_t_post_; // champ de postraitement
-  Motcles noms_nu_t_post_; //leurs noms
+  std::vector<Champ_Fonc> nu_ou_lambda_turb_post_; // champ de postraitement
+  Motcles noms_nu_ou_lambda_turb_post_; //leurs noms
   REF(Pb_Multiphase) pbm_;
   REF(Champs_compris) le_chmp_compris_;
-
-  // a factoriser
-  DoubleTab d_t_; // diffusivite turbulente
-  std::vector<Champ_Fonc> d_t_post_;
-  Motcles noms_d_t_post_; //leurs noms
 };
 
 #endif /* Op_Dift_Multiphase_proto_included */

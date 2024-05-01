@@ -29,7 +29,7 @@ Entree& Op_Diff_Turbulent_PolyMAC_P0_Face::readOn(Entree& is)
   //lecture de la correlation de viscosite turbulente
   corr_.typer_lire(equation().probleme(), "viscosite_turbulente", is);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
-  ajout_champs_op_face();
+  ajout_champs_proto_face();
   return is;
 }
 
@@ -42,13 +42,13 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::get_noms_champs_postraitables(Noms& noms
 void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
 {
   Op_Diff_PolyMAC_P0_Face::creer_champ(motlu);
-  creer_champ_proto(motlu);
+  creer_champ_proto_face(motlu);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_Face::completer();
-  completer_proto();
+  completer_proto_face();
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::preparer_calcul()
@@ -60,10 +60,10 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::preparer_calcul()
 void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
 {
   // MAJ nu_t
-  nu_t_ = 0.;
+  nu_ou_lambda_turb_ = 0.;
   Op_Diff_PolyMAC_P0_Face::mettre_a_jour(temps);
   call_compute_nu_turb();
-  mettre_a_jour_proto(temps);
+  mettre_a_jour_proto_face(temps);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_mu(DoubleTab& mu) const
@@ -75,17 +75,17 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_mu(DoubleTab& mu) const
   if (mu.nb_dim() == 2) //nu scalaire
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
-        mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t_(i, n);
+        mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
   else if (mu.nb_dim() == 3) //nu anisotrope diagonal
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++)
-          mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t_(i, n);
+          mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
   else if (mu.nb_dim() == 4) //nu anisotrope complet
     for (i = 0; i < nl; i++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++)
-          mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t_(i, n);
+          mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
   else
     abort();
 

@@ -26,14 +26,14 @@ Entree& Op_Diff_Turbulent_PolyMAC_P0_Elem::readOn(Entree& is)
   //lecture de la correlation de diffusivite turbulente
   corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
-  ajout_champs_op_elem();
+  ajout_champs_proto_elem();
   return is;
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Op_Diff_PolyMAC_P0_Elem::get_noms_champs_postraitables(nom,opt);
-  get_noms_champs_postraitables_proto_elem(que_suis_je(), nom, opt);
+  get_noms_champs_postraitables_proto(que_suis_je(), nom, opt);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::creer_champ(const Motcle& motlu)
@@ -73,7 +73,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
     }
 
   // on calcule d_t_
-  DoubleTab& diff_turb = ref_cast_non_const(DoubleTab, d_t_);
+  DoubleTab& diff_turb = ref_cast_non_const(DoubleTab, nu_ou_lambda_turb_);
   diff_turb = 0.; // XXX : pour postraitement et pour n'a pas avoir la partie laminaire
   diff_turb -= mu;
 

@@ -25,29 +25,20 @@ void Op_Dift_Multiphase_proto::associer_proto(const Pb_Multiphase& pb, Champs_co
   le_chmp_compris_ = ch;
 }
 
-void Op_Dift_Multiphase_proto::ajout_champs_op_face()
+void Op_Dift_Multiphase_proto::ajout_champs_(const bool is_face)
 {
-  noms_nu_t_post_.dimensionner(pbm_->nb_phases());
-  nu_t_post_.resize(pbm_->nb_phases());
+  noms_nu_ou_lambda_turb_post_.dimensionner(pbm_->nb_phases());
+  nu_ou_lambda_turb_post_.resize(pbm_->nb_phases());
 
   for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_nu_t_post_[i] = Nom("viscosite_turbulente_") + pbm_->nom_phase(i);
-}
-
-void Op_Dift_Multiphase_proto::ajout_champs_op_elem()
-{
-  noms_d_t_post_.dimensionner(pbm_->nb_phases());
-  d_t_post_.resize(pbm_->nb_phases());
-
-  for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_d_t_post_[i] = Nom("diffusivite_turbulente_") + pbm_->nom_phase(i);
+    noms_nu_ou_lambda_turb_post_[i] = is_face ? Nom("viscosite_turbulente_") + pbm_->nom_phase(i) : Nom("diffusivite_turbulente_") + pbm_->nom_phase(i);
 }
 
 void Op_Dift_Multiphase_proto::get_noms_champs_postraitables_proto(const Nom& classe, Noms& nom, Option opt) const
 {
   Noms noms_compris;
   for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_compris.add(noms_nu_t_post_[i]);
+    noms_compris.add(noms_nu_ou_lambda_turb_post_[i]);
 
   if (opt == DESCRIPTION)
     Cerr << classe << " : " << noms_compris << finl;
@@ -55,101 +46,77 @@ void Op_Dift_Multiphase_proto::get_noms_champs_postraitables_proto(const Nom& cl
     nom.add(noms_compris);
 }
 
-void Op_Dift_Multiphase_proto::get_noms_champs_postraitables_proto_elem(const Nom& classe, Noms& nom, Option opt) const
+void Op_Dift_Multiphase_proto::creer_champ_(const Motcle& motlu, const bool is_face)
 {
-  Noms noms_compris;
-  for (int i = 0; i < pbm_->nb_phases(); i++)
-    noms_compris.add(noms_d_t_post_[i]);
-
-  if (opt == DESCRIPTION)
-    Cerr << classe << " : " << noms_compris << finl;
-  else
-    nom.add(noms_compris);
-}
-
-void Op_Dift_Multiphase_proto::creer_champ_proto(const Motcle& motlu)
-{
-  int i = noms_nu_t_post_.rang(motlu);
-  if (i >= 0 && nu_t_post_[i].est_nul())
+  int i = noms_nu_ou_lambda_turb_post_.rang(motlu);
+  if (i >= 0 && nu_ou_lambda_turb_post_[i].est_nul())
     {
       const Discret_Thyd& dis = ref_cast(Discret_Thyd, pbm_->discretisation());
       Noms noms(1), unites(1);
-      noms[0] = noms_nu_t_post_[i];
-      dis.discretiser_champ("CHAMP_ELEM", pbm_->domaine_dis(), scalaire, noms, unites, 1, 0, nu_t_post_[i]);
-      Motcle syn = Nom("nu_turbulente_") + pbm_->nom_phase(i);
-      nu_t_post_[i]->add_synonymous(syn);
-      le_chmp_compris_->ajoute_champ(nu_t_post_[i]);
-      Cerr << "Adding its synonym : " << syn << finl;
+      noms[0] = noms_nu_ou_lambda_turb_post_[i];
+      dis.discretiser_champ("CHAMP_ELEM", pbm_->domaine_dis(), scalaire, noms, unites, 1, 0, nu_ou_lambda_turb_post_[i]);
+
+      // We add some synonyms
+      std::vector<Motcle> syn;
+      if (is_face)
+        syn.push_back(Nom("nu_turbulente_") + pbm_->nom_phase(i));
+      else
+        {
+          syn.push_back(Nom("lambda_turbulente_") + pbm_->nom_phase(i));
+          syn.push_back(Nom("conductivite_turbulente_") + pbm_->nom_phase(i));
+        }
+
+      for (auto& itr : syn)
+        nu_ou_lambda_turb_post_[i]->add_synonymous(itr);
+
+      le_chmp_compris_->ajoute_champ(nu_ou_lambda_turb_post_[i]);
+      for (auto& itr : syn)
+        Cerr << "   => Adding its synonym : " << itr << finl;
     }
 }
 
-void Op_Dift_Multiphase_proto::creer_champ_proto_elem(const Motcle& motlu)
-{
-  int i = noms_d_t_post_.rang(motlu);
-  if (i >= 0 && d_t_post_[i].est_nul())
-    {
-      const Discret_Thyd& dis = ref_cast(Discret_Thyd, pbm_->discretisation());
-      Noms noms(1), unites(1);
-      noms[0] = noms_d_t_post_[i];
-      dis.discretiser_champ("CHAMP_ELEM", pbm_->domaine_dis(), scalaire, noms, unites, 1, 0, d_t_post_[i]);
-      Motcle syn = Nom("lambda_turbulente_") + pbm_->nom_phase(i), syn2 = Nom("conductivite_turbulente_") + pbm_->nom_phase(i);
-      d_t_post_[i]->add_synonymous(syn);
-      d_t_post_[i]->add_synonymous(syn2);
-      le_chmp_compris_->ajoute_champ(d_t_post_[i]);
-      Cerr << "Adding its synonym : " << syn << finl;
-      Cerr << "Adding its synonym : " << syn2 << finl;
-    }
-}
-
-void Op_Dift_Multiphase_proto::completer_proto()
+void Op_Dift_Multiphase_proto::completer_(const bool is_face)
 {
   //si la correlation a besoin du gradient de u, on doit le creer maintenant
-  if (corr_.non_nul() && ref_cast(Viscosite_turbulente_base, corr_.valeur()).gradu_required())
-    pbm_->creer_champ("gradient_vitesse");
+  if (is_face)
+    {
+      if (corr_.non_nul() && ref_cast(Viscosite_turbulente_base, corr_.valeur()).gradu_required())
+        pbm_->creer_champ("gradient_vitesse");
+    }
+  else
+    {
+      if (corr_.non_nul() && ref_cast(Transport_turbulent_base, corr_.valeur()).gradu_required())
+        pbm_->creer_champ("gradient_vitesse");
+    }
+
+
   if (corr_.non_nul())
     corr_->completer();
 
   // on initialise nu_t_ a 0 avec la bonne structure //
-  nu_t_ = pbm_->equation_masse().inconnue()->valeurs();
-  nu_t_ = 0.;
+  nu_ou_lambda_turb_ = pbm_->equation_masse().inconnue()->valeurs();
+  nu_ou_lambda_turb_ = 0.;
 }
 
-void Op_Dift_Multiphase_proto::completer_proto_elem()
-{
-  //si la correlation a besoin du gradient de u, on doit le creer maintenant
-  if (corr_.non_nul() && ref_cast(Transport_turbulent_base, corr_.valeur()).gradu_required())
-    pbm_->creer_champ("gradient_vitesse");
-
-  // on initialise d_t_ a 0 avec la bonne structure //
-  d_t_ = pbm_->equation_masse().inconnue()->valeurs();
-  d_t_ = 0.;
-}
-
-void Op_Dift_Multiphase_proto::mettre_a_jour_proto(const double temps)
+void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_face)
 {
   int N = pbm_->nb_phases();
   for (int n = 0; n < N; n++)
-    if (nu_t_post_[n].non_nul()) //viscosite turbulente : toujours scalaire
+    if (nu_ou_lambda_turb_post_[n].non_nul()) // viscosite/diffusivite turbulente : toujours scalaire
       {
-        const DoubleTab& rho = pbm_->milieu().masse_volumique().passe();
-        DoubleTab& val = nu_t_post_[n]->valeurs();
-        int nl = val.dimension(0), cR = (rho.dimension(0) == 1);
-        for (int i = 0; i < nl; i++)
-          val(i, 0) = rho(!cR * i, n) * nu_t_(i, n);
-        nu_t_post_[n].mettre_a_jour(temps);
-      }
-}
+        DoubleTab& val = nu_ou_lambda_turb_post_[n]->valeurs();
+        const int nl = val.dimension(0);
+        if (is_face)
+          {
+            const DoubleTab& rho = pbm_->milieu().masse_volumique().passe();
+            const int cR = (rho.dimension(0) == 1);
+            for (int i = 0; i < nl; i++)
+              val(i, 0) = rho(!cR * i, n) * nu_ou_lambda_turb_(i, n);
+          }
+        else
+          for (int i = 0; i < nl; i++)
+            val(i, 0) = nu_ou_lambda_turb_(i, n);
 
-void Op_Dift_Multiphase_proto::mettre_a_jour_proto_elem(const double temps)
-{
-  int N = pbm_->nb_phases();
-  for (int n = 0; n < N; n++)
-    if (d_t_post_[n].non_nul()) //di turbulente : toujours scalaire
-      {
-        DoubleTab& val = d_t_post_[n]->valeurs();
-        int nl = val.dimension(0);
-        for (int i = 0; i < nl; i++)
-          val(i, 0) = d_t_(i, n);
-        d_t_post_[n].mettre_a_jour(temps);
+        nu_ou_lambda_turb_post_[n].mettre_a_jour(temps);
       }
 }
