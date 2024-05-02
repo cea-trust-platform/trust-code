@@ -47,7 +47,7 @@ void Op_Dift_Multiphase_VDF_Elem::completer()
   assert(corr_.non_nul());
   completer_Op_Dift_VDF_base();
   associer_pb<Eval_Dift_Multiphase_VDF_Elem>(equation().probleme());
-  completer_proto_elem();
+  completer_proto_elem(*this);
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(nu_ou_lambda_turb_);
 }
 

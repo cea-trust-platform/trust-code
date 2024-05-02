@@ -48,7 +48,7 @@ void Op_Dift_Multiphase_VDF_Face::completer()
   completer_Op_Dift_VDF_base();
   associer_pb<Eval_Dift_Multiphase_VDF_Face>(equation().probleme());
 
-  completer_proto_face();
+  completer_proto_face(*this);
 
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(nu_ou_lambda_turb_);
 }

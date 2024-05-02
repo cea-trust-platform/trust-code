@@ -51,7 +51,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::mettre_a_jour(double temps)
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
 {
   Op_Diff_PolyMAC_P0_Elem::completer();
-  completer_proto_elem();
+  completer_proto_elem(*this);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
@@ -74,8 +74,12 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
 
   // on calcule d_t_
   DoubleTab& diff_turb = ref_cast_non_const(DoubleTab, nu_ou_lambda_turb_);
+  assert (diff_turb.dimension_tot(0) == mu.dimension_tot(0) && diff_turb.line_size() == mu.line_size());
   diff_turb = 0.; // XXX : pour postraitement et pour n'a pas avoir la partie laminaire
-  diff_turb -= mu;
+
+  for (int i = 0; i < diff_turb.dimension_tot(0); i++)
+    for (int j = 0; j < diff_turb.line_size(); j++)
+      diff_turb(i,j) -= mu(i,j);
 
   // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
   ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()),
@@ -83,5 +87,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
                                                                  mu);
 
   mu.echange_espace_virtuel();
-  diff_turb += mu;
+
+  for (int i = 0; i < diff_turb.dimension_tot(0); i++)
+    for (int j = 0; j < diff_turb.line_size(); j++)
+      diff_turb(i,j) += mu(i,j);
 }

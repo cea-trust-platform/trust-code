@@ -23,6 +23,7 @@
 #include <TRUST_Ref.h>
 #include <vector>
 
+class Operateur_Diff_base;
 class Champs_compris;
 class Pb_Multiphase;
 class Equation_base;
@@ -32,7 +33,7 @@ class Op_Dift_Multiphase_proto
 private:
   void ajout_champs_(const bool /* is_face */);
   void creer_champ_(const Motcle& , const bool /* is_face */);
-  void completer_(const bool /* is_face */);
+  void completer_(const Operateur_Diff_base&, const bool /* is_face */);
   void mettre_a_jour_(const double, const bool /* is_face */);
 
 public:
@@ -48,8 +49,8 @@ public:
   void creer_champ_proto_face(const Motcle& motlu) { creer_champ_(motlu, true); }
   void creer_champ_proto_elem(const Motcle& motlu) { creer_champ_(motlu, false); }
 
-  void completer_proto_face() { completer_(true); }
-  void completer_proto_elem() { completer_(false); }
+  void completer_proto_face(const Operateur_Diff_base& op) { completer_(op, true); }
+  void completer_proto_elem(const Operateur_Diff_base& op) { completer_(op, false); }
 
   void mettre_a_jour_proto_face(const double temps) { mettre_a_jour_(temps, true); }
   void mettre_a_jour_proto_elem(const double temps) { mettre_a_jour_(temps, false); }

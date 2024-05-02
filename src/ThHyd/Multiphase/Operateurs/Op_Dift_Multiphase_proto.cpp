@@ -75,7 +75,7 @@ void Op_Dift_Multiphase_proto::creer_champ_(const Motcle& motlu, const bool is_f
     }
 }
 
-void Op_Dift_Multiphase_proto::completer_(const bool is_face)
+void Op_Dift_Multiphase_proto::completer_(const Operateur_Diff_base& op,const bool is_face)
 {
   //si la correlation a besoin du gradient de u, on doit le creer maintenant
   if (is_face)
@@ -89,12 +89,11 @@ void Op_Dift_Multiphase_proto::completer_(const bool is_face)
         pbm_->creer_champ("gradient_vitesse");
     }
 
-
   if (corr_.non_nul())
     corr_->completer();
 
-  // on initialise nu_t_ a 0 avec la bonne structure //
-  nu_ou_lambda_turb_ = pbm_->equation_masse().inconnue()->valeurs();
+  const int nb_elem = ref_cast(Domaine_VF, op.equation().domaine_dis().valeur()).nb_elem_tot(),  N = op.equation().inconnue().valeurs().line_size();
+  nu_ou_lambda_turb_.resize(nb_elem, N);
   nu_ou_lambda_turb_ = 0.;
 }
 

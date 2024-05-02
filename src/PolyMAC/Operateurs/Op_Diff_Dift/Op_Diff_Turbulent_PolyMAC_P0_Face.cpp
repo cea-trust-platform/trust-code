@@ -48,7 +48,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
 void Op_Diff_Turbulent_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_Face::completer();
-  completer_proto_face();
+  completer_proto_face(*this);
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::preparer_calcul()
