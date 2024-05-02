@@ -50,6 +50,7 @@ public:
   // Methodes declarees dans la classe de base (interface commune a tous
   // les formats de postraitment de champs):
   void reset() override;
+  void resetTime(double t) override;
   void set_param(Param& param) override;
   int initialize_by_default(const Nom& file_basename) override;
   int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;

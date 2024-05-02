@@ -102,7 +102,7 @@ namespace ICoCo
     throw NotImplemented("type_of_Problem_not_set", "iterateTimeStep");
   }
 
-  void Problem::resetTime(double time)
+  void Problem::resetTime(double time, const std::string dirname)
   {
     throw NotImplemented("type_of_Problem_not_set", "resetTimeStep");
   }

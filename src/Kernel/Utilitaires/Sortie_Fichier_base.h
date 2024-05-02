@@ -41,7 +41,7 @@ public:
   virtual int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out);
 
   Sortie& flush() override;
-  static void newDirectory(int, std::string dirname="calcul");
+  static void set_root(const std::string dirname);
   static std::string root;
 
 protected:

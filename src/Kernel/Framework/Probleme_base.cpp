@@ -1644,7 +1644,9 @@ void Probleme_base::finir()
     sauver_xyz(1);
 }
 
-// ToDo: newParameter or newCalculation ?
+/*! @brief Recherche des champs parametriques, et pour chacun, passage au parametre suivant
+ *
+ */
 int Probleme_base::newParameter()
 {
   int index = 0;
@@ -1673,22 +1675,10 @@ int Probleme_base::newParameter()
   return index;
 }
 
-void Probleme_base::reinit(int calcul)
+/*! @brief Reset time to tinit and run the next computation in a new directory
+ *
+ */
+void Probleme_base::newCompute(int calcul)
 {
-  terminate(); // Ferme les fichiers de postraitement dans le repertoire courant
-  terminated = false;
-  Sortie_Fichier_base::newDirectory(calcul); // Cree un nouveau repertoire pour le prochain calcul
-  schema_temps().reinit();
-  // See Probleme_base_interface_proto::initialize_impl:
-  // See Probleme_base_interface_proto::resetTime_impl;
-  //resetTime(schema_temps().temps_init()); Non car strategie differente pour postraitement
-  double time = schema_temps().temps_init();
-  schema_temps().resetTime(time);
-  milieu().resetTime(time);
-  for (int i = 0; i < nombre_d_equations(); i++)
-    equation(i).resetTime(time);  // will also reset fields there
-
-  schema_temps().initialize(); // ToDo merge 3 calls reinit(), resetTime(), initialize()
-  init_postraitements();
-  initialized = true;
+  resetTime(schema_temps().temps_init(), "calcul"+std::to_string(calcul));
 }

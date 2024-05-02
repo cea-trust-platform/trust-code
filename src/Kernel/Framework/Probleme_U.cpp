@@ -152,10 +152,11 @@ void Probleme_U::abortTimeStep()
  * initial conditions, and global time 0.
  *
  * @param[in] time the new current time.
+ * @param[in] dirname the new directory for output files.
  * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
  * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
  */
-void Probleme_U::resetTime(double time)
+void Probleme_U::resetTime(double time, const std::string dirname)
 {
 }
 
@@ -321,18 +322,18 @@ bool Probleme_U::run()
           stop=true;
           setStationary(stop);
         }
-      // Post process task (Force the post processing/prints at the end of the run (stop=1))
-      postraiter(stop);
 
-      // Keep on the resolution if parametric variation:
-      if (stop)
+      int newCalcul = stop ? newParameter() : 0;
+      if (newCalcul)
         {
-          int calcul = newParameter();
-          if (calcul>0)
-            {
-              stop = false;
-              reinit(calcul);
-            }
+          // Keep on the resolution if parametric variation:
+          stop = false;
+          newCompute(newCalcul);
+        }
+      else
+        {
+          // Post process task (Force the post processing/prints at the end of the run (stop=1))
+          postraiter(stop);
         }
 
       // Stop the CPU measure of the time step and print:

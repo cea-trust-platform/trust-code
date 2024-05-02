@@ -50,7 +50,7 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
   // On fixe le premier parametre:
   int calcul = newParameter();
   assert(calcul>0);
-  Sortie_Fichier_base::newDirectory(calcul);
+  Sortie_Fichier_base::set_root("calcul"+std::to_string(calcul));
   return is;
 }
 

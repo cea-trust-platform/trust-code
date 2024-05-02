@@ -33,6 +33,9 @@ Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U)
 
 void Schema_Temps_base::initialize()
 {
+  nb_impr_= 0;
+  nb_pas_dt_ = 0;
+
   // GF je remets le calculer_pas_de_temps car des schemas en temps implicites s'en servent pour dimensionner (en particulier ovap)
   pb_base().calculer_pas_de_temps();
   // je le mets une deuxieme fois pour alternant....
@@ -521,13 +524,6 @@ Schema_Temps_base::Schema_Temps_base()
   disable_dt_ev_ = 0;
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
-}
-
-void Schema_Temps_base::reinit()
-{
-  nb_impr_= 0;
-  //temps_courant_ =0;
-  nb_pas_dt_ = 0;
 }
 
 

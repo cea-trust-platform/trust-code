@@ -46,7 +46,7 @@ public:
 
   // Methodes specifiques:
   int size() { return champs_.size(); }
-  int index() { return index_; }
+  //int index() { return index_; }
   int newParameter();
 
 protected :

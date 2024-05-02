@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public:
   void terminate_impl(Probleme_base& pb);
   void validateTimeStep_impl(Probleme_base& pb);
   void abortTimeStep_impl(Probleme_base& pb);
-  void resetTime_impl(Probleme_base& pb, double time);
+  void resetTime_impl(Probleme_base& pb, double time, std::string direname);
   void getInputFieldsNames_impl(const Probleme_base& pb, Noms& noms) const;
   void getOutputFieldsNames_impl(const Probleme_base& pb, Noms& noms) const;
   void addInputField_impl(Probleme_base& pb, Field_base& f);

@@ -29,7 +29,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
 {
   Nom pb, fichier;
   Param param(que_suis_je());
-  // ToDo : ne plus lire le probleme
+  // ToDo : ne plus lire le probleme ? Difficile car les termes sources n'ont pas les Champ_Don
   param.ajouter("probleme", &pb, Param::REQUIRED);
   param.ajouter("fichier", &fichier, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
@@ -61,7 +61,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
   // On fixe le premier parametre:
   int calcul = newParameter();
   assert(calcul>0);
-  Sortie_Fichier_base::newDirectory(calcul);
+  Sortie_Fichier_base::set_root("calcul"+std::to_string(calcul));
   return is;
 }
 

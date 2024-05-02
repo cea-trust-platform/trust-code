@@ -45,6 +45,11 @@ void Format_Post_Lml::reset()
   lml_basename_ = "??";
 }
 
+void Format_Post_Lml::resetTime(double t)
+{
+  //temps_courant_ = -1; // not using t - this will come from outside when calling 'ecrire_temps'
+}
+
 /*! @brief erreur => exit
  *
  */

@@ -169,7 +169,7 @@ public:
   void validateTimeStep() override { validateTimeStep_impl(*this); }
   void setStationary(bool flag) override { schema_temps().set_stationnaires_atteints(flag); }
   void abortTimeStep() override { abortTimeStep_impl(*this); }
-  void resetTime(double time) override { resetTime_impl(*this, time); }
+  void resetTime(double time, const std::string dirname="") override { resetTime_impl(*this, time, dirname); }
 
   // interface IterativeUnsteadyProblem
   bool iterateTimeStep(bool& converged) override { return iterateTimeStep_impl(*this, converged); }
@@ -194,9 +194,8 @@ public:
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
   // Champs parametriques:
-  const LIST(REF(Champ_Parametrique))& Champs_Parametriques() const { return Champs_Parametriques_; }
   LIST(REF(Champ_Parametrique))& Champs_Parametriques() { return Champs_Parametriques_; }
-  void reinit(int) override;
+  void newCompute(int) override;
   //
 
 protected :
@@ -230,8 +229,7 @@ protected :
   mutable Nom error_;                // Erreur d'allocation
 
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
-  LIST(REF(Champ_front_Parametrique)) Champs_front_Parametriques_; //Champs a mettre a jour lorsque le calcul est fini
-  LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs a mettre a jour lorsque le calcul est fini
+  LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

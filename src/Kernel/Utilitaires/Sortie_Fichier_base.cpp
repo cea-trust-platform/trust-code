@@ -190,12 +190,9 @@ bool Sortie_Fichier_base::is_open()
   return (ofstream_&&get_ofstream().is_open()) ;
 }
 
-void Sortie_Fichier_base::newDirectory(int calcul, std::string dirname)
+void Sortie_Fichier_base::set_root(const std::string dirname)
 {
   root=dirname;
-  root+=std::to_string(calcul);
   root+="/";
   Cerr << "[IO] Create a new directory " << root << finl;
-  //Objet_U::get_set_nom_du_cas() = root; // Mais stocker le nom etude
-  //Sortie_Fichier_base::root=root; // ToDo voir si modifier nom_du_cas() pas mieux (mais risque)
 }

@@ -176,7 +176,7 @@ void Probleme_base_interface_proto::abortTimeStep_impl(Probleme_base& pb)
   dt_defined = false;
 }
 
-void Probleme_base_interface_proto::resetTime_impl(Probleme_base& pb, double time)
+void Probleme_base_interface_proto::resetTime_impl(Probleme_base& pb, double time, const std::string dirname)
 {
   if (dt_defined)
     throw WrongContext(pb.le_nom().getChar(), "resetTime", "resetTime can not be called inside a time step computation");
@@ -185,6 +185,15 @@ void Probleme_base_interface_proto::resetTime_impl(Probleme_base& pb, double tim
 
   // We postreat once before reseting:
   pb.postraiter(true);
+
+  // Possible to create a new directory:
+  if (!dirname.empty())
+    {
+      pb.terminate(); // Close properly the problem and the output files
+      terminated = false;
+      Sortie_Fichier_base::set_root(dirname); // Create a new directory
+      pb.schema_temps().initialize(); // Initialize the time scheme (.dt_ev file)
+    }
 
   // [ABN] Warning: when dealing with input data (like Champ_Don), resetTime() can be mapped to 'mettre_a_jour()' (we really
   // want the input data at the given time)

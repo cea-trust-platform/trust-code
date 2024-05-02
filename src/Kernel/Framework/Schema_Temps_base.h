@@ -275,7 +275,6 @@ public :
     return disable_dt_ev_ ;
   };
   void finir() const;
-  void reinit();
 
 protected :
   REF(Probleme_base) mon_probleme;

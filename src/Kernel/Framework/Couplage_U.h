@@ -52,10 +52,10 @@ public:
   void validateTimeStep() override;
   bool isStationary() const override;
   int newParameter() override;
-  void reinit(int) override;
+  void newCompute(int) override;
   void setStationary(bool) override;
   void abortTimeStep() override;
-  void resetTime(double t) override;
+  void resetTime(double t, const std::string dirname="") override;
 
   // interface IterativeUnsteadyProblem
 

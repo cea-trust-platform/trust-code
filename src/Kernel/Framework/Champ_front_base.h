@@ -100,6 +100,8 @@ public:
   virtual int avancer(double temps);
   virtual int reculer(double temps);
   virtual bool instationnaire() const { return instationnaire_; }
+  virtual void set_instationnaire() { instationnaire_ = true; Gpoint_ = valeurs(); Gpoint_=0; } // Dimensionne Gpoint_
+  virtual inline void set_derivee_en_temps(DoubleTab& Gpoint) { Gpoint_ = Gpoint; }
   virtual inline const DoubleTab& derivee_en_temps() const { return Gpoint_; }
   virtual void calculer_derivee_en_temps(double t1, double t2);
 
@@ -110,8 +112,9 @@ protected:
   // solveurs.
   REF(Frontiere_dis_base) la_frontiere_dis;
   Roue_ptr les_valeurs; // Les valeurs du champ
-  bool instationnaire_ = false; // Par defaut champ stationnaire
   DoubleTab Gpoint_; // Derivee en temps des valeurs conditions limites
+private:
+  bool instationnaire_ = false; // Par defaut champ stationnaire
 };
 
 

@@ -89,10 +89,10 @@ int Couplage_U::newParameter()
   return index;
 }
 
-void Couplage_U::reinit(int calcul)
+void Couplage_U::newCompute(int calcul)
 {
   for(int i=0; i<nb_problemes(); i++)
-    ref_cast(Probleme_base, probleme(i)).reinit(calcul);
+    ref_cast(Probleme_base, probleme(i)).newCompute(calcul);
 }
 
 void Couplage_U::setStationary(bool flag)
@@ -107,10 +107,10 @@ void Couplage_U::abortTimeStep()
     probleme(i).abortTimeStep();
 }
 
-void Couplage_U::resetTime(double t)
+void Couplage_U::resetTime(double t, const std::string dirname)
 {
   for(int i=0; i<nb_problemes(); i++)
-    probleme(i).resetTime(t);
+    probleme(i).resetTime(t, dirname);
 }
 
 bool Couplage_U::iterateTimeStep(bool& converged)
