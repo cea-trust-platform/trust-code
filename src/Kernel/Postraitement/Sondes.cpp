@@ -49,8 +49,6 @@ Entree& Sondes::readOn(Entree& s )
     }
   s >> motlu;
 
-  Nom nom_fichier;
-
   if (motlu == "FICHIER")
     {
       Cerr<<"Error: Sondes { " << motlu << " .... } no more allowed, use Sondes_fichier { " << motlu << " .... }" <<finl;
