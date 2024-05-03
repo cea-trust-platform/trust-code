@@ -24,7 +24,9 @@ define_modules_config()
       #module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0" used for first 1.9.3 install
       # use swig module, but it needs develop GCC-CPU-3.1.0, which load gcc-native/12.1
       # gcc-native/12.1 is replaced by cce/17.0.0 when loading PrgEnv-cray, so we reload gcc-native/12.1 again
-       module="develop GCC-CPU-3.1.0 swig/4.1.1-fortran craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc-native/12.1 cray-python/3.10.10 cmake/3.27.7"
+      #module="develop GCC-CPU-3.1.0 swig/4.1.1-fortran craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc-native/12.1 cray-python/3.10.10 cmake/3.27.7"
+      # ND : 30/04/2024 : ne plus utiliser develop car les modules sont assez souvent supprimes
+      module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0"
    fi   
    #
    echo "# Module $module detected and loaded on $HOST."
