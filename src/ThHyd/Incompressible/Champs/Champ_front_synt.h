@@ -17,6 +17,7 @@
 #define Champ_front_synt_included
 
 #include <Ch_front_var_instationnaire_dep.h>
+#include <Champ_front_base.h>
 #include <TRUST_Ref.h>
 
 class Champ_Inc_base;
@@ -25,7 +26,6 @@ class Champ_Inc_base;
  *
  * @sa Champ_front_base
  */
-
 
 class Champ_front_synt : public Ch_front_var_instationnaire_dep
 {
@@ -44,7 +44,8 @@ public:
 protected :
   OBS_PTR(Champ_Inc_base) ref_inco_;
 
-  DoubleVect moyenne;
+  // OLD
+  //DoubleVect moyenne;
   DoubleVect dir_fluct;
 
   int nbModes = -10;
@@ -55,7 +56,12 @@ protected :
   double KeOverKmin= 0.;
   double ratioCutoffWavenumber= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
   double temps_d_avant_= 0.;
+
+
+// Nouveaux attributs champs
+  OWN_PTR(Champ_front_base) moyenne_ch;
+
 };
 
-#endif
+#endif /* Champ_front_synt_included */
 

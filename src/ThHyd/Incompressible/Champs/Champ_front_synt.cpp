@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Champ_front_uniforme.h>
 #include <Frontiere_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Navier_Stokes_std.h>
@@ -42,22 +43,6 @@ Sortie& Champ_front_synt::printOn(Sortie& os) const
   return os;
 }
 
-/*! @brief Mise a jour du temps
- *
- */
-
-int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
-{
-  if (!Ch_front_var_instationnaire_dep::initialiser(tps,inco))
-    return 0;
-
-  ref_inco_ = inco;
-  temps_d_avant_ = tps;
-
-  return 1;
-}
-
-
 /*! @brief Lecture a partir d'un flot d'entree au format: nombre_de_composantes
  *
  *     moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
@@ -81,7 +66,9 @@ Entree& Champ_front_synt::readOn(Entree& is)
     }
   Motcle motlu;
   Motcles les_mots(9);
-  les_mots[0]="moyenne";
+//  OLD
+//  les_mots[0]="moyenne";
+  les_mots[0]="moyenne_champ";
   les_mots[1]="lenghtScale";
   les_mots[2]="nbModes";
   les_mots[3]="turbKinEn";
@@ -107,11 +94,14 @@ Entree& Champ_front_synt::readOn(Entree& is)
         {
         case 0:
           {
+//        	OLD
+//        	cpt++;
+//            moyenne.resize(dim);
+//            fixer_nb_comp(dim);
+//            for(int i=0; i<dim; i++)
+//              is >> moyenne(i);
             cpt++;
-            moyenne.resize(dim);
-            fixer_nb_comp(dim);
-            for(int i=0; i<dim; i++)
-              is >> moyenne(i);
+            is >> moyenne_ch;
             break;
           }
         case 1:
@@ -210,6 +200,28 @@ Entree& Champ_front_synt::readOn(Entree& is)
 }
 
 
+/*! @brief Mise a jour du temps
+ *
+ */
+int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
+{
+  if (!Ch_front_var_instationnaire_dep::initialiser(tps,inco))
+    return 0;
+
+  ref_inco_ = inco;
+  temps_d_avant_ = tps;
+
+  moyenne_ch->associer_fr_dis_base(la_frontiere_dis.valeur());
+  moyenne_ch->initialiser(tps,inco);
+
+  // Pour une raison obscure le mettre_a_jour est necessaire pour pouvoir utiliser un schema en temps explicite.
+  // Sinon div(U)=0 n'est meme pas respecte.
+  mettre_a_jour(tps);
+
+  return 1;
+}
+
+
 /*! @brief Pas code !!
  *
  * @param (Champ_front_base& ch)
@@ -220,8 +232,12 @@ Champ_front_base& Champ_front_synt::affecter_(const Champ_front_base& ch)
   return *this;
 }
 
+
 void Champ_front_synt::mettre_a_jour(double temps)
 {
+
+  // Pas de mise à jour des champs utilises (moyenne, turbKinEn ...). Ils doivent être des champs stationnaire.
+  // Notez que e.g. moyenne->mettre_a_jour(temps); ne marche pas si moyenne est un champ_front_recyclage stationnaire
 
   // Acceder a l'equation depuis l'inconnue, ensuite acceder au milieu
   const Equation_base& equ = ref_inco_->equation();
@@ -357,6 +373,10 @@ void Champ_front_synt::mettre_a_jour(double temps)
   DoubleTab centreGrav(nb_face);
   tabFaces.calculer_centres_gravite(centreGrav);
 
+  // recuperation des champs fixes et prise en compte du cas uniforme
+  const DoubleTab& tab_moyenne = moyenne_ch->valeurs();
+  const int cm = sub_type(Champ_front_uniforme, moyenne_ch.valeur()); // tab_moyenne.dimension(0) == 1;
+
   for( int i = 0; i<nb_face; i++ )
     {
       DoubleTab turb(nb_comp());
@@ -396,15 +416,19 @@ void Champ_front_synt::mettre_a_jour(double temps)
       double a = exp(-dt/timeScale);
       double b = sqrt(1-a*a);
 
-      tab(i,0) = moyenne(0) + dir_fluct(0) * (a * (tab_avant(i,0) - moyenne(0)) + b * turb(0));
-      tab(i,1) = moyenne(1) + dir_fluct(1) * (a * (tab_avant(i,1) - moyenne(1)) + b * turb(1));
-      tab(i,2) = moyenne(2) + dir_fluct(2) * (a * (tab_avant(i,2) - moyenne(2)) + b * turb(2));
+//      OLD
+//      tab(i,0) = moyenne(0) + dir_fluct(0) * (a * (tab_avant(i,0) - moyenne(0)) + b * turb(0));
+//      tab(i,1) = moyenne(1) + dir_fluct(1) * (a * (tab_avant(i,1) - moyenne(1)) + b * turb(1));
+//      tab(i,2) = moyenne(2) + dir_fluct(2) * (a * (tab_avant(i,2) - moyenne(2)) + b * turb(2));
+
+      tab(i,0) = tab_moyenne(!cm * i, 0) + dir_fluct(0) * (a * (tab_avant(i,0) - tab_moyenne(!cm * i, 0)) + b * turb(0));
+      tab(i,1) = tab_moyenne(!cm * i, 1) + dir_fluct(1) * (a * (tab_avant(i,1) - tab_moyenne(!cm * i, 1)) + b * turb(1));
+      tab(i,2) = tab_moyenne(!cm * i, 2) + dir_fluct(2) * (a * (tab_avant(i,2) - tab_moyenne(!cm * i, 2)) + b * turb(2));
 
       //Cerr << "r, a, b = " << dt/timeScale << " , " << a << " , " << b << finl;
       //Cerr << "Uprime, uprime = " << tab(i,0) << " , " << turb(0) << finl;
       //Cerr << "face, Uprime, uprime = " << i << " , " << tab(i,0) << " , " << turb(0) << finl;
     }
-
   tab.echange_espace_virtuel();
   temps_d_avant_ = temps;
 
