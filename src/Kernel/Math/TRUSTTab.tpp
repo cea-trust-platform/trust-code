@@ -140,6 +140,37 @@ inline _SIZE_ TRUSTTab<_TYPE_,_SIZE_>::dimension_tot(int i) const
   return (i == 0) ? dimension_tot_0_ : dimensions_[i];
 }
 
+/*!
+ * See doc in TRUSTArray. This one also deals with multi-dim.
+ */
+template<>
+inline void TRUSTTab<trustIdType,trustIdType>::from_tid_to_int(TRUSTTab<int, int>& out) const
+{
+  // Manage multi-dim structure - I could not copy members directly because TRUSTTab<tid,tid>
+  // can't see internals of TRUSTTab<int,int> and I could not get the 'friend' clause to work there ...
+  ArrOfInt sizes;
+  sizes.resize_array(nb_dim_);
+  for (int i = 0; i < nb_dim_; i++)
+    {
+      assert(dimensions_[i] < std::numeric_limits<int>::max());
+      sizes[i] = (int)dimensions_[i];
+    }
+  out.resize(sizes);
+
+  // Do the job as if an array:
+  TRUSTArray::from_tid_to_int(out);
+}
+
+template<typename _TYPE_, typename _SIZE_>
+void TRUSTTab<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTTab<int, int>& out) const
+{
+  // Should no be used for anything else than specialisations listed above.
+  assert(false);
+  Process::exit("TRUSTTab<>::from_tid_to_int() should not be used with those current template types.");
+}
+
+
+
 //  Adds 1 to dimension_tot(0) and puts a in the added line.
 // Precondition: line_size() must be equal to 1 and the array must be resizable.
 template<typename _TYPE_, typename _SIZE_>

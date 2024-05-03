@@ -109,6 +109,8 @@ protected:
   }
 
 public:
+  // Useful for from_tid_to_int() method implementation.
+  friend TRUSTTab<int, int>;
 
   TRUSTTab() : nb_dim_(1), dimension_tot_0_(0)
   {
@@ -186,6 +188,9 @@ public:
   inline _SIZE_ dimension(int) const;
   inline _SIZE_ dimension_tot(int) const;
   inline int nb_dim() const { return nb_dim_; }
+
+  // See same method in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
+  inline void from_tid_to_int(TRUSTTab<int, int>& out) const;
 
   inline TRUSTTab& operator=(const TRUSTTab&);
   inline TRUSTTab& operator=(const TRUSTVect<_TYPE_,_SIZE_>&);

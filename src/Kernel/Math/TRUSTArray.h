@@ -81,6 +81,9 @@ public:
   // Tests can inspect whatever they want:
   friend class TestTRUSTArray;
 
+  // One instanciation with given template parameter may see all other template versions (useful in ref_as_big())
+  template<typename _TYPE2_, typename _SIZE2_> friend class TRUSTArray;
+
   // Iterators
   inline Iterator_ begin() { return span_.begin(); }
   inline Iterator_ end() { return span_.end(); }
@@ -127,6 +130,16 @@ public:
   // Resizing methods
   inline void resize(_SIZE_ new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(_SIZE_ new_size, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
+
+  // Conversion method - from a small array (_SIZE_=int) of TID (_TYPE_=trustIdType), return a big one (_SIZE_=long).
+  // No data copied! This behaves somewhat like a ref_array:
+  void ref_as_big(TRUSTArray<_TYPE_, _TYPE_>& out) const;
+
+  // The other way around compared to ref_as_big! From big to small. In debug, size limit is checked.
+  void ref_as_small(TRUSTArray<_TYPE_, int>& out) const;
+
+  // Conversion from a BigArrOfTID to an ArrOfInt - see also similar method in TRUSTTab
+  void from_tid_to_int(TRUSTArray<int, int>& out) const;
 
   /*! Memory allocation type - TEMP arrays (i.e. Trav) have a different allocation mechanism - see TRUSTTravPool.h) */
   inline void set_mem_storage(const STORAGE storage);
@@ -267,6 +280,8 @@ private:
 private:
   /*! Debug */
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
+
+  template<typename _TAB_> void ref_conv_helper_(_TAB_& out) const;
 };
 
 using ArrOfDouble = TRUSTArray<double, int>;

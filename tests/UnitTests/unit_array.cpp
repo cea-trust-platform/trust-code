@@ -33,7 +33,7 @@ public:
   void test_ref_arr();
   void test_ref_data();
   void test_trav();
-
+  void test_conversion();
 };
 
 
@@ -122,9 +122,7 @@ void TestTRUSTArray::test_ref_arr()
     ref1.ref_array(b, 2);
     ref2.ref_array(ref1, 2);
     assert(ref2[0] == 4);  // was 2!!
-  } 
-
-  
+  }
 }
 
 void TestTRUSTArray::test_ref_data()
@@ -212,6 +210,57 @@ void TestTRUSTArray::test_trav()
 }
 
 
+void TestTRUSTArray::test_conversion()
+{
+  // Test for big / small conversion
+  {
+    ArrOfFloat small;
+    {
+      BigArrOfFloat big(10);
+      big = 24;
+      big.ref_as_small(small);
+    }
+    // small should outlive big:
+    assert(small[2] == 24);
+    assert(small.size_array() == 10);
+  }
+  { // The other way around:
+    BigArrOfTID big;
+    {
+      ArrOfTID small(10);
+      small = 12;
+      small.ref_as_big(big);
+    }
+    // big should outlive small:
+    assert(big[2] == 12);
+    assert(big.size_array() == 10);
+  }
+  {
+    ArrOfInt b;
+    {
+      BigArrOfTID a(10);
+      a = 12;
+      a.from_tid_to_int(b);
+    }
+    assert(b[2] == 12);
+    assert(b.size_array() == 10);
+  }
+  // Line size should be preserved in from_tid_to_int:
+  {
+    IntTab b;
+    {
+      BigTIDTab a(10, 2);
+      a = 12;
+      a.from_tid_to_int(b);
+      assert(b(2,1) == 12);
+      assert(b.dimension(0) == a.dimension(0));
+      assert(b.dimension(1) == a.dimension(1));
+      assert(b.line_size() == a.line_size());
+    }
+  }
+
+}
+
 /*! Not great, we just rely on 'assert' for now ... one day Google Test or something
  * similar ...
  */
@@ -228,6 +277,7 @@ int main(int argc, char ** argv)
   tta.test_ref_arr();
   tta.test_ref_data();
   tta.test_trav();
+  tta.test_conversion();
 
 #ifdef _OPENMP
   Kokkos::finalize();

@@ -242,6 +242,89 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::inject_array(const TRUST
   return *this;
 }
 
+template<typename _TYPE_, typename _SIZE_>
+template<typename _TAB_>
+void TRUSTArray<_TYPE_, _SIZE_>::ref_conv_helper_(_TAB_& out) const
+{
+  out.detach_array();
+  // Same as 'attach_array()', but since we are crossing templates parameters, we can not call it directly:
+  out.mem_ = mem_;
+  out.span_ = span_;
+  out.data_location_ = data_location_;
+  out.storage_type_ = storage_type_;
+}
+
+/*! Conversion methods - from a small array (_SIZE_=int) of TID (_TYPE_=trustIdType), return a big one (_SIZE_=trustIdType).
+ * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff notably.
+ */
+#if INT_is_64_ == 2
+template<>
+void TRUSTArray<int, int>::ref_as_big(TRUSTArray<int, int>& out) const
+{
+  ref_conv_helper_(out);
+}
+#endif
+
+template<>
+void TRUSTArray<trustIdType, int>::ref_as_big(TRUSTArray<trustIdType,trustIdType>& out) const
+{
+  ref_conv_helper_(out);
+}
+
+template<typename _TYPE_, typename _SIZE_>
+void TRUSTArray<_TYPE_,_SIZE_>::ref_as_big(TRUSTArray<_TYPE_,_TYPE_>& out) const
+{
+  // Should no be used for anything else than specialisations listed above.
+  assert(false);
+  Process::exit("TRUSTArray<>::ref_as_big() should not be used with those current template types.");
+}
+
+/*! Conversion methods - from a big array (_SIZE_=trustIdType), return a small one (_SIZE_=int).
+ * Overflow is detected in debug if array is too big to be fit into _SIZE_=int.
+ * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff notably.
+ */
+template<>
+void TRUSTArray<float, trustIdType>::ref_as_small(TRUSTArray<float, int>& out) const
+{
+  // Check size fits in 32bits:
+  assert(size_array() < std::numeric_limits<int>::max());
+  ref_conv_helper_(out);
+}
+
+template<typename _TYPE_, typename _SIZE_>
+void TRUSTArray<_TYPE_,_SIZE_>::ref_as_small(TRUSTArray<_TYPE_, int>& out) const
+{
+  // Should no be used for anything else than specialisations listed above.
+  assert(false);
+  Process::exit("TRUSTArray<>::ref_as_big() should not be used with those current template types.");
+}
+
+/*! Conversion from a BigArrOfTID to an ArrOfInt. Careful, it always does a copy! It is your responsibility
+ * to invoke it only when necessary (typically you should avoid this when trustIdType == int ...)
+ */
+template<>
+void TRUSTArray<trustIdType,trustIdType>::from_tid_to_int(TRUSTArray<int, int>& out) const
+{
+  // Not too big?
+  assert(size_array() < std::numeric_limits<int>::max());
+  int sz_int = (int)size_array(); // we may cast!
+  out.resize_array_(sz_int);  // the one with '_' skipping the checks, so we can be called from Tab too
+  // All values within int range?
+  assert((   *std::min_element(span_.begin(), span_.end()) > std::numeric_limits<int>::min()  ));
+  assert((   *std::max_element(span_.begin(), span_.end()) < std::numeric_limits<int>::max()  ));
+  // Yes, copy:
+  std::copy(span_.begin(), span_.end(), out.span_.begin());
+}
+
+template<typename _TYPE_, typename _SIZE_>
+void TRUSTArray<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTArray<int, int>& out) const
+{
+  // Should no be used for anything else than specialisations listed above.
+  assert(false);
+  Process::exit("TRUSTArray<>::from_tid_to_int() should not be used with those current template types.");
+}
+
+
 /** Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
  */
 template <typename _TYPE_, typename _SIZE_>

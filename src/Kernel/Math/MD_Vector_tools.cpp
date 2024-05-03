@@ -129,7 +129,7 @@ template <typename _TYPE_>
 void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
 {
   const MD_Vector_base& mdv = md.valeur();
-  const int is_double = (std::is_same<_TYPE_,int>::value) ? 0 : 1;
+  const int is_double = (std::is_same<_TYPE_,double>::value) ? 1 : 0;
 
   if (md == last_md && v.line_size() == last_linesize && last_isdouble == is_double &&  last_opt == opt) { /* Do nothing si double et pas 1er passage */ }
   else

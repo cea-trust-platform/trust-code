@@ -481,7 +481,20 @@ template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::CARRE
 template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::CARRE_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
 
 #if INT_is_64_ == 2
+template void operator_vect_single_generic<trustIdType, trustIdType, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<trustIdType, trustIdType>& resu, const trustIdType x, Mp_vect_options opt);
+template void operator_vect_single_generic<int, trustIdType, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<int, trustIdType>& resu, const int x, Mp_vect_options opt);
+template void operator_vect_single_generic<float, trustIdType, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<float, trustIdType>& resu, const float x, Mp_vect_options opt);
+template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<double, trustIdType>& resu, const double x, Mp_vect_options opt);
+
+template void operator_vect_single_generic<trustIdType, trustIdType, TYPE_OPERATOR_SINGLE::SUB_>(TRUSTVect<trustIdType, trustIdType>& resu, const trustIdType x, Mp_vect_options opt);
+template void operator_vect_single_generic<int, trustIdType, TYPE_OPERATOR_SINGLE::SUB_>(TRUSTVect<int, trustIdType>& resu, const int x, Mp_vect_options opt);
+template void operator_vect_single_generic<float, trustIdType, TYPE_OPERATOR_SINGLE::SUB_>(TRUSTVect<float, trustIdType>& resu, const float x, Mp_vect_options opt);
+template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SINGLE::SUB_>(TRUSTVect<double, trustIdType>& resu, const double x, Mp_vect_options opt);
+
 template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SINGLE::MULT_>(TRUSTVect<double, trustIdType>& resu, const double x, Mp_vect_options opt);
+template void operator_vect_single_generic<float, trustIdType, TYPE_OPERATOR_SINGLE::MULT_>(TRUSTVect<float, trustIdType>& resu, const float x, Mp_vect_options opt);
+
+
 #endif
 
 template <typename _TYPE_, typename _SIZE_, typename _TYPE_RETURN_, TYPE_OPERATION_VECT _TYPE_OP_ >
@@ -757,7 +770,7 @@ template <typename _TYPE_, typename _SIZE_>
 void invalidate_data(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt)
 {
 #ifndef LATATOOLS
-  _TYPE_ invalid = (std::is_same<_TYPE_,_SIZE_>::value) ? INT_MAX : (std::is_same<_TYPE_,float>::value) ? -987654.321f : -987654.321 ;
+  _TYPE_ invalid = (_TYPE_)-987654321;
 
   const MD_Vector& md = resu.get_md_vector();
   const int line_size = resu.line_size();

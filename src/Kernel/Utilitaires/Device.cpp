@@ -573,7 +573,10 @@ template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdTyp
 template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName, bool enabled);
 template const float* mapToDevice<float>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
 
-template double* computeOnTheDevice<double>(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
+template int* computeOnTheDevice(TRUSTArray<int,trustIdType>& tab, std::string arrayName, bool enabled);
+template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName, bool enabled);
+template float* computeOnTheDevice(TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
+template double* computeOnTheDevice(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
 
 #endif
 

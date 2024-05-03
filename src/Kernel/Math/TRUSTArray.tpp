@@ -45,8 +45,8 @@ inline void TRUSTArray<_TYPE_, _SIZE_>::resize_array(_SIZE_ new_size, RESIZE_OPT
   // Si le tableau change de taille, il doit etre du type TRUSTArray
   assert(  ( mem_ == nullptr || (int)mem_->size() == new_size ) ||
            std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos );
-  // ref_arrays can not be resized:
-  assert( ref_count() <= 1 );
+  // ref_arrays can not be resized, except if they keep the same size
+  assert( size_array() == new_size || ref_count() <= 1 );
   // ref_data can not be resized:
   assert( span_.empty() || mem_ != nullptr );
   resize_array_(new_size, opt);
