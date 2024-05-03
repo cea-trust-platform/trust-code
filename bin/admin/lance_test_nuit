@@ -1162,6 +1162,14 @@ echo "###############################################"
            grep error $make_log
            grep -i Stop $make_log
            grep KO $make_log | grep -v "LIBKOKKOS:OK"
+           if [ "$TYPE" = "debug" ] && [ $vue = tuleap/Livraison ]
+           then
+              echo "grep -r linux_opt $TRUST_ROOT/MonoDir_mpi/src/CMakeFiles/TRUST_mpi.dir/*.make 2>/dev/null" > tmp.log
+              error_link_or_include="`grep -r linux_opt $TRUST_ROOT/MonoDir_mpi/src/CMakeFiles/TRUST_mpi.dir/*.make 2>/dev/null`"
+              echo "$error_link_or_include" >> tmp.log
+              [ "$error_link_or_include" != "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] DEBUG error: link or includes done against an optimized library\" $TRUST_MAIL
+              rm -f tmp.log
+           fi
            if [ "$OPT" = "_semi_opt" ]
            then
               if [ $vue = tuleap/Livraison ]

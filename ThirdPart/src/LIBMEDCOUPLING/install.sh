@@ -134,7 +134,7 @@ fi
 #####
 # Build debug version first if requested:
 #####
-if [ "$TRUST_ENABLE_MC_DEBUG" != "0" ]; then
+if [ "$TRUST_ENABLE_MC_DEBUG" != "0" ] || [ $HOST = $TRUST_HOST_ADMIN ] ; then
   rel_type="Debug"
   build_dir=$build_dir_root/${TRUST_ARCH}
   install_dir=$install_dir_root/${TRUST_ARCH}

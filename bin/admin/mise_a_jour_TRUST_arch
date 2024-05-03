@@ -339,6 +339,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-petsc" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -disable-petsc"
 # PETSc debug
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-enable-petsc-debug" | grep ^$HOST"\."`" != "" ]             && option_configure=$option_configure" -enable-petsc-debug"
+# MEDCoupling debug
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-enable-mc-debug" | grep ^$HOST"\."`" != "" ]             && option_configure=$option_configure" -enable-mc-debug"
 # without VC
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-vc" | grep ^$HOST"\."`" != "" ]                     && option_configure=$option_configure" -disable-vc"
 # OpenMPI

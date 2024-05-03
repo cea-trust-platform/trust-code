@@ -1056,8 +1056,9 @@ then
           liste_skipped=$liste_skipped" $i"
           i=""
        fi
-        # Discard ICoCo test cases if ICoCo baltik is not built with TRUST
-       ICoCo_exec=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/`basename $exec` && ICoCo_exec=`echo $ICoCo_exec | sed "1,$ s?TRUST_mpi?ICoCo?g"`
+       # Discard ICoCo test cases if ICoCo baltik is not built with TRUST
+       exec_name=`basename $exec_debug`  # ND: I use exec_name instead of TRUST, otherwise pemfc ICoCo test cases not run
+       ICoCo_exec=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/`basename $exec` && ICoCo_exec=`echo $ICoCo_exec | sed "1,$ s?$exec_name?ICoCo?g"`
        ICoCo_env=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh && [ "`grep $TRUST_ROOT $ICoCo_env &>/dev/null;echo $?`" != 0 ] && ICoCo_env=""
        test_case=`basename $file`
        if [ ${test_case#ICoCo_} != $test_case ]

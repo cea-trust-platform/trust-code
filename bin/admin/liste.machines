@@ -27,7 +27,7 @@ linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		  				-benchmark -cuda 
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD            						-benchmark -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-benchmark -cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
-linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-pdflatex -disable-hwloc  -without-conda  
+linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-pdflatex -disable-hwloc   
 linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -build_64_bit -without-pdflatex -disable-hwloc 
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc  		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD  -FLICA5   					  -disable-plot2d -disable-hwloc  	-benchmark 								# CentOS 7.6	CEA Saclay
@@ -47,7 +47,7 @@ linux	rsync_ssh	non	is241758.intra.cea.fr		-all		-C3D 							-disable-optionals	
 linux	rsync_ssh	non	is154710.intra.cea.fr		-all		-TrioCFD 					-disable-petsc -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania
 linux	rsync_ssh	non	is154710-xdata.intra.cea.fr									-xdata  -without-pdflatex 						# CentOS 7.9	Bat 451	LGLS	salle de formation titania
 linux	rsync_ssh	non	is154711.intra.cea.fr				-TrioCFD  -TrioMC   			-g 		-without-pdflatex						# CentOS 7.9	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non	is154726.intra.cea.fr		-all 		 			-g 		-enable-petsc-debug -without-pdflatex			# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non	is154726.intra.cea.fr		-all 		 			-g 		-enable-petsc-debug -enable-mc-debug -without-pdflatex			# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	tache   is240933.intra.cea.fr				        	                     -check-valgrind -without-pdflatex -force_provided_mpich 				# CentOS 7.9 Salle de formation titania
 linux	rsync_ssh	tache	is241480-wompi-64.intra.cea.fr		-all 		  				-platform -disable-mpi -build_64_bit -disable-mpi4py -without-visit -without-pdflatex 				# CentOS 7.9	Bat 451	LMSF	Salle de formation titania
 linux	rsync_ssh	tache	is244274-build64.intra.cea.fr			 							-build_64_bit -force-provided-mpich 							# Fedora 32	Bat 451	LGLS bureau Gilles
