@@ -49,7 +49,7 @@ echo "s?$METIS_ROOT? /include/?g">>$tmp
 echo "s?$TRUST_MED_ROOT/include/med?\$(TRUST_MED_ROOT)/include/med?g">>$tmp
 echo "s?$TRUST_MED_ROOT? /include/?g">>$tmp
 
-echo "s?$TRUST_MEDCOUPLING_ROOT/include?\$(TRUST_MEDCOUPLING_ROOT)/include?g">>$tmp
+echo "s?$TRUST_MEDCOUPLING_ROOT?\$(TRUST_MEDCOUPLING_ROOT)?g">>$tmp
 
 echo "s?$TRUST_OSQP_ROOT/include?\$(TRUST_OSQP_ROOT)/include?g">>$tmp
 

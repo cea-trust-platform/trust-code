@@ -5,7 +5,7 @@ LATA_TOOLS_INSTALL_DIR=$TRUST_ROOT/exec/lata_tools
 #
 # Source MEDCoupling si pas encore fait !
 #
-if [ "`echo $PYTHONPATH | grep -i LIBMEDCOUPLING/install/bin`" = "" ]
+if [ "`echo $PYTHONPATH | grep -i LIBMEDCOUPLING/${TRUST_ARCH}_opt/bin`" = "" ]
 then
   if [ -f $TRUST_MEDCOUPLING_ROOT/env.sh ]
   then
