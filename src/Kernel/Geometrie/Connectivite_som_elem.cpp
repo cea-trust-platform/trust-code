@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,29 +25,31 @@
  * @param (som_elem)
  * @param (include_virtual)
  */
-void construire_connectivite_som_elem(const int       nb_sommets,
-                                      const IntTab&      les_elems,
-                                      Static_Int_Lists& som_elem,
-                                      const int       include_virtual)
+template <typename _SIZE_>
+void construire_connectivite_som_elem(const _SIZE_       nb_sommets,
+                                      const ITab_T<_SIZE_>&      les_elems,
+                                      Static_Int_Lists_32_64<_SIZE_>& som_elem,
+                                      bool       include_virtual)
 {
   // Nombre d'elements du domaine
-  const int nb_elem = (include_virtual) ? les_elems.dimension_tot(0) : les_elems.dimension(0);
+  const _SIZE_ nb_elem = (include_virtual) ? les_elems.dimension_tot(0) : les_elems.dimension(0);
   // Nombre de sommets par element
-  const int nb_sommets_par_element = les_elems.dimension(1);
+  const _SIZE_ nb_sommets_par_element = les_elems.dimension(1);
 
   // Construction d'un tableau initialise a zero : pour chaque sommet,
   // nombre d'elements voisins de ce sommet
-  ArrOfInt nb_elements_voisins(nb_sommets);
+  AOInt_T<_SIZE_> nb_elements_voisins(nb_sommets);
 
   // Premier passage : on calcule le nombre d'elements voisins de chaque
   // sommet pour creer la structure de donnees
-  int elem, i;
+  _SIZE_ elem;
+  int i;
 
   for (elem = 0; elem < nb_elem; elem++)
     {
       for (i = 0; i < nb_sommets_par_element; i++)
         {
-          int sommet = les_elems(elem, i);
+          _SIZE_ sommet = les_elems(elem, i);
           // GF cas des polyedres
           if (sommet==-1) break;
           nb_elements_voisins[sommet]++;
@@ -65,10 +67,10 @@ void construire_connectivite_som_elem(const int       nb_sommets,
     {
       for (i = 0; i < nb_sommets_par_element; i++)
         {
-          int sommet = les_elems(elem, i);
+          _SIZE_ sommet = les_elems(elem, i);
           // GF cas des polyedres
           if (sommet==-1) break;
-          int n = (nb_elements_voisins[sommet])++;
+          _SIZE_ n = (nb_elements_voisins[sommet])++;
           som_elem.set_value(sommet, n, elem);
         }
     }
@@ -85,9 +87,10 @@ void construire_connectivite_som_elem(const int       nb_sommets,
  * @param (sommets_to_find) une liste de sommets
  * @param (elements) resultat de la recherche: la liste des elements qui contiennent tous les sommets de sommets_to_find. Si sommets_to_find est vide, on renvoie un tableau vide. (en cas d'appels repetes a cette fonction, il est conseille de mettre le drapeau "smart_resize")
  */
-void find_adjacent_elements(const Static_Int_Lists& som_elem,
-                            const ArrOfInt& sommets_to_find,
-                            ArrOfInt& elements)
+template <typename _SIZE_>
+void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem,
+                            const SmallAOTID_T<_SIZE_>& sommets_to_find,
+                            SmallAOTID_T<_SIZE_>& elements)
 {
   int nb_som_to_find = sommets_to_find.size_array();
   // on retire les sommets valant -1 (cas ou plusieurs types de faces)
@@ -104,32 +107,39 @@ void find_adjacent_elements(const Static_Int_Lists& som_elem,
   //  A la fin, il ne reste que les elements qui sont dans toutes les listes.
   {
     // Initialisation avec les elements adjacents au premier sommet
-    const int sommet = sommets_to_find[0];
-    som_elem.copy_list_to_array(sommet, elements);
+    const _SIZE_ sommet = sommets_to_find[0];
+    // OK this is a bit technical here: 'elements' is a small array, even in 64b.
+    // But copy_list_to_array() might return a Big array (in 64b). So we cheat, we pass it a big array
+    // which is actually pointing to the same internal memory block as the small one.
+    // Just need to start with the correct size because copy_list_to_array will resize otherwise:
+    int sz = (int)som_elem.get_list_size(sommet);
+    elements.resize_array(sz);
+    AOInt_T<_SIZE_> elem_as_big;
+    elements.ref_as_big(elem_as_big);
+    som_elem.copy_list_to_array(sommet, elem_as_big);
   }
   int nb_elem_found = elements.size_array();
   int i_sommet;
   for (i_sommet = 1; i_sommet < nb_som_to_find; i_sommet++)
     {
-      const int sommet = sommets_to_find[i_sommet];
+      const _SIZE_ sommet = sommets_to_find[i_sommet];
       // Calcul des elements communs entre elements[.] et som_elem(sommet,.)
       // Nombre d'elements communs entre elements et la nouvelle liste de sommets
       int nb_elems_restants = 0;
       // Nombre d'elements adjacents au "sommet"
-      const int nb_elem_liste = som_elem.get_list_size(sommet);
+      const int nb_elem_liste = (int)som_elem.get_list_size(sommet);
       // On suppose que les listes d'elements sont triees dans l'ordre croissant
       // On parcourt simultanement les deux listes et on conserve les elements
       // communs.
-      int i = 0;
-      int j = 0;
+      int i=0, j=0;
       if (nb_elem_found == 0)
         break;
       if (nb_elem_liste > 0)
         {
           while (1)
             {
-              const int elem_i = elements[i];
-              const int elem_j = som_elem(sommet, j);
+              const _SIZE_ elem_i = elements[i];
+              const _SIZE_ elem_j = som_elem(sommet, j);
               if (elem_i == elem_j)
                 {
                   // Element commun aux deux listes, on le garde
@@ -159,3 +169,10 @@ void find_adjacent_elements(const Static_Int_Lists& som_elem,
   elements.resize_array(nb_elem_found);
 }
 
+template void construire_connectivite_som_elem(const int nb_sommets, const ITab_T<int>& les_elems, Static_Int_Lists_32_64<int>& som_elem, bool include_virtual);
+template void find_adjacent_elements(const Static_Int_Lists_32_64<int>& som_elem, const SmallAOTID_T<int>& sommets_to_find, SmallAOTID_T<int>& elements);
+
+#if INT_is_64_ == 2
+template void construire_connectivite_som_elem(const trustIdType nb_sommets, const ITab_T<trustIdType>& les_elems, Static_Int_Lists_32_64<trustIdType>& som_elem, bool include_virtual);
+template void find_adjacent_elements(const Static_Int_Lists_32_64<trustIdType>& som_elem, const SmallAOTID_T<trustIdType>& sommets_to_find, SmallAOTID_T<trustIdType>& elements);
+#endif

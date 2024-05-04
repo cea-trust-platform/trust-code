@@ -16,7 +16,6 @@
 #include <Reordonner_faces_periodiques.h>
 #include <Connectivite_som_elem.h>
 #include <Partitionneur_base.h>
-#include <Static_Int_Lists.h>
 #include <communications.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>

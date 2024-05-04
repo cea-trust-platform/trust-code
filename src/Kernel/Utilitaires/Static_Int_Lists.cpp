@@ -16,9 +16,9 @@
 #include <TRUSTArrays.h>
 
 /*! @brief detruit toutes les listes
- *
  */
-void Static_Int_Lists::reset()
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::reset()
 {
   index_.resize_array(0);
   valeurs_.resize_array(0);
@@ -31,21 +31,21 @@ void Static_Int_Lists::reset()
  *   Les valeurs sizes doivent etre positives ou nulles.
  *
  */
-void Static_Int_Lists::set_list_sizes(const ArrOfInt& sizes)
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::set_list_sizes(const ArrOfInt_t& sizes)
 {
   reset();
 
-  const int nb_listes = sizes.size_array();
+  const int_t nb_listes = sizes.size_array();
   index_.resize_array(nb_listes + 1);
   // Construction du tableau d'index
   index_[0];
-  int i;
-  for (i = 0; i < nb_listes; i++)
+  for (int_t i = 0; i < nb_listes; i++)
     {
       assert(sizes[i] >= 0);
       index_[i+1] = index_[i] + sizes[i];
     }
-  const int somme_sizes = index_[nb_listes];
+  const int_t somme_sizes = index_[nb_listes];
   valeurs_.resize_array(somme_sizes);
 }
 
@@ -55,7 +55,8 @@ void Static_Int_Lists::set_list_sizes(const ArrOfInt& sizes)
  *   les listes.
  *
  */
-void Static_Int_Lists::set_data(const ArrOfInt& data)
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::set_data(const ArrOfInt_t& data)
 {
   assert(data.size_array() == valeurs_.size_array());
   valeurs_.inject_array(data);
@@ -63,26 +64,28 @@ void Static_Int_Lists::set_data(const ArrOfInt& data)
 
 #ifndef NDEBUG
 // Verifie la coherence du tableau index et data
-static int check_index_data(const ArrOfInt& index, const ArrOfInt& data)
+template <typename _SIZE_>
+static bool check_index_data(const AOInt_T<_SIZE_>& index, const AOInt_T<_SIZE_>& data)
 {
   if (index.size_array() < 1)
-    return 0;
+    return false;
   if (index[0] != 0)
-    return 0;
-  const int n = index.size_array() - 1; // nombre de listes
-  for (int i = 0; i < n; i++)
+    return false;
+  const _SIZE_ n = index.size_array() - 1; // nombre de listes
+  for (_SIZE_ i = 0; i < n; i++)
     if (index[i+1] < index[i])
-      return 0;
+      return false;
   if (index[n] != data.size_array())
-    return 0;
-  return 1;
+    return false;
+  return true;
 }
 #endif
 
 /*! @brief remplace index et data.
  *
  */
-void Static_Int_Lists::set_index_data(const ArrOfInt& index, const ArrOfInt& data)
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::set_index_data(const ArrOfInt_t& index, const ArrOfInt_t& data)
 {
   assert(check_index_data(index, data));
   index_ = index;
@@ -94,17 +97,17 @@ void Static_Int_Lists::set_index_data(const ArrOfInt& index, const ArrOfInt& dat
  * Si num_liste < 0, on trie toutes les listes.
  *
  */
-void Static_Int_Lists::trier_liste(int num_liste)
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::trier_liste(int_t num_liste)
 {
-  const int i_debut = (num_liste < 0) ? 0 : num_liste;
-  const int i_fin   = (num_liste < 0) ? index_.size_array() - 1 : num_liste + 1;
+  const int_t i_debut = (num_liste < 0) ? 0 : num_liste;
+  const int_t i_fin   = (num_liste < 0) ? index_.size_array() - 1 : num_liste + 1;
 
-  int i;
-  ArrOfInt valeurs_liste;
-  for (i = i_debut; i < i_fin; i++)
+  ArrOfInt_t valeurs_liste;
+  for (int_t i = i_debut; i < i_fin; i++)
     {
-      const int index = index_[i];
-      const int size  = index_[i+1] - index;
+      const int_t index = index_[i];
+      const int_t size  = index_[i+1] - index;
       valeurs_liste.ref_array(valeurs_, index, size);
       valeurs_liste.ordonne_array();
     }
@@ -113,15 +116,17 @@ void Static_Int_Lists::trier_liste(int num_liste)
 /*! @brief copie la i-ieme liste dans le tableau fourni Le tableau array doit etre resizable.
  *
  */
-void Static_Int_Lists::copy_list_to_array(int i, ArrOfInt& array) const
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::copy_list_to_array(int_t i, ArrOfInt_t& array) const
 {
-  const int n = get_list_size(i);
+  const int_t n = get_list_size(i);
   array.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  const int index = index_[i];
+  const int_t index = index_[i];
   array.inject_array(valeurs_, n, 0 /* destination index */, index /* source index */);
 }
 
-Sortie& Static_Int_Lists::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Static_Int_Lists_32_64<_SIZE_>::printOn(Sortie& os) const
 {
 #ifndef LATATOOLS
   os << index_   << tspace;
@@ -130,7 +135,8 @@ Sortie& Static_Int_Lists::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Static_Int_Lists::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Static_Int_Lists_32_64<_SIZE_>::readOn(Entree& is)
 {
   reset();
 #ifndef LATATOOLS
@@ -140,39 +146,38 @@ Entree& Static_Int_Lists::readOn(Entree& is)
   return is;
 }
 
-Sortie& Static_Int_Lists::ecrire(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Static_Int_Lists_32_64<_SIZE_>::ecrire(Sortie& os) const
 {
 #ifndef LATATOOLS
   os << "nb lists       : " << get_nb_lists() << finl;
   os << "sizes of lists : ";
-  for (int i=0; i<get_nb_lists(); ++i)
+  for (int_t i=0; i<get_nb_lists(); ++i)
     {
       os << get_list_size(i) << " ";
     }
   os << finl;
 
-  for (int i=0; i<get_nb_lists(); ++i)
+  for (int_t i=0; i<get_nb_lists(); ++i)
     {
       os << "{ " ;
-      const int sz = get_list_size(i);
-      for (int j=0; j<sz; ++j)
-        {
-          os <<  valeurs_[(index_[i]+j)] << " ";
-        }
+      const int_t sz = get_list_size(i);
+      for (int_t j=0; j<sz; ++j)
+        os <<  valeurs_[(index_[i]+j)] << " ";
       os << "}" << finl;
     }
 #endif
   return os;
 }
 
-void Static_Int_Lists::set(const ArrsOfInt& src)
+template <typename _SIZE_>
+void Static_Int_Lists_32_64<_SIZE_>::set(const ArrsOfInt_t& src)
 {
   const int nb_lists = src.size();
   index_.resize_array(nb_lists + 1, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  int idx = 0;
-  int i;
+  int_t idx = 0;
   index_[0] = 0;
-  for (i = 0; i < nb_lists; i++)
+  for (int i = 0; i < nb_lists; i++)
     {
       idx += src[i].size_array();
       index_[i+1] = idx;
@@ -180,11 +185,16 @@ void Static_Int_Lists::set(const ArrsOfInt& src)
 
   valeurs_.resize_array(idx, RESIZE_OPTIONS::NOCOPY_NOINIT);
   idx = 0;
-  for (i = 0; i < nb_lists; i++)
+  for (int i = 0; i < nb_lists; i++)
     {
-      const ArrOfInt& a = src[i];
-      int sz = a.size_array();
+      const ArrOfInt_t& a = src[i];
+      int_t sz = a.size_array();
       valeurs_.inject_array(a, sz, idx /* dest index */, 0 /* source index */);
       idx += sz;
     }
 }
+
+template class Static_Int_Lists_32_64<int>;
+#if INT_is_64_ == 2
+template class Static_Int_Lists_32_64<trustIdType>;
+#endif

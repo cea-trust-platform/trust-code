@@ -34,37 +34,32 @@
  *    Cout << l(0,1);
  *
  */
-class Static_Int_Lists
+template <typename _SIZE_>
+class Static_Int_Lists_32_64
 {
 public:
-  void set_list_sizes(const ArrOfInt& sizes);
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrsOfInt_t = ArrsOfInt_T<_SIZE_>;
+
+  void set_list_sizes(const ArrOfInt_t& sizes);
   void reset();
-  void copy_list_to_array(int i_liste, ArrOfInt& array) const;
 
-  inline void   set_value(int i_liste, int i_element, int valeur);
-  inline int operator() (int i_liste, int i_element) const;
-  inline int get_list_size(int i_liste) const;
-  inline int get_nb_lists() const;
-  const ArrOfInt& get_index() const
-  {
-    return index_;
-  }
-  const ArrOfInt& get_data() const
-  {
-    return valeurs_;
-  }
-  void set_data(const ArrOfInt& data);
-  void set_index_data(const ArrOfInt& index, const ArrOfInt& data);
-  void trier_liste(int i);
-  void set(const ArrsOfInt&);
+  void copy_list_to_array(int_t i_liste, ArrOfInt_t& array) const;
 
-  // MODIF ELI LAUCOIN (22/08/2007) :
-  // j'ajoute un printOn et un readOn
+  inline void   set_value(int_t i_liste, int_t i_element, int_t valeur);
+  inline int_t operator() (int_t i_liste, int_t i_element) const;
+  inline int_t get_list_size(int_t i_liste) const;
+  inline int_t get_nb_lists() const;
+  const ArrOfInt_t& get_index() const  { return index_;    }
+  const ArrOfInt_t& get_data() const   { return valeurs_;  }
+  void set_data(const ArrOfInt_t& data);
+  void set_index_data(const ArrOfInt_t& index, const ArrOfInt_t& data);
+  void trier_liste(int_t i);
+  void set(const ArrsOfInt_t& src);
+
   Sortie& printOn(Sortie& os) const;
   Entree& readOn(Entree& is);
-
-  // MODIF ELI LAUCOIN (02/09/2007) :
-  // j'ajoute un ecrire pour faciliter le debug
   Sortie& ecrire(Sortie& os) const;
 
 private:
@@ -73,16 +68,17 @@ private:
   // Le premier element de la liste i est valeurs_[index_[i]]
   // et le dernier element est valeurs_[index_[i+1]-1]
   // (c'est comme le stockage morse des matrices).
-  ArrOfInt index_;
-  ArrOfInt valeurs_;
+  ArrOfInt_t index_;
+  ArrOfInt_t valeurs_;
 };
 
 /*! @brief affecte la "valeur" au j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
  *
  */
-inline void Static_Int_Lists::set_value(int i, int j, int valeur)
+template <typename _SIZE_>
+inline void Static_Int_Lists_32_64<_SIZE_>::set_value(int_t i, int_t j, int_t valeur)
 {
-  const int index = index_[i] + j;
+  const int_t index = index_[i] + j;
   assert(index < index_[i+1]);
   valeurs_[index] = valeur;
 }
@@ -90,29 +86,34 @@ inline void Static_Int_Lists::set_value(int i, int j, int valeur)
 /*! @brief renvoie le j-ieme element de la i-ieme liste avec 0 <= i < get_nb_lists()  et  0 <= j < get_list_size(i)
  *
  */
-inline int Static_Int_Lists::operator() (int i, int j) const
+template <typename _SIZE_>
+inline typename Static_Int_Lists_32_64<_SIZE_>::int_t Static_Int_Lists_32_64<_SIZE_>::operator() (int_t i, int_t j) const
 {
-  const int index = index_[i] + j;
+  const int_t index = index_[i] + j;
   assert(index < index_[i+1]);
-  const int val = valeurs_[index];
+  const int_t val = valeurs_[index];
   return val;
 }
 
 /*! @brief renvoie le nombre d'elements de la liste i
  *
  */
-inline int Static_Int_Lists::get_list_size(int i) const
+template <typename _SIZE_>
+inline typename Static_Int_Lists_32_64<_SIZE_>::int_t Static_Int_Lists_32_64<_SIZE_>::get_list_size(int_t i) const
 {
-  const int size = index_[i+1] - index_[i];
-  return size;
+  return index_[i+1] - index_[i];
 }
 
 /*! @brief renvoie le nombre de listes stockees
  *
  */
-inline int Static_Int_Lists::get_nb_lists() const
+template <typename _SIZE_>
+inline typename Static_Int_Lists_32_64<_SIZE_>::int_t Static_Int_Lists_32_64<_SIZE_>::get_nb_lists() const
 {
   return index_.size_array() - 1;
 }
+
+using Static_Int_Lists = Static_Int_Lists_32_64<int>;
+using Static_Int_Lists_64 = Static_Int_Lists_32_64<trustIdType>;
 
 #endif

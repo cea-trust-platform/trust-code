@@ -15,7 +15,6 @@
 
 #include <Connectivite_som_elem.h>
 #include <EcrFicCollecteBin.h>
-#include <Static_Int_Lists.h>
 #include <Elem_geom_base.h>
 #include <Poly_geom_base.h>
 #include <communications.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,17 +18,11 @@
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs.h>
+#include <Static_Int_Lists.h>
 
 /*! @brief : class Refine_Mesh
  *
- *  <Description of class Refine_Mesh>
- *
- *
- *
  */
-
-class Static_Int_Lists;
-
 class Refine_Mesh : public Interprete_geometrique_base
 {
 

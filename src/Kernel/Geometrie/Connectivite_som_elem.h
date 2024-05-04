@@ -18,9 +18,15 @@
 
 #include <TRUSTTabs_forward.h>
 
-class Static_Int_Lists;
+template <typename _SIZE_>
+class Static_Int_Lists_32_64;
 
-void construire_connectivite_som_elem(const int nb_sommets, const IntTab& les_elems, Static_Int_Lists& som_elem, const int include_virtual);
-void find_adjacent_elements(const Static_Int_Lists& som_elem, const ArrOfInt& sommets_to_find, ArrOfInt& elements);
+// We do not differentiate here _SIZE_ and _TYPE_ because those functions all work with entity indices.
+// So we are either manipulating IntTab or BigTIDTab, nothing in between.
+template <typename _SIZE_>
+void construire_connectivite_som_elem(const _SIZE_ nb_sommets, const ITab_T<_SIZE_>& les_elems, Static_Int_Lists_32_64<_SIZE_>& som_elem, bool include_virtual);
+
+template <typename _SIZE_>
+void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem, const SmallAOTID_T<_SIZE_>& sommets_to_find, SmallAOTID_T<_SIZE_>& elements);
 
 #endif

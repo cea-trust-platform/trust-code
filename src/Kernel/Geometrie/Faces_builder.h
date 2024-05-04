@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,7 @@
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Domaine_forward.h>
-
-class Static_Int_Lists;
+#include <Static_Int_Lists.h>
 
 /*! @brief classe outil pour construire les faces d'un domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)

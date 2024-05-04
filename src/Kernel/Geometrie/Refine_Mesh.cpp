@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Static_Int_Lists.h>
 #include <Array_tools.h>
 #include <Refine_Mesh.h>
 #include <Sous_Domaine.h>

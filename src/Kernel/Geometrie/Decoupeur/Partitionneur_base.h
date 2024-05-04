@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Noms.h>
+#include <Static_Int_Lists.h>
 
-class Static_Int_Lists;
 #include <Domaine_forward.h>
 class Param;
 #include <Domaine_forward.h>
