@@ -42,10 +42,10 @@
 using MEDCoupling::MEDCouplingRemapper;
 using MEDCoupling::MEDCouplingUMesh;
 using MEDCoupling::MCAuto;
+using MEDCoupling::MEDCouplingFieldDouble;
 #ifdef MPI_
 #include <OverlapDEC.hxx>
 using MEDCoupling::OverlapDEC;
-using MEDCoupling::MEDCouplingFieldDouble;
 #endif
 #endif
 

@@ -2394,11 +2394,12 @@ MEDCoupling::MEDCouplingRemapper* Domaine::get_remapper(const Domaine& other_dom
     prepare_rmp_with(other_domain);
   return &rmps.at(&other_domain);
 }
-
+#ifdef MPI_
 MEDCoupling::OverlapDEC* Domaine::get_dec(const Domaine& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc)
 {
   if (!decs.count({ &other_domain, dist->getNature() } ))
     prepare_dec_with(other_domain, dist, loc);
   return &decs.at({ &other_domain, dist->getNature() });
 }
+#endif
 #endif

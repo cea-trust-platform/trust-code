@@ -21,7 +21,9 @@
 #include <Comm_Group_MPI.h>
 #include <Param.h>
 #include <MEDLoader.hxx>
+#ifdef MPI_
 #include <ParaFIELD.hxx>
+#endif
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
 // XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 1 Field that is interpolated from a distant domain via MEDCoupling (remapper).
@@ -180,7 +182,6 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   if (Process::nproc() > 1 && use_dec_)
     {
 #ifdef MPI_
-
       if (dom_loc_->get_mc_mesh() == nullptr) dom_loc_->build_mc_mesh();
       if (dom_dist_->get_mc_mesh() == nullptr) dom_dist_->build_mc_mesh();
 
