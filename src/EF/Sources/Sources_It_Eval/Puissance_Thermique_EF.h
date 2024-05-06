@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ public:
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
+  virtual void resetTime(double temps) override { Terme_Puissance_Thermique::resetTime(temps); }
 };
 
 #endif /* Puissance_Thermique_EF_included */

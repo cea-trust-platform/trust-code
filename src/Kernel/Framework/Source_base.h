@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Matrice_Bloc.h>
 #include <MorEqn.h>
 #include <SFichier.h>
+#include <Champ_Don.h>
 
 class Probleme_base;
 class Domaine_dis;
@@ -84,6 +85,9 @@ public:
   inline DoubleVect& bilan() const { return bilan_; }
   inline Champs_compris& champs_compris() { return champs_compris_; }
 
+  // Liste des champs des sources:
+  const LIST(REF(Champ_Don))& Champs_Don() const { return champs_don_; }
+
 protected:
 
   virtual void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) =0;
@@ -95,7 +99,7 @@ protected:
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
   mutable SFichier Flux;
   Champs_compris champs_compris_;
-
+  LIST(REF(Champ_Don)) champs_don_;
 };
 
 #endif /* Source_base_included */

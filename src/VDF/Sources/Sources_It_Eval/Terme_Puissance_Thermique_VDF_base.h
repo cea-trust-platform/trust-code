@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@ class Terme_Puissance_Thermique_VDF_base : public Terme_Puissance_Thermique, pub
 public:
   Terme_Puissance_Thermique_VDF_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VDF_base(iter_base) { }
   int initialiser(double temps) override;
+  virtual void resetTime(double temps) override { Terme_Puissance_Thermique::resetTime(temps); }
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
 };
 

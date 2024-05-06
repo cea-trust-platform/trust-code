@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,11 @@ Sortie& Solide::printOn(Sortie& os) const { return Milieu_base::printOn(os); }
  * @param (Entree& is) un flot d'entree
  * @return (Entree& is) le flot d'entree modifie
  */
-Entree& Solide::readOn(Entree& is) { return Milieu_base::readOn(is); }
+Entree& Solide::readOn(Entree& is)
+{
+  champs_don_.add(mon_champ_);
+  return Milieu_base::readOn(is);
+}
 
 void Solide::set_param(Param& param)
 {

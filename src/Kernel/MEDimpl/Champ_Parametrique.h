@@ -45,15 +45,13 @@ public:
   virtual DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override { return champ()->valeur_aux(positions, valeurs); }
 
   // Methodes specifiques:
-  int size() { return champs_.size(); }
-  //int index() { return index_; }
-  int newParameter();
-
+  int newParameter() const;
+  static bool enabled;
 protected :
   LIST(Champ_Don) champs_;
   Champ_Don& champ() { return champs_[index_-1]; }
   const Champ_Don& champ() const { return champs_[index_-1]; }
-  int index_=0;
+  mutable int index_=0;
 };
 
 #endif

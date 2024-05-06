@@ -90,6 +90,13 @@ Entree& Milieu_base::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
   check_gravity_vector();
   creer_champs_non_lus();
+  champs_don_.add(g);
+  champs_don_.add(alpha);
+  champs_don_.add(lambda);
+  champs_don_.add(Cp);
+  champs_don_.add(beta_th);
+  champs_don_.add(porosites_champ);
+  champs_don_.add(diametre_hyd_champ);
   return is;
 }
 
@@ -956,3 +963,4 @@ const Nom& Milieu_base::le_nom() const
 {
   return nom_;
 }
+

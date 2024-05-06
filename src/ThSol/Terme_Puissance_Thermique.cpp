@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,6 +76,11 @@ void Terme_Puissance_Thermique::mettre_a_jour(double temps)
 {
   la_puissance_lu.mettre_a_jour(temps);
   la_puissance.valeur().affecter(la_puissance_lu.valeur());
+}
+
+void Terme_Puissance_Thermique::resetTime(double temps)
+{
+  mettre_a_jour(temps);
 }
 
 void Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const

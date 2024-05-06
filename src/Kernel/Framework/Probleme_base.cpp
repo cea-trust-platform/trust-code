@@ -1650,11 +1650,12 @@ void Probleme_base::finir()
 int Probleme_base::newParameter()
 {
   int index = 0;
+  // Boucle sur les champs des conditions limites:
   for (int i = 0; i < nombre_d_equations(); i++)
     {
       const Equation_base& eq = equation(i);
       const Conds_lim& condsLim = eq.domaine_Cl_dis().les_conditions_limites();
-      for (auto &condLim : condsLim)
+      for (auto const &condLim : condsLim)
         {
           const Cond_lim_base& la_cl_base = condLim.valeur();
           if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front().valeur()))
@@ -1664,13 +1665,34 @@ int Probleme_base::newParameter()
             }
         }
     }
-  LIST(REF(Champ_Parametrique))& Champs_Parametriques = this->Champs_Parametriques();
-  int size = Champs_Parametriques.size();
-  if (size)
+  // Boucles sur les champs des sources:
+  if(Champ_Parametrique::enabled)
     {
-      // Passe au champ_parametrique suivant:
-      for (int i=0; i<size; i++)
-        index = std::max(index, Champs_Parametriques(i)->newParameter());
+      for (int i = 0; i < nombre_d_equations(); i++)
+        {
+          const Equation_base& eq = equation(i);
+          const Sources& sources = eq.sources();
+          for (auto &source: sources)
+            {
+              for (auto const &champ_don: source.valeur().Champs_Don())
+                {
+                  if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
+                    {
+                      const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
+                      index = std::max(index, champ.newParameter());
+                    }
+                }
+            }
+        }
+      // Boucle sur les champs du Milieu:
+      for (auto const &champ_don: milieu().Champs_Don())
+        {
+          if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
+            {
+              const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
+              index = std::max(index, champ.newParameter());
+            }
+        }
     }
   return index;
 }

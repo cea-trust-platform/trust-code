@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,6 +74,12 @@ Sortie& Fluide_base::printOn(Sortie& os) const
 Entree& Fluide_base::readOn(Entree& is)
 {
   Milieu_base::readOn(is);
+  champs_don_.add(mu);
+  champs_don_.add(nu);
+  champs_don_.add(beta_co);
+  champs_don_.add(coeff_absorption_);
+  champs_don_.add(indice_refraction_);
+  champs_don_.add(longueur_rayo_);
   return is;
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,6 +118,9 @@ public:
   void set_id_composite(const int i);
   int id_composite = -1;
 
+  // Liste des champs des milieux:
+  const LIST(REF(Champ_Don))& Champs_Don() const { return champs_don_; }
+
 protected:
   REF(Domaine_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
@@ -126,6 +129,7 @@ protected:
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;
   Nom nom_;
+  LIST(REF(Champ_Don)) champs_don_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
   Type_rayo indic_rayo_;
@@ -134,7 +138,7 @@ protected:
   virtual void calculer_alpha();
   void ecrire(Sortie& ) const;
   void creer_alpha();
-  void creer_derivee_rho();
+  //void creer_derivee_rho();
 
   // Utile pour F5
   void discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis);

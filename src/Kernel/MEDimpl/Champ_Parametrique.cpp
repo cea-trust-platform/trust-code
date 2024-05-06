@@ -25,12 +25,12 @@ Implemente_instanciable( Champ_Parametrique, "Champ_Parametrique", Champ_Don_bas
 
 Sortie& Champ_Parametrique::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
 
+bool Champ_Parametrique::enabled=false;
 Entree& Champ_Parametrique::readOn(Entree& is)
 {
+  Champ_Parametrique::enabled=true;
   Nom pb, fichier;
   Param param(que_suis_je());
-  // ToDo : ne plus lire le probleme ? Difficile car les termes sources n'ont pas les Champ_Don
-  param.ajouter("probleme", &pb, Param::REQUIRED);
   param.ajouter("fichier", &fichier, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   // Lecture de tous les lignes du fichier parametrique:
@@ -46,18 +46,6 @@ Entree& Champ_Parametrique::readOn(Entree& is)
       Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl;
       fic >> motlu;
     }
-  // Associer au schema temps:
-  Probleme_base& pb_base = ref_cast(Probleme_base, Interprete::objet(pb));
-  // Verifie que tous les champs parametriques ont le meme nombre
-  LIST(REF(Champ_Parametrique))& Champs_Parametriques = pb_base.Champs_Parametriques();
-  int nb_champs_parametriques = Champs_Parametriques.size();
-  if (nb_champs_parametriques && Champs_Parametriques.dernier()->size()!=size())
-    {
-      Cerr << "Erreur, le champ parametrique lu dans le fichier " << fichier << " a " << size() << " elements." << finl;
-      Cerr << "Les autres champs parametriques ont " << Champs_Parametriques.dernier()->size() << " elements." << finl;
-      Process::exit("Cela doit etre identique.");
-    }
-  Champs_Parametriques.add(*this);
   // On fixe le premier parametre:
   int calcul = newParameter();
   assert(calcul>0);
@@ -65,7 +53,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
   return is;
 }
 
-int Champ_Parametrique::newParameter()
+int Champ_Parametrique::newParameter() const
 {
   if (champs_.size()==index_)
     return 0;

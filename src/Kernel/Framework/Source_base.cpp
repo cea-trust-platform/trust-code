@@ -333,3 +333,4 @@ void Source_base::set_fichier(const Nom& nom)
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
 }
+

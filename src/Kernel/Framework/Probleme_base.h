@@ -194,7 +194,6 @@ public:
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
   // Champs parametriques:
-  LIST(REF(Champ_Parametrique))& Champs_Parametriques() { return Champs_Parametriques_; }
   void newCompute(int) override;
   //
 
