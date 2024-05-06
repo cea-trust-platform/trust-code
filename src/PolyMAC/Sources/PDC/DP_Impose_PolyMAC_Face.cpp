@@ -98,14 +98,14 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
-  double rho = equation().milieu().masse_volumique().valeurs()(0, 0),
+  double rho = equation().milieu().masse_volumique().valeurs()(0, 0), dp_regul = regul_ ? f_DP_.eval() * fac_regul_ : 0,
          fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;
 
   if (regul_)
     {
       for (int i = 0, f; i < num_faces.size(); i++)
         if ((f = num_faces(i)) < domaine_poly.nb_faces())
-          secmem(f) += fs(f) * pf(f) * sgn(i) * dp_regul_ * fac_rho;
+          secmem(f) += fs(f) * pf(f) * sgn(i) * dp_regul * fac_rho;
     }
   else
     {
