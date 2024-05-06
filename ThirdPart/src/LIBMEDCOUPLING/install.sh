@@ -190,7 +190,7 @@ then
    then
       echo "medcoupling library OK"
       # Clean build folder
-      cd .. ; [ "$rel_type" = "Release" ] && rm -rf configuration* medcoupling*
+      (cd $build_root ; rm -rf configuration* medcoupling*)
    else
       echo "medcoupling library KO"
       exit -1
