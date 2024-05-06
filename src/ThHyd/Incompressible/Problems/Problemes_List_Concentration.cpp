@@ -24,7 +24,7 @@ Sortie& Pb_Hydraulique_List_Concentration::printOn(Sortie& os) const { return TR
 Entree& Pb_Hydraulique_List_Concentration::readOn(Entree& is) { return TRUSTProblem_List_Concentration_Gen<Pb_Hydraulique>::readOn(is); }
 
 // XD pb_avec_liste_conc Pb_base pb_avec_liste_conc -1 Class to create a classical problem with a list of scalar concentration equations.
-// XD attr list_equations listeqn list_equations 0 convection_diffusion_concentration equations. The unknown of the concentration equation number N is named concentrationN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.
+// XD attr liste_equations listeqn list_equations 0 convection_diffusion_concentration equations. The unknown of the concentration equation number N is named concentrationN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.
 
 // XD Pb_Thermohydraulique_List_Concentration pb_avec_liste_conc Pb_Thermohydraulique_List_Concentration -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.

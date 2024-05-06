@@ -49,7 +49,7 @@ Read sch
     facsec 1000
     solveur implicite { solveur _solveur_implicite_ }
     seuil_statio 1.e-2
-    seuil_statio_relatif_deconseille 1
+    Residuals { relative 1 }
     dt_impr 1.e-10
 }
 

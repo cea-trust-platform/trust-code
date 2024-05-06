@@ -17,7 +17,7 @@ cp -ar $org/TRIOU/TRIOU_SRC $dest/TRIOU
 mv  $dest/XTriou/TRAD_2  $dest/XTriou/TRAD_2.org
 chmod +w  $dest/XTriou/TRAD_2.org
 cat /dev/null >  $dest/XTriou/testall.py
-cp share/doc_src/* $dest/XTriou
+cp -r share/doc_src/* $dest/XTriou
 cat  $dest/XTriou/TRAD_2.org $dest/XTriou/TRAD2_ajout > $dest/XTriou/TRAD_2 2>/dev/null
 cd $dest/XTriou
 [ -f build_TRAD2.sh ] && ./build_TRAD2.sh || exit -1

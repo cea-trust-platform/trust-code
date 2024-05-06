@@ -108,9 +108,9 @@ Read pb
 
     Post_processing
     {
-        Probes_file { file probes_def }
+        Probes_file { fichier probes_def }
 
-        Definition_champs_file { file advanced_fields_def }
+        Definition_champs_file { fichier advanced_fields_def }
 
         fields dt_post 0.3
         {

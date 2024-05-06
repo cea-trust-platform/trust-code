@@ -50,7 +50,7 @@ Read scheme_euler_explicit
     dt_sauv 100
     facsec 0.9375
     seuil_statio 0.0001
-    # seuil_statio_relatif_deconseille 1 #
+    # Residuals { relative 1 } #
 }
 
 Scheme_euler_implicit scheme_euler_implicit
@@ -63,7 +63,7 @@ Read scheme_euler_implicit
     facsec 100
     solveur implicite { solveur petsc gmres { precond diag { } seuil 1.e-10 } }
     seuil_statio 0.0001
-    # seuil_statio_relatif_deconseille 1 #
+    # Residuals { relative 1 } #
 }
 
 Associate pb dom
