@@ -67,14 +67,14 @@ void DP_Impose_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   int i, j, e, f, d, db, D = dimension, n, N = vit.line_size() / D;
 
-  double rho = equation().milieu().masse_volumique().valeurs()(0, 0),
+  double rho = equation().milieu().masse_volumique().valeurs()(0, 0), dp_regul = regul_ ? f_DP_.eval() * fac_regul_ : 0,
          fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;
 
   if (regul_)
     {
       for (i = 0; i < num_faces.size(); i++)
         if ((f = num_faces(i)) < dom.nb_faces())
-          secmem(f) += fs(f) * pf(f) * sgn(i) * dp_regul_ * fac_rho;
+          secmem(f) += fs(f) * pf(f) * sgn(i) * dp_regul * fac_rho;
     }
   else
     {
