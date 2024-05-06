@@ -1205,6 +1205,7 @@
  Sqrt Sqrt StdFunction.h
  SSOR SSOR SSOR.h
  ssor_bloc PrecondA PrecondA.h
+ Stat_per_proc_perf_log Stat_per_proc_perf_log Stat_per_proc_perf_log.h
  StdFunction StdFunction StdFunction.h
  StiffenedGas Fluide_stiffened_gas Fluide_stiffened_gas.h
  Supprime_Bord SupprimeBord SupprimeBord.h

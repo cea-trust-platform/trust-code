@@ -17,7 +17,7 @@
 
 Implemente_instanciable(Stat_per_proc_perf_log,"Stat_per_proc_perf_log",Interprete);
 // XD stat_per_proc_perf_log interprete stat_per_proc_perf_log -1 Keyword allowing to activate the detailed statistics per processor (by default this is false, and only the master proc will produce stats).
-// XD attr flg int flg 0 A flag that can be either 0 or 1 to turn off (default) or on the detailed stats.
+// XD attr flg entier flg 0 A flag that can be either 0 or 1 to turn off (default) or on the detailed stats.
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

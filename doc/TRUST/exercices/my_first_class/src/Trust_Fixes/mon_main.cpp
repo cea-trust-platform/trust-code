@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -147,7 +147,10 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // Kokkos initialisation
   True_int argc2 = argc;
   Kokkos::initialize( argc2, argv );
-  Cerr << "Kokkos initialized!" << finl;
+
+  Nom arguments_info="";
+  arguments_info +="Kokkos initialized!\n";
+
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
@@ -155,7 +158,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
   Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == nullptr ? true : false;
 
-  Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)
     {
@@ -407,7 +409,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   if (!Objet_U::disable_TU)
     {
       if(GET_COMM_DETAILS)
-        statistiques().print_communciation_tracking_details("Statistiques de post resolution", 1);               // Into _comm.TU file
+        statistiques().print_communciation_tracking_details("Statistiques de post resolution", 1);               // Into _csv.TU file
 
       statistiques().dump("Statistiques de post resolution", mode_append);
       print_statistics_analyse("Statistiques de post resolution", 1);

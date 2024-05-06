@@ -13,5 +13,5 @@ do
    grep "Debit " $cas.TU
 done
 meld EcrFicPartageBin.TU EcrFicPartageMPIIO.TU &
-meld EcrFicPartageBin_comm.TU EcrFicPartageMPIIO_comm.TU
+meld EcrFicPartageBin_csv.TU EcrFicPartageMPIIO_csv.TU
 

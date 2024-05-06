@@ -17,9 +17,9 @@ then
     echo "Error: write to the output .dt_ev file is NOT disabled."
     err=1
 fi
-if [ -f "$jdd".TU ] || [ -f "$jdd"_detail.TU ]
+if [ -f "$jdd".TU ] || [ -f "$jdd"_csv.TU ]
 then
-    echo "Error: writes to the output .TU and _detail.TU files are NOT disabled."
+    echo "Error: writes to the output .TU and _csv.TU files are NOT disabled."
     err=1
 fi
 if [ -f "$jdd"_petsc.TU ]

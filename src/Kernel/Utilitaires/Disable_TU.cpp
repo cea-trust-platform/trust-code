@@ -46,7 +46,7 @@ Entree& Disable_TU::readOn(Entree& is)
  */
 Entree& Disable_TU::interpreter(Entree& is)
 {
-  Cerr << "Reading of disable_TU flag => Disable the writing of the *.TU and *_detail.TU files."<< finl;
+  Cerr << "Reading of disable_TU flag => Disable the writing of the *.TU and *_csv.TU files."<< finl;
   disable_TU = 1; // Flag to disable the writing of the .TU files
   return is;
 }
