@@ -73,8 +73,8 @@ public:
 protected:
   DoubleTab nu_ou_lambda_turb_; // comme le nom dit
   Correlation corr_; // correlation de viscosite/transport turbulente
-  std::vector<Champ_Fonc> nu_ou_lambda_turb_post_; // champ de postraitement
-  Motcles noms_nu_ou_lambda_turb_post_; //leurs noms
+  std::vector<Champ_Fonc> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
+  Motcles noms_nu_ou_lambda_turb_post_, noms_mu_ou_alpha_turb_post_; //leurs noms
   REF(Pb_Multiphase) pbm_;
   REF(Champs_compris) le_chmp_compris_;
 };
