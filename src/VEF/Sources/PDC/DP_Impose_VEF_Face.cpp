@@ -129,14 +129,15 @@ void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int D = dimension, N = vit.line_size() / D;
 
-  double rho = equation().milieu().masse_volumique().valeurs()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
+  double rho = equation().milieu().masse_volumique().valeurs()(0, 0), dp_regul = regul_ ? f_DP_.eval() * fac_regul_ : 0,
+         fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
   if (regul_)
     {
       for (int i = 0, f; i < num_faces.size(); i++)
         if ((f = num_faces(i)) < dom.nb_faces())
           for (int d = 0; d < D; d++)
-            secmem(f, d) += nf(f, d) * pf(f) * sgn(i) * dp_regul_ * fac_rho;
+            secmem(f, d) += nf(f, d) * pf(f) * sgn(i) * dp_regul * fac_rho;
     }
   else
     {

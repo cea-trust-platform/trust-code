@@ -60,16 +60,16 @@ Entree& DP_Impose::lire_donnees(Entree& is)
   else if (motlu == "dp_regul")
     {
       regul_ = 1;
-      Nom eps_str, deb_str;
+      Nom eps_str, deb_str, dp_str;
       Param param("dp_regul");
-      param.ajouter("DP0", &dp_regul_, Param::REQUIRED);
+      param.ajouter("DP0", &dp_str, Param::REQUIRED);
       param.ajouter("deb", &deb_str, Param::REQUIRED);
       param.ajouter("eps", &eps_str, Param::REQUIRED);
       param.lire_avec_accolades(is);
-      deb_cible_.setNbVar(1), eps_.setNbVar(1);
-      deb_cible_.setString(deb_str), eps_.setString(eps_str);
-      deb_cible_.addVar("t"), eps_.addVar("t");
-      deb_cible_.parseString(), eps_.parseString();
+      f_DP_.setNbVar(1), deb_cible_.setNbVar(1), eps_.setNbVar(1);
+      f_DP_.setString(dp_str), deb_cible_.setString(deb_str), eps_.setString(eps_str);
+      f_DP_.addVar("t"), deb_cible_.addVar("t"), eps_.addVar("t");
+      f_DP_.parseString(), deb_cible_.parseString(), eps_.parseString();
     }
   else
     {
@@ -89,10 +89,10 @@ void DP_Impose::update_dp_regul(const Equation_base& eqn, double deb, DoubleVect
 {
   if (!regul_) return;
   double t = eqn.probleme().schema_temps().temps_courant(), dt = eqn.probleme().schema_temps().pas_de_temps();
-  deb_cible_.setVar(0, t), eps_.setVar(0, t);
+  f_DP_.setVar(0, t), deb_cible_.setVar(0, t), eps_.setVar(0, t);
   double deb_cible = deb_cible_.eval(), eps = eps_.eval(), f_min = std::pow(1 - eps, dt), f_max = std::pow(1 + eps, dt); //bande de variation de K
-  if (eps > 0.0) dp_regul_ *= std::min(std::max(std::pow(deb_cible / std::fabs(deb), 2), f_min), f_max);
+  if (eps > 0.0) fac_regul_ *= std::min(std::max(std::pow(deb_cible / std::fabs(deb), 2), f_min), f_max);
 
   //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
-  if (!Process::me()) bilan(0) = dp_regul_, bilan(1) = deb, bilan(2) = deb_cible;
+  if (!Process::me()) bilan(0) = f_DP_.eval() * fac_regul_, bilan(1) = deb, bilan(2) = deb_cible;
 }
