@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,19 +26,20 @@
  * Template car on a besoin de la version float pour lata tools.
  *
  */
+template<typename _SIZE_>
 template<class _TAB_TYPE_>
-void Octree_Double::build_elements(const _TAB_TYPE_& coords, const IntTab& elements,
-                                   const double epsilon, const int include_virtual)
+void Octree_Double_32_64<_SIZE_>::build_elements(const _TAB_TYPE_& coords, const IntTab_t& elements,
+                                                 const double epsilon, const bool include_virtual)
 {
   octree_int_.reset();
   compute_origin_factors(coords, epsilon, include_virtual);
 
-  const int nb_elems = include_virtual ? elements.dimension_tot(0) : elements.dimension(0);
-  const int nb_som_elem = elements.dimension(1);
-  const int dim = coords.dimension(1);
-  IntTab elements_boxes;
+  const int_t nb_elems = include_virtual ? elements.dimension_tot(0) : elements.dimension(0);
+  const int nb_som_elem = (int)elements.dimension(1);
+  const int dim = (int)coords.dimension(1);
+  IntTab_t elements_boxes;
   elements_boxes.resize(nb_elems, dim * 2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  for (int i = 0; i < nb_elems; i++)
+  for (int_t i = 0; i < nb_elems; i++)
     {
       for (int j = 0; j < dim; j++)
         {
@@ -46,7 +47,7 @@ void Octree_Double::build_elements(const _TAB_TYPE_& coords, const IntTab& eleme
           double xmax = -1.e37;
           for (int k = 0; k < nb_som_elem; k++)
             {
-              const int som = elements(i, k);
+              const int_t som = elements(i, k);
               if (som < 0) continue; // for polyhedrons, som might be -1 (padding)
               const double x = coords(som, j);
               xmin = (x<xmin) ? x : xmin;
@@ -71,47 +72,42 @@ void Octree_Double::build_elements(const _TAB_TYPE_& coords, const IntTab& eleme
  *
  * Template car on a besoin de la version float pour lata tools.
  */
+template<typename _SIZE_>
 template<class _TAB_TYPE_>
-void Octree_Double::compute_origin_factors(const _TAB_TYPE_& coords,
-                                           const double epsilon,
-                                           const int include_virtual)
+void Octree_Double_32_64<_SIZE_>::compute_origin_factors(const _TAB_TYPE_& coords,
+                                                         const double epsilon,
+                                                         const int include_virtual)
 {
   // Recherche des coordonnees min et max du domaine
-  const int nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
-  if (nb_som == 0)
-    return; // octree vide
+  const int_t nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
+  if (nb_som == 0) return; // octree vide
 
-  const int dim = coords.dimension(1);
-  dim_ = dim;
+  dim_ = (int)coords.dimension(1);
   origin_.resize_array(3);
   factor_.resize_array(3);
-  ArrOfDouble xmin(dim);
-  xmin= 1.e37;
-  ArrOfDouble xmax(dim);
-  xmax= -1.e-37;
-  assert(dim >= 1 && dim <= 3);
-  int i, j;
-  for (i = 0; i < nb_som; i++)
-    {
-      for (j = 0; j < dim; j++)
-        {
-          const double x = coords(i, j);
-          if (x < xmin[j])
-            xmin[j] = x;
-          if (x > xmax[j])
-            xmax[j] = x;
-        }
-    }
-  const double coord_max = (double) Octree_Int::coord_max_;
-  for (j = 0; j < dim; j++)
+  ArrOfDouble_t xmin(dim_);
+  xmin = 1.e37;
+  ArrOfDouble_t xmax(dim_);
+  xmax = -1.e-37;
+  assert(dim_ >= 1 && dim_ <= 3);
+  for (int_t i = 0; i < nb_som; i++)
+    for (int j = 0; j < dim_; j++)
+      {
+        const double x = coords(i, j);
+        if (x < xmin[j])
+          xmin[j] = x;
+        if (x > xmax[j])
+          xmax[j] = x;
+      }
+
+  const double coord_max = (double) Octree_Int_32_64<_SIZE_>::coord_max_;
+  for (int j = 0; j < dim_; j++)
     {
       xmin[j] -= epsilon;
       xmax[j] += epsilon;
       origin_[j] = xmin[j];
       if (xmax[j] - xmin[j] > 0.)
-        {
-          factor_[j] = coord_max / (xmax[j] - xmin[j]);
-        }
+        factor_[j] = coord_max / (xmax[j] - xmin[j]);
       else
         factor_[j] = 0.;
     }

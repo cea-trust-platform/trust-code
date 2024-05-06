@@ -15,12 +15,8 @@
 
 #include <Octree_Double.h>
 
-Octree_Double::Octree_Double()
-{
-  dim_ = 0;
-}
-
-void Octree_Double::reset()
+template <typename _SIZE_>
+void Octree_Double_32_64<_SIZE_>::reset()
 {
   dim_ = 0;
   octree_int_.reset();
@@ -34,7 +30,8 @@ void Octree_Double::reset()
  *   Les indices des elements sont dans floor_elements()[index+i] pour 0 <= i < n
  *
  */
-int Octree_Double::search_elements(double x, double y, double z, int& index) const
+template <typename _SIZE_>
+typename Octree_Double_32_64<_SIZE_>::int_t Octree_Double_32_64<_SIZE_>::search_elements(double x, double y, double z, int_t& index) const
 {
   if (dim_ == 0)
     return 0; // octree vide
@@ -42,14 +39,7 @@ int Octree_Double::search_elements(double x, double y, double z, int& index) con
   int ok = integer_position(x, 0, ix)
            && integer_position(y, 1, iy)
            && integer_position(z, 2, iz);
-  if (ok)
-    {
-      return octree_int_.search_elements(ix, iy, iz, index);
-    }
-  else
-    {
-      return 0;
-    }
+  return ok ? octree_int_.search_elements(ix, iy, iz, index) : 0;
 }
 
 /*! @brief construit un octree contenant les points de coordonnees coords.
@@ -62,58 +52,58 @@ int Octree_Double::search_elements(double x, double y, double z, int& index) con
  *    Un point peut alors se trouver dans plusieurs octree_floor.
  *
  */
-void Octree_Double::build_nodes(const DoubleTab& coords, const int include_virtual, const double epsilon)
+template <typename _SIZE_>
+void Octree_Double_32_64<_SIZE_>::build_nodes(const DoubleTab_t& coords, const bool include_virtual, const double epsilon)
 {
   octree_int_.reset();
   compute_origin_factors(coords, epsilon, include_virtual);
-  const int nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
+  const int_t nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
   if (nb_som == 0)
     return; // octree vide
-  const int dim = coords.dimension(1);
+  const int dim = (int)coords.dimension(1);
   if (epsilon < 0.)
     {
-      Cerr << "Internal error in Octree_Double::build_nodes: negative epsilon" << finl;
+      Cerr << "Internal error in Octree_Double_32_64<_SIZE_>::build_nodes: negative epsilon" << finl;
       Process::exit();
     }
-  int have_epsilon = (epsilon == 0.) ? 0 : 1;
-  IntTab elements_boxes;
+  bool have_epsilon = (epsilon != 0.);
+  IntTab_t elements_boxes;
   elements_boxes.resize(nb_som, have_epsilon ? (dim*2) : dim, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
-  for (int i = 0; i < nb_som; i++)
-    {
-      for (int j = 0; j < dim; j++)
-        {
-          int pos1 = 0;
-          const double x0 = coords(i, j);
-          double x = x0 - epsilon;
-          if (!integer_position(x, j, pos1))
-            {
-              Cerr << "Fatal error in octree : integer position outside octree" << finl;
-              Process::exit();
-            }
-          elements_boxes(i, j) = pos1;
-          if (have_epsilon)
-            {
-              pos1 = 0;
-              double xbis = x0 + epsilon;
-              if (!integer_position(xbis, j, pos1))
-                {
-                  Cerr << "Fatal error in octree : integer position outside octree" << finl;
-                  Process::exit();
-                }
-              elements_boxes(i, dim+j) = pos1;
-            }
-        }
-    }
+  for (int_t i = 0; i < nb_som; i++)
+    for (int j = 0; j < dim; j++)
+      {
+        int pos1 = 0;
+        const double x0 = coords(i, j);
+        double x = x0 - epsilon;
+        if (!integer_position(x, j, pos1))
+          {
+            Cerr << "Fatal error in octree : integer position outside octree" << finl;
+            Process::exit();
+          }
+        elements_boxes(i, j) = pos1;
+        if (have_epsilon)
+          {
+            pos1 = 0;
+            double xbis = x0 + epsilon;
+            if (!integer_position(xbis, j, pos1))
+              {
+                Cerr << "Fatal error in octree : integer position outside octree" << finl;
+                Process::exit();
+              }
+            elements_boxes(i, dim+j) = pos1;
+          }
+      }
   octree_int_.build(dim, elements_boxes);
 }
 
 /*! @brief cherche tous les elements ou points ayant potentiellement une intersection non vide avec la boite donnee.
  *
  */
-int Octree_Double::search_elements_box(double xmin, double ymin, double zmin,
-                                       double xmax, double ymax, double zmax,
-                                       ArrOfInt& elements) const
+template <typename _SIZE_>
+typename Octree_Double_32_64<_SIZE_>::int_t Octree_Double_32_64<_SIZE_>::search_elements_box(double xmin, double ymin, double zmin,
+                                                                                             double xmax, double ymax, double zmax,
+                                                                                             ArrOfInt_t& elements) const
 {
   const int dim = dim_;
   if (dim == 0)
@@ -139,16 +129,18 @@ int Octree_Double::search_elements_box(double xmin, double ymin, double zmin,
 /*! @brief cherche tous les elements ou points ayant potentiellement une intersection non vide avec la boite donnee (centre + ou - radius dans chaque direction)
  *
  */
-int Octree_Double::search_elements_box(const ArrOfDouble& center, const double radius,
-                                       ArrOfInt& elements) const
+template <typename _SIZE_>
+typename Octree_Double_32_64<_SIZE_>::int_t
+Octree_Double_32_64<_SIZE_>::search_elements_box(const ArrOfDouble& center, const double radius,
+                                                 ArrOfInt_t& elements) const
 {
   int dim = center.size_array();
   double x = center[0];
   double y = (dim>=2) ? center[1] : 0.;
   double z = (dim>2) ? center[2] : 0.;
-  int i = search_elements_box(x-radius, y-radius, z-radius,
-                              x+radius, y+radius, z+radius,
-                              elements);
+  int_t i = search_elements_box(x-radius, y-radius, z-radius,
+                                x+radius, y+radius, z+radius,
+                                elements);
   return i;
 }
 
@@ -159,19 +151,20 @@ int Octree_Double::search_elements_box(const ArrOfDouble& center, const double r
  *   dans node_list. On renvoie l'indice dans le tableau coords du sommet le plus proche.
  *
  */
-int Octree_Double::search_nodes_close_to(double x, double y, double z,
-                                         const DoubleTab& coords, ArrOfInt& node_list,
-                                         double epsilon)
+template <typename _SIZE_>
+typename Octree_Double_32_64<_SIZE_>::int_t  Octree_Double_32_64<_SIZE_>::search_nodes_close_to(double x, double y, double z,
+                                                                                                const DoubleTab_t& coords, ArrOfInt_t& node_list,
+                                                                                                double epsilon)
 {
-  const int n = node_list.size_array();
+  const int_t n = node_list.size_array();
   double eps2 = epsilon * epsilon;
-  int count = 0;
-  const int dim = coords.dimension(1);
+  int_t count = 0;
+  const int dim = (int)coords.dimension(1);
   double dmin = eps2;
-  int nearest = -1;
-  for (int i = 0; i < n; i++)
+  int_t nearest = -1;
+  for (int_t i = 0; i < n; i++)
     {
-      const int som = node_list[i];
+      const int_t som = node_list[i];
       double dx = x - coords(som, 0);
       double dy = (dim >= 2) ? y - coords(som, 1) : 0.;
       double dz = (dim >= 3) ? z - coords(som, 2) : 0.;
@@ -196,14 +189,21 @@ int Octree_Double::search_nodes_close_to(double x, double y, double z,
  * ..)
  *
  */
-int Octree_Double::search_nodes_close_to(const ArrOfDouble& point,
-                                         const DoubleTab& coords, ArrOfInt& node_list,
-                                         double epsilon)
+template <typename _SIZE_>
+typename Octree_Double_32_64<_SIZE_>::int_t  Octree_Double_32_64<_SIZE_>::search_nodes_close_to(const ArrOfDouble& point,
+                                                                                                const DoubleTab_t& coords, ArrOfInt_t& node_list,
+                                                                                                double epsilon)
 {
   int dim = point.size_array();
   double x = point[0];
   double y = (dim>=2) ? point[1] : 0.;
   double z = (dim>2) ? point[2] : 0.;
-  int i = search_nodes_close_to(x, y, z, coords, node_list, epsilon);
+  int_t i = search_nodes_close_to(x, y, z, coords, node_list, epsilon);
   return i;
 }
+
+template class Octree_Double_32_64<int>;
+#if INT_is_64_ == 2
+template class Octree_Double_32_64<trustIdType>;
+#endif
+

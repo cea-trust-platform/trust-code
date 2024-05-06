@@ -14,19 +14,26 @@
 *****************************************************************************/
 #include <Octree_Int.h>
 
-static const int max_levels_ = 32; // 1 de plus que le nombre de bits=1 dans coords_max
+static constexpr int max_levels_ = 32; // 1 de plus que le nombre de bits=1 dans coords_max
 // La valeur suivante doit etre une puissance de deux
-const int Octree_Int::root_octree_half_width_ = 1073741824; /* 2^30   = 0100 0000  0000 0000  0000 0000  0000 0000b */
+template<> const int Octree_Int_32_64<int>::root_octree_half_width_ = 1073741824; /* 2^30   = 0100 0000  0000 0000  0000 0000  0000 0000b */
 // La valeur suivante doit etre egale a (root_octree_half_width_ * 2 - 1)
-const int Octree_Int::coord_max_ = 2147483647;              /* 2^31-1 = 0111 1111  1111 1111  1111 1111  1111 1111b */
+template<> const int Octree_Int_32_64<int>::coord_max_ = 2147483647;              /* 2^31-1 = 0111 1111  1111 1111  1111 1111  1111 1111b */
 
-/*! @brief construction d'un octree_id (voir octree_structure_) Si type==EMPTY, on l'octree_id est 0
+
+#if INT_is_64_ == 2
+template<> const int Octree_Int_32_64<trustIdType>::root_octree_half_width_ = 1073741824;
+template<> const int Octree_Int_32_64<trustIdType>::coord_max_ = 2147483647;
+#endif
+
+/*! @brief construction d'un octree_id (voir octree_structure_)
  *
+ *   Si type==EMPTY, l'octree_id est 0
  *   Si type==OCTREE, on suppose que index est un indice dans octree_structure_
  *   Si type==FLOOR, on suppose que index est un indice dans floor_elements_
- *
  */
-inline int Octree_Int::octree_id(int index, Octree_Type type)
+template <typename _SIZE_>
+inline typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::octree_id(int_t index, Octree_Type type)
 {
   switch(type)
     {
@@ -45,7 +52,8 @@ inline int Octree_Int::octree_id(int index, Octree_Type type)
  *   En general on a deja determine le type avant, on le passe en parametre pour optimiser.
  *
  */
-inline int Octree_Int::octree_index(int octree_id, Octree_Type type)
+template <typename _SIZE_>
+inline typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::octree_index(int_t octree_id, Octree_Type type)
 {
   assert(type==octree_type(octree_id));
   switch(type)
@@ -63,7 +71,8 @@ inline int Octree_Int::octree_index(int octree_id, Octree_Type type)
 /*! @brief Renvoie le type d'un octree en fonction de son octree_id.
  *
  */
-inline Octree_Int::Octree_Type Octree_Int::octree_type(int octree_id)
+template <typename _SIZE_>
+inline typename Octree_Int_32_64<_SIZE_>::Octree_Type Octree_Int_32_64<_SIZE_>::octree_type(int_t octree_id)
 {
   if (octree_id > 0)
     return OCTREE;
@@ -86,34 +95,28 @@ inline Octree_Int::Octree_Type Octree_Int::octree_type(int octree_id)
  *   Il vaut mieux utiliser toute la plage des entiers en multipliant par un facteur adequat.
  *
  */
-void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
+template <typename _SIZE_>
+void Octree_Int_32_64<_SIZE_>::build(const int dimension, const IntTab_t& elements_boxes)
 {
   assert(dimension >= 1 && dimension <= 3);
   assert(elements_boxes.dimension(1) == dimension
          || elements_boxes.dimension(1) == dimension * 2 );
 
-  const int nb_elems = elements_boxes.dimension(0);
+  const int_t nb_elems = elements_boxes.dimension(0);
   nb_elements_ = nb_elems;
 
-
-
   floor_elements_.resize_array(0);
-  const int nb_octrees = 1 << dimension;
+  const int nb_octrees = 1 << dimension;  // = 2^dim
   octree_structure_.resize(0, nb_octrees);
 
   assert(elements_boxes.size_array() == 0
          || (min_array(elements_boxes) >= 0 && max_array(elements_boxes) <= coord_max_));
 
-  ArrsOfInt tmp_elem_flags(max_levels_);
-  ArrsOfInt tmp_elem_list(max_levels_);
-  for (int i = 0; i < max_levels_; i++)
-    {
-
-
-    }
-  ArrOfInt& elements_list = tmp_elem_list[0];
+  AOFlagS_ tmp_elem_flags(max_levels_);
+  ArrsOfInt_t tmp_elem_list(max_levels_);
+  ArrOfInt_t& elements_list = tmp_elem_list[0];
   elements_list.resize_array(nb_elems, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  for (int i = 0; i < nb_elems; i++)
+  for (int_t i = 0; i < nb_elems; i++)
     elements_list[i] = i;
 
   root_octree_id_ = build_octree_recursively(root_octree_half_width_,root_octree_half_width_,root_octree_half_width_,
@@ -131,9 +134,10 @@ void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
  *   contenant le point (x,y,z)
  *
  */
-int Octree_Int::search_elements(int x, int y, int z, int& index) const
+template <typename _SIZE_>
+typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_elements(int x, int y, int z, int_t& index) const
 {
-  const int nb_octrees = octree_structure_.dimension(1);
+  const int nb_octrees = (int)octree_structure_.dimension(1);
   if (nb_octrees == 2)
     y = 0; // important pour ne pas tomber sur des cubes inexistants
   if (nb_octrees <= 4)
@@ -142,43 +146,47 @@ int Octree_Int::search_elements(int x, int y, int z, int& index) const
   assert(y >= 0 && y <= coord_max_);
   assert(z >= 0 && z <= coord_max_);
 
-  const int my_octree_id = search_octree_floor(x, y, z);
+  const int_t my_octree_id = search_octree_floor(x, y, z);
 
   if (octree_type(my_octree_id) == EMPTY)
-    {
-      return 0;
-    }
-  const int idx = octree_index(my_octree_id, FLOOR);
-  const int n = floor_elements_[idx];
+    return 0;
+
+  const int_t idx = octree_index(my_octree_id, FLOOR);
+  const int_t n = floor_elements_[idx];
   index = idx + 1;
   return n;
 }
 
+template <typename _SIZE_>
 struct IntBoxData
 {
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using AOBit_ = ArrOfBit_32_64<_SIZE_>;
+
   IntBoxData(int xmin, int ymin, int zmin,
              int xmax, int ymax, int zmax,
-             ArrOfInt& elements,
-             ArrOfBit *markers) :
+             ArrOfInt_t& elements,
+             AOBit_ *markers) :
     xmin_(xmin), ymin_(ymin), zmin_(zmin),
     xmax_(xmax), ymax_(ymax), zmax_(zmax),
     elements_(elements),
     markers_(markers) { };
   int xmin_, ymin_, zmin_;
   int xmax_, ymax_, zmax_;
-  ArrOfInt& elements_;
-  ArrOfBit *markers_;
+  ArrOfInt_t& elements_;
+  AOBit_ *markers_;
 };
 
 /*! @brief cherche les elements ayant potentiellement une intersection non vide
  * avec la boite xmin..zmax.
  *   Les elements peuvent apparaitre plusieurs fois dans le tableau "elements"
  */
-int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
-                                    int xmax, int ymax, int zmax,
-                                    ArrOfInt& elements) const
+template <typename _SIZE_>
+typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_elements_box(int xmin, int ymin, int zmin,
+                                                                                       int xmax, int ymax, int zmax,
+                                                                                       ArrOfInt_t& elements) const
 {
-  const int nb_octrees = octree_structure_.dimension(1);
+  const int nb_octrees = (int)octree_structure_.dimension(1);
   if (nb_octrees == 2)
     ymin = ymax = 0; // important pour ne pas tomber sur des cubes inexistants
   if (nb_octrees <= 4)
@@ -191,7 +199,7 @@ int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
   assert(zmax >= 0 && zmax <= coord_max_);
 
   elements.resize_array(0);
-  IntBoxData boxdata(xmin, ymin, zmin, xmax, ymax, zmax, elements, 0);
+  IntBoxData<_SIZE_> boxdata(xmin, ymin, zmin, xmax, ymax, zmax, elements, 0);
   switch(octree_type(root_octree_id_))
     {
     case FLOOR:
@@ -205,7 +213,7 @@ int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
     case EMPTY:
       break;
     }
-  const int n = elements.size_array();
+  const int_t n = elements.size_array();
   return n;
 }
 
@@ -214,22 +222,23 @@ int Octree_Int::search_elements_box(int xmin, int ymin, int zmin,
  * elements_
  *
  */
-void Octree_Int::search_elements_box_floor(IntBoxData& boxdata,
-                                           int octree_floor_id) const
+template <typename _SIZE_>
+void Octree_Int_32_64<_SIZE_>::search_elements_box_floor(IntBoxData<_SIZE_>& boxdata,
+                                                         int_t octree_floor_id) const
 {
-  const int idx = octree_index(octree_floor_id, FLOOR);
-  const int n = floor_elements_[idx];
+  const int_t idx = octree_index(octree_floor_id, FLOOR);
+  const int_t n = floor_elements_[idx];
   if (boxdata.markers_)
-    for (int i = 0; i < n; i++)
+    for (int_t i = 0; i < n; i++)
       {
-        const int elem = floor_elements_[idx+1+i];
+        const int_t elem = floor_elements_[idx+1+i];
         if (!boxdata.markers_->testsetbit(elem))
           boxdata.elements_.append_array(elem);
       }
   else
-    for (int i = 0; i < n; i++)
+    for (int_t i = 0; i < n; i++)
       {
-        const int elem = floor_elements_[idx+1+i];
+        const int_t elem = floor_elements_[idx+1+i];
         boxdata.elements_.append_array(elem);
       }
 }
@@ -247,11 +256,11 @@ static int sub_cube_flags_max[3] = { 2+8+32+128, /* drapeaux des cubes 1,3,5,7 *
 /*! @brief cherche recursivement les elements inclus dans la boite boxdata pour l'octree_id donne, de centre cx, cy, cz.
  *
  */
-
-void Octree_Int::search_elements_box_recursively(IntBoxData& boxdata,
-                                                 int the_octree_id,
-                                                 int cx, int cy, int cz,
-                                                 int half_width) const
+template <typename _SIZE_>
+void Octree_Int_32_64<_SIZE_>::search_elements_box_recursively(IntBoxData<_SIZE_>& boxdata,
+                                                               int_t the_octree_id,
+                                                               int cx, int cy, int cz,
+                                                               int half_width) const
 {
   int flags = 255;
   if (cx > boxdata.xmax_) // les cubes superieurs en x ne sont pas dedans
@@ -267,7 +276,7 @@ void Octree_Int::search_elements_box_recursively(IntBoxData& boxdata,
   if (cz <= boxdata.zmin_)
     flags &= sub_cube_flags_max[2];
   int test_flag = 1;
-  const int idx = octree_index(the_octree_id, OCTREE);
+  const int_t idx = octree_index(the_octree_id, OCTREE);
   const int half_width_2 = half_width >> 1;
   const int mhalf_width = - half_width_2;
   int cx2, cy2, cz2;
@@ -275,7 +284,7 @@ void Octree_Int::search_elements_box_recursively(IntBoxData& boxdata,
     {
       if ((flags & test_flag) != 0)
         {
-          const int id = octree_structure_(idx, i);
+          const int_t id = octree_structure_(idx, i);
           switch(octree_type(id))
             {
             case FLOOR:
@@ -296,7 +305,8 @@ void Octree_Int::search_elements_box_recursively(IntBoxData& boxdata,
     }
 }
 
-void Octree_Int::reset()
+template <typename _SIZE_>
+void Octree_Int_32_64<_SIZE_>::reset()
 {
   root_octree_id_ = octree_id(0, EMPTY);
   nb_elements_ = 0;
@@ -307,13 +317,14 @@ void Octree_Int::reset()
 /*! @brief construit un octree_floor avec la liste d'elements donnee et renvoie l'octree_id de cet octree_floor
  *
  */
-int Octree_Int::build_octree_floor(const ArrOfInt& elements_list)
+template <typename _SIZE_>
+typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::build_octree_floor(const ArrOfInt_t& elements_list)
 {
-  const int nb_elems = elements_list.size_array();
-  const int index = floor_elements_.size_array();
+  const int_t nb_elems = elements_list.size_array();
+  const int_t index = floor_elements_.size_array();
   floor_elements_.resize_array(index + nb_elems + 1, RESIZE_OPTIONS::COPY_NOINIT);
   floor_elements_[index] = nb_elems;
-  for (int i = 0; i < nb_elems; i++)
+  for (int_t i = 0; i < nb_elems; i++)
     floor_elements_[index + 1 + i] = elements_list[i];
   return octree_id(index, FLOOR);
 }
@@ -325,61 +336,62 @@ int Octree_Int::build_octree_floor(const ArrOfInt& elements_list)
  *  Valeur de retour: octree_id de l'octree construit (void octree_structure_)
  *
  */
-int Octree_Int::build_octree_recursively(const int octree_center_x,
-                                         const int octree_center_y,
-                                         const int octree_center_z,
-                                         const int octree_half_width,
-                                         const IntTab& elements_boxes,
-                                         ArrsOfInt& vect_elements_list,
-                                         const int level,
-                                         ArrsOfInt& tmp_elem_flags)
+template <typename _SIZE_>
+typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::build_octree_recursively(const int octree_center_x,
+                                                                                            const int octree_center_y,
+                                                                                            const int octree_center_z,
+                                                                                            const int octree_half_width,
+                                                                                            const IntTab_t& elements_boxes,
+                                                                                            ArrsOfInt_t& vect_elements_list,
+                                                                                            const int level,
+                                                                                            AOFlagS_& tmp_elem_flags)
 {
   // Criteres d'arret de la subdivision:
   // Nombre maximal d'elements dans un sous-cube floor
-  static const int octree_floor_max_elems = 8;
+  constexpr int OCTREE_FLOOR_MAX_ELEMS = 8;
   // S'il y a beaucoup d'elements dupliques, mais pas trop, et que le nombre d'elements
   //  dans l'octree est superieur a cette valeur, on subdivise quand-meme
-  static const int octree_duplicate_elements_limit = 64;
-  const ArrOfInt& elements_list = vect_elements_list[level];
+  constexpr int OCTREE_DUPLICATE_ELEMENTS_LIMIT = 64;
+  const ArrOfInt_t& elements_list = vect_elements_list[level];
   // Si le nombre d'elements est inferieur a la limite, on cree un floor_element,
   // sinon on subdivise
-  const int nb_elems = elements_list.size_array();
+  const int_t nb_elems = elements_list.size_array();
   if (nb_elems == 0)
     return octree_id(0, EMPTY);
 
-  if (nb_elems < octree_floor_max_elems || octree_half_width == 1 /* dernier niveau */)
+  if (nb_elems < OCTREE_FLOOR_MAX_ELEMS || octree_half_width == 1 /* dernier niveau */)
     {
-      const int the_octree_id = build_octree_floor(elements_list);
+      const int_t the_octree_id = build_octree_floor(elements_list);
       return the_octree_id;
     }
 
-  ArrOfInt& elem_flags = tmp_elem_flags[level];
+  AOFlag_& elem_flags = tmp_elem_flags[level];
   elem_flags.resize_array(nb_elems, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
-  const int nb_octrees = octree_structure_.dimension(1);
+  const int nb_octrees = (int)octree_structure_.dimension(1);
   assert(nb_octrees == 2 || nb_octrees == 4 || nb_octrees == 8);
-  const int elem_box_dim = elements_boxes.dimension(1);
+  const int elem_box_dim = (int)elements_boxes.dimension(1);
   // Soit elements_boxes contient dimension colonnes, soit dimension*2
   const int box_delta = (elem_box_dim > 3) ? (elem_box_dim >> 1) : 0;
   // Nombre d'elements stockes en double dans l'octree (a cause des elements a cheval
   //  sur plusieurs sous-octrees)
-  int nb_duplicate_elements = 0;
+  int_t nb_duplicate_elements = 0;
   // On range les elements de la liste dans 8 sous-cubes (remplissage de elem_flags)
-  for (int i_elem = 0; i_elem < nb_elems; i_elem++)
+  for (int_t i_elem = 0; i_elem < nb_elems; i_elem++)
     {
-      const int elem = elements_list[i_elem];
+      const int_t elem = elements_list[i_elem];
       // dir_flag vaut 1 pour la direction x, 2 pour y et 4 pour z
       int dir_flag = 1;
       // sub_cube_flags contient 2^dim drapeaux binaires (1 par sous-cube),
       // et indique les sous-cubes coupes par l'element
       int octree_flags = 255;
       // dans combien de sous-octree cet element est-il stocke ?
-      int nb_duplicates = 1;
+      int_t nb_duplicates = 1;
 
       for (int direction = 0; direction < 3; direction++)
         {
-          const int elem_min = elements_boxes(elem, direction);
-          const int elem_max = elements_boxes(elem, box_delta+direction);
+          const int_t elem_min = elements_boxes(elem, direction);
+          const int_t elem_max = elements_boxes(elem, box_delta+direction);
           assert(elem_max >= elem_min);
           // coordonnee du centre du cube dans la direction j:
           const int center = (direction==0) ? octree_center_x : ((direction==1) ? octree_center_y : octree_center_z);
@@ -401,40 +413,37 @@ int Octree_Int::build_octree_recursively(const int octree_center_x,
   // Critere un peu complique : s'il y a vraiment beaucoup d'elements
   //  dans cet octree, on autorise jusqu'a dupliquer tous les elements,
   //  ce qui permet de ranger des elements tres alonges qui sont forcement
-  //  dupliques dans une direction (>octree_duplicate_elements_limit).
-  if ((nb_duplicate_elements * 2 >= nb_elems && nb_elems < octree_duplicate_elements_limit)
+  //  dupliques dans une direction (>OCTREE_DUPLICATE_ELEMENTS_LIMIT).
+  if ((nb_duplicate_elements * 2 >= nb_elems && nb_elems < OCTREE_DUPLICATE_ELEMENTS_LIMIT)
       || nb_duplicate_elements > nb_elems)
     {
-      const int the_octree_id = build_octree_floor(elements_list);
+      const int_t the_octree_id = build_octree_floor(elements_list);
       // On renvoie un index d'octreefloor
       return the_octree_id;
     }
 
   // On reserve une case a la fin de octree_structure pour stocker cet octree:
-  const int index_octree = octree_structure_.dimension(0);
+  const int_t index_octree = octree_structure_.dimension(0);
   octree_structure_.resize_dim0(index_octree + 1, RESIZE_OPTIONS::COPY_NOINIT);
-  ArrOfInt& new_liste_elems = vect_elements_list[level+1];
+  ArrOfInt_t& new_liste_elems = vect_elements_list[level+1];
   new_liste_elems.resize_array(0);
   const int width = octree_half_width >> 1;
   const int m_width = - width;
   // Traitement recursif des sous-cubes de l'octree:
-  int i_cube;
-  for (i_cube = 0; i_cube < nb_octrees; i_cube++)
+  for (int i_cube = 0; i_cube < nb_octrees; i_cube++)
     {
       const int octree_flag = 1 << i_cube;
       new_liste_elems.resize_array(nb_elems, RESIZE_OPTIONS::NOCOPY_NOINIT);
-      int count = 0;
+      int_t count = 0;
       // Liste des elements inclus dans le sous-cube:
-      for (int i_elem = 0; i_elem < nb_elems; i_elem++)
+      for (int_t i_elem = 0; i_elem < nb_elems; i_elem++)
         if ((elem_flags[i_elem] & octree_flag) != 0)
           new_liste_elems[count++] = elements_list[i_elem];
       new_liste_elems.resize_array(count);
 
-      int sub_octree_id;
+      int_t sub_octree_id;
       if (new_liste_elems.size_array() == 0)
-        {
-          sub_octree_id = octree_id(-1, EMPTY);
-        }
+        sub_octree_id = octree_id(-1, EMPTY);
       else
         {
           // Coordonnees du nouveau sous-cube
@@ -456,19 +465,18 @@ int Octree_Int::build_octree_recursively(const int octree_center_x,
 /*! @brief renvoie l'octree_id de l'octree_floor contenant le sommet (x,y,z) (peut renvoyer l'octree EMPTY)
  *
  */
-int Octree_Int::search_octree_floor(int x, int y, int z) const
+template <typename _SIZE_>
+typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_octree_floor(int x, int y, int z) const
 {
   if (octree_type(root_octree_id_) != OCTREE)
     return root_octree_id_;
-  // Le test pour savoir si on est dans la partie superieure ou
-  // inferieure d'un octree au niveau i consiste simplement a tester
+  // Le test pour savoir si on est dans la partie superieure ou inferieure d'un octree au niveau i consiste simplement a tester
   // le i-ieme bit de la position.
   int flag = root_octree_half_width_;
 
-  int index = octree_index(root_octree_id_, OCTREE);
+  int_t index = octree_index(root_octree_id_, OCTREE);
 
-  // Descendre dans la hierarchie d'octree subdivises jusqu'au cube
-  //  le plus petit
+  // Descendre dans la hierarchie d'octree subdivises jusqu'au cube le plus petit
   while (1)
     {
       // Numero du sous-cube dans lequel se trouve le sommet x,y,z
@@ -477,8 +485,8 @@ int Octree_Int::search_octree_floor(int x, int y, int z) const
       const int iz = (z & flag) ? 4 : 0;
       int i_sous_cube = ix + iy + iz;
       // On entre dans le sous-cube :
-      const int the_octree_id = octree_structure_(index, i_sous_cube);
-      if (octree_type(the_octree_id) != OCTREE)
+      const int_t the_octree_id = octree_structure_(index, i_sous_cube);
+      if (octree_type(the_octree_id) != OCTREE) // floor or empty
         return the_octree_id;
 
       index = octree_index(the_octree_id, OCTREE);
@@ -486,3 +494,10 @@ int Octree_Int::search_octree_floor(int x, int y, int z) const
     }
   //return -1; // On n'arrive jamais ici !
 }
+
+
+
+template class Octree_Int_32_64<int>;
+#if INT_is_64_ == 2
+template class Octree_Int_32_64<trustIdType>;
+#endif
