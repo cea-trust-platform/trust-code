@@ -28,35 +28,28 @@ Entree& Option_Interpolation::readOn(Entree& is) { return Interprete::readOn(is)
 
 Entree& Option_Interpolation::interpreter(Entree& is)
 {
+  int no_dec = false;
+
   Param param(que_suis_je());
-  param.ajouter_non_std("sans_dec|without_dec", (this)); // XD_ADD_P rien Use remapper even for a parallel calculation
-  param.ajouter_non_std("sharing_algo", (this)); // XD_ADD_P entier Setting the DEC sharing algo : 0,1,2
+  param.ajouter_flag("sans_dec|without_dec", &no_dec); // XD_ADD_P rien Use remapper even for a parallel calculation
+  param.ajouter("sharing_algo", &SHARING_ALGO); // XD_ADD_P entier Setting the DEC sharing algo : 0,1,2
   param.lire_avec_accolades_depuis(is);
-  return is;
-}
 
-int Option_Interpolation::lire_motcle_non_standard(const Motcle& mot_cle, Entree& is)
-{
-  int val, retval = 1;
-  if (mot_cle == "sharing_algo")
+  if(SHARING_ALGO < 0 || SHARING_ALGO > 2)
     {
-      is >> val;
-
-      if (val < 0 || val > 2)
-        {
-          Cerr << "Option_Interpolation : wrong sharing_algo read : " << val << finl;
-          Cerr << "Available values are 0, 1 or 2 ! See the MEDCoupling Doc ! " << finl;
-          Process::exit();
-        }
-      SHARING_ALGO = val;
+      Cerr << "Option_Interpolation : wrong sharing_algo read : " << SHARING_ALGO << finl;
+      Cerr << "Available values are 0, 1 or 2 ! See the MEDCoupling Doc ! "  << finl;
+      Process::exit();
     }
-  else if (mot_cle == "sans_dec" || mot_cle == "without_dec") /* for experts only ;) */
+
+  if (no_dec) /* for experts only ;) */
     {
       Cerr << "Forcing the usage of MEDCouplingRemapper ! " << finl;
       USE_DEC = 0;
     }
   else
-    retval = -1;
+    USE_DEC = 1;
 
-  return retval;
+  return is;
 }
+

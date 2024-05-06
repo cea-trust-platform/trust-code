@@ -22,11 +22,14 @@ class Motcle;
 
 class Option_Interpolation: public Interprete
 {
+
   Declare_instanciable(Option_Interpolation);
+
 public:
   Entree& interpreter(Entree&) override;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  static int USE_DEC, SHARING_ALGO;
+
+  static int USE_DEC;
+  static int SHARING_ALGO;
 };
 
 #endif /* Option_Interpolation_included */
