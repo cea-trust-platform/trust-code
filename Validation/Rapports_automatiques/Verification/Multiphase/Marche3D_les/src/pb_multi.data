@@ -1,0 +1,163 @@
+# PARALLEL OK #
+
+dimension 3
+
+Domaine dom
+
+# BEGIN MESH #
+Read_file ../Marche3D.geo ;
+Regroupebord dom WALL 
+{              
+    Haut1  
+    Haut2  
+    Haut3  
+    Bas2  
+    Gauche  
+    Bas3  
+    Sud1  
+    Nord1  
+    Sud2  
+    Nord2  
+    Sud3  
+    Nord3  
+    Sud4  
+    Nord4  
+    Sud5 
+    Nord5  
+}
+
+Regroupebord dom SORTIE 
+{             
+    SortieBasse  
+    SortieHaute    
+}
+$poly
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partition_tool tranche { tranches 4 1 1 }
+        Larg_joint 2
+        zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    nb_pas_dt_max 100
+    tinit 0
+    tmax 5
+    dt_impr 1e-8
+    dt_max 0.01
+    facsec 1
+    facsec_max 1
+    solveur sets
+    {
+        criteres_convergence { alpha 1e-5 pression 1. vitesse 1e-5 temperature 1e8   }
+        iter_min 2
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e-3
+    }
+}
+
+Pb_Multiphase pb
+
+associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    Milieu_composite
+    {
+        liquide_eau Fluide_Incompressible
+        {
+            mu Champ_Uniforme 1 1.85e-05
+            rho Champ_Uniforme 1  100.17
+            lambda Champ_Uniforme  1 0.0262
+            Cp Champ_Uniforme 1 1006
+            beta_th Champ_Uniforme 1 3.41e-3
+        }
+    }
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg -ksp_type fgmres }
+        convection { amont }
+        diffusion  { turbulente smago { Cs 0.2 } }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3  0 0. 0.
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        conditions_limites
+        {
+            Bas1 Paroi_Fixe
+            WALL Paroi_Fixe
+            SORTIE frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+            Entree frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3  1. 0. 0.
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        conditions_limites
+        {
+            Bas1 Paroi
+            WALL Paroi
+            SORTIE frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            Entree frontiere_ouverte a_ext Champ_Front_Uniforme 1 1 
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { turbulente prandtl { Pr_t 0.85 } }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 300 }
+        boundary_conditions
+        {
+            Bas1 paroi_temperature_imposee Champ_Front_Uniforme 1 800
+            WALL paroi_adiabatique
+            SORTIE frontiere_ouverte T_ext Champ_Front_Uniforme 1 300
+            /* Entree frontiere_ouverte T_ext Champ_Front_Uniforme 1 300 */
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 900
+        }
+    }
+
+    Postraitement
+    {
+        probes
+        {
+            nu_t grav NU_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
+            mu_t grav VISCOSITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
+            lambda_t grav CONDUCTIVITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
+            alpha_t grav DIFFUSIVITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
+        }
+        format single_lata
+        champs dt_post 0.1
+        {
+            vitesse_liquide_eau	elem
+            temperature_LIQUIDE_EAU elem
+            pression elem
+            CONDUCTIVITE_TURBULENTE_LIQUIDE_EAU elem
+            DIFFUSIVITE_TURBULENTE_LIQUIDE_EAU elem
+            VISCOSITE_TURBULENTE_LIQUIDE_EAU elem
+            NU_TURBULENTE_LIQUIDE_EAU elem
+        }
+
+    }
+}
+
+Resoudre pb
+
+Fin
