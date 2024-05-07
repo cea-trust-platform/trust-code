@@ -5,7 +5,7 @@ dimension 3
 Domaine dom
 
 # BEGIN MESH #
-Read_file ../Marche3D.geo ;
+Read_file ../../Marche3D.geo ;
 Regroupebord dom WALL 
 {              
     Haut1  
@@ -93,7 +93,7 @@ Lire pb
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg -ksp_type fgmres }
         convection { amont }
-        diffusion  { turbulente smago { Cs 0.2 } }
+        diffusion  { turbulente $mod }
         initial_conditions
         {
             vitesse Champ_Uniforme 3  0 0. 0.
@@ -139,11 +139,11 @@ Lire pb
         probes
         {
             nu_t grav NU_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
-            mu_t grav VISCOSITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
+            mu_t grav MU_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
             lambda_t grav CONDUCTIVITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
             alpha_t grav DIFFUSIVITE_TURBULENTE_LIQUIDE_EAU periode 1e8 segment 500 0 1.5 5  30 1.5 5
         }
-        format single_lata
+        format lml
         champs dt_post 0.1
         {
             vitesse_liquide_eau	elem
@@ -151,7 +151,7 @@ Lire pb
             pression elem
             CONDUCTIVITE_TURBULENTE_LIQUIDE_EAU elem
             DIFFUSIVITE_TURBULENTE_LIQUIDE_EAU elem
-            VISCOSITE_TURBULENTE_LIQUIDE_EAU elem
+            MU_TURBULENTE_LIQUIDE_EAU elem
             NU_TURBULENTE_LIQUIDE_EAU elem
         }
 

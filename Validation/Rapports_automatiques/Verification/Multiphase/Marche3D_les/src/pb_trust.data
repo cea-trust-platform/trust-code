@@ -5,7 +5,7 @@ dimension 3
 Domaine dom
 
 # BEGIN MESH #
-Read_file ../Marche3D.geo ;
+Read_file ../../Marche3D.geo ;
 Regroupebord dom WALL 
 {              
     Haut1  
@@ -47,7 +47,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-vdf dis
+$dis dis
 
 Schema_euler_implicite sch
 Read sch
@@ -85,10 +85,6 @@ Lire pb
         convection { amont }
         diffusion  { }
         Modele_turbulence $mod
-        {
-            turbulence_paroi negligeable
-            $cst
-        }
         initial_conditions
         {
             vitesse Champ_Uniforme 3  0 0. 0.
@@ -122,10 +118,10 @@ Lire pb
     {
         probes
         {
-            mu_t grav VISCOSITE_TURBULENTE periode 1e8 segment 500 0 1.5 5  30 1.5 5
+            nu_t grav VISCOSITE_TURBULENTE periode 1e8 segment 500 0 1.5 5  30 1.5 5
             alpha_t grav DIFFUSIVITE_TURBULENTE periode 1e8 segment 500 0 1.5 5  30 1.5 5
         }
-        format single_lata
+        format lml
         champs dt_post 0.1
         {
             vitesse	elem
