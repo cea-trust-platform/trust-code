@@ -66,6 +66,8 @@ then
       mkdir -p $parent_dir
       mv $kernel_tmp/$test_kernel $parent_dir/.
    done
+   # Keep UnitTests, otherwise sources cannot be built
+   mv $kernel_tmp/UnitTests .
    rm -r -f $kernel_tmp 
    cd ..
   

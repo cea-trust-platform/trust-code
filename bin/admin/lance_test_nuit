@@ -1787,7 +1787,7 @@ echo "  See $remote2_log"
 (
 simule_install_TRUST ./$version_arch $remote1                                         1>>$remote1_log 2>&1
 echo " "
-if [ "`grep "BUILD_" $remote1_log | grep "KO" 2>/dev/null`" != "" ] || [ "`grep "Installation KO" $remote1_log 2>/dev/null`" != "" ]
+if [ "`grep "^BUILD_" $remote1_log | grep "KO" 2>/dev/null`" != "" ] || [ "`grep "Installation KO" $remote1_log 2>/dev/null`" != "" ]
 then
    echo "Installation KO -with_source on $remote1"
    cat $remote1_log | mail_ -s\"[lance_test_nuit] Remote install with source failed on ${remote1##* }\" $TRUST_MAIL
@@ -1796,14 +1796,14 @@ else
    echo "Installation OK -with_source on $remote1"
 fi
 grep "Installation KO" $remote1_log
-grep "BUILD_" $remote1_log
+grep "^BUILD_" $remote1_log
 ) &
 installation_id1=$!
 # Test d'une extraction/installation d'une version kernel
 (
 extract_Version_TRUST ./$version_arch -install $remote2 -kernel_only                 1>>$remote2_log 2>&1
 echo " "
-if [ "`grep "BUILD_" $remote2_log | grep "KO" 2>/dev/null`" != "" ] || [ "`grep "Installation KO" $remote2_log 2>/dev/null`" != "" ]
+if [ "`grep "^BUILD_" $remote2_log | grep "KO" 2>/dev/null`" != "" ] || [ "`grep "Installation KO" $remote2_log 2>/dev/null`" != "" ]
 then
    echo "Installation KO -kernel_only on $remote2"
    cat $remote2_log | mail_ -s\"[lance_test_nuit] Remote install kernel only failed on ${remote2##* }\" $TRUST_MAIL
@@ -1812,7 +1812,7 @@ else
    echo "Installation OK -kernel_only on $remote2"
 fi
 grep "Installation KO" $remote2_log
-grep "BUILD_" $remote2_log
+grep "^BUILD_" $remote2_log
 ) &
 installation_id2=$!
 # Test d'une extraction/installation d'une version sans les sources

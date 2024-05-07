@@ -245,7 +245,6 @@ echo "Options:" | tee -a $LOG
 if [ -f KSH/wget_ ] || [ -f TRUST-$TRUST_VERSION/bin/KSH/wget_ ]
 then
    # Version already installed
-   echo "  -patch                Download and apply latest patch on the installed version" | tee -a $LOG
    echo "  -configure-options \"OPT1 OPT2 ..\"           (For advanced users) The installation is made with ./configure OPT1 OPT2 " | tee -a $LOG
 else
    # First install

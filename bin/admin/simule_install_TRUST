@@ -36,7 +36,7 @@ then
   rm -f '$paquet';
   export TRUST_VERSION='$version';
   ./TRUST-'$version'/bin/Installer_TRUST 1>'$install_log' 2>&1;
-  if [ $? = 0 ] && [ "`grep "BUILD_" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
+  if [ $? = 0 ] && [ "`grep "^BUILD_" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
   then
      echo "Installation OK!"
      echo " "
