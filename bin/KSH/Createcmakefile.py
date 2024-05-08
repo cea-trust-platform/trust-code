@@ -467,13 +467,14 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
     #
     # (no exec produced in partial mode)
     if((${kernel} STREQUAL "full") OR ($ENV{FORCE_LINK}))
+        set(my_listobj)
+        foreach(_obj IN LISTS listlibs)
+            list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
+        endforeach()
+
         include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
-        add_executable (${trio} 
-            MAIN/the_main.cpp 
-            MAIN/mon_main.cpp 
-            ${inst_compl}
-        )
-        target_link_libraries(${trio} ${libtrio} ${syslib})
+        add_executable (${trio} ${inst_compl})
+        target_link_libraries(${trio} ${my_listobj} ${syslib})
         install (TARGETS ${trio} DESTINATION exec)
 
         #
