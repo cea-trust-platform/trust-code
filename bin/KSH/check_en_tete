@@ -75,14 +75,14 @@ $TRUST_Awk 'BEGIN {en_tete=1}
 ' $file >> $tmp_file
   
    # on ajoute la license
-$TRUST_ROOT/bin/KSH/check_license_in_file.sh --mode c -add $tmp_file || exit -1
+   $TRUST_ROOT/bin/KSH/check_license_in_file.sh --mode c -add $tmp_file || exit -1
    if [ "`diff $tmp_file $file`" != "" ]
    then
       cat $tmp_file > $file
       echo entete $file updated
-   else
-      rm -f $tmp_file
    fi
+   # clean up
+   rm -f $tmp_file
    # Verification qu'il y'a bien un seul en tete
    if [ "`grep -e '[ ]*Copyright' $file | wc -l | $TRUST_Awk '{print $1}'`" != 1 ]
    then
