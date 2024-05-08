@@ -313,15 +313,15 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
               // How many rows shall we read ?
               const int number_of_j_this_batch = std::min(nj_local - j, number_of_j_per_batch);
               const int global_j = offset_j + j;
-              FloatTab   tmp_read; // Buffer where reading processes put data
+              BigFloatTab   tmp_read; // Buffer where reading processes put data
               ArrOfDouble tmp_dispatch; // Buffer where other buffers receive their data
               if (slice_i == 0)
                 {
                   // First processor in the row reads the data
                   const long long start = ((long long) global_k * input_nj_tot + global_j) * input_ni_tot;
                   const long long n = number_of_j_this_batch * input_ni_tot;
-                  lata_db.read_data(*db_field, tmp_read, start, (int)n);
-                  if (tmp_read.dimension(1) <= i_compo)
+                  lata_db.read_data(*db_field, tmp_read, start, n);
+                  if ((int)tmp_read.dimension(1) <= i_compo)
                     {
                       Cerr << "Error in read_lata_parallel_template: requested component " << i_compo
                            << " but only " << tmp_read.dimension(1) << " components are available" << finl;
@@ -431,17 +431,22 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
   envoyer_broadcast(is_double, 0);
   if (!is_double)
     {
+      // TODO - should not size down ... ?
       FloatTab data;
+      BigFloatTab big_data;
       if (master)
-        db.read_data(*db_field, data);
+        db.read_data(*db_field, big_data);
+      big_data.ref_as_small(data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, f, nitot, njtot, nktot, 1 /* total nbcompo */, 0 /* this component */);
     }
   else
     {
       DoubleTab data;
+      BigDoubleTab big_data;
       if (master)
-        db.read_data(*db_field, data);
+        db.read_data(*db_field, big_data);
+      big_data.ref_as_small(data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, f, nitot, njtot, nktot, 1 /* total nbcompo */, 0 /* this component */);
     }
@@ -512,8 +517,10 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
   if (!is_double)
     {
       FloatTab data;
+      BigFloatTab big_data;
       if (master)
-        db.read_data(*db_field, data);
+        db.read_data(*db_field, big_data);
+      big_data.ref_as_small(data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, vx, nitot, njtot, nktot, 3 /* total nbcompo */, 0 /* this component */);
       reader.redistribute_load(data, vy, nitot, njtot, nktot, 3 /* total nbcompo */, 1 /* this component */);
@@ -522,8 +529,10 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
   else
     {
       DoubleTab data;
+      BigDoubleTab big_data;
       if (master)
-        db.read_data(*db_field, data);
+        db.read_data(*db_field, big_data);
+      big_data.ref_as_small(data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, vx, nitot, njtot, nktot, 3 /* total nbcompo */, 0 /* this component */);
       reader.redistribute_load(data, vy, nitot, njtot, nktot, 3 /* total nbcompo */, 1 /* this component */);

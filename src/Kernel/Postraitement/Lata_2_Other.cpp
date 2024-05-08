@@ -48,7 +48,6 @@ Sortie& Lata_2_Other::printOn(Sortie& is) const
 }
 
 /*! @brief Convert a Lata domain object ('Domain') into a TRUST domain object ('Domaine')
- *
  */
 void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
 {
@@ -59,8 +58,12 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
   if (dom.get_domain_type() == Domain::UNSTRUCTURED)
     {
       const DomainUnstructured& geom = dom.cast_DomainUnstructured();
-      int dim1 = geom.nodes_.dimension(0);
-      int dim2 = geom.nodes_.dimension(1);
+      trustIdType dim1_tmp = geom.nodes_.dimension(0);
+      // Check that the Lata domain fits in 32b
+      if(dim1_tmp >= std::numeric_limits<int>::max())
+        Process::exit("LATA file is too big and does not fit into 32bits!!");
+      int dim1 = (int)dim1_tmp;
+      int dim2 = (int)geom.nodes_.dimension(1);
       som.resize(dim1, dim2);
       for (int i1 = 0; i1 < dim1; i1++)
         for (int i2 = 0; i2 < dim2; i2++)
@@ -102,7 +105,13 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
   if (dom.get_domain_type() == Domain::UNSTRUCTURED)
     {
       const DomainUnstructured& geom = dom.cast_DomainUnstructured();
+#if INT_is_64_ == 2
+      IntTab tmp;
+      geom.elements_.from_tid_to_int(tmp);
+      dom_trio.les_elems() = tmp;
+#else
       dom_trio.les_elems() = geom.elements_;
+#endif
     }
   else
     {
@@ -277,9 +286,10 @@ Entree& Lata_2_Other::interpreter(Entree& is)
                       {
                         const FieldFloat& field = filter.get_float_field(fieldid);
                         {
-                          const FloatTab& values_lata = field.data_;
-                          int dim1 = values_lata.dimension(0);
-                          int dim2 = values_lata.dimension(1);
+                          const BigFloatTab& values_lata = field.data_;
+                          assert(values_lata.size_array() < std::numeric_limits<int>::max());
+                          int dim1 = (int)values_lata.dimension(0);
+                          int dim2 = (int)values_lata.dimension(1);
                           values.resize(dim1, dim2);
                           for (int i1 = 0; i1 < dim1; i1++)
                             for (int i2 = 0; i2 < dim2; i2++)
