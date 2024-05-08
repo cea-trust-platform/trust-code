@@ -52,11 +52,12 @@ if [ "${TRUST_ROOT}" = "" ]
 then
     TRUST_environnement_error
 fi
-# Verification que tout est correcte si TRUST est en 64 bit indices
+
+# Verification que tout est correct si TRUST est en 64 bit indices
 if [ "$TRUST_INT64" != "1" ] && [ -f $TRUST_ROOT/.build64 ]
 then
     TRUST_64bits_environnement_error
-elif [ "$TRUST_INT64" = "1" ] && [ ! -f $TRUST_ROOT/.build64 ]
+elif [ "$TRUST_INT64" = "1" ] && [ ! -f $TRUST_ROOT/.build64 ] && [ "$TRUST_INT64_NEW" != "1" ]
 then
     TRUST_64bits_environnement_error
 fi
