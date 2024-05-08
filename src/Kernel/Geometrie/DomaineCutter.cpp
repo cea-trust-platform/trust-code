@@ -1074,7 +1074,7 @@ void  calculer_listes_elements_sous_domaines(const IntVect& elem_part,
 
 void calculer_elements_voisins_bords(const Domaine& dom,
                                      const Static_Int_Lists& som_elem,
-                                     Static_Int_Lists& voisins,const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
+                                     Static_Int_Lists& voisins,const IntVect& elem_part, const bool permissif, Noms& bords_a_pb_)
 {
   const Domaine& domaine = dom;
   const int nb_front = domaine.nb_front_Cl();
@@ -1113,7 +1113,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
               drap=1;
               if (elem_part[elems_voisins[1]]==1)
                 elems_voisins[0]=elems_voisins[1];
-              if (permissif==0)
+              if (!permissif)
                 Process::exit();
             }
           voisins.set_value(i, j, elems_voisins[0]);
@@ -1134,7 +1134,7 @@ void DomaineCutter::initialiser(const Domaine&   domaine_global,
                                 const int     nb_parts,
                                 const int     epaisseur_joint,
                                 const Noms&      liste_bords_periodiques,
-                                const int permissif)
+                                const bool permissif)
 {
   assert(nb_parts >= 0);
   assert(elem_part.size_array() == domaine_global.nb_elem_tot());

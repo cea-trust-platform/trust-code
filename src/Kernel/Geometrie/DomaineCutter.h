@@ -35,7 +35,7 @@ class DomaineCutter: public Objet_U
 {
   Declare_instanciable(DomaineCutter);
 public:
-  void initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
+  void initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const bool permissif=false);
 
   void reset();
 
