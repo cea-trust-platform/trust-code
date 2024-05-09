@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug :
+build_debug=$TRUST_ENABLE_KOKKOS_DEBUG
+
 archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
 # Attention 4.x C++17 pour TRUST GPU mais necessaire pour nvc++ -cuda
 [ "$TRUST_USE_OPENMP" = 1 ] && archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
@@ -19,7 +22,9 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       cd $build_dir
       tar xzf $archive || exit -1
       src_dir=$build_dir/kokkos
-      for CMAKE_BUILD_TYPE in Release Debug
+      extra_build=""
+      [ "$build_debug" = "1" ] && extra_build="Debug"
+      for CMAKE_BUILD_TYPE in Release $extra_build
       do
         rm -rf BUILD
         mkdir -p BUILD
@@ -42,10 +47,10 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
-	   # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET
+           # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET
            #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
            #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
-	   CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON -DCMAKE_CXX_STANDARD=17"
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
         fi
         [ "$TRUST_USE_ROCM" != 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
@@ -73,14 +78,19 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       do
          ln -s -f $TRUST_ARCH"_opt" $TRUST_ARCH$build
       done
+      main_tgt=""
+      [ "$build_debug" != "1" ] && main_tgt="_opt"
       for build in _semi_opt _pg _gcov
       do
-         ln -s -f $TRUST_ARCH $TRUST_ARCH$build
+         ln -s -f $TRUST_ARCH$main_tgt $TRUST_ARCH$build
       done
+      if [ "$build_debug" != "1" ]; then
+        ln -s -f $TRUST_ARCH"_opt" $TRUST_ARCH
+      fi
       )
       # Clean build:
       rm -rf $build_dir $log_file
-    )   
+    )
     #echo "# Kokkos OK! Path to Kokkos is: $KOKKOS_ROOT_DIR"
 else
     echo "# Kokkos: already installed. Doing nothing."
