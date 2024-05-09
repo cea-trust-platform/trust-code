@@ -23,6 +23,73 @@ static bool timer=true;
 static bool timer=false;
 #endif
 
+namespace
+{
+
+/*! Small iterator class to scan blocks of a MD vector (blocks described by integer indices) or scan a single big block (trustIdType).
+ * The important point: the operator*() always returns a trustIdType (TID), whether internal data is int* or trustIdType* :
+ *   - in sequential, we can scan a whole Big array from start to end,
+ *   - in parallel, we can scan chunks of the arrays as defined by MD_Vector_base2::blocs_items_to_compute_ (stored as int, on purpose, it should never be too big
+ *   after Scatter)
+ */
+template<typename _SIZE_>
+struct Block_Iter
+{
+  Block_Iter() = default;
+  Block_Iter(const Block_Iter& other) = default;  // default copy ctor, will copy all members
+  Block_Iter(const int * p) : int_ptr(p) {}
+  Block_Iter(_SIZE_ s, _SIZE_ e) : start(s), end(e) {}
+
+  _SIZE_ operator*() const
+  {
+    return start == -1 ? (_SIZE_)*int_ptr : start;  // potentially casting!
+  }
+  Block_Iter operator++(True_int)   // Postfix operator
+  {
+    Block_Iter ret = *this;
+    if(int_ptr) int_ptr++;
+    else std::swap(start, end);
+    return ret;
+  }
+  bool empty() const { return int_ptr == nullptr && start == -1; }
+
+  const int * int_ptr=nullptr;
+  _SIZE_ start=-1;
+  _SIZE_ end=-1;
+};
+
+/*! Determine which blocks of indices should be used to perform an operation.
+ */
+template <typename _SIZE_>
+Block_Iter<_SIZE_> determine_blocks(Mp_vect_options opt, const MD_Vector& md, const _SIZE_ vect_size_tot, const int line_size, int& nblocs_left)
+{
+  nblocs_left = 1;
+#ifndef LATATOOLS
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
+    {
+      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+      // Should never use paralle patterns in 64b:
+      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
+      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      return Block_Iter<_SIZE_>(items_blocs.addr());  // iterator on int, but operator*() will cast and return a _SIZE_
+    }
+  else
+#endif
+    if (vect_size_tot > 0)
+      {
+        // Warning, if vect_size_tot is 0, line_size might be 0 too
+        // Compute all data, in the vector (including virtual data), build a big bloc:
+        nblocs_left = 1;
+        return Block_Iter<_SIZE_>(0, vect_size_tot / line_size);   // iterator on a single (big) block
+      }
+  return Block_Iter<_SIZE_>();
+}
+
+
+} // end anonymous NS
+
 template<typename _TYPE_, typename _SIZE_>
 void ajoute_produit_scalaire(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, Mp_vect_options opt)
 {
@@ -37,29 +104,14 @@ void ajoute_produit_scalaire(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size && vy.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
+#ifndef LATATOOLS
   assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
+#endif
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int,_SIZE_>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return;
 
   _TYPE_ *resu_base = resu.addr();
   const _TYPE_ *x_base = vx.addr();
@@ -67,7 +119,7 @@ void ajoute_produit_scalaire(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const int begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
@@ -110,39 +162,21 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUST
   assert(line_size > 0 && line_size_vx > 0 && line_size % line_size_vx == 0);
   const int delta_line_size = line_size / line_size_vx;
   assert(vx.size_totale() * delta_line_size == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int, _SIZE_>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else
-#endif  // LATATOOLS
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return;
+  assert(vx.get_md_vector() == md);
+#endif
+  // Determine blocs of data to process, depending on " opt"
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return;
 
   _TYPE_ *resu_base = resu.addr();
   const _TYPE_ *x_base = vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size_vx, end_bloc = (*(bloc_ptr++)) * line_size_vx;
+      const int begin_bloc = (*(bloc_itr++)) * line_size_vx, end_bloc = (*(bloc_itr++)) * line_size_vx;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc * delta_line_size;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
@@ -160,7 +194,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUST
               if (IS_DIV)
                 {
                   if (x == 0) error_divide(__func__);
-                  p_resu *= ((_TYPE_)1. / x);
+                  p_resu *= ((_TYPE_)1 / x);
                 }
             }
           x_ptr++;
@@ -178,6 +212,7 @@ template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::
 template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_, float, int>(TRUSTVect<float, int>& resu, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
 template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_, double, int>(TRUSTVect<double, int>& resu, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
 template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_, float, int>(TRUSTVect<float, int>& resu, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
+
 
 
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_, typename _SIZE_>
@@ -198,32 +233,10 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
   assert(vx.get_md_vector() == md);
 #endif
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return;
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return;
 
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
@@ -232,7 +245,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
@@ -278,31 +291,11 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<
   assert(vx.get_md_vector() == md);
 #endif
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left_size = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left_size = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul. Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left_size = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return;
+  int nblocs_left_size;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left_size);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return;
+
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -310,7 +303,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<
   for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
@@ -371,32 +364,10 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
   const _SIZE_ vect_size_tot = master_vect.size_totale();
   const MD_Vector& md = master_vect.get_md_vector();
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return;
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return;
 
   bool kernelOnDevice = resu.checkDataOnDevice();
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
@@ -404,7 +375,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
@@ -517,32 +488,11 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
   assert(vx.get_md_vector() == md);
 #endif
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty())
+    return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -550,7 +500,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
       _SIZE_ size_bloc = end_bloc - begin_bloc;
@@ -689,33 +639,11 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
 #ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
 #endif
-  // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
-  int nblocs_left = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return sum;
+  // Determine blocs of data to process, depending on " opt"
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr  = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return sum;
 
   bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
@@ -723,7 +651,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
       if (kernelOnDevice)
@@ -817,33 +745,11 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
 #ifndef LATATOOLS
   assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
 #endif
-  // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
-  int nblocs_left = 1;
-  _SIZE_ one_bloc[2];
-  const _SIZE_ *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      assert( (!std::is_same<_SIZE_,std::int64_t>::value) );
-      bloc_ptr = (_SIZE_*)items_blocs.addr();  // cast for compiler only, we should never use this in 64 bits.
-    }
-  else
-#endif
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return sum;
+  // Determine blocs of data to process, depending on " opt"
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr  = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return sum;
 
   bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_,_SIZE_>&>(vx).checkDataOnDevice(vy);
   const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);
@@ -852,7 +758,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       // ToDo OpenMP bug nvc++ compiler recent bouh: https://forums.developer.nvidia.com/t/openmp-nvc-duplicate-name-in-reduction-clause-error-with-recent-sdk/255696/3
       if (kernelOnDevice)
