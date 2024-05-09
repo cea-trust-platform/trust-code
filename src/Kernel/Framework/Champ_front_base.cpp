@@ -174,11 +174,11 @@ void Champ_front_base::calculer_derivee_en_temps(double t1, double t2)
     {
       const DoubleTab& v1 = valeurs_au_temps(t1);
       const DoubleTab& v2 = valeurs_au_temps(t2);
-      if (v1.dimension(0) == 1)
+      if (!Gpoint_.get_md_vector().non_nul() && v1.dimension(0) == 1)
         {
           // Champ instationnaire uniforme
           int dim = v1.dimension(1);
-          if (Gpoint_.dimension(0) != dim) Gpoint_.resize(dim);
+          Gpoint_.resize(dim);
           for (int i = 0; i < dim; i++)
             Gpoint_(i) = (v2(0, i) - v1(0, i)) / (t2 - t1);
         }
