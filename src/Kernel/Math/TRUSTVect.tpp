@@ -263,6 +263,7 @@ template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 {
 #ifndef LATATOOLS
+  if (Process::is_sequential()) return;
   MD_Vector_tools::echange_espace_virtuel(*this);
 #endif
 }

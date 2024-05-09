@@ -41,7 +41,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
@@ -116,7 +116,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   int nblocs_left_size = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
@@ -206,7 +206,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
@@ -332,7 +332,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
@@ -502,7 +502,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
@@ -623,7 +623,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
       const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
