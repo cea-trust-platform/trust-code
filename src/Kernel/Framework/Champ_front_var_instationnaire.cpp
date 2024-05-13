@@ -58,7 +58,7 @@ int Champ_front_var_instationnaire::initialiser(double temps, const Champ_Inc_ba
 
   temps_defaut=temps;
   changer_temps_futur(temps,0);
-  set_instationnaire();
+  set_instationnaire(true);
   return 1;
 }
 

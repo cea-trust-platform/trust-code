@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,7 @@ protected :
   Table la_table;
   Champ_Fonc vrai_champ0_;
   bool table_lue_ = false;
+  double frac_=DMAXFLOAT;
 };
 
 #endif /* Champ_Fonc_MED_Table_Temps_included */

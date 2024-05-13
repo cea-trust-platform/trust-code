@@ -46,7 +46,6 @@ void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
 Entree& Champ_Fonc_MED_Table_Temps::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn( is );
-  set_instationnaire();
   if (!table_lue_)
     {
       Cerr << "A table must be read using table_temps or table_temps_lue !" << finl;
@@ -154,6 +153,10 @@ void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)
   if (domainebidon_inst.nb_elem() > 0)
     {
       double frac = la_table.val(t);
+      if (frac_==DMAXFLOAT)
+        frac_ = frac;
+      else if (frac!=frac_)
+        set_instationnaire(true); // table non constante
       const DoubleTab& vals0 = le_champ0().valeurs();
       DoubleTab& vals = le_champ().valeurs();
 

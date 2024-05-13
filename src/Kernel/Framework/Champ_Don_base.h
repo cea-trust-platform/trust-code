@@ -49,7 +49,7 @@ public:
   Champ_base& affecter_compo(const Champ_base&, int) override;
 
   virtual int initialiser(const double temps);
-  virtual void set_instationnaire() { instationnaire_ = true; }
+  virtual void set_instationnaire(bool flag) { instationnaire_ = flag; }
   virtual bool instationnaire() const { return instationnaire_; }
   /*! @brief Renvoie le nombre de degre de liberte par composante: le nombre de noeuds.
    *

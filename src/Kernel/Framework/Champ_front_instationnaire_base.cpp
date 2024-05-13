@@ -49,7 +49,7 @@ int Champ_front_instationnaire_base::initialiser(double temps, const Champ_Inc_b
     {
       les_valeurs[i].valeurs().resize(1,nb_comp());
     }
-  set_instationnaire();
+  set_instationnaire(true);
   return 1;
 }
 

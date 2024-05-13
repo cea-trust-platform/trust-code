@@ -100,7 +100,7 @@ public:
   virtual int avancer(double temps);
   virtual int reculer(double temps);
   virtual bool instationnaire() const { return instationnaire_; }
-  virtual void set_instationnaire() { instationnaire_ = true; Gpoint_ = valeurs(); Gpoint_=0; } // Dimensionne Gpoint_
+  virtual void set_instationnaire(bool flag) { instationnaire_ = flag; Gpoint_ = valeurs(); Gpoint_=0; } // Dimensionne Gpoint_
   virtual inline void set_derivee_en_temps(DoubleTab& Gpoint) { Gpoint_ = Gpoint; }
   virtual inline const DoubleTab& derivee_en_temps() const { return Gpoint_; }
   virtual void calculer_derivee_en_temps(double t1, double t2);

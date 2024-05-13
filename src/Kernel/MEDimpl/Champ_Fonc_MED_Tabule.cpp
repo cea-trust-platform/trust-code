@@ -26,7 +26,6 @@ Sortie& Champ_Fonc_MED_Tabule::printOn(Sortie& os) const
 Entree& Champ_Fonc_MED_Tabule::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn(is);
-  set_instationnaire();
   return is;
 }
 
@@ -71,6 +70,8 @@ void Champ_Fonc_MED_Tabule::mettre_a_jour(double le_temps)
           tab2_ = tab1_;
           temps2_ = DMAXFLOAT;
         }
+      else
+        set_instationnaire(true);
     }
 
   if ((le_temps >= temps1_) && (le_temps < temps2_))
