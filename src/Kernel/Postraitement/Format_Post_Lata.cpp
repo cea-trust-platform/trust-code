@@ -49,7 +49,7 @@ void Format_Post_Lata::reset()
   temps_courant_ = -1.;
 }
 
-void Format_Post_Lata::resetTime(double t)
+void Format_Post_Lata::resetTime(double t, const std::string dirname)
 {
   temps_courant_ = -1; // not using t - this will come from outside when calling 'ecrire_temps'
 }

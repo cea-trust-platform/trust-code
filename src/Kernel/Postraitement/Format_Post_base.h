@@ -104,7 +104,7 @@ class Format_Post_base : public Objet_U
 public:
   // Remet l'objet dans l'etat initial obtenu apres constructeur par defaut
   virtual void reset() = 0;
-  virtual void resetTime(double t);
+  virtual void resetTime(double t, const std::string dirname);
   virtual void set_param(Param& param)=0;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int initialize_by_default(const Nom& file_basename);

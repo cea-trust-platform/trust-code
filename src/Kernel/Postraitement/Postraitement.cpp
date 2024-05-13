@@ -716,7 +716,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
  * TODO: In the current setup suffix is "" meaning that the previous output **are** discarded. This
  * might change in the future!
  */
-void Postraitement::resetTime(double time)
+void Postraitement::resetTime(double time, const std::string dirname)
 {
   // Modify output file name
   Nom name=nom_fich().prefix(format);
@@ -724,7 +724,7 @@ void Postraitement::resetTime(double time)
   nom_fich_ = name + suffix_for_reset_;
 
   // And reset all time related members:
-  format_post->resetTime(time);
+  format_post->resetTime(time, dirname);
   temps_ = -1.;
   dernier_temps = -1.;
 }

@@ -232,12 +232,12 @@ void Postraitements::mettre_a_jour(double temps)
     }
 }
 
-void Postraitements::resetTime(double t)
+void Postraitements::resetTime(double t, const std::string dirname)
 {
   for (auto& itr : *this)
     {
       Postraitement_base& post = itr.valeur();
-      post.resetTime(t);
+      post.resetTime(t, dirname);
     }
 }
 

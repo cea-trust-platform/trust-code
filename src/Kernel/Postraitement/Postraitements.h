@@ -44,7 +44,7 @@ public:
   int reprendre(Entree& is) override;
   void completer();
   void completer_sondes();
-  void resetTime(double t);
+  void resetTime(double t, const std::string dirname);
 };
 
 #endif

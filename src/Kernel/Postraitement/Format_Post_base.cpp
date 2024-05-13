@@ -37,11 +37,14 @@ Entree& Format_Post_base::readOn(Entree& is)
   return is;
 }
 
-void Format_Post_base::resetTime(double t)
+void Format_Post_base::resetTime(double t, const std::string dirname)
 {
-  Cerr << "Format '" << que_suis_je() << " does not support resetTime()!!" << std::endl;
-  Process::exit(-1);
-  // but LATA does :-)
+  if (dirname.empty())
+    {
+      Cerr << "Format '" << que_suis_je() << " does not support resetTime()!!" << std::endl;
+      Process::exit(-1);
+      // but LATA does :-)
+    }
 }
 
 int Format_Post_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)

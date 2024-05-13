@@ -73,7 +73,7 @@ public:
   void init() override;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void resetTime(double t) override;
+  void resetTime(double t, const std::string dirname) override;
 
   //
   // Methodes specifiques :

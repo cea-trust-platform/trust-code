@@ -57,7 +57,7 @@ public:
   // les formats de postraitment de champs):
   //
   void reset() override;
-  void resetTime(double t) override;
+  void resetTime(double t, const std::string dirname) override;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int initialize_by_default(const Nom& file_basename) override;
