@@ -44,7 +44,7 @@ then
     ln -nsf $TRUST_EOS_HOME_DIR/include/EOS EOS/.
     ln -nsf $TRUST_EOS_HOME_DIR/include/Common EOS/.
     ln -nsf $TRUST_EOS_HOME_DIR/include/Language EOS/.
-    echo "#define HAS_EOS" > TRUST_TMP/eos++.h.tmp
+    echo "#define HAS_EOS" > $TRUST_TMP/eos++.h.tmp
     echo "  TRUST configured with the EOS library found in $TRUST_EOS_HOME_DIR"
     echo "  EOS header files added in $TRUST_ROOT/include/EOS !"
 else
