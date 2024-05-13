@@ -86,7 +86,7 @@ Read pb
             Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0.
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
-        initial_conditions { Temperature Champ_Uniforme 1 0. }
+        initial_conditions { Temperature _init_ }
         sources { Puissance_thermique _champ_ }
     }
     Post_processing
