@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,9 +63,12 @@ int Champ_front_var::initialiser(double temps, const Champ_Inc_base& inco)
       // On a un peut tout et n'importe quoi en entree: parfois tableau vide,
       // parfois nb_dim==1, etc...
       // Attention, les valeurs existantes doivent etre conservees s'il y en a !
-      tab.resize(tab.dimension(0), nbc);
-      frontiere.creer_tableau_faces(tab);
-      tab.echange_espace_virtuel();
+      if (tab.size()==0)
+        {
+          tab.resize(tab.dimension(0), nbc);
+          frontiere.creer_tableau_faces(tab);
+          tab.echange_espace_virtuel();
+        }
     }
   return 1;
 }
