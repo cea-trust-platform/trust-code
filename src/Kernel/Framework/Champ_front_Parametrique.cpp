@@ -21,7 +21,7 @@
 
 
 Implemente_instanciable(Champ_front_Parametrique,"Champ_front_Parametrique",Champ_front_base);
-// ToDo XDATA
+// XD Champ_front_Parametrique front_field_base Champ_front_Parametrique 0 Parametric boundary field
 
 Sortie& Champ_front_Parametrique::printOn(Sortie& os) const
 {
@@ -32,7 +32,7 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
 {
   Nom fichier;
   Param param(que_suis_je());
-  param.ajouter("fichier", &fichier, Param::REQUIRED);
+  param.ajouter("fichier", &fichier, Param::REQUIRED); // XD_ADD_P chaine Filename where boundary fields are read
   param.lire_avec_accolades_depuis(is);
   // Lecture de tous les lignes du fichier parametrique:
   EFichier fic(fichier);

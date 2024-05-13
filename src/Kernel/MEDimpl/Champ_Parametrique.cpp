@@ -21,7 +21,7 @@
 #include <string>
 
 Implemente_instanciable( Champ_Parametrique, "Champ_Parametrique", Champ_Don_base );
-// ToDo XDATA
+// XD Champ_Parametrique champ_don_base Champ_Parametrique 0 Parametric field
 
 Sortie& Champ_Parametrique::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
 
@@ -31,7 +31,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
   Champ_Parametrique::enabled=true;
   Nom pb, fichier;
   Param param(que_suis_je());
-  param.ajouter("fichier", &fichier, Param::REQUIRED);
+  param.ajouter("fichier", &fichier, Param::REQUIRED);  // XD_ADD_P chaine Filename where fields are read
   param.lire_avec_accolades_depuis(is);
   // Lecture de tous les lignes du fichier parametrique:
   EFichier fic(fichier);
