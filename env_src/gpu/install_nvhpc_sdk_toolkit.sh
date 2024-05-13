@@ -8,7 +8,7 @@ SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_c
 [ -f /usr/lib64/libstdc++.so.6.0.30 ] && SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi # 12.1, 11.8, 11.0
 
 # On passe a 23.5 pour tout le monde (permet de mieux suivre la correction des bugs du compilateur)
-SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi # 12.1, 11.8, 11.0
+SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi && installer_md5sum=4748dd45561d22cac5dfe5238e7eaf16 # 12.1, 11.8, 11.0
 # ! 23.9 : nvc++ -std=c++17 crashe sur TRUSTArray.cpp (omp target dans template ?) ToDo: signaler a NVidia
 #SDK_VERSION=23.9 && CUDA_VERSION=12.1 && installer=nvhpc_2023_239_Linux_x86_64_cuda_multi # 12.2, 11.8, 11.0
 #SDK_VERSION=24.1 && CUDA_VERSION=12.3 && installer=nvhpc_2024_221_Linux_x86_64_cuda_multi # 12.3, 11.8
@@ -23,7 +23,15 @@ then
    then
       cd $TRUST_TMP
       wget https://developer.download.nvidia.com/hpc-sdk/$SDK_VERSION/$installer.tar.gz 1>/dev/null 2>&1 
-      [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/nvidia-hpc-sdk-releases" && exit -1
+      [ $? != 0 ] && echo "Error when downloading. See https://developer.nvidia.com/nvidia-hpc-sdk-releases" && rm -f $installer.tar.gz && exit -1
+   fi
+   if [ "`md5sum $TRUST_TMP/$installer.tar.gz | cut -f 1 -d' '`" != "$installer_md5sum" ]
+   then
+      echo "md5sum not identical for $TRUST_TMP/$installer.tar.gz .... abort"
+      md5sum $TRUST_TMP/$installer.tar.gz
+      echo "md5sum ref:"$installer_md5sum
+      rm -f $TRUST_TMP/$installer.tar.gz
+      exit -1
    fi
    mkdir -p $INSTALL && cd $INSTALL
    echo "It may take some minutes to install NVidia HPC SDK..."
