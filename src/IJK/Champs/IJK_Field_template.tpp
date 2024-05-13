@@ -298,11 +298,15 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
   // calculation of the offset due to shear periodicity between zmin and zmax
-  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-  IJK_Shear_Periodic_helpler::Lx_for_shear_perio = Lx;
-  double DX = Lx/nii ;
-  double Shear_x_time = IJK_Shear_Periodic_helpler::shear_x_time_;
-  double offset_i = Shear_x_time/DX;
+  double offset_i = 0.0;
+  if (IJK_Shear_Periodic_helpler::defilement_ == 1)
+    {
+      double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+      IJK_Shear_Periodic_helpler::Lx_for_shear_perio = Lx;
+      double DX = Lx/nii ;
+      double Shear_x_time = IJK_Shear_Periodic_helpler::shear_x_time_;
+      offset_i = Shear_x_time/DX;
+    }
   exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
   exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk);
   exchange_data(pe_jmin_, 0, 0, 0, pe_jmax_, 0, njj, 0, nii, le_ghost, nkk);
