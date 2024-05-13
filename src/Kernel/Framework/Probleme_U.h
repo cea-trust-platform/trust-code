@@ -58,7 +58,6 @@ public :
   virtual void validateTimeStep();
   virtual bool isStationary() const;
   virtual int newParameter() { return 0; };
-  virtual void newCompute(int) {};
   virtual void setStationary(bool);
   virtual void abortTimeStep();
   virtual void resetTime(double time, const std::string dirname="");

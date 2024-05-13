@@ -193,10 +193,6 @@ public:
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
-  // Champs parametriques:
-  void newCompute(int) override;
-  //
-
 protected :
   std::vector<Milieu> le_milieu_;
   REF(Domaine_dis) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.

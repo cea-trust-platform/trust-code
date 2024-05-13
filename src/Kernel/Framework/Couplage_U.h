@@ -52,7 +52,6 @@ public:
   void validateTimeStep() override;
   bool isStationary() const override;
   int newParameter() override;
-  void newCompute(int) override;
   void setStationary(bool) override;
   void abortTimeStep() override;
   void resetTime(double t, const std::string dirname="") override;

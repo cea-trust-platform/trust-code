@@ -89,12 +89,6 @@ int Couplage_U::newParameter()
   return index;
 }
 
-void Couplage_U::newCompute(int calcul)
-{
-  for(int i=0; i<nb_problemes(); i++)
-    ref_cast(Probleme_base, probleme(i)).newCompute(calcul);
-}
-
 void Couplage_U::setStationary(bool flag)
 {
   for(int i=0; i<nb_problemes(); i++)
@@ -109,8 +103,14 @@ void Couplage_U::abortTimeStep()
 
 void Couplage_U::resetTime(double t, const std::string dirname)
 {
+  const std::string current_dirname = Sortie_Fichier_base::root;
   for(int i=0; i<nb_problemes(); i++)
-    probleme(i).resetTime(t, dirname);
+    {
+      // We reset the IO directory to the current dirname before post-processing
+      if (!dirname.empty())
+        Sortie_Fichier_base::set_root(current_dirname);
+      probleme(i).resetTime(t, dirname);
+    }
 }
 
 bool Couplage_U::iterateTimeStep(bool& converged)

@@ -328,7 +328,7 @@ bool Probleme_U::run()
         {
           // Keep on the resolution if parametric variation:
           stop = false;
-          newCompute(newCalcul);
+          resetTime(0., "calcul"+std::to_string(newCalcul));
         }
       else
         {

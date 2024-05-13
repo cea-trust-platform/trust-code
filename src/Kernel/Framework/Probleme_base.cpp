@@ -1697,10 +1697,3 @@ int Probleme_base::newParameter()
   return index;
 }
 
-/*! @brief Reset time to tinit and run the next computation in a new directory
- *
- */
-void Probleme_base::newCompute(int calcul)
-{
-  resetTime(schema_temps().temps_init(), "calcul"+std::to_string(calcul));
-}
