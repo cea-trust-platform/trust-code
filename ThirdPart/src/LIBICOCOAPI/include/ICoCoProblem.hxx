@@ -278,11 +278,10 @@ namespace ICoCo
      * Can be called outside the TIME_STEP_DEFINED context (see Problem documentation).
      *
      * @param[in] time the new current time.
-     * @param[in] dirname optional new current directory.
      * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
      * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
      */
-    virtual void resetTime(double time, const std::string dirname="");
+    virtual void resetTime(double time);
 
     /*! @brief  (Optional) Perform a single iteration of computation inside the time step.
      *

@@ -441,7 +441,7 @@ void ProblemTrio::setInputStringValue(const std::string& name, const std::string
   pb->setInputStringValue(name, val);
 }
 
-std::string ProblemTrio::getOutputStringValue(const std::string& name)
+std::string ProblemTrio::getOutputStringValue(const std::string& name) const
 {
   return pb->getOutputStringValue(name);
 }

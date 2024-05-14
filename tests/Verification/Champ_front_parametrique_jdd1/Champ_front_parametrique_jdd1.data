@@ -103,9 +103,7 @@ Read pb
         solveur_pression petsc cholesky { }
         convection { amont }
         diffusion {  }
-        initial_conditions {
-            vitesse Champ_Uniforme 2 0. 0.
-        }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
         boundary_conditions {
             Obstacle paroi_fixe
             Symetrie symetrie

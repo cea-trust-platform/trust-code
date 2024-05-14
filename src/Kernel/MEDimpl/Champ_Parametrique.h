@@ -46,7 +46,7 @@ public:
   virtual bool instationnaire() const override { return champ()->instationnaire(); }
 
   // Methodes specifiques:
-  int newParameter() const;
+  int newCompute() const;
   static bool enabled;
 protected :
   LIST(Champ_Don) champs_;

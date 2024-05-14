@@ -48,13 +48,13 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
       fic >> motlu;
     }
   // On fixe le premier parametre:
-  int calcul = newParameter();
-  assert(calcul>0);
-  Sortie_Fichier_base::set_root("calcul"+std::to_string(calcul));
+  int compute = newCompute();
+  assert(compute>0);
+  Sortie_Fichier_base::set_root("calcul"+std::to_string(compute));
   return is;
 }
 
-int Champ_front_Parametrique::newParameter() const
+int Champ_front_Parametrique::newCompute() const
 {
   if (champs_.size()==index_)
     return 0;

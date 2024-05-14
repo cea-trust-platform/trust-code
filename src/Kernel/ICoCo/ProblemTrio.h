@@ -110,7 +110,7 @@ public :
 
   // I/O for strings:
   void setInputStringValue(const std::string& name, const std::string& val) override;
-  std::string getOutputStringValue(const std::string& name) override;
+  std::string getOutputStringValue(const std::string& name) const override;
 
   ////////////////////////////////////////////////////////////////////////////////////
   // Specific to TRUST, and outside the ICoCo standard

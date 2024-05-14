@@ -80,13 +80,13 @@ bool Couplage_U::isStationary() const
   return stat;
 }
 
-int Couplage_U::newParameter()
+int Couplage_U::newCompute()
 {
-  int index=0;
+  int compute=0;
   for(int i=0; i<nb_problemes(); i++)
-    index = std::max(index, ref_cast(Probleme_base, probleme(i)).newParameter());
-  if (index && !isStationary()) Process::exit("Cas non prevu. Permanent non atteint et Champ_parametrique.");
-  return index;
+    compute = ref_cast(Probleme_base, probleme(i)).newCompute();
+  if (compute && !isStationary()) Process::exit("Unexpected case. Stationary not reached and Champ_parametrique used.");
+  return compute;
 }
 
 void Couplage_U::setStationary(bool flag)
@@ -101,15 +101,19 @@ void Couplage_U::abortTimeStep()
     probleme(i).abortTimeStep();
 }
 
-void Couplage_U::resetTime(double t, const std::string dirname)
+void Couplage_U::resetTime(double t)
 {
   const std::string current_dirname = Sortie_Fichier_base::root;
   for(int i=0; i<nb_problemes(); i++)
     {
-      // We reset the IO directory to the current dirname before post-processing
-      if (!dirname.empty())
-        Sortie_Fichier_base::set_root(current_dirname);
-      probleme(i).resetTime(t, dirname);
+      if (str_params_.count("SORTIE_ROOT_DIRECTORY") != 0)
+        {
+          // We transmit the SORTIE_ROOT_DIRECTORY to each problem:
+          probleme(i).setInputStringValue("SORTIE_ROOT_DIRECTORY", getOutputStringValue("SORTIE_ROOT_DIRECTORY"));
+          // We reset the IO directory to the current dirname before post-processing
+          Sortie_Fichier_base::set_root(current_dirname);
+        }
+      probleme(i).resetTime(t);
     }
 }
 

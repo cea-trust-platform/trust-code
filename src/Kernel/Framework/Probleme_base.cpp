@@ -1647,22 +1647,18 @@ void Probleme_base::finir()
 
 void Probleme_base::resetTime(double time)
 {
-  static const std::string param_nam = "SORTIE_ROOT_DIRECTORY";
+  static const std::string param_name = "SORTIE_ROOT_DIRECTORY";
+  std::string new_root_dir = (str_params_.count(param_name) == 0) ? "" : getOutputStringValue(param_name);
 
-  if(str_params_.count(param_nam) == 0)
-    Process::exit("Calling resetTime(), but string parameter 'SORTIE_ROOT_DIRECTORY' is not defined!!");
-
-  std::string new_root_dir = getOutputStringValue(param_nam);
-
-  resetTimeWithDir_impl(*this, time,new_root_dir);
+  resetTimeWithDir_impl(*this, time, new_root_dir);
 }
 
 /*! @brief Recherche des champs parametriques, et pour chacun, passage au parametre suivant
  *
  */
-int Probleme_base::newParameter()
+int Probleme_base::newCompute()
 {
-  int index = 0;
+  int compute = 0;
   // Boucle sur les champs des conditions limites:
   for (int i = 0; i < nombre_d_equations(); i++)
     {
@@ -1674,7 +1670,7 @@ int Probleme_base::newParameter()
           if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front().valeur()))
             {
               const Champ_front_Parametrique& champ_front = ref_cast(Champ_front_Parametrique, la_cl_base.champ_front().valeur());
-              index = std::max(index, champ_front.newParameter());
+              compute = champ_front.newCompute();
             }
         }
     }
@@ -1687,27 +1683,27 @@ int Probleme_base::newParameter()
           const Sources& sources = eq.sources();
           for (auto &source: sources)
             {
-              for (auto const &champ_don: source.valeur().Champs_Don())
+              for (auto const &champ_don: source.valeur().champs_don())
                 {
                   if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
                     {
                       const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
-                      index = std::max(index, champ.newParameter());
+                      compute = champ.newCompute();
                     }
                 }
             }
         }
       // Boucle sur les champs du Milieu:
-      for (auto const &champ_don: milieu().Champs_Don())
+      for (auto const &champ_don: milieu().champs_don())
         {
           if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
             {
               const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
-              index = std::max(index, champ.newParameter());
+              compute = champ.newCompute();
             }
         }
     }
-  return index;
+  return compute;
 }
 
 

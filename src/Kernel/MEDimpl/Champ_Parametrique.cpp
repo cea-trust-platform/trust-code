@@ -47,13 +47,13 @@ Entree& Champ_Parametrique::readOn(Entree& is)
       fic >> motlu;
     }
   // On fixe le premier parametre:
-  int calcul = newParameter();
-  assert(calcul>0);
-  Sortie_Fichier_base::set_root("calcul"+std::to_string(calcul));
+  int compute = newCompute();
+  assert(compute>0);
+  Sortie_Fichier_base::set_root("calcul"+std::to_string(compute));
   return is;
 }
 
-int Champ_Parametrique::newParameter() const
+int Champ_Parametrique::newCompute() const
 {
   if (champs_.size()==index_)
     return 0;
@@ -62,7 +62,7 @@ int Champ_Parametrique::newParameter() const
       index_++;
       // ToDo ameliorer message avec les caracteristiques du champ
       Cerr << "================================================" << finl;
-      Cerr << "[Parameter] Updating to: " << champ().valeur() << (champ()->instationnaire() ? " provisoire instationnaire " : " provisoire stationnaire ") << finl;
+      Cerr << "[Parameter] Updating to: " << champ().valeur() << (champ()->instationnaire() ? " (transient field) " : " (permanent field) ") << finl;
       Cerr << "================================================" << finl;
       return index_;
     }

@@ -1,5 +1,5 @@
 # Champ parametrique sur puissance #
-# PARALLEL OK 6 #
+# PARALLEL NOT #
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom

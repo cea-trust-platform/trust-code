@@ -119,7 +119,7 @@ public:
   int id_composite = -1;
 
   // Liste des champs des milieux:
-  const LIST(REF(Champ_Don))& Champs_Don() const { return champs_don_; }
+  const LIST(REF(Champ_Don))& champs_don() const { return champs_don_; }
 
 protected:
   REF(Domaine_dis_base) zdb_;

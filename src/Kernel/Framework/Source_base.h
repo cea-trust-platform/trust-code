@@ -86,7 +86,7 @@ public:
   inline Champs_compris& champs_compris() { return champs_compris_; }
 
   // Liste des champs des sources:
-  const LIST(REF(Champ_Don))& Champs_Don() const { return champs_don_; }
+  const LIST(REF(Champ_Don))& champs_don() const { return champs_don_; }
 
 protected:
 

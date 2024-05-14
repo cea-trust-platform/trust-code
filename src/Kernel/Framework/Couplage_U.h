@@ -51,10 +51,10 @@ public:
   //  virtual bool solveTimeStep();
   void validateTimeStep() override;
   bool isStationary() const override;
-  int newParameter() override;
+  int newCompute() override;
   void setStationary(bool) override;
   void abortTimeStep() override;
-  void resetTime(double t, const std::string dirname="") override;
+  void resetTime(double t) override;
 
   // interface IterativeUnsteadyProblem
 

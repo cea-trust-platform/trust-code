@@ -65,7 +65,7 @@ public:
 
   // Methodes specifiques:
   virtual bool instationnaire() const override { return index_==1 ? champ()->instationnaire() : true; } // Le premier champ peut etre stationnaire mais ensuite instationnaire forcement
-  int newParameter() const;
+  int newCompute() const;
 
 private:
   LIST(Champ_front) champs_;
