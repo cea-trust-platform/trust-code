@@ -60,7 +60,7 @@ public :
   virtual int newParameter() { return 0; };
   virtual void setStationary(bool);
   virtual void abortTimeStep();
-  virtual void resetTime(double time, const std::string dirname="");
+  virtual void resetTime(double time);
   virtual bool iterateTimeStep(bool& converged);
   virtual void getInputFieldsNames(Noms& noms) const;
   virtual void getInputFieldTemplate(const Nom& name, ICoCo::TrioField& afield) const;
@@ -71,6 +71,10 @@ public :
   virtual int getOutputIntValue(const Nom& name) const;
 
   virtual void setInputDoubleValue(const Nom& name, const double val);
+
+  virtual void setInputStringValue(const std::string& name, const std::string& val) { str_params_[name] = val; }
+  virtual std::string getOutputStringValue(const std::string& name);
+
   virtual void post_initialize() { }
 
   // Complements a l'API de Problem
@@ -97,6 +101,7 @@ protected :
 
   Nom nom;
   ScalarRegister reg;
+  std::map<std::string, std::string> str_params_;
 
 };
 

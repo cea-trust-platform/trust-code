@@ -366,13 +366,12 @@ void ProblemTrio::abortTimeStep()
  * Can be called outside the TIME_STEP_DEFINED context (see Problem documentation).
  *
  * @param[in] time the new current time.
- * @param[in] dirname the new directory for output files.
  * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
  * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
  */
-void ProblemTrio::resetTime(double time, const std::string dirname)
+void ProblemTrio::resetTime(double time)
 {
-  pb->resetTime(time, dirname);
+  pb->resetTime(time);
 }
 
 /////////////////////////////////////////////
@@ -435,6 +434,16 @@ void ProblemTrio::setInputDoubleValue(const std::string& name, const double& val
 {
   Nom mot(name);
   pb->setInputDoubleValue(mot,val);
+}
+
+void ProblemTrio::setInputStringValue(const std::string& name, const std::string& val)
+{
+  pb->setInputStringValue(name, val);
+}
+
+std::string ProblemTrio::getOutputStringValue(const std::string& name)
+{
+  return pb->getOutputStringValue(name);
 }
 
 double ProblemTrio::getOutputDoubleValue(const std::string& name) const

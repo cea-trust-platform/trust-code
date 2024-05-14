@@ -152,11 +152,10 @@ void Probleme_U::abortTimeStep()
  * initial conditions, and global time 0.
  *
  * @param[in] time the new current time.
- * @param[in] dirname the new directory for output files.
  * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
  * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
  */
-void Probleme_U::resetTime(double time, const std::string dirname)
+void Probleme_U::resetTime(double time)
 {
 }
 
@@ -328,7 +327,8 @@ bool Probleme_U::run()
         {
           // Keep on the resolution if parametric variation:
           stop = false;
-          resetTime(0., "calcul"+std::to_string(newCalcul));
+          setInputStringValue("SORTIE_ROOT_DIRECTORY", "calcul"+std::to_string(newCalcul));
+          resetTime(0.);
         }
       else
         {
@@ -600,6 +600,17 @@ void Probleme_U::setInputDoubleValue(const Nom& name, const double val)
     throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
   chip->setDoubleValue(val);
 }
+
+
+std::string Probleme_U::getOutputStringValue(const std::string& name)
+{
+  if(str_params_.count(name) == 0)
+    {
+      WrongArgument(name,"getOutputStringValue",name,"no string parameter with that name");
+    }
+  return str_params_[name];
+}
+
 
 void Probleme_U::setInputIntValue(const Nom& name, const int& val)
 {

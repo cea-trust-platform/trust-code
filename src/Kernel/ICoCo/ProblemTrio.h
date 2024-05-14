@@ -69,7 +69,7 @@ public :
   bool getStationaryMode() const override; // new in V2
   bool isStationary() const override;
   void abortTimeStep() override;
-  void resetTime(double time, const std::string dirname="") override;  // new in ICoCo V2
+  void resetTime(double time) override;  // new in ICoCo V2
 
   // interface IterativeUnsteadyProblem
 
@@ -107,6 +107,10 @@ public :
   int getOutputIntValue(const std::string& name) const override;
   double getOutputDoubleValue(const std::string& name) const override;
   void setInputDoubleValue(const std::string& name, const double& val) override;
+
+  // I/O for strings:
+  void setInputStringValue(const std::string& name, const std::string& val) override;
+  std::string getOutputStringValue(const std::string& name) override;
 
   ////////////////////////////////////////////////////////////////////////////////////
   // Specific to TRUST, and outside the ICoCo standard

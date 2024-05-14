@@ -1644,6 +1644,19 @@ void Probleme_base::finir()
     sauver_xyz(1);
 }
 
+
+void Probleme_base::resetTime(double time)
+{
+  static const std::string param_nam = "SORTIE_ROOT_DIRECTORY";
+
+  if(str_params_.count(param_nam) == 0)
+    Process::exit("Calling resetTime(), but string parameter 'SORTIE_ROOT_DIRECTORY' is not defined!!");
+
+  std::string new_root_dir = getOutputStringValue(param_nam);
+
+  resetTimeWithDir_impl(*this, time,new_root_dir);
+}
+
 /*! @brief Recherche des champs parametriques, et pour chacun, passage au parametre suivant
  *
  */
@@ -1696,4 +1709,6 @@ int Probleme_base::newParameter()
     }
   return index;
 }
+
+
 

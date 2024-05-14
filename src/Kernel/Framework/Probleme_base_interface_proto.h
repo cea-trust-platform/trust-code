@@ -38,7 +38,6 @@ public:
   void terminate_impl(Probleme_base& pb);
   void validateTimeStep_impl(Probleme_base& pb);
   void abortTimeStep_impl(Probleme_base& pb);
-  void resetTime_impl(Probleme_base& pb, double time, std::string direname);
   void getInputFieldsNames_impl(const Probleme_base& pb, Noms& noms) const;
   void getOutputFieldsNames_impl(const Probleme_base& pb, Noms& noms) const;
   void addInputField_impl(Probleme_base& pb, Field_base& f);
@@ -46,6 +45,9 @@ public:
   double presentTime_impl(const Probleme_base& pb) const;
   double computeTimeStep_impl(const Probleme_base& pb,bool& stop) const;
   double futureTime_impl(const Probleme_base& pb) const;
+
+  // Not the same signature as ICoCo:
+  void resetTimeWithDir_impl(Probleme_base& pb, double time, std::string direname);
 
   REF(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
   REF(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;

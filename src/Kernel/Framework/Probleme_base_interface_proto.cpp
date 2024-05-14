@@ -176,7 +176,7 @@ void Probleme_base_interface_proto::abortTimeStep_impl(Probleme_base& pb)
   dt_defined = false;
 }
 
-void Probleme_base_interface_proto::resetTime_impl(Probleme_base& pb, double time, const std::string dirname)
+void Probleme_base_interface_proto::resetTimeWithDir_impl(Probleme_base& pb, double time, const std::string dirname)
 {
   if (dt_defined)
     throw WrongContext(pb.le_nom().getChar(), "resetTime", "resetTime can not be called inside a time step computation");
