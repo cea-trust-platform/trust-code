@@ -422,6 +422,8 @@ class TRUSTCase(object):
         saveFileAccumulator(f"{baseName}.out")
         saveFileAccumulator(f"{baseName}.err")
         saveFileAccumulator(f"{baseName}_*.son")
+        saveFileAccumulator(f"{baseName}.TU")
+        saveFileAccumulator(f"{baseName}_csv.TU")
 
         return ok
 
@@ -525,8 +527,6 @@ class TRUSTSuite(object):
         for image in image_files:
             saveFileAccumulator(str(image))
 
-
-
     def addCase(self, case):
         self.cases_.append(case)
 
@@ -537,6 +537,8 @@ class TRUSTSuite(object):
         saveFileAccumulator(f"{baseName}.out")
         saveFileAccumulator(f"{baseName}.err")
         saveFileAccumulator(f"{baseName}_*.son")
+        saveFileAccumulator(f"{baseName}.TU")
+        saveFileAccumulator(f"{baseName}_csv.TU")
 
     def getCases(self):
         return self.cases_
