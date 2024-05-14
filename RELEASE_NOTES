@@ -1,3 +1,4 @@
+XX/05/24 (TRUST) Keyword      : Champ_front_parametrique (boundary fields list) and Champ_parametrique (fields list) to chain multi-stationary or stationary-transient scenarios (see V&V sheets under Verification/Champs). Experimental, only tested with Flica5
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------

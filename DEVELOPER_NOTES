@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) Minor change : Methods Gpoint() and Gpoint(t1,t2) renamed derivee_en_temps() and calculer_derivee_en_temps(t1,t2)
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
