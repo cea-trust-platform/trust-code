@@ -8,7 +8,6 @@ then
    unlink $TRUST_ROOT/exec/compare_lata
 fi
 
-export MED_COUPLING_ROOT=$TRUST_MEDCOUPLING_ROOT
 ORG=`pwd`
 # Something changed -> we delete all
 # Sometime TRUST_CC changes and produces recursive cmake so the last condition IS important
@@ -43,8 +42,21 @@ cmake $ORG $cmake_opt || exit -1
 
 make -j  $TRUST_NB_PROCS  install || exit -1
 
-echo "Check if compare_lata works"
-tar xzf $TRUST_ROOT/Outils/lata_tools/src/tools/vdf.tar.gz
-$TRUST_ROOT/exec/lata_tools/bin/compare_lata vdf/vdf.lata vdf/vdf.lata || exit -1
+echo "Check if compare_lata works ..."
+echo "   with LATA files 32b ..."
+tar xzf $TRUST_ROOT/Outils/lata_tools/src/tests/vdf32.tar.gz
+$TRUST_ROOT/exec/lata_tools/bin/compare_lata vdf32/vdf.lata vdf32/vdf.lata || exit -1
+echo "   with LATA files 64b ..."
+tar xzf $TRUST_ROOT/Outils/lata_tools/src/tests/upwind64.tar.gz
+$TRUST_ROOT/exec/lata_tools/bin/compare_lata upwind64/upwind.lata upwind64/upwind.lata || exit -1
+echo "   with LML files ..."
+tar xzf $TRUST_ROOT/Outils/lata_tools/src/tests/upwind.tar.gz
+$TRUST_ROOT/exec/lata_tools/bin/compare_lata upwind.lml upwind.lml || exit -1
+if [ "$TRUST_MEDCOUPLING_ROOT" != "" ]; then
+  echo "   with MED files ..."
+  cp $TRUST_ROOT/Outils/lata_tools/src/tests/upwind_0000.med .
+  $TRUST_ROOT/exec/lata_tools/bin/compare_lata upwind_0000.med upwind_0000.med || exit -1
+fi
+
 cd ..
 rm -rf $Build
