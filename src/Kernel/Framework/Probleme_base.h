@@ -202,6 +202,7 @@ protected :
   REF(Probleme_Couple) pbc_;
   void warn_old_syntax();
   virtual void typer_lire_milieu(Entree& is) ;
+  virtual void lire_solved_equations(Entree& is) { /* Do nothing */ }
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
 
   mutable DERIV(Sortie_Fichier_base) ficsauv_;

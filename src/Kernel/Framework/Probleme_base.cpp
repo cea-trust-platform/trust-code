@@ -144,7 +144,9 @@ Entree& Probleme_base::readOn(Entree& is)
       Process::exit();
     }
 
-  /* 1 : milieu : NEW SYNTAX */
+  /* 1 : solved_equations + milieu : NEW SYNTAX */
+  lire_solved_equations(is);
+
   if (!milieu_via_associer_ && !is_pb_med() && !is_pb_rayo())
     typer_lire_milieu(is);
   else assert((int)le_milieu_.size() == 0);
