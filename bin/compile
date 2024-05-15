@@ -277,7 +277,7 @@ echo>>$COMPILE
 #####
 # EOS
 #####
-if [ $TRUST_USE_EOS = 1 ]
+if [ "$TRUST_USE_EOS" = 1 ]
 then
   LEOS=$TRUST_EOS_HOME_DIR/lib/libeos.a
   if [ -f $LEOS ]
@@ -293,7 +293,7 @@ fi
 ##########
 # CoolProp
 ##########
-if [ $TRUST_USE_COOLPROP = 1 ]
+if [ "$TRUST_USE_COOLPROP" = 1 ]
 then
   LCOOLPROP=$TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a
   if [ -f $LCOOLPROP ]

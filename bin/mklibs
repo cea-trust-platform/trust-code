@@ -192,7 +192,7 @@ fi
 ########
 # Kokkos
 ########
-if [ $TRUST_USE_KOKKOS = 1 ] ; then
+if [ "$TRUST_USE_KOKKOS" = 1 ] ; then
    KOKKOS_P="\$ENV{TRUST_KOKKOS_ROOT}/\$ENV{TRUST_ARCH}\${OPT}/lib64"
    KOKKOS_L="kokkoscontainers kokkoscore"
    [ -f $TRUST_KOKKOS_ROOT/$TRUST_ARCH$OPT/libkokkossimd.a ] && KOKKOS_L=$KOKKOS_L" kokkossimd"
@@ -269,7 +269,7 @@ ALL_L=$ALL_L" med medimport medC hdf5 hdf5_hl"
 #####
 # EOS
 #####
-if [ $TRUST_USE_EOS = 1 ] ; then
+if [ "$TRUST_USE_EOS" = 1 ] ; then
     ALL_P=$ALL_P" \$ENV{TRUST_EOS_HOME_DIR}/lib"
     ALL_L=$ALL_L" eos"
 fi
@@ -277,7 +277,7 @@ fi
 ##########
 # CoolProp
 ##########
-if [ $TRUST_USE_COOLPROP = 1 ] ; then
+if [ "$TRUST_USE_COOLPROP" = 1 ] ; then
     ALL_P=$ALL_P" \$ENV{TRUST_COOLPROP_HOME_DIR}/build"
     ALL_L=$ALL_L" CoolProp"
 fi
