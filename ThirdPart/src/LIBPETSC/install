@@ -345,7 +345,7 @@ fi
 ########################################################
 # 2 versions construites, une debug et une optimisee
 ########################################################
-if [ $HOST = $TRUST_HOST_ADMIN ] || [ $TRUST_ENABLE_PETSC_DEBUG = 1 ]
+if [ $TRUST_ENABLE_PETSC_DEBUG = 1 ] # || [ $HOST = $TRUST_HOST_ADMIN ] # ND : petsc debug pose souci sur PETSC_VDF/PETSC_VEF/Champ_front_debit_QC_VDF/et un dernier cas, plus de debug par defaut
 then
    liste_debug="0 1"	# Version optimisee et debug construite
    # cette variable construit seulement petsc_debug si on fait make debug. Elle est declaree dans bin/compile

@@ -2,6 +2,7 @@
 
 # Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug :
 build_debug=$TRUST_ENABLE_KOKKOS_DEBUG
+[ $HOST = $TRUST_HOST_ADMIN ] && build_debug=1
 
 archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
 # Attention 4.x C++17 pour TRUST GPU mais necessaire pour nvc++ -cuda

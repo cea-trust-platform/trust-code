@@ -12,7 +12,7 @@ prepare_sources()
 
    mkdir baltik
    cd baltik
-   for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
+   for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h 2>/dev/null`
    do
        ln -nsf $file `basename $file`
    done
