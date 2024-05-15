@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fichier_base",Objet_U);
 
@@ -132,13 +133,16 @@ std::string Sortie_Fichier_base::root = "";
 static std::map<std::string, int> counters;
 int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
-  std::string pathname = root;
-  if (!root.empty() && Process::je_suis_maitre())
+  struct stat sb;
+  // Create the root directory if it doesn't exit by the master process:
+  if (!root.empty() && stat(root.c_str(), &sb) && Process::je_suis_maitre())
     {
       std::string cmd="mkdir -p ";
-      cmd+=pathname;
+      cmd+=root;
       system(cmd.c_str());
     }
+  std::string pathname = root;
+  if (!pathname.empty()) pathname+="/";
   pathname += name;
   if (++counters[pathname]%100==0) Cerr << "Warning, file " << pathname << " has been opened/closed " << counters[pathname] << " times..." << finl;
   IOS_OPEN_MODE ios_mod=mode;
@@ -193,6 +197,5 @@ bool Sortie_Fichier_base::is_open()
 void Sortie_Fichier_base::set_root(const std::string dirname)
 {
   root=dirname;
-  root+="/";
-  Cerr << "[IO] Create a new directory " << root << finl;
+  Cerr << "[IO] Setting output directory to: " << root << finl;
 }

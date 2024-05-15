@@ -44,7 +44,7 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
       Champ_front ch;
       fic >> ch;
       champs_.add(ch);
-      Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl; //" " << ch.valeur() << finl;
+      //Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl; //" " << ch.valeur() << finl;
       fic >> motlu;
     }
   // On fixe le premier parametre:
@@ -60,11 +60,15 @@ int Champ_front_Parametrique::newCompute() const
     return 0;
   else
     {
+      Nom previous_field("");
+      if (index_)
+        {
+          previous_field = " from ";
+          previous_field += champ().valeur().que_suis_je();
+        }
       index_++;
-      // ToDo ameliorer message avec les caracteristiques du champ
-      Cerr << "================================================" << finl;
-      Cerr << "[Parameter] Updating to: " << champ().valeur().que_suis_je() << finl; //" " << champ().valeur() << finl;
-      Cerr << "================================================" << finl;
+      Nom next_field = champ().valeur().que_suis_je();
+      Cerr << "[Parameter] Updating boundary field" << previous_field << " to " << next_field << finl;
       return index_;
     }
 }

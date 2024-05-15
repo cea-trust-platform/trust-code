@@ -29,22 +29,24 @@ bool Champ_Parametrique::enabled=false;
 Entree& Champ_Parametrique::readOn(Entree& is)
 {
   Champ_Parametrique::enabled=true;
-  Nom pb, fichier;
+  Nom fichier;
   Param param(que_suis_je());
   param.ajouter("fichier", &fichier, Param::REQUIRED);  // XD_ADD_P chaine Filename where fields are read
   param.lire_avec_accolades_depuis(is);
   // Lecture de tous les lignes du fichier parametrique:
   EFichier fic(fichier);
   Motcle motlu;
-  Champ_Don ch;
   fic >> motlu;
   if (motlu!="{") Process::exit("Waiting { !");
   while (motlu!="}")
     {
+      Champ_Don ch;
       fic >> ch;
       champs_.add(ch);
-      Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl;
+      //Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl;
       fic >> motlu;
+      // Pour eviter de surcharger plusieurs methodes de Champ_Don_base:
+      fixer_nb_comp(ch.nb_comp());
     }
   // On fixe le premier parametre:
   int compute = newCompute();
@@ -59,11 +61,15 @@ int Champ_Parametrique::newCompute() const
     return 0;
   else
     {
+      Nom previous_field("");
+      if (index_)
+        {
+          previous_field = " from ";
+          previous_field += champ().valeur().que_suis_je();
+        }
       index_++;
-      // ToDo ameliorer message avec les caracteristiques du champ
-      Cerr << "================================================" << finl;
-      Cerr << "[Parameter] Updating to: " << champ().valeur() << (champ()->instationnaire() ? " (transient field) " : " (permanent field) ") << finl;
-      Cerr << "================================================" << finl;
+      Nom next_field = champ().valeur().que_suis_je();
+      Cerr << "[Parameter] Updating field" << previous_field << " to " << next_field << finl;
       return index_;
     }
 }
