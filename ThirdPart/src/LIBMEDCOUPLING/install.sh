@@ -60,18 +60,9 @@ build_and_test_mc()
        export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
-    echo "Applying patch for old compilers (gcc 4.8.5) ..."
-    (cd $src_dir/src/INTERP_KERNEL; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.10.0_gnu_485.diff )
-    echo "Applying patch for OverlapDEC ..."
-    (cd $src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/odec_multi_compo.patch)
-    echo "Applying patch for tetra intersect ..."
-    (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/tetra_mc.patch)
-    echo "Applying patch for dpIndex ..."
-    (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_tri.patch)
-    echo "Applying patch for OverlapDEC bug (again) ..."
-    (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_odec.patch)
-    echo "Applying patch for OverlapDEC getField methods ..."
-    (cd $src_dir; patch -p1 -f < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/odec_get_field.patch)
+    ## Keeping a model of how to apply a patch:
+    #echo "Applying patch for  ..."
+    #(cd $src_dir; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/xxx.patch )
     
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
