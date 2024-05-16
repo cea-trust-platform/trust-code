@@ -158,6 +158,9 @@ for mkf in `cd $TRUST_ENV;\ls make.$TRUST_ARCH_CC*`; do
     fi
 done
 
+# Update include link - always pointing to opt includes:
+ln -nsf $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH}_opt/include $TRUST_MEDCOUPLING_ROOT/include
+
 # Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
 # but we need an env file for the test below ... 
 echo "@@@@@@@@@@@@ Creating env file ..."
