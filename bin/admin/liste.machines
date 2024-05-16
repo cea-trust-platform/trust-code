@@ -27,8 +27,8 @@ linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		  				-benchmark -cuda 
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD            						-benchmark -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-benchmark -cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
-linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-doc -disable-hwloc -disable-plot2d    
-linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -build_64_bit -without-doc -disable-hwloc -disable-plot2d 
+linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit   
+linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit 
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc  		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD  -FLICA5   					  -disable-plot2d -disable-hwloc  	-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD    				-build_64_bit -without-doc -disable-hwloc -disable-plot2d		 								# CentOS 7.6	CEA Saclay

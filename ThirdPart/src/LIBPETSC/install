@@ -143,7 +143,7 @@ then
    # et des includes pour les librairies ptscotch et parmetis
    #################################################################
    folds=""
-   for REP in `\ls $PETSC_ROOT 2>/dev/null`
+   for REP in `\ls $PETSC_ROOT 2>/dev/null | grep -v configure`
    do
       [ ! -L $PETSC_ROOT/$REP ] && folds=$folds" "$REP
    done
