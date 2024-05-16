@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
+16/05/24 (TRUST) Tools        : Upgrade to MEDCoupling 9.13.0
 13/05/24 (TRUST) New feature  : New LES Smago/WALE models developped for Pb_Multiphase. To be used in TrioCFD (CMFD module !)
 06/05/24 (TRUST) New feature  : Performance logs (TU files): XX_comm.TU and XX_detail.TU have been replaced by XX_csv.TU which contains a CSV formated logs of the computation times. Keyword 'stat_per_proc_perf_log' can be used to obtain detailed performance logs per processor. See validation form 'HowTo/Post_treatment_performance' for detailed explanation on how global TU information are computed.
 30/04/24 (TRUST) New Keywords : 'Fields_file', 'Statistics_file', 'Serial_statistics_file', 'Mobile_Probes_file', 'Int_Probes_file' and 'Int_Arrays_file'
