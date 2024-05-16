@@ -775,18 +775,6 @@ def introduction(auteur, creationDate=None):
     displayMD("\n Report generated " + dat)
 
 
-def description(text):
-    """ 
-    Function that creates a Description cell Mardown
-
-    Parameters
-    ---------
-    text: str 
-        Description test.
-    """
-    displayMD("### Description \n" + text)
-
-
 def TRUST_parameters(version="", param=[]):
     """ Function that creates a cell Mardown giving TRUST parameters (version, binary)
     
