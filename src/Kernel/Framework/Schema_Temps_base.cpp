@@ -1049,6 +1049,16 @@ void Schema_Temps_base::write_progress(bool init)
  *
  */
 static SFichier dt_ev_;
+static bool header_complete = false;
+void open_dt_ev(IOS_OPEN_MODE mode)
+{
+  if (!dt_ev_.is_open())
+    {
+      Nom fichier(Objet_U::nom_du_cas() + ".dt_ev");
+      dt_ev_.ouvrir(fichier, mode);
+      dt_ev_.setf(ios::scientific);
+    }
+}
 void Schema_Temps_base::write_dt_ev(bool init)
 {
   if (je_suis_maitre() && !disable_dt_ev())
@@ -1062,37 +1072,43 @@ void Schema_Temps_base::write_dt_ev(bool init)
             {
               if (schema_impr())
                 {
-                  dt_ev_.ouvrir(fichier, ios::out);
-                  dt_ev_.setf(ios::scientific);
+                  open_dt_ev(ios::out);
                   dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
                 }
+              open_dt_ev(ios::app);
               for (int i = 0; i < pb_base().nombre_d_equations(); i++)
                 dt_ev_ << pb_base().equation(i).expression_residu();
             }
           else
             {
               if (schema_impr())
-                {
-                  dt_ev_.ouvrir(fichier, ios::app);
-                  dt_ev_.setf(ios::scientific);
-                }
+                open_dt_ev(ios::app);
             }
         }
       else
         {
+          open_dt_ev(ios::app);
           if (schema_impr())
-            dt_ev_ << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ << "\t " << residu_ << "\t " << dt_stab_ << "\t ";
+            {
+              dt_ev_ << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ << "\t " << residu_ << "\t "
+                     << dt_stab_ << "\t ";
+              header_complete = true;
+            }
           for (int i = 0; i < pb_base().nombre_d_equations(); i++)
             pb_base().equation(i).imprime_residu(dt_ev_);
         }
     }
 }
 
+/*! @brief Fermeture du fichier .dt_ev
+ *
+ */
 void Schema_Temps_base::finir() const
 {
   if (je_suis_maitre() && dt_ev_.is_open())
     {
-      dt_ev_ << finl;
+      if (header_complete) dt_ev_ << finl;
       dt_ev_.close();
+      header_complete = false;
     }
 }
