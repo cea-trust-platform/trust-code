@@ -21,6 +21,17 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Reaction,"Reaction",Objet_U);
+// XD reaction objet_lecture nul 1 Keyword to describe reaction: NL2 w =K pow(T,beta) exp(-Ea/( R T)) $\Pi$ pow(Reactif_i,activitivity_i). NL2 If K_inv >0, NL2 w= K pow(T,beta) exp(-Ea/( R T)) ( $\Pi$ pow(Reactif_i,activitivity_i) - Kinv/exp(-c_r_Ea/(R T)) $\Pi$ pow(Produit_i,activitivity_i ))
+// XD attr reactifs chaine reactifs 0 LHS of equation (ex CH4+2*O2)
+// XD attr produits chaine produits 0 RHS of equation (ex CO2+2*H20)
+// XD attr constante_taux_reaction floattant constante_taux_reaction 1 constante of cinetic K
+// XD attr coefficients_activites bloc_lecture coefficients_activites 1 coefficients od ativity (exemple { CH4 1 O2 2 })
+// XD attr enthalpie_reaction floattant enthalpie_reaction 0 DH
+// XD attr energie_activation floattant energie_activation 0 Ea
+// XD attr exposant_beta floattant exposant_beta 0 Beta
+// XD attr contre_reaction floattant contre_reaction 1 K_inv
+// XD attr contre_energie_activation floattant contre_energie_activation 1 c_r_Ea
+
 
 Sortie& Reaction::printOn(Sortie& os) const
 {

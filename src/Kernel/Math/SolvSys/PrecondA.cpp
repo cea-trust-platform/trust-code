@@ -21,6 +21,14 @@
 #include <Param.h>
 
 Implemente_instanciable(PrecondA,"ssor_bloc",Precond_base);
+// XD ssor_bloc precond_base ssor_bloc -1 not_set
+// XD attr alpha_0 floattant alpha_0 1 not_set
+// XD attr precond0 precond_base precond0 1 not_set
+// XD attr alpha_1 floattant alpha_1 1 not_set
+// XD attr precond1 precond_base precond1 1 not_set
+// XD attr alpha_a floattant alpha_a 1 not_set
+// XD attr preconda precond_base preconda 1 not_set
+
 
 Sortie& PrecondA::printOn(Sortie& s ) const
 {

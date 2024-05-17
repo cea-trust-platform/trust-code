@@ -16,6 +16,10 @@
 #include <Champ_Tabule_Temps.h>
 
 Implemente_instanciable(Champ_Tabule_Temps,"Champ_Tabule_Temps",Champ_Uniforme_inst);
+// XD champ_tabule_temps champ_don_base champ_tabule_temps 0 Field that is constant in space and tabulated as a function of time.
+// XD attr dim entier dim 0 Number of field components.
+// XD attr bloc bloc_lecture bloc 0 Values as a table. The value of the field at any time is calculated by linear interpolation from this table.
+
 
 
 /*! @brief NE FAIT RIEN

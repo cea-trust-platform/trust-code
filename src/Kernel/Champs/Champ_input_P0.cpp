@@ -25,6 +25,8 @@
 #include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_input_P0,"Champ_input_P0",Champ_Fonc_P0_base);
+// XD champ_input_p0 champ_input_base champ_input_p0 1 not_set
+
 
 using ICoCo::WrongArgument;
 

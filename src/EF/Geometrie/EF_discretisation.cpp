@@ -41,6 +41,8 @@
 #include <Domaine_Cl_dis.h>
 
 Implemente_instanciable(EF_discretisation,"EF",Discret_Thyd);
+// XD ef discretisation_base ef -1 Element Finite discretization.
+
 
 
 

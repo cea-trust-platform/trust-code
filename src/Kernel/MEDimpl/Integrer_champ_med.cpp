@@ -19,6 +19,14 @@
 #include <SFichier.h>
 
 Implemente_instanciable(Integrer_champ_med,"Integrer_champ_med",Interprete);
+// XD integrer_champ_med interprete integrer_champ_med 1 his keyword is used to calculate a flow rate from a velocity MED field read before. The method is either debit_total to calculate the flow rate on the whole surface, either integrale_en_z to calculate flow rates between z=zmin and z=zmax on nb_tranche surfaces. The output file indicates first the flow rate for the whole surface and then lists for each tranche : the height z, the surface average value, the surface area and the flow rate. For the debit_total method, only one tranche is considered.NL2 file :z Sum(u.dS)/Sum(dS) Sum(dS) Sum(u.dS)
+// XD attr champ_med ref_champ_fonc_med champ_med 0 not_set
+// XD attr methode chaine(into=["integrale_en_z","debit_total"]) methode 0 to choose between the integral following z or over the entire height (debit_total corresponds to zmin=-DMAXFLOAT, ZMax=DMAXFLOAT, nb_tranche=1)
+// XD attr zmin floattant zmin 1 not_set
+// XD attr zmax floattant zmax 1 not_set
+// XD attr nb_tranche entier nb_tranche 1 not_set
+// XD attr fichier_sortie chaine fichier_sortie 1 name of the output file, by default: integrale.
+
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *

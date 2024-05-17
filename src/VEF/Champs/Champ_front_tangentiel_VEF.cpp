@@ -17,6 +17,10 @@
 #include <Domaine_VEF.h>
 #include <TRUSTTrav.h>
 Implemente_instanciable(Champ_front_tangentiel_VEF,"Champ_front_tangentiel_VEF",Champ_front_tangentiel);
+// XD champ_front_tangentiel_vef front_field_base champ_front_tangentiel_vef 0 Field to define the tangential velocity vector field standard at the boundary in VEF discretization.
+// XD attr mot chaine(into=["vitesse_tangentielle"]) mot 0 Name of vector field.
+// XD attr vit_tan floattant vit_tan 0 Vector field standard [m/s].
+
 
 
 Sortie& Champ_front_tangentiel_VEF::printOn(Sortie& os) const

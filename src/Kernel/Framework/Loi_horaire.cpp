@@ -23,6 +23,12 @@
 #include <Param.h>
 
 Implemente_instanciable(Loi_horaire,"Loi_horaire",Objet_U);
+// XD loi_horaire objet_u loi_horaire 1 to define the movement with a time-dependant law for the solid interface.
+// XD attr position listchaine position 0 not_set
+// XD attr vitesse listchaine vitesse 0 not_set
+// XD attr rotation listchaine rotation 1 not_set
+// XD attr derivee_rotation listchaine derivee_rotation 1 not_set
+
 
 Sortie& Loi_horaire::printOn(Sortie& os) const { return os; }
 

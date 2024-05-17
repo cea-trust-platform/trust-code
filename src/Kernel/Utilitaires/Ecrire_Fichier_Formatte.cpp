@@ -15,6 +15,8 @@
 #include <Ecrire_Fichier_Formatte.h>
 
 Implemente_instanciable(Ecrire_Fichier_Formatte,"Ecrire_Fichier_Formatte",Ecrire_Fichier);
+// XD ecrire_fichier_formatte write_file ecrire_fichier_formatte -1 Keyword to write the object of name name_obj to a file filename in ASCII format.
+
 
 /*! @brief Appel a la methode printOn de la classe Interprete
  *

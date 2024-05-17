@@ -22,6 +22,9 @@
 #include <Param.h>
 
 Implemente_instanciable(Champ_Generique_Moyenne,"Champ_Post_Statistiques_Moyenne|Moyenne",Champ_Generique_Statistiques_base);
+// XD moyenne champ_post_statistiques_base moyenne -1 to calculate the average of the field over time
+// XD attr moyenne_convergee field_base moyenne_convergee 1 This option allows to read a converged time averaged field in a .xyz file in order to calculate, when resuming the calculation, the statistics fields (rms, correlation) which depend on this average. In that case, the time averaged field is not updated during the resume of calculation. In this case, the time averaged field must be fully converged to avoid errors when calculating high order statistics.
+
 
 Sortie& Champ_Generique_Moyenne::printOn(Sortie& s ) const
 {

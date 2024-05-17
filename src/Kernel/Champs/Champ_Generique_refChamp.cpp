@@ -28,6 +28,10 @@
 #include <Postraitement.h>
 
 Implemente_instanciable(Champ_Generique_refChamp,"refChamp",Champ_Generique_base);
+// XD refchamp champ_generique_base refchamp -1 Field of prolem
+// XD attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
+// XD attr nom_source chaine nom_source 1 The alias name for the field
+
 Add_synonym(Champ_Generique_refChamp,"Champ_Post_refChamp");
 
 /*! @brief Imprime sur un flot de sortie.

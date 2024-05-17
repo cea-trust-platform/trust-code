@@ -22,6 +22,11 @@
 
 
 Implemente_instanciable(Distanceparoi,"Distance_paroi",Interprete_geometrique_base);
+// XD distance_paroi interprete distance_paroi 0 Class to generate external file Wall_length.xyz devoted for instance, for mixing length modelling. In this file, are saved the coordinates of each element (center of gravity) of dom domain and minimum distance between this point and boundaries (specified bords) that user specifies in data file (typically, those associated to walls). A field Distance_paroi is available to post process the distance to the wall.
+// XD attr dom ref_domaine dom 0 Name of domain.
+// XD attr bords listchaine bords 0 Boundaries.
+// XD attr format chaine(into=["binaire","formatte"]) format 0 Value for format may be binaire (a binary file Wall_length.xyz is written) or formatte (moreover, a formatted file Wall_length_formatted.xyz is written).
+
 
 Sortie& Distanceparoi::printOn(Sortie& os) const
 {

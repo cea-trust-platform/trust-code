@@ -16,6 +16,11 @@
 #include <Champ_Uniforme_Morceaux.h>
 
 Implemente_instanciable(Champ_Uniforme_Morceaux,"Champ_Uniforme_Morceaux",Champ_Don_base);
+// XD champ_uniforme_morceaux champ_don_base champ_uniforme_morceaux 0 Field which is partly constant in space and stationary.
+// XD attr nom_dom ref_domaine nom_dom 0 Name of the domain to which the sub-areas belong.
+// XD attr nb_comp entier nb_comp 0 Number of field components.
+// XD attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object value, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a Champ_Uniforme_Morceaux(partly_uniform_field) type object.
+
 
 Sortie& Champ_Uniforme_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 

@@ -17,6 +17,8 @@
 #include <Equation.h>
 
 Implemente_instanciable(Leap_frog,"Leap_frog",Schema_Temps_base);
+// XD leap_frog schema_temps_base leap_frog -1 This is the leap-frog scheme.
+
 
 
 /*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.

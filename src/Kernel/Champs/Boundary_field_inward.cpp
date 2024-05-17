@@ -20,6 +20,9 @@
 #include <EChaine.h>
 
 Implemente_instanciable(Boundary_field_inward,"Boundary_field_inward",Champ_front_normal);
+// XD boundary_field_inward front_field_base boundary_field_inward 1 this field is used to define the normal vector field standard at the boundary in VDF or VEF discretization.
+// XD attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
+
 
 
 Sortie& Boundary_field_inward::printOn(Sortie& os) const
@@ -95,6 +98,10 @@ void Boundary_field_inward::mettre_a_jour(double tps)
 
 // Obsolete soon:
 Implemente_instanciable(Champ_front_normal_VEF,"Champ_front_normal_VEF",Boundary_field_inward);
+// XD champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
+// XD attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
+// XD attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
+
 
 Sortie& Champ_front_normal_VEF::printOn(Sortie& os) const
 {

@@ -17,6 +17,8 @@
 #include <Postraitement.h>
 
 Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
+// XD postraitements listobj postraitements -1 un_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name).
+
 
 Entree& Postraitements::readOn(Entree& s)
 {

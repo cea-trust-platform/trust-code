@@ -19,6 +19,9 @@
 #include <Param.h>
 
 Implemente_instanciable(Testeur,"Testeur",Interprete);
+// XD testeur interprete testeur 0 not_set
+// XD attr data bloc_lecture data 0 not_set
+
 
 
 // printOn et readOn

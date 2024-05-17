@@ -16,6 +16,8 @@
 #include <Symetrie.h>
 
 Implemente_instanciable(Symetrie,"Symetrie",Navier);
+// XD symetrie condlim_base symetrie -1 1). For Navier-Stokes equations, this keyword is used to designate a symmetry condition concerning the velocity at the boundary called bord (edge) (normal velocity at the edge equal to zero and tangential velocity gradient at the edge equal to zero); 2). For scalar transport equation, this keyword is used to set a symmetry condition on scalar on the boundary named bord (edge).
+
 
 
 /*! @brief Ecrit le type de l'objet sur un flot de sortie.

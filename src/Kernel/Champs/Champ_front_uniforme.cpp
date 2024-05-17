@@ -16,6 +16,9 @@
 #include <Champ_front_uniforme.h>
 
 Implemente_instanciable(Champ_front_uniforme,"Champ_front_uniforme",Champ_front_base);
+// XD champ_front_uniforme front_field_base champ_front_uniforme 0 Boundary field which is constant in space and stationary.
+// XD attr val list val 0 Values of field components.
+
 
 
 

@@ -21,6 +21,8 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Generique_Ecart_Type,"Champ_Post_Statistiques_Ecart_Type|Ecart_Type",Champ_Generique_Statistiques_base);
+// XD ecart_type champ_post_statistiques_base ecart_type -1 to calculate the standard deviation (statistic rms) of the field nom_champ.
+
 
 Sortie& Champ_Generique_Ecart_Type::printOn(Sortie& s ) const
 {

@@ -35,6 +35,8 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(VDF_discretisation,"VDF",Discret_Thyd);
+// XD vdf discretisation_base vdf -1 Finite difference volume discretization.
+
 
 Entree& VDF_discretisation::readOn(Entree& s)
 {

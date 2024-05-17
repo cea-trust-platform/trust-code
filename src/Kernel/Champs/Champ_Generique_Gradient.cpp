@@ -20,6 +20,8 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Generique_Gradient,"Gradient",Champ_Generique_Operateur_base);
+// XD gradient champ_post_operateur_base gradient -1 To calculate gradient of a given field.
+
 Add_synonym(Champ_Generique_Gradient,"Champ_Post_Operateur_Gradient");
 
 Sortie& Champ_Generique_Gradient::printOn(Sortie& s ) const

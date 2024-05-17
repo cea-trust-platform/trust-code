@@ -19,6 +19,9 @@
 #include <SFichier.h>
 
 Implemente_instanciable(OrienteFacesBord,"OrienteFacesBord",Interprete_geometrique_base);
+// XD orientefacesbord interprete orientefacesbord -1 Keyword to modify the order of the boundary vertices included in a domain, such that the surface normals are outer pointing.
+// XD attr domain_name ref_domaine domain_name 0 Name of domain.
+
 
 
 Sortie& OrienteFacesBord::printOn(Sortie& os) const

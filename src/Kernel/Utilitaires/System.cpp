@@ -17,6 +17,9 @@
 #include <Nom.h>
 
 Implemente_instanciable(System,"System",Interprete);
+// XD system interprete system -1 To run Unix commands from the data file. Example: System \'echo The End | mail trust@cea.fr\'
+// XD attr cmd chaine cmd 0 command to execute.
+
 
 Sortie& System::printOn(Sortie& s ) const
 {
