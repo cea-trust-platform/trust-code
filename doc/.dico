@@ -136,6 +136,7 @@
  Champ_Front_MUSIG Champ_Front_MUSIG Champ_Front_MUSIG.h
  Champ_front_normal Champ_front_normal Champ_front_normal.h
  Champ_front_normal_VEF Champ_front_normal_VEF Boundary_field_inward.h
+ Champ_front_Parametrique Champ_front_Parametrique Champ_front_Parametrique.h
  Champ_front_pression_from_u Champ_front_pression_from_u Champ_front_pression_from_u.h
  Champ_front_recyclage Champ_front_recyclage Champ_front_recyclage.h
  Champ_front_synt Champ_front_synt Champ_front_synt.h
@@ -177,6 +178,7 @@
  Champ_P1NC Champ_P1NC Champ_P1NC.h
  Champ_P1_EF Champ_P1_EF Champ_P1_EF.h
  Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle.h
+ Champ_Parametrique Champ_Parametrique Champ_Parametrique.h
  Champ_Post_Statistiques_Correlation|Correlation Champ_Generique_Correlation Champ_Generique_Correlation.h
  Champ_Post_Statistiques_Ecart_Type|Ecart_Type Champ_Generique_Ecart_Type Champ_Generique_Ecart_Type.h
  Champ_Post_Statistiques_Moyenne|Moyenne Champ_Generique_Moyenne Champ_Generique_Moyenne.h
