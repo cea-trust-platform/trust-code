@@ -25,7 +25,7 @@
 #include <random>
 #include <string>
 
-Implemente_instanciable(Champ_front_synt,"Champ_front_synt",Ch_front_var_instationnaire_dep);
+Implemente_instanciable(Champ_front_synt, "Champ_front_synt", Ch_front_var_instationnaire_dep);
 
 /*! @brief Impression sur un flot de sortie au format: taille
  *
@@ -36,17 +36,14 @@ Implemente_instanciable(Champ_front_synt,"Champ_front_synt",Ch_front_var_instati
  */
 Sortie& Champ_front_synt::printOn(Sortie& os) const
 {
-  const DoubleTab& tab=valeurs();
+  const DoubleTab& tab = valeurs();
   os << tab.size() << " ";
-  for(int i=0; i<tab.size(); i++)
-    os << tab(0,i);
+  for (int i = 0; i < tab.size(); i++)
+    os << tab(0, i);
   return os;
 }
 
-/*! @brief Lecture a partir d'un flot d'entree au format: nombre_de_composantes
- *
- *     moyenne moyenne(0) ... moyenne(nombre_de_composantes-1)
- *     moyenne amplitude(0) ... amplitude(nombre_de_composantes-1)
+/*! @brief Lecture a partir d'un flot d'entree
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
@@ -57,118 +54,104 @@ Sortie& Champ_front_synt::printOn(Sortie& os) const
 Entree& Champ_front_synt::readOn(Entree& is)
 {
 
-  int dim;
-  dim=lire_dimension(is,que_suis_je());
-  if( dim != 3)
+  int dim = lire_dimension(is, que_suis_je());
+  if (dim != 3)
     {
-      Cerr << "Error the dimension must be equal to 3" << finl;
+      Cerr << "Error while reading Champ_front_synt:" << finl;
+      Cerr << "The dimension must be equal to 3 to use Champ_front_synt" << finl;
       exit();
     }
   Motcle motlu;
-  Motcles les_mots(9);
-//  OLD
-//  les_mots[0]="moyenne";
-  les_mots[0]="moyenne_champ";
-  les_mots[1]="lenghtScale";
-  les_mots[2]="nbModes";
-  les_mots[3]="turbKinEn";
-  les_mots[4]="turbDissRate";
-  les_mots[5]="KeOverKmin";
-  les_mots[6]="timeScale";
-  les_mots[7]="ratioCutoffWavenumber";
-  les_mots[8]="dir_fluct";
+  int nbmots = 7;
+  Motcles les_mots(nbmots);
+
+  les_mots[0] = "moyenne";
+  les_mots[1] = "turbKinEn";
+  les_mots[2] = "turbDissRate";
+  les_mots[3] = "nbModes";
+  les_mots[4] = "KeOverKmin";
+  les_mots[5] = "ratioCutoffWavenumber";
+  les_mots[6] = "dir_fluct";
 
   is >> motlu;
   if (motlu != "{")
     {
-      Cerr << "Error while reading Champ_front_synt" << finl;
+      Cerr << "Error while reading Champ_front_synt:" << finl;
       Cerr << "We expected a { instead of " << motlu << finl;
       exit();
     }
   int cpt = 0;
   is >> motlu;
-  while (motlu!="}")
+  while (motlu != "}")
     {
-      int rang=les_mots.search(motlu);
+      int rang = les_mots.search(motlu);
       switch(rang)
         {
         case 0:
           {
-//        	OLD
-//        	cpt++;
-//            moyenne.resize(dim);
-//            fixer_nb_comp(dim);
-//            for(int i=0; i<dim; i++)
-//              is >> moyenne(i);
             cpt++;
-            is >> moyenne_ch;
+            is >> moyenne_;
             break;
           }
         case 1:
           {
             cpt++;
-            is >> lenghtScale;
+            is >> turbKinEn_;
             break;
           }
         case 2:
           {
             cpt++;
-            is >> nbModes;
+            is >> turbDissRate_;
             break;
           }
         case 3:
           {
             cpt++;
-            is >> turbKinEn;
+            is >> nbModes_;
             break;
           }
         case 4:
           {
             cpt++;
-            is >> turbDissRate;
+            is >> KeOverKmin_;
             break;
           }
         case 5:
           {
             cpt++;
-            is >> KeOverKmin;
+            is >> ratioCutoffWavenumber_;
             break;
           }
         case 6:
           {
             cpt++;
-            is >> timeScale;
-            break;
-          }
-        case 7:
-          {
-            cpt++;
-            is >> ratioCutoffWavenumber;
-            break;
-          }
-        case 8:
-          {
-            cpt++;
-            dir_fluct.resize(dim);
+            dir_fluct_.resize(dim);
             fixer_nb_comp(dim);
-            for(int i=0; i<dim; i++)
+            for (int i = 0; i < dim; i++)
               {
-                is >> dir_fluct(i);
+                is >> dir_fluct_(i);
               }
             break;
           }
-        default :
+        default:
           {
             if (motlu == "p")
               {
                 Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.9.0"<< finl;
-                Cerr << "  Update your datafile."<< finl;
+                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.9.0" << finl;
+                Cerr << "  Update your datafile." << finl;
+              }
+            if (motlu == "timeScale" or motlu == "lenghtScale")
+              {
+                Cerr << "Error while reading Champ_front_synt:" << finl;
+                Cerr << "  'lenghtScale' and 'timeScale' are not parameters anymore ; they are estimated internally based on turbKinEn and turbDissRate." << finl;
+                Cerr << "  Update your datafile." << finl;
               }
             else
               {
                 Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  " << motlu << "is not understood."<< finl;
+                Cerr << "  " << motlu << "is not understood." << finl;
                 Cerr << "  We are expecting a parameter among " << les_mots << finl;
               }
             exit();
@@ -176,43 +159,135 @@ Entree& Champ_front_synt::readOn(Entree& is)
         }
       is >> motlu;
     }
-  if(cpt != 9)
+  if (cpt != nbmots)
     {
       Cerr << "Error while reading Champ_front_synt: wrong number of parameters" << finl;
       Cerr << "You should specify all these parameters: " << les_mots << finl;
       exit();
     }
-  if( lenghtScale == 0 || nbModes == 0 || turbKinEn == 0 || turbDissRate == 0 || KeOverKmin == 0 || timeScale == 0 || ratioCutoffWavenumber == 0 )
+  if (nbModes_ == 0 || KeOverKmin_ == 0 || ratioCutoffWavenumber_ == 0)
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
-      Cerr << "There is at least one parameter among: timeScale, lenghtScale, nbModes, turbKinEn, turbDissRate and ratioCutoffWavenumber set to 0" << finl;
+      Cerr << "There is at least one parameter among: nbModes, turbKinEn, ratioCutoffWavenumber, set to 0" << finl;
       exit();
     }
-
-  for(int i=0; i<dim; i++)
-    {
-      Cerr << dir_fluct(i) << " ";
-    }
-  Cerr << finl;
-
 
   return is;
 }
 
+/*! @brief Choix du spectre (isotropique) local
+ *
+ */
+double Champ_front_synt::energy_spectrum_(const double& kappa, const double& tke, const double& ke, const double& keta)
+{
+  return (amp_ / ke) * (2. * tke / 3.) * pow(kappa / ke, 4) / pow(1. + pow(kappa / ke, 2), 17. / 6.) * exp(-2. * (pow(kappa / keta, 2)));  // Karman spectrum
+}
 
-/*! @brief Mise a jour du temps
+/*! @brief Initialisation
  *
  */
 int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 {
-  if (!Ch_front_var_instationnaire_dep::initialiser(tps,inco))
+  if (!Ch_front_var_instationnaire_dep::initialiser(tps, inco))
     return 0;
 
-  ref_inco_ = inco;
+  ref_inco_ = inco; // n'est utilise que pour acceder a l'equation : remplacer l'attribut par un attribut Equation_base& equ_ ???
   temps_d_avant_ = tps;
 
-  moyenne_ch->associer_fr_dis_base(la_frontiere_dis.valeur());
-  moyenne_ch->initialiser(tps,inco);
+  ////// RECUPERATION INFORMATIONS FACES //////
+  const Front_VF& front = ref_cast(Front_VF, la_frontiere_dis.valeur());
+  nb_face_ = front.nb_faces(); // real only                        ////// CALCUL DE nb_face_ //////
+  //
+  centreGrav_.resize(nb_face_, 3);
+  const Faces& tabFaces = front.frontiere().faces();
+  tabFaces.calculer_centres_gravite(centreGrav_);                  ////// CALCUL DE centreGrav_ //////
+
+  ////// INITIALISATION DES CHAMPS LUS //////
+  moyenne_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  moyenne_->initialiser(tps, inco);
+  turbKinEn_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  turbKinEn_->initialiser(tps, inco);
+  turbDissRate_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  turbDissRate_->initialiser(tps, inco);
+
+  ////// CALCUL DES QUANTITES AUXILIAIRES CONSTANTES EN TEMPS: timeScale_, kappa_center_, amplitude_, ncM_ //////
+
+  // ncM_
+  ncM_ = !(moyenne_->valeurs().dimension(0) == 1);                     ////// CALCUL DE ncM_ //////
+
+  // recuperation de la viscosite cinematique
+  const Equation_base& equ = ref_inco_.valeur().equation();
+  const Milieu_base& mil = equ.milieu();
+  const double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeurs()(0, 0); // const ???
+
+  // Echelles turbuelence et nombres d'ondes
+
+  timeScale_.resize(nb_face_);
+  kappa_center_.resize(nbModes_);
+
+  DoubleVect kappa_node(nbModes_ + 1); // kappa sur les noeuds (bords des segments) de la discretisation
+  DoubleVect dkn(nbModes_); // longueurs des segments
+
+  DoubleVect lenghtScale(nb_face_); // echelle de turbulence spatiale
+  DoubleVect kappa_eta(nb_face_); // nombre d'onde de Kolmogorov
+  DoubleVect kappa_e(nb_face_); // pic d'energie
+
+  //// remplissage des tableaux
+  const int ncK = !(turbKinEn_->valeurs().dimension(0) == 1);
+  const int ncEPS = !(turbDissRate_->valeurs().dimension(0) == 1);
+  double ki, epsi, lScale;
+  for (int i = 0; i < nb_face_; i++)
+    {
+      ki = turbKinEn_->valeurs()(ncK * i);
+      epsi = turbDissRate_->valeurs()(ncEPS * i);
+      lScale = sqrt(pow(2. * ki / 3., 3)) / epsi;
+      //
+      lenghtScale(i) = lScale;
+      timeScale_(i) = ki / epsi;                                          ////// CALCUL DE timeScale_ //////
+      kappa_eta(i) = pow(epsi / pow(visc, 3), 0.25);
+      kappa_e(i) = 9 * M_PI * amp_ / (55. * lScale);
+    }
+
+  //// kappa min
+  double kappa_min = mp_min_vect(kappa_e) / KeOverKmin_; // plus petit nombre d'onde
+
+  //// kappa_delta et kappa_max
+  DoubleVect aireFaces; // Attention : contains real + virtual faces
+  tabFaces.calculer_surfaces(aireFaces);
+  double sum_aire = 0.;
+
+  for (int i = 0; i < nb_face_; i++)
+    sum_aire += aireFaces[i];
+  sum_aire = mp_sum(sum_aire);
+  const double dmin = sqrt(sum_aire / mp_sum(nb_face_)); // const ???
+  //
+  const double kappa_delta = (M_PI / dmin) * ratioCutoffWavenumber_; // nombre d'onde characteristique de la plus petite echelle du maillage
+  const double kappa_max = std::min(mp_min_vect(kappa_eta), kappa_delta); // plus grand nombre d'onde
+  if (kappa_max <= kappa_min)
+    {
+      Cerr << "Error: kappa_max(=" << kappa_max << ") <= kappa_min(=" << kappa_min << ")" << finl;
+      Cerr << "You should either refine your mesh or increase the ratioCutoffWavenumber_ value in " << que_suis_je() << finl;
+      Process::exit();
+    }
+
+  //// kappa_node
+  const double delta_kappa = pow(kappa_max / kappa_min, 1. / nbModes_); // repartition logarithmique des modes // const ???
+  kappa_node(0) = kappa_min;
+  for (int n = 1; n < nbModes_ + 1; n++)
+    kappa_node(n) = kappa_node(n - 1) * delta_kappa;
+
+  for (int n = 0; n < nbModes_; n++)
+    {
+      // kappa_center(i) = 0.5*(kappa_node(n+1)+kappa_node(n)); moyenne arithmetique
+      kappa_center_(n) = sqrt(kappa_node(n + 1) * kappa_node(n)); // moyenne geometrique, mieux adaptee pour une variation logarithmique de E(kappa)  ////// CALCUL DE kappa_center_ //////
+      dkn(n) = kappa_node(n + 1) - kappa_node(n);
+    }
+
+  // Amplitudes
+  amplitude_.resize(nb_face_, nbModes_);
+  for (int i = 0; i < nb_face_; i++)
+    for (int n = 0; n < nbModes_; n++)
+      amplitude_(i, n) = sqrt(dkn(n) * energy_spectrum_(kappa_center_(n), turbKinEn_->valeurs()(ncK * i), kappa_e(i), kappa_eta(i)));            ////// CALCUL DE amplitude_ //////
 
   // Pour une raison obscure le mettre_a_jour est necessaire pour pouvoir utiliser un schema en temps explicite.
   // Sinon div(U)=0 n'est meme pas respecte.
@@ -220,7 +295,6 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 
   return 1;
 }
-
 
 /*! @brief Pas code !!
  *
@@ -232,204 +306,84 @@ Champ_front_base& Champ_front_synt::affecter_(const Champ_front_base& ch)
   return *this;
 }
 
-
+/*! @brief Mise a jour du temps
+ *
+ */
 void Champ_front_synt::mettre_a_jour(double temps)
 {
 
   // Pas de mise à jour des champs utilises (moyenne, turbKinEn ...). Ils doivent être des champs stationnaire.
   // Notez que e.g. moyenne->mettre_a_jour(temps); ne marche pas si moyenne est un champ_front_recyclage stationnaire
 
-  // Acceder a l'equation depuis l'inconnue, ensuite acceder au milieu
-  const Equation_base& equ = ref_inco_->equation();
-  const Milieu_base& mil = equ.milieu();
-
-  /*
-    Cerr << "*************************************************" << finl;
-    Cerr << "mil = " << mil.masse_volumique()(0,0) << finl;
-    Cerr << "temps = " << equ.inconnue().temps() << finl;
-    Cerr << "dt = " << equ.schema_temps().pas_de_temps() << finl;
-    Cerr << "visco cinematique = " << ref_cast(Fluide_base,mil).viscosite_cinematique().valeur()(0,0) << finl;
-    Cerr << "visco dynamique = " << ref_cast(Fluide_base,mil).viscosite_dynamique()(0,0) << finl;
-    Cerr << "*************************************************" << finl;
-
-    const Champ_Don_base& visco = ref_cast(Fluide_base,mil).viscosite_dynamique();
-    if (sub_type(Champ_Uniforme,visco.valeur()))
-      Cerr << "visco dynamique = " << visco(0,0) << finl;
-    else
-      {
-        const DoubleTab& val_visco = visco->valeurs();
-        Cerr << "valeurs viscosite = " << val_visco << finl;\
-      }
-  */
-
-  ////////////////////////////////////////////
-  /// 	   donnees d'initialisation        ///
-  ////////////////////////////////////////////
-
-  double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeurs()(0,0);
-  const Front_VF& front = ref_cast(Front_VF,la_frontiere_dis.valeur());
-  int nb_face = front.nb_faces(); // real only
-  const Faces& tabFaces = front.frontiere().faces(); // recuperation des faces
+  // Acceder au pas de temps depuis l'equation, depuis l'inconnue
+  const Equation_base& equ = ref_inco_.valeur().equation();
+  double dt = equ.schema_temps().pas_de_temps();
 
   //Cerr << "We store : temps_d_avant_ = "<<temps_d_avant_<<finl;
-  DoubleTab& tab_avant=valeurs_au_temps(temps_d_avant_);
-  DoubleTab& tab=valeurs_au_temps(temps);
+  DoubleTab& tab_avant = valeurs_au_temps(temps_d_avant_);
+  DoubleTab& tab = valeurs_au_temps(temps);
 
-  DoubleVect aireFaces; // Attention : contains real + virtual faces
-  tabFaces.calculer_surfaces(aireFaces);
-
-  double sum_aire=0.;
-  for(int i=0; i<nb_face; i++)
-    sum_aire += aireFaces[i];
-
-  sum_aire = mp_sum(sum_aire);
-  double dmin = sqrt( sum_aire / mp_sum_as_double(nb_face) ) ; // on prend la racine de l'aire moyenne des faces d'entree pour avoir une taille de maille caracteristique
-
-  //double Uref = 0.; // vitesse de reference = norme du vecteur moyenne
-  //for (int i=0; i<moyenne.size_reelle(); i++) Uref += moyenne(i)*moyenne(i);
-  //Uref = sqrt(Uref);
-
-  //double turbScale = turbIntensity * Uref; //urms=I*Uref
-  //double turbKinEn = 3./2. * (turbIntensity * Uref) * (turbIntensity * Uref); // evaluation de l'energie cinetique turbulente = 3/2*(I*Uref)^2
-  //double turbDissRate = pow(Cmu,0.75)*pow(turbKinEn,1.5)/lenghtScale; // calcul de epsilon pour un ecoulement etabli en conduite. A faire pour un ecoulement de grille ? (decroissance energetique)
-
-  /////////////////////////////////////////////
-  /// valeurs remarquables du nombre d'onde ///
-  /////////////////////////////////////////////
-
-  double kappa_max = (pi/dmin)*ratioCutoffWavenumber; // plus grand nombre d'onde (depend du maillage)
-  double kappa_e = 9*pi*amp/(55*lenghtScale); // pic d'energie
-  double kappa_eta = pow((turbDissRate/(visc*visc*visc)),0.25); // nombre d'onde de Kolmogorov
-  double kappa_min = kappa_e / KeOverKmin; // plus petit nombre d'onde
-  //double delta_kappa = (min(kappa_eta,kappa_max) - kappa_min) / nbModes; // repartition lineaire des modes => pas bon
-  double delta_kappa = pow( (std::min(kappa_eta,kappa_max) / kappa_min ), 1./(nbModes-1.)); // repartition logarithmique des modes => OK
-  if (kappa_max <= kappa_min)
-    {
-      Cerr << "Error: kappa_max(=" << kappa_max << ") <= kappa_min(=" << kappa_min << ")" << finl;
-      Cerr << "You should either refine your mesh or increase the ratioCutoffWavenumber value in " << que_suis_je() << finl;
-      Process::exit();
-    }
-  //Cerr << "Remarkable wavenumbers for the method of synthetic turbulence generation:" << finl;
-  //Cerr << "kappa_min = " << kappa_min << finl;
-  //Cerr << "kappa_e = " << kappa_e << finl;
-  //Cerr << "kappa_mesh = " << kappa_max << finl;
-  //Cerr << "kappa_eta = " << kappa_eta << finl;
-  //Cerr << "delta_kappa = " << delta_kappa << finl;
-
-  DoubleVect kappa_face(nbModes+1);
-  DoubleVect kappa_center(nbModes);
-  DoubleVect dkn(nbModes);
-
-  DoubleVect kappa_x(nbModes);
-  DoubleVect kappa_y(nbModes);
-  DoubleVect kappa_z(nbModes);
-
-  DoubleVect sigma_x(nbModes);
-  DoubleVect sigma_y(nbModes);
-  DoubleVect sigma_z(nbModes);
-
-  DoubleVect phi(nbModes);
-  DoubleVect alpha(nbModes);
-  DoubleVect psi(nbModes);
-  DoubleVect tetha(nbModes);
+  // Variables utilisees
+  DoubleTab kappa(nbModes_, 3);  // vecteurs d'onde des modes
+  DoubleTab sigma(nbModes_, 3);  // directions des modes
 
   ////////////////////////////////////////////
   /// generation aleatoire des angles      ///
   ////////////////////////////////////////////
 
-  for(int i = 0; i<nbModes; i++)
+  DoubleVect phi(nbModes_);
+  DoubleVect tetha(nbModes_);
+  DoubleVect alpha(nbModes_);
+  DoubleVect psi(nbModes_);
+
+  for (int n = 0; n < nbModes_; n++)
     {
-      phi(i) = drand48()* 2*pi ;
-      alpha(i) = drand48()* 2*pi ;
-      psi(i) = drand48()* 2*pi ;
-      //tetha(i) = drand48()* pi ; // pour une densite de probabilite de 1/pi => pas bon
-      tetha(i) = acos(1-2*drand48()) ; // pour une densite de probabilite de 0.5*sin(theta) => OK
+      phi(n) = drand48() * 2 * M_PI;
+      tetha(n) = acos(1. - 2 * drand48()); // pour une densite de probabilite de 0.5*sin(theta) ( (phi,theta) isotropique )
+      alpha(n) = drand48() * 2 * M_PI;
+      psi(n) = drand48() * 2 * M_PI;
 
       /// creation vecteur onde en coordonnee cartesienne ///
-      kappa_x(i) = sin(tetha(i))*cos(phi(i));
-      kappa_y(i) = sin(tetha(i))*sin(phi(i));
-      kappa_z(i) = cos(tetha(i));
+      kappa(n, 0) = kappa_center_(n) * sin(tetha(n)) * cos(phi(n));
+      kappa(n, 1) = kappa_center_(n) * sin(tetha(n)) * sin(phi(n));
+      kappa(n, 2) = kappa_center_(n) * cos(tetha(n));
 
       /// creation de la direction orthogonal au vecteur onde ///
-      sigma_x(i) = cos(phi(i))*cos(tetha(i))*cos(alpha(i)) - sin(phi(i))*sin(alpha(i));
-      sigma_y(i) = sin(phi(i))*cos(tetha(i))*cos(alpha(i)) + cos(phi(i))*sin(alpha(i));
-      sigma_z(i) = -sin(tetha(i))*cos(alpha(i));
+      sigma(n, 0) = cos(phi(n)) * cos(tetha(n)) * cos(alpha(n)) - sin(phi(n)) * sin(alpha(n));
+      sigma(n, 1) = sin(phi(n)) * cos(tetha(n)) * cos(alpha(n)) + cos(phi(n)) * sin(alpha(n));
+      sigma(n, 2) = -sin(tetha(n)) * cos(alpha(n));
     }
 
-  //for(int i = 0; i< nbModes+1; i++) kappa_face(i) = kappa_min + delta_kappa*i; // repartition lineaire
-  for(int i = 0; i< nbModes+1; i++)
+  for (int i = 0; i < nb_face_; i++)
     {
-      kappa_face(i) = kappa_min * pow(delta_kappa,i); // repartition logarithmique
-      //Cerr << "Kappa(n) = " << kappa_face(i) << finl;
-    }
+      // recuperation moyenne
+      DoubleVect moy(3);
+      moy(0) = moyenne_->valeurs()(ncM_ * i, 0);
+      moy(1) = moyenne_->valeurs()(ncM_ * i, 1);
+      moy(2) = moyenne_->valeurs()(ncM_ * i, 2);
 
-  for(int i = 0; i< nbModes; i++)
-    {
-      kappa_center(i) = 1.0/2.0*(kappa_face(i+1)+kappa_face(i));
-      dkn(i) = kappa_face(i+1)- kappa_face(i);
-    }
-
-  /// recuperation des centres de gravite ///
-  DoubleTab centreGrav(nb_face);
-  tabFaces.calculer_centres_gravite(centreGrav);
-
-  // recuperation des champs fixes et prise en compte du cas uniforme
-  const DoubleTab& tab_moyenne = moyenne_ch->valeurs();
-  const int cm = sub_type(Champ_front_uniforme, moyenne_ch.valeur()); // tab_moyenne.dimension(0) == 1;
-
-  for( int i = 0; i<nb_face; i++ )
-    {
-      DoubleTab turb(nb_comp());
-      //recuperer les points du milieu du maillage
-
-      double x_center = centreGrav(i,0);
-      double y_center = centreGrav(i,1);
-      double z_center = centreGrav(i,2);
-
-      for(int m = 0; m<nbModes; m++)
+      // calcul fluctuation
+      DoubleVect turb(3);
+      for (int n = 0; n < nbModes_; n++)
         {
-          double kx = kappa_x(m) * kappa_center(m);
-          double ky = kappa_y(m) * kappa_center(m);
-          double kz = kappa_z(m) * kappa_center(m);
-
-          double arg = kx*x_center + ky*y_center + kz*z_center + psi(m);
-
+          double arg = kappa(n, 0) * centreGrav_(i, 0) + kappa(n, 1) * centreGrav_(i, 1) + kappa(n, 2) * centreGrav_(i, 2) + psi(n);
           double tfunk = cos(arg);
-
-          double karman_spectrum = amp/kappa_e * (2.*turbKinEn/3.) * pow((kappa_center(m)/kappa_e),4)/pow(1+pow(kappa_center(m)/kappa_e, 2),17.0/6.0) * exp(-2*(pow(kappa_center(m)/kappa_eta, 2)));
-          double amplitude = sqrt(karman_spectrum * dkn(m));
-
-          turb(0) += 2*amplitude*tfunk*sigma_x(m);
-          turb(1) += 2*amplitude*tfunk*sigma_y(m);
-          turb(2) += 2*amplitude*tfunk*sigma_z(m);
-
-          //Cerr << "Kappa = " << kappa_center(m) << finl;
-          //Cerr << "Kappa, Spectre = " << kappa_center(m) << " , " << karman_spectrum << finl;
-          //Cerr << "Amplitude = " << amplitude << finl;
+          //
+          turb(0) += 2 * amplitude_(i, n) * tfunk * sigma(n, 0);
+          turb(1) += 2 * amplitude_(i, n) * tfunk * sigma(n, 1);
+          turb(2) += 2 * amplitude_(i, n) * tfunk * sigma(n, 2);
         }
 
-      //////////////////////////////////////
-      /// MISE EN PLACE AUTOCORRELATION  ///
-      //////////////////////////////////////
+      // calcul autocorrelation temporelle
+      double a = exp(-dt / timeScale_(i));
+      double b = sqrt(1. - a * a);
 
-      double dt = equ.schema_temps().pas_de_temps();
-      double a = exp(-dt/timeScale);
-      double b = sqrt(1-a*a);
+      // calcul final vitesse
+      tab(i, 0) = moy(0) + dir_fluct_(0) * (a * (tab_avant(i, 0) - moy(0)) + b * turb(0));
+      tab(i, 1) = moy(1) + dir_fluct_(1) * (a * (tab_avant(i, 1) - moy(1)) + b * turb(1));
+      tab(i, 2) = moy(2) + dir_fluct_(2) * (a * (tab_avant(i, 2) - moy(2)) + b * turb(2));
 
-//      OLD
-//      tab(i,0) = moyenne(0) + dir_fluct(0) * (a * (tab_avant(i,0) - moyenne(0)) + b * turb(0));
-//      tab(i,1) = moyenne(1) + dir_fluct(1) * (a * (tab_avant(i,1) - moyenne(1)) + b * turb(1));
-//      tab(i,2) = moyenne(2) + dir_fluct(2) * (a * (tab_avant(i,2) - moyenne(2)) + b * turb(2));
-
-      tab(i,0) = tab_moyenne(!cm * i, 0) + dir_fluct(0) * (a * (tab_avant(i,0) - tab_moyenne(!cm * i, 0)) + b * turb(0));
-      tab(i,1) = tab_moyenne(!cm * i, 1) + dir_fluct(1) * (a * (tab_avant(i,1) - tab_moyenne(!cm * i, 1)) + b * turb(1));
-      tab(i,2) = tab_moyenne(!cm * i, 2) + dir_fluct(2) * (a * (tab_avant(i,2) - tab_moyenne(!cm * i, 2)) + b * turb(2));
-
-      //Cerr << "r, a, b = " << dt/timeScale << " , " << a << " , " << b << finl;
-      //Cerr << "Uprime, uprime = " << tab(i,0) << " , " << turb(0) << finl;
-      //Cerr << "face, Uprime, uprime = " << i << " , " << tab(i,0) << " , " << turb(0) << finl;
     }
   tab.echange_espace_virtuel();
   temps_d_avant_ = temps;
-
 }

@@ -31,10 +31,6 @@ class Champ_front_synt : public Ch_front_var_instationnaire_dep
 {
   Declare_instanciable(Champ_front_synt);
 
-  const double amp = 1.452762113;
-  const double pi=2.*acos(0.);
-  const double Cmu=0.09;
-
 public:
 
   int initialiser(double temps, const Champ_Inc_base& inco) override;
@@ -42,25 +38,34 @@ public:
   void mettre_a_jour(double temps) override;
 
 protected :
-  OBS_PTR(Champ_Inc_base) ref_inco_;
+  const double amp_ = 1.452762113;
+  const double Cmu_=0.09;
 
-  // OLD
-  //DoubleVect moyenne;
-  DoubleVect dir_fluct;
+  OBS_PTR(Champ_Inc_base) ref_inco_; // sera une référence à l'inconnue
+  double temps_d_avant_= 0.; // variable auxiliaire pour acceder au temps precedent dans mettre_a_jour
 
-  int nbModes = -10;
-  double lenghtScale= 0.; // echelle integrale en espace
-  double timeScale= 0.; // echelle integrale en temps
-  double turbKinEn= 0.; // energie cinetique turbulente (k)
-  double turbDissRate= 0.; // taux de dissipation turbulente (epsilon)
-  double KeOverKmin= 0.;
-  double ratioCutoffWavenumber= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
-  double temps_d_avant_= 0.;
+  // Informartions faces utilisees
+  int nb_face_=-1; // nombre de faces du bord
+  DoubleTab centreGrav_; // centre de gravités des faces du bord ; aura les dimension (nb_face,3)
 
+  // PARAMETRES LUS (7)
+  //// Champs caracterisant la statistique // lenghtScale et timeScale sont fonction des precedents
+  OWN_PTR(Champ_front_base) moyenne_;
+  OWN_PTR(Champ_front_base) turbKinEn_; // energie cinetique turbulente (k)
+  OWN_PTR(Champ_front_base) turbDissRate_; // taux de dissipation turbulente (epsilon)
+  DoubleVect dir_fluct_;
+  //// Parametres discretisation en nombres d'onde
+  int nbModes_ = -10; // nombres d'interlles de la discretisation en kappa
+  double KeOverKmin_= 0.;
+  double ratioCutoffWavenumber_= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
 
-// Nouveaux attributs champs
-  OWN_PTR(Champ_front_base) moyenne_ch;
+  // Quantités auxiliaires aux valeurs constantes durant la simulation
+  ArrOfDouble timeScale_; // echelle temporelle de turbulence ; aura la longueur nb_face ; utilise pour correlation temporelle
+  ArrOfDouble kappa_center_; // valeur des normes de vecteurs d'onde kappa_n au mileu des intervalles de la discretisation en kappa ; aura la longueur nbModes
+  DoubleTab amplitude_; // amplitudes des modes \hat{u}_n  ; aura les dimensions (nb_face,nbModes)
+  int ncM_=-1 ; // sera 0 ou 1 selon si moyenne est uniforme ou pas
 
+  double energy_spectrum_(const double& kappa, const double& tke, const double& ke, const double& keta);
 };
 
 #endif /* Champ_front_synt_included */
