@@ -74,7 +74,7 @@ Read pb
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
-        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        solveur_pression petsc cholesky { } # cli_quiet { -pc_type hypre -pc_hypre_type boomeramg } #
         convection { amont }
         diffusion  { negligeable }
         initial_conditions
