@@ -16,6 +16,16 @@
 #include <SolvElem_Gmres.h>
 
 Implemente_instanciable(SolvElem_Gmres,"Gmres",SolvElem_base);
+// XD gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
+// XD attr impr rien impr 1 Keyword which may be used to print the convergence.
+// XD attr quiet rien quiet 1 To disable printing of information
+// XD attr seuil floattant seuil 1 Convergence value.
+// XD attr diag rien diag 1 Keyword to use diagonal preconditionner (in place of pilut that is not parallel).
+// XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
+// XD attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
+// XD attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+// XD attr dim_espace_krilov entier dim_espace_krilov 1 not_set
+
 
 // printOn
 

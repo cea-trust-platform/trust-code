@@ -17,6 +17,9 @@
 #include <Scatter.h>
 
 Implemente_instanciable(Reorienter_triangles,"Reorienter_triangles",Interprete_geometrique_base);
+// XD reorienter_triangles interprete reorienter_triangles -1 not_set
+// XD attr domain_name ref_domaine domain_name 0 Name of domain.
+
 
 Sortie& Reorienter_triangles::printOn(Sortie& os) const
 {

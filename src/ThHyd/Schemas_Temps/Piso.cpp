@@ -30,8 +30,14 @@
 #include <Piso.h>
 
 Implemente_instanciable_sans_constructeur(Piso,"Piso",Simpler);
+// XD piso simpler piso -1 Piso (Pressure Implicit with Split Operator) - method to solve N_S.
+// XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
+// XD attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
+
 
 Implemente_instanciable_sans_constructeur(Implicite,"Implicite",Piso);
+// XD implicite piso implicite -1 similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.
+
 
 Piso::Piso()
 {

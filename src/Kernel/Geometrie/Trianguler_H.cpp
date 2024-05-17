@@ -17,6 +17,8 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Trianguler_H,"Trianguler_H",Triangulation_base);
+// XD trianguler_h triangulate trianguler_h -1 To achieve a triangular mesh from a mesh comprising rectangles (4 triangles per rectangle). Should be used in VEF discretization. Principle: NL2 \includepng{{triangulerh.pdf}}{{10}}
+
 
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)

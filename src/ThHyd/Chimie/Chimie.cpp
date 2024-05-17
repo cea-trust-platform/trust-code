@@ -25,6 +25,12 @@
 #include <Constituant.h>
 
 Implemente_instanciable(Chimie,"Chimie",Objet_U);
+// XD chimie objet_u chimie 1 Keyword to describe the chmical reactions
+// XD attr reactions reactions reactions 0 list of reactions
+// XD attr modele_micro_melange entier modele_micro_melange 1 modele_micro_melange (0 by default)
+// XD attr constante_modele_micro_melange floattant constante_modele_micro_melange 1 constante of modele (1 by default)
+// XD attr espece_en_competition_micro_melange chaine espece_en_competition_micro_melange 1 espece in competition in reactions
+
 
 Sortie& Chimie::printOn(Sortie& os) const
 {

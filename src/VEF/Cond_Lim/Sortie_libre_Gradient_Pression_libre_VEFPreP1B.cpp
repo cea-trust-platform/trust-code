@@ -21,6 +21,8 @@
 #include <Milieu_base.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEFPreP1B, "Frontiere_ouverte_Gradient_Pression_libre_VEFPreP1B", Neumann_sortie_libre);
+// XD frontiere_ouverte_gradient_pression_libre_vefprep1b neumann frontiere_ouverte_gradient_pression_libre_vefprep1b -1 Class for outlet boundary condition in VEF P1B/P1NC like Orlansky.
+
 
 Sortie& Sortie_libre_Gradient_Pression_libre_VEFPreP1B::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

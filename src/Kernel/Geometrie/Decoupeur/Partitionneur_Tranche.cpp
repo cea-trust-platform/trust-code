@@ -20,6 +20,9 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Tranche,"Partitionneur_Tranche",Partitionneur_base);
+// XD partitionneur_tranche partitionneur_deriv tranche -1 This algorithm will create a geometrical partitionning by slicing the mesh in the two or three axis directions, based on the geometric center of each mesh element. nz must be given if dimension=3. Each slice contains the same number of elements (slices don\'t have the same geometrical width, and for VDF meshes, slice boundaries are generally not flat except if the number of mesh elements in each direction is an exact multiple of the number of slices). First, nx slices in the X direction are created, then each slice is split in ny slices in the Y direction, and finally, each part is split in nz slices in the Z direction. The resulting number of parts is nx*ny*nz. If one particular direction has been declared periodic, the default slicing (0, 1, 2, ..., n-1)is replaced by (0, 1, 2, ... n-1, 0), each of the two \'0\' slices having twice less elements than the other slices.
+// XD attr tranches listentierf tranches 1 Partitioned by nx in the X direction, ny in the Y direction, nz in the Z direction. Works only for structured meshes. No warranty for unstructured meshes.
+
 
 Partitionneur_Tranche::Partitionneur_Tranche()
 {

@@ -18,6 +18,10 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Fichier_Decoupage,"Partitionneur_Fichier_Decoupage",Partitionneur_base);
+// XD partitionneur_fichier_decoupage partitionneur_deriv fichier_decoupage -1 This algorithm reads an array of integer values on the disc, one value for each mesh element. Each value is interpreted as the target part number n>=0 for this element. The number of parts created is the highest value in the array plus one. Empty parts can be created if some values are not present in the array. NL2 The file format is ASCII, and contains space, tab or carriage-return separated integer values. The first value is the number nb_elem of elements in the domain, followed by nb_elem integer values (positive or zero). NL2 This algorithm has been designed to work together with the \'ecrire_decoupage\' option. You can generate a partition with any other algorithm, write it to disc, modify it, and read it again to generate the .Zone files. NL2 Contrary to other partitioning algorithms, no correction is applied by default to the partition (eg. element 0 on processor 0 and corrections for periodic boundaries). If \'corriger_partition\' is specified, these corrections are applied.
+// XD attr fichier chaine fichier 0 FILENAME
+// XD attr corriger_partition rien corriger_partition 1 not_set
+
 
 Partitionneur_Fichier_Decoupage::Partitionneur_Fichier_Decoupage()
 {

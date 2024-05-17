@@ -22,6 +22,8 @@
 #include <Debog.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_impose_VEFPreP1B, "Frontiere_ouverte_Gradient_Pression_impose_VEFPreP1B", Sortie_libre_Gradient_Pression_impose_VEF);
+// XD frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
+
 
 Sortie& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

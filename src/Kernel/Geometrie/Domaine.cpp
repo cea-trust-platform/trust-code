@@ -47,6 +47,8 @@ using MEDCoupling::DataArrayDouble;
 #endif
 
 Implemente_instanciable_sans_constructeur(Domaine,"Domaine",Objet_U);
+// XD domaine objet_u domaine -1 Keyword to create a domain.
+
 
 Domaine::Domaine()
 {

@@ -17,6 +17,8 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Trianguler_fin, "Trianguler_fin", Triangulation_base);
+// XD trianguler_fin triangulate trianguler_fin -1 Trianguler_fin is the recommended option to triangulate rectangles. NL2 As an extension (subdivision) of Triangulate_h option, this one cut each initial rectangle in 8 triangles (against 4, previously). This cutting ensures : NL2 - a correct cutting in the corners (in respect to pressure discretization PreP1B). NL2 - a better isotropy of elements than with Trianguler_h option. NL2 - a better alignment of summits (this could have a benefit effect on calculation near walls since first elements in contact with it are all contained in the same constant thickness, and, by this way, a 2D cartesian grid based on summits can be engendered and used to realize statistical analysis in plane channel configuration for instance). Principle: NL2 \includepng{{triangulerfin.pdf}}{{10}}
+
 
 Sortie& Trianguler_fin::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

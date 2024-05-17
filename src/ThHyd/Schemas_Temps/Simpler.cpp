@@ -26,6 +26,17 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(Simpler,"Simpler",Simple);
+// XD simpler solveur_implicite_base simpler 1 Simpler method for incompressible systems.
+// XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 0 Keyword to set the value of the convergence criteria for the resolution of the implicit system build to solve either the Navier_Stokes equation (only for Simple and Simpler algorithms) or a scalar equation. It is adviced to use the default value (1e6) to solve the implicit system only once by time step. This value must be decreased when a coupling between problems is considered.
+// XD attr seuil_convergence_solveur floattant seuil_convergence_solveur 1 value of the convergence criteria for the resolution of the implicit system build by solving several times per time step the Navier_Stokes equation and the scalar equations if any. This value MUST be used when a coupling between problems is considered (should be set to a value typically of 0.1 or 0.01).
+// XD attr seuil_generation_solveur floattant seuil_generation_solveur 1 Option to create a GMRES solver and use vrel as the convergence threshold (implicit linear system Ax=B will be solved if residual error ||Ax-B|| is lesser than vrel).
+// XD attr seuil_verification_solveur floattant seuil_verification_solveur 1 Option to check if residual error ||Ax-B|| is lesser than vrel after the implicit linear system Ax=B has been solved.
+// XD attr seuil_test_preliminaire_solveur floattant seuil_test_preliminaire_solveur 1 Option to decide if the implicit linear system Ax=B should be solved by checking if the residual error ||Ax-B|| is bigger than vrel.
+// XD attr solveur solveur_sys_base solveur 1 Method (different from the default one, Gmres with diagonal preconditioning) to solve the linear system.
+// XD attr no_qdm rien no_qdm 1 Keyword to not solve qdm equation (and turbulence models of these equation).
+// XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
+// XD attr controle_residu rien controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
+
 
 Sortie& Simpler::printOn(Sortie& os ) const
 {

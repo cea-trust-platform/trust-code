@@ -29,6 +29,12 @@
 #include <ArrOfBit.h>
 
 Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_global_impose);
+// XD paroi_echange_contact_vdf condlim_base paroi_echange_contact_vdf -1 Boundary condition type to model the heat flux between two problems. Important: the name of the boundaries in the two problems should be the same.
+// XD attr autrepb ref_Pb_base autrepb 0 Name of other problem.
+// XD attr nameb chaine nameb 0 Name of bord.
+// XD attr temp chaine temp 0 Name of field.
+// XD attr h floattant h 0 Value assigned to a coefficient (expressed in W.K-1m-2) that characterises the contact between the two mediums. In order to model perfect contact, h must be taken to be infinite. This value must obviously be the same in both the two problems blocks. NL2 The surface thermal flux exchanged between the two mediums is represented by : NL2 fi = h (T1-T2) where 1/h = d1/lambda1 + 1/val_h_contact + d2/lambda2 NL2 where di : distance between the node where Ti and the wall is found.
+
 
 int meme_point2(const DoubleVect& a,const DoubleVect& b);
 

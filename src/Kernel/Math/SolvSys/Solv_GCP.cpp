@@ -24,6 +24,16 @@
 #include <TRUSTTab_parts.h>
 
 Implemente_instanciable_sans_constructeur(Solv_GCP,"Solv_GCP",solv_iteratif);
+// XD solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
+// XD attr precond precond_base precond 1 Keyword to define system preconditioning in order to accelerate resolution by the conjugated gradient. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
+// XD attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method.
+// XD attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
+// XD attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+// XD attr quiet rien quiet 1 To not displaying any outputs of the solver.
+// XD attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+// XD attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
+// XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
+
 //
 // printOn et readOn
 

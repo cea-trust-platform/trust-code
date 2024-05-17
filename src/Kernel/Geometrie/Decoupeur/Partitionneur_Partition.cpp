@@ -19,6 +19,9 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Partition,"Partitionneur_Partition",Partitionneur_base);
+// XD partitionneur_partition partitionneur_deriv partition -1 This algorithm re-use the partition of the domain named DOMAINE_NAME. It is useful to partition for example a post processing domain. The partition should match with the calculation domain.
+// XD attr domaine ref_domaine domaine 0 domain name
+
 
 Partitionneur_Partition::Partitionneur_Partition()
 {

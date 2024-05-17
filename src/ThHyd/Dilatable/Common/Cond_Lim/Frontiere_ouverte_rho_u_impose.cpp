@@ -19,6 +19,8 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Frontiere_ouverte_rho_u_impose, "Frontiere_ouverte_rho_u_impose", Entree_fluide_vitesse_imposee_libre);
+// XD frontiere_ouverte_rho_u_impose frontiere_ouverte_vitesse_imposee_sortie frontiere_ouverte_rho_u_impose -1 This keyword is used to designate a condition of imposed mass rate at an open boundary called bord (edge). The imposed mass rate field at the inlet is vectorial and the imposed velocity values are expressed in kg.s-1. This boundary condition can be used only with the Quasi compressible model.
+
 
 Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

@@ -32,6 +32,9 @@ extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Temperature,"Convection_Diffusion_Temperature",Convection_Diffusion_std);
+// XD convection_diffusion_temperature eqn_base convection_diffusion_temperature -1 Energy equation (temperature diffusion convection).
+// XD attr penalisation_l2_ftd penalisation_l2_ftd penalisation_l2_ftd 1 to activate or not (the default is Direct Forcing method) the Penalized Direct Forcing method to impose the specified temperature on the solid-fluid interface.
+
 
 Convection_Diffusion_Temperature::Convection_Diffusion_Temperature()
 {

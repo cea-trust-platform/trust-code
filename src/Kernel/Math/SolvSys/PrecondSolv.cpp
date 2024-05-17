@@ -17,6 +17,9 @@
 #include <Check_espace_virtuel.h>
 
 Implemente_instanciable(PrecondSolv,"PrecondSolv",Precond_base);
+// XD precondsolv precond_base precondsolv 0 not_set
+// XD attr solveur solveur_sys_base solveur 0 Solver type.
+
 //
 // printOn et readOn
 

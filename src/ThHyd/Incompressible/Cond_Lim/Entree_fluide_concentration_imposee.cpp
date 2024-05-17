@@ -16,6 +16,9 @@
 #include <Entree_fluide_concentration_imposee.h>
 
 Implemente_instanciable(Entree_fluide_concentration_imposee, "Frontiere_ouverte_concentration_imposee", Dirichlet_entree_fluide);
+// XD frontiere_ouverte_concentration_imposee dirichlet frontiere_ouverte_concentration_imposee -1 Imposed concentration condition at an open boundary called bord (edge) (situation corresponding to a fluid inlet). This condition must be associated with an imposed inlet velocity condition.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 Sortie& Entree_fluide_concentration_imposee::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 Entree& Entree_fluide_concentration_imposee::readOn(Entree& s)
 {

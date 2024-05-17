@@ -18,6 +18,12 @@
 #include <Frontiere_dis_base.h>
 
 Implemente_instanciable(Champ_front_fonc_pois_tube,"Champ_front_fonc_pois_tube",Champ_front_fonc);
+// XD champ_front_fonc_pois_tube front_field_base champ_front_fonc_pois_tube 0 Boundary field champ_front_fonc_pois_tube.
+// XD attr r_tube floattant r_tube 0 not_set
+// XD attr umoy list umoy 0 not_set
+// XD attr r_loc listf r_loc 0 not_set
+// XD attr r_loc_mult listentierf r_loc_mult 0 not_set
+
 
 Sortie& Champ_front_fonc_pois_tube::printOn(Sortie& s ) const
 {

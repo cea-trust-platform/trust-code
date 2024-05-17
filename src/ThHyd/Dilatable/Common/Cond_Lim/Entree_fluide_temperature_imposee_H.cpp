@@ -18,6 +18,8 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Entree_fluide_temperature_imposee_H, "Entree_temperature_imposee_H", Entree_fluide_temperature_imposee);
+// XD entree_temperature_imposee_h frontiere_ouverte_temperature_imposee entree_temperature_imposee_h -1 Particular case of class frontiere_ouverte_temperature_imposee for enthalpy equation.
+
 
 Sortie& Entree_fluide_temperature_imposee_H::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

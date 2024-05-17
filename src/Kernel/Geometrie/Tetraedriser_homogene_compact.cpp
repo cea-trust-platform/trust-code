@@ -16,6 +16,8 @@
 #include <Tetraedriser_homogene_compact.h>
 
 Implemente_instanciable(Tetraedriser_homogene_compact, "Tetraedriser_homogene_compact", Triangulation_base);
+// XD tetraedriser_homogene_compact tetraedriser tetraedriser_homogene_compact -1 This new discretization generates tetrahedral elements from cartesian or non-cartesian hexahedral elements. The process cut each hexahedral in 6 pyramids, each of them being cut then in 4 tetrahedral. So, in comparison with tetra_homogene, less elements (*24 instead of*40) with more homogeneous volumes are generated. Moreover, this process is done in a faster way. Initial block is divided in 24 tetrahedra: \includepng{{tetraedriserhomogenecompact.jpeg}}{{5}}
+
 
 Sortie& Tetraedriser_homogene_compact::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

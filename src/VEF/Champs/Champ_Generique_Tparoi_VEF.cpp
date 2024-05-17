@@ -28,6 +28,8 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Generique_Tparoi_VEF,"Tparoi_VEF",Champ_Gen_de_Champs_Gen);
+// XD tparoi_vef champ_post_de_champs_post tparoi_vef -1 This keyword is used to post process (only for VEF discretization) the temperature field with a slight difference on boundaries with Neumann condition where law of the wall is applied on the temperature field. nom_pb is the problem name and field_name is the selected field name. A keyword (temperature_physique) is available to post process this field without using Definition_champs.
+
 Add_synonym(Champ_Generique_Tparoi_VEF,"Champ_Post_Tparoi_VEF");
 
 Sortie& Champ_Generique_Tparoi_VEF::printOn(Sortie& s ) const

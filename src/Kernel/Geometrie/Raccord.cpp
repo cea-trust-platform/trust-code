@@ -16,6 +16,12 @@
 #include <Raccord.h>
 
 Implemente_instanciable(Raccord, "Raccord", DERIV(Raccord_base));
+// XD raccord bord_base raccord 0 The block side is in contact with the block of another domain (case of two coupled problems).
+// XD attr type1 chaine(into=["local","distant"]) type1 0 Contact type.
+// XD attr type2 chaine(into=["homogene"]) type2 0 Contact type.
+// XD attr nom chaine nom 0 Name of block side.
+// XD attr defbord defbord defbord 0 Definition of block side.
+
 
 Sortie& Raccord::printOn(Sortie& s) const { return DERIV(Raccord_base)::printOn(s); }
 

@@ -22,6 +22,11 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Extruder_en3,"Extruder_en3",Interprete_geometrique_base);
+// XD extruder_en3 extruder extruder_en3 1 Class to create a 3D tetrahedral/hexahedral mesh (a prism is cut in 3) from a 2D triangular/quadrangular mesh. The names of the boundaries (by default, devant (front) and derriere (back)) may be edited by the keyword nom_cl_devant and nom_cl_derriere. If NULL is written for nom_cl, then no boundary condition is generated at this place. NL2 Recommendation : to ensure conformity between meshes (in case of fluid/solid coupling) it is recommended to extrude all the domains at the same time.
+// XD attr domaine listchaine domain_name 0 List of the domains
+// XD attr nom_cl_devant chaine nom_cl_devant 1 New name of the first boundary.
+// XD attr nom_cl_derriere chaine nom_cl_derriere 1 New name of the second boundary.
+
 
 Extruder_en3::Extruder_en3():
   NZ_(-1),

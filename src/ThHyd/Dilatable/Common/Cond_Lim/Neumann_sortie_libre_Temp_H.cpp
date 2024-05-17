@@ -18,6 +18,9 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Neumann_sortie_libre_Temp_H, "Sortie_libre_temperature_imposee_H", Neumann_sortie_libre);
+// XD sortie_libre_temperature_imposee_h neumann sortie_libre_temperature_imposee_h 0 Open boundary for heat equation with enthalpy as unknown.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 
 Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

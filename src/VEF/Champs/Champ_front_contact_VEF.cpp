@@ -39,6 +39,12 @@
 // En particulier les gradients...
 
 Implemente_instanciable(Champ_front_contact_VEF,"Champ_front_contact_VEF",Ch_front_var_instationnaire_dep);
+// XD champ_front_contact_vef front_field_base champ_front_contact_vef 0 This field is used on a boundary between a solid and fluid domain to exchange a calculated temperature at the contact face of the two domains according to the flux of the two problems.
+// XD attr local_pb ref_Pb_base local_pb 0 Name of the problem.
+// XD attr local_boundary chaine local_boundary 0 Name of the boundary.
+// XD attr remote_pb ref_Pb_base remote_pb 0 Name of the second problem.
+// XD attr remote_boundary chaine remote_boundary 0 Name of the boundary in the second problem.
+
 
 
 Sortie& Champ_front_contact_VEF::printOn(Sortie& os) const

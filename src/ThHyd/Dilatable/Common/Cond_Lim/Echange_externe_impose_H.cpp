@@ -18,6 +18,8 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Echange_externe_impose_H, "Paroi_echange_externe_impose_H", Echange_externe_impose);
+// XD paroi_echange_externe_impose_h paroi_echange_externe_impose paroi_echange_externe_impose_h -1 Particular case of class paroi_echange_externe_impose for enthalpy equation.
+
 
 Sortie& Echange_externe_impose_H::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

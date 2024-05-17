@@ -30,6 +30,9 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Champ_front_recyclage,"Champ_front_recyclage",Ch_front_var_instationnaire_dep);
+// XD champ_front_recyclage front_field_base champ_front_recyclage 0 \input{{champfrontrecyclage}}
+// XD attr bloc chaine bloc 0 not_set
+
 
 Champ_front_recyclage::Champ_front_recyclage()
 {

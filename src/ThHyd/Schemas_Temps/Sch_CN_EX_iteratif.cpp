@@ -20,6 +20,9 @@
 #include <SFichier.h>
 
 Implemente_instanciable(Sch_CN_EX_iteratif,"Sch_CN_EX_iteratif",Sch_CN_iteratif);
+// XD Sch_CN_EX_iteratif Sch_CN_iteratif Sch_CN_EX_iteratif -1 This keyword also describes a Crank-Nicholson method of second order accuracy but here, for scalars, because of instablities encountered when dt>dt_CFL, the Crank Nicholson scheme is not applied to scalar quantities. Scalars are treated according to Euler-Explicite scheme at the end of the CN treatment for velocity flow fields (by doing p Euler explicite under-iterations at dt<=dt_CFL). Parameters are the sames (but default values may change) compare to the Sch_CN_iterative scheme plus a relaxation keyword: niter_min (2 by default), niter_max (6 by default), niter_avg (3 by default), facsec_max (20 by default), seuil (0.05 by default)
+// XD attr omega floattant omega 1 relaxation factor (0.1 by default)
+
 
 
 Sortie& Sch_CN_EX_iteratif::printOn(Sortie& s) const

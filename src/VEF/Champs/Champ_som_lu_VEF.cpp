@@ -20,6 +20,12 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Champ_som_lu_VEF,"Champ_som_lu_VEF",Champ_som_lu);
+// XD champ_som_lu_vef champ_don_base champ_som_lu_vef 0 Keyword to read in a file values located at the nodes of a mesh in VEF discretization.
+// XD attr domain_name ref_domaine domain_name 0 Name of the domain.
+// XD attr dim entier dim 0 Value of the dimension of the field.
+// XD attr tolerance floattant tolerance 0 Value of the tolerance to check the coordinates of the nodes.
+// XD attr file chaine file 0 Name of the file. NL2 This file has the following format: NL2 Xi Yi Zi -> Coordinates of the node NL2 Ui Vi Wi -> Value of the field on this node NL2 Xi+1 Yi+1 Zi+1 -> Next point NL2 Ui+1 Vi+1 Zi+1 -> Next value ...
+
 
 Sortie& Champ_som_lu_VEF::printOn(Sortie& os) const { return Champ_som_lu::printOn(os); }
 Entree& Champ_som_lu_VEF::readOn(Entree& is) { return Champ_som_lu::readOn(is); }

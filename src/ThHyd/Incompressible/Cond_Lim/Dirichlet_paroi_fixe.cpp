@@ -16,6 +16,8 @@
 #include <Dirichlet_paroi_fixe.h>
 
 Implemente_instanciable(Dirichlet_paroi_fixe, "Paroi_fixe", Dirichlet_homogene);
+// XD paroi_fixe condlim_base paroi_fixe -1 Keyword to designate a situation of adherence to the wall called bord (edge) (normal and tangential velocity at the edge is zero).
+
 
 Sortie& Dirichlet_paroi_fixe::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

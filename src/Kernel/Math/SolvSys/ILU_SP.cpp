@@ -20,6 +20,10 @@
 #include <Param.h>
 
 Implemente_instanciable(ILU_SP, "ILU", Precond_base);
+// XD ilu precond_base ilu -1 This preconditionner can be only used with the generic GEN solver.
+// XD attr type entier type 1 values can be 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2)
+// XD attr filling entier filling 1 default value = 1.
+
 //
 // printOn et readOn
 

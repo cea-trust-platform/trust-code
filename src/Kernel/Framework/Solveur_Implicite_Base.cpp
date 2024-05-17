@@ -17,6 +17,8 @@
 #include <Solveur_Implicite_Base.h>
 
 Implemente_base(Solveur_Implicite_Base,"Solveur_Implicite_Base",Objet_U);
+// XD solveur_implicite_base objet_u solveur_implicite_base -1 Class for solver in the situation where the time scheme is the implicit scheme. Solver allows equation diffusion and convection operators to be set as implicit terms.
+
 
 Sortie& Solveur_Implicite_Base::printOn(Sortie& os ) const
 {

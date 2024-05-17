@@ -89,11 +89,29 @@ int Cond_lim_utilisateur_base::is_pb_rayo()
  * Classes filles
  */
 Implemente_instanciable(cl_timp,"Paroi_Temperature_imposee",Cond_lim_utilisateur_base);
+// XD paroi_temperature_imposee dirichlet paroi_temperature_imposee 0 Imposed temperature condition at the wall called bord (edge).
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 Implemente_instanciable(paroi_adiabatique,"paroi_adiabatique",Cond_lim_utilisateur_base);
+// XD paroi_adiabatique condlim_base paroi_adiabatique -1 Normal zero flux condition at the wall called bord (edge).
+
 Implemente_instanciable(paroi_flux_impose,"paroi_flux_impose",Cond_lim_utilisateur_base);
+// XD paroi_flux_impose condlim_base paroi_flux_impose 0 Normal flux condition at the wall called bord (edge). The surface area of the flux (W.m-1 in 2D or W.m-2 in 3D) is imposed at the boundary according to the following convention: a positive flux is a flux that enters into the domain according to convention.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 Implemente_instanciable(paroi_contact,"paroi_contact",Cond_lim_utilisateur_base);
+// XD paroi_contact condlim_base paroi_contact -1 Thermal condition between two domains. Important: the name of the boundaries in the two domains should be the same. (Warning: there is also an old limitation not yet fixed on the sequential algorithm in VDF to detect the matching faces on the two boundaries: faces should be ordered in the same way). The kind of condition depends on the discretization. In VDF, it is a heat exchange condition, and in VEF, a temperature condition. NL2 Such a coupling requires coincident meshes for the moment. In case of non-coincident meshes, run is stopped and two external files are automatically generated in VEF (connectivity_failed_boundary_name and connectivity_failed_pb_name.med). In 2D, the keyword Decouper_bord_coincident associated to the connectivity_failed_boundary_name file allows to generate a new coincident mesh. NL2 In 3D, for a first preliminary cut domain with HOMARD (fluid for instance), the second problem associated to pb_name (solide in a fluid/solid coupling problem) has to be submitted to HOMARD cutting procedure with connectivity_failed_pb_name.med. NL2 Such a procedure works as while the primary refined mesh (fluid in our example) impacts the fluid/solid interface with a compact shape as described below (values 2 or 4 indicates the number of division from primary faces obtained in fluid domain at the interface after HOMARD cutting): NL2 2-2-2-2-2-2 NL2 2-4-4-4-4-4-2 \\; 2-2-2 NL2 2-4-4-4-4-2 \\; 2-4-2 NL2 2-2-2-2-2 \\; 2-2 NL2 OK NL2 NL2 2-2 \\; \\; 2-2-2 NL2 2-4-2 \\; 2-2 NL2 2-2 \\; 2-2 NL2 NOT OK
+// XD attr autrepb ref_Pb_base autrepb 0 Name of other problem.
+// XD attr nameb chaine nameb 0 boundary name of the remote problem which should be the same than the local name
+
 Implemente_instanciable(paroi_contact_rayo,"paroi_contact_rayo",Cond_lim_utilisateur_base);
 Implemente_instanciable(paroi_contact_fictif,"paroi_contact_fictif",Cond_lim_utilisateur_base);
+// XD paroi_contact_fictif condlim_base paroi_contact_fictif -1 This keyword is derivated from paroi_contact and is especially dedicated to compute coupled fluid/solid/fluid problem in case of thin material. Thanks to this option, solid is considered as a fictitious media (no mesh, no domain associated), and coupling is performed by considering instantaneous thermal equilibrium in it (for the moment).
+// XD attr autrepb ref_Pb_base autrepb 0 Name of other problem.
+// XD attr nameb chaine nameb 0 Name of bord.
+// XD attr conduct_fictif floattant conduct_fictif 0 thermal conductivity
+// XD attr ep_fictive floattant ep_fictive 0 thickness of the fictitious media
+
 Implemente_instanciable(paroi_contact_fictif_rayo,"paroi_contact_fictif_rayo",Cond_lim_utilisateur_base);
 
 Sortie& cl_timp::printOn(Sortie& s ) const { return s << que_suis_je() ; }

@@ -17,6 +17,8 @@
 #include <Param.h>
 
 Implemente_base_sans_constructeur(Postraitement_base,"Postraitement_base",Objet_U);
+// XD postraitement_base objet_lecture postraitement_base -1 not_set
+
 
 const char * const Postraitement_base::demande_description = "DESCRIPTION";
 

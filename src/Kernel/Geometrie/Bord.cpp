@@ -16,6 +16,10 @@
 #include <Bord.h>
 
 Implemente_instanciable(Bord,"Bord",Frontiere);
+// XD bord bord_base bord 0 The block side is not in contact with another block and boundary conditions are applied to it.
+// XD attr nom chaine nom 0 Name of block side.
+// XD attr defbord defbord defbord 0 Definition of block side.
+
 
 
 /*! @brief Simple appel a: Frontiere::printOn(Sortie&)

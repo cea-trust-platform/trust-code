@@ -16,6 +16,12 @@
 #include <Init_par_partie.h>
 
 Implemente_instanciable_sans_constructeur(Init_par_partie,"Init_par_partie",TRUSTChamp_Divers_generique<Champ_Divers_Type::INUTILE>);
+// XD init_par_partie champ_don_base init_par_partie 0 ne marche que pour n_comp=1
+// XD attr n_comp entier(into=[1]) n_comp 0 not_set
+// XD attr val1 floattant val1 0 not_set
+// XD attr val2 floattant val2 0 not_set
+// XD attr val3 floattant val3 0 not_set
+
 
 Sortie& Init_par_partie::printOn(Sortie& os) const { return os; }
 

@@ -17,6 +17,8 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Point,"Point",Elem_geom_base);
+// XD point points point 0 Point as class-daughter of Points.
+
 
 
 

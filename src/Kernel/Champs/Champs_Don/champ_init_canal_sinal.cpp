@@ -17,6 +17,10 @@
 #include <Motcle.h>
 
 Implemente_instanciable(champ_init_canal_sinal,"champ_init_canal_sinal",TRUSTChamp_Divers_generique<Champ_Divers_Type::CANAL>);
+// XD champ_init_canal_sinal champ_don_base champ_init_canal_sinal 0 For a parabolic profile on U velocity with an unpredictable disturbance on V and W and a sinusoidal disturbance on V velocity.
+// XD attr dim entier dim 0 Number of field components.
+// XD attr bloc bloc_lec_champ_init_canal_sinal bloc 0 Parameters for the class champ_init_canal_sinal.
+
 
 Sortie& champ_init_canal_sinal::printOn(Sortie& os) const { return os; }
 

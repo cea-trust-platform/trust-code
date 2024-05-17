@@ -27,6 +27,13 @@ REF(Debog_Pb) Debog_Pb::instance_debog_;
 
 Implemente_instanciable(Debog_Pb,"Debog_pb",Objet_U);
 Implemente_instanciable(Debog_Pb_Wrapper,"Debog",Interprete);
+// XD debog interprete debog 0 Class to debug some differences between two TRUST versions on a same data file. NL2 If you want to compare the results of the same code in sequential and parallel calculation, first run (mode=0) in sequential mode (the files fichier1 and fichier2 will be written first) then the second run in parallel calculation (mode=1). NL2 During the first run (mode=0), it prints into the file DEBOG, values at different points of the code thanks to the C++ instruction call. see for example in Kernel/Framework/Resoudre.cpp file the instruction: Debog::verifier(msg,value); Where msg is a string and value may be a double, an integer or an array. NL2 During the second run (mode=1), it prints into a file Err_Debog.dbg the same messages than in the DEBOG file and checks if the differences between results from both codes are less than a given value (error). If not, it prints Ok else show the differences and the lines where it occured.
+// XD attr pb ref_pb_gen_base pb 0 Name of the problem to debug.
+// XD attr fichier1 chaine file1 0 Name of the file where domain will be written in sequential calculation.
+// XD attr fichier2 chaine file2 0 Name of the file where faces will be written in sequential calculation.
+// XD attr seuil floattant seuil 0 Minimal value (by default 1.e-20) for the differences between the two codes.
+// XD attr mode entier mode 0 By default -1 (nothing is written in the different files), you will set 0 for the sequential run, and 1 for the parallel run.
+
 
 Sortie& Debog_Pb::printOn(Sortie& os) const
 {

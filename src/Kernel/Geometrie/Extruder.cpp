@@ -22,6 +22,11 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Extruder, "Extruder", Interprete_geometrique_base);
+// XD extruder interprete extruder 1 Class to create a 3D tetrahedral/hexahedral mesh (a prism is cut in 14) from a 2D triangular/quadrangular mesh.
+// XD attr domaine ref_domaine domain_name 0 Name of the domain.
+// XD attr direction troisf direction 0 Direction of the extrude operation.
+// XD attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
+
 
 Extruder::Extruder() { direction.resize(3, RESIZE_OPTIONS::NOCOPY_NOINIT); }
 

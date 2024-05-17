@@ -16,6 +16,8 @@
 #include <Field_base.h>
 
 Implemente_base_sans_constructeur(Field_base,"Field_base",Objet_U);
+// XD field_base objet_u champ_base -1 Basic class of fields.
+
 
 Field_base::Field_base() : nb_compo_(0), nature_(scalaire) { }
 

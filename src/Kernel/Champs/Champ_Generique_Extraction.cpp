@@ -30,6 +30,11 @@
 #include <Champ_Generique_Interpolation.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Extraction,"Extraction",Champ_Gen_de_Champs_Gen);
+// XD extraction champ_post_de_champs_post extraction -1 To create a surface field (values at the boundary) of a volume field
+// XD attr domaine ref_domaine domaine 0 name of the volume field
+// XD attr nom_frontiere chaine nom_frontiere 0 boundary name where the values of the volume field will be picked
+// XD attr methode chaine(into=["trace","champ_frontiere"]) methode 1 name of the extraction method (trace by_default or champ_frontiere)
+
 Add_synonym(Champ_Generique_Extraction,"Champ_Post_Extraction");
 
 /*! @brief voir reset()

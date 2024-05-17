@@ -30,6 +30,8 @@
 #include <grad_U_Champ_Face_PolyMAC.h>
 
 Implemente_instanciable(PolyMAC_discretisation, "PolyMAC", Discret_Thyd);
+// XD polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
+
 
 Entree& PolyMAC_discretisation::readOn(Entree& s) { return s; }
 

@@ -35,6 +35,9 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable_sans_constructeur(Simple,"Simple",Simpler_Base);
+// XD simple piso simple -1 SIMPLE type algorithm
+// XD attr relax_pression floattant relax_pression 1 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
+
 
 Simple::Simple()
 {

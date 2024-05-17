@@ -23,6 +23,9 @@
 #include <SSOR.h>
 
 Implemente_instanciable_sans_constructeur(SSOR,"SSOR",Precond_base);
+// XD ssor precond_base ssor 1 Symmetric successive over-relaxation algorithm.
+// XD attr omega floattant omega 1 Over-relaxation facteur (between 1 and 2, default value 1.6).
+
 
 SSOR::SSOR() : omega_(1.6), algo_fortran_(-1), avec_assert_(-1), algo_items_communs_(-1), line_size_(0) { }
 

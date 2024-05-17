@@ -18,6 +18,8 @@
 #include <Sondes.h>
 
 Implemente_instanciable(Sondes, "Sondes|Probes", LIST(DERIV(Sonde)));
+// XD sondes listobj nul 1 sonde 0 List of probes.
+
 
 Sortie& Sondes::printOn(Sortie& s ) const { return s ; }
 

@@ -18,6 +18,8 @@
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Schema_Adams_Bashforth_order_2,"Schema_Adams_Bashforth_order_2",Schema_Adams_Bashforth_base);
+// XD schema_adams_bashforth_order_2 schema_temps_base schema_adams_bashforth_order_2 -1 not_set
+
 
 
 /*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.

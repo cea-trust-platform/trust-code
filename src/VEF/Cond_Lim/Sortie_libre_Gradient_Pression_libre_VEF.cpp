@@ -22,6 +22,8 @@
 #include <Domaine_VEF.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEF, "Frontiere_ouverte_Gradient_Pression_libre_VEF", Neumann_sortie_libre);
+// XD frontiere_ouverte_gradient_pression_libre_vef neumann frontiere_ouverte_gradient_pression_libre_vef -1 Class for outlet boundary condition in VEF like Orlansky. There is no reference for pressure for theses boundary conditions so it is better to add pressure condition (with Frontiere_ouverte_pression_imposee) on one or two cells (for symmetry in a channel) of the boundary where Orlansky conditions are imposed.
+
 
 Sortie& Sortie_libre_Gradient_Pression_libre_VEF::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

@@ -23,6 +23,9 @@
 int Nom::nb_noms=0;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Nom,"Nom",Objet_U);
+// XD nom objet_u nom 0 Class to name the TRUST objects.
+// XD attr mot chaine mot 1 Chain of characters.
+
 
 int Nom::check_case_non_sensitive_=1;
 

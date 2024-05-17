@@ -19,6 +19,10 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Neumann_sortie_libre, "Frontiere_ouverte", Neumann_val_ext);
+// XD frontiere_ouverte neumann frontiere_ouverte -1 Boundary outlet condition on the boundary called bord (edge) (diffusion flux zero). This condition must be associated with a boundary outlet hydraulic condition.
+// XD attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext","a_ext","tau_ext","k_ext","omega_ext"]) var_name 0 Field name.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 
 Sortie& Neumann_sortie_libre::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

@@ -20,6 +20,9 @@
 #include <Equation_base.h>
 
 Implemente_instanciable_sans_constructeur(Sortie_libre_pression_imposee, "Frontiere_ouverte_pression_imposee", Neumann_sortie_libre);
+// XD frontiere_ouverte_pression_imposee neumann frontiere_ouverte_pression_imposee -1 Imposed pressure condition at the open boundary called bord (edge). The imposed pressure field is expressed in Pa.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 
 Sortie_libre_pression_imposee::Sortie_libre_pression_imposee() : d_rho(-123.) { }
 

@@ -33,6 +33,8 @@
 #include <Debog.h>
 
 Implemente_instanciable(Solveur_U_P,"Solveur_U_P",Simple);
+// XD solveur_u_p simple solveur_u_p 1 similar to simple.
+
 
 Sortie& Solveur_U_P::printOn(Sortie& os ) const { return Simple::printOn(os); }
 

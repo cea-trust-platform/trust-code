@@ -20,6 +20,8 @@
 #include <Motcle.h>
 
 Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps, "Champ_Uniforme_Morceaux_Tabule_Temps", Champ_Uniforme_Morceaux_inst);
+// XD champ_uniforme_morceaux_tabule_temps champ_uniforme_morceaux champ_uniforme_morceaux_tabule_temps -1 this type of field is constant in space on one or several sub_zones and tabulated as a function of time.
+
 
 Sortie& Champ_Uniforme_Morceaux_Tabule_Temps::printOn(Sortie& os) const { return os; }
 

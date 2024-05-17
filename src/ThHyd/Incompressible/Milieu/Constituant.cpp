@@ -20,6 +20,12 @@
 #include <Param.h>
 
 Implemente_instanciable(Constituant, "Constituant", Milieu_base);
+// XD constituant milieu_base constituant -1 Constituent.
+// XD attr rho field_base rho 1 Density (kg.m-3).
+// XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
+
 
 Sortie& Constituant::printOn(Sortie& os) const { return os; }
 

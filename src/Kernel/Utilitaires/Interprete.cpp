@@ -17,6 +17,8 @@
 #include <Interprete.h>
 
 Implemente_instanciable(Interprete, "Interprete", Objet_U);
+// XD interprete objet_u interprete 0 Basic class for interpreting a data file. Interpretors allow some operations to be carried out on objects.
+
 
 Entree& Interprete::readOn(Entree& is)
 {

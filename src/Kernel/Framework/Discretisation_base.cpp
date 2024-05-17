@@ -25,6 +25,8 @@
 #include <Domaine_VF.h>
 
 Implemente_base(Discretisation_base, "Discretisation_base", Objet_U);
+// XD discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
+
 
 const Motcle Discretisation_base::DEMANDE_DESCRIPTION = Motcle("demande_description");
 const Nom Discretisation_base::NOM_VIDE = Nom("-");

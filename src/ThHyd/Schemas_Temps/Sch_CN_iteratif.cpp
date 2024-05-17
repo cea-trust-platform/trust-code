@@ -23,6 +23,13 @@
 #include <Param.h>
 
 Implemente_instanciable(Sch_CN_iteratif, "Sch_CN_iteratif", Schema_Temps_base);
+// XD Sch_CN_iteratif schema_temps_base Sch_CN_iteratif -1 The Crank-Nicholson method of second order accuracy. A mid-point rule formulation is used (Euler-centered scheme). The basic scheme is: $$u(t+1) = u(t) + du/dt(t+1/2)*dt$$ The estimation of the time derivative du/dt at the level (t+1/2) is obtained either by iterative process. The time derivative du/dt at the level (t+1/2) is calculated iteratively with a simple under-relaxations method. Since the method is implicit, neither the cfl nor the fourier stability criteria must be respected. The time step is calculated in a way that the iterative procedure converges with the less iterations as possible. NL2 Remark : for stationary or RANS calculations, no limitation can be given for time step through high value of facsec_max parameter (for instance : facsec_max 1000). In counterpart, for LES calculations, high values of facsec_max may engender numerical instabilities.
+// XD attr niter_min entier niter_min 1 minimal number of p-iterations to satisfy convergence criteria (2 by default)
+// XD attr niter_max entier niter_max 1 number of maximum p-iterations allowed to satisfy convergence criteria (6 by default)
+// XD attr niter_avg entier niter_avg 1 threshold of p-iterations (3 by default). If the number of p-iterations is greater than niter_avg, facsec is reduced, if lesser than niter_avg, facsec is increased (but limited by the facsec_max value).
+// XD attr facsec_max floattant facsec_max 1 maximum ratio allowed between dynamical time step returned by iterative process and stability time returned by CFL condition (2 by default).
+// XD attr seuil floattant seuil 1 criteria for ending iterative process (Max( || u(p) - u(p-1)||/Max || u(p) ||) < seuil) (0.001  by default)
+
 
 Sortie& Sch_CN_iteratif::printOn(Sortie& s) const { return Schema_Temps_base::printOn(s); }
 

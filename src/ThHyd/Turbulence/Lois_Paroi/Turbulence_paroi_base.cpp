@@ -26,6 +26,8 @@
 #include <Noms.h>
 
 Implemente_base_sans_constructeur(Turbulence_paroi_base, "Turbulence_paroi_base", Objet_U);
+// XD turbulence_paroi_base objet_u turbulence_paroi_base -1 Basic class for wall laws for Navier-Stokes equations.
+
 
 // XD negligeable turbulence_paroi_base negligeable 0 Keyword to suppress the calculation of a law of the wall with a turbulence model. The wall stress is directly calculated with the derivative of the velocity, in the direction perpendicular to the wall (tau_tan /rho= nu dU/dy). NL2 Warning: This keyword is not available for k-epsilon models. In that case you must choose a wall law.
 // XD negligeable_scalaire turbulence_paroi_scalaire_base negligeable_scalaire 0 Keyword to suppress the calculation of a law of the wall with a turbulence model for thermohydraulic problems. The wall stress is directly calculated with the derivative of the velocity, in the direction perpendicular to the wall.

@@ -17,6 +17,9 @@
 #include <algorithm>
 
 Implemente_instanciable(Champ_Fonc_t,"Champ_Fonc_t",Champ_Uniforme_inst);
+// XD champ_fonc_t champ_don_base champ_fonc_t 0 Field that is constant in space and is a function of time.
+// XD attr val listchaine val 0 Values of field components (time dependant functions).
+
 
 /*! @brief NE FAIT RIEN
  *

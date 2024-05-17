@@ -24,6 +24,10 @@
 #include <memory>
 
 Implemente_instanciable(Mailler,"Mailler",Interprete_geometrique_base);
+// XD mailler interprete mailler -1 The Mailler (Mesh) interpretor allows a Domain type object domaine to be meshed with objects objet_1, objet_2, etc...
+// XD attr domaine ref_domaine domaine 0 Name of domain.
+// XD attr bloc list_bloc_mailler bloc 0 Instructions to mesh.
+
 
 Sortie& Mailler::printOn(Sortie& os) const
 {

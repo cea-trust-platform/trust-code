@@ -21,6 +21,8 @@
 #include <Param.h>
 
 Implemente_base(Champ_Generique_base,"Champ_Generique_base",Objet_U);
+// XD champ_generique_base objet_u champ_generique_base 1 not_set
+
 
 Sortie& Champ_Generique_base::printOn(Sortie& os) const
 {

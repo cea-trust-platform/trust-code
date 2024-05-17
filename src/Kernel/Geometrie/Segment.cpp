@@ -17,6 +17,11 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Segment,"Segment",Elem_geom_base);
+// XD segment sonde_base segment 0 Keyword to define the number of probe segment points. The file is arranged in columns.
+// XD attr nbr entier nbr 0 Number of probe points of the segment, evenly distributed.
+// XD attr point_deb un_point point_deb 0 First outer probe segment point.
+// XD attr point_fin un_point point_fin 0 Second outer probe segment point.
+
 
 static int faces_sommets_segment[2][1] =
 { { 0 } ,{ 1 }  };

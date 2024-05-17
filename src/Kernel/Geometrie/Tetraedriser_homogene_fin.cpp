@@ -17,6 +17,8 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Tetraedriser_homogene_fin, "Tetraedriser_homogene_fin", Triangulation_base);
+// XD tetraedriser_homogene_fin tetraedriser tetraedriser_homogene_fin -1 Tetraedriser_homogene_fin is the recommended option to tetrahedralise blocks. As an extension (subdivision) of Tetraedriser_homogene_compact, this last one cut each initial block in 48 tetrahedra (against 24, previously). This cutting ensures : NL2 - a correct cutting in the corners (in respect to pressure discretization PreP1B), NL2 - a better isotropy of elements than with Tetraedriser_homogene_compact, NL2 - a better alignment of summits (this could have a benefit effect on calculation near walls since first elements in contact with it are all contained in the same constant thickness and ii/ by the way, a 3D cartesian grid based on summits can be engendered and used to realise spectral analysis in HIT for instance). Initial block is divided in 48 tetrahedra: \includepng{{tetraedriserhomogenefin.jpeg}}{{5}}
+
 
 Sortie& Tetraedriser_homogene_fin::printOn(Sortie& os) const { return Interprete::printOn(os); }
 

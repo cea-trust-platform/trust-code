@@ -21,6 +21,8 @@
 #include <Debog.h>
 
 Implemente_instanciable(Sortie_libre_Pression_imposee_Orlansky, "Frontiere_ouverte_Pression_imposee_Orlansky", Neumann_sortie_libre);
+// XD frontiere_ouverte_pression_imposee_orlansky neumann frontiere_ouverte_pression_imposee_orlansky -1 This boundary condition may only be used with VDF discretization. There is no reference for pressure for this boundary condition so it is better to add pressure condition (with Frontiere_ouverte_pression_imposee) on one or two cells (for symetry in a channel) of the boundary where Orlansky conditions are imposed.
+
 
 Sortie& Sortie_libre_Pression_imposee_Orlansky::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

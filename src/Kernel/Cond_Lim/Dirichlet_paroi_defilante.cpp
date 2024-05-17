@@ -16,6 +16,9 @@
 #include <Dirichlet_paroi_defilante.h>
 
 Implemente_instanciable(Dirichlet_paroi_defilante, "Paroi_defilante", Dirichlet);
+// XD paroi_defilante dirichlet paroi_defilante -1 Keyword to designate a condition where tangential velocity is imposed on the wall called bord (edge). If the velocity components set by the user is not tangential, projection is used.
+// XD attr ch front_field_base ch 0 Boundary field type.
+
 
 Sortie& Dirichlet_paroi_defilante::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
