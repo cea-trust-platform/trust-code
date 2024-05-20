@@ -327,6 +327,7 @@ bool Probleme_U::run()
         {
           // Keep on the resolution if parametric variation:
           stop = false;
+          setStationary(stop);
           setInputStringValue("SORTIE_ROOT_DIRECTORY", "calcul"+std::to_string(compute));
           resetTime(0.);
         }
