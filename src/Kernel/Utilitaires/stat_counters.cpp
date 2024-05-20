@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -324,8 +324,10 @@ void print_statistics_analyse(const char * message, int mode_append)
   if (Process::je_suis_maitre())
     {
       // Ouverture du fichier principal (pour tous les processeurs)
-      SFichier stat_file(TU,
-                         mode_append ? (ios::out | ios::app) : (ios::out));
+      std::string root=Sortie_Fichier_base::root;
+      Sortie_Fichier_base::root = "";
+      SFichier stat_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
+      Sortie_Fichier_base::root = root;
       stat_file << message << "\n\n";
       stat_file << "Temps total                       "
                 << temps_total.max_time << "\n";
@@ -481,7 +483,10 @@ void print_statistics_analyse(const char * message, int mode_append)
 
       if (Process::je_suis_maitre())
         {
+          std::string root=Sortie_Fichier_base::root;
+          Sortie_Fichier_base::root = "";
           SFichier stat_file(TU, mode_append ? (ios::out | ios::app) : (ios::out));
+          Sortie_Fichier_base::root = root;
           write_stat_file("probleme thermohydraulique  ", pb_fluide, temps_total, stat_file);
           write_stat_file("probleme combustible        ", pb_combustible, temps_total, stat_file);
           stat_file << "\n";

@@ -1081,7 +1081,10 @@ void Statistiques::dump(const char * message, int mode_append)
   {
     Nom CSV(Objet_U::nom_du_cas());
     CSV+="_csv.TU";
+    std::string root=Sortie_Fichier_base::root;
+    Sortie_Fichier_base::root = "";
     EcrFicPartage file(CSV, mode_append ? (ios::out | ios::app) : (ios::out));
+    Sortie_Fichier_base::root = root;
     file << File_header.str();
     file << perfs_globales.str();
     file << perfs.str();
