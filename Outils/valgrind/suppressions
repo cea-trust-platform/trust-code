@@ -6,6 +6,7 @@
 
 ######
 ###### Tous les cas avec Kokkos 3.x ou 4.x
+###### * ajoutees dans le cas ou TRUST est compile en int64
 ######
 {
    Kokkos_leak
@@ -16,14 +17,15 @@
    fun:_ZN6Kokkos6Serial15impl_initializeERKNS_22InitializationSettingsE
    fun:_ZN6Kokkos4Impl16ExecSpaceManager17initialize_spacesERKNS_22InitializationSettingsE
    fun:_ZN6Kokkos10initializeERiPPc
-   fun:_ZN8mon_main13init_parallelEiPPciii
-   fun:_Z10main_TRUSTiPPcRP8mon_maini
+   fun:_ZN8mon_main13init_parallelE*PPc*
+   fun:_Z10main_TRUST*PPcRP8mon_main*
    ...
    fun:main
 }
 
 ######
 ###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair
+###### * ajoutees dans le cas ou TRUST est compile en int64
 ######
 {
    <insert_a_suppression_name_here>
@@ -33,10 +35,10 @@
    ...
    fun:_dlerror_run
    fun:dlsym
-   fun:PetscInitialize_Common.constprop.3
-   fun:PetscInitialize.part.2
-   fun:_ZN8mon_main13init_parallelEiPPciii
-   fun:_Z10main_TRUSTiPPcRP8mon_maini
+   fun:PetscInitialize_Common*
+   fun:PetscInitialize.part.*
+   fun:_ZN8mon_main13init_parallelE*PPc*
+   fun:_Z10main_TRUST*PPcRP8mon_main*
    ...
    fun:main
 }
