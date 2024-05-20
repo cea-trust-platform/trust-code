@@ -449,7 +449,10 @@ class TRUSTCase(object):
         ### Run Case ###
         err_file = self.dataFileName_ + ".err"
         out_file = self.dataFileName_ + ".out"
-        cmd = "trust %s %s %s 2>%s 1>%s" % (self.dataFileName_, str(self.nbProcs_), self.execOptions, err_file, out_file)
+        para = ""
+        if self.nbProcs_ != 1:
+            para = str(self.nbProcs_)
+        cmd = "trust %s %s %s 2>%s 1>%s" % (self.dataFileName_, para, self.execOptions, err_file, out_file)
         output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
         if verbose:
             print(cmd)
