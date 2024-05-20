@@ -139,7 +139,12 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
     {
       std::string cmd="mkdir -p ";
       cmd+=root;
-      system(cmd.c_str());
+      int err = system(cmd.c_str());
+      if (err)
+        {
+          Cerr << "Sortie_Fichier_base::ouvrir: Error while creating " << root << " folder!" << finl;
+          Process::exit();
+        }
     }
   std::string pathname = root;
   if (!pathname.empty()) pathname+="/";
