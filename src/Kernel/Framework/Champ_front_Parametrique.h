@@ -66,11 +66,11 @@ public:
   // Methodes specifiques:
   virtual bool instationnaire() const override { return index_==1 ? champ()->instationnaire() : true; } // Le premier champ peut etre stationnaire mais ensuite instationnaire forcement
   int newCompute() const;
+  Champ_front& champ() { return champs_[index_-1]; }
+  const Champ_front& champ() const { return champs_[index_-1]; }
 
 private:
   LIST(Champ_front) champs_;
-  Champ_front& champ() { return champs_[index_-1]; }
-  const Champ_front& champ() const { return champs_[index_-1]; }
   mutable int index_=0;
   mutable double last_t2_ = DMAXFLOAT; // Pour gerer les changements de champs dans calculer_derivee_en_temps
 };
