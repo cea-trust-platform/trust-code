@@ -42,8 +42,9 @@ public:
   Champ_base& affecter_compo(const Champ_base& ch, int i) override { return champ().affecter_compo(ch, i); }
   virtual int initialiser(const double temps) override { return champ().initialiser(temps); }
   inline int nb_valeurs_nodales() const override { return champ().valeurs().dimension(0); }
-  virtual DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override { return champ()->valeur_aux(positions, valeurs); }
-  virtual bool instationnaire() const override { return champ()->instationnaire(); }
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override { return champ()->valeur_aux(positions, valeurs); }
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override { return champ()->valeur_aux_elems(positions, les_polys, valeurs); };
+  bool instationnaire() const override { return champ()->instationnaire(); }
 
   // Methodes specifiques:
   int newCompute() const;
