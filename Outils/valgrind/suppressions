@@ -44,6 +44,31 @@
 }
 
 ######
+###### 21/05/2024: Cas Sonde avec CGNS, erreur qui ne vient pas de TRUST.
+###### erreur reproduite avec cgns + hdf5 de TRUST
+######
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   pwrite64(buf)
+   ...
+   fun:H5FD__sec2_write
+   fun:H5FD_write
+   fun:H5F__accum_write
+   fun:H5PB_write
+   fun:H5F_block_write
+   fun:H5C__flush_single_entry
+   fun:H5C__flush_ring
+   fun:H5C_flush_cache
+   fun:H5AC_flush
+   fun:H5F__flush_phase2
+   fun:H5F__dest
+   fun:H5F_try_close
+   fun:H5F__close
+   fun:H5VL__native_file_close
+}
+
+######
 ###### Cas test PETSC_SA-AMG en parallele utilisant PETSc 3.20
 ######
 {
