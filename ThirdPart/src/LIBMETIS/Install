@@ -28,6 +28,12 @@ DISTCC_HOSTS=""
 # Configuration
 export CMAKE_C_FLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
 
+# Hack pour Fedora 40 avec gcc 14.1.1
+if [ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>13?1:0)}'`" = 1 ]
+then
+   export CMAKE_C_FLAGS=$CMAKE_C_FLAGS" -Wno-implicit-function-declaration"
+fi
+
 # Modification du Makefile de Metis pour dire renseigner CMAKE_C_FLAGS 
 sed -i "s?DCMAKE_VERBOSE_MAKEFILE=1?DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_C_FLAGS=\"$CMAKE_C_FLAGS\"?g" Makefile || exit -1
 

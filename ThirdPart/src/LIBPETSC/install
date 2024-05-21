@@ -626,6 +626,13 @@ do
       CUDAFLAGS=$FLAG"-ccbin $TRUST_cc_BASE"
    fi
    CXXOPTFLAGS=$COPTFLAGS
+
+   # Hack pour Fedora 40 avec gcc 14.1.1
+   if [ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>13?1:0)}'`" = 1 ]
+   then
+      export COPTFLAGS=$COPTFLAGS" -Wno-implicit-function-declaration"
+   fi
+
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:
    [ "`uname -m`" = aarch64 ] && PATH=/usr/bin:$PATH
