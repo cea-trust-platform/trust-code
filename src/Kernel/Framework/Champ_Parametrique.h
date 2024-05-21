@@ -40,11 +40,13 @@ public:
   const DoubleTab& valeurs(double temps) const override { return champ()->valeurs(temps); }
   Champ_base& affecter_(const Champ_base& ch) override { return champ().affecter_(ch); }
   Champ_base& affecter_compo(const Champ_base& ch, int i) override { return champ().affecter_compo(ch, i); }
-  virtual int initialiser(const double temps) override { return champ().initialiser(temps); }
   inline int nb_valeurs_nodales() const override { return champ().valeurs().dimension(0); }
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override { return champ()->valeur_aux(positions, valeurs); }
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override { return champ()->valeur_aux_elems(positions, les_polys, valeurs); };
   bool instationnaire() const override { return champ()->instationnaire(); }
+
+  // Methodes surchargees avec boucles sur les champs
+  int initialiser(const double temps) override { for (auto& ch : champs_) ch->initialiser(temps); return 1; }
 
   // Methodes specifiques:
   int newCompute() const;
