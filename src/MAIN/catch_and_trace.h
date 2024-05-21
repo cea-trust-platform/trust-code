@@ -56,94 +56,17 @@ typedef struct _sig_ucontext
 /*
  * Execute a system command and get output.
  */
-int exec_cmd_and_get_output(const char* cmd, std::string& result)
-{
-  std::array<char, 128> buffer;
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-  if (!pipe)
-    {
-      return 0; // popen failed - unable to execute system command
-    }
-  while (fgets(buffer.data(), (int)buffer.size(), pipe.get()) != nullptr)
-    {
-      result += buffer.data();
-    }
-  return 1;
-}
+int exec_cmd_and_get_output(const char* cmd, std::string& result);
 
 /*
  * Custom error handler printing out in the journal the backtrace of the exception.
  */
-static bool crit_err_hdlr_done = false;
-void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
-{
-  if (crit_err_hdlr_done) return;
-  crit_err_hdlr_done = true;
-  std::cerr << "Error handler triggered!! See Journal - process ID: " << Process::me() << std::endl;
-  Process::Journal() << "signal " << (int)sig_num
-                     << " (" << strsignal(sig_num) << "), address is "
-                     << long(info->si_addr) << finl; //" from "
-
-  void * array[100];
-  int size = backtrace(array, 100);
-
-  Process::Journal() << __FUNCTION__ << " backtrace returned " << size << " frames\n" << finl;
-
-  // Extract symbols from backtrace
-  char ** messages = backtrace_symbols(array, size);
-
-  // Skip first stack frame (points here) and print out backtrace
-  for (int i = 1; i < size && messages != nullptr; ++i)
-    {
-      Process::Journal() << "[proc " << Process::me() << "]: (" << i << ") " << messages[i] << finl;
-      // Find first occurence of '(' or ' ' in message[i] and assume
-      // everything before that is the file name (don't go beyond 0 though, string terminator)
-      size_t p = 0;
-      while(messages[i][p] != '(' && messages[i][p] != ' '
-            && messages[i][p] != 0)
-        ++p;
-
-      // Call 'addr2line' system utility to extract line number in the source code:
-      char syscom[256];
-      snprintf(syscom, 256, "addr2line %p --functions -e %.*s | tr '\n' ' ' | c++filt", array[i], (True_int)p, messages[i]);
-      std::string output;
-      int ret = exec_cmd_and_get_output(syscom, output);
-      if(!ret)
-        Process::Journal() << "(Unable to execute 'addr2line' to get line number in source ...)" << finl;
-      else
-        Process::Journal() << "[proc " << Process::me() << "]: (" << i << ") ----> "
-                           << output << finl;
-    }
-  Process::Journal() << finl;
-  free(messages);
-
-  Process::exit();
-}
+void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext);
 
 /*
  * Install error handlers catching SIGABRT and SIGFPE
  */
-void install_handlers()
-{
-  struct sigaction sigact;
-  sigemptyset(&sigact.sa_mask);
-  sigact.sa_sigaction = crit_err_hdlr;
-  sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+void install_handlers();
 
-  if (sigaction(SIGABRT, &sigact, (struct sigaction *)nullptr) != 0)
-    {
-      std::cerr << "FATAL ERROR setting handler for signal " << SIGABRT
-                << " (" << strsignal(SIGABRT) << ")" << std::endl;
-      Process::exit();
-    }
-
-  if (sigaction(SIGFPE, &sigact, (struct sigaction *)nullptr) != 0)
-    {
-      std::cerr << "FATAL ERROR setting handler for signal " << SIGFPE
-                << " (" << strsignal(SIGFPE) << ")" << std::endl;
-      Process::exit();
-    }
-  std::cerr << "Custom error handlers correctly installed. SIGFPE and SIGABRT redirected." << std::endl;
-}
 
 #endif /* catch_and_trace_H */
