@@ -1014,7 +1014,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name, const Options_Par
         {
           sfichier << "LATA_V2.1 TRUST version " << TRUST_VERSION << finl;
           sfichier << Objet_U::nom_du_cas() << finl;
-          sfichier << "TRUST verbosity=0" << finl;
+          sfichier << "Trio_U verbosity=0" << finl;
 
           sfichier << "Format ";
           switch(format)
