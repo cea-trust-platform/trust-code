@@ -111,52 +111,166 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
   return;
 }
 
-void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& gradient_elem)
+void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
 {
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleTab& tab_face_normales = domaine_VEF.face_normales();
+  const IntTab& tab_face_voisins = domaine_VEF.face_voisins();
+  const DoubleVect& tab_inverse_volumes = domaine_VEF.inverse_volumes();
+  const ArrOfInt& tab_est_face_bord = domaine_VEF.est_face_bord();
+
+  CDoubleTabView face_normales = tab_face_normales.view_ro();
+  CIntTabView face_voisins = tab_face_voisins.view_ro();
+  CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
+  CDoubleTabView variable = tab_variable.view_ro();
+  CDoubleTabView gradient_elem = tab_gradient_elem.view_rw();
+  CIntArrView est_face_bord = tab_est_face_bord.view_ro();
+
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
+
   int dimension = Objet_U::dimension;
-  const int nb_comp = variable.line_size();
+  auto range2D = [](int a, int b) { return Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {a,b}); };
 
-  gradient_elem = 0.;
+  Kokkos::parallel_for(nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  {
+    int type_face = est_face_bord(fac);
 
-  const int * face_voisins_addr = mapToDevice(face_voisins);
-  const double * face_normales_addr = mapToDevice(face_normales);
-  const int * est_face_bord_addr = mapToDevice(domaine_VEF.est_face_bord());
-  const double * variable_addr = mapToDevice(variable,"variable");
-  double * gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int fac=0; fac<nb_faces_tot; fac++)
-    {
-      double contrib = est_face_bord_addr[fac]==2 ? 0.5 : 1; // Contribution O.5 si fac periodique
-      int elem1 = face_voisins_addr[fac * 2];
-      int elem2 = face_voisins_addr[fac * 2 + 1];
-      for (int icomp = 0; icomp < nb_comp; icomp++)
+    // Faces de bord périodiques
+    if (type_face == 2)
+      {
+        int elem1 = face_voisins(fac, 0);
+        int elem2 = face_voisins(fac, 1);
+
         for (int i = 0; i < dimension; i++)
           {
-            double grad = contrib * face_normales_addr[fac * dimension + i] * variable_addr[fac * nb_comp + icomp];
-            if (elem1 >= 0)
-              #pragma omp atomic
-              gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension + i] += grad;
-            if (elem2 >= 0)
-              #pragma omp atomic
-              gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + i] -= grad;
+            double grad = 0.5 * face_normales(fac,i) * variable(fac, 0);
+            Kokkos::atomic_add(&gradient_elem(elem1, i), +grad);
+            Kokkos::atomic_add(&gradient_elem(elem2, i), -grad);
           }
-    }
-  end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Champ_P1NC::calculer_gradientP1NC");
-  // ToDo merge in one region the 2 loops
-  const double * inverse_volumes_addr = mapToDevice(domaine_VEF.inverse_volumes());
-  start_gpu_timer();
-  // Parfois un crash du build avec nvc++ recent (par exemple topaze, 22.7. Marche avec 22.1). Supprimer alors le if (Objet_U::computeOnDevice)
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int elem=0; elem<nb_elem; elem++)
-    for (int icomp=0; icomp<nb_comp; icomp++)
-      for (int i=0; i<dimension; i++)
-        gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
-  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Champ_P1NC::calculer_gradientP1NC");
+      }
+    // Faces de bord non périodiques
+    else if (type_face == 1)
+      {
+        int elem1 = face_voisins(fac,0);
+
+        for (int i = 0; i < dimension; i++)
+          {
+            double grad = face_normales(fac,i) * variable(fac, 0);
+            Kokkos::atomic_add(&gradient_elem(elem1, i), grad);
+          }
+      }
+    // Faces internes
+    else if (type_face == 0)
+      {
+        int elem1 = face_voisins(fac, 0);
+        int elem2 = face_voisins(fac, 1);
+
+        for (int i = 0; i < dimension; i++)
+          {
+            double grad = face_normales(fac,i) * variable(fac, 0);
+            if (elem1 >= 0) Kokkos::atomic_add(&gradient_elem(elem1, i), +grad);
+            if (elem2 >= 0) Kokkos::atomic_add(&gradient_elem(elem2, i), -grad);
+          }
+      }
+  });
+
+  // Division par le volume de l'élément
+  auto vol_div = KOKKOS_LAMBDA (int elem, int i)
+  {
+    gradient_elem(elem, i) *= inverse_volumes(elem);
+  };
+  Kokkos::parallel_for("gradient_elem 2D volume div", range2D(nb_elem, dimension), vol_div);
+}
+
+void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
+{
+  const DoubleTab& tab_face_normales = domaine_VEF.face_normales();
+  const IntTab& tab_face_voisins = domaine_VEF.face_voisins();
+  const DoubleVect& tab_inverse_volumes = domaine_VEF.inverse_volumes();
+  const ArrOfInt& tab_est_face_bord = domaine_VEF.est_face_bord();
+
+  CDoubleTabView face_normales = tab_face_normales.view_ro();
+  CIntTabView face_voisins = tab_face_voisins.view_ro();
+  CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
+  CDoubleTabView variable = tab_variable.view_ro();
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_rw();
+  CIntArrView est_face_bord = tab_est_face_bord.view_ro();
+
+  const int nb_faces_tot = domaine_VEF.nb_faces_tot();
+  const int nb_elem = domaine_VEF.nb_elem_tot();
+
+  int dimension = Objet_U::dimension;
+  const int nb_comp = tab_variable.line_size();
+
+  Kokkos::parallel_for(nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  {
+    int type_face = est_face_bord(fac);
+
+    // Faces de bord périodiques
+    if (type_face == 2)
+      {
+        int elem1 = face_voisins(fac, 0);
+        int elem2 = face_voisins(fac, 1);
+
+        for (int icomp = 0; icomp < nb_comp; icomp++)
+          for (int i = 0; i < dimension; i++)
+            {
+              double grad = 0.5 * face_normales(fac,i) * variable(fac,icomp);
+              Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), +grad);
+              Kokkos::atomic_add(&gradient_elem(elem2, icomp, i), -grad);
+            }
+      }
+    // Faces de bord non périodiques
+    else if (type_face == 1)
+      {
+        int elem1 = face_voisins(fac, 0);
+
+        for (int icomp = 0; icomp < nb_comp; icomp++)
+          for (int i = 0; i < dimension; i++)
+            {
+              double grad = face_normales(fac,i) * variable(fac,icomp);
+              Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), grad);
+            }
+      }
+    // Faces internes
+    else if (type_face == 0)
+      {
+        int elem1 = face_voisins(fac, 0);
+        int elem2 = face_voisins(fac, 1);
+
+        for (int icomp = 0; icomp < nb_comp; icomp++)
+          for (int i = 0; i < dimension; i++)
+            {
+              double grad = face_normales(fac,i) * variable(fac,icomp);
+              if (elem1 >= 0) Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), +grad);
+              if (elem2 >= 0) Kokkos::atomic_add(&gradient_elem(elem2, icomp, i), -grad);
+            }
+      }
+  });
+
+  auto range3D = [](int a, int b, int c) { return Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {a,b,c}); };
+
+  // Division par le volume de l'élément
+  auto vol_div = KOKKOS_LAMBDA (int elem, int icomp, int i)
+  {
+    gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
+  };
+  Kokkos::parallel_for("gradient_elem 2D volume div", range3D(nb_elem, nb_comp, dimension), vol_div);
+}
+
+void calculer_gradientP1NC(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
+{
+  const int nb_comp = tab_variable.line_size();
+  tab_gradient_elem = 0.;
+
+  // Cas du calcul du gradient d'un tableau de vecteurs ou
+  // tableau de scalaires tab_gradient_elem(,,)
+  if (nb_comp != 1 || tab_gradient_elem.nb_dim() == 3)
+    calculer_gradientP1NC_3D(tab_variable, domaine_VEF, domaine_Cl_VEF, tab_gradient_elem);
+  // Cas du calcul du gradient d'un tableau de scalaire dans un
+  // tableau gradient_elem(,)
+  else
+    calculer_gradientP1NC_2D(tab_variable, domaine_VEF, domaine_Cl_VEF, tab_gradient_elem);
 }
 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const
