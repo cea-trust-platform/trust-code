@@ -746,6 +746,11 @@ do
   done
 done
 
+if [ "$convert_absolute_to_relative_links" != "" ] && [ "`which symlinks 2>/dev/null`" != "" ]
+then
+   (cd ${project_directory}/build/tests/; symlinks -cr . 1>/dev/null 2>&1)
+fi
+
 
 echo "Creation $env_file"
 
