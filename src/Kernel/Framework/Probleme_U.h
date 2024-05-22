@@ -57,7 +57,7 @@ public :
   virtual bool solveTimeStep();
   virtual void validateTimeStep();
   virtual bool isStationary() const;
-  virtual int newCompute() { return 0; };
+  virtual std::string newCompute() { return ""; };
   virtual void setStationary(bool);
   virtual void abortTimeStep();
   virtual void resetTime(double time);

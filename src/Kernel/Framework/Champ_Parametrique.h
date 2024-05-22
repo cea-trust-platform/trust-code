@@ -49,8 +49,10 @@ public:
   int initialiser(const double temps) override { for (auto& ch : champs_) ch->initialiser(temps); return 1; }
 
   // Methodes specifiques:
-  int newCompute() const;
+  std::string newCompute() const;
   static bool enabled;
+  static std::string dirnameDefault;
+  static std::string dirnameCompute(int compute);
 protected :
   LIST(Champ_Don) champs_;
   Champ_Don& champ() { return champs_[index_-1]; }

@@ -1656,9 +1656,8 @@ void Probleme_base::resetTime(double time)
 /*! @brief Recherche des champs parametriques, et pour chacun, passage au parametre suivant
  *
  */
-int Probleme_base::newCompute()
+std::string Probleme_base::newCompute()
 {
-  int compute = 0;
   // Boucle sur les champs des conditions limites:
   for (int i = 0; i < nombre_d_equations(); i++)
     {
@@ -1670,7 +1669,8 @@ int Probleme_base::newCompute()
           if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front().valeur()))
             {
               const Champ_front_Parametrique& champ_front = ref_cast(Champ_front_Parametrique, la_cl_base.champ_front().valeur());
-              compute = champ_front.newCompute();
+              std::string dir = champ_front.newCompute();
+              if (!dir.empty()) return dir;
             }
         }
     }
@@ -1688,7 +1688,8 @@ int Probleme_base::newCompute()
                   if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
                     {
                       const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
-                      compute = champ.newCompute();
+                      std::string dir = champ.newCompute();
+                      if (!dir.empty()) return dir;
                     }
                 }
             }
@@ -1699,11 +1700,12 @@ int Probleme_base::newCompute()
           if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
             {
               const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
-              compute = champ.newCompute();
+              std::string dir = champ.newCompute();
+              if (!dir.empty()) return dir;
             }
         }
     }
-  return compute;
+  return "";
 }
 
 

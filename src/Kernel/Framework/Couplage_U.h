@@ -51,7 +51,7 @@ public:
   //  virtual bool solveTimeStep();
   void validateTimeStep() override;
   bool isStationary() const override;
-  int newCompute() override;
+  std::string newCompute() override;
   void setStationary(bool) override;
   void abortTimeStep() override;
   void resetTime(double t) override;

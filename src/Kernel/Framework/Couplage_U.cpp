@@ -80,13 +80,15 @@ bool Couplage_U::isStationary() const
   return stat;
 }
 
-int Couplage_U::newCompute()
+std::string Couplage_U::newCompute()
 {
-  int compute=0;
   for(int i=0; i<nb_problemes(); i++)
-    compute = std::max(compute, ref_cast(Probleme_base, probleme(i)).newCompute());
+    {
+      std::string dir = ref_cast(Probleme_base, probleme(i)).newCompute();
+      if (!dir.empty()) return dir;
+    }
   //if (compute && !isStationary()) Process::exit("Unexpected case. Stationary not reached and Champ_parametrique used.");
-  return compute;
+  return "";
 }
 
 void Couplage_U::setStationary(bool flag)

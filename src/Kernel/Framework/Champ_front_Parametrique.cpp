@@ -48,16 +48,14 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
       fic >> motlu;
     }
   // On fixe le premier parametre:
-  int compute = newCompute();
-  assert(compute>0);
-  Sortie_Fichier_base::set_root("calcul"+std::to_string(compute));
+  Sortie_Fichier_base::set_root(newCompute());
   return is;
 }
 
-int Champ_front_Parametrique::newCompute() const
+std::string Champ_front_Parametrique::newCompute() const
 {
   if (champs_.size()==index_)
-    return 0;
+    return "";
   else
     {
       Nom previous_field("");
@@ -69,7 +67,7 @@ int Champ_front_Parametrique::newCompute() const
       index_++;
       Nom next_field = champ().valeur().que_suis_je();
       Cerr << "[Parameter] Updating boundary field" << previous_field << " to " << next_field << finl;
-      return index_;
+      return Champ_Parametrique::dirnameCompute(index_);
     }
 }
 

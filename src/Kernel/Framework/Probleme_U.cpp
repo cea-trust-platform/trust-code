@@ -322,13 +322,13 @@ bool Probleme_U::run()
           setStationary(stop);
         }
 
-      int compute = stop ? newCompute() : 0;
-      if (compute)
+      std::string newDirectory = stop ? newCompute() : "";
+      if (!newDirectory.empty())
         {
-          // Keep on the resolution if parametric variation:
+          // Keep on the resolution if parametric variation in a new directory:
           stop = false;
           setStationary(stop);
-          setInputStringValue("SORTIE_ROOT_DIRECTORY", "calcul"+std::to_string(compute));
+          setInputStringValue("SORTIE_ROOT_DIRECTORY", newDirectory);
           resetTime(0.);
         }
       else

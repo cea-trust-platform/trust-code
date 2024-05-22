@@ -165,7 +165,7 @@ public:
   bool solveTimeStep() override { return solveTimeStep_impl(*this); }
   bool solveTimeStep_pbU() { return Probleme_U::solveTimeStep(); }
   bool isStationary() const override { return isStationary_impl(*this); }
-  int newCompute() override;
+  std::string newCompute() override;
   void validateTimeStep() override { validateTimeStep_impl(*this); }
   void setStationary(bool flag) override { schema_temps().set_stationnaires_atteints(flag); }
   void abortTimeStep() override { abortTimeStep_impl(*this); }

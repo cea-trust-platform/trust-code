@@ -26,6 +26,12 @@ Implemente_instanciable( Champ_Parametrique, "Champ_Parametrique", Champ_Don_bas
 Sortie& Champ_Parametrique::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
 
 bool Champ_Parametrique::enabled=false;
+std::string Champ_Parametrique::dirnameDefault="";
+std::string Champ_Parametrique::dirnameCompute(int compute)
+{
+  return Champ_Parametrique::dirnameDefault.empty() ? "calcul"+std::to_string(compute) : Champ_Parametrique::dirnameDefault;
+}
+
 Entree& Champ_Parametrique::readOn(Entree& is)
 {
   Champ_Parametrique::enabled=true;
@@ -49,16 +55,14 @@ Entree& Champ_Parametrique::readOn(Entree& is)
       fixer_nb_comp(ch.nb_comp());
     }
   // On fixe le premier parametre:
-  int compute = newCompute();
-  assert(compute>0);
-  Sortie_Fichier_base::set_root("calcul"+std::to_string(compute));
+  Sortie_Fichier_base::set_root(newCompute());
   return is;
 }
 
-int Champ_Parametrique::newCompute() const
+std::string Champ_Parametrique::newCompute() const
 {
   if (champs_.size()==index_)
-    return 0;
+    return "";
   else
     {
       Nom previous_field("");
@@ -70,7 +74,7 @@ int Champ_Parametrique::newCompute() const
       index_++;
       Nom next_field = champ().valeur().que_suis_je();
       Cerr << "[Parameter] Updating field" << previous_field << " to " << next_field << finl;
-      return index_;
+      return Champ_Parametrique::dirnameCompute(index_);
     }
 }
 

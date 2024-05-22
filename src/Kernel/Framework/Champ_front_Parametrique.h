@@ -65,7 +65,7 @@ public:
   bool instationnaire() const override { return index_==1 ? champ()->instationnaire() : true; } // Le premier champ peut etre stationnaire mais ensuite instationnaire forcement
 
   // Methodes specifiques:
-  int newCompute() const;
+  std::string newCompute() const;
   Champ_front& champ() { return champs_[index_-1]; }
   const Champ_front& champ() const { return champs_[index_-1]; }
 
