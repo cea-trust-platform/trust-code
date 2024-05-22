@@ -489,7 +489,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
             add_executable (${trio} ${inst_compl})
             target_link_libraries(${trio} ${my_listobj} ${syslib})
         endif()
-    
+
         install (TARGETS ${trio} DESTINATION exec)
 
         #

@@ -1077,14 +1077,17 @@ fi
 # Linker setup - will use 'mold' if found:
 ###############################
 echo "# Checking if linker is overriden (you can set configure option '-linker=' to do this) or if 'mold' is present ..."
-if [ "$TRUST_FORCE_LINKER" != "" ]; then
-  echo "# TRUST linker forced to : $TRUST_FORCE_LINKER"
-  m="# TRUST linker" && e="TRUST_LINKER=\"$TRUST_FORCE_LINKER\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
+if [ "$TRUST_FORCE_LINKER" != "" ] && [ "$TRUST_FORCE_LINKER" != "default" ]
+then
+   echo "# TRUST linker forced to: $TRUST_FORCE_LINKER"
+   m="# TRUST linker" && e="TRUST_LINKER=\"$TRUST_FORCE_LINKER\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
 fi
 mold=`whence_ mold`
-if [ $? -eq 0 ] && [ "$TRUST_FORCE_LINKER" == "" ]; then
-  echo "# 'mold' linker detected: $mold"
-  m="# TRUST linker" && e="TRUST_LINKER=\"$mold\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
+if [ "$mold" != "" ] && [ "$TRUST_FORCE_LINKER" == "" ] && [ "$TRUST_ARCH_CC" != "linux_icpc" ] && [ "$TRUST_ARCH_CC" != "linux_icpx" ]
+then
+   # for intel, only bfd, gold and lld are avail: https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-8/fuse-ld.html
+   echo "# 'mold' linker detected: $mold (if you want to not use it, set configure option -linker=default)"
+   m="# TRUST linker" && e="TRUST_LINKER=\"mold\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
 fi
 
 #####################
