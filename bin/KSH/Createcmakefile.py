@@ -467,14 +467,29 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
     #
     # (no exec produced in partial mode)
     if((${kernel} STREQUAL "full") OR ($ENV{FORCE_LINK}))
-        set(my_listobj)
-        foreach(_obj IN LISTS listlibs)
-            list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
-        endforeach()
+        # If the linker was overriden, we also take this opportunity to build the executable more
+        # efficiently by using directly the .o files to build the exe file.
+        # On some machines (adastra GPUs) this makes a too long command line, so we use also the TRUST_LINKER
+        # variable to have a way to build with the former method ... to be changed once adastra is up to date.
+        if ("${TRUST_LINKER}" STREQUAL "")
+            include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
+            add_executable (${trio}
+                MAIN/the_main.cpp
+                MAIN/mon_main.cpp
+                ${inst_compl}
+            )
+            target_link_libraries(${trio} ${libtrio} ${syslib})
+        else()
+            set(my_listobj)
+            foreach(_obj IN LISTS listlibs)
+                list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
+            endforeach()
 
-        include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
-        add_executable (${trio} ${inst_compl})
-        target_link_libraries(${trio} ${my_listobj} ${syslib})
+            include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
+            add_executable (${trio} ${inst_compl})
+            target_link_libraries(${trio} ${my_listobj} ${syslib})
+        endif()
+    
         install (TARGETS ${trio} DESTINATION exec)
 
         #

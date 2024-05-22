@@ -273,6 +273,8 @@ echo "   -cxxflags=<flags>                 Add C++ compiler options."
 echo "   -cflags=<flags>                   Add C compiler options."
 echo "   -fflags=<flags>                   Add Fortran compiler options."
 echo " "
+echo "   -linker=<prog>                    Force the use of a specified linker."
+echo " "
 echo "   -with-64-bit-indices              Build with 64 bits integer indices."
 echo " "
 echo "   -add_search=<dir>                 Add a directory to the defaults path to search a tool."
@@ -469,6 +471,10 @@ do
    elif [ "${1#-fflags=}" != "$1" ]
    then
       export TRUST_ADD_FFLAGS=${1#-fflags=}
+
+   elif [ "${1#-linker=}" != "$1" ]
+   then
+      export TRUST_FORCE_LINKER=${1#-linker=}
 
    elif [ "${1#-native}" != "$1" ]
    then

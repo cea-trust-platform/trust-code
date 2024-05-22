@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
+23/05/24 (TRUST) Change       : Flag '-linker' can be used to override linker, otherwise mold will be used if found.
 17/05/24 (TRUST) Minor change : Methods Gpoint() and Gpoint(t1,t2) renamed derivee_en_temps() and calculer_derivee_en_temps(t1,t2)
 14/05/24 (TRUST) Debug        : Flag '-enable-kokkos-debug' can be used to compile (and link only with $exec_debug) Kokkos library in Debug mode.
 30/04/24 (TRUST) Debug        : Flag '-enable-mc-debug' can be used to compile (and link only with $exec_debug) MEDCoupling library in Debug mode.

@@ -1073,6 +1073,23 @@ then
     fi
 fi
 
+###############################
+# Linker setup - will use 'mold' if found:
+###############################
+echo "# Checking if linker is overriden (you can set configure option '-linker=' to do this) or if 'mold' is present ..."
+if [ "$TRUST_FORCE_LINKER" != "" ]; then
+  echo "# TRUST linker forced to : $TRUST_FORCE_LINKER"
+  m="# TRUST linker" && e="TRUST_LINKER=\"$TRUST_FORCE_LINKER\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
+fi
+mold=`whence_ mold`
+if [ $? -eq 0 ] && [ "$TRUST_FORCE_LINKER" == "" ]; then
+  echo "# 'mold' linker detected: $mold"
+  m="# TRUST linker" && e="TRUST_LINKER=\"$mold\"  && export TRUST_LINKER" && ecrit $m"|"$e"|"$env;eval $e
+fi
+
+#####################
+# ddterm / xterm
+#####################
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
 [ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. Some TRUST tools (e.g. gdb on a parallel case) will not work cause Dtterm or Xterm not found. "
@@ -2528,4 +2545,5 @@ then
     echo "We will edit sources to build 64 bits version, please wait..."
     (cd $TRUST_ROOT && ./bin/BUILD64/GO)
 fi
+
 exit 0
