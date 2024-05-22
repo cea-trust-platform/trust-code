@@ -89,8 +89,10 @@ Read pb
         initial_conditions { Temperature _init_ }
         sources { Puissance_thermique _champ_ }
     }
-    Post_processing
+    Postraitements
     {
+      lata 
+      {
         probes
         {
             T temperature periode 0.01 points 1 0.0045 0.0045
@@ -101,6 +103,16 @@ Read pb
             vitesse elem
             temperature elem
         }
+      }
+      med 
+      {
+        format med
+        fields dt_post 10
+        {
+            vitesse elem
+            temperature elem
+        }
+      }
     }
 }
 Solve pb

@@ -39,6 +39,7 @@ using MEDCoupling::GetAllFieldNames;
 using MEDCoupling::GetAllFieldIterations;
 using MEDCoupling::MEDFileMesh;
 #endif
+#include <Sortie_Fichier_base.h>
 
 Implemente_instanciable(Ecrire_MED,"Write_MED|ecrire_med",Interprete);
 
@@ -68,17 +69,21 @@ Entree& Ecrire_MED::readOn(Entree& is)
 
 Ecrire_MED::Ecrire_MED(const Nom& file_name, const Domaine& dom):
   major_mode_(false),
-  nom_fichier_(file_name),
   dom_(dom)
 #ifdef MEDCOUPLING_
   ,  mcumesh_(nullptr)
 #endif
 {
+  nom_fichier_ = Sortie_Fichier_base::root;
+  if (nom_fichier_!="") nom_fichier_+="/";
+  nom_fichier_ += file_name;
 }
 
 void Ecrire_MED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
 {
-  nom_fichier_ = file_name;
+  nom_fichier_ = Sortie_Fichier_base::root;
+  if (nom_fichier_!="") nom_fichier_+="/";
+  nom_fichier_ += file_name;
   dom_ = dom;
 }
 

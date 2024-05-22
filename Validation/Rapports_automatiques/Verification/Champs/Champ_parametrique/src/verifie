@@ -1,18 +1,18 @@
 #!/bin/bash
 jdd=$1
-if [ $jdd = cp ] || [ $jdd = Champ_parametrique_jdd1 ]
-then
-   exit 0 # La verification est faite au niveau de la fiche de validation
-fi
+[ $jdd != cp ] && exit 0
 echo "Checking results for $jdd.."
-# Verification que tout le monde est bien la:
-grep TRUST $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
-grep GEOM $jdd.lata 	1>/dev/null 2>&1 || exit -1 	# lata
-grep $jdd *.son 	1>/dev/null 2>&1 || exit -1 	# son
-grep temps $jdd.dt_ev 	1>/dev/null 2>&1 || exit -1 	# dt_ev
-# Tous les .TU doivent etre a la racine !
-ls */*.TU && exit -1
-# compare la derniere valeur de chaque sonde de temperature:
-compare_sonde cp_T.son $jdd"_T".son -type statio || exit -1
+for calcul in `find . -type d -name calcul'?'`
+do
+   cd $calcul
+   # Verification que tout le monde est bien la
+   grep TRUST $jdd"_LATA".lata 	|| exit -1 	# lata
+   grep GEOM $jdd"_LATA".lata 	    || exit -1 	# lata
+   grep $jdd *.son 	 || exit -1 	# son
+   grep temps $jdd.dt_ev 	 || exit -1 	# dt_ev
+   ls $jdd"_MED_0000.med" || exit -1 # Fichier MED
+   ls $jdd*.TU 1>/dev/null 2>&1 && exit -1    # Tous les .TU doivent etre a la racine !
+   cd -
+done
 exit 0
 
