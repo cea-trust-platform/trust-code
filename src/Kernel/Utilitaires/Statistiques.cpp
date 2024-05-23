@@ -582,7 +582,7 @@ void Statistiques::dump(const char * message, int mode_append)
       File_header << "# Detailed performance log file. See the associated validation form for an example of data analysis"<< std::endl;
       File_header << "# Number of processor = " << Process::nproc() << std::endl ;
       File_header << "# The time was measured by the following method :" << Time::description << std::endl;
-      File_header << "# By default, only averaged statistics on all processor are printed. For accessing the detail per processor, initialize the environment variable STAT_PER_PROC_PERF_LOG==1" << std::endl;
+      File_header << "# By default, only averaged statistics on all processor are printed. For accessing the detail per processor, add 'stat_per_proc_perf_log 1' in the data file"<< std::endl;
       File_header << "# Processor number equal to -1 corresponds to the performance of the calculation averaged on the processors during the simulation step" << std::endl;
       File_header << "# If a counter does not belong in any particular family, then counter family is set to (null)" << std::endl;
       File_header << "# Count means the number of time the counter is called during the overall calculation step." << std::endl;
