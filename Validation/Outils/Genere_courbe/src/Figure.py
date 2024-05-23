@@ -14,7 +14,7 @@
 #
 #*****************************************************************************
 
-import sys, os
+import sys, os, subprocess
 
 from Courbe import Courbe
 from filelist import FileAccumulator
@@ -48,6 +48,11 @@ class Figure:
         self.logY      = False
         self.listeCourbes = []
         self.format = 'png'
+        self.cairo = False;
+        # Teste si "png large" supporte:
+        return_code = subprocess.call("echo 'set terminal png large' | gnuplot 2>/dev/null", shell=True)
+        if return_code!=0:
+            self.cairo = True;
         self.pointSize = 'Undefined'
         self.legende = 'Undefined'
         self.grid = 'Undefined'
@@ -258,15 +263,11 @@ class Figure:
                 ficPlot.write('set terminal postscript eps color\n')
                 self.fichierGraphique = 'fic%03d.ps' % (indice)
             elif self.format=='png':
-                #png
-                #ficPlot.write('set size 1.3,1.3\n')
-                #ficPlot.write('set terminal png large\n')
-                #ficPlot.write('set terminal pngcairo size 800,600\n')
-                # if pngcairo avail (FED38), it will be used; otherwise switch to png terminal
-                # see https://stackoverflow.com/questions/20657816/how-do-i-check-if-a-terminal-is-available-through-my-gnuplot-script
-                ficPlot.write("if (strstrt(GPVAL_TERMINALS, 'png') > 0) {\n    set terminal png large\n} else {\n    set terminal pngcairo size 800,600\n}\n")
+                if (self.cairo):
+                    ficPlot.write('set terminal pngcairo size 640,480\n')
+                else:
+                    ficPlot.write('set terminal png large\n')
                 self.fichierGraphique = 'fic%03d.png' % (indice)
-
             elif self.format=='epslatex':
                 #latex
                 ficPlot.write('set terminal epslatex color\n')
