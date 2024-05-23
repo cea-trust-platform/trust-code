@@ -33,6 +33,9 @@ then
    dlocal=`dirname $local`
    echo $dlocal
    sed -i "s?$HOME/.visit?$dlocal?" CMakeLists.txt
+   # Dans VisIt 3.4.1, il faut mettre VISIT_BINARY_DIR sinon plugins pas installes au bon endroit
+   PLUGIN_INSTALL_DIR="`grep VISIT_PLUGIN_DIR CMakeLists.txt | sed 's?x86_64/plugins?x86_64?' | sed 's?VISIT_PLUGIN_DIR?VISIT_BINARY_DIR?'`"
+   sed -i "s?PROJECT(triofield_database)?PROJECT(triofield_database)\n$PLUGIN_INSTALL_DIR?" CMakeLists.txt
    rm -f CMakeCache*
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
