@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) CI           : Result comparison is not done anymore (make check|ctest) for test cases with header "# lance_test N ecarts #" except on the reference PC
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------

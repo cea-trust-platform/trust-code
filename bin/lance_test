@@ -929,6 +929,7 @@ then
        choix=$choix_USER
        export choix
        let k=$k+1
+       CAS_AVEC_ECART=0 && [ "`grep "# lance_test" $file | grep ecarts 2>/dev/null`" != "" ] && CAS_AVEC_ECART=1
        # Si parallele choisi, filtre les cas
        if [ ${choix#P_} != $choix ]
        then
@@ -1072,13 +1073,6 @@ then
           #[ "`grep -i 'solveur petsc cholesky { }' $REP/* 2>/dev/null`" != "" ] && i=""  # if petsc cholesky used with implicit time scheme in Flica5 # ND je desactive ce test
           [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)" && liste_skipped=$liste_skipped" $iisa"
         fi
-       # Discard PolyMAC test cases with NVidia compiler:
-       #if [ "$TRUST_ARCH_CC" = linux_nvc++ ] && [ "`grep -i "PolyMAC" $REP/* 2>/dev/null`" != "" ]
-       #then
-       #    echo "Test $i skipped (PolyMAC build error with nvc++ to fix)"
-       #    liste_skipped=$liste_skipped" $i"
-       #    i=""
-       #fi
        # Discard test case with python MPI:
        if [ "$TRUST_DISABLE_MPI4PY" = 1 ] && [ "`grep -i mpirun $REP/* 2>/dev/null | grep -i python`" != "" ]
        then
@@ -1359,6 +1353,7 @@ then
                          echo FIN >> $NOM2.lml
                          echo "FIN n'est pas dans $NOM2.lml avec la version $exec"
                       fi
+                      ref_comparison=1
                       if [ "$type" = "seq" ]
                       then
                          if [ ! -s .reference.lml ]
@@ -1369,14 +1364,18 @@ then
                          # Comparaison reference-sequentiel(ou parallele si PARALLEL_ONLY=1)
                          LML1=.reference.lml
                          LML2=$NOM2.lml
+                          # On ne compare pas avec la reference selon certaines conditions:
+                         [ -f $rep_tests/$REP/no_ref_comparison ] && ref_comparison=0 # Existence du fichier no_ref_comparison
+                         # Si on est pas sur la machine de livraison (qui fait les references):
+                         [ $HOST != $TRUST_HOST_ADMIN ] && [ $CAS_AVEC_ECART = 1 ] && ref_comparison=0 # Cas sensible detecte par la balise lance_test ecarts dans jdd
                       else
                          # Comparaison reference-sequentiel(ou parallele si PARALLEL_ONLY=1)
                          LML1=$NOM.lml
                          LML2=$NOM2.lml
                       fi
-                      if [ -f $rep_tests/$REP/no_ref_comparison ] && [ $LML1 = ".reference.lml" ]
+                      if [ $ref_comparison = 0 ]
                       then
-                         echo "Test $i not compared to the reference"
+                         echo "Warning! File $LML2 not compared to the reference (see the reason in the .data header)"
                          liste_no_ref_comparison=$liste_no_ref_comparison" $i"
                       else
                          # lance_test_seq_par will be replaced by compare_lata

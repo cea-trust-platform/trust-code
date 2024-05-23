@@ -1,6 +1,5 @@
 # Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #
 # PARALLEL RUNS #
-# lance_test 1 ecart #
 dimension 2
 Scheme_euler_implicit sch
 # Runge_Kutta_ordre_3 sch #
