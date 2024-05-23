@@ -48,7 +48,7 @@ fi
 if [ "$mini" = "1" ] 
 then
    sed "s?\.?\\\.?g" $TRUST_ENV/liste_fichiers_TRUST_nec| awk '{print (" ./"$1)}' >$TRUST_ENV/liste_fichiers_TRUST_nec2 
-   egrep -f $TRUST_ENV/liste_fichiers_TRUST_nec2 $fichier > $TRUST_TMP/$fichier.mod  
+   grep -E -f $TRUST_ENV/liste_fichiers_TRUST_nec2 $fichier > $TRUST_TMP/$fichier.mod  
    mv $TRUST_TMP/$fichier.mod $fichier
    cp $fichier $TRUST_TMP/$fichier
    cp $TRUST_TMP/$fichier.mod $fichier

@@ -15,14 +15,14 @@ if [ "$ligne" = "" ]
 then
 echo on transforme en pb couple
 pbc1=pbc1
-ligne="`egrep -i 'discretiser|discretize' $file`"
+ligne="`grep -E -i 'discretiser|discretize' $file`"
 nompb=`echo $ligne  |  awk  '  { print $2  }' `
 ligneb=`echo $ligne  |sed "s/$nompb/pbc1/"`
-sch=`egrep -i 'associer|associate' $file    |  grep $nompb  | grep sch|awk '{print $NF}'`
+sch=`grep -E -i 'associer|associate' $file    |  grep $nompb  | grep sch|awk '{print $NF}'`
 ligne2="Pb_Couple_Rayonnement  $pbc1   Modele_Rayonnement_Milieu_Transparent modr   Associer $pbc1 modr  Lire modr {  fichier_face_rayo bidon.facesrayo fichier_fij bidon.factforme fichier_matrice bidon.mat_ray_inv relaxation 0  } associer pbc1 $nompb associer pbc1 $sch "$ligneb
 sed "s/$ligne/$ligne2/" es.data > es2.data
 #set -xv
-ligne="`egrep -i 'associer|associate' es.data    |  grep $nompb  | grep sch`"
+ligne="`grep -E -i 'associer|associate' es.data    |  grep $nompb  | grep sch`"
 ligne2="associer pbc1 $sch"
 sed "s/$ligne//" es2.data > es.data
 ligne="`grep -i resoudre_qcomp es.data `"
@@ -30,7 +30,7 @@ if [ "$ligne" != "" ]
 then
 sed "s/$ligne/resoudre_qcomp pbc1/" es.data >es2.data
 else
-ligne="`egrep -i 'resoudre|solve ' es.data `"
+ligne="`grep -E -i 'resoudre|solve ' es.data `"
 sed "s/$ligne/resoudre pbc1/" es.data >es2.data
 fi
 #mv es2.data Rayo_$file
@@ -47,7 +47,7 @@ else
 disc=VEF
 fi
 echo "on cherche les cond_lims thermiques"
-egrep -vi 'resoudre|solve ' es2.data > es.data
+grep -E -vi 'resoudre|solve ' es2.data > es.data
 $exec es 1>out 2>err
 grep "pas rayonnante" err > err2 
  grep -B1 -i rayo_transp es.log| grep "Reading the boundary condition" | awk '{print $NF}' | sort -u > err2

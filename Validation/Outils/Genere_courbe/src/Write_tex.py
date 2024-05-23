@@ -503,7 +503,7 @@ Report generated  __DATE__.'''
         fichier.write_Tex(r'\item Version %s : %s' % (maitre.code,chaine2Tex(version)))
         try:
             from os import popen
-            a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
+            a=os.popen('grep -E "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
             chaine=a.read().split()
             version=chaine[0]+" (built on TRUST v"+chaine[1]+")"
 #            fichier.write_Tex(r'\item Binary: %s' % chaine2Tex(version))
@@ -709,7 +709,7 @@ Report generated  __DATE__.'''
         ficTex.write_Tex(r'\item Version %s : %s' % (maitre.code,chaine2Tex(version)))
         try:
             from os import popen
-            a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
+            a=os.popen('grep -E "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
             chaine=a.read().split()
             version=chaine[0]+" (built on TRUST v"+chaine[1]+")"
             ficTex.write_Tex(r'\item Binary: %s' % chaine2Tex(version))
