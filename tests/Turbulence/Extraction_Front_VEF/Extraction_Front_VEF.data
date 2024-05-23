@@ -3,7 +3,6 @@
 # Test du postraitement d un champ extrait sur une frontiere #
 # Plante si postraitement avec meshtv #
 # PARALLEL NOT #
-# lance_test 1 ecarts #
 dimension 3
 Domaine dom
 Domaine dom_extraction

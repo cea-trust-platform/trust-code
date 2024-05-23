@@ -1,6 +1,5 @@
 # Hydraulique 2D laminaire schema Amont maillage quadrangle #
 # PARALLEL OK #
-# lance_test 2 ecarts possibles sur ce cas possible sur ce cas #
 dimension 2
 Pb_hydraulique_turbulent pb
 Domaine dom

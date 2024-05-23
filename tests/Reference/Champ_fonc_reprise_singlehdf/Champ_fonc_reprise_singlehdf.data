@@ -1,6 +1,5 @@
 # Hydraulique 2D laminaire avec "trou" dans le maillage et Champ_Fonc_Reprise #
 # PARALLEL ONLY 2 #
-# lance_test 50 ecarts #
 dimension 2
 Pb_hydraulique pb
 Domaine dom

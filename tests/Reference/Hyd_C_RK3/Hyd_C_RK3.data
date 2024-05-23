@@ -1,6 +1,5 @@
 # Hydraulique 2D avec transport constituant #
 # PARALLEL OK 4 #
-# lance_test 1 ecarts #
 dimension 2
 
 Pb_hydraulique_concentration pb

@@ -1,6 +1,5 @@
 # Lecture d'un maillage hexaedre issu d'ICEM #
 # puis tetraedrisation #
-# lance_test Ce cas peut planter pour cause de manque de RAM #
 dimension 3
 
 domaine dom

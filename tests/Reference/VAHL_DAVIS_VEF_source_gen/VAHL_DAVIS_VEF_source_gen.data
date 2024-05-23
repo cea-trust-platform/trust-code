@@ -1,7 +1,6 @@
 # Thermohydraulique 2D VEF Boussinesq generic amont #
 # Terme source generique de frottement pour l eq de qdm #
 # PARALLEL OK #
-# lance_test 1 ecarts #
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom

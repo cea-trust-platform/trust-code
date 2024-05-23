@@ -1,6 +1,5 @@
 # Thermohydraulique concentration 2D VEF Boussinesq #
 # PARALLEL OK #
-# lance_test 1 ecart #
 dimension 2
 Pb_Thermohydraulique_Concentration pb
 

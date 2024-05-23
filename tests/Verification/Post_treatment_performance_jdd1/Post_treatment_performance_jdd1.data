@@ -1,6 +1,5 @@
 # Hydraulique 2D laminar with Quick scheme #
 # PARALLEL RUNS #
-# lance_test 2 ecarts #
 
 # Activate detailed stats #
 stat_per_proc_perf_log 1

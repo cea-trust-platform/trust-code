@@ -1,6 +1,5 @@
 # Hydraulique 2D laminar with Quick scheme #
 # PARALLEL ONLY 4 #
-# lance_test 2 ecarts #
 
 # Dimension 2D or 3D #
 dimension 2

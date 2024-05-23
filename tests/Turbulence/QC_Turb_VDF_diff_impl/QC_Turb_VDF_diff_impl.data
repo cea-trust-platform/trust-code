@@ -1,6 +1,5 @@
 # ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #
 # PARALLEL OK 4 #
-# lance_test 1 ecart #
 dimension 3
 Pb_Thermohydraulique_turbulent_QC pb
 

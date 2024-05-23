@@ -1,6 +1,6 @@
 # ThermoHydraulique 2D : Calculs statistiques et test de la reprise #
 # PARALLEL RUNS #
-# lance_test 3 ecarts #
+# lance_test 3 ecarts avec OpenMP #
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom

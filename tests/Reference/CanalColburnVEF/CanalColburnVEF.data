@@ -1,6 +1,5 @@
 # VEF: Conduction 3D avec thermohydraulique 1D #
 # PARALLEL RUNS #
-# lance_test 1 ecart #
 Dimension 3
 
 domaine SOLIDE
