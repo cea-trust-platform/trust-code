@@ -23,7 +23,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       cd $build_dir
       tar xzf $archive || exit -1
       src_dir=$build_dir/kokkos
-      
+
       # Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug or when developping on GPU:
       if [ $HOST = $TRUST_HOST_ADMIN ] || [ "$TRUST_USE_OPENMP" = 1 ]
       then
@@ -44,7 +44,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
 	   CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
 	   # To use nvc++ as device compiler (nvcc ~ nvc++ -gpu):
 	   [ "`basename $TRUST_CC_BASE`" = nvc++ ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON"
-	fi    
+	fi
 	CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
@@ -62,7 +62,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE$TRUST_CUDA_CC=ON"
            elif [ "$TRUST_CUDA_CC" = 90 ]
            then
-              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_HOPPER$TRUST_CUDA_CC=ON"  
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_HOPPER$TRUST_CUDA_CC=ON"
            else
               echo "KOKKOS_ARCH not set!" && exit -1
            fi
@@ -73,14 +73,15 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
 	   if [ "$TRUST_USE_KOKKOS_HIP" = 1 ]
 	   then
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON"
-              #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build   
+              #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
 	   else
               # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET:
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON" # Slow on MI250
-	   fi   
+	   fi
            CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
         fi
+        #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMP=ON"
         # On ne construit les examples que la ou cela marche...
         [ "$TRUST_USE_ROCM" != 1 ] && [ "$TRUST_CUDA_CC" != 70 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
         CMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR/$TRUST_ARCH`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
@@ -90,6 +91,10 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=ON"           # Use bounds checking: increase run time
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON"  # Debug check on dual views
+        fi
+	if [ $CMAKE_BUILD_TYPE != Debug ]
+        then
+	    CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX2=ON" # only work if TRUST is also compiled with avx option (such as mavx2), not the case in debug mode
         fi
         # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
         echo "cmake ../kokkos $CMAKE_OPT" | tee $log_file
