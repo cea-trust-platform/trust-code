@@ -23,7 +23,7 @@
 void kokkos_self_test()
 {
 #ifndef NDEBUG
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   static bool kokkos_self_tested_ = false;
 
   if (kokkos_self_tested_) return;

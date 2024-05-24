@@ -130,7 +130,7 @@ inline TRUSTArray<_TYPE_,_SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator=(const TR
 template<typename _TYPE_, typename _SIZE_>
 inline _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   this->ensureDataOnHost();
 #endif
   assert(i >= 0 && i < size_array());
@@ -140,7 +140,7 @@ inline _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i)
 template<typename _TYPE_, typename _SIZE_>
 inline const _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i) const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   this->ensureDataOnHost();
 #endif
   assert(i >= 0 && i < size_array());

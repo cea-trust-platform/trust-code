@@ -51,6 +51,9 @@ check_recent_src()
        $TRUST_ROOT/bin/KSH/forbid_french.ct $file
        erreur $?
     fi
+    # Macro _OPENMP -> _OPENMP_TARGET
+    grep " _OPENMP" $file | grep -v TARGET
+    [ $? = 0 ] && echo "Replace in $file: _OPENMP macro by _OPENMP_TARGET" && erreur 1
 
     #################################################
     # Interdiction des include sous la forme "toto.h"

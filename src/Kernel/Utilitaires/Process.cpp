@@ -393,7 +393,7 @@ void Process::imprimer_ram_totale(int all_process)
         double max_memoire=Process::mp_max(memoire);
         double total_memoire=Process::mp_sum(memoire);
         Cout << (int)(total_memoire/Mo) << " MBytes of RAM taken by the calculation (max on a rank: "<<(int)(max_memoire/Mo)<<" MB)." << finl;
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
         int Go = 1024 * Mo;
         double allocated = mp_max((double)DeviceMemory::allocatedBytesOnDevice());
         size_t total = DeviceMemory::deviceMemGetInfo(1);

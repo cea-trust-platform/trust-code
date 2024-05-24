@@ -59,7 +59,7 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 }
 
 
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 // Set MPI processes to devices
 void init_openmp()
 {
@@ -170,7 +170,7 @@ void init_cuda()
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (tab.get_data_location()==DataLocation::HostOnly) return tab.data();
   _TYPE_ *device_ptr = nullptr;
   _TYPE_ *ptr = tab.data();
@@ -189,7 +189,7 @@ template <typename _TYPE_, typename _SIZE_>
 _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
@@ -203,7 +203,7 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
@@ -238,7 +238,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       _TYPE_ *tab_addr = tab.data();
@@ -254,7 +254,7 @@ void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       std::string clock;
@@ -295,7 +295,7 @@ template <typename _TYPE_, typename _SIZE_>
 _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       init_openmp();
@@ -328,7 +328,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, 
 template <typename _TYPE_, typename _SIZE_>
 void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       assert(isAllocatedOnDevice(ptr) || size==0);
@@ -363,7 +363,7 @@ _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName
 template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice && tab.get_data_location() == DataLocation::Device)
     {
       copyFromDevice(tab.data(), tab.size_mem(), " array " + arrayName);
@@ -374,7 +374,7 @@ void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       assert(isAllocatedOnDevice(ptr) || size==0);
@@ -407,7 +407,7 @@ void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_>
 void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
       if (tab.get_data_location()==DataLocation::Device || tab.get_data_location()==DataLocation::PartialHostDevice)
@@ -431,7 +431,7 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
 template <typename _TYPE_>
 void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice && tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       int bytes = sizeof(_TYPE_) * (fin-deb);
@@ -451,7 +451,7 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
 template <typename _TYPE_>
 void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice && tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host

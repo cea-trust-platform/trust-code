@@ -74,7 +74,7 @@ template<typename T>
 using HostViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 // Its const version (const disabled for OpenMP, weird bug)
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 template<typename T>
 using ConstViewArr = Kokkos::View</* const */T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 template<typename T>

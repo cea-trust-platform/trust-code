@@ -61,7 +61,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab2() const
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1]);
   t_dev device_view;
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view_tab2()");
   device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1]);
@@ -102,7 +102,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
   init_view_tab2();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
@@ -130,7 +130,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_tab2();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
@@ -158,7 +158,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
   init_view_tab2();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos view_rw()");
 #else
   // Copy to device (if needed) ...
@@ -183,7 +183,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view_rw()
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Copy to host (if needed) ...
@@ -193,7 +193,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host() const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
@@ -242,7 +242,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab3() const
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2]);
   t_dev device_view;
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view_tab3()");
   device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1], dims[2]);
@@ -266,7 +266,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
 {
   // Init if necessary
   init_view_tab3();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   mapToDevice(*this, "Kokkos TRUSTTab3::view3_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
@@ -294,7 +294,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
 {
   // Init if necessary
   init_view_tab3();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_,_SIZE_>::view3_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
@@ -322,7 +322,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
 {
   // Init if necessary
   init_view_tab3();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos view3_rw()");
 #else
   // Copy to device (if needed) ...
@@ -345,7 +345,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host3() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Copy to host (if needed) ...
@@ -355,7 +355,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host3() const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host3() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:
@@ -406,7 +406,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab4() const
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
   t_dev device_view;
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view_tab4()");
   device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0], dims[1], dims[2], dims[3]);
@@ -430,8 +430,8 @@ TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
 {
   // Init if necessary
   init_view_tab4();
-#ifdef _OPENMP
-  mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
+#ifdef _OPENMP_TARGET
+  mapToDevice(*this, "Kokkos TRUSTTab::view4_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab4_.template sync<memory_space>();
@@ -458,7 +458,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
 {
   // Init if necessary
   init_view_tab4();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTTab4<_TYPE_,_SIZE_>::view4_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
@@ -486,7 +486,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
 {
   // Init if necessary
   init_view_tab4();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos view4_rw()");
 #else
   // Copy to device (if needed) ...
@@ -509,7 +509,7 @@ TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host4() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Copy to host (if needed) ...
@@ -519,7 +519,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::sync_to_host4() const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::modified_on_host4() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:

@@ -19,7 +19,7 @@
 #include <View_Types.h>
 
 // Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 static bool timer=true;
 #else
 static bool timer=false;
@@ -352,7 +352,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<
           if (IS_EGAL) p_resu = x;
           if (IS_DIV)
             {
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
               if (x == 0.) error_divide(__func__);
 #endif
               p_resu /= x;
@@ -427,7 +427,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
 
           if (IS_DIV)
             {
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
               if (x == (_TYPE_)0) error_divide(__func__);
 #endif
               p_resu /= x;
@@ -435,7 +435,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
 
           if (IS_INV)
             {
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
               if (p_resu == (_TYPE_)0) error_divide(__func__);
 #endif
               p_resu = (_TYPE_) ((_TYPE_)1 / p_resu); // same as sqrt above

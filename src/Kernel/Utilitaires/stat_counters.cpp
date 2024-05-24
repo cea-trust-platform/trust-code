@@ -578,7 +578,7 @@ void print_statistics_analyse(const char * message, int mode_append)
                   Cerr << "==============================================================================================" << finl;
                 }
             }
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
           else
             {
               Cerr << "============================================================================================" << finl;

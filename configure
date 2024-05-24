@@ -295,6 +295,7 @@ echo "   -rocalution=0|path to rocALUTION  Disable or specify extern rocALUTION 
 echo "   -cuda=path/nvcc|=download|=ccXY   Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
 echo "   -rocm                             Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
 echo "   -openmp                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
+echo "   -kokkos_openmp                    Enable OpenMP Kokkos backend instead of serial backend (default)"
 echo "   -kokkos_simd                      Enable SIMD Kokkos support"
 echo "   -kokkos_hip                       Enable HIP backend on AMD (OpenMP target is the default)"
 echo " "
@@ -415,6 +416,7 @@ export TRUST_ROCALUTION=1
 export TRUST_USE_OPENBLAS=1
 export TRUST_USE_OPENMP=0
 export TRUST_USE_KOKKOS=1
+export TRUST_USE_KOKKOS_OPENMP=0
 export TRUST_USE_KOKKOS_SIMD=0
 export TRUST_USE_KOKKOS_HIP=0
 export TRUST_USE_AVX=1
@@ -631,6 +633,10 @@ do
    then
       export TRUST_USE_OPENMP=1
 
+   elif [ "${1#-kokkos_openmp}" != "$1" ]
+   then
+      export TRUST_USE_KOKKOS_OPENMP=1
+
    elif [ "${1#-kokkos_simd}" != "$1" ]
    then
       export TRUST_USE_KOKKOS_SIMD=1
@@ -836,6 +842,7 @@ echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# D
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_WITHOUT_CONDA=$TRUST_WITHOUT_CONDA && export TRUST_WITHOUT_CONDA    	# `[ $TRUST_WITHOUT_CONDA = 1 ] && echo 'Installing without conda - The auto-detected Python will be used and is sym-linked in exec/python/bin' || echo 'conda enabled by default'`" >> $var
 echo "TRUST_USE_KOKKOS=$TRUST_USE_KOKKOS && export TRUST_USE_KOKKOS    	# TRUST built with Kokkos" >> $var
+echo "TRUST_USE_KOKKOS_OPENMP=$TRUST_USE_KOKKOS_OPENMP && export TRUST_USE_KOKKOS_OPENMP    	# TRUST built with Kokkos OpenMP backend" >> $var
 echo "TRUST_USE_KOKKOS_SIMD=$TRUST_USE_KOKKOS_SIMD && export TRUST_USE_KOKKOS_SIMD    	# TRUST built with Kokkos SIMD" >> $var
 echo "TRUST_USE_KOKKOS_HIP=$TRUST_USE_KOKKOS_HIP && export TRUST_USE_KOKKOS_HIP    	# TRUST built with Kokkos HIP" >> $var
 

@@ -111,7 +111,7 @@ public:
   inline const _CLASSE_& valeur() const
   {
     assert(pointeur_ != nullptr);
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
     assert(get_Objet_U_ptr_check() || 1);
 #endif
     return *pointeur_;
@@ -120,7 +120,7 @@ public:
   inline _CLASSE_& valeur()
   {
     assert(pointeur_ != nullptr);
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
     assert(get_Objet_U_ptr_check() || 1);
 #endif
     return *pointeur_;

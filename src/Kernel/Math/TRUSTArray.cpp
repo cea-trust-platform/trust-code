@@ -19,7 +19,7 @@
 #include <DeviceMemory.h>
 
 // Ajout d'un flag par appel a end_gpu_timer peut etre couteux (creation d'une string)
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 static bool timer=true;
 #else
 static bool timer=false;
@@ -232,7 +232,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::inject_array(const TRUST
           const _TYPE_ * addr_source = source.span_.data() + first_element_source;
           _TYPE_ * addr_dest = span_.data() + first_element_dest;
           memcpy(addr_dest, addr_source, nb_elements * sizeof(_TYPE_));
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
           if (DeviceMemory::warning(nb_elements) && Process::je_suis_maitre())
             Cerr << "[Host] Filling a large TRUSTArray (" << nb_elements << " items) which is slow during a GPU run! Set a breakpoint to fix." << finl;
 #endif

@@ -23,7 +23,7 @@
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost() const
 {
-#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
+#if defined(_OPENMP_TARGET) && !defined(TRUST_USE_UVM)
   if (get_data_location()==DataLocation::Device)
     copyFromDevice(*this, "const detected with ensureDataOnHost()");
 #endif
@@ -32,7 +32,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost() const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost()
 {
-#if defined(_OPENMP) && !defined(TRUST_USE_UVM)
+#if defined(_OPENMP_TARGET) && !defined(TRUST_USE_UVM)
   const DataLocation& loc = get_data_location();
   if (loc==DataLocation::Host || loc==DataLocation::HostOnly || loc==DataLocation::PartialHostDevice) return;
   else if (loc==DataLocation::Device)
@@ -56,7 +56,7 @@ inline bool TRUSTArray<_TYPE_,_SIZE_>::isDataOnDevice() const
 template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   bool flag = isDataOnDevice() && computeOnDevice;
   if (!flag)
     ensureDataOnHost();
@@ -71,7 +71,7 @@ inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice() const
 template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice()
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   bool flag = isDataOnDevice() && computeOnDevice;
   if (!flag)
     ensureDataOnHost();
@@ -86,7 +86,7 @@ inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice()
 template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice(const TRUSTArray& tab_const)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   bool flag = isDataOnDevice() && tab_const.isDataOnDevice() && computeOnDevice;
   // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
   if (!flag)

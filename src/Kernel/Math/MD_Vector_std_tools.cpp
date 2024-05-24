@@ -71,7 +71,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
               // Indice de l'item geometrique a copier (ou du premier item du bloc)
               int premier_item_bloc = items_to_process_addr[item];
               // Adresse des elements a copier dans le vecteur
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
               assert(premier_item_bloc >= 0 && bloc_size > 0 &&
                      (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
 #endif
@@ -88,7 +88,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
                       _TYPE_ src = buffer_addr[ii];
                       vect_addr[jj] = (dest > src) ? dest : src;
                     }
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
                   else
                     {
                       Cerr << "Unknown VECT_ITEMS_TYPE enum !" << finl;
@@ -162,7 +162,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
               const int dernier_item_bloc = items_to_process_addr[item + 1];
               const int bloc_size = dernier_item_bloc - premier_item_bloc;
               // Adresse des elements a copier dans le vecteur
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
               assert(premier_item_bloc >= 0 && bloc_size > 0 &&
                      (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
 #endif
@@ -178,7 +178,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
                   if (IS_READ) buffer_addr[ii] = vect_addr[jj];
                   else if (IS_WRITE) vect_addr[jj] = buffer_addr[ii];
                   else if (IS_ADD) vect_addr[jj] += buffer_addr[ii];
-#ifndef _OPENMP
+#ifndef _OPENMP_TARGET
                   else
                     {
                       Cerr << "Unknown VECT_BLOCS_TYPE enum !" << finl;

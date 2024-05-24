@@ -21,7 +21,13 @@
 #include <stat_counters.h>
 #include <kokkos++.h>
 
-#ifdef _OPENMP
+#if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
+// Use our own macro _OPENMP_TARGET instead of _OPENMP to differentiate from host OpenMP backend
+#if defined(_OPENMP)
+#define _OPENMP_TARGET
+#endif
+#endif
+#ifdef _OPENMP_TARGET
 #include <omp.h>
 #ifdef TRUST_USE_CUDA
 #include <nvtx3/nvToolsExt.h>
@@ -40,7 +46,7 @@ void init_openmp();
 void init_cuda();
 std::string ptrToString(const void* adr);
 
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 #define ToDo_Kokkos(str)                              \
         printf("[Kokkos %s] Warning, code running slow cause not ported yet: line %d in %s \n", str, __LINE__, __FILE__);
 #else
@@ -48,7 +54,7 @@ std::string ptrToString(const void* adr);
 #endif
 
 // Macro Kernel_Name
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 inline const std::string methodName(const std::string& prettyFunction, const int line)
 {
   size_t colons = prettyFunction.find("::");
@@ -74,7 +80,7 @@ inline const std::string methodName(const std::string& prettyFunction, const int
 // Timers GPU avec OpenMP (renommer?)
 inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (init_openmp_ && timer_on)
     {
       timer_counter++;
@@ -90,7 +96,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   if (init_openmp_ && timer_on)
     {
       timer_counter--;
@@ -160,7 +166,7 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
 {
   // Routine omp_target_is_present pour existence d'une adresse sur le device
   // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   return omp_target_is_present(tab_addr, omp_get_default_device())==1;
 #else
   return false;
@@ -170,7 +176,7 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
 template <typename _TYPE_, typename _SIZE_=int>
 bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
   bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
   if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");

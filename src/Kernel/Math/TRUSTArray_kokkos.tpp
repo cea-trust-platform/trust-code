@@ -42,7 +42,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view_arr() const
   // Empty view on device - just a memory allocation:
   //t_dev device_view = t_dev(nom, ze_dim);
   t_dev device_view;
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view_arr()");
   device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), ze_dim);
@@ -67,7 +67,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
   init_view_arr();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   mapToDevice(*this, "Kokkos TRUSTArray::view_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
@@ -95,7 +95,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_arr();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
@@ -123,7 +123,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
   init_view_arr();
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTArray::view_rw()");
 #else
   // Copy to device (if needed) ...
@@ -149,7 +149,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::sync_to_host() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Copy to host (if needed) ...
@@ -159,7 +159,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::sync_to_host() const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::modified_on_host() const
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Process::exit("ToDo");
 #endif
   // Mark modified on host side:

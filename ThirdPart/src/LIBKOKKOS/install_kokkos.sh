@@ -81,7 +81,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
         fi
-        #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMP=ON"
+        [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMP=ON"	# Backend OpenMP au lieu de serial
         # On ne construit les examples que la ou cela marche...
         [ "$TRUST_USE_ROCM" != 1 ] && [ "$TRUST_CUDA_CC" != 70 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_EXAMPLES=ON"
         CMAKE_INSTALL_PREFIX=$KOKKOS_ROOT_DIR/$TRUST_ARCH`[ $CMAKE_BUILD_TYPE = Release ] && echo _opt`
@@ -91,12 +91,11 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=ON"           # Use bounds checking: increase run time
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON"  # Debug check on dual views
-        fi
-	if [ $CMAKE_BUILD_TYPE != Debug ]
-        then
-	    CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX2=ON" # only work if TRUST is also compiled with avx option (such as mavx2), not the case in debug mode
+        else
+           CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX2=ON" # only work if TRUST is also compiled with avx option (such as mavx2), not the case in debug mode
         fi
         # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
+        # et ici aussi: https://kokkos.org/kokkos-core-wiki/API/core/Macros.html
         echo "cmake ../kokkos $CMAKE_OPT" | tee $log_file
         cmake ../kokkos $CMAKE_OPT 2>&1 | tee -a $log_file
         [ ${PIPESTATUS[0]} != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1

@@ -266,7 +266,7 @@ void TestTRUSTArray::test_conversion()
  */
 int main(int argc, char ** argv)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   Kokkos::initialize(argc, argv);
 #endif
 

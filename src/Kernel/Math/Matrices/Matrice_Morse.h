@@ -308,7 +308,7 @@ struct Matrice_Morse_View
       if (tab2_v(k)-1 == j) return(coeff_v(k));
     if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
     printf("Error Matrice_Morse::operator(%d, %d) not defined!\n", (True_int)i, (True_int)j);
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
     Kokkos::abort("Error");
 #else
     abort();
