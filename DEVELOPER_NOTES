@@ -1,10 +1,10 @@
 -------------------------------------------------------------
 Developer notes version 1.9.4_beta : Changes since version 1.9.3 :
 -------------------------------------------------------------
-23/05/24 (TRUST) Change       : Flag '-linker' can be used to override linker, otherwise mold will be used if found. configure option -linker=default will force default linker.
+23/05/24 (TRUST) Change       : configure option '-linker=' can be used to override linker, otherwise mold will be used if found (only with gcc>12.1.0 and clang compilers). if need to use default linker, than -linker=default will force default linker (ld for gnu, ...).
 17/05/24 (TRUST) Minor change : Methods Gpoint() and Gpoint(t1,t2) renamed derivee_en_temps() and calculer_derivee_en_temps(t1,t2)
-14/05/24 (TRUST) Debug        : Flag '-enable-kokkos-debug' can be used to compile (and link only with $exec_debug) Kokkos library in Debug mode.
-30/04/24 (TRUST) Debug        : Flag '-enable-mc-debug' can be used to compile (and link only with $exec_debug) MEDCoupling library in Debug mode.
+14/05/24 (TRUST) Debug        : configure option '-enable-kokkos-debug' can be used to compile (and link only with $exec_debug) Kokkos library in Debug mode.
+30/04/24 (TRUST) Debug        : configure option '-enable-mc-debug' can be used to compile (and link only with $exec_debug) MEDCoupling library in Debug mode.
 24/04/24 (TRUST) NR Tests     : make check_mode and make ctest_mode does not scan validation forms if no validation form has been modified since last check.
 11/04/24 (TRUST) NR Tests     : Environment variable TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS removed, make ctest_MODE does now a smart check of tests issued from validation forms.
 22/03/24 (TRUST) Major change : mklibs script now generates only what is necessary for CMake. Old building mode (autotools) not supported anymore. File make.liba not generated anymore.
