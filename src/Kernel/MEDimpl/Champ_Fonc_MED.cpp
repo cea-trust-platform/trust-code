@@ -40,6 +40,7 @@ using MEDCoupling::GetTimeAttachedOnFieldIteration;
 using MEDCoupling::GetAllFieldNamesOnMesh;
 using MEDCoupling::MEDFileFieldMultiTS;
 using MEDCoupling::MEDFileField1TS;
+using MEDCoupling::MEDFileMesh;
 #endif
 
 // XD champ_fonc_med field_base champ_fonc_med 1 Field to read a data field in a MED-format file .med at a specified time. It is very useful, for example, to resume a calculation with a new or refined geometry. The field post-processed on the new geometry at med format is used as initial condition for the resume.
@@ -243,7 +244,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     }
   // FIN MODIF ELI LAUCOIN (06/03/2012)
   /* si on est en parallele : creation du filtre */
-  if (Process::is_parallel() && field_size != le_champ().valeurs().dimension(0))
+  if (Process::is_parallel() && field_size < 0)
     {
       EFichier fdec;
       fdec.ouvrir(nom_decoup_);
@@ -283,12 +284,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           else
             {
               Cerr << "Champ_Fonc_MED on parallel domain : decoup file only handled for field located on nodes or on cells!" << finl;
-              Process::exit();
-            }
-
-          if (field_size != dec_size)
-            {
-              Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl;
               Process::exit();
             }
         }
@@ -554,7 +549,7 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
 
   if (fast) // Lecture plus rapide du field sans lecture du mesh associe
     {
-      MCAuto<MEDFileField1TS> file = MEDCoupling::MEDFileField1TS::New(fileName, fieldName, iteration, order);
+      MCAuto<MEDFileField1TS> file = MEDFileField1TS::New(fileName, fieldName, iteration, order);
       ffield = file->getFieldOnMeshAtLevel(field_type, domaine().get_mc_mesh(), 0);
     }
   else   // Lecture ~deux fois plus lente du field avec lecture du mesh associe
@@ -578,37 +573,20 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   int last_iter  = time_steps_[nn-1].first;
   int last_order = time_steps_[nn-1].second;
   // Only one MCAuto below to avoid double deletion:
-  MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, last_iter, last_order);
-  MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-  if (field == 0)
-    {
-      Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-      Process::exit(-1);
-    }
-  size = field->getNumberOfTuplesExpected();
+  MCAuto<MEDFileField1TS> field = MEDFileField1TS::New(fileName, fieldName, last_iter, last_order);
   nbcomp = (int) field->getNumberOfComponents();
+  if (is_parallel() && use_existing_domain_)
+    size = -1;
+  else
+    {
+      MCAuto<MEDFileMesh> mesh = MEDFileMesh::New(fileName, meshName, last_iter, last_order);
+      size = field_type == MEDCoupling::ON_NODES ? mesh->getNumberOfNodes() : mesh->getNumberOfCellsAtLevel(0);
+    }
 
-//  nbcomp = (int)MEDCoupling::GetComponentsNamesOfField(fileName,fieldName).size();
-//  int meshDim, spaceDim;
-//  int numberOfNodes;
-//  std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > typesOfCells(MEDCoupling::GetUMeshGlobalInfo(fileName,meshName,meshDim,spaceDim,numberOfNodes));
-//  size = -1;
-  if (field_type == MEDCoupling::ON_NODES)
-    {
-      if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
-        type_champ = "Champ_Fonc_Q1_MED";
-      else
-        type_champ = "Champ_Fonc_P1_MED";
-//      size = numberOfNodes;
-    }
-  else if (field_type == MEDCoupling::ON_CELLS)
-    {
-      type_champ = "Champ_Fonc_P0_MED";
-//      int numberOfCells = 0;
-//      for(int i=0; i<(int)typesOfCells[0].size(); i++) //iterate over cells of maximal dimension
-//        numberOfCells+=(int)typesOfCells[0][i].second;
-//      size = numberOfCells;
-    }
+  if (field_type == MEDCoupling::ON_CELLS)
+    type_champ = "Champ_Fonc_P0_MED";
+  else if (field_type == MEDCoupling::ON_NODES)
+    type_champ = cell_type == INTERP_KERNEL::NORM_QUAD4 || cell_type == INTERP_KERNEL::NORM_HEXA8 ? "Champ_Fonc_Q1_MED" : "Champ_Fonc_P1_MED";
 }
 #endif // MEDCOUPLING_
 
