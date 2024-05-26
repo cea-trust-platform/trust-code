@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,8 @@ class Domaine;
  *         {
  *              fichier     decoup/domaine_glob.txt
  *              fichier_ssz sous_domaine_dom_N.file
+ *              OU
+ *              nom_ssz     sous_domaine
  *         }
  *         Nom_Domaines decoup/dom_N
  *     }
@@ -57,6 +59,6 @@ public:
 protected:
   // Parametres du partitionneur
   Nom filename_;      ///! Nom du fichier de decoupe globale
-  Nom filename_ssz_;  ///! Nom du fichier de sous-domaines
+  Nom filename_ssz_, name_ssz_; ///! Nom du fichier de sous-domaines
 };
 #endif

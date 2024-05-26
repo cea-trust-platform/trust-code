@@ -919,32 +919,10 @@ Entree& Sous_Domaine::readOn(Entree& is)
       Nom nom_ss_domaine;
       is >> nom_ss_domaine;
       const Sous_Domaine& ssz=ref_cast(Sous_Domaine,interprete().objet(nom_ss_domaine));
-      nb_pol_possible=ssz.nb_elem_tot();
-
-      les_polys_possibles_.resize_array(nb_pol_possible);
-      int compt=0;
-      // on cherche dans ces polys ceux que l'on n a pas
-      for (int i=0; i<nb_pol_possible; i++)
-        {
-          int poly_i=ssz(i);
-          int trouve=0;
-          for (int j=0; j<nb_elem_tot(); j++)
-            if ((les_polys_(j))==poly_i)
-              {
-                trouve=1;
-                break;
-              }
-          if (!trouve)
-            les_polys_possibles_[compt++]=poly_i;
-        }
-      // on rajoute ces polys a la fin
-      int old_size=les_polys_.size();
-      les_polys_.resize(old_size+compt);
-      Journal()<<les_polys_<<finl;
-
-      for (int i=0; i<compt; i++)
-        les_polys_(old_size+i)=les_polys_possibles_[i];
-
+      std::set<int> poly_set(les_polys_.begin(), les_polys_.end()); //to detect already present elements
+      for (int i = 0; i < ssz.nb_elem_tot(); i++)
+        if (!poly_set.count(ssz(i))) //only add new elements
+          les_polys_.append_array(ssz(i));
 
       is >>motlu;
     }
