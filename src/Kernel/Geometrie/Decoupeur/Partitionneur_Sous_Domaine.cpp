@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 #include <Partitionneur_Sous_Domaine.h>
+#include <Interprete.h>
 #include <EFichier.h>
 #include <Domaine.h>
 #include <Param.h>
@@ -40,8 +41,11 @@ Partitionneur_Sous_Domaine::Partitionneur_Sous_Domaine()
 Entree& Partitionneur_Sous_Domaine::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
+  if (filename_ssz_ == "" && name_ssz_ == "")
+    Process::exit(que_suis_je() + " : at least one of filename_ssz or name_ssz are needed");
   Cerr << " filename : " << filename_ << finl;
   Cerr << " filename_ssz : " << filename_ssz_ << finl;
+  Cerr << " name_ssz : " << name_ssz_ << finl;
   return is;
 }
 
@@ -55,7 +59,8 @@ Sortie& Partitionneur_Sous_Domaine::printOn(Sortie& os) const
 void Partitionneur_Sous_Domaine::set_param(Param& param)
 {
   param.ajouter("fichier",&filename_,Param::REQUIRED); // XD_ADD_P chaine fichier
-  param.ajouter("fichier_ssz",&filename_ssz_,Param::REQUIRED); // XD_ADD_P chaine fichier sous zonne
+  param.ajouter("fichier_ssz",&filename_ssz_); // XD_ADD_P chaine fichier sous zonne
+  param.ajouter("name_ssz",&name_ssz_); // XD_ADD_P chaine nom sous zonne
 }
 
 /*! @brief Lit le contenu du fichier "filename_" et stocke le resultat dans elem_part
@@ -67,12 +72,6 @@ void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& n
     {
       Cerr << "Error in Partitionneur_Sous_Domaine::construire_partition\n";
       Cerr << " The file name has not been initialized" << finl;
-      exit();
-    }
-  if (filename_ssz_ == "")
-    {
-      Cerr << "Error in Partitionneur_Sous_Domaine::construire_partition\n";
-      Cerr << " The subdomaine file name has not been initialized" << finl;
       exit();
     }
 
@@ -90,17 +89,22 @@ void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& n
   file >> nb_parts_tot;
   file.close();
 
-  Cerr << "Reading of subdomaine file : " << filename_ssz_ << finl;
-  file.ouvrir(filename_ssz_);
-  if (!file.good())
-    {
-      Cerr << "Error in Partitionneur_Sous_Domaine::construire_partition\n";
-      Cerr << " Failed to open file " << filename_ssz_ << finl;
-      exit();
-    }
   ArrOfInt elem_ssz;
-  file >> elem_ssz;
-  file.close();
+  if (filename_ssz_ != "")
+    {
+      Cerr << "Reading of subdomaine file : " << filename_ssz_ << finl;
+      file.ouvrir(filename_ssz_);
+      if (!file.good())
+        {
+          Cerr << "Error in Partitionneur_Sous_Domaine::construire_partition\n";
+          Cerr << " Failed to open file " << filename_ssz_ << finl;
+          exit();
+        }
+      file >> elem_ssz;
+      file.close();
+    }
+  else
+    elem_ssz = ref_cast(Sous_Domaine, Interprete::objet(name_ssz_)).les_elems();
 
   /* remplissage de elem_part */
   elem_part.resize(elem_ssz.size_array());
