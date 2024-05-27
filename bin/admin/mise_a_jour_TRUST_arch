@@ -724,7 +724,7 @@ do
    fi
    echo $CC_PERF >> $PERF
    # On verifie si on a obtenu un executable teste
-   if [ -f $exec ] && [ "`touch vide.data;trust vide 2>&1 | grep TRUST;rm -f vide.data`" != "" ]
+   if [ -f $exec ] && [ "`touch vide.data;trust vide 2>&1 | grep TRUST;rm -f vide.data vide*.TU vide.log vide.stop`" != "" ]
    then
       taille=`\ls -la $exec | $TRUST_Awk '{print int($5/1024/1024)}'`
       type=`ldd $exec 2>/dev/null | grep lib | $TRUST_Awk 'END {type="Statique";if (NR>50) type="Dynamique";else if (NR>0) type="Semi-Statique";print type}'`

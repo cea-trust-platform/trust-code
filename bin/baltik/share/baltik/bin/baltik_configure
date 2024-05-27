@@ -758,6 +758,7 @@ echo " . $TRUST_ROOT/env_TRUST.sh
 export project_directory=\$(cd \"\$( dirname \"\${BASH_SOURCE[0]:-\${(%):-%x}}\" )\" && pwd)
 # Initial install performed here:
 #export project_directory=${project_directory}
+export ${project_name}_project_directory=\${project_directory}
 export PATH=\${project_directory}/build/xdata:\$PATH
 export TRUST_TESTS=\${project_directory}/build/tests/all/
 export Rapports_auto_root=\${project_directory}/build/tests/share/all/ 
