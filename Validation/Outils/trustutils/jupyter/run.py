@@ -577,7 +577,7 @@ class TRUSTSuite(object):
         ## Hence, s.o. who runs the Sserver on its machine will benefit from it directly, and on the other hand
         ## the validation process can control this finely.
         if "-parallel_run" in opt:
-            runParallel = True
+            runParallel = not preventConcurrent
         else:
             runParallel = not preventConcurrent and ((opt == "" or "-parallel_sjob" in opt.split(" ")) and self.detectSserver())
             extra = {True: "**with Sserver**", False: ""}[runParallel]
