@@ -473,7 +473,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
               if (dimension == 3)
                 cerr << " " << coord2(j, 2);
               cerr << endl;
-              printf(" Pas trouve le sommet %d Topologie : %s \n", j + 1, dom.id_.name_.getString());
+              printf(" Pas trouve le sommet %d Topologie : %s \n", j + 1, "oups");
               exit(1);
             }
         }
@@ -945,8 +945,8 @@ int main(int argc, char **argv)
             double em = 0;
             int gnerrf = -1;
             const EcartField& un_ecart = les_ecarts[j];
-	    // si Field Int no comparaison 
-	    if (un_ecart.les_ecarts_.size()<2) continue;
+
+            // cerr<<un_ecart.name_<<endl;
             int nbc = un_ecart.les_ecarts_[1].min.size_array();
             float& max = max_field[j];
             {

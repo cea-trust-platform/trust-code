@@ -17,8 +17,6 @@
 #define LataDB_include_
 #include <LataTools.h>
 #include <sstream>
-#include <map>
-#include "ReaderFORT21.h"
 
 // This file describes the LataDB class and all associated data structures.
 //  LataDB stores all the meta contained in the .lata master file, and not more.
@@ -154,7 +152,7 @@ public:
   Noms component_names_;
   Noms unites_;
   // Scalar or vector ?
-  enum Nature { UNKNOWN, SCALAR, VECTOR, WALLSCALAR };
+  enum Nature { UNKNOWN, SCALAR, VECTOR };
   Nature nature_;
   // Type and formatting info of the data
   LataDBDataType datatype_;
@@ -182,18 +180,10 @@ protected:
 
 class LataDataFile;
 #include <TRUSTArray.h>
-class MapBasicMesh;
 class LataDB
 {
 public:
-  LataDB() :
-     path_prefix_(""),
-     old_style_lata_(0),
-     write_master_file_to_call_(0),
-     internal_data_buffer_(std::ios::in | std::ios::out | std::ios::app | std::ios::binary),
-     basicmeshses_(nullptr)
-  {  }
-
+  LataDB() : internal_data_buffer_(std::ios::in | std::ios::out | std::ios::app | std::ios::binary) { old_style_lata_ = 0; path_prefix_ = ""; write_master_file_to_call_ = 0; }
   LataDB(const LataDB& src) :
     header_(src.header_),
     case_(src.case_),
@@ -203,8 +193,7 @@ public:
     timesteps_(src.timesteps_),
     path_prefix_(src.path_prefix_),
     old_style_lata_(src.old_style_lata_),
-    write_master_file_to_call_(src.write_master_file_to_call_),
-    basicmeshses_(nullptr)
+    write_master_file_to_call_(src.write_master_file_to_call_)
   {
     // Note B.M. il faudrait copier internal_data_buffer_ pour faire marcher lml->lata mais je ne sais pas faire...
   }
@@ -212,7 +201,6 @@ public:
   void reset();
   virtual void read_master_file(const char * path_prefix_, const char * filename);
   void read_master_file_med(const char *prefix, const char *filename);
-  void read_master_file_fort21(const char *prefix, const char *filename);
   static Nom   read_master_file_options(const char * filename);
 
   virtual void filter_db(const LataDB& source,
@@ -281,7 +269,6 @@ protected:
   template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, const ArrOfInt& lines_to_read) const;
   template <class C_Tab> void read_data2_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, long long debut = 0, entier n = -1, const ArrOfInt *lines_to_read = 0) const;
   template <class C_Tab> void read_data2_med_( const LataDBField& fld, C_Tab * const data, entier debut = 0, entier n = -1, const ArrOfInt *lines_to_read = 0) const;
-  template <class C_Tab> int read_data2_fort21_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, entier debut = 0, entier n = -1, const ArrOfInt *lines_to_read = 0) const;
   template <class C_Tab> FileOffset write_data_(entier tstep, const Field_UName& uname, const C_Tab&);
 
   // Timestep 0 contains global domains and field definition
@@ -300,6 +287,5 @@ protected:
 
   // This is a memory buffer where data can be written to create a temporary data base
   mutable std::stringstream internal_data_buffer_;
-  mutable MapBasicMesh*  basicmeshses_;
 };
 #endif

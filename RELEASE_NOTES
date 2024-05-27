@@ -1,7 +1,6 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
-24/05/24 (TRUST) New feature  : Support for Cathare FORT21 format in lata tools and plugins.
 17/05/24 (TRUST) Minor change : In Jupyter validation form Python API, method 'run.description()' is not available anymore. A MarkDown block should be used instead
 17/05/24 (TRUST) Keyword      : Champ_front_parametrique (boundary fields list) and Champ_parametrique (fields list) to chain multi-stationary or stationary-transient scenarios (see V&V sheets under Verification/Champs). Experimental, only tested with Flica5
 16/05/24 (TRUST) Tools        : Upgrade to MEDCoupling 9.13.0
