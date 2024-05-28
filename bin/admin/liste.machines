@@ -11,9 +11,9 @@ linux	rsync_ssh		tache	is241479.intra.cea.fr		-all 		 -TrioCFD  	-g 				-force_p
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 					-semi_opt 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is241762-clang.intra.cea.fr			-TrioCFD -C3D                				-clang -force_provided_openmpi -without-pdflatex  					# Fedora 34	Bat 451 LMSF titania 
-linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
+linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux   rsync_ssh       tache   is157083-clang.intra.cea.fr 		-all	   -TrioCFD	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 38 GF 
-linux   rsync_ssh       tache   is234637-clang.intra.cea.fr 		-all	   -TrioCFD	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit   					# Fedora 40 GA 
+linux   rsync_ssh       tache   is234637-clang.intra.cea.fr 		-all	   -TrioCFD	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit -disable-plot2d -disable-gmsh   					# Fedora 40 GA 
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
 linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
 linux	rsync_ssh	tache	is247255.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex    							# Ubuntu 22 	Bat 451 LMSF titania  MF
@@ -67,5 +67,5 @@ linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	   	 		   								
 linux   rsync_ssh	tache	is210376-noconda.intra.cea.fr 		-all	  -C3D  	 		   		-without-conda						# Fedora 34 tmp no exec, sans conda
 linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		-prof    		-remote_install_TRUST_kernel_only 						# Ub20 mode formation titania 
 linux   ssh_pass	tache	is231762.intra.cea.fr 		-all	   -MPCube -TrioCFD  -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC  	 		   			-without-pdflatex					# Rocky 9.2 GA 
-linux   rsync_ssh       tache   is234637.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex  					# Fedora 40 GA titania 
+linux   rsync_ssh       tache   is234637.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex -disable-plot2d -disable-gmsh -without-visit   					# Fedora 40 GA titania 
 linux   rsync_ssh       tache   is157091.intra.cea.fr 			      	 		-benchmark  -cuda11_6 -openmp -force_latest_mpich   # Fedora ? PL titania 
