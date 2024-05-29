@@ -265,10 +265,11 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         fit : Boolean
             When the value is "False", the method does not Returns the parabola fit.
         mode : str
-                You can select a mode as this:
-                    - mode = ``"autocorrelation"`` (default)
-                    - mode = ``"fft"`` returns only Fourier transform of autocorrlation
-                    - mode = ``"autocorrelation fft"`` for both
+            You can select a mode as this:
+
+               - mode = ``"autocorrelation"`` (default)
+               - mode = ``"fft"`` returns only Fourier transform of autocorrlation
+               - mode = ``"autocorrelation fft"`` for both
      
         Returns
         -------
