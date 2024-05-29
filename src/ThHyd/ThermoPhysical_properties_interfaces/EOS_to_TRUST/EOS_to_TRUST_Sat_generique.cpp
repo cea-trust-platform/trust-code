@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,17 +106,23 @@ int EOS_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, 
   // XXX : COCO : ARRETE D'APPELER SIGMA COMME CA CAR JE T'AVAIS DIT POURQUOI
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) return compute_eos_field(P, T, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
-  else /* attention stride */
+  if (sigma_mano_ > 0)
+    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = sigma_mano_;
+  else
     {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      int err_;
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      err_ = compute_eos_field(P, TT, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
-      for (auto& val : TT) T[i_it * ncomp + id] = val;
-      return err_;
+      if (ncomp == 1) return compute_eos_field(P, T, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
+      else /* attention stride */
+        {
+          VectorD temp_((int)P.size());
+          SpanD TT(temp_);
+          int err_;
+          for (auto& val : TT) val = T[i_it * ncomp + id];
+          err_ = compute_eos_field(P, TT, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
+          for (auto& val : TT) T[i_it * ncomp + id] = val;
+          return err_;
+        }
     }
+  return 1;
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
@@ -127,9 +133,14 @@ int EOS_to_TRUST_Sat_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) return compute_eos_field_h(P, H, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
-  else /* attention stride */
-    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+  if (sigma_mano_ > 0)
+    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = sigma_mano_;
+  else
+    {
+      if (ncomp == 1) return compute_eos_field_h(P, H, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
+      else /* attention stride */
+        Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+    }
   return 1;
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
