@@ -23,7 +23,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_null, "Modele_turbulence_hyd_null", Modele_turbulence_hyd_base);
-// XD modele_turbulence_hyd_nul modele_turbulence_hyd_deriv null -1 Nul turbulence model (turbulent viscosity = 0) which can be used with a turbulent problem.
+// XD modele_turbulence_hyd_null modele_turbulence_hyd_deriv null -1 Null turbulence model (turbulent viscosity = 0) which can be used with a turbulent problem.
 
 Modele_turbulence_hyd_null::Modele_turbulence_hyd_null()
 {

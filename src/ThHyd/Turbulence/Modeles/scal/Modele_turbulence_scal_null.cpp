@@ -20,7 +20,7 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(Modele_turbulence_scal_null, "Modele_turbulence_scal_null", Modele_turbulence_scal_base);
-// XD modele_turbulence_scal_nul modele_turbulence_scal_base null -1 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
+// XD modele_turbulence_scal_null modele_turbulence_scal_base null -1 Null scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
 // XD attr turbulence_paroi suppress_param turbulence_paroi 1 del
 
 Sortie& Modele_turbulence_scal_null::printOn(Sortie& s) const
@@ -39,8 +39,8 @@ Entree& Modele_turbulence_scal_null::readOn(Entree& is)
   if (!sub_type(Modele_turbulence_hyd_null, mod_turb_hydr))
     {
       Cerr << "Error in Modele_turbulence_scal_null::readOn !!!" << finl;
-      Cerr << "You use a NUL turbulence model for the scalar equation " << mon_equation_->que_suis_je() << " together with a non NUL turbulence model for " << le_pb.equation(0).que_suis_je() << finl;
-      Cerr << "This is impossible !!! Replace the model " << mod_turb_hydr.que_suis_je() << " by the NUL model !!!" << finl;
+      Cerr << "You use a Null turbulence model for the scalar equation " << mon_equation_->que_suis_je() << " together with a non Null turbulence model for " << le_pb.equation(0).que_suis_je() << finl;
+      Cerr << "This is impossible !!! Replace the model " << mod_turb_hydr.que_suis_je() << " by the Null model !!!" << finl;
       Process::exit();
     }
 
