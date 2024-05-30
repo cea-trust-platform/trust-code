@@ -6,21 +6,21 @@ This software is **OpenSource ([BSD license](https://github.com/cea-trust-platfo
 
 You can visit **[TRUST website](https://cea-trust-platform.github.io/)**
 
-# **How to install TRUST-1.9.3 version ?**
+# **How to install TRUST-1.9.4 version ?**
 
 ### **First method (git configuration)**
 
 ```bash
 # Check out the sources for TRUST
-git clone git@github.com:cea-trust-platform/trust-code.git TRUST-1.9.3
+git clone git@github.com:cea-trust-platform/trust-code.git TRUST-1.9.4
 # Move to the cloned TRUST folder
-cd TRUST-1.9.3
+cd TRUST-1.9.4
 # Download the required external packages
-wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.3.tar
+wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.4.tar
 # or:
-# curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.3.tar > externalpackages-1.9.3.tar
+# curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.4.tar > externalpackages-1.9.4.tar
 # Unzip the downloaded external packages folder
-tar xf externalpackages-1.9.3.tar
+tar xf externalpackages-1.9.4.tar
 # Have a look at the available configuration options
 ./configure -help
 # Execute the configure script with your selected options
@@ -41,13 +41,13 @@ type mpicxx
 
 ```bash
 # Download the sources for TRUST
-wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.3/TRUST-1.9.3.tar.gz
+wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.4/TRUST-1.9.4.tar.gz
 # or:
-# curl ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.3/TRUST-1.9.3.tar.gz > TRUST-1.9.3.tar.gz
+# curl ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.4/TRUST-1.9.4.tar.gz > TRUST-1.9.4.tar.gz
 # Unzip the downloaded folder
-tar xzf TRUST-1.9.3.tar.gz
+tar xzf TRUST-1.9.4.tar.gz
 # Move to the unziped TRUST folder
-cd TRUST-1.9.3
+cd TRUST-1.9.4
 # Execute the configure script with your selected options
 ./configure $OPTIONS
 ```

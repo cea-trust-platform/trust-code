@@ -32,7 +32,7 @@ define_modules_config()
          module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3" # TRUST 1.9.2. Cuda 11.2 mais c-amg crash (sur topaze aussi...)
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Comme sur topaze
          module="gnu/8.3.0 cuda/11.7 nvhpc/22.7 mpi/openmpi/4.1.4" # Comme sur topaze (passage a 11.7)
-         module="gnu/8.3.0 cuda/11.8 nvhpc/22.11 mpi/openmpi/4.1.4" # cuda/11.7 nvhpc/22.7 plus dispo suite maj 04/2024
+         #module="gnu/8.3.0 cuda/11.8 nvhpc/22.11 mpi/openmpi/4.1.4" # cuda/11.7 nvhpc/22.7 plus dispo suite maj 04/2024
       else
          #module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.6" # Ok, it works

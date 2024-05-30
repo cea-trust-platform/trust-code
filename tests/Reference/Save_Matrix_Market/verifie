@@ -1,4 +1,6 @@
 #!/bin/bash
+# ND : I skip verifie to not have crash if no mpi + 64 bit integers...
+[ "$TRUST_INT64" = "1" ] && [ "$TRUST_DISABLE_MPI" = "1" ] && echo "verifie not run since TRUST_INT64=1 and TRUST_DISABLE_MPI=1" && exit 0
 # Resolution du systeme par PETSc
 # Conversion en matrice PETSc:
 for file in `ls *matrix*.mtx 2>/dev/null`
