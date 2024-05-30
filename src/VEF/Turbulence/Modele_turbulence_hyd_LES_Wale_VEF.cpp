@@ -56,21 +56,21 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
     }
   Debog::verifier("Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente visco_turb 0", visco_turb);
 
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  DoubleTrav duidxj(nb_elem_tot,dimension,dimension);
   // Patrick : on travaille sur le champ filtre.
   //const Champ_P1NC& ch=(const Champ_P1NC&) mon_equation->inconnue().valeur();
-  DoubleTab ubar(la_vitesse);
-  //  ch.filtrer_L2(ubar);
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
-  DoubleTab duidxj(nb_elem_tot, dimension, dimension);
-  Champ_P1NC::calcul_gradient(ubar, duidxj, domaine_Cl_VEF);
+  //DoubleTab ubar(la_vitesse);
+  //ch.filtrer_L2(ubar);
+  //Champ_P1NC::calcul_gradient(ubar,duidxj,domaine_Cl_VEF);
+  Champ_P1NC::calcul_gradient(la_vitesse,duidxj,domaine_Cl_VEF);
 
-  // OpenMP ToDo:
-  // l_ passe une seule fois dans une region
-  // Utiliser copyToDevice pour duidxj_addr et l_addr
-  double *visco_turb_addr = visco_turb.addr();
-  const double *l_addr = l_.addr();
-  const double *duidxj_addr = duidxj.addr();
-  #pragma omp target teams map(to:duidxj_addr[0:duidxj.size_array()],l_addr[0:l_.size_array()]) map(from:visco_turb_addr[0:visco_turb.size_array()])
+  // ToDo_Kokkos
+  const double* l_addr = mapToDevice(l_);
+  const double* duidxj_addr = mapToDevice(duidxj);
+  double* visco_turb_addr = computeOnTheDevice(visco_turb);
+  start_gpu_timer();
+  #pragma omp target teams
   {
     double gij2[3][3] { };
     double sd[3][3] { };
@@ -125,6 +125,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
           visco_turb_addr[elem] = 0;
       } // fin de la boucle sur les elements
   }
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   Debog::verifier("Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 

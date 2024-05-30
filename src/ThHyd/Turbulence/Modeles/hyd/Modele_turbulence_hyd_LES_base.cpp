@@ -21,6 +21,9 @@
 #include <Probleme_base.h>
 #include <Milieu_base.h>
 #include <Param.h>
+#include <kokkos++.h>
+#include <TRUSTArray_kokkos.tpp>
+#include <TRUSTTab_kokkos.tpp>
 
 Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbulence_hyd_LES_base", Modele_turbulence_hyd_0_eq_base);
 
@@ -115,8 +118,15 @@ void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
       exit();
     }
 
-  for (int elem = 0; elem < nb_elem; elem++)
-    k(elem) = visco_turb[elem] * visco_turb[elem] / (Cq * Cq * l_(elem) * l_(elem));
+  CDoubleArrView l_v = l_.view_ro();
+  CDoubleTabView visco_turb_v = visco_turb.view_ro();
+  DoubleArrView k_v = k.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    k_v(elem)=visco_turb_v(elem, 0)*visco_turb_v(elem, 0)/(Cq*Cq*l_v(elem)*l_v(elem));
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue().temps();
   energie_cinetique_turb_.changer_temps(temps);

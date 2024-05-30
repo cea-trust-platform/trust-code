@@ -39,7 +39,8 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
-  SMA_barre_.resize(nb_elem_tot);
+  if (SMA_barre_.size_array()==0)
+    SMA_barre_.resize(nb_elem_tot);
 
   calculer_S_barre();
 
@@ -49,8 +50,20 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
       Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
       exit();
     }
-  for (int elem = 0; elem < nb_elem; elem++)
-    visco_turb(elem) = cs_ * cs_ * l_(elem) * l_(elem) * sqrt(SMA_barre_[elem]);
+
+  //const double cs = cs_;
+  CDoubleArrView l_v = l_.view_ro();
+  CDoubleArrView SMA_barre_v = SMA_barre_.view_ro();
+  DoubleTabView visco_turb_v = visco_turb.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_CLASS_LAMBDA(
+                         const int elem)
+  {
+    // KOKKOS tips: Using a KOKKOS_LAMBDA on CUDA with member class (here cs_) -> crash
+    // Use KOKKOS_CLASS_LAMBDA instead (it copies the whole instance on the device) or local copy the member attribute
+    // See https://github.com/kokkos/kokkos/issues/695
+    visco_turb_v(elem,0) = cs_*cs_*l_v(elem)*l_v(elem)*sqrt(SMA_barre_v(elem));
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue().temps();
   la_viscosite_turbulente_.changer_temps(temps);
