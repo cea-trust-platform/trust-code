@@ -940,7 +940,7 @@ then
           i=""
        fi
        # Discard sensitive test case with OpenMP #
-       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i " ecarts #" $file 2>/dev/null`" != "" ]
+       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i " ecarts " $file | grep "#" 2>/dev/null`" != "" ]
        then
           echo "Sensitive test $i is skipped (Not supported with OpenMP)"
           liste_skipped=$liste_skipped" $i"
