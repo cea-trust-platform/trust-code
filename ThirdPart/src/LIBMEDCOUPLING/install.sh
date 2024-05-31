@@ -80,7 +80,8 @@ build_and_test_mc()
     (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch ) || exit -1
     echo "Applying patch for Apple ..."
     (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/apple.patch ) || exit -1
-
+    echo "Applying patch for OverlapDEC accessors in Python ..."
+    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/py_odec_accessors.patch )
 
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
