@@ -1,0 +1,15 @@
+diff --git a/src/ParaMEDMEM_Swig/ParaMEDMEMCommon.i b/src/ParaMEDMEM_Swig/ParaMEDMEMCommon.i
+index 3613e6e6..f910e507 100644
+--- a/src/ParaMEDMEM_Swig/ParaMEDMEMCommon.i
++++ b/src/ParaMEDMEM_Swig/ParaMEDMEMCommon.i
+@@ -354,6 +354,10 @@ namespace MEDCoupling
+         void attachTargetLocalField(MEDCouplingFieldDouble *field);
+         void attachSourceLocalField(ICoCo::MEDDoubleField *field);
+         void attachTargetLocalField(ICoCo::MEDDoubleField *field);
++
++        ParaFIELD* getSourceLocalField();
++        ParaFIELD* getTargetLocalField();
++
+         ProcessorGroup *getGroup();
+         bool isInGroup() const;
+ 
