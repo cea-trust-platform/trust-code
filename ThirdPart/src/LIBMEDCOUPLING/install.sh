@@ -63,6 +63,8 @@ build_and_test_mc()
     ## Keeping a model of how to apply a patch:
     #echo "Applying patch for  ..."
     #(cd $src_dir; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/xxx.patch )
+    echo "Applying patch for OverlapDEC accessors in Python ..."
+    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/py_odec_accessors.patch )
     
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
