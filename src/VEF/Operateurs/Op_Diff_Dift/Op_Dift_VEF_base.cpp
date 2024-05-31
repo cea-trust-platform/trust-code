@@ -79,20 +79,25 @@ void Op_Dift_VEF_base::completer()
     }
 }
 
-void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
+void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& tab_borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
 {
   const Domaine_VEF& le_dom_VEF = domaine_vef();
   int nb_elem = le_dom_VEF.nb_elem();
   int flag = diffusivite().valeurs().dimension(0) > 1 ? 1 : 0;
-  for (int elem = 0; elem < nb_elem; elem++)
-    {
-      double h_inv = 1. / le_dom_VEF.carre_pas_maille()(elem);
-      // C'est pas tres propre pour recuperer diffu mais ca evite de coder cette methode dans plusieurs classes:
-      double diffu = (flag ? diffusivite().valeurs()(elem) : diffusivite().valeurs()(0, 0));
-      double coef = 1. / (2 * (dt_conv + DMINFLOAT) * dimension * h_inv * dt_diff_sur_dt_conv) - diffu;
-      if (coef > 0 && coef < borne_visco_turb(elem))
-        borne_visco_turb(elem) = coef;
-    }
+  const double dim = Objet_U::dimension;
+  CDoubleTabView diffu = diffusivite().valeurs().view_ro();
+  CDoubleArrView carre_pas_maille = le_dom_VEF.carre_pas_maille().view_ro();
+  DoubleArrView borne_visco_turb = tab_borne_visco_turb.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int elem)
+  {
+    double h_inv = 1. / carre_pas_maille(elem);
+    // C'est pas tres propre pour recuperer diffu mais ca evite de coder cette methode dans plusieurs classes:
+    double diffu_elem = (flag ? diffu(elem, 0) : diffu(0, 0));
+    double coef = 1. / (2 * (dt_conv + DMINFLOAT) * dim * h_inv * dt_diff_sur_dt_conv) - diffu_elem;
+    if (coef > 0 && coef < borne_visco_turb(elem))
+      borne_visco_turb(elem) = coef;
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 // La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
@@ -103,50 +108,61 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 {
   remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-  const Domaine_VEF& le_dom_VEF = domaine_vef();
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
-  // DoubleTab diffu(nu_);
-  DoubleTrav diffu;
-  diffu = nu_; // XXX : Elie Saikali : Attention pas pareil que DoubleTrav diffu(nu_) !!!!!!!!!
+  //DoubleVect tab_diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleTrav tab_diffu_turb;
+  tab_diffu_turb = diffusivite_turbulente()->valeurs();
+  DoubleTrav tab_diffu;
+  tab_diffu = nu_; // XXX : Elie Saikali : Attention pas pareil que DoubleTrav diffu(nu_) !!!!!!!!!
 
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
       double rhocp = mon_equation->domaine_dis()->nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0) : 1.0;
-      diffu_turb /= rhocp;
-      diffu /= rhocp;
+      tab_diffu_turb /= rhocp;
+      tab_diffu /= rhocp;
     }
 
+  const double deux_dim = 2. * Objet_U::dimension;
+  const Domaine_VEF& le_dom_VEF = domaine_vef();
   const int le_dom_nb_elem = le_dom_VEF.domaine().nb_elem();
-  double dt_stab = 1.e30, alpha = -123., coef = -123.;
-
+  double dt_stab = 1.e30;
+  CDoubleTabView diffu = tab_diffu.view_ro();
+  CDoubleArrView diffu_turb = static_cast<const DoubleVect&>(tab_diffu_turb).view_ro();
+  CDoubleArrView carre_pas_maille = le_dom_VEF.carre_pas_maille().view_ro();
   if (has_champ_masse_volumique())
     {
-      const DoubleTab& rho_elem = get_champ_masse_volumique().valeurs();
-      assert(rho_elem.size_array() == le_dom_VEF.nb_elem_tot());
-      for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
-        {
-          alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
-          alpha /= rho_elem[num_elem];
-          coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
-          if (coef < dt_stab) dt_stab = coef;
-        }
+      const DoubleTab& tab_rho_elem = get_champ_masse_volumique().valeurs();
+      assert(tab_rho_elem.size_array() == le_dom_VEF.nb_elem_tot());
+      CDoubleArrView rho_elem = static_cast<const DoubleVect&>(tab_rho_elem).view_ro();
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                              Kokkos::RangePolicy<>(0, le_dom_nb_elem), KOKKOS_LAMBDA(
+                                const int num_elem, double& dtstab)
+      {
+        double alpha = diffu(num_elem, 0) + diffu_turb(num_elem); // PQ : 06/03
+        alpha /= rho_elem(num_elem);
+        double coef = carre_pas_maille(num_elem) / (deux_dim * (alpha + DMINFLOAT));
+        if (coef < dtstab) dtstab = coef;
+      }, Kokkos::Min<double>(dt_stab));
     }
   else
     {
-      const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
-      const DoubleTab& valeurs_diffusivite = champ_diffusivite.valeurs();
-      const int nb_comp = valeurs_diffusivite.line_size(), cD = (valeurs_diffusivite.dimension(0) == 1); // uniforme ou pas ?
-      for (int nc = 0; nc < nb_comp; nc++)
-        for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
+      const DoubleTab& tab_valeurs_diffusivite = diffusivite_pour_pas_de_temps().valeurs();
+      const int nb_comp = tab_valeurs_diffusivite.line_size(), cD = (tab_valeurs_diffusivite.dimension(0) == 1); // uniforme ou pas ?
+      CDoubleTabView valeurs_diffusivite = tab_valeurs_diffusivite.view_ro();
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                              Kokkos::RangePolicy<>(0, le_dom_nb_elem), KOKKOS_LAMBDA(
+                                const int num_elem, double& dtstab)
+      {
+        for (int nc = 0; nc < nb_comp; nc++)
           {
-            alpha = diffu(num_elem, nc) + diffu_turb[num_elem];
+            double alpha = diffu(num_elem, nc) + diffu_turb(num_elem);
             const double valeurs_diffusivite_dt = valeurs_diffusivite(!cD * num_elem, nc);
             alpha *= valeurs_diffusivite_dt / (diffu(num_elem, nc) + DMINFLOAT);
-            coef = le_dom_VEF.carre_pas_maille()(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
-            if (coef < dt_stab) dt_stab = coef;
+            double coef = carre_pas_maille(num_elem) / (deux_dim * (alpha + DMINFLOAT));
+            if (coef < dtstab) dtstab = coef;
           }
+      }, Kokkos::Min<double>(dt_stab));
     }
-
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
 }
@@ -166,6 +182,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
           const Domaine& le_dom = le_dom_VEF.domaine();
           const DoubleVect& diffu_turb = diffusivite_turbulente()->valeurs();
           double alpha = -123., coef = -123.;
+          ToDo_Kokkos("critical");
 
           int le_dom_nb_elem = le_dom.nb_elem();
           if (has_champ_masse_volumique())
@@ -214,6 +231,7 @@ double Op_Dift_VEF_base::calculer_dt_stab_P1NCP1B() const
 
   const double diffu = diffusivite(0);
   double dt_stab = 1.e30, coef, diffu2_;
+  ToDo_Kokkos("critical");
 
   for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
     {
