@@ -55,14 +55,24 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
   CDoubleArrView l_v = l_.view_ro();
   CDoubleArrView SMA_barre_v = SMA_barre_.view_ro();
   DoubleTabView visco_turb_v = visco_turb.view_wo();
+#if __cplusplus == 201402L
+  // C++14:
+  const double cs = cs_;
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    visco_turb_v(elem,0) = cs*cs*l_v(elem)*l_v(elem)*sqrt(SMA_barre_v(elem));
+  });
+#else
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_CLASS_LAMBDA(
                          const int elem)
   {
     // KOKKOS tips: Using a KOKKOS_LAMBDA on CUDA with member class (here cs_) -> crash
-    // Use KOKKOS_CLASS_LAMBDA instead (it copies the whole instance on the device) or local copy the member attribute
+    // Use KOKKOS_CLASS_LAMBDA instead (but C++17 feature) : it copies the whole instance on the device) or local copy the member attribute
     // See https://github.com/kokkos/kokkos/issues/695
     visco_turb_v(elem,0) = cs_*cs_*l_v(elem)*l_v(elem)*sqrt(SMA_barre_v(elem));
   });
+#endif
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue().temps();

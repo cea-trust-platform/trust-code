@@ -63,13 +63,13 @@ inline const std::string methodName(const std::string& prettyFunction, const int
 }
 #define __KERNEL_NAME__ methodName(__PRETTY_FUNCTION__,__LINE__)
 #else
-#define __KERNEL_NAME__
+#define __KERNEL_NAME__ ""
 #endif
 
 // Timers GPU avec OpenMP (renommer?)
-#ifdef _OPENMP
 inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
+#ifdef _OPENMP
   if (init_openmp_ && timer_on)
     {
       if (clock_on) clock_start = Statistiques::get_time_now();
@@ -78,15 +78,13 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
       nvtxRangePush(str.c_str());
 #endif
     }
+#endif
   return str;
 }
-#else
-inline void start_gpu_timer() {}
-#endif
 
-#ifdef _OPENMP
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
+#ifdef _OPENMP
 #ifndef LATATOOLS
   Kokkos::fence();
 #endif
@@ -122,10 +120,8 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
       nvtxRangePop();
 #endif
     }
-}
-#else
-inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) {}
 #endif
+}
 
 template <typename _TYPE_>
 extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_>& tab);

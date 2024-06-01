@@ -440,9 +440,8 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
 {
   // On initial
   int size = viscosite_turbulente().valeurs().size();
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   if (borne_visco_turb_.size() == 0)
-    borne_visco_turb_ = visco_turb; //.resize(size);
+    borne_visco_turb_ = la_viscosite_turbulente_.valeurs();
   borne_visco_turb_ = XNUTM_;
   if (calcul_borne_locale_visco_turb_ && (equation().schema_temps().nb_pas_dt() != 0 || equation().probleme().reprise_effectuee()))
     {
@@ -456,23 +455,27 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   assert(nb_elem == size);
   int compt = 0;
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
-  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
-  ToDo_Kokkos("");
-  for (int elem = 0; elem < nb_elem; elem++)
-    {
-      if (visco_turb(elem) > borne_visco_turb_(elem))
-        {
-          compt++;
-          corr_visco_turb_.valeurs()(elem) = borne_visco_turb_(elem) / visco_turb(elem);
-          visco_turb(elem) = borne_visco_turb_(elem);
-        }
-      else
-        corr_visco_turb_.valeurs()(elem) = 1.;
-    }
+
+  CDoubleArrView borne_visco_turb = borne_visco_turb_.view_ro();
+  DoubleArrView corr_visco_turb = static_cast<DoubleVect&>(corr_visco_turb_.valeurs()).view_wo();
+  DoubleArrView visco_turb = static_cast<DoubleVect&>(la_viscosite_turbulente_.valeurs()).view_rw();
+  // Remplissage des tableaux de travail:
+  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                          Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                            const int elem, int& compt_)
+  {
+    if (visco_turb(elem) > borne_visco_turb(elem))
+      {
+        compt_++;
+        corr_visco_turb(elem) = borne_visco_turb(elem) / visco_turb(elem);
+        visco_turb(elem) = borne_visco_turb(elem);
+      }
+    else
+      corr_visco_turb(elem) = 1.;
+  }, Kokkos::Sum<int>(compt));
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   corr_visco_turb_.changer_temps(mon_equation_->inconnue().temps());
-  visco_turb.echange_espace_virtuel();
+  la_viscosite_turbulente_.valeurs().echange_espace_virtuel();
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_.valeurs());
 
   // On imprime

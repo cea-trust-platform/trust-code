@@ -207,7 +207,7 @@ public:
   inline DataLocation get_data_location() const { return data_location_ == nullptr ? DataLocation::HostOnly : *data_location_; }
   inline void set_data_location(DataLocation flag) { if (data_location_ != nullptr) *data_location_ = flag; }
   inline void set_data_location(DataLocation flag) const { if (data_location_ != nullptr) *data_location_ = flag; }
-  inline int size_mem() { return mem_ == nullptr ? 0 : mem_->size(); };
+  inline int size_mem() { return mem_ == nullptr ? 0 : (int)mem_->size(); };
 
   inline void checkDataOnHost();
   inline void checkDataOnHost() const;
