@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ public :
         Scalaire0_[i] = fct_Scalaire0_[i].eval();
       }
   }
-  inline const ArrOfDouble getScalaire0() const { return Scalaire0_; }
+  inline const ArrOfDouble& getScalaire0() const { return Scalaire0_; }
 
 protected :
   void set_param(Param& param);
