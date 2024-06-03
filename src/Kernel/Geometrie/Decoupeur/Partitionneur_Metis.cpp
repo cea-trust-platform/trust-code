@@ -30,9 +30,6 @@ inline void not_implemented(const Nom& chaine)
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Metis,"Partitionneur_Metis",Partitionneur_base);
 // XD partitionneur_metis partitionneur_deriv metis -1 Metis is an external partitionning library. It is a general algorithm that will generate a partition of the domain.
-// XD attr kmetis rien kmetis 1 The default values are pmetis, default parameters are automatically chosen by Metis. \'kmetis\' is faster than pmetis option but the last option produces better partitioning quality. In both cases, the partitioning quality may be slightly improved by increasing the nb_essais option (by default N=1). It will compute N partitions and will keep the best one (smallest edge cut number). But this option is CPU expensive, taking N=10 will multiply the CPU cost of partitioning by 10. NL2 Experiments show that only marginal improvements can be obtained with non default parameters.
-// XD attr use_weights rien use_weights 1 If use_weights is specified, weighting of the element-element links in the graph is used to force metis to keep opposite periodic elements on the same processor. This option can slightly improve the partitionning quality but it consumes more memory and takes more time. It is not mandatory since a correction algorithm is always applied afterwards to ensure a correct partitionning for periodic boundaries.
-
 
 Partitionneur_Metis::Partitionneur_Metis()
 {
@@ -65,11 +62,11 @@ void Partitionneur_Metis::set_param(Param& param)
   param.ajouter("nb_essais",&nb_essais_);
   param.ajouter_condition("(value_of_nb_parts_ge_1)_and_(value_of_nb_parts_le_100000)","The following condition must be satisfied : 1 <= nb_parties <= 100000");
   param.ajouter_non_std("pmetis",(this));
-  param.ajouter_non_std("kmetis",(this));
+  param.ajouter_non_std("kmetis",(this));  // XD attr kmetis rien kmetis 1 The default values are pmetis, default parameters are automatically chosen by Metis. \'kmetis\' is faster than pmetis option but the last option produces better partitioning quality. In both cases, the partitioning quality may be slightly improved by increasing the nb_essais option (by default N=1). It will compute N partitions and will keep the best one (smallest edge cut number). But this option is CPU expensive, taking N=10 will multiply the CPU cost of partitioning by 10. NL2 Experiments show that only marginal improvements can be obtained with non default parameters.
   param.ajouter_non_std("match_type",(this));
   param.ajouter_non_std("initial_partition_type",(this));
   param.ajouter_non_std("refinement_type",(this));
-  param.ajouter_flag("use_weights",&use_weights_);
+  param.ajouter_flag("use_weights",&use_weights_);  // XD attr use_weights rien use_weights 1 If use_weights is specified, weighting of the element-element links in the graph is used to force metis to keep opposite periodic elements on the same processor. This option can slightly improve the partitionning quality but it consumes more memory and takes more time. It is not mandatory since a correction algorithm is always applied afterwards to ensure a correct partitionning for periodic boundaries.
   param.ajouter_flag("use_segment_to_build_connectivite_elem_elem",&use_segment_to_build_connectivite_elem_elem_); // option pour construire le grpah a partir des liens (segment) pour reseau electrique, sides ....
 }
 

@@ -31,9 +31,6 @@
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Extraction,"Extraction",Champ_Gen_de_Champs_Gen);
 // XD extraction champ_post_de_champs_post extraction -1 To create a surface field (values at the boundary) of a volume field
-// XD attr domaine ref_domaine domaine 0 name of the volume field
-// XD attr nom_frontiere chaine nom_frontiere 0 boundary name where the values of the volume field will be picked
-// XD attr methode chaine(into=["trace","champ_frontiere"]) methode 1 name of the extraction method (trace by_default or champ_frontiere)
 
 Add_synonym(Champ_Generique_Extraction,"Champ_Post_Extraction");
 
@@ -76,9 +73,9 @@ Sortie& Champ_Generique_Extraction::printOn(Sortie& os) const
 void Champ_Generique_Extraction::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("domaine",&dom_extrac_,Param::REQUIRED);
-  param.ajouter("nom_frontiere",&nom_fr_,Param::REQUIRED);
-  param.ajouter("methode",&methode_);
+  param.ajouter("domaine",&dom_extrac_,Param::REQUIRED);   // XD attr domaine ref_domaine domaine 0 name of the volume field
+  param.ajouter("nom_frontiere",&nom_fr_,Param::REQUIRED); // XD attr nom_frontiere chaine nom_frontiere 0 boundary name where the values of the volume field will be picked
+  param.ajouter("methode",&methode_);                      // XD attr methode chaine(into=["trace","champ_frontiere"]) methode 1 name of the extraction method (trace by_default or champ_frontiere)
 }
 
 //Renvoie la directive (champ_elem, champ_sommets, champ_face ou pression)

@@ -21,8 +21,6 @@ Implemente_instanciable(Champ_front_tangentiel_VEF,"Champ_front_tangentiel_VEF",
 // XD attr mot chaine(into=["vitesse_tangentielle"]) mot 0 Name of vector field.
 // XD attr vit_tan floattant vit_tan 0 Vector field standard [m/s].
 
-
-
 Sortie& Champ_front_tangentiel_VEF::printOn(Sortie& os) const
 {
   return Champ_front_tangentiel::printOn(os);
@@ -34,8 +32,6 @@ Entree& Champ_front_tangentiel_VEF::readOn(Entree& is)
   fixer_nb_comp(dimension);
   return Champ_front_tangentiel::readOn(is);
 }
-
-
 
 
 // WEC : manifestement suppose qu'on est en dimension 3, que les

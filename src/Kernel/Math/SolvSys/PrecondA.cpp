@@ -22,13 +22,6 @@
 
 Implemente_instanciable(PrecondA,"ssor_bloc",Precond_base);
 // XD ssor_bloc precond_base ssor_bloc -1 not_set
-// XD attr alpha_0 floattant alpha_0 1 not_set
-// XD attr precond0 precond_base precond0 1 not_set
-// XD attr alpha_1 floattant alpha_1 1 not_set
-// XD attr precond1 precond_base precond1 1 not_set
-// XD attr alpha_a floattant alpha_a 1 not_set
-// XD attr preconda precond_base preconda 1 not_set
-
 
 Sortie& PrecondA::printOn(Sortie& s ) const
 {
@@ -45,12 +38,12 @@ Entree& PrecondA::readOn(Entree& is )
 
 void PrecondA::set_param(Param& param)
 {
-  param.ajouter("precond0",&le_precond_0);
-  param.ajouter("precond1",&le_precond_1);
-  param.ajouter("preconda",&le_precond_a);
-  param.ajouter("alpha_0",&alpha_0);
-  param.ajouter("alpha_1",&alpha_1);
-  param.ajouter("alpha_a",&alpha_a);
+  param.ajouter("precond0",&le_precond_0); // XD attr precond0 precond_base precond0 1 not_set
+  param.ajouter("precond1",&le_precond_1); // XD attr precond1 precond_base precond1 1 not_set
+  param.ajouter("preconda",&le_precond_a); // XD attr preconda precond_base preconda 1 not_set
+  param.ajouter("alpha_0",&alpha_0);   // XD attr alpha_0 floattant alpha_0 1 not_set
+  param.ajouter("alpha_1",&alpha_1);   // XD attr alpha_1 floattant alpha_1 1 not_set
+  param.ajouter("alpha_a",&alpha_a);   // XD attr alpha_a floattant alpha_a 1 not_set
 }
 
 static void prepare_precond(Precond& p, const Matrice_Base& m, const DoubleVect& v,

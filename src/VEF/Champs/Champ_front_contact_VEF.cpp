@@ -46,7 +46,6 @@ Implemente_instanciable(Champ_front_contact_VEF,"Champ_front_contact_VEF",Ch_fro
 // XD attr remote_boundary chaine remote_boundary 0 Name of the boundary in the second problem.
 
 
-
 Sortie& Champ_front_contact_VEF::printOn(Sortie& os) const
 {
   return os;

@@ -21,11 +21,6 @@
 
 Implemente_instanciable(ILU_SP, "ILU", Precond_base);
 // XD ilu precond_base ilu -1 This preconditionner can be only used with the generic GEN solver.
-// XD attr type entier type 1 values can be 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2)
-// XD attr filling entier filling 1 default value = 1.
-
-//
-// printOn et readOn
 
 Sortie& ILU_SP::printOn(Sortie& s ) const
 {
@@ -37,12 +32,12 @@ Sortie& ILU_SP::printOn(Sortie& s ) const
 Entree& ILU_SP::readOn(Entree& is )
 {
   Param param(que_suis_je());
-  param.ajouter("type", &precond_, Param::OPTIONAL);
+  param.ajouter("type", &precond_, Param::OPTIONAL);  // XD attr type entier type 1 values can be 0|1|2|3 for null|left|right|left-and-right preconditionning (default value = 2)
   param.dictionnaire("0", PRECOND_NUL);
   param.dictionnaire("1", PRECOND_GAUCHE);
   param.dictionnaire("2", PRECOND_DROITE);
   param.dictionnaire("3", PRECOND_GAUCHE_DROITE);
-  param.ajouter("filling", &lfil_, Param::OPTIONAL);
+  param.ajouter("filling", &lfil_, Param::OPTIONAL);  // XD attr filling entier filling 1 default value = 1.
   param.lire_avec_accolades(is);
 
   return is;

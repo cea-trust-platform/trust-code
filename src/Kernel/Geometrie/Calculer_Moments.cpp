@@ -23,8 +23,6 @@ Implemente_instanciable(Calculer_Moments,"Calculer_Moments",Interprete_geometriq
 // XD attr mot lecture_bloc_moment_base mot 0 Keyword.
 
 
-// printOn et readOn
-
 Sortie& Calculer_Moments::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;

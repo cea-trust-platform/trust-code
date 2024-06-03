@@ -130,6 +130,14 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
     {
       for (int face=ndeb; face<nfin; face++)
         {
+
+
+
+
+
+
+
+
           e(face-ndeb) = zvdf_2.dist_norm_bord(face);
         }
     }

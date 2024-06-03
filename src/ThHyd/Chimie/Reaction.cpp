@@ -22,16 +22,6 @@
 
 Implemente_instanciable(Reaction,"Reaction",Objet_U);
 // XD reaction objet_lecture nul 1 Keyword to describe reaction: NL2 w =K pow(T,beta) exp(-Ea/( R T)) $\Pi$ pow(Reactif_i,activitivity_i). NL2 If K_inv >0, NL2 w= K pow(T,beta) exp(-Ea/( R T)) ( $\Pi$ pow(Reactif_i,activitivity_i) - Kinv/exp(-c_r_Ea/(R T)) $\Pi$ pow(Produit_i,activitivity_i ))
-// XD attr reactifs chaine reactifs 0 LHS of equation (ex CH4+2*O2)
-// XD attr produits chaine produits 0 RHS of equation (ex CO2+2*H20)
-// XD attr constante_taux_reaction floattant constante_taux_reaction 1 constante of cinetic K
-// XD attr coefficients_activites bloc_lecture coefficients_activites 1 coefficients od ativity (exemple { CH4 1 O2 2 })
-// XD attr enthalpie_reaction floattant enthalpie_reaction 0 DH
-// XD attr energie_activation floattant energie_activation 0 Ea
-// XD attr exposant_beta floattant exposant_beta 0 Beta
-// XD attr contre_reaction floattant contre_reaction 1 K_inv
-// XD attr contre_energie_activation floattant contre_energie_activation 1 c_r_Ea
-
 
 Sortie& Reaction::printOn(Sortie& os) const
 {
@@ -128,16 +118,16 @@ Entree& Reaction::readOn(Entree& is)
   //  nb_iter_impl_contre_reaction_=1;      // pas d'iteration
   //sous_relax__impl_contre_reaction_=1.; // pas de sous-relaxation
   Param param(que_suis_je());
-  param.ajouter( "reactifs",&reactifs_,Param::REQUIRED);
-  param.ajouter( "produits",&produits_,Param::REQUIRED);
-  param.ajouter( "constante_taux_reaction",&constante_taux_reaction_);
-  param.ajouter( "enthalpie_reaction",&enthalpie_reaction_,Param::REQUIRED);
-  param.ajouter( "energie_activation",&Ea_);
-  param.ajouter( "exposant_beta",&beta_);
-  param.ajouter_non_std("coefficients_activites",(this));
+  param.ajouter( "reactifs",&reactifs_,Param::REQUIRED);  // XD attr reactifs chaine reactifs 0 LHS of equation (ex CH4+2*O2)
+  param.ajouter( "produits",&produits_,Param::REQUIRED);  // XD attr produits chaine produits 0 RHS of equation (ex CO2+2*H20)
+  param.ajouter( "constante_taux_reaction",&constante_taux_reaction_);       // XD attr constante_taux_reaction floattant constante_taux_reaction 1 constante of cinetic K
+  param.ajouter( "enthalpie_reaction",&enthalpie_reaction_,Param::REQUIRED); // XD attr enthalpie_reaction floattant enthalpie_reaction 0 DH
+  param.ajouter( "energie_activation",&Ea_);               // XD attr energie_activation floattant energie_activation 0 Ea
+  param.ajouter( "exposant_beta",&beta_);                  // XD attr exposant_beta floattant exposant_beta 0 Beta
+  param.ajouter_non_std("coefficients_activites",(this));  // XD attr coefficients_activites bloc_lecture coefficients_activites 1 coefficients od ativity (exemple { CH4 1 O2 2 })
 
-  param.ajouter( "contre_reaction",&contre_reaction_);
-  param.ajouter( "contre_energie_activation",&c_r_Ea_);
+  param.ajouter( "contre_reaction",&contre_reaction_);  // XD attr contre_reaction floattant contre_reaction 1 K_inv
+  param.ajouter( "contre_energie_activation",&c_r_Ea_); // XD attr contre_energie_activation floattant contre_energie_activation 1 c_r_Ea
   param.ajouter( "Sc_t",&Sc_t_);
   param.lire_avec_accolades_depuis(is);
   if (Sc_t_==0.)

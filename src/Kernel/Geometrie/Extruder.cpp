@@ -23,10 +23,6 @@
 
 Implemente_instanciable_sans_constructeur(Extruder, "Extruder", Interprete_geometrique_base);
 // XD extruder interprete extruder 1 Class to create a 3D tetrahedral/hexahedral mesh (a prism is cut in 14) from a 2D triangular/quadrangular mesh.
-// XD attr domaine ref_domaine domain_name 0 Name of the domain.
-// XD attr direction troisf direction 0 Direction of the extrude operation.
-// XD attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
-
 
 Extruder::Extruder() { direction.resize(3, RESIZE_OPTIONS::NOCOPY_NOINIT); }
 
@@ -50,9 +46,9 @@ Entree& Extruder::interpreter_(Entree& is)
 {
   Nom nom_dom;
   Param param(que_suis_je());
-  param.ajouter("domaine",&nom_dom,Param::REQUIRED);
-  param.ajouter("nb_tranches",&NZ,Param::REQUIRED);
-  param.ajouter_arr_size_predefinie("direction",&direction,Param::REQUIRED);
+  param.ajouter("domaine",&nom_dom,Param::REQUIRED);  // XD attr domaine ref_domaine domain_name 0 Name of the domain.
+  param.ajouter("nb_tranches",&NZ,Param::REQUIRED);   // XD attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
+  param.ajouter_arr_size_predefinie("direction",&direction,Param::REQUIRED); // XD attr direction troisf direction 0 Direction of the extrude operation.
   param.lire_avec_accolades_depuis(is);
   associer_domaine(nom_dom);
   Scatter::uninit_sequential_domain(domaine());

@@ -24,11 +24,6 @@
 
 Implemente_instanciable(Loi_horaire,"Loi_horaire",Objet_U);
 // XD loi_horaire objet_u loi_horaire 1 to define the movement with a time-dependant law for the solid interface.
-// XD attr position listchaine position 0 not_set
-// XD attr vitesse listchaine vitesse 0 not_set
-// XD attr rotation listchaine rotation 1 not_set
-// XD attr derivee_rotation listchaine derivee_rotation 1 not_set
-
 
 Sortie& Loi_horaire::printOn(Sortie& os) const { return os; }
 
@@ -45,12 +40,12 @@ Entree& Loi_horaire::readOn(Entree& is)
 
   // Lecture de jeu de donnees
   Param param(que_suis_je());
-  param.ajouter("position",&position_);                                // Vecteur position
-  param.ajouter("vitesse",&vitesse_);                // Vecteur vitesse
-  param.ajouter("rotation",&rotation_);                                        // Matrice de passage
-  param.ajouter("derivee_rotation",&derivee_rotation_);                        // Derivee matrice de passage
-  param.ajouter("verification_derivee",&verification_derivee_);
-  param.ajouter("impr",&impr_);
+  param.ajouter("position",&position_);    // XD attr position listchaine position 0 Vecteur position
+  param.ajouter("vitesse",&vitesse_);      // XD attr vitesse listchaine vitesse 0 Vecteur vitesse
+  param.ajouter("rotation",&rotation_);    // XD attr rotation listchaine rotation 1 Matrice de passage
+  param.ajouter("derivee_rotation",&derivee_rotation_);          // XD attr derivee_rotation listchaine derivee_rotation 1 Derivee matrice de passage
+  param.ajouter("verification_derivee",&verification_derivee_);  // XD attr verification_derivee entier verification_derivee 1 not_set
+  param.ajouter("impr",&impr_);            // XD attr impr entier impr 1 Whether to print output
   param.lire_avec_accolades_depuis(is);
 
   // Verification de ce qui a ete lu: ( pourquoi le_nom() retourne neant ???

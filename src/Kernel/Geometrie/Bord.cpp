@@ -21,7 +21,6 @@ Implemente_instanciable(Bord,"Bord",Frontiere);
 // XD attr defbord defbord defbord 0 Definition of block side.
 
 
-
 /*! @brief Simple appel a: Frontiere::printOn(Sortie&)
  *
  * @param (Sortie& s) un flot de sortie

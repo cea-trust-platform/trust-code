@@ -25,14 +25,6 @@
 
 Implemente_instanciable_sans_constructeur(Solv_GCP,"Solv_GCP",solv_iteratif);
 // XD solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
-// XD attr precond precond_base precond 1 Keyword to define system preconditioning in order to accelerate resolution by the conjugated gradient. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
-// XD attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method.
-// XD attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
-// XD attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
-// XD attr quiet rien quiet 1 To not displaying any outputs of the solver.
-// XD attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
-// XD attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
-// XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
 
 //
 // printOn et readOn
@@ -67,15 +59,15 @@ Entree& Solv_GCP::readOn(Entree& is )
   int precond_nul;
   int impr,quiet;
   Param param((*this).que_suis_je());
-  param.ajouter("seuil",&seuil_,Param::REQUIRED);
-  param.ajouter("nb_it_max",&nb_it_max_);
-  param.ajouter_flag("impr",&impr);
-  param.ajouter_flag("quiet",&quiet);
-  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
-  param.ajouter("precond",&le_precond_);
-  param.ajouter_flag("precond_nul",&precond_nul);
+  param.ajouter("seuil",&seuil_,Param::REQUIRED);  // XD attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
+  param.ajouter("nb_it_max",&nb_it_max_); // XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
+  param.ajouter_flag("impr",&impr);   // XD attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+  param.ajouter_flag("quiet",&quiet); // XD attr quiet rien quiet 1 To not displaying any outputs of the solver.
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_); // XD attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+  param.ajouter("precond",&le_precond_);  // XD attr precond precond_base precond 1 Keyword to define system preconditioning in order to accelerate resolution by the conjugated gradient. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
+  param.ajouter_flag("precond_nul",&precond_nul);  // XD attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method.
   param.ajouter_flag("precond_diagonal", &precond_diag_);
-  param.ajouter_flag("optimized", &optimized_);
+  param.ajouter_flag("optimized", &optimized_);  // XD attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
   param.lire_avec_accolades_depuis(is);
   // Obligation de definir un precond
   if (!le_precond_.non_nul() && precond_nul==0 && precond_diag_==0)

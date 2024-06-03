@@ -102,9 +102,9 @@ Entree& Milieu_base::readOn(Entree& is)
 
 void Milieu_base::set_param(Param& param)
 {
-  param.ajouter("rho", &rho);
-  param.ajouter("lambda", &lambda);
-  param.ajouter("Cp", &Cp);
+  param.ajouter("rho", &rho);   // XD attr rho field_base rho 1 Density (kg.m-3).
+  param.ajouter("lambda", &lambda); // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+  param.ajouter("Cp", &Cp);  // XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
   param.ajouter("beta_th", &beta_th);
   set_additional_params(param);
 }

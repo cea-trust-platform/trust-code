@@ -23,10 +23,6 @@
 
 Implemente_instanciable_sans_constructeur(Extruder_en20, "Extruder_en20", Interprete_geometrique_base);
 // XD extruder_en20 interprete extruder_en20 1 It does the same task as Extruder except that a prism is cut into 20 tetraedra instead of 3. The name of the boundaries will be devant (front) and derriere (back). But you can change these names with the keyword RegroupeBord.
-// XD attr domaine ref_domaine domain_name 0 Name of the domain.
-// XD attr direction troisf direction 1 0 Direction of the extrude operation.
-// XD attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
-
 
 Extruder_en20::Extruder_en20() { direction.resize(3, RESIZE_OPTIONS::NOCOPY_NOINIT); }
 
@@ -50,9 +46,9 @@ Entree& Extruder_en20::interpreter_(Entree& is)
 {
   Nom nom_dom;
   Param param(que_suis_je());
-  param.ajouter("domaine",&nom_dom,Param::REQUIRED);
-  param.ajouter("nb_tranches",&NZ,Param::REQUIRED);
-  param.ajouter_arr_size_predefinie("direction",&direction,Param::REQUIRED);
+  param.ajouter("domaine",&nom_dom,Param::REQUIRED);  // XD attr domaine ref_domaine domain_name 0 Name of the domain.
+  param.ajouter("nb_tranches",&NZ,Param::REQUIRED);   // XD attr nb_tranches entier nb_tranches 0 Number of elements in the extrusion direction.
+  param.ajouter_arr_size_predefinie("direction",&direction,Param::REQUIRED);  // XD attr direction troisf direction 1 0 Direction of the extrude operation.
   param.lire_avec_accolades_depuis(is);
   associer_domaine(nom_dom);
   Scatter::uninit_sequential_domain(domaine());

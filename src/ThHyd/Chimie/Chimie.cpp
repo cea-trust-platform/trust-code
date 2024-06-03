@@ -26,11 +26,6 @@
 
 Implemente_instanciable(Chimie,"Chimie",Objet_U);
 // XD chimie objet_u chimie 1 Keyword to describe the chmical reactions
-// XD attr reactions reactions reactions 0 list of reactions
-// XD attr modele_micro_melange entier modele_micro_melange 1 modele_micro_melange (0 by default)
-// XD attr constante_modele_micro_melange floattant constante_modele_micro_melange 1 constante of modele (1 by default)
-// XD attr espece_en_competition_micro_melange chaine espece_en_competition_micro_melange 1 espece in competition in reactions
-
 
 Sortie& Chimie::printOn(Sortie& os) const
 {
@@ -42,10 +37,10 @@ Sortie& Chimie::printOn(Sortie& os) const
 Entree& Chimie::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("reactions",&reactions_,Param::REQUIRED);
-  param.ajouter("modele_micro_melange",&modele_micro_melange_);
-  param.ajouter("constante_modele_micro_melange",&constante_modele_micro_melange_);
-  param.ajouter("espece_en_competition_micro_melange",&espece_en_competition_micro_melange_);
+  param.ajouter("reactions",&reactions_,Param::REQUIRED);                           // XD attr reactions reactions reactions 0 list of reactions
+  param.ajouter("modele_micro_melange",&modele_micro_melange_);                     // XD attr modele_micro_melange entier modele_micro_melange 1 modele_micro_melange (0 by default)
+  param.ajouter("constante_modele_micro_melange",&constante_modele_micro_melange_); // XD attr constante_modele_micro_melange floattant constante_modele_micro_melange 1 constante of modele (1 by default)
+  param.ajouter("espece_en_competition_micro_melange",&espece_en_competition_micro_melange_);  // XD attr espece_en_competition_micro_melange chaine espece_en_competition_micro_melange 1 espece in competition in reactions
   param.lire_avec_accolades_depuis(is);
   return is;
 
