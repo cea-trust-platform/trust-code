@@ -33,7 +33,7 @@
 #include <TRUSTArray_kokkos.tpp>
 #include <TRUSTTab_kokkos.tpp>
 
-static int methode_calcul_valeurs_sommets = 2 ;
+static int methode_calcul_valeurs_sommets_static = 2 ;
 
 // -1 moyenne des faces
 // 1 moyenne des sommets sans min/max
@@ -1603,92 +1603,95 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
 
 DoubleTab& Champ_P1NC_implementation::
 valeur_aux_sommets(const Domaine& dom,
-                   DoubleTab& champ_som) const
+                   DoubleTab& tab_champ_som) const
 {
   int nb_som = dom.nb_som_tot();
-  int nb_som_return = champ_som.dimension_tot(0);
-
-  const Champ_base& cha=le_champ();
-  const DoubleTab& ch = cha.valeurs();
-  int nb_compo_=cha.nb_comp();
-  ArrOfInt compteur(nb_som);
+  int nb_som_return = tab_champ_som.dimension_tot(0);
+  int nb_compo_ = le_champ().nb_comp();
+  IntTrav tab_compteur(nb_som);
 
   const Domaine_VEF& domaine_VEF = domaine_vef();
   assert(domaine_vef().domaine()==dom);
-
-  if ( methode_calcul_valeurs_sommets>0)
+  if (methode_calcul_valeurs_sommets_static>0)
     {
       int nb_elem_tot = dom.nb_elem_tot();
       int nb_som_elem = dom.nb_som_elem();
 
-      const IntTab& elem_faces = domaine_VEF.elem_faces();
+      DoubleTrav tab_min_som(nb_som,nb_compo_) ;
+      DoubleTrav tab_max_som(nb_som,nb_compo_) ;
 
-      DoubleTab min_som(nb_som,nb_compo_) ;
-      DoubleTab max_som(nb_som,nb_compo_) ;
-      int ncomp, face_adj,face_glob;
-      int num_elem,num_som,j;
-
-      champ_som = 0;
-      compteur = 0;
-      for (j=0; j<nb_som; j++)
-        for (int k = 0; k < nb_compo_; k++ )
-          {
-            min_som(j,k) = 1.e+30 ;
-            max_som(j,k) = 1.e-30 ;
-          }
-
-      for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
+      tab_min_som = 1.e+30;
+      tab_max_som = 1.e-30; // ToDo bug ? tab_max_som = -1.e+30
+      if (getenv("TRUST_FIX_P1NC_POST_SOM")!=nullptr) tab_max_som = -1.e+30;
+      tab_compteur = 0;
+      tab_champ_som = 0.;
+      // Loop on elem (~30ms -> ~8ms by using parallelism on the 2 nested loops with MDRangePolicy)
+      {
+        CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+        CIntTabView sommet_elem = dom.les_elems().view_ro();
+        CDoubleTabView ch = le_champ().valeurs().view_ro();
+        IntArrView compteur = static_cast<ArrOfInt&>(tab_compteur).view_rw();
+        DoubleTabView champ_som = tab_champ_som.view_rw();
+        DoubleTabView min_som = tab_min_som.view_rw();
+        DoubleTabView max_som = tab_max_som.view_rw();
+        Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem_tot,nb_som_elem}), KOKKOS_LAMBDA(
+                               const int num_elem, const int j)
         {
-          for (j=0; j<nb_som_elem; j++)
+          int num_som = sommet_elem(num_elem, j);
+          if (num_som < nb_som_return)
             {
-              num_som = dom.sommet_elem(num_elem,j);
-              if(num_som < nb_som_return)
+              Kokkos::atomic_increment(&compteur(num_som));
+              for (int ncomp = 0; ncomp < nb_compo_; ncomp++)
                 {
-                  compteur[num_som]++;
-                  for (ncomp=0; ncomp<nb_compo_; ncomp++)
+                  Kokkos::atomic_add(&champ_som(num_som, ncomp), valeur_a_sommet_compo(num_som, num_elem, ncomp, elem_faces, sommet_elem, ch));
+                  for (int face_adj = 0; face_adj < nb_som_elem; face_adj++)
                     {
-                      champ_som(num_som,ncomp) += valeur_a_sommet_compo(num_som,num_elem,ncomp);
-                      for(face_adj=0; face_adj<nb_som_elem; face_adj ++)
+                      if (face_adj != j)
                         {
-                          if (face_adj != j )
-                            {
-                              face_glob = elem_faces(num_elem, face_adj);
-                              min_som(num_som,ncomp) = std::min ( ch(face_glob,ncomp),min_som(num_som,ncomp) ) ;
-                              max_som(num_som,ncomp) = std::max ( ch(face_glob,ncomp),max_som(num_som,ncomp) ) ;
-                            }
+                          int face_glob = elem_faces(num_elem, face_adj);
+                          Kokkos::atomic_min(&min_som(num_som, ncomp), ch(face_glob, ncomp));
+                          Kokkos::atomic_max(&max_som(num_som, ncomp), ch(face_glob, ncomp));
                         }
                     }
                 }
             }
-        }
-      for (num_som=0; num_som<nb_som_return; num_som++)
-        for (ncomp=0; ncomp<nb_compo_; ncomp++)
-          {
-            champ_som(num_som,ncomp) /= compteur[num_som];
-            if ( methode_calcul_valeurs_sommets>1)
-              {
-                if ( champ_som(num_som,ncomp) < min_som(num_som,ncomp) )
-                  {
-                    champ_som(num_som,ncomp) = min_som(num_som,ncomp) ;
-                  }
-                if ( champ_som(num_som,ncomp) > max_som(num_som,ncomp) )
-                  {
-                    champ_som(num_som,ncomp) = max_som(num_som,ncomp) ;
-                  }
-              }
-          }
+        });
+        end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      }
+      // Loop on nodes (~0.2ms, no gain by collapsing the 2 nested loops...)
+      {
+        int methode_calcul_valeurs_sommets = methode_calcul_valeurs_sommets_static; // Kokkos kernels can't use static var on device
+        CDoubleTabView min_som = tab_min_som.view_ro();
+        CDoubleTabView max_som = tab_max_som.view_ro();
+        CIntArrView compteur = static_cast<ArrOfInt&>(tab_compteur).view_ro();
+        DoubleTabView champ_som = tab_champ_som.view_rw();
+        Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_som_return,nb_compo_}), KOKKOS_LAMBDA(
+                               const int num_som, const int ncomp)
+        {
+          champ_som(num_som, ncomp) /= compteur(num_som);
+          if (methode_calcul_valeurs_sommets > 1)
+            {
+              if (champ_som(num_som, ncomp) < min_som(num_som, ncomp))
+                champ_som(num_som, ncomp) = min_som(num_som, ncomp);
+              if (champ_som(num_som, ncomp) > max_som(num_som, ncomp))
+                champ_som(num_som, ncomp) = max_som(num_som, ncomp);
+            }
+        });
+        end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      }
     }
   else
     {
-      assert(methode_calcul_valeurs_sommets==-1);
-      champ_som = 0;
-      compteur = 0;
+      assert(methode_calcul_valeurs_sommets_static==-1);
+      tab_champ_som = 0;
+      tab_compteur = 0;
       int nb_comp=nb_compo_;
       int nb_faces_tot=domaine_VEF.nb_faces_tot();
       int nb_som_face=domaine_VEF.nb_som_face();
       const IntTab& face_sommets=domaine_VEF.face_sommets();
-      int face;
-      for(face=0; face<nb_faces_tot; face++)
+      const DoubleTab& ch = le_champ().valeurs();
+      ToDo_Kokkos("critical"); // but never used !
+      for(int face=0; face<nb_faces_tot; face++)
         {
 
           for(int isom=0; isom<nb_som_face; isom++)
@@ -1696,9 +1699,9 @@ valeur_aux_sommets(const Domaine& dom,
               int som1=face_sommets(face,isom);
               if (som1<nb_som_return)
                 {
-                  compteur[som1]++;
+                  tab_compteur[som1]++;
                   for(int k=0; k<nb_comp; k++)
-                    champ_som(som1,k)+=ch(face,k);
+                    tab_champ_som(som1,k)+=ch(face,k);
                 }
             }
         }
@@ -1707,27 +1710,44 @@ valeur_aux_sommets(const Domaine& dom,
       for (int num_som=0; num_som<nb_som_return; num_som++)
         for (int ncomp=0; ncomp<nb_compo_; ncomp++)
           {
-            champ_som(num_som,ncomp) /= compteur[num_som];
+            tab_champ_som(num_som,ncomp) /= tab_compteur[num_som];
           }
     }
-  return champ_som;
+  return tab_champ_som;
 }
 
-double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const
+double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int num_elem, int ncomp) const
 {
-  //Cerr << "Champ_P1NC_implementation::valeur_a_sommet_compo" << finl;
-  int face=-1;
   const IntTab& elem_faces = domaine_vef().elem_faces();
-  const IntTab& sommet_poly = get_domaine_geom().les_elems();
+  const IntTab& sommet_elem = get_domaine_geom().les_elems();
   const DoubleTab& ch = le_champ().valeurs();
   double val=0;
-  if (le_poly != -1)
+  if (num_elem != -1)
     {
       for (int i=0; i< Objet_U::dimension+1; i++)
         {
-          face = elem_faces(le_poly,i);
-          if (sommet_poly(le_poly,i)==num_som)
+          int face = elem_faces(num_elem,i);
+          if (sommet_elem(num_elem,i)==num_som)
             val -= (Objet_U::dimension-1)*ch(face, ncomp);
+          else
+            val += ch(face, ncomp);
+        }
+    }
+  return val;
+}
+
+KOKKOS_INLINE_FUNCTION
+double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int num_elem, int ncomp, CIntTabView elem_faces, CIntTabView sommet_elem, CDoubleTabView ch) const
+{
+  double val=0;
+  if (num_elem != -1)
+    {
+      int nb_som = sommet_elem.extent(1);
+      for (int i=0; i<nb_som; i++)
+        {
+          int face = elem_faces(num_elem,i);
+          if (sommet_elem(num_elem,i)==num_som)
+            val -= (nb_som-2)*ch(face, ncomp);
           else
             val += ch(face, ncomp);
         }
@@ -1770,7 +1790,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
   int nb_som = dom.nb_som();
 
   IntVect compteur(nb_som);
-  if (methode_calcul_valeurs_sommets>0)
+  if (methode_calcul_valeurs_sommets_static>0)
     {
       int nb_elem_tot = dom.nb_elem_tot();
       int nb_som_elem = dom.nb_som_elem();
@@ -1820,7 +1840,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
       for (num_som=0; num_som<nb_som; num_som++)
         {
           champ_som(num_som) /= compteur[num_som];
-          if (methode_calcul_valeurs_sommets>1)
+          if (methode_calcul_valeurs_sommets_static>1)
             {
               if ( champ_som(num_som) < min_som(num_som) ) champ_som(num_som) = min_som(num_som) ;
               if ( champ_som(num_som) > max_som(num_som) ) champ_som(num_som) = max_som(num_som) ;
