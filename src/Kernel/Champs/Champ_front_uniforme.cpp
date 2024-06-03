@@ -20,8 +20,6 @@ Implemente_instanciable(Champ_front_uniforme,"Champ_front_uniforme",Champ_front_
 // XD attr val list val 0 Values of field components.
 
 
-
-
 /*! @brief Imprime le champ sur flot de sortie.
  *
  * Imprime la taille du champ et la valeur (constante) sur

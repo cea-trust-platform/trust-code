@@ -26,8 +26,6 @@ Implemente_instanciable(Champ_front_lu,"Champ_front_lu",Ch_front_var_stationnair
 // XD attr file chaine file 0 path for the read file
 
 
-
-
 /*! @brief Imprime le champ sur flot de sortie.
  *
  * Imprime la taille du champ et la valeur (constante) sur
