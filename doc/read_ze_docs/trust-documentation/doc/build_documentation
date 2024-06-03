@@ -1,0 +1,8 @@
+#!/bin/bash
+
+pip install -U Sphinx
+pip install sphinx-material # a cool theme
+
+make html
+
+# TODO : FIXME : generate pdf

@@ -1,0 +1,15 @@
+name: rtd38
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - doxygen=1.9.8
+  - sphinx-material
+  - numpy
+  - matplotlib
+  - scipy
+  - pandas
+  - ipywidgets
+  - graphviz
+

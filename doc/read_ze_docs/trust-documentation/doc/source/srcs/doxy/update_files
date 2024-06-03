@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ ! -d "${TRUST_ROOT}" ]; then
+	echo "TRUST env is not initialized !"
+	exit -1
+fi
+
+rm -rf src
+cp -a $TRUST_ROOT/src .
+cp the_main.cpp src/MAIN/.
+
+#cp $TRUST_ROOT/bin/KSH/Doxyfile .
+
+#sed -i 's/PROJECT_NAME           =/PROJECT_NAME           = CEA TRUST Platform/g' Doxyfile
+#sed -i 's/PROJECT_LOGO           =/PROJECT_LOGO           = logo.png/g' Doxyfile
+#sed -i 's/PROJECT_BRIEF          =/PROJECT_BRIEF          = Thermohydraulic software package for CFD simulations./g' Doxyfile

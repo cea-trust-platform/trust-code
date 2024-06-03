@@ -1,0 +1,440 @@
+/****************************************************************************
+* Copyright (c) 2023, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+#include <Format_Post_Med.h>
+#include <EcrMED.h>
+#include <EcrFicPartage.h>
+#include <EFichier.h>
+#include <Param.h>
+#include <med++.h>
+
+Implemente_instanciable_sans_constructeur(Format_Post_Med,"Format_Post_Med",Format_Post_base);
+
+
+/////////////////////////////////////////////////////////////////////////////
+//Parametre: med_basename_
+// Signification: debut du nom du fichier
+//Extension med
+
+//Specificites de ce format
+//Generation d un fichier format.med.data exploitable pour reecrire les donnees a un autre format
+//-Methodes completer_post_med(...) et preparer_post_med(...) pour generer les fichiers
+//-Metode finir_med(...) pour concatener les fichiers crees
+///////////////////////////////////////////////////////////////////////////////////////
+
+/*! @brief Constructeur par defaut:
+ *
+ */
+
+//Specifier dans commentaire ce qui est fixe par defaut
+Format_Post_Med::Format_Post_Med()
+{
+  reset();
+}
+
+/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
+ *
+ */
+void Format_Post_Med::reset()
+{
+  med_basename_ = "??";
+  ecr_med.set_major_mode(false);
+}
+
+/*! @brief erreur => exit
+ *
+ */
+Sortie& Format_Post_Med::printOn(Sortie& os) const
+{
+  Cerr << "Format_Post_Meshtv::printOn : error" << finl;
+  exit();
+  return os;
+}
+
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *     nom_fichier filename_sans_extension
+ *   }
+ *
+ */
+Entree& Format_Post_Med::readOn(Entree& is)
+{
+  Format_Post_base::readOn(is);
+  return is;
+}
+
+void Format_Post_Med::set_param(Param& param)
+{
+  param.ajouter("nom_fichier",&med_basename_,Param::REQUIRED);
+}
+
+/*! @brief Initialisation de la classe avec des parametres par defaut
+ */
+int Format_Post_Med::initialize_by_default(const Nom& file_basename)
+{
+  med_basename_= file_basename;
+  return 1;
+}
+
+int Format_Post_Med::initialize(const Nom& file_basename, const int format, const Nom& option_para)
+{
+  med_basename_= file_basename;
+  return 1;
+}
+
+int Format_Post_Med::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
+{
+
+  Nom nom_fich(med_basename_);
+  nom_fich +=".";
+  Nom format="med";
+  nom_fich += format;
+  nom_fich += ".index";
+
+  ecrire_entete_med(nom_fich,est_le_premier_post);
+  return 1;
+}
+
+int Format_Post_Med::finir(const int est_le_dernier_post)
+{
+  Nom nom_fic_base(med_basename_);
+  nom_fic_base += ".med";
+  Nom nom_fic=nom_fic_base.nom_me(Process::me());
+  Cerr << "MED file " << nom_fic << " closed. See .index file for more infos." << finl;
+  return 1;
+}
+
+
+int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
+                                    const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
+                                    const Motcle& loc_post,const Nom& le_nom_champ_post)
+{
+  return 1;
+}
+
+int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
+                                   const int reprise,
+                                   const double t_init)
+{
+  return 1;
+}
+
+int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
+{
+  const REF(Domaine_dis_base) domaine_dis_base;
+  return ecrire_domaine_dis(domaine, domaine_dis_base, est_le_premier_post);
+}
+
+/*! @brief voir Format_Post_base::ecrire_domaine
+ */
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
+{
+  Nom nom_fich(med_basename_);
+  nom_fich +=".";
+  Nom format="med";
+  nom_fich += format;
+  nom_fich += ".index";
+
+  Nom nom_fic_base(med_basename_);
+  nom_fic_base += ".";
+  nom_fic_base += format;
+  Nom nom_fic=nom_fic_base.nom_me(Process::me());
+
+  ecrire_domaine_med(domaine,domaine_dis_base,nom_fic,est_le_premier_post,nom_fich);
+
+  return 1; // ok tout va bien
+}
+
+/*! @brief commence l'ecriture d'un nouveau pas de temps
+ *
+ * Ouvre le fichier maitre en mode APPEND et ajoute une ligne
+ *    "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
+ */
+int Format_Post_Med::ecrire_temps(const double temps)
+{
+  Nom nom_fich(med_basename_);
+  nom_fich +=".";
+  Nom format="med";
+  nom_fich += format;
+  nom_fich += ".index";
+
+  ecrire_temps_med(temps,nom_fich);
+
+  return 1;
+}
+
+/*! @brief voir Format_Post_base::ecrire_champ
+ *
+ */
+int Format_Post_Med::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+                                  int ncomp,double temps_,
+                                  const Nom& id_champ,
+                                  const Nom& id_du_domaine,
+                                  const Nom& localisation,
+                                  const Nom&   nature,
+                                  const DoubleTab& valeurs)
+{
+  Nom nom_fich_index(med_basename_);
+  nom_fich_index +=".";
+  Nom format="med";
+  nom_fich_index += format;
+  nom_fich_index += ".index";
+
+  Nom nom_fich_ecrit(med_basename_);
+  nom_fich_ecrit += ".";
+  nom_fich_ecrit += format;
+
+  ecrire_champ_med(domaine,unite_,noms_compo,ncomp,temps_,nom_fich_ecrit,id_champ,id_du_domaine,localisation,valeurs,nom_fich_index);
+
+  return 1;
+}
+
+/*! @brief
+ *
+ */
+
+int Format_Post_Med::ecrire_item_int(const Nom&     id_item,
+                                     const Nom&     id_du_domaine,
+                                     const Nom&     id_domaine,
+                                     const Nom&     localisation,
+                                     const Nom&     reference,
+                                     const IntVect& valeurs,
+                                     const int   reference_size)
+{
+
+  return 1;
+}
+
+int Format_Post_Med::ecrire_entete_med(Nom& nom_fich,const int est_le_premier_post)
+{
+
+  if (est_le_premier_post && Process::je_suis_maitre())
+    {
+      SFichier s(nom_fich);
+      s << "Trio_U" << " " << "Version "  << "1" << finl;
+      s << nom_du_cas() << finl;
+      s << "Trio_U" << finl;
+    }
+  return 1;
+}
+
+int Format_Post_Med::finir_med(Nom& nom_fich,int& est_le_dernier_post)
+{
+  ////Nom nom_fichier_base = nom_fich.prefix(".med.index");
+  Nom nom_fichier_base = nom_fich;
+  nom_fichier_base.prefix(".med.index");
+  Nom nom_fichier(nom_fichier_base);
+  Nom format = "med";
+  nom_fichier += ".";
+  nom_fichier += format;
+
+  if (!est_le_dernier_post || !Process::je_suis_maitre()) return 1;
+
+  // on veut concatainer les 3 fichiers
+  SFichier file3(nom_fichier+".data");
+  SFichier file("postmed.data");
+  for (int i=0; i<3; i++)
+    {
+      Nom num(i);
+      Nom fic2(nom_fichier);
+      fic2+=".med";
+      fic2+=num;
+      {
+        EFichier file2(fic2);
+        Nom motlu;
+        file2>>motlu;
+        while (!file2.eof())
+          {
+            file<<motlu<<" "<<finl;
+            if (motlu!="#")
+              file3<<motlu<<" "<<finl;
+            file2>>motlu;
+          }
+      }
+    }
+
+  SFichier s;
+  s.ouvrir(nom_fich,ios::app);
+  s << "FIN" << finl;
+
+  return 1;
+}
+
+int Format_Post_Med::completer_post_med(const Nom& nom_fich2,const Nom& nom1,const Nom& nom2)
+{
+  if (je_suis_maitre())
+    {
+      SFichier file;
+      file.ouvrir(nom_fich2,ios::app);
+      file <<nom1<<" "<<nom2<<finl;
+    }
+  return 1;
+}
+
+int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2,const Nom& nom_fich3,
+                                       const Nom& id_du_domaine,const int est_le_premier_post)
+{
+  Nom nom_fich(nom_fich1);
+  nom_fich.prefix(".med0");
+
+  if (!je_suis_maitre()) return 1;
+
+  if (est_le_premier_post)
+    {
+      SFichier file(nom_fich1);
+      file<<"{ Dimension "<<dimension<<finl<<"# export Domaine "<<id_du_domaine<<finl;
+    }
+  else
+    {
+      SFichier file(nom_fich1,ios::app);
+      file<<" export Domaine "<<id_du_domaine<<finl;
+    }
+
+  SFichier file;
+  if (est_le_premier_post)
+    {
+      file.ouvrir(nom_fich2);
+      file<<"# \n Pbc_MED pbmed\n Lire pbmed { "<<finl;
+    }
+  else
+    {
+      file.ouvrir(nom_fich2,ios::app);
+      file<<"} } } , "<<finl;
+    }
+  file<<nom_fich<<" "<<id_du_domaine<<"  { Postraitement { Champs dt_post 1e-9 {"<<finl;
+
+  if (est_le_premier_post)
+    {
+      SFichier file2(nom_fich3);
+      file2<<"} } } } }"<<finl;
+    }
+
+  return 1;
+}
+
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
+{
+  int dim = domaine.les_sommets().dimension(1);
+  bool append = !est_le_premier_post;
+  if (je_suis_maitre())
+    {
+      SFichier s;
+      s.ouvrir(nom_fich, ios::app);
+      s << "format MED: " << ecr_med.version() << finl;
+      s << "dimension: " << dim << finl;
+      s << "domaine: " << domaine.le_nom() << finl;
+      s << "nb_proc: " << Process::nproc() << finl;
+      Cerr << "Opening MED file " << nom_fic << " with " << ecr_med.version() << " format. ";
+      if (!ecr_med.get_major_mode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
+      Cerr << finl;
+    }
+  ecr_med.set_file_name_and_dom(nom_fic, domaine);
+  ecr_med.ecrire_domaine_dis(domaine_dis_base, append);
+  return 1;
+
+}
+
+int Format_Post_Med::ecrire_temps_med(const double temps,Nom& nom_fich)
+{
+  if (je_suis_maitre())
+    {
+      SFichier s;
+      s.ouvrir(nom_fich,ios::app);
+      s << "TEMPS " << temps << finl;
+    }
+  return 1;
+}
+
+int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, const Noms& noms_compo,
+                                      int ncomp, double temps_,const Nom& nom_pdb,
+                                      const Nom&   id_du_champ,
+                                      const Nom&   id_du_domaine,
+                                      const Nom&   loc_post,
+                                      const DoubleTab& valeurs,Nom& nom_fich)
+{
+  Nom fic = nom_pdb.nom_me(me());
+  ecr_med.set_file_name_and_dom(fic, dom);
+
+  Nom nom_post(id_du_champ);
+  Noms noms_compo_courts(noms_compo);
+  if (ncomp != -1)
+    {
+      nom_post = noms_compo[ncomp];
+    }
+  nom_post.prefix(dom.le_nom());
+  Nom nom_dom="";
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix(dom.le_nom());
+  if (loc_post == "SOM")
+    {
+      nom_post.prefix("_som_");
+      nom_post.prefix("_SOM_");
+      nom_dom = dom.le_nom();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_SOM_");
+    }
+  else if (loc_post == "ELEM")
+    {
+      nom_post.prefix("_ELEM_");
+      nom_post.prefix("_elem_");
+      nom_dom = dom.le_nom();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_ELEM_");
+    }
+  else if (loc_post == "FACES")
+    {
+#ifdef MEDCOUPLING_
+      nom_post.prefix("_FACES_");
+      nom_post.prefix("_faces_");
+      nom_dom = dom.get_mc_face_mesh()->getName();
+      for (int i = 0; i < noms_compo.size(); ++i)
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_FACES_");
+#else
+      Cerr << "Post-processing in MED format on faces needs MEDCoupling" << finl;
+#endif
+    }
+  if (je_suis_maitre())
+    {
+      //Ouverture du fichier
+      SFichier os;
+      os.ouvrir(nom_fich, ios::app);
+      os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
+    }
+
+  Nom type_elem = dom.type_elem()->que_suis_je();
+
+  // modif noms compo
+  for (int i = 0; i < noms_compo.size(); ++i)
+    noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(nom_post);
+
+  if (loc_post == "SOM")
+    ecr_med.ecrire_champ("CHAMPPOINT", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+  else if (loc_post == "ELEM")
+    ecr_med.ecrire_champ("CHAMPMAILLE", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+  else if (loc_post == "FACES")
+    ecr_med.ecrire_champ("CHAMPFACES", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
+  else
+    {
+      Cerr << "We do not know to postprocess " << id_du_champ
+           << " with the keyword " << loc_post << finl;
+      return -1;
+    }
+  return 1;
+}
+
+
+
+
+

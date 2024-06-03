@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ ! -d "${TRUST_ROOT}" ]; then
+	echo "TRUST env is not initialized !"
+	exit -1
+fi
+
+cp $TRUST_ROOT/Validation/Outils/documentation/source/stats.rst .
+cp $TRUST_ROOT/Validation/Outils/documentation/source/trustutils.* .
+
+rm -rf python_cloned_srcs
+mkdir python_cloned_srcs
+
+cp -r $TRUST_ROOT/Validation/Outils/trustutils python_cloned_srcs/.
+cp -r $TRUST_ROOT/Outils/TRUST_STATS_JUPYTER/stats python_cloned_srcs/.
+
+
+rm python_cloned_srcs/trustutils/__init__.py
+touch python_cloned_srcs/trustutils/__init__.py
+
+echo "from .files import TrustFile, SonFile, SonPOINTFile, SonSEGFile, OutFile, CSVFile, DTEVFile" >> python_cloned_srcs/trustutils/__init__.py
+echo "from .jupyter import run" >> python_cloned_srcs/trustutils/__init__.py
+echo "from .jupyter import plot" >> python_cloned_srcs/trustutils/__init__.py
+echo "from .jupyter import widget" >> python_cloned_srcs/trustutils/__init__.py
+echo "from .visitutils import tools_for_visit as visit" >> python_cloned_srcs/trustutils/__init__.py
+echo "from .visitutils import message" >> python_cloned_srcs/trustutils/__init__.py
