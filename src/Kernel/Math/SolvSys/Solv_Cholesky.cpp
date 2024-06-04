@@ -24,6 +24,9 @@
 //Solv_Cholesky::deja_factorise_=0;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Cholesky,"Solv_Cholesky",SolveurSys_base);
+// XD cholesky solveur_sys_base cholesky -1 Cholesky direct method.
+// XD attr impr rien impr 1 Keyword which may be used to print the resolution time.
+// XD attr quiet rien quiet 1 To disable printing of information
 
 // printOn et readOn
 

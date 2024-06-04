@@ -45,6 +45,11 @@
 #include <functional>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",Solv_Externe);
+// XD petsc solveur_sys_base petsc 0 Solver via Petsc API NL2 \input{{solvpetsc}}
+// XD attr solveur chaine solveur 0 not_set
+// XD attr option_solveur bloc_lecture option_solveur 0 not_set
+// XD attr atol floattant atol 1 Absolute threshold for convergence (same as seuil option)
+// XD attr rtol floattant rtol 1 Relative threshold for convergence
 
 // printOn
 Sortie& Solv_Petsc::printOn(Sortie& s ) const

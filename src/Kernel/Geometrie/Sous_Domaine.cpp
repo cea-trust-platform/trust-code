@@ -24,6 +24,47 @@
 
 Implemente_instanciable(Sous_Domaine,"Sous_Domaine",Objet_U);
 Add_synonym(Sous_Domaine, "Sous_Zone");
+// XD sous_zone objet_u sous_zone 1 It is an object type describing a domain sub-set. NL2 A Sous_Zone (Sub-area) type object must be associated with a Domaine type object. The Read (Lire) interpretor is used to define the items comprising the sub-area. NL2 Caution: The Domain type object nom_domaine must have been meshed (and triangulated or tetrahedralised in VEF) prior to carrying out the Associate (Associer) nom_sous_zone nom_domaine instruction; this instruction must always be preceded by the read instruction.
+// XD  attr restriction ref_sous_zone restriction 1 The elements of the sub-area nom_sous_zone must be included into the other sub-area named nom_sous_zone2. This keyword should be used first in the Read keyword.
+// XD  attr rectangle bloc_origine_cotes rectangle 1 The sub-area will include all the domain elements whose centre of gravity is within the Rectangle (in dimension 2).
+// XD  attr segment bloc_origine_cotes segment 1 not_set
+// XD  attr boite bloc_origine_cotes box 1 The sub-area will include all the domain elements whose centre of gravity is within the Box (in dimension 3).
+// XD  attr liste listentier liste 1 The sub-area will include n domain items, numbers No. 1 No. i No. n.
+// XD  attr fichier chaine filename 1 The sub-area is read into the file filename.
+// XD  attr intervalle deuxentiers intervalle 1 The sub-area will include domain items whose number is between n1 and n2 (where n1<=n2).
+// XD  attr polynomes bloc_lecture polynomes 1 A REPRENDRE
+// XD  attr couronne bloc_couronne couronne 1 In 2D case, to create a couronne.
+// XD  attr tube bloc_tube tube 1 In 3D case, to create a tube.
+// XD  attr fonction_sous_zone chaine fonction_sous_domaine 1 Keyword to build a sub-area with the the elements included into the area defined by fonction>0.
+// XD  attr union ref_sous_zone union_with 1 The elements of the sub-area nom_sous_zone3 will be added to the sub-area nom_sous_zone. This keyword should be used last in the Read keyword.
+// XD ref domaine domaine
+
+// XD bloc_origine_cotes objet_lecture nul 0 Class to create a rectangle (or a box).
+// XD  attr name chaine(into=["Origine"]) name 0 Keyword to define the origin of the rectangle (or the box).
+// XD  attr origin listf origine 0 Coordinates of the origin of the rectangle (or the box).
+// XD  attr name2 chaine(into=["Cotes"]) name2 0 Keyword to define the length along the axes.
+// XD  attr cotes listf cotes 0 Length along the axes.
+
+// XD bloc_couronne objet_lecture nul 0 Class to create a couronne (2D).
+// XD  attr name chaine(into=["Origine"]) name 0 Keyword to define the center of the circle.
+// XD  attr origin listf origine 0 Center of the circle.
+// XD  attr name3 chaine(into=["ri"]) name3 0 Keyword to define the interior radius.
+// XD  attr ri floattant ri 0 Interior radius.
+// XD  attr name4 chaine(into=["re"]) name4 0 Keyword to define the exterior radius.
+// XD  attr re floattant re 0 Exterior radius.
+
+// XD bloc_tube objet_lecture nul 0 Class to create a tube (3D).
+// XD  attr name chaine(into=["Origine"]) name 0 Keyword to define the center of the tube.
+// XD  attr origin listf origine 0 Center of the tube.
+// XD  attr name2 chaine(into=["dir"]) name2 0 Keyword to define the direction of the main axis.
+// XD  attr direction chaine(into=["X","Y","Z"]) direction 0 direction of the main axis X, Y or Z
+// XD  attr name3 chaine(into=["ri"]) name3 0 Keyword to define the interior radius.
+// XD  attr ri floattant ri 0 Interior radius.
+// XD  attr name4 chaine(into=["re"]) name4 0 Keyword to define the exterior radius.
+// XD  attr re floattant re 0 Exterior radius.
+// XD  attr name5 chaine(into=["hauteur"]) name5 0 Keyword to define the heigth of the tube.
+// XD  attr h floattant h 0 Heigth of the tube.
+
 
 /*! @brief Ecrit la liste des polyedres de la sous-domaine sur un flot de sortie.
  *

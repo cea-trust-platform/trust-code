@@ -19,8 +19,13 @@
 
 Implemente_instanciable(Calculer_Moments,"Calculer_Moments",Interprete_geometrique_base);
 // XD calculer_moments interprete calculer_moments -1 Calculates and prints the torque (moment of force) exerted by the fluid on each boundary in output files (.out) of the domain nom_dom.
-// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
-// XD attr mot lecture_bloc_moment_base mot 0 Keyword.
+// XD  attr nom_dom ref_domaine nom_dom 0 Name of domain.
+// XD  attr mot lecture_bloc_moment_base mot 0 Keyword.
+
+// XD lecture_bloc_moment_base objet_lecture nul 0 Auxiliary class to compute and print the moments.
+// XD calcul lecture_bloc_moment_base calcul -1 The centre of gravity will be calculated.
+// XD centre_de_gravite lecture_bloc_moment_base centre_de_gravite -1 To specify the centre of gravity.
+// XD  attr point un_point point 0 A centre of gravity.
 
 
 Sortie& Calculer_Moments::printOn(Sortie& s ) const

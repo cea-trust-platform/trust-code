@@ -21,6 +21,8 @@
 #include <Domaine_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem,"Source_Constituant_VDF_P0_VDF",Terme_Source_VDF_base);
+// XD source_constituant source_base source_constituant 0 Keyword to specify source rates, in [[C]/s], for each one of the nb constituents. [C] is the concentration unit.
+// XD attr ch field_base ch 0 Field type.
 
 Sortie& Terme_Source_Constituant_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 

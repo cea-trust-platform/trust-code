@@ -26,6 +26,9 @@
 #include <stat_counters.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION, "Solv_rocALUTION", Solv_Externe);
+// XD rocalution petsc rocalution 0 Solver via rocALUTION API
+// XD attr solveur chaine solveur 0 not_set
+// XD attr option_solveur bloc_lecture option_solveur 0 not_set
 
 // printOn
 Sortie& Solv_rocALUTION::printOn(Sortie& s ) const

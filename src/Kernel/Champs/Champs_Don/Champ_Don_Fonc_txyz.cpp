@@ -18,6 +18,10 @@
 #include <Parser_U.h>
 
 Implemente_instanciable(Champ_Don_Fonc_txyz,"Champ_Fonc_txyz",TRUSTChamp_Don_generique<Champ_Don_Type::TXYZ>);
+// XD field_func_txyz champ_don_base champ_fonc_txyz 0 Field defined by analytical functions. It makes it possible the definition of a field that depends on the time and the space.
+// XD attr dom ref_domaine dom 0 Name of domain of calculation
+// XD attr val listchaine val 0 List of functions on (t,x,y,z).
+// XD ref gravite field_base
 
 Sortie& Champ_Don_Fonc_txyz::printOn(Sortie& os) const { return TRUSTChamp_Don_generique::printOn(os); }
 

@@ -21,6 +21,16 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
+// XD gen solveur_sys_base gen -1 not_set
+// XD attr solv_elem chaine solv_elem 0 To specify a solver among gmres or bicgstab.
+// XD attr precond precond_base precond 0 The only preconditionner that we can specify is ilu.
+// XD attr seuil floattant seuil 1 Value of the final residue. The solver ceases iterations when the Euclidean residue standard ||Ax-B|| is less than this value. default value 1e-12.
+// XD attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+// XD attr save_matrice|save_matrix rien save_matrice 1 To save the matrix in a file.
+// XD attr quiet rien quiet 1 To not displaying any outputs of the solver.
+// XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
+// XD attr force rien force 1 Keyword to set ipar[5]=-1 in the GEN solver. This is helpful if you notice that the solver does not perform more than 100 iterations. If this keyword is specified in the datafile, you should provide nb_it_max.
+
 
 Solv_Gen::Solv_Gen()
 {
