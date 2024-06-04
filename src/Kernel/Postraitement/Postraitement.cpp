@@ -423,25 +423,61 @@ void Postraitement::set_param(Param& param)
 }
 
 // XD sondes_fichier objet_lecture nul 1 Keyword to read probes from a file
-// XD attr fichier chaine file 0 name of file
+// XD   attr fichier chaine file 0 name of file
 // XD definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
-// XD attr fichier chaine file 0 name of file
+// XD   attr fichier chaine file 0 name of file
 
-// XD champs_posts_fichier objet_lecture nul 0 Field\'s write mode.
+// XD champ_a_post objet_lecture nul 0 Field to be post-processed.
+// XD   attr champ chaine champ 0 Name of the post-processed field.
+// XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field values: The two available values are elem, som, or faces (LATA format only) used respectively to select field values at mesh centres (CHAMPMAILLE type field in the lml file) or at mesh nodes (CHAMPPOINT type field in the lml file). If no selection is made, localisation is set to som by default.
+// XD champs_a_post listobj nul -1 champ_a_post 0 Fields to be post-processed.
+
+// XD champs_posts objet_lecture nul 0 Field\'s write mode.
+// XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr champs|fields champs_a_post champs 0 Post-processed fields.
+
+// XD champs_posts_fichier objet_lecture nul 0 Fields read from file.
 // XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
 // XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
 // XD   attr period chaine period 0 Value of the period which can be like (2.*t).
 // XD   attr fichier chaine file 0 name of file
 
-// XD stats_posts_fichier objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
+// XD stats_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiques}}
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr champs|fields list_stat_post champs 0 Post-processed fields.
+
+// XD stats_posts_fichier objet_lecture nul 0 Statistics read from file.. \input{{statistiques}}
 // XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
 // XD   attr period chaine period 0 Value of the period which can be like (2.*t).
 // XD   attr fichier chaine file 0 name of file
 
-// XD stats_serie_posts_fichier objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
+// XD stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
+// XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
+// XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
+// XD   attr stat list_stat_post stat 0 not_set
+
+// XD stats_serie_posts_fichier objet_lecture nul 0 Serial_statistics read from a file. \input{{statistiquesseries}}
 // XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
 // XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
 // XD   attr fichier chaine file 0 name of file
+
+// XD stat_post_t_deb stat_post_deriv t_deb 0 not_set
+// XD   attr val floattant val 0 not_set
+// XD stat_post_t_fin stat_post_deriv t_fin 0 not_set
+// XD   attr val floattant val 0 not_set
+// XD stat_post_moyenne stat_post_deriv moyenne 0 not_set
+// XD   attr field chaine field 0 not_set
+// XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
+// XD stat_post_ecart_type stat_post_deriv ecart_type 0 not_set
+// XD   attr field chaine field 0 not_set
+// XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
+// XD stat_post_correlation stat_post_deriv correlation 0 not_set
+// XD   attr first_field chaine first_field 0 not_set
+// XD   attr second_field chaine second_field 0 not_set
+// XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 {

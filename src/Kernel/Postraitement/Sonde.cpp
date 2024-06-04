@@ -33,6 +33,8 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
 // XD attr prd floattant prd 0 Period value. Every prd seconds, the field value calculated at the previous time step is written to the nom_sonde.son file.
 // XD attr type sonde_base type 0 Type of probe.
 
+// XD sonde_base objet_lecture sonde_base 0 Basic probe. Probes refer to sensors that allow a value or several points of the domain to be monitored over time. The probes may be a set of points defined one by one (keyword Points) or a set of points evenly distributed over a straight segment (keyword Segment) or arranged according to a layout (keyword Plan) or according to a parallelepiped (keyword Volume). The fields allow all the values of a physical value on the domain to be known at several moments in time.
+
 // XD segmentfacesx sonde_base segmentfacesx 0 Segment probe where points are moved to the nearest x faces
 // XD attr nbr entier nbr 0 Number of probe points of the segment, evenly distributed.
 // XD attr point_deb un_point point_deb 0 First outer probe segment point.
@@ -54,6 +56,53 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
 // XD attr radius floattant radius 0 not_set
 // XD attr teta1 floattant teta1 0 not_set
 // XD attr teta2 floattant teta2 0 not_set
+
+// XD un_point objet_lecture nul 0 A point.
+// XD attr pos listf pos 0 Point coordinates.
+
+// XD listpoints listobj nul 0 un_point 0 Points.
+// XD points sonde_base points 0 Keyword to define the number of probe points. The file is arranged in columns.
+// XD attr points listpoints points 0 Probe points.
+
+// XD numero_elem_sur_maitre sonde_base numero_elem_sur_maitre 0 Keyword to define a probe at the special element. Useful for min/max sonde.
+// XD attr numero entier numero 0 element number
+
+// XD segmentpoints points segmentpoints 0 This keyword is used to define a probe segment from specifics points. The nom_champ field is sampled at ns specifics points.
+
+// XD position_like sonde_base position_like 0 Keyword to define a probe at the same position of another probe named autre_sonde.
+// XD attr autre_sonde chaine autre_sonde 0 Name of the other probe.
+
+// XD plan sonde_base plan 0 Keyword to set the number of probe layout points. The file format is type .lml
+// XD attr nbr entier nbr 0 Number of probes in the first direction.
+// XD attr nbr2 entier nbr2 0 Number of probes in the second direction.
+// XD attr point_deb un_point point_deb 0 First point defining the angle. This angle should be positive.
+// XD attr point_fin un_point point_fin 0 Second point defining the angle. This angle should be positive.
+// XD attr point_fin_2 un_point point_fin_2 0 Third point defining the angle. This angle should be positive.
+
+// XD volume sonde_base volume 0 Keyword to define the probe volume in a parallelepiped passing through 4 points and the number of probes in each direction.
+// XD attr nbr entier nbr 0 Number of probes in the first direction.
+// XD attr nbr2 entier nbr2 0 Number of probes in the second direction.
+// XD attr nbr3 entier nbr3 0 Number of probes in the third direction.
+// XD attr point_deb un_point point_deb 0 Point of origin.
+// XD attr point_fin un_point point_fin 0 Point defining the first direction (from point of origin).
+// XD attr point_fin_2 un_point point_fin_2 0 Point defining the second direction (from point of origin).
+// XD attr point_fin_3 un_point point_fin_3 0 Point defining the third direction (from point of origin).
+
+// XD circle sonde_base circle 0 Keyword to define several probes located on a circle.
+// XD attr nbr entier nbr 0 Number of probes between teta1 and teta2 (angles given in degrees).
+// XD attr point_deb un_point point_deb 0 Center of the circle.
+// XD attr direction entier(into=[0,1,2]) direction 1 Axis normal to the circle plane (0:x axis, 1:y axis, 2:z axis).
+// XD attr radius floattant radius 0 Radius of the circle.
+// XD attr theta1 floattant theta1 0 First angle.
+// XD attr theta2 floattant theta2 0 Second angle.
+
+// XD circle_3 sonde_base circle_3 0 Keyword to define several probes located on a circle (in 3-D space).
+// XD attr nbr entier nbr 0 Number of probes between teta1 and teta2 (angles given in degrees).
+// XD attr point_deb un_point point_deb 0 Center of the circle.
+// XD attr direction entier(into=[0,1,2]) direction 0 Axis normal to the circle plane (0:x axis, 1:y axis, 2:z axis).
+// XD attr radius floattant radius 0 Radius of the circle.
+// XD attr theta1 floattant theta1 0 First angle.
+// XD attr theta2 floattant theta2 0 Second angle.
 
 static int fichier_sondes_cree=0;
 static SFichier fichier_sondes;

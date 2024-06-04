@@ -25,78 +25,8 @@ floatfloat objet_lecture nul 0 Two reals.
 entierfloat objet_lecture nul 0 An integer and a real.
   attr the_int entier the_int 0 Integer.
   attr the_float floattant the_float 0 Real.
-champ_a_post objet_lecture nul 0 Field to be post-processed.
-  attr champ chaine champ 0 Name of the post-processed field.
-  attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field values: The two available values are elem, som, or faces (LATA format only) used respectively to select field values at mesh centres (CHAMPMAILLE type field in the lml file) or at mesh nodes (CHAMPPOINT type field in the lml file). If no selection is made, localisation is set to som by default.
-champs_a_post listobj nul -1 champ_a_post 0 Fields to be post-processed.
-champs_posts objet_lecture nul 0 Field\'s write mode.
-  attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
-  attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period which can be like (2.*t).
-  attr champs|fields champs_a_post champs 0 Post-processed fields.
 stat_post_deriv objet_lecture stat_post_deriv 0 not_set
-stat_post_t_deb stat_post_deriv t_deb 0 not_set
-  attr val floattant val 0 not_set
-stat_post_t_fin stat_post_deriv t_fin 0 not_set
-  attr val floattant val 0 not_set
-stat_post_moyenne stat_post_deriv moyenne 0 not_set
-  attr field chaine field 0 not_set
-  attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
-stat_post_ecart_type stat_post_deriv ecart_type 0 not_set
-  attr field chaine field 0 not_set
-  attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
-stat_post_correlation stat_post_deriv correlation 0 not_set
-  attr first_field chaine first_field 0 not_set
-  attr second_field chaine second_field 0 not_set
-  attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
 list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
-stats_posts objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
-  attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-  attr period chaine period 0 Value of the period which can be like (2.*t).
-  attr champs|fields list_stat_post champs 0 Post-processed fields.
-stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
-  attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
-  attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
-  attr stat list_stat_post stat 0 not_set
-sonde_base objet_lecture sonde_base 0 Basic probe. Probes refer to sensors that allow a value or several points of the domain to be monitored over time. The probes may be a set of points defined one by one (keyword Points) or a set of points evenly distributed over a straight segment (keyword Segment) or arranged according to a layout (keyword Plan) or according to a parallelepiped (keyword Volume). The fields allow all the values of a physical value on the domain to be known at several moments in time.
-un_point objet_lecture nul 0 A point.
-  attr pos listf pos 0 Point coordinates.
-listpoints listobj nul 0 un_point 0 Points.
-points sonde_base points 0 Keyword to define the number of probe points. The file is arranged in columns.
-  attr points listpoints points 0 Probe points.
-numero_elem_sur_maitre sonde_base numero_elem_sur_maitre 0 Keyword to define a probe at the special element. Useful for min/max sonde.
-  attr numero entier numero 0 element number
-segmentpoints points segmentpoints 0 This keyword is used to define a probe segment from specifics points. The nom_champ field is sampled at ns specifics points.
-position_like sonde_base position_like 0 Keyword to define a probe at the same position of another probe named autre_sonde.
-  attr autre_sonde chaine autre_sonde 0 Name of the other probe.
-plan sonde_base plan 0 Keyword to set the number of probe layout points. The file format is type .lml
-  attr nbr entier nbr 0 Number of probes in the first direction.
-  attr nbr2 entier nbr2 0 Number of probes in the second direction.
-  attr point_deb un_point point_deb 0 First point defining the angle. This angle should be positive.
-  attr point_fin un_point point_fin 0 Second point defining the angle. This angle should be positive.
-  attr point_fin_2 un_point point_fin_2 0 Third point defining the angle. This angle should be positive.
-volume sonde_base volume 0 Keyword to define the probe volume in a parallelepiped passing through 4 points and the number of probes in each direction.
-  attr nbr entier nbr 0 Number of probes in the first direction.
-  attr nbr2 entier nbr2 0 Number of probes in the second direction.
-  attr nbr3 entier nbr3 0 Number of probes in the third direction.
-  attr point_deb un_point point_deb 0 Point of origin.
-  attr point_fin un_point point_fin 0 Point defining the first direction (from point of origin).
-  attr point_fin_2 un_point point_fin_2 0 Point defining the second direction (from point of origin).
-  attr point_fin_3 un_point point_fin_3 0 Point defining the third direction (from point of origin).
-circle sonde_base circle 0 Keyword to define several probes located on a circle.
-  attr nbr entier nbr 0 Number of probes between teta1 and teta2 (angles given in degrees).
-  attr point_deb un_point point_deb 0 Center of the circle.
-  attr direction entier(into=[0,1,2]) direction 1 Axis normal to the circle plane (0:x axis, 1:y axis, 2:z axis).
-  attr radius floattant radius 0 Radius of the circle.
-  attr theta1 floattant theta1 0 First angle.
-  attr theta2 floattant theta2 0 Second angle.
-circle_3 sonde_base circle_3 0 Keyword to define several probes located on a circle (in 3-D space).
-  attr nbr entier nbr 0 Number of probes between teta1 and teta2 (angles given in degrees).
-  attr point_deb un_point point_deb 0 Center of the circle.
-  attr direction entier(into=[0,1,2]) direction 0 Axis normal to the circle plane (0:x axis, 1:y axis, 2:z axis).
-  attr radius floattant radius 0 Radius of the circle.
-  attr theta1 floattant theta1 0 First angle.
-  attr theta2 floattant theta2 0 Second angle.
 listchamp_generique listobj nul 1 champ_generique_base 1 XXX
 champ_post_de_champs_post champ_generique_base champ_post_de_champs_post -1 not_set
   attr source champ_generique_base source 1 the source field.
