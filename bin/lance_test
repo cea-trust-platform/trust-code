@@ -37,6 +37,7 @@ gmon()
             echo "End."
          fi
       fi
+      rm -f gmon.out
    fi
 }
 analyse()
