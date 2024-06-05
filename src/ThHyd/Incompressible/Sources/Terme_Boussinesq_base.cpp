@@ -21,6 +21,11 @@
 #include <Param.h>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
+// XD boussinesq_temperature source_base boussinesq_temperature -1 Class to describe a source term that couples the movement quantity equation and energy equation with the Boussinesq hypothesis.
+// XD attr t0 chaine t0 0 Reference temperature value (oC or K). It can also be a time dependant function since the 1.6.6 version.
+// XD attr verif_boussinesq entier verif_boussinesq 1 Keyword to check (1) or not (0) the reference value in comparison with the mean value in the domain. It is set to 1 by default.
+// XD boussinesq_concentration source_base boussinesq_concentration -1 Class to describe a source term that couples the movement quantity equation and constituent transport equation with the Boussinesq hypothesis.
+// XD attr c0 list c0 0 Reference concentration field type. The only field type currently available is Champ_Uniforme (Uniform field).
 
 Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 

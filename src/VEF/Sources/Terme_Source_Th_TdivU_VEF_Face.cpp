@@ -29,6 +29,7 @@
 #include <Echange_impose_base.h>
 
 Implemente_instanciable(Terme_Source_Th_TdivU_VEF_Face,"Source_Th_TdivU_VEF_P1NC",Source_base);
+// XD source_th_tdivu source_base source_th_tdivu 0 This term source is dedicated for any scalar (called T) transport. Coupled with upwind (amont) or muscl scheme, this term gives for final expression of convection : div(U.T)-T.div (U)=U.grad(T) This ensures, in incompressible flow when divergence free is badly resolved, to stay in a better way in the physical boundaries. NL2 Warning: Only available in VEF discretization.
 
 Sortie& Terme_Source_Th_TdivU_VEF_Face::printOn(Sortie& s ) const
 {

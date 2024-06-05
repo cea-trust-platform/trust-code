@@ -18,6 +18,7 @@
 #include <Frontiere.h>
 
 Implemente_base_sans_constructeur(Champ_front_base,"Champ_front_base",Field_base);
+// XD front_field_base objet_u champ_front_base -1 Basic class for fields at domain boundaries.
 
 Champ_front_base::Champ_front_base() { temps_defaut = -1.; }
 /*! @brief Imprime le nom du champ sur un flot de sortie

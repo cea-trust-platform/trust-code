@@ -30,7 +30,7 @@
 #include <Param.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Terme_Source_Canal_perio,"Terme_Source_Canal_perio",Source_base);
-
+// XD canal_perio source_base canal_perio 1 Momentum source term to maintain flow rate. The expression of the source term is: NL2 S(t) = (2*(Q(0) - Q(t))-(Q(0)-Q(t-dt))/(coeff*dt*area) NL2 NL2 Where: NL2 coeff=damping coefficient NL2 area=area of the periodic boundary NL2 Q(t)=flow rate at time t NL2 dt=time step NL2 NL2 Three files will be created during calculation on a datafile named DataFile.data. The first file contains the flow rate evolution. The second file is useful for resuming a calculation with the flow rate of the previous stopped calculation, and the last one contains the pressure gradient evolution: NL2 -DataFile_Channel_Flow_Rate_ProblemName_BoundaryName NL2 -DataFile_Channel_Flow_Rate_repr_ProblemName_BoundaryName NL2 -DataFile_Pressure_Gradient_ProblemName_BoundaryName
 
 Terme_Source_Canal_perio::Terme_Source_Canal_perio():
   direction_ecoulement_(-1),
@@ -79,11 +79,11 @@ Entree& Terme_Source_Canal_perio::readOn(Entree& is )
 void Terme_Source_Canal_perio::set_param(Param& param)
 {
   param.ajouter_non_std("direction_ecoulement",(this));
-  param.ajouter("u_etoile",&u_etoile);
-  param.ajouter("coeff",&coeff);
-  param.ajouter("h",&h);
-  param.ajouter("bord",&bord_periodique_);
-  param.ajouter_non_std("debit_impose",(this));
+  param.ajouter("u_etoile",&u_etoile);                     // XD attr u_etoile floattant u_etoile 1 not_set
+  param.ajouter("coeff",&coeff);                           // XD attr coeff floattant coeff 1 Damping coefficient (optional, default value is 10).
+  param.ajouter("h",&h);                                   // XD attr h floattant h 1 Half heigth of the channel.
+  param.ajouter("bord",&bord_periodique_);                 // XD attr bord chaine bord 0 The name of the (periodic) boundary normal to the flow direction.
+  param.ajouter_non_std("debit_impose",(this));            // XD attr debit_impose floattant debit_impose 1 Optional option to specify the aimed flow rate Q(0). If not used, Q(0) is computed by the code after the projection phase, where velocity initial conditions are slighlty changed to verify incompressibility.
   param.ajouter_non_std("velocity_weighting",(this));
 }
 

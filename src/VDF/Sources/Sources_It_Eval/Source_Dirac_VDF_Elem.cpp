@@ -18,6 +18,9 @@
 #include <Navier_Stokes_std.h>
 
 Implemente_instanciable_sans_constructeur(Source_Dirac_VDF_Elem,"Dirac_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
+// XD dirac source_base dirac 0 Class to define a source term corresponding to a volume power release in the energy equation.
+// XD attr position list position 0 not_set
+// XD attr ch field_base ch 0 Thermal power field type. To impose a volume power on a domain sub-area, the Champ_Uniforme_Morceaux (partly_uniform_field) type must be used. NL2 Warning : The volume thermal power is expressed in W.m-3.
 
 Sortie& Source_Dirac_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 

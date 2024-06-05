@@ -19,6 +19,11 @@
 #include <Champ_base.h>
 
 Implemente_instanciable(Operateur_Conv,"Operateur_Conv",DERIV(Operateur_Conv_base));
+// XD convection_deriv objet_lecture convection_deriv 0 not_set
+// XD bloc_convection objet_lecture nul 0 not_set
+// XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+// XD attr operateur convection_deriv operateur 0 not_set
+// XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
 Sortie& Operateur_Conv::printOn(Sortie& os) const
 {

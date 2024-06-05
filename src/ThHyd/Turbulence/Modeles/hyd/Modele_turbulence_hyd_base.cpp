@@ -31,6 +31,7 @@
 #include <Debog.h>
 
 Implemente_base(Modele_turbulence_hyd_base, "Modele_turbulence_hyd_base", Objet_U);
+// XD modele_turbulence_hyd_deriv objet_lecture modele_turbulence_hyd_deriv -1 Basic class for turbulence model for Navier-Stokes equations.
 
 Sortie& Modele_turbulence_hyd_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
@@ -72,12 +73,12 @@ Entree& Modele_turbulence_hyd_base::readOn(Entree& is)
 
 void Modele_turbulence_hyd_base::set_param(Param& param)
 {
-  param.ajouter_non_std("turbulence_paroi", (this), Param::REQUIRED);
-  param.ajouter_non_std("dt_impr_ustar", (this));
-  param.ajouter_non_std("dt_impr_ustar_mean_only", (this));
-  param.ajouter("nut_max", &XNUTM_);
-  param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps", &calcul_borne_locale_visco_turb_);
-  param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre", &dt_diff_sur_dt_conv_);
+  param.ajouter_non_std("turbulence_paroi", (this), Param::REQUIRED); // XD attr turbulence_paroi turbulence_paroi_base turbulence_paroi 1 Keyword to set the wall law.
+  param.ajouter_non_std("dt_impr_ustar", (this));                     // XD attr dt_impr_ustar floattant dt_impr_ustar 1 This keyword is used to print the values (U +, d+, u$\star$) obtained with the wall laws into a file named datafile_ProblemName_Ustar.face and periode refers to the printing period, this value is expressed in seconds.
+  param.ajouter_non_std("dt_impr_ustar_mean_only", (this));           // XD attr dt_impr_ustar_mean_only dt_impr_ustar_mean_only dt_impr_ustar_mean_only 1 This keyword is used to print the mean values of u* ( obtained with the wall laws) on each boundary, into a file named datafile_ProblemName_Ustar_mean_only.out. periode refers to the printing period, this value is expressed in seconds. If you don\'t use the optional keyword boundaries, all the boundaries will be considered. If you use it, you must specify nb_boundaries which is the number of boundaries on which you want to calculate the mean values of u*, then you have to specify their names.
+  param.ajouter("nut_max", &XNUTM_);                                  // XD attr nut_max floattant nut_max 1 Upper limitation of turbulent viscosity (default value 1.e8).
+  param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps", &calcul_borne_locale_visco_turb_); // XD attr correction_visco_turb_pour_controle_pas_de_temps rien correction_visco_turb_pour_controle_pas_de_temps 1 Keyword to set a limitation to low time steps due to high values of turbulent viscosity. The limit for turbulent viscosity is calculated so that diffusive time-step is equal or higher than convective time-step. For a stationary flow, the correction for turbulent viscosity should apply only during the first time steps and not when permanent state is reached. To check that, we could post process the corr_visco_turb field which is the correction of turbulent viscosity: it should be 1. on the whole domain.
+  param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre", &dt_diff_sur_dt_conv_);       // XD attr correction_visco_turb_pour_controle_pas_de_temps_parametre floattant correction_visco_turb_pour_controle_pas_de_temps_parametre 1 Keyword to set a limitation to low time steps due to high values of turbulent viscosity. The limit for turbulent viscosity is the ratio between diffusive time-step and convective time-step is higher or equal to the given value [0-1]
   //param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
 }
 
@@ -99,6 +100,9 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
         }
       else if (mot == "dt_impr_ustar_mean_only")
         {
+          // XD dt_impr_ustar_mean_only objet_lecture nul 1 not_set
+          // XD attr dt_impr floattant dt_impr 0 not_set
+          // XD attr boundaries listchaine boundaries 1 not_set
           Nom accolade_ouverte = "{";
           Nom accolade_fermee = "}";
           nom_fichier_ = Objet_U::nom_du_cas() + "_" + equation().probleme().le_nom() + "_ustar_mean_only";

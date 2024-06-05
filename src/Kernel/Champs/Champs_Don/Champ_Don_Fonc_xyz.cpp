@@ -18,6 +18,9 @@
 #include <Parser_U.h>
 
 Implemente_instanciable(Champ_Don_Fonc_xyz,"Champ_Fonc_xyz",TRUSTChamp_Don_generique<Champ_Don_Type::XYZ>);
+// XD field_func_xyz champ_don_base champ_fonc_xyz 0 Field defined by analytical functions. It makes it possible the definition of a field that depends on (x,y,z).
+// XD attr dom ref_domaine dom 0 Name of domain of calculation.
+// XD attr val listchaine val 0 List of functions on (x,y,z).
 
 Sortie& Champ_Don_Fonc_xyz::printOn(Sortie& os) const { return TRUSTChamp_Don_generique::printOn(os); }
 

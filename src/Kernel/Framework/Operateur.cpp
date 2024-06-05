@@ -76,6 +76,10 @@ Entree& Operateur::lire(Entree& is)
         }
       else if (motlu=="implicite")
         {
+          // XD op_implicite objet_lecture nul 0 not_set
+          // XD attr implicite chaine(into=["implicite"]) implicite 0 not_set
+          // XD attr mot chaine(into=["solveur"]) mot 0 not_set
+          // XD attr solveur solveur_sys_base solveur 0 not_set
           if(typ=="non defini")
             {
               typ = "";

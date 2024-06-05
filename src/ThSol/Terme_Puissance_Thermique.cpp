@@ -23,6 +23,9 @@
 #include <Discretisation_base.h>
 #include <Champ_val_tot_sur_vol_base.h>
 
+// XD puissance_thermique source_base puissance_thermique 0 Class to define a source term corresponding to a volume power release in the energy equation.
+// XD attr ch field_base ch 0 Thermal power field type. To impose a volume power on a domain sub-area, the Champ_Uniforme_Morceaux (partly_uniform_field) type must be used. NL2 Warning : The volume thermal power is expressed in W.m-3 in 3D (in W.m-2 in 2D). It is a power per volume unit (in a porous media, it is a power per fluid volume unit).
+
 /*! @brief Lit le terme de puissance thermique a partir d'un flot d'entree et d une equation pour eventuellement
  *
  *     acceder a la discretisation afin de typer la_puissance.

@@ -20,6 +20,7 @@
 #include <Sous_Domaine.h>
 
 Implemente_base(Champ_val_tot_sur_vol_base,"Champ_val_tot_sur_vol_base",Champ_Uniforme_Morceaux);
+// XD valeur_totale_sur_volume champ_uniforme_morceaux valeur_totale_sur_volume -1 Similar as Champ_Uniforme_Morceaux with the same syntax. Used for source terms when we want to specify a source term with a value given for the volume (eg: heat in Watts) and not a value per volume unit (eg: heat in Watts/m3).
 
 Sortie& Champ_val_tot_sur_vol_base::printOn(Sortie& os) const { return Champ_Uniforme_Morceaux::printOn(os); }
 

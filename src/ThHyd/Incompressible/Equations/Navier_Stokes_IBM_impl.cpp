@@ -20,6 +20,20 @@
 #include <Param.h>
 #include <Nom.h>
 
+// XD penalisation_l2_ftd_lec objet_lecture nul 0 not_set
+// XD attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
+// XD attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF
+// XD attr correction_calcul_pression_initiale entier correction_calcul_pression_initiale 1 (IBM advanced) fix initial pressure computation for PDF
+// XD attr correction_vitesse_projection_initiale entier correction_vitesse_projection_initiale 1 (IBM advanced) fix initial velocity computation for PDF
+// XD attr correction_matrice_pression entier correction_matrice_pression 1 (IBM advanced) fix pressure matrix for PDF
+// XD attr matrice_pression_penalisee_H1 entier matrice_pression_penalisee_H1 1 (IBM advanced) fix pressure matrix for PDF
+// XD attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
+// XD attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
+// XD attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
+// XD attr bord chaine bord 0 not_set
+// XD attr val list val 0 not_set
+// XD penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set
+
 void Navier_Stokes_IBM_impl::set_param_IBM(Param& param)
 {
   param.ajouter_flag("postraiter_gradient_pression_sans_masse",&postraiter_gradient_pression_sans_masse_,Param::OPTIONAL);

@@ -21,6 +21,7 @@
 #include <Scatter.h>
 
 Implemente_instanciable(Periodique, "Periodique", Cond_lim_base);
+// XD periodic condlim_base periodique -1 1). For Navier-Stokes equations, this keyword is used to indicate that the horizontal inlet velocity values are the same as the outlet velocity values, at every moment. As regards meshing, the inlet and outlet edges bear the same name.; 2). For scalar transport equation, this keyword is used to set a periodic condition on scalar. The two edges dealing with this periodic condition bear the same name.
 
 Sortie& Periodique::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

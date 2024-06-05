@@ -18,6 +18,8 @@
 
 Implemente_instanciable(Champ_Uniforme,"Champ_Uniforme",TRUSTChamp_Divers_generique<Champ_Divers_Type::UNIFORME>);
 Add_synonym(Champ_Uniforme,"Uniform_field");
+// XD uniform_field champ_don_base champ_uniforme 0 Field that is constant in space and stationary.
+// XD attr val list val 0 Values of field components.
 
 Sortie& Champ_Uniforme::printOn(Sortie& os) const
 {

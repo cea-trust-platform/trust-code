@@ -20,6 +20,12 @@
 #include <Champ_Don.h>
 
 Implemente_instanciable(Operateur_Diff,"Operateur_Diff",DERIV(Operateur_Diff_base));
+// XD diffusion_deriv objet_lecture diffusion_deriv 0 not_set
+// XD bloc_diffusion objet_lecture nul 0 not_set
+// XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+// XD attr operateur diffusion_deriv operateur 1 if none is specified, the diffusive scheme used is a 2nd-order scheme.
+// XD attr op_implicite op_implicite op_implicite 1 To have diffusive implicitation, it use Uzawa algorithm. Very useful when viscosity has large variations.
+// XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
 Sortie& Operateur_Diff::printOn(Sortie& os) const
 {
