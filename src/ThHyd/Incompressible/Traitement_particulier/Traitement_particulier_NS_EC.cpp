@@ -24,7 +24,10 @@
 #include <sys/stat.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Traitement_particulier_NS_EC,"Traitement_particulier_NS_EC",Traitement_particulier_NS_base);
-
+// XD ec traitement_particulier_base ec -1 Keyword to print total kinetic energy into the referential linked to the domain (keyword Ec). In the case where the domain is moving into a Galilean referential, the keyword Ec_dans_repere_fixe will print total kinetic energy in the Galilean referential whereas Ec will print the value calculated into the moving referential linked to the domain
+// XD attr Ec rien Ec 1 not_set
+// XD attr Ec_dans_repere_fixe rien Ec_dans_repere_fixe 1 not_set
+// XD attr periode floattant periode 1 periode is the keyword to set the period of printing into the file datafile_Ec.son or datafile_Ec_dans_repere_fixe.son.
 
 /*! @brief
  *

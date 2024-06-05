@@ -27,6 +27,13 @@ Implemente_instanciable(Operateur_Diff,"Operateur_Diff",DERIV(Operateur_Diff_bas
 // XD attr op_implicite op_implicite op_implicite 1 To have diffusive implicitation, it use Uzawa algorithm. Very useful when viscosity has large variations.
 // XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
+/* Here we put the doc for all shared (VDF, VEF,...) keywords: */
+
+// XD diffusion_negligeable diffusion_deriv negligeable 0 the diffusivity will not taken in count
+
+// XD diffusion_option diffusion_deriv option 0 not_set
+// XD attr bloc_lecture bloc_lecture bloc_lecture 0 not_set
+
 Sortie& Operateur_Diff::printOn(Sortie& os) const
 {
   return Operateur::ecrire(os);

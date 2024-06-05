@@ -17,7 +17,7 @@
 #include <Convection_tools.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Muscl_VEF_Face,"Op_Conv_Muscl_VEF_P1NC",Op_Conv_VEF_Face);
-
+// XD convection_muscl convection_deriv muscl 0 Keyword for muscl scheme in VEF discretization equivalent to generic muscl vanleer 2 for the 1.5 version or later. The previous muscl scheme can be used with the obsolete in future muscl_old keyword.
 
 //// printOn
 //

@@ -16,6 +16,10 @@
 #include <Perte_Charge_Reguliere.h>
 #include <Motcle.h>
 
+// XD perte_charge_reguliere source_base perte_charge_reguliere 0 Source term modelling the presence of a bundle of tubes in a flow.
+// XD attr spec spec_pdcr_base spec 0 Description of longitudinale or transversale type.
+// XD attr zone_name chaine name_of_zone 0 Name of the sub-area occupied by the tube bundle. A Sous_Zone (Sub-area) type object called zone_name should have been previously created.
+
 //Add a constructor for initialization
 Perte_Charge_Reguliere::Perte_Charge_Reguliere( void ) : Perte_Charge( )
 {

@@ -16,6 +16,9 @@
 #include <Traitement_particulier_NS_temperature.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Traitement_particulier_NS_temperature,"Traitement_particulier_NS_temperature",Traitement_particulier_NS_base);
+// XD temperature traitement_particulier_base temperature -1 not_set
+// XD attr bord chaine bord 0 not_set
+// XD attr direction entier direction 0 not_set
 
 
 /*! @brief

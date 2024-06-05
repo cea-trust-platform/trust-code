@@ -19,17 +19,13 @@
 #include <Periodique.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Muscl_old_VEF_Face,"Op_Conv_Muscl_old_VEF_P1NC",Op_Conv_VEF_base);
+// XD convection_muscl_old convection_deriv muscl_old 0 Only for VEF discretization.
 
-
-//// printOn
-//
 Sortie& Op_Conv_Muscl_old_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
 Entree& Op_Conv_Muscl_old_VEF_Face::readOn(Entree& s )
 {
   return s ;

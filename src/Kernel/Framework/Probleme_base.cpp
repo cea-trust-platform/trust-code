@@ -61,6 +61,19 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 //  XD ref loi4 loi_fermeture_base
 //  XD ref loi5 loi_fermeture_base
 
+
+// XD problem_read_generic Pb_base problem_read_generic -1 The probleme_read_generic differs rom the rest of the TRUST code : The problem does not state the number of equations that are enclosed in the problem. As the list of equations to be solved in the generic read problem is declared in the data file and not pre-defined in the structure of the problem, each equation has to be distinctively associated with the problem with the Associate keyword.
+// XD   ref eqn1 eqn_base
+// XD   ref eqn2 eqn_base
+// XD   ref eqn3 eqn_base
+// XD   ref eqn4 eqn_base
+// XD   ref eqn5 eqn_base
+// XD   ref eqn6 eqn_base
+// XD   ref eqn7 eqn_base
+// XD   ref eqn8 eqn_base
+// XD   ref eqn9 eqn_base
+// XD   ref eqn10 eqn_base
+
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
 LIST(Nom) glob_noms_fichiers;

@@ -28,6 +28,9 @@
 #include <SSOR.h>
 
 Implemente_instanciable(Op_Dift_VEF_P1NCP1B_Face, "Op_Dift_VEF_P1NCP1B_P1NC", Op_Dift_VEF_base);
+// XD diffusion_p1ncp1b diffusion_deriv p1ncp1b 1 not_set
+
+// XD difusion_p1b diffusion_deriv p1b 0 not_set
 
 Sortie& Op_Dift_VEF_P1NCP1B_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 

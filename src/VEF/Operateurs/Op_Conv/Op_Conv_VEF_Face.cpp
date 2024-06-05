@@ -28,16 +28,17 @@
 #include <Tetra_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_VEF_Face,"Op_Conv_Generic_VEF_P1NC",Op_Conv_VEF_base);
+// XD convection_generic convection_deriv generic 0 Keyword for generic calling of upwind and muscl convective scheme in VEF discretization. For muscl scheme, limiters and order for fluxes calculations have to be specified. The available limiters are : minmod - vanleer -vanalbada - chakravarthy - superbee, and the order of accuracy is 1 or 2. Note that chakravarthy is a non-symmetric limiter and superbee may engender results out of physical limits. By consequence, these two limiters are not recommended. NL2 Examples: NL2 convection { generic amont }NL2 convection { generic muscl minmod 1 }NL2 convection { generic muscl vanleer 2 }NL2 NL2 In case of results out of physical limits with muscl scheme (due for instance to strong non-conformal velocity flow field), user can redefine in data file a lower order and a smoother limiter, as : convection { generic muscl minmod 1 }
+// XD   attr type chaine(into=["amont","muscl","centre"]) type 0 type of scheme
+// XD   attr limiteur chaine(into=["minmod","vanleer","vanalbada","chakravarthy","superbee"]) limiteur 1 type of limiter
+// XD   attr ordre entier(into=[1,2,3]) ordre 1 order of accuracy
+// XD   attr alpha floattant alpha 1 alpha
 
-//// printOn
-//
 Sortie& Op_Conv_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
 Entree& Op_Conv_VEF_Face::readOn(Entree& s )
 {
   Motcle type_op_lu;

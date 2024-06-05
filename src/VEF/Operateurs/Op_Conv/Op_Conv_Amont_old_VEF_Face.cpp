@@ -20,18 +20,12 @@
 #include <Periodique.h>
 
 Implemente_instanciable(Op_Conv_Amont_old_VEF_Face,"Op_Conv_Amont_old_VEF_P1NC",Op_Conv_VEF_base);
-
-
-//// printOn
-//
+// XD convection_amont_old convection_deriv amont_old 0 Only for VEF discretization, obsolete keyword, see amont.
 
 Sortie& Op_Conv_Amont_old_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_Amont_old_VEF_Face::readOn(Entree& s )
 {

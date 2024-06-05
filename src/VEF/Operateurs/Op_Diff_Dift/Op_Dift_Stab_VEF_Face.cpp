@@ -31,6 +31,14 @@
 #include <Debog.h>
 
 Implemente_instanciable(Op_Dift_Stab_VEF_Face, "Op_Dift_VEF_P1NC_stab", Op_Dift_VEF_base);
+// XD diffusion_stab diffusion_deriv stab 1 keyword allowing consistent and stable calculations even in case of obtuse angle meshes.
+// XD attr standard entier standard 1 to recover the same results as calculations made by standard laminar diffusion operator. However, no stabilization technique is used and calculations may be unstable when working with obtuse angle meshes (by default 0)
+// XD attr info entier info 1 developer option to get the stabilizing ratio (by default 0)
+// XD attr new_jacobian entier new_jacobian 1 when implicit time schemes are used, this option defines a new jacobian that may be more suitable to get stationary solutions (by default 0)
+// XD attr nu entier nu 1 (respectively nut 1) takes the molecular viscosity (resp. eddy viscosity) into account in the velocity gradient part of the diffusion expression (by default nu=1 and nut=1)
+// XD attr nut entier nut 1 not_set
+// XD attr nu_transp entier nu_transp 1 (respectively nut_transp 1) takes the molecular viscosity (resp. eddy viscosity) into account in the transposed velocity gradient part of the diffusion expression (by default nu_transp=0 and nut_transp=1)
+// XD attr nut_transp entier nut_transp 1 not_set
 
 double my_minimum(double a, double b, double c)
 {

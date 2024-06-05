@@ -38,17 +38,26 @@
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC_Stab,"Op_Conv_EF_Stab_VEF_P1NC",Op_Conv_VEF_Face);
 
+// XD sous_zone_valeur objet_lecture nul 0 Two words.
+// XD attr sous_zone ref_sous_zone sous_zone 0 sous zone
+// XD attr valeur floattant valeur 0 value
 
-//// printOn
-//
+// XD listsous_zone_valeur listobj nul 0 sous_zone_valeur 0 List of groups of two words.
+
+// XD convection_ef_stab convection_deriv ef_stab 1 Keyword for a VEF convective scheme.
+// XD attr alpha floattant alpha 1 To weight the scheme centering with the factor double (between 0 (full centered) and 1 (mix between upwind and centered), by default 1). For scalar equation, it is adviced to use alpha=1 and for the momentum equation, alpha=0.2 is adviced.
+// XD attr test entier test 1 Developer option to compare old and new version of EF_stab
+// XD attr tdivu rien tdivu 1 To have the convective operator calculated as div(TU)-TdivU(=UgradT).
+// XD attr old rien old 1 To use old version of EF_stab scheme (default no).
+// XD attr volumes_etendus rien volumes_etendus 1 Option for the scheme to use the extended volumes (default, yes).
+// XD attr volumes_non_etendus rien volumes_non_etendus 1 Option for the scheme to not use the extended volumes (default, no).
+// XD attr amont_sous_zone ref_sous_zone amont_sous_zone 1 Option to degenerate EF_stab scheme into Amont (upwind) scheme in the sub zone of name sz_name. The sub zone may be located arbitrarily in the domain but the more often this option will be activated in a zone where EF_stab scheme generates instabilities as for free outlet for example.
+// XD attr alpha_sous_zone listsous_zone_valeur alpha_sous_zone 1 Option to change locally the alpha value on N sub-zones named sub_zone_name_I. Generally, it is used to prevent from a local divergence by increasing locally the alpha parameter.
 
 Sortie& Op_Conv_EF_VEF_P1NC_Stab::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
 {

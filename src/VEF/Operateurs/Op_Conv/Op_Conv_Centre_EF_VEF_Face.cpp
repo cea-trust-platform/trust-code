@@ -18,18 +18,23 @@
 #include <Periodique.h>
 
 Implemente_instanciable(Op_Conv_Centre_EF_VEF_Face,"Op_Conv_Centre_EF_VEF_P1NC",Op_Conv_VEF_base);
-
-
-//// printOn
-//
+// XD bloc_ef objet_lecture nul 0 not_set
+// XD   attr mot1 chaine(into=["transportant_bar","transporte_bar","filtrer_resu","antisym"]) mot1 0 not_set
+// XD   attr val1 entier(into=[0,1]) val1 0 not_set
+// XD   attr mot2 chaine(into=["transportant_bar","transporte_bar","filtrer_resu","antisym"]) mot2 0 not_set
+// XD   attr val2 entier(into=[0,1]) val2 0 not_set
+// XD   attr mot3 chaine(into=["transportant_bar","transporte_bar","filtrer_resu","antisym"]) mot3 0 not_set
+// XD   attr val3 entier(into=[0,1]) val3 0 not_set
+// XD   attr mot4 chaine(into=["transportant_bar","transporte_bar","filtrer_resu","antisym"]) mot4 0 not_set
+// XD   attr val4 entier(into=[0,1]) val4 0 not_set
+// XD convection_ef convection_deriv ef 0 For VEF calculations, a centred convective scheme based on Finite Elements formulation can be called through the following data:NL2 NL2 Convection { EF transportant_bar val transporte_bar val antisym val filtrer_resu val }NL2 NL2 This scheme is 2nd order accuracy (and get better the property of kinetic energy conservation). Due to possible problems of instabilities phenomena, this scheme has to be coupled with stabilisation process (see Source_Qdm_lambdaup).These two last data are equivalent from a theoretical point of view in variationnal writing to : div(( u. grad ub , vb) - (u. grad vb, ub)), where vb corresponds to the filtered reference test functions.NL2 NL2 Remark:NL2 This class requires to define a filtering operator : see solveur_bar
+// XD   attr mot1 chaine(into=["defaut_bar"]) mot1 1 equivalent to transportant_bar 0 transporte_bar 1 filtrer_resu 1 antisym 1
+// XD   attr bloc_ef bloc_ef bloc_ef 1 not_set
 
 Sortie& Op_Conv_Centre_EF_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_Centre_EF_VEF_Face::readOn(Entree& s )
 {

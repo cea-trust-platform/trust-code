@@ -18,18 +18,12 @@
 #include <Neumann_sortie_libre.h>
 
 Implemente_base(Op_Conv_kschemas_centre_VEF,"Op_Conv_kschemas_centre_VEF_P1NC",Op_Conv_VEF_base);
-
-
-//// printOn
-//
+// XD convection_kquick convection_deriv kquick 0 Only for VEF discretization.
 
 Sortie& Op_Conv_kschemas_centre_VEF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Conv_kschemas_centre_VEF::readOn(Entree& s )
 {

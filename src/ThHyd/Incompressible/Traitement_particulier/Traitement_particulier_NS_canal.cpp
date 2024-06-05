@@ -29,6 +29,14 @@
 #include <Champ_Uniforme.h>
 
 Implemente_base_sans_constructeur(Traitement_particulier_NS_canal,"Traitement_particulier_NS_canal",Traitement_particulier_NS_base);
+// XD canal traitement_particulier_base canal -1 Keyword for statistics on a periodic plane channel.
+// XD attr dt_impr_moy_spat floattant dt_impr_moy_spat 1 Period to print the spatial average (default value is 1e6).
+// XD attr dt_impr_moy_temp floattant dt_impr_moy_temp 1 Period to print the temporal average (default value is 1e6).
+// XD attr debut_stat floattant debut_stat 1 Time to start the temporal averaging (default value is 1e6).
+// XD attr fin_stat floattant fin_stat 1 Time to end the temporal averaging (default value is 1e6).
+// XD attr pulsation_w floattant pulsation_w 1 Pulsation for phase averaging (in case of pulsating forcing term) (no default value).
+// XD attr nb_points_par_phase entier nb_points_par_phase 1 Number of samples to represent phase average all along a period (no default value).
+// XD attr reprise chaine reprise 1 val_moy_temp_xxxxxx.sauv : Keyword to resume a calculation with previous averaged quantities. NL2 Note that for thermal and turbulent problems, averages on temperature and turbulent viscosity are automatically calculated. To resume a calculation with phase averaging, val_moy_temp_xxxxxx.sauv_phase file is required on the directory where the job is submitted (this last file will be then automatically loaded by TRUST).
 
 Traitement_particulier_NS_canal::Traitement_particulier_NS_canal()
 {

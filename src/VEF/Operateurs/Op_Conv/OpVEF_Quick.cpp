@@ -16,18 +16,12 @@
 #include <OpVEF_Quick.h>
 
 Implemente_instanciable_sans_constructeur(OpVEF_Quick,"Op_Conv_KQuick_VEF_P1NC",Op_Conv_kschemas_VEF);
-
-
-//// printOn
-//
+// XD convection_quick convection_deriv quick 0 Only for VDF discretization.
 
 Sortie& OpVEF_Quick::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& OpVEF_Quick::readOn(Entree& s )
 {

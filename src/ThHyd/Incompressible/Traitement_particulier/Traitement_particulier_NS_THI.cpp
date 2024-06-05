@@ -20,6 +20,16 @@
 #include <Domaine.h>
 
 Implemente_base(Traitement_particulier_NS_THI,"Traitement_particulier_NS_THI",Traitement_particulier_NS_base);
+// XD thi traitement_particulier_base thi -1 Keyword for a THI (Homogeneous Isotropic Turbulence) calculation.
+// XD   attr init_Ec entier init_Ec 0 Keyword to renormalize initial velocity so that kinetic energy equals to the value given by keyword val_Ec.
+// XD   attr val_Ec floattant val_Ec 1 Keyword to impose a value for kinetic energy by velocity renormalizated if init_Ec value is 1.
+// XD   attr facon_init entier(into=["0","1"]) facon_init 1 Keyword to specify how kinetic energy is computed (0 or 1).
+// XD   attr calc_spectre entier(into=["0","1"]) calc_spectre 1 Calculate or not the spectrum of kinetic energy. NL2 Files called Sorties_THI are written with inside four columns : NL2 time:t global_kinetic_energy:Ec enstrophy:D skewness:S NL2 If calc_spectre is set to 1, a file Sorties_THI2_2 is written with three columns : NL2 time:t kinetic_energy_at_kc=32 enstrophy_at_kc=32 NL2 If calc_spectre is set to 1, a file spectre_xxxxx is written with two columns at each time xxxxx : NL2 frequency:k energy:E(k).
+// XD   attr periode_calc_spectre floattant periode_calc_spectre 1 Period for calculating spectrum of kinetic energy
+// XD   attr spectre_3D entier(into=["0","1"]) Spectre_3D 1 Calculate or not the 3D spectrum
+// XD   attr spectre_1D entier(into=["0","1"]) Spectre_1D 1 Calculate or not the 1D spectrum
+// XD   attr conservation_Ec rien conservation_Ec 1 If set to 1, velocity field will be changed as to have a constant kinetic energy (default 0)
+// XD   attr longueur_boite floattant longueur_boite 1 Length of the calculation domain
 
 Sortie& Traitement_particulier_NS_THI::printOn(Sortie& is) const
 {

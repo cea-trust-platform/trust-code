@@ -24,8 +24,11 @@
 #include <dlsinterf.h>
 #include <Constituant.h>
 
+// XD reactions listobj nul 1 reaction 1 list of reactions
+
 Implemente_instanciable(Chimie,"Chimie",Objet_U);
 // XD chimie objet_u chimie 1 Keyword to describe the chmical reactions
+
 
 Sortie& Chimie::printOn(Sortie& os) const
 {

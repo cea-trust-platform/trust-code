@@ -18,9 +18,9 @@
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
 
-
 Implemente_base_sans_constructeur_ni_destructeur(Traitement_particulier_NS_chmoy_faceperio,"Traitement_particulier_NS_chmoy_faceperio",Traitement_particulier_NS_base);
-
+// XD chmoy_faceperio traitement_particulier_base chmoy_faceperio 0 non documente
+// XD   attr bloc bloc_lecture bloc 0 not_set
 
 /*! @brief
  *

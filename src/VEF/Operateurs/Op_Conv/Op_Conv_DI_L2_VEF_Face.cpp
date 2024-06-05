@@ -21,7 +21,7 @@
 #include <Neumann_sortie_libre.h>
 
 Implemente_instanciable(Op_Conv_DI_L2_VEF_Face,"Op_Conv_DI_L2_VEF_P1NC",Op_Conv_VEF_base);
-
+// XD convection_di_l2 convection_deriv di_l2 0 Only for VEF discretization.
 
 //// printOn
 //
