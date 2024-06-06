@@ -59,10 +59,18 @@ configure_file(trusticoco.i.in ${swig_file} @ONLY)
 
 set_source_files_properties(${swig_file} PROPERTIES CPLUSPLUS ON)
 set_source_files_properties(${swig_file} PROPERTIES SWIG_FLAGS "-py3")
+set(comp_def_)
 if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
-  set_source_files_properties(${swig_file} PROPERTIES COMPILE_DEFINITIONS "MEDCOUPLING")
-  #set_source_files_properties(${swig_file} PROPERTIES COMPILE_DEFINITIONS "OLD_MEDCOUPLING")
+    list(APPEND comp_def_ "MEDCOUPLING")
 endif()
+
+# mpi4py should be installed by Conda if compiled with MPI:
+if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1")
+  message(STATUS "Compiling with MPI support!")
+  include_directories("$ENV{MPI_INCLUDE}")
+  list(APPEND comp_def_ "WITH_MPI")
+endif()
+set_source_files_properties(${swig_file} PROPERTIES COMPILE_DEFINITIONS "${comp_def_}")
 
 if(${CMAKE_VERSION} VERSION_LESS "3.8.0") 
   swig_add_module(trusticoco python ${swig_file})
@@ -85,6 +93,16 @@ add_test(NAME TRUST_swig
               PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
            ${PYTHON_EXECUTABLE} test_trusticoco.py
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+
+# If MPI, test setting communicator
+if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1")
+  add_test(NAME TRUST_swig_mpi
+         COMMAND ${CMAKE_COMMAND} -E env
+              PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
+           mpirun.sh -np 2 ${PYTHON_EXECUTABLE} test_icoco_comm.py
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+endif()
+
 
 ##
 ## Installation

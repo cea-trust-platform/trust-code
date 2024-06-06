@@ -8,6 +8,12 @@
 #include "ICoCoExceptions.hxx"
 %}
 
+#ifdef WITH_MPI
+%{
+  #include <mpi.h>
+%}
+#endif
+
 #ifdef MEDCOUPLING
 %{
   #include "ICoCoMEDDoubleField.hxx"
@@ -89,6 +95,13 @@
      return "@TRUST_VERSION@";
   }
 
+#ifdef WITH_MPI
+  void _setMPIComm_cpp(long long com)
+  {
+    self->setMPIComm((MPI_Comm*)com); // ugly cast ...
+  }
+#endif
+
 }
 
 // Renaming ValueType enum into ICoCoValueType because Python wrapping discards the namespace "ICoCo"
@@ -98,4 +111,11 @@ class ICoCoValueType(object):
     Double = ValueType_Double
     Int = ValueType_Int
     String = ValueType_String
+    
+def _setMPIComm_internal(self, com):
+    from mpi4py import MPI
+    self._setMPIComm_cpp(MPI._addressof(com))
+    
+ProblemTrio.setMPIComm = _setMPIComm_internal
+    
 }
