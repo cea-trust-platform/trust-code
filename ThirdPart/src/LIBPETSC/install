@@ -278,28 +278,14 @@ then
    echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
    with_gpu="--with-cuda"
    with_gpu=$with_gpu" --with-cudac=$TRUST_NVCC"
-   with_cuda_dir=1
-   if [ $with_cuda_dir = 1 ]
+   with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
+   if [ -d $CUDA_ROOT/lib64/stubs ]
    then
-      # PETSc>=3.18 detecte mieux:
-      with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
-   else
-      # PETSc=3.18.5
-      CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ]        && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs"        # Necessaire sur irene pas sur jeanzay (fait ch..r)
-      for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs `echo $CUDA_ROOT | sed "1,$ s?/cuda/?/../math_libs/?g"`
-      do
-         [ -d $CUDA_LIB_PATH ] && CUDA_MATH=",-L$CUDA_LIB_PATH/lib64" && break
-      done
-      with_gpu=$with_gpu" --with-cuda-lib=[-L$CUDA_ROOT/lib64$CUDA_STUBS$CUDA_MATH,-lcudart,-lcublas,-lcublasLt,-lcufft,-lcusparse,-lcusolver,-lcurand]"
-      CUDA_INCLUDES=`ls $CUDA_ROOT/include/cuda/cuda.h $CUDA_ROOT/include/cuda.h $CUDA_LIB_PATH/include/cublas.h 2>/dev/null`
-      with_gpu=$with_gpu" --with-cuda-include=["
-      for CUDA_INCLUDE in $CUDA_INCLUDES
-      do
-         with_gpu=$with_gpu"`dirname $CUDA_INCLUDE`,"
-      done
-      with_gpu=$with_gpu"]"
-   fi
-
+      # PL: Avec spack (JeanZay, orcus), erreur libcuda.so.1 not found qui fait ch..r (plantage de l'installation de ptscotch et magma)
+      # See https://github.com/spack/spack/issues/42825
+      ln -s -f $CUDA_ROOT/lib64/stubs/libcuda.so libcuda.so.1
+      export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
+   fi      
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
    echo "****************************************"
