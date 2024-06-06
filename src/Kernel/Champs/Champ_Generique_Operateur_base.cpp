@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,21 +17,14 @@
 
 Implemente_base_sans_constructeur(Champ_Generique_Operateur_base,"Champ_Generique_Operateur_base",Champ_Gen_de_Champs_Gen);
 
-Champ_Generique_Operateur_base::Champ_Generique_Operateur_base()
-{
-
-}
+// XD champ_post_operateur_base champ_post_de_champs_post champ_post_operateur_base -1 not_set
 
 Sortie& Champ_Generique_Operateur_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Operateur_base::readOn(Entree& s )
 {
-  Champ_Gen_de_Champs_Gen::readOn(s);
-  return s ;
+  return Champ_Gen_de_Champs_Gen::readOn(s);
 }
-
-

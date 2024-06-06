@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,15 +18,13 @@
 
 Implemente_instanciable(Ecrire,"Ecrire",Interprete);
 
+// XD write interprete ecrire -1 Keyword to write the object of name name_obj to a standard outlet.
+// XD   attr name_obj chaine name_obj 0 Name of the object to be written.
+
 Sortie& Ecrire::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
 Entree& Ecrire::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Lit le nom d'un objet dans is Ecrit l'objet correspondant sur la sortie standard
- *
- * @param (Entree& is)
- * @return (Entree&)
- */
 Entree& Ecrire::interpreter(Entree& is)
 {
   Nom nom1;

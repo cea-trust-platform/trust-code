@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,8 @@
 #include <Motcle.h>
 
 Implemente_base_sans_constructeur(SolveurSys_base,"SolveurSys_base",Objet_U);
+// XD solveur_sys_base class_generic solveur_sys_base -1 Basic class to solve the linear system.
+
 SolveurSys_base::SolveurSys_base()
 {
   limpr_=0;
@@ -32,15 +34,10 @@ SolveurSys_base::SolveurSys_base()
   reuse_preconditioner_=false;
 }
 
-// printOn
-
 Sortie& SolveurSys_base::printOn(Sortie& s ) const
 {
   return s  << que_suis_je();
 }
-
-
-// readOn
 
 Entree& SolveurSys_base::readOn(Entree& is )
 {

@@ -19,31 +19,24 @@
 
 Implemente_base_sans_constructeur(Champ_Generique_Statistiques_base,"Champ_Generique_Statistiques_base",Champ_Gen_de_Champs_Gen);
 
+// XD champ_post_statistiques_base champ_post_de_champs_post champ_post_statistiques_base -1 not_set
+
 Champ_Generique_Statistiques_base::Champ_Generique_Statistiques_base()
 {
   tstat_deb_ = -1.;
   tstat_fin_ = -1;
 }
 
-/*! @brief Imprime le nom et le type de l'operateur sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_Generique_Statistiques_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Statistiques_base::readOn(Entree& s )
 {
-  Champ_Gen_de_Champs_Gen::readOn(s);
-  return s ;
+  return Champ_Gen_de_Champs_Gen::readOn(s);
 }
 
-// t_deb : temps de debut des statistiques
-// t_fin : temps de fin des statistiques
 void Champ_Generique_Statistiques_base::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
@@ -52,8 +45,8 @@ void Champ_Generique_Statistiques_base::set_param(Param& param)
   //ex : Postraitement::creer_champ_post_stat()
   //Mais specification obligatoire a conserver dans la doc pour l utilisateur
   //qui specifie son champ statistique de facon standard dans definition_champs.
-  param.ajouter("t_deb",&tstat_deb_);
-  param.ajouter("t_fin",&tstat_fin_);
+  param.ajouter("t_deb",&tstat_deb_); // XD attr t_deb floattant t_deb 0 Start of integration time
+  param.ajouter("t_fin",&tstat_fin_); // XD attr t_fin floattant t_fin 0 End of integration time
 }
 
 int Champ_Generique_Statistiques_base::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)

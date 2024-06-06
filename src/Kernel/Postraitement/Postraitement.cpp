@@ -35,10 +35,20 @@
 #include <communications.h>
 #include <communications_array.h>
 
-
-
-
 Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
+// XD corps_postraitement postraitement nul -1 not_set
+
+// XD un_postraitement objet_lecture nul 0 An object of post-processing (with name).
+// XD attr nom chaine nom 0 Name of the post-processing.
+// XD attr post corps_postraitement post 0 Definition of the post-processing.
+
+// XD type_un_post objet_lecture nul 0 not_set
+// XD attr type chaine(into=["postraitement","post_processing"]) type 0 not_set
+// XD attr post un_postraitement post 0 not_set
+
+// XD nom_postraitement objet_lecture nul 0 not_set
+// XD attr nom chaine nom 0 Name of the post-processing.
+// XD attr post postraitement_base post 0 the post
 
 Postraitement::~Postraitement()
 {

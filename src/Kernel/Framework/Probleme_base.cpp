@@ -42,6 +42,8 @@
 
 Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 
+// XD pb_gen_base objet_u pb_gen_base -1 Basic class for problems.
+
 // XD Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
 // XD  attr milieu milieu_base milieu 1 The medium associated with the problem.
 // XD  attr constituant constituant constituant 1 Constituent.

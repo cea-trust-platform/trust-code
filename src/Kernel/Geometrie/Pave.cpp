@@ -18,6 +18,9 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Pave,"Pave",Domaine);
+
+// XD mailler_base objet_lecture mailler_base -1 Basic class to mesh.
+
 // XD pave mailler_base pave 0 Class to create a pave (block) with boundaries.
 // XD  attr name chaine name 0 Name of the pave (block).
 // XD  attr bloc bloc_pave bloc 0 Definition of the pave (block).
@@ -40,6 +43,14 @@ Implemente_instanciable(Pave,"Pave",Domaine);
 // XD attr ztanh floattant ztanh 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Z-direction.
 // XD attr ztanh_dilatation entier(into=[-1,0,1]) ztanh_dilatation 1 Keyword to generate mesh with tanh (hyperbolic tangent) variation in the Z-direction. tanh_dilatation: The value may be -1,0,1 (0 by default): 0: coarse mesh at the middle of the channel and smaller near the walls -1: coarse mesh at the back of the channel and smaller near the front 1: coarse mesh at the front of the channel and smaller near the back.
 // XD attr ztanh_taille_premiere_maille floattant ztanh_taille_premiere_maille 1 Size of the first cell of the mesh with tanh (hyperbolic tangent) variation in the Z-direction.
+
+// XD epsilon mailler_base epsilon 0 Two points will be confused if the distance between them is less than eps. By default, eps is set to 1e-12. The keyword Epsilon allows an alternative value to be assigned to eps.
+// XD   attr eps floattant eps 0 New value of precision.
+
+// XD domain mailler_base domain 0 Class to reuse a domain.
+// XD   attr domain_name ref_domaine domain_name 0 Name of domain.
+
+// XD list_bloc_mailler listobj list_bloc_mailler 1 mailler_base 1 List of block mesh.
 
 Sortie& Pave::printOn(Sortie& s ) const
 {

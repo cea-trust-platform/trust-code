@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #include <Equation.h>
 
 Implemente_instanciable(Schema_Euler_explicite,"Schema_euler_explicite|Scheme_euler_explicit",TRUSTSchema_RK<Ordre_RK::UN>);
+// XD euler_scheme schema_temps_base schema_euler_explicite -1 This is the Euler explicit scheme.
 
 Sortie& Schema_Euler_explicite::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::UN>::printOn(s); }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 Implemente_instanciable(Interprete, "Interprete", Objet_U);
 // XD interprete objet_u interprete 0 Basic class for interpreting a data file. Interpretors allow some operations to be carried out on objects.
 
+// XD fin interprete fin -1 Keyword which must complete the data file. The execution of the data file stops when reaching this keyword.
 
 Entree& Interprete::readOn(Entree& is)
 {

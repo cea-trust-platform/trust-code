@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,29 +16,37 @@
 #include <Bord.h>
 
 Implemente_instanciable(Bord,"Bord",Frontiere);
+
+// XD defbord objet_lecture nul 0 Class to define an edge.
+
+// XD defbord_2 defbord nul -1 1-D edge (straight line) in the 2-D space.
+// XD   attr dir chaine(into=["X","Y"]) dir 0 Edge is perpendicular to this direction.
+// XD   attr eq chaine(into=["="]) eq 0 Equality sign.
+// XD   attr pos floattant pos 0 Position value.
+// XD   attr pos2_min floattant pos2_min 0 Minimal value.
+// XD   attr inf1 chaine(into=["<="]) inf1 0 Less than or equal to sign.
+// XD   attr dir2 chaine(into=["X","Y"]) dir2 0 Edge is parallel to this direction.
+// XD   attr inf2 chaine(into=["<="]) inf2 0 Less than or equal to sign.
+// XD   attr pos2_max floattant pos2_max 0 Maximal value.
+
+// XD defbord_3 defbord nul -1 2-D edge (plane) in the 3-D space.
+// XD   attr dir chaine(into=["X","Y","Z"]) dir 0 Edge is perpendicular to this direction.
+// XD   attr eq chaine(into=["="]) eq 0 Equality sign.
+// XD   attr pos floattant pos 0 Position value.
+// XD   attr pos2_min floattant pos2_min 0 Minimal value.
+// XD   attr inf1 chaine(into=["<="]) inf1 0 Less than or equal to sign.
+// XD   attr dir2 chaine(into=["X","Y"]) dir2 0 Edge is parallel to this direction.
+// XD   attr inf2 chaine(into=["<="]) inf2 0 Less than or equal to sign.
+// XD   attr pos2_max floattant pos2_max 0 Maximal value.
+// XD   attr pos3_min floattant pos3_min 0 Minimal value.
+// XD   attr inf3 chaine(into=["<="]) inf3 0 Less than or equal to sign.
+// XD   attr dir3 chaine(into=["Y","Z"]) dir3 0 Edge is parallel to this direction.
+// XD   attr inf4 chaine(into=["<="]) inf4 0 Less than or equal to sign.
+// XD   attr pos3_max floattant pos3_max 0 Maximal value.
+
 // XD bord bord_base bord 0 The block side is not in contact with another block and boundary conditions are applied to it.
 // XD attr nom chaine nom 0 Name of block side.
 // XD attr defbord defbord defbord 0 Definition of block side.
 
-
-/*! @brief Simple appel a: Frontiere::printOn(Sortie&)
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Bord::printOn(Sortie& s ) const
-{
-  return Frontiere::printOn(s) ;
-}
-
-
-
-/*! @brief Simple appel a: Frontiere::readOn(Entree&)
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entre modifie
- */
-Entree& Bord::readOn(Entree& s)
-{
-  return Frontiere::readOn(s) ;
-}
+Sortie& Bord::printOn(Sortie& s ) const { return Frontiere::printOn(s) ; }
+Entree& Bord::readOn(Entree& s) { return Frontiere::readOn(s) ; }

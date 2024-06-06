@@ -19,6 +19,18 @@
 Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
 // XD postraitements listobj postraitements -1 un_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name).
 
+// XD type_postraitement_ft_lata objet_lecture nul 0 not_set
+// XD attr type chaine(into=["postraitement_ft_lata","postraitement_lata"]) type 0 not_set
+// XD attr nom chaine nom 0 Name of the post-processing.
+// XD attr bloc chaine bloc 0 not_set
+
+// XD un_postraitement_spec objet_lecture nul 0 An object of post-processing (with type +name).
+// XD attr type_un_post type_un_post type_un_post 1 not_set
+// XD attr type_postraitement_ft_lata type_postraitement_ft_lata type_postraitement_ft_lata 1 not_set
+
+// XD liste_post listobj liste_post -1 un_postraitement_spec 0 Keyword to use several results files. List of objects of post-processing (with name)
+
+// XD liste_post_ok listobj liste_post_ok -1 nom_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name)
 
 Entree& Postraitements::readOn(Entree& s)
 {

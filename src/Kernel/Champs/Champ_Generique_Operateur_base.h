@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,19 +30,13 @@ class Operateur_base;
 
 class Champ_Generique_Operateur_base : public Champ_Gen_de_Champs_Gen
 {
-
   Declare_base_sans_constructeur(Champ_Generique_Operateur_base);
-
 public:
 
-  Champ_Generique_Operateur_base();
+  Champ_Generique_Operateur_base() { }
 
   virtual const Operateur_base& Operateur() const = 0;
   virtual Operateur_base& Operateur() = 0;
-
-protected:
-
-
 };
 
 #endif

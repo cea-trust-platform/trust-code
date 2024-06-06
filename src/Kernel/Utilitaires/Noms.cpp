@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,23 +16,20 @@
 #include <Noms.h>
 Implemente_instanciable(Noms,"Noms",VECT(Nom));
 
+// XD nom_anonyme nom nul -1 not_set
+// XD vect_nom listobj vect_nom 0 nom_anonyme 0 Vect of name.
+// XD list_nom listobj list_nom 1 nom_anonyme 0 List of name.
+// XD list_nom_virgule listobj list_nom_virgule 1 nom_anonyme 1 List of name.
 
-/*! @brief Ecriture d'un tableau de noms sur un flot de sortie
- *
- * @param (Sortie& s) le flot de sortie a utiliser
- * @return (Sortie&) le flot de sortie modifie
- */
+// XD un_pb objet_lecture nul 0 pour les groupes
+// XD   attr mot ref_Pb_base mot 0 the string
+// XD list_un_pb listobj nul 1 un_pb 1 pour les groupes
+
 Sortie& Noms::printOn(Sortie& s) const
 {
   return VECT(Nom)::printOn(s);
 }
 
-
-/*! @brief Lecture d'un tableau de nomss sur un flot d'entree
- *
- * @param (Entree& s) le flot d'entree a utiliser
- * @return (Entree& s) le flot d'entree modifie
- */
 Entree& Noms::readOn(Entree& s)
 {
   return VECT(Nom)::readOn(s);
