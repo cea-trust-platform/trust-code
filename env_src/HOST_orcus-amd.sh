@@ -18,6 +18,8 @@ define_modules_config()
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
          module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # ToDo test
+         # On telecharge desormais le meme SDK que sur PC:
+         module="slurm                                 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
       else
          # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
          module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
@@ -74,8 +76,8 @@ define_soumission_batch()
    # intelq*      up   infinite     11   idle n[105-115]
    # gpuq         up   infinite      1   idle gpu01
 
-   # On se base sur la frontale pour selectionner la queue par defaut:
-   queue=amdq_naples && [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
+   # On se base sur la frontale pour selectionner la queue par defaut: 
+   queue=amdq_naples && [ "$gpu" = 1 ] && queue=gpuq_a100
    [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
 
    # sacctmgr list qos

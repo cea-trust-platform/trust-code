@@ -49,6 +49,10 @@ then
    # ToDo -DCUDA_ARCH="60;70;80" ou --gpu=all
    # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
    # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
+   
+   # Hack du CMakeLists.txt (vu sur orcus avec Cuda 12) car manque de cublasLt
+   sed -i "1,$ s?CUDA::cublas?CUDA::cublas CUDA::cublasLt?g" ../CMakeLists.txt || exit -1
+   
    cmake -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
    #$TRUST_MAKE || exit -1
    if [ "$HOST" = jean-zay ]
