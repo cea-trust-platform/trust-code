@@ -28,15 +28,16 @@
 #include <Debog.h>
 #include <cfloat>
 
-Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
-// XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
-
 // XD dt_start class_generic dt_start 0 not_set
 // XD dt_calc_dt_calc dt_start dt_calc 0 The time step at first iteration is calculated in agreement with CFL condition.
 // XD dt_calc_dt_min dt_start dt_min 0 The first iteration is based on dt_min.
 
 // XD dt_calc_dt_fixe dt_start dt_fixe 0 The first time step is fixed by the user (recommended when resuming calculation with Crank Nicholson temporal scheme to ensure continuity).
 // XD   attr value floattant value 0 first time step.
+
+Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
+// XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
+/* Attributes further down in the cpp: */
 
 void Schema_Temps_base::initialize()
 {

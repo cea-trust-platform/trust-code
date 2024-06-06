@@ -44,14 +44,15 @@ extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
 extern Stat_Counter_Id source_counter_;
 
-Implemente_base_sans_constructeur(Equation_base,"Equation_base",Objet_U);
-// XD eqn_base mor_eqn eqn_base -3 Basic class for equations.
-
 // XD condinit objet_lecture nul 0 Initial condition.
 // XD attr nom chaine nom 0 Name of initial condition field.
 // XD attr ch field_base ch 0 Type field and the initial values.
 
 // XD condinits listobj condinits -1 condinit 0 Initial conditions.
+
+Implemente_base_sans_constructeur(Equation_base,"Equation_base",Objet_U);
+// XD eqn_base mor_eqn eqn_base -3 Basic class for equations.
+/* Attributes further down in the cpp: */
 
 Equation_base::Equation_base()
 {
