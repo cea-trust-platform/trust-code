@@ -85,15 +85,17 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
 #ifdef _OPENMP
-#ifndef LATATOOLS
-  Kokkos::fence();
-#endif
-#ifdef TRUST_USE_UVM
-  cudaDeviceSynchronize();
-#endif
   if (init_openmp_ && timer_on)
     {
-      Kokkos::fence(); // Barrier for real time
+      if (onDevice)
+        {
+#ifdef TRUST_USE_UVM
+          cudaDeviceSynchronize();
+#endif
+#ifndef LATATOOLS
+          Kokkos::fence();  // Barrier for real time
+#endif
+        }
       if (bytes == -1) statistiques().end_count(gpu_kernel_counter_, 0, onDevice);
       if (clock_on) // Affichage
         {
@@ -153,8 +155,6 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
   // Routine omp_target_is_present pour existence d'une adresse sur le device
   // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
 #ifdef _OPENMP
-  // omp_target_is_present buggee ? Renvoie 0 sur le device 1 meme si alloue...
-  if (omp_get_default_device()!=0) Process::exit((Nom)"Do not use isAllocatedOnDevice(tab_addr) on device other than 0 ! Contact TRUST support.");
   return omp_target_is_present(tab_addr, omp_get_default_device())==1;
 #else
   return false;
@@ -165,11 +165,13 @@ template <typename _TYPE_>
 bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
 {
 #ifdef _OPENMP
-  if (omp_get_default_device()==0)
-    return isAllocatedOnDevice(tab.data());
-  else
+  bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
+  bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
+  if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
+  return isAllocatedOnDevice2;
+#else
+  return false;
 #endif
-    return tab.get_data_location() != DataLocation::HostOnly;
 }
 
 template <typename _TYPE_>

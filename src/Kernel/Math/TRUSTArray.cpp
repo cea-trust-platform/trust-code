@@ -97,10 +97,13 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
       if(opt == RESIZE_OPTIONS::COPY_INIT)
         std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
 
-      // We should never have to worry about device allocation here:
-      assert(get_data_location() == DataLocation::HostOnly);
+      // We should never have to worry about device allocation here: Why it may be interesting to reuse device allocated memory ?
+      // assert(get_data_location() == DataLocation::HostOnly);
       span_ = Span_(*mem_);
-      data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
+      if (isAllocatedOnDevice(mem_->data()))
+        data_location_ = std::make_shared<DataLocation>(DataLocation::Host);
+      else
+        data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
     }
   else
     {
@@ -153,14 +156,15 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
                   // TODO find a nicer way to spot this ... TODO device allocation should be based on real underlying block
                   // size, not size_array() as it is now ...
                   {
+                    // Delete former block before allocating a new one !
+                    deleteOnDevice(prev_ad, sz_arr);
+                    set_data_location(DataLocation::HostOnly);
                     // Allocate new (bigger) block on device:
                     allocateOnDevice(*this);
                     // Copy data (use a dummy TRUSTArray just because of inject_array API)
                     TRUSTArray<_TYPE_> dummy_src;
                     dummy_src.span_ = prev_span;
                     inject_array(dummy_src, sz_arr);
-                    // Delete former block
-                    deleteOnDevice(prev_ad, sz_arr);
                   }
             }
         }

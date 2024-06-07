@@ -28,6 +28,16 @@ void self_test()
     return;
   else
     self_tested_ = true;
+  // Verification que omp_target_is_present fonctionne bien (important)
+  {
+    DoubleTab a(10);
+    mapToDevice(a);
+    if (omp_target_is_present(a.data(), omp_get_default_device())!=1)
+      Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
+    deleteOnDevice(a);
+    if (omp_target_is_present(a.data(), omp_get_default_device())!=0)
+      Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
+  }
 #ifndef NDEBUG
   if (Objet_U::computeOnDevice)
     {

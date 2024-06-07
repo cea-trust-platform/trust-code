@@ -118,12 +118,12 @@ public:
       {
         // storage_type_ must be set properly before invoking this! So that Trav mechanism works:
         resize_array_(size, RESIZE_OPTIONS::NOCOPY_NOINIT);
-
-        data_location_ = std::make_shared<DataLocation>(A.get_data_location());
-        if (get_data_location() != DataLocation::HostOnly)   // Only allocate on device what has been at least once on device
+        if (A.get_data_location() != DataLocation::HostOnly)   // Only allocate *this on device if A is on the device
           // Not a Trav already allocated on device (avoid double alloc on device for Trav)
           if(!(storage_type_ == STORAGE::TEMP_STORAGE && isAllocatedOnDevice(mem_->data())))
             allocateOnDevice(*this);
+        // Set new location AFTER possible allocation
+        data_location_ = std::make_shared<DataLocation>(A.get_data_location());
         inject_array(A);
       }
   }
