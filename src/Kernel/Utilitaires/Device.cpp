@@ -144,6 +144,15 @@ void init_openmp()
   // Dummy target region, so as not to measure startup time later:
   #pragma omp target
   { ; }
+  // ToDo Kokkos:
+  if (nDevs>1 && nRanks>nDevs)
+    {
+      Cerr << "Error!" << finl;
+      Cerr << "You can't use more MPI ranks than available  GPU devices per node for the moment !" << finl;
+      Cerr << "Use the same number of MPI ranks than GPU per node." << finl;
+      Cerr << "Or You can force MPI ranks using one device only: CUDA_VISIBLE_DEVICES=0" << finl;
+      Process::exit();
+    }
 }
 #endif
 
