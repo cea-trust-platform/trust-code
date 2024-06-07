@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <Kokkos_Core.hpp>
+#include <Kokkos_DualView.hpp>
 //#include <cuda_runtime.h>
 
 int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
@@ -21,8 +23,10 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
     }
   return devID;
 }
-
-int main(int argc, char** argv) {
+using namespace Kokkos;
+int main(int argc, char **argv) {
+  Kokkos::initialize(argc, argv);
+  {  
   MPI_Init(NULL, NULL);
   MPI_Comm localWorld;
   MPI_Comm globalWorld = MPI_COMM_WORLD;
@@ -44,6 +48,20 @@ int main(int argc, char** argv) {
   // Dummy target region, so as not to measure startup time later:
   #pragma omp target
   { ; }
+  // Launch a kernel:
+  const int size = 260000;
+  int data[size];
+  #pragma omp target enter data map(alloc:data[0:size])
+  #pragma omp target update to(data[0:size])
+  #pragma omp target teams distribute parallel for
+  for (int i = 0; i < size; ++i)
+      data[i] = i;
+  #pragma omp target update from(data[0:size])
+  std::cout << "After OpenMP (should be 1):" << data[1] << std::endl;
+  #pragma omp target exit data map(from:data[0:size])
   MPI_Finalize();
+  }
+  Kokkos::finalize();
+  return 0;
 }
 
