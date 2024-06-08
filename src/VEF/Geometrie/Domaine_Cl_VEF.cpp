@@ -361,314 +361,150 @@ void Domaine_Cl_VEF::remplir_type_elem_Cl(const Domaine_VEF& le_dom_VEF)
 void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   DoubleTab& ch_tab = ch->valeurs(temps);
-  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
-  ToDo_Kokkos("copyPartial");
+  int nb_comp = ch->nb_comp();
+  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
+  //ToDo_Kokkos("copyPartial"); Really not costly
   start_gpu_timer();
-  if (sub_type(Champ_P0_VEF, ch.valeur())) { /* Don nothing */ }
+  if (sub_type(Champ_P0_VEF, ch.valeur())) { /* Do nothing */ }
   else if (sub_type(Champ_P1NC,ch.valeur()) || sub_type(Champ_Q1NC, ch.valeur()))
     {
-      int nb_comp;
-
-      if (sub_type(Champ_P1NC, ch.valeur()))
+      for (int i = 0; i < nb_cond_lim(); i++)
         {
-          const Champ_P1NC& chnc = ref_cast(Champ_P1NC, ch.valeur());
-          nb_comp = chnc.nb_comp();
-          int ndeb, nfin, num_face, ncomp;
-          for (int i = 0; i < nb_cond_lim(); i++)
+          const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          if (sub_type(Periodique, la_cl))
             {
-              const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-              if (sub_type(Periodique, la_cl))
+              // On fait en sorte que le champ ait la meme valeur
+              // sur deux faces de periodicite qui sont en face l'une de l'autre
+              const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
+              for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
-
-                  // On fait en sorte que le champ ait la meme valeur
-                  // sur deux faces de periodicite qui sont en face l'une de l'autre
-                  const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  int voisine;
-                  double moy;
-                  for (num_face = ndeb; num_face < nfin; num_face++)
+                  int voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
+                  if (nb_comp == 1)
                     {
-                      voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
-                      if (nb_comp == 1)
+                      if (ch_tab[num_face] != ch_tab[voisine])
                         {
-                          if (ch_tab[num_face] != ch_tab[voisine])
-                            {
-                              moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
-                              ch_tab[num_face] = moy;
-                              ch_tab[voisine] = moy;
-                            }
-                        }
-                      else
-                        {
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            if (ch_tab(num_face, ncomp) != ch_tab(voisine, ncomp))
-                              {
-                                moy = 0.5 * (ch_tab(num_face, ncomp) + ch_tab(voisine, ncomp));
-                                ch_tab(num_face, ncomp) = moy;
-                                ch_tab(voisine, ncomp) = moy;
-                              }
+                          double moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
+                          ch_tab[num_face] = moy;
+                          ch_tab[voisine] = moy;
                         }
                     }
-                }
-              else if ((sub_type(Symetrie, la_cl)) && (ch->nature_du_champ() == vectoriel))
-                {
-                  const Domaine_VEF& zvef = chnc.domaine_vef();
-                  const DoubleTab& face_normales = zvef.face_normales();
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == dimension)
-                    {
-                      for (num_face = ndeb; num_face < nfin; num_face++)
-                        {
-                          double face_n, surf = 0, flux = 0;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            {
-                              face_n = face_normales(num_face, ncomp);
-                              flux += ch_tab(num_face, ncomp) * face_n;
-                              surf += face_n * face_n;
-                            }
-                          // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (std::fabs(surf) >= DMINFLOAT)
-                            flux /= surf;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            ch_tab(num_face, ncomp) -= flux * face_normales(num_face, ncomp);
-                        }
-                    }
-                }
-              else if (sub_type(Dirichlet_entree_fluide, la_cl))
-                {
-                  const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
                   else
                     {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
-                    }
-                }
-              else if (sub_type(Scalaire_impose_paroi, la_cl))
-                {
-                  const Scalaire_impose_paroi& la_cl_diri = ref_cast(Scalaire_impose_paroi, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      {
-                        ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
-                      }
-                  else
-                    {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
-                    }
-                }
-              else if ((sub_type(Dirichlet_paroi_fixe, la_cl)) && (ch->nature_du_champ() == multi_scalaire))
-                {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = 0;
-                  else
-                    {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
+                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                        if (ch_tab(num_face, ncomp) != ch_tab(voisine, ncomp))
                           {
-                            ch_tab(num_face, 0) = 0;
-                            ch_tab(num_face, 1) = 0;
+                            double moy = 0.5 * (ch_tab(num_face, ncomp) + ch_tab(voisine, ncomp));
+                            ch_tab(num_face, ncomp) = moy;
+                            ch_tab(voisine, ncomp) = moy;
                           }
                     }
                 }
-              else if (sub_type(Dirichlet_paroi_fixe, la_cl))
+            }
+          else if ((sub_type(Symetrie, la_cl)) && (ch->nature_du_champ() == vectoriel))
+            {
+              const Domaine_VEF& zvef = domaine_vef();
+              const DoubleTab& face_normales = zvef.face_normales();
+              if (nb_comp == dimension)
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = 0;
-                  else
+                  for (int num_face = ndeb; num_face < nfin; num_face++)
                     {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = 0;
-                    }
-                }
-              else if (sub_type(Dirichlet_paroi_defilante, la_cl))
-                {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  const Dirichlet_paroi_defilante& la_cl_diri = ref_cast(Dirichlet_paroi_defilante, la_cl);
-                  const DoubleTab& face_normales = chnc.domaine_vef().face_normales();
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp != dimension)
-                    {
-                      Cerr << "Cas non prevu dans Domaine_Cl_VEF::imposer_cond_lim." << finl;
-                      exit();
-                    }
-                  else
-                    {
-                      for (num_face = ndeb; num_face < nfin; num_face++)
+                      double surf = 0, flux = 0;
+                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
                         {
-                          double surf = 0, flux = 0;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            {
-                              double face_n = face_normales(num_face, ncomp);
-                              flux += la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) * face_n;
-                              surf += face_n * face_n;
-                            }
-                          // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (std::fabs(surf) >= DMINFLOAT)
-                            flux /= surf;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) - flux * face_normales(num_face, ncomp);
+                          double face_n = face_normales(num_face, ncomp);
+                          flux += ch_tab(num_face, ncomp) * face_n;
+                          surf += face_n * face_n;
                         }
+                      // flux /= surf; // Fixed bug: Arithmetic exception
+                      if (std::fabs(surf) >= DMINFLOAT)
+                        flux /= surf;
+                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                        ch_tab(num_face, ncomp) -= flux * face_normales(num_face, ncomp);
                     }
                 }
             }
-        }
-      else if (sub_type(Champ_Q1NC, ch.valeur()))
-        {
-          const Champ_Q1NC& chnc = ref_cast(Champ_Q1NC, ch.valeur());
-          nb_comp = chnc.nb_comp();
-          int ndeb, nfin, num_face, ncomp;
-          for (int i = 0; i < nb_cond_lim(); i++)
+          else if (sub_type(Dirichlet_entree_fluide, la_cl))
             {
-              const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-              if (sub_type(Periodique, la_cl))
+              const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
+              if (nb_comp == 1)
+                for (int num_face = ndeb; num_face < nfin; num_face++)
+                  ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
+              else
                 {
-                  // On fait en sorte que le champ ait la meme valeur
-                  // sur deux faces de periodicite qui sont en face l'une de l'autre
-                  const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  int voisine;
-                  double moy;
-                  for (num_face = ndeb; num_face < nfin; num_face++)
-                    {
-                      voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
-                      if (nb_comp == 1)
-                        {
-                          if (ch_tab[num_face] != ch_tab[voisine])
-                            {
-                              moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
-                              ch_tab[num_face] = moy;
-                              ch_tab[voisine] = moy;
-                            }
-                        }
-                      else
-                        {
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            if (ch_tab(num_face, ncomp) != ch_tab(voisine, ncomp))
-                              {
-                                moy = 0.5 * (ch_tab(num_face, ncomp) + ch_tab(voisine, ncomp));
-                                ch_tab(num_face, ncomp) = moy;
-                                ch_tab(voisine, ncomp) = moy;
-                              }
-                        }
-                    }
+                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                    for (int num_face = ndeb; num_face < nfin; num_face++)
+                      ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
                 }
-              else if ((sub_type(Symetrie, la_cl)) && (ch->nature_du_champ() == vectoriel))
+            }
+          else if (sub_type(Scalaire_impose_paroi, la_cl))
+            {
+              const Scalaire_impose_paroi& la_cl_diri = ref_cast(Scalaire_impose_paroi, la_cl);
+              if (nb_comp == 1)
+                for (int num_face = ndeb; num_face < nfin; num_face++)
+                  ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
+              else
                 {
-                  const Domaine_VEF& zvef = chnc.domaine_vef();
-                  const DoubleTab& face_normales = zvef.face_normales();
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == dimension)
-                    {
-                      for (num_face = ndeb; num_face < nfin; num_face++)
-                        {
-                          double face_n, surf = 0, flux = 0;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            {
-                              face_n = face_normales(num_face, ncomp);
-                              flux += ch_tab(num_face, ncomp) * face_n;
-                              surf += face_n * face_n;
-                            }
-                          // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (std::fabs(surf) >= DMINFLOAT)
-                            flux /= surf;
-                          for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                            ch_tab(num_face, ncomp) -= flux * face_normales(num_face, ncomp);
-                        }
-                    }
+                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                    for (int num_face = ndeb; num_face < nfin; num_face++)
+                      ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
                 }
-              else if (sub_type(Dirichlet_entree_fluide, la_cl))
+            }
+          else if ((sub_type(Dirichlet_paroi_fixe, la_cl)) && (ch->nature_du_champ() == multi_scalaire))
+            {
+              if (nb_comp == 1)
+                for (int num_face = ndeb; num_face < nfin; num_face++)
+                  ch_tab[num_face] = 0;
+              else
                 {
-                  const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
-                  else
-                    {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
-                    }
-                }
-              else if (sub_type(Scalaire_impose_paroi, la_cl))
-                {
-                  const Scalaire_impose_paroi& la_cl_diri = ref_cast(Scalaire_impose_paroi, la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
+                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                    for (int num_face = ndeb; num_face < nfin; num_face++)
                       {
-                        ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
+                        ch_tab(num_face, 0) = 0;
+                        ch_tab(num_face, 1) = 0;
                       }
-                  else
-                    {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
-                    }
                 }
-              else if (sub_type(Dirichlet_paroi_fixe, la_cl))
+            }
+          else if (sub_type(Dirichlet_paroi_fixe, la_cl))
+            {
+              if (nb_comp == 1)
+                for (int num_face = ndeb; num_face < nfin; num_face++)
+                  ch_tab[num_face] = 0;
+              else
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = 0;
-                  else
-                    {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = 0;
-                    }
+                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                    for (int num_face = ndeb; num_face < nfin; num_face++)
+                      ch_tab(num_face, ncomp) = 0;
                 }
-              else if (sub_type(Dirichlet_paroi_defilante, la_cl))
+            }
+          else if (sub_type(Dirichlet_paroi_defilante, la_cl))
+            {
+              const Dirichlet_paroi_defilante& la_cl_diri = ref_cast(Dirichlet_paroi_defilante, la_cl);
+              const DoubleTab& face_normales = domaine_vef().face_normales();
+              if (nb_comp != dimension)
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  const Dirichlet_paroi_defilante& la_cl_diri = ref_cast(Dirichlet_paroi_defilante, la_cl);
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  if (nb_comp == 1)
-                    for (num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
-                  else
+                  Cerr << "Cas non prevu dans Domaine_Cl_VEF::imposer_cond_lim." << finl;
+                  exit();
+                }
+              else
+                {
+                  for (int num_face = ndeb; num_face < nfin; num_face++)
                     {
-                      for (ncomp = 0; ncomp < nb_comp; ncomp++)
-                        for (num_face = ndeb; num_face < nfin; num_face++)
-                          ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
+                      double surf = 0, flux = 0;
+                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                        {
+                          double face_n = face_normales(num_face, ncomp);
+                          flux += la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) * face_n;
+                          surf += face_n * face_n;
+                        }
+                      // flux /= surf; // Fixed bug: Arithmetic exception
+                      if (std::fabs(surf) >= DMINFLOAT)
+                        flux /= surf;
+                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                        ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) -
+                                                  flux * face_normales(num_face, ncomp);
                     }
                 }
             }
@@ -677,11 +513,10 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
   else
     {
       Cerr << "Le type de Champ_Inc " << ch->que_suis_je() << " n'est pas prevu en VEF\n" << finl;
-
       exit();
     }
   end_gpu_timer(0, "Boundary condition on Champ_Inc in Domaine_Cl_VEF::imposer_cond_lim");
-  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
+  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 
   // PARTIE PRESSION
