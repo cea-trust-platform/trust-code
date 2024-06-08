@@ -63,6 +63,7 @@ private:
   void volumique_P0(DoubleTab&) const;
 
   mutable IntVect nb_degres_liberte_;
+  mutable bool corrige_sommets_sans_degre_liberte_ = false;
   mutable IntTab som_;
 };
 

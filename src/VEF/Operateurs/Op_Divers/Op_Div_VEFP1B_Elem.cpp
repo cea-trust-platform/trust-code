@@ -340,9 +340,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
           {
             int som = nps + domaine.get_renum_som_perio(som_elem(elem, indice));
             nb_degres_liberte_(som - nps)++;
-            som_
-            (elem, indice) = som;
+            som_(elem, indice) = som;
           }
+      corrige_sommets_sans_degre_liberte_ = (mp_min_vect(nb_degres_liberte_) == 0);
     }
 
   int modif_traitement_diri = domaine_VEF.get_modif_div_face_dirichlet();
@@ -644,7 +644,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
             }
         }
     }
-  if (domaine_VEF.get_alphaS())
+  if (domaine_VEF.get_alphaS() && corrige_sommets_sans_degre_liberte_)
     degres_liberte();
   //Optimisation, pas necessaire:
   //div.echange_espace_virtuel();
@@ -753,7 +753,6 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
   decoup_som << "1" << finl;
   decoup_som << Objet_U::dimension << " " << nb_som << finl;
   ArrOfInt somm(dimension + 2);
-  ToDo_Kokkos("critical");
   for (int k = 0; k < nb_som; k++)
     {
       int sommet = domaine.get_renum_som_perio(k);
