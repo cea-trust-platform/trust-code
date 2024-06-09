@@ -319,26 +319,26 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_vort_faces(DoubleTab& vort) c
         for (d=0; d<D; d++)
           vort(f, d, n) += vorticite(e, N*d+n)*vfd(f, c)/vf(f);
   if (D==3)
-    {
-      for (f = 0 ; f<nf ; f++)
+    for (f = 0 ; f<nf ; f++)
+      {
         grad_l = 0; // we fill grad_l so that grad_l(d, d2) = du_d/dx_d2 by averaging between both elements
-      for (d = 0 ; d<D ; d++)
-        for (d2 = 0 ; d2<D ; d2++)
-          for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
-            grad_l(d, d2) += vfd(f, c)/vf(f)*grad_v(nf_tot + D*e + d2 , n_l * D + d) ;
-      //We replace the n_l components by the one calculated without interpolation to elements
-      scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
-      for (d = 0 ; d<D ; d++)
-        for (d2 = 0 ; d2<D ; d2++)
-          scal_grad(d) += grad_l(d, d2)*n_f(f, d2)/fs(f);
-      for (d = 0 ; d<D ; d++)
-        for (d2 = 0 ; d2<D ; d2++)
-          grad_l(d, d2) += (grad_v(f ,n_l*D+d) - scal_grad(d)) * n_f(f, d2)/fs(f);
-      // We calculate the local vorticity using this local gradient
-      vort(f, 0, n_l) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
-      vort(f, 1, n_l) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
-      vort(f, 2, n_l) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
-    }
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
+              grad_l(d, d2) += vfd(f, c)/vf(f)*grad_v(nf_tot + D*e + d2 , n_l * D + d) ;
+        //We replace the n_l components by the one calculated without interpolation to elements
+        scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            scal_grad(d) += grad_l(d, d2)*n_f(f, d2)/fs(f);
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            grad_l(d, d2) += (grad_v(f ,n_l*D+d) - scal_grad(d)) * n_f(f, d2)/fs(f);
+        // We calculate the local vorticity using this local gradient
+        vort(f, 0, n_l) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
+        vort(f, 1, n_l) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
+        vort(f, 2, n_l) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
+      }
 }
 
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_vort_elem(DoubleTab& vort) const
