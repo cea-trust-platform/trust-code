@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+28/10/24 (TRUST) New feature  : Support for Cathare FORT21 format in lata tools and plugins.
 28/10/24 (TRUST) New feature  : New environment variable TRUST_STDCPP tells which C++ standard is being used to build TRUST (C++17 by default)
 28/10/24 (TRUST) Build        : TRUST is now configured by default with Kokkos SIMD (if C++17) backend enabled
 21/10/24 (TRUST) Bug fix      : In VEF, Viscous forces on boundaries (printed in *_Contrainte_visqueuse*.out files) in incompressible Navier-Stokes equations were computed as Integral(-mu*grad(u)*ndS). It is now computed as Integral(-mu*(grad(u) +grad(u)^T)*ndS).

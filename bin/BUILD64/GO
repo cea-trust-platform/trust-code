@@ -16,7 +16,7 @@ arch_f=$(find src -name "arch.h")
 sed -i 's/int /long /g' $arch_f
 sed -i 's/ long True_/ int True_/' $arch_f
 
-./Modifie $(find Outils/lata_tools/src -not -name "*.py" )
+./Modifie $(find Outils/lata_tools/src -not -name "*.py" -and -not -name "ReaderFORT21*")
 
 ./Modifie  ThirdPart/src/LIBICOCOAPI/include/ICoCoTrioField.hxx
 ./Modifie  ThirdPart/src/LIBICOCOAPI/src/ICoCoTrioField.cpp

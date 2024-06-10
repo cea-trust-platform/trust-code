@@ -444,11 +444,11 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
           iseq[j] = loc;
           if (iseq[j] == -1)
             {
-              cerr << " sommet " << j << " " << coord2(j, 0) << " " << coord2(j, 1);
+              cerr << " vertex " << j << " " << coord2(j, 0) << " " << coord2(j, 1);
               if (dimension == 3)
                 cerr << " " << coord2(j, 2);
               cerr << endl;
-              cerr << " -> This vertex not found (index #" << j + 1 << ")!!" << endl;
+              cerr << " -> This vertex not found (index #" << j + 1 << ") in domaine named '" << dom.id_.name_.getString() << "'!!" << endl;
               exit(1);
             }
         }
@@ -460,7 +460,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
   /* On verifie le nombre de mailles sur chaque grille */
   if (nb_maille != nb_maille2)
     {
-      printf(" Le nombre de mailles n'est pas le meme dans le premier fichier que dans le second\n");
+      cerr << "The number of elements is not the same in the two files!" << endl;
       exit(-1);
     }
 
@@ -700,7 +700,7 @@ int main(int argc, char **argv)
           print(fields);
           cerr << fields2.size() << " fields on " << geoms3[i] << " in " << filename2 << " ";
           print(fields2);
-          cerr << fields3.size() << " fields communs on " << geoms3[i] << " in " << filename << " and in " << filename2 << " ";
+          cerr << fields3.size() << " common fields on " << geoms3[i] << " in " << filename << " and in " << filename2 << " ";
           print(fields3);
           gnerr_field_name++;
         }
@@ -896,8 +896,8 @@ int main(int argc, char **argv)
             double em = 0;
             int gnerrf = -1;
             const EcartField& un_ecart = les_ecarts[j];
-
-            // cerr<<un_ecart.name_<<endl;
+            // if Field Int no comparaison:
+            if (un_ecart.les_ecarts_.size()<2) continue;
             trustIdType nbc = un_ecart.les_ecarts_[1].min.size_array();
             float& max = max_field[j];
             {

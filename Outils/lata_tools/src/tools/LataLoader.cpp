@@ -302,6 +302,9 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
             case Domain::polyedre:
               type_cell = INTERP_KERNEL::NORM_POLYHED;
               break;
+            case Domain::polygone:
+              type_cell = INTERP_KERNEL::NORM_POLYGON;
+              break;
             default:
               type_cell = INTERP_KERNEL::NORM_POLYHED;
               cerr << "LataLoader::GetMesh unknown elt type " << endl;

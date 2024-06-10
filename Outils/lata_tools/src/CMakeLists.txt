@@ -11,7 +11,7 @@ option(loaderpython "Build swig of lataloader" ON)
 set (TRUST_INT64 $ENV{TRUST_INT64})
 
 # if ("${TRUST_INT64}"  STREQUAL "1" )
-# set (loaderpython off)
+#   set (loaderpython off)
 # endif ()
 
 if ("${MEDCOUPLING_ROOT}"  STREQUAL "" )

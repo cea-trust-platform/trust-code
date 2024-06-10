@@ -22,8 +22,10 @@ cd $Build
 SWIG_EXECUTABLE=`type -p swig`
 # PL inutile de specifier swig (dans PATH normalement):
 build_mode="Release"
-if [ "x$exec" == "x$exec_debug" ]; then 
+if [ "x$exec" == "x$exec_debug" ]; then
+   echo "*****************************************" 
    echo "lata_tools will be built in DEBUG mode!!"
+   echo "*****************************************"
    build_mode="Debug" 
 fi
 if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "`basename $TRUST_CC_BASE`" != crayCC ] # Sur adastra GNU ici ne marche pas... tout comme medcoupling
@@ -57,6 +59,11 @@ if [ "$TRUST_MEDCOUPLING_ROOT" != "" ]; then
   cp $TRUST_ROOT/Outils/lata_tools/src/tests/upwind_0000.med .
   $TRUST_ROOT/exec/lata_tools/bin/compare_lata upwind_0000.med upwind_0000.med || exit -1
 fi
+echo "   with FORT21 files ..."
+$TRUST_ROOT/exec/lata_tools/bin/compare_lata $TRUST_ROOT/Outils/lata_tools/src/tools/FORT21 $TRUST_ROOT/Outils/lata_tools/src/tools/FORT21 || exit -1
+$TRUST_ROOT/exec/lata_tools/bin/lata_analyzer $TRUST_ROOT/Outils/lata_tools/src/tools/FORT21 write_singlelata=testf21 || exit -1
+nc=$(grep CHAMP testf21.lata | wc| awk '{print $1}')
+[ $nc -ne 57 ] && echo "Invalid number of CHAMP ($nc != 57)" && exit -2
 
 cd ..
 rm -rf $Build
