@@ -1,7 +1,7 @@
 # Boite 3D avec periodicite dans les trois directions : THI_VEF #
 # calcul en parallele #
 # PARALLEL OK #
-
+# OPENMP NOT #
 dimension 3
 
 Pb_hydraulique_Turbulent pb

@@ -1,5 +1,6 @@
 # Thermohydraulique 3D VDF couplee a conduction 2D #
 # PARALLEL OK #
+# OPENMP NOT #
 dimension 2
 Scheme_euler_implicit sch
 Read sch

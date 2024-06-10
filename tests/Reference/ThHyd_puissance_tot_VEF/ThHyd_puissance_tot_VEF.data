@@ -5,6 +5,7 @@
 # en appliquant des conditions de Dirichlet #
 
 # PARALLEL OK #
+# OPENMP NOT #
 
 dimension 2
 
