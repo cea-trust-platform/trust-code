@@ -157,13 +157,14 @@ def generate_cmake_files(root_dir, atelier):
 
     # Generate sub CMakeLists.txt for each sub-directory in the TRUST sources:
     #
-    for d in listdirorg:
-        d_short = short_path(root_dir, d)
-        cmake_fnam = os.path.join(d, 'CMakeLists.txt')
-        with open(cmake_fnam, "w") as f:
+    if not atelier: # should not be done for baltiks, only for TRUST
+        for d in listdirorg:
             d_short = short_path(root_dir, d)
-            s = generate_subdir_cmake(root_dir, d_short, cmake_fnam)
-            f.write(s)
+            cmake_fnam = os.path.join(d, 'CMakeLists.txt')
+            with open(cmake_fnam, "w") as f:
+                d_short = short_path(root_dir, d)
+                s = generate_subdir_cmake(root_dir, d_short, cmake_fnam)
+                f.write(s)
 
     if atelier:
         out = open('CMakeLists.txt.trust','w')
