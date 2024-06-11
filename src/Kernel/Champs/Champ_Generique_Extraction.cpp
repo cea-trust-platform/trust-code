@@ -325,7 +325,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   Nom type_elem;
   if (type_face_source==Faces::segment_2D || type_face_source==Faces::segment_2D_axi)
     type_elem = "Segment"; // Pour MC2
-  else if (type_face_source==5)
+  else if (type_face_source==Faces::quadrilatere_2D_axi)
     type_elem = "Segment"; // Pour MC2
   else if (type_face_source==Faces::quadrangle_3D)
     type_elem = "Quadrangle";
