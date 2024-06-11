@@ -53,4 +53,4 @@ run()
 [ $HOST = adastra ]  && run MI250X && run 4xMI250X 4 && run 8xMI250X 8 OpenMP_Iterateur_BENCH_rocALUTION_10
 [ $HOST = jean-zay ] && run v100-32g && run 4xv100-32g 4
 [ $HOST = irene-amd-ccrt ] && run v100
-
+[ $HOST = is247056 ] && run a5000_is247056 && run 2xa5000_is247056 2
