@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,11 @@ class Fluide_reel_base: public Fluide_base
 {
   Declare_base_sans_constructeur(Fluide_reel_base);
 public :
-  Fluide_reel_base() { converter_h_T_.set_instance(*this); }
+  Fluide_reel_base()
+  {
+    converter_h_T_.set_instance(*this);
+    converter_T_h_.set_instance(*this);
+  }
 
   bool initTimeStep(double dt) override;
   int initialiser(const double temps) override;
@@ -176,6 +180,20 @@ public:
   };
 
   H_to_T converter_h_T_;
+
+  /* l'inverse : passage de derivees en (p, T) en derivees en (p, h) */
+  struct T_to_H
+  {
+    void set_instance(const Fluide_reel_base& fld) { z_fld_ = fld; }
+    void dX_dP_h(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dP);
+    void dX_dh_P(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dh);
+
+  private:
+    REF(Fluide_reel_base) z_fld_;
+  };
+
+  T_to_H converter_T_h_;
+
 };
 
 #endif /* Fluide_reel_base_included */

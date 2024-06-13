@@ -387,3 +387,24 @@ void Fluide_reel_base::H_to_T::dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P,
   for (int i = 0; i < (int) dX_dP_h.size(); i++)
     dX_dT[i] = dT_h[i] * dX_dh_P[i];
 }
+
+/*
+ * Methodes utiles pour convertir les derivees en T a h (pour Cathare).
+ */
+void Fluide_reel_base::T_to_H::dX_dP_h(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dP)
+{
+  const SpanD dp_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["pression"].get_span_tot();
+  const SpanD dT_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["temperature"].get_span_tot();
+  assert((int )dX_dP_T.size() == (int )dX_dT_P.size() && (int )dX_dP_T.size() == (int )dp_h.size()  && (int )dX_dP.size() == (int )dp_h.size());
+  for (int i = 0; i < (int) dX_dP_T.size(); i++)
+    dX_dP[i] = dX_dP_T[i] - dp_h[i] / dT_h[i] * dX_dT_P[i];
+}
+
+void Fluide_reel_base::T_to_H::dX_dh_P(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dh)
+{
+  const SpanD dT_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["temperature"].get_span_tot();
+  assert((int )dX_dP_T.size() == (int )dT_h.size() && (int )dX_dT_P.size() == (int )dT_h.size() && (int )dX_dh.size() == (int )dT_h.size() );
+  for (int i = 0; i < (int) dX_dP_T.size(); i++)
+    dX_dh[i] = dX_dT_P[i] / dT_h[i];
+}
+
