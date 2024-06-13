@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,10 @@ Entree& Source_Frottement_interfacial_base::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+
+  const bool res_en_T = pbm.resolution_en_T();
+  if (!res_en_T) Process::exit("Source_Frottement_interfacial_base::readOn NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
+
   if (pbm.has_correlation("frottement_interfacial")) correlation_ = pbm.get_correlation("frottement_interfacial"); //correlation fournie par le bloc correlation
   else correlation_.typer_lire(pbm, "frottement_interfacial", is); //sinon -> on la lit
   return is;

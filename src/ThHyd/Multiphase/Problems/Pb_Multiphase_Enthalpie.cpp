@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,11 +19,7 @@ Implemente_instanciable(Pb_Multiphase_Enthalpie, "Pb_Multiphase_Enthalpie|Pb_Mul
 
 Sortie& Pb_Multiphase_Enthalpie::printOn(Sortie& os) const { return Pb_Multiphase::printOn(os); }
 
-Entree& Pb_Multiphase_Enthalpie::readOn(Entree& is)
-{
-  resolution_en_T_ = false; // resolution en h
-  return Pb_Multiphase::readOn(is);
-}
+Entree& Pb_Multiphase_Enthalpie::readOn(Entree& is) { return Pb_Multiphase::readOn(is); }
 
 void Pb_Multiphase_Enthalpie::associer_milieu_base(const Milieu_base& mil)
 {

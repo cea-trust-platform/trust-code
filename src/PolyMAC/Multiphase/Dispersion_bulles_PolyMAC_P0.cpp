@@ -64,8 +64,8 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleTab& pvit = ch.passe(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
-                     &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
-                     &rho   = equation().milieu().masse_volumique().passe(),
+                     &temp = pbm.equation_energie().inconnue().passe(),
+                      &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
@@ -114,7 +114,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
           {
             Interface_base& sat = milc.get_interface(k,l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            for (int i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = res_en_T ? sat.sigma(temp_ou_enth(i,k),press(i,k * (Np > 1))) : sat.sigma_h(temp_ou_enth(i,k),press(i,k * (Np > 1))) ;
+            for (int i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = res_en_T ? sat.sigma(temp(i,k),press(i,k * (Np > 1))) : sat.sigma_h(temp(i,k),press(i,k * (Np > 1))) ;
           }
       }
 
@@ -159,7 +159,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               {
                 in.alpha[n]   += vf_dir(f, c)/vf(f) * alpha(e, n);
                 in.p[n]   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-                in.T[n]   += vf_dir(f, c)/vf(f) * temp_ou_enth(e, n); // FIXME SI res_en_T
+                in.T[n]   += vf_dir(f, c)/vf(f) * temp(e, n); // FIXME SI res_en_T
                 in.rho[n] += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
                 in.mu[n]  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
                 in.nut[n] += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
@@ -197,7 +197,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
         {
           in.alpha[n] = alpha(e, n);
           in.p[n]     = press(e, n * (Np > 1));
-          in.T[n]     = temp_ou_enth(e, n); // FIXME SI res_en_T
+          in.T[n]     = temp(e, n); // FIXME SI res_en_T
           in.rho[n]   = rho(!cR * e, n);
           in.mu[n]    = mu(!cM * e, n);
           in.nut[n]   = is_turb    ? nut(e,n) : 0;
