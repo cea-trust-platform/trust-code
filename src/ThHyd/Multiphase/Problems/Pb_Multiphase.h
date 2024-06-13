@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,9 +87,9 @@ public:
   virtual Equation_base& equation_energie() { return eq_energie; }
   virtual const Equation_base& equation_energie() const { return eq_energie; }
 
-protected:
+  inline virtual bool resolution_en_T() const { return true; }
 
-  bool resolution_en_T_ = true;
+protected:
   Noms noms_phases_;
   std::map<std::string, Correlation> correlations;
 

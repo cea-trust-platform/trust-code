@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue().passe(),
                    &rho = equation().milieu().masse_volumique().passe(),
-                    &temp  = pbm.equation_energie().inconnue().passe(),
+                    &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
                      &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,

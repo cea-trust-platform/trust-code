@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@ class Pb_Multiphase_Enthalpie : public Pb_Multiphase
 {
   Declare_instanciable(Pb_Multiphase_Enthalpie);
 public:
+  inline bool resolution_en_T() const override { return false; /* en h */ }
   void associer_milieu_base(const Milieu_base& ) override;
   int verifier() override;
 

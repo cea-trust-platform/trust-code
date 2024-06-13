@@ -41,6 +41,9 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
   if (!pbm.has_correlation("flux_interfacial"))
     Process::exit(que_suis_je() + " : a flux_interfacial correlation must be defined in the global correlations { } block!");
 
+  const bool res_en_T = pbm.resolution_en_T();
+  if (!res_en_T) Process::exit("Source_Flux_interfacial_base::readOn NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
+
   correlation_ = pbm.get_correlation("flux_interfacial");
 
   dv_min = ref_cast(Flux_interfacial_base, correlation_->valeur()).dv_min();

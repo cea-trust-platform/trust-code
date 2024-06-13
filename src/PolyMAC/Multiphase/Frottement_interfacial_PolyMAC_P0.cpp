@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
-                     &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
+                     &temp = pbm.equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
@@ -102,7 +102,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
             {
               a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
               p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
-              T_l(n)   += vfd(f, c) / vf(f) * temp_ou_enth(e, n); // FIXME SI res_en_T
+              T_l(n)   += vfd(f, c) / vf(f) * temp(e, n); // FIXME SI res_en_T
               rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
               mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
               for (k = n+1; k < N; k++)
@@ -147,7 +147,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
         {
           a_l(n)   = alpha(e, n);
           p_l(n)   = press(e, n * (Np > 1));
-          T_l(n)   =  temp_ou_enth(e, n); // FIXME SI res_en_T
+          T_l(n)   =  temp(e, n); // FIXME SI res_en_T
           rho_l(n) =   rho(!cR * e, n);
           mu_l(n)  =    mu(!cM * e, n);
           for (k = n+1; k < N; k++)

@@ -198,7 +198,7 @@ int Milieu_composite::initialiser(const double temps)
   t_init_ = temps;
 
   // XXX Elie Saikali : utile pour cas reprise !
-  rho.changer_temps(temps), e_int.changer_temps(temps), h.changer_temps(temps);
+  rho.changer_temps(temps), e_int.changer_temps(temps), h_ou_T.changer_temps(temps);
 
   return Milieu_base::initialiser_porosite(temps);
 }
@@ -530,14 +530,14 @@ void Milieu_composite::calculer_temperature_multiphase(const Objet_U& obj, Doubl
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()).derivees() : nullptr;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
       for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
   for (auto &&nom : noms_der)
     {
-      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : NULL;
+      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : nullptr;
       DoubleTab& der = deriv[nom];
       for (der.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;
