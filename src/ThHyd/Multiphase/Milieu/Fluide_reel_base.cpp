@@ -59,6 +59,9 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
 
   res_en_T_ = sub_type(Pb_Multiphase,pb) ? ref_cast(Pb_Multiphase,pb).resolution_en_T() : true;
 
+  if (!res_en_T_ && is_incompressible())
+    Process::exit("Incompressible fluid :: NOT YET PORTED TO ENTHALPY EQUATION (BUG DEDANS) ! TODO FIXME !!");
+
   /* masse volumique, energie interne, enthalpie : champ_inc */
   Champ_Inc rho_inc, ei_inc, h_ou_T_inc;
   int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
@@ -330,7 +333,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
       val_temp(i,n) = T_REF_[i] + ( enth(i,n) - h_ref_ ) / Cp_[i];
       val_e(i) = enth(i);
       dh_T(i) = 1. / Cp_[i]; /* la seule derivee en incompressible */
-      dh_e(i) = dh_T(i);
+      dh_e(i) = 1.; // dh_T(i);
     }
 
   for (int i = 0; i < Nb; i++) /* bord */
@@ -566,7 +569,7 @@ void Fluide_reel_base::compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD 
  */
 void Fluide_reel_base::H_to_T::dX_dP_T(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dP)
 {
-  const SpanD dp_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["pression"].get_span_tot();
+  const SpanD dp_h = ref_cast(Champ_Inc_base, z_fld_->h_ou_T.valeur()).derivees()["pression"].get_span_tot();
   assert((int )dX_dP_h.size() == (int )dX_dh_P.size() && (int )dX_dP_h.size() == (int )dp_h.size()  && (int )dX_dP.size() == (int )dp_h.size());
   for (int i = 0; i < (int) dX_dP_h.size(); i++)
     dX_dP[i] = dX_dP_h[i] + dp_h[i] * dX_dh_P[i];
@@ -574,7 +577,7 @@ void Fluide_reel_base::H_to_T::dX_dP_T(const SpanD dX_dP_h, const SpanD dX_dh_P,
 
 void Fluide_reel_base::H_to_T::dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dT )
 {
-  const SpanD dT_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["temperature"].get_span_tot();
+  const SpanD dT_h = ref_cast(Champ_Inc_base, z_fld_->h_ou_T.valeur()).derivees()["temperature"].get_span_tot();
   assert((int )dX_dP_h.size() == (int )dT_h.size() && (int )dX_dh_P.size() == (int )dT_h.size() && (int )dX_dT.size() == (int )dT_h.size() );
   for (int i = 0; i < (int) dX_dP_h.size(); i++)
     dX_dT[i] = dT_h[i] * dX_dh_P[i];
