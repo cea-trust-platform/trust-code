@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,8 +22,9 @@ class Op_Conv_Amont_VPoly_VDF_Face : public Op_Conv_Amont_VDF_Face
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VPoly_VDF_Face);
 public:
+  double calculer_dt_stab() const override;
   Op_Conv_Amont_VPoly_VDF_Face() : Op_Conv_Amont_VDF_Face() { /* on initialise l'iter juste pour les domaines, cl, blabla */ }
-  void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { Op_Conv_VDF_base::dimensionner_blocs_face(mats, semi_impl); }
+  void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
