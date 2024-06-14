@@ -153,6 +153,28 @@ void Masse_Multiphase::completer()
       const Champ_Inc& inco = inconnue();
       Op_Grad_->associer(zdis, zcl, inco);
     }
+
+  verifier_somme_alpha();
+}
+
+void Masse_Multiphase::verifier_somme_alpha()
+{
+  const DoubleTab& vals = l_inco_ch->valeurs();
+  const int ne = vals.dimension(0), nl = vals.line_size();
+  DoubleVect vals_somme(ne);
+  vals_somme = 0.;
+
+  for (int i = 0; i < ne; i++)
+    for (int j = 0; j < nl; j++)
+      vals_somme(i) += vals(i, j);
+
+  const double min_a = mp_min_vect(vals_somme), max_a = mp_max_vect(vals_somme);
+
+  if (min_a < 1. - 1.e-12 || max_a > 1. + 1.e-12)
+    {
+      Cerr << "WHAT ?? The sum of the void fraction (per cell) is not 1 !!!! You should do something !" << finl;
+      Process::exit();
+    }
 }
 
 /*! @brief Discretise l'equation.
