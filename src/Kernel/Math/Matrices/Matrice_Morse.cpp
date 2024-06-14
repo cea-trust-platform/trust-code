@@ -1651,7 +1651,7 @@ Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice
                   if (len > nzmax-1)
                     {
                       // Cerr << "Matrice_Morse::affect_prod len > nzmax -1 " << nzmax << finl;
-                      nzmax += nrow/ii*nzmax;
+                      nzmax *= 2;
                       coeff_.resize(nzmax);
                       tab2_.resize(nzmax);
                     }
