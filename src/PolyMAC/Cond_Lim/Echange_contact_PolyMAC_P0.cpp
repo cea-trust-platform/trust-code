@@ -25,8 +25,10 @@
 #include <Milieu_base.h>
 #include <Operateur.h>
 #include <Front_VF.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Echange_contact_PolyMAC_P0, "Paroi_Echange_contact_PolyMAC_P0|Paroi_Echange_contact_PolyVEF_P0", Echange_contact_PolyMAC_P0P1NC);
+Add_synonym(Echange_contact_PolyMAC_P0, "Paroi_Echange_contact_PolyVEF_P0P1");
 using namespace MEDCoupling;
 
 Sortie& Echange_contact_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
@@ -57,71 +59,4 @@ void Echange_contact_PolyMAC_P0::init_op() const
   diff = ref_cast(Op_Diff_PolyMAC_P0_Elem, eqn.operateur(i_op).l_op_base());
   o_diff = ref_cast(Op_Diff_PolyMAC_P0_Elem, o_eqn.operateur(o_i_op).l_op_base());
 
-}
-
-/* identification des elements / faces de l'autre cote de la frontiere, avec offsets */
-void Echange_contact_PolyMAC_P0::init_fs_dist() const
-{
-  if (fs_dist_init_)
-    return; //deja fait
-  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, fvf->domaine_dis()), &o_domaine = ref_cast(Domaine_PolyMAC_P0, o_fvf->domaine_dis());
-  const DoubleTab& xv = domaine.xv(), &o_xv = o_domaine.xv(), &xs = domaine.domaine().coord_sommets(), &o_xs = o_domaine.domaine().coord_sommets();
-  const IntTab& f_s = domaine.face_sommets(), &o_f_s = o_domaine.face_sommets();
-
-  int i, j, f, o_f, s, o_s, nf_tot = fvf->nb_faces_tot(), o_nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;
-  f_dist.resize(nf_tot);
-
-  std::set<int> s_som, s_o_som; //sommets de chaque cote
-  for (i = 0; i < nf_tot; i++)
-    for (f = fvf->num_face(i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
-      s_som.insert(s);
-  for (i = 0; i < o_nf_tot; i++)
-    for (f = o_fvf->num_face(i), j = 0; j < o_f_s.dimension(1) && (s = o_f_s(f, j)) >= 0; j++)
-      s_o_som.insert(s);
-  std::vector<int> som(s_som.begin(), s_som.end()), o_som(s_o_som.begin(), s_o_som.end()); //en vecteur
-  int ns_tot = (int) som.size(), o_ns_tot = (int) o_som.size();
-
-  DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D), xsf(ns_tot, D), o_xsf(o_ns_tot, D); //positions locales/distantes -> pour calcul de correspondance
-  for (i = 0; i < nf_tot; i++)
-    for (d = 0; d < D; d++)
-      xvf(i, d) = xv(fvf->num_face(i), d);
-  for (i = 0; i < o_nf_tot; i++)
-    for (d = 0; d < D; d++)
-      o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
-  for (i = 0; i < ns_tot; i++)
-    for (d = 0; d < D; d++)
-      xsf(i, d) = xs(som[i], d);
-  for (i = 0; i < o_ns_tot; i++)
-    for (d = 0; d < D; d++)
-      o_xsf(i, d) = o_xs(o_som[i], d);
-
-#ifdef MEDCOUPLING_
-  MCAuto<DataArrayDouble> fdad(DataArrayDouble::New()), o_fdad(DataArrayDouble::New()), sdad(DataArrayDouble::New()), o_sdad(DataArrayDouble::New());
-  fdad->useExternalArrayWithRWAccess(xvf.addr(), nf_tot, D), o_fdad->useExternalArrayWithRWAccess(o_xvf.addr(), o_nf_tot, D);
-  sdad->useExternalArrayWithRWAccess(xsf.addr(), ns_tot, D), o_sdad->useExternalArrayWithRWAccess(o_xsf.addr(), o_ns_tot, D);
-  //point de o_{f,s}dad le plus proche de chaque point de {f,s}dad
-  MCAuto<DataArrayIdType> f_idx(nf_tot && o_nf_tot ? o_fdad->findClosestTupleId(fdad) : nullptr), s_idx(ns_tot && o_ns_tot ? o_sdad->findClosestTupleId(sdad) : nullptr);
-
-  for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
-    {
-      f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face((int)(f_idx->getIJ(i, 0))) : -1;
-      double d2 = o_f >= 0 ? domaine.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
-      if (d2 < 1e-12)
-        f_dist(i) = o_f;
-      else
-        f_dist(i) = -1;
-      if (i < fvf->nb_faces() && d2 >= 1e-12)
-        Process::exit(Nom("Echange_contact_PolyMAC_P0: missing opposite faces detected between ") + fvf->le_nom() + " and " + o_fvf->le_nom() + " ! Have you used Decouper_multi?");
-    }
-  for (i = 0; i < ns_tot; i++) //remplissage de s_dist
-    {
-      s = som[i], o_s = o_ns_tot ? o_som[s_idx->getIJ(i, 0)] : -1;
-      if (o_s >= 0 && domaine.dot(&xs(s, 0), &xs(s, 0), &o_xs(o_s, 0), &o_xs(o_s, 0)) < 1e-12)
-        s_dist[s] = o_s;
-    }
-
-#else
-  Process::exit("Echange_contact_PolyMAC_P0 : MEDCoupling is required!");
-#endif
-  fs_dist_init_ = 1;
 }

@@ -50,6 +50,11 @@ public :
   mutable IntTab f_dist;     //face de l'autre cote de chaque face de la frontiere
   mutable int f_dist_init_ = 0;
 
+  /* faces, sommets de l'autre cote de la frontiere */
+  void init_fs_dist() const; //initialisation de f_dist, s_dist
+  mutable std::map<int, int> s_dist; //s_dist[sommet de ce cote] = sommet de l'autre cote
+  mutable int fs_dist_init_ = 0;
+
   double invh_paroi = 1e30; //resistance thermique (1 / h) de la paroi
 
 protected :
