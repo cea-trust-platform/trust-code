@@ -172,10 +172,11 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
             for (n = 0; n < N; n++)
               secmem(f, N * d + n) = masse(n, n) * ((fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) : 0) - resoudre_en_increments * inco(f, N * d + n));
           for (auto &&kv : matrices)
-            for (i = N * D * f, d = 0; d < D; d++)
-              for (n = 0; n < N; n++, i++)
-                for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
-                  kv.second->get_set_coeff()(j) = kv.second == mat && mat->get_tab2()(j) - 1 == i ? masse(n, n) : 0;
+            if (kv.second->nb_colonnes())
+              for (i = N * D * f, d = 0; d < D; d++)
+                for (n = 0; n < N; n++, i++)
+                  for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
+                    kv.second->get_set_coeff()(j) = kv.second == mat && mat->get_tab2()(j) - 1 == i ? masse(n, n) : 0;
         }
       else if (p0p1 ? (!Option_PolyVEF::sym_as_diri && fcl(f, 0) == 2) : (fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2))) /* Symetrie en P0P1 / Dirichlet sur les autres : projection + CL */
         {
