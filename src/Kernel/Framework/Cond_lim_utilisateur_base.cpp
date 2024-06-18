@@ -269,9 +269,8 @@ void paroi_contact::complement(Nom& ajout)
   if (mon_equation->discretisation().is_vdf() || mon_equation->discretisation().is_polymac_family())
     {
       if (mon_equation->discretisation().is_vdf()) ajout = "paroi_echange_contact_VDF ";
-      else ajout = mon_equation->discretisation().is_polymac_p0p1nc() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
-                     mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " :
-                     mon_equation->discretisation().is_polyvef() ? "paroi_echange_contact_PolyVEF " : "paroi_echange_contact_PolyMAC ";
+      else ajout = mon_equation->discretisation().is_polymac_p0p1nc() || mon_equation->discretisation().is_polyvef_p0p1nc() || mon_equation->discretisation().is_polyvef_p0p1() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
+                     mon_equation->discretisation().is_polymac_p0() || mon_equation->discretisation().is_polyvef_p0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
 
       ajout += nom_autre_pb;
       ajout += " ";
