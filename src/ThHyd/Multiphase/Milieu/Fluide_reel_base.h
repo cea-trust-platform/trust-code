@@ -67,6 +67,7 @@ public :
 
   //gamme range[inco] = { min, max} : par defaut, rien a controler
   virtual std::map<std::string, std::array<double, 2>> unknown_range() const { return {}; }
+  virtual std::map<std::string, std::array<double, 2>> unknown_range_h() const { return {}; }
 
 protected :
   double T_ref_ = -1., P_ref_ = -1., h_ref_ = -1., t_init_ = -1.;
