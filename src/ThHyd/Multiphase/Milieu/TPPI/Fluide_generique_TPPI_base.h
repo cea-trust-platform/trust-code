@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,14 @@ public :
       return Fluide_reel_base::unknown_range();
 
     return { { "temperature", { tmin_ - 273.15, tmax_ - 273.15 } }, { "pression", { pmin_, pmax_ } } };
+  }
+
+  MRange unknown_range_h() const override
+  {
+    if (hmax_ < -100. )
+      return Fluide_reel_base::unknown_range_h();
+
+    return { { "enthalpie", { hmin_ , hmax_ } }, { "pression", { pmin_, pmax_ } } };
   }
 
   // lois en T
@@ -168,7 +176,7 @@ public :
 protected:
   std::shared_ptr<TPPI> TPPI_ = nullptr;
   Motcle model_name_, fluid_name_;
-  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
+  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123., hmin_ = -123., hmax_ = -123.;
 };
 
 #endif /* Fluide_generique_TPPI_base_included */

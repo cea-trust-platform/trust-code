@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,10 @@ Entree& Fluide_generique_CoolProp::readOn(Entree& is)
 
   tmin_ = TPPI_->tppi_get_T_min();
   tmax_ = TPPI_->tppi_get_T_max();
+
+  hmin_ = TPPI_->tppi_get_h_min();
+  hmax_ = TPPI_->tppi_get_h_max();
+
   pmin_ = TPPI_->tppi_get_p_min();
   pmax_ = TPPI_->tppi_get_p_max();
 

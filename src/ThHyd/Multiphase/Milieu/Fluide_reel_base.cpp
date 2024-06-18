@@ -220,17 +220,18 @@ int Fluide_reel_base::check_unknown_range() const
 {
   if (is_incompressible()) return 1;
 
-  // TODO : FIXME :
-  if (!res_en_T_) return 1;
-
   int ok = 1, zero = 0, nl = e_int.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC_P0P1NC)
-  for (auto &&i_r : unknown_range())
+  for (auto &&i_r : res_en_T_ ? unknown_range() : unknown_range_h())
     {
       const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
       double vmin = DBL_MAX, vmax = -DBL_MAX;
       for (int i = 0, j = std::min(std::max(id_composite, zero), vals.dimension(1) - 1); i < nl; i++)
         vmin = std::min(vmin, vals(i, j)), vmax = std::max(vmax, vals(i, j));
       ok &= Process::mp_min(vmin) >= i_r.second[0] && Process::mp_max(vmax) <= i_r.second[1];
+
+      if (!ok)
+        Cerr << "  *** WARNING <<< " << que_suis_je() << " >>> VALUES OUT OF RANGE *** : Variable : " << i_r.first << " , min/max : ( "
+             << vmin << " , " << vmax << " ) & limits ( " << i_r.second[0] << " , " << i_r.second[1] << " )" << finl;
     }
   return ok;
 }
