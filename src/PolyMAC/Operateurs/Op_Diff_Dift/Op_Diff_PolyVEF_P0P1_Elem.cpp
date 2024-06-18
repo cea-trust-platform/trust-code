@@ -38,7 +38,7 @@
 #include <Flux_parietal_base.h>
 #include <TRUSTTab_parts.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_PolyVEF_P0P1_Elem, "Op_Diff_PolyVEF_P0P1_Elem|Op_Diff_PolyVEF_P0P1_var_Elem", Op_Diff_PolyMAC_P0P1NC_base);
+Implemente_instanciable_sans_constructeur(Op_Diff_PolyVEF_P0P1_Elem, "Op_Diff_PolyVEF_P0P1_Elem|Op_Diff_PolyVEF_P0P1_var_Elem", Op_Diff_PolyMAC_P0P1NC_Elem);
 
 Op_Diff_PolyVEF_P0P1_Elem::Op_Diff_PolyVEF_P0P1_Elem()
 {
@@ -68,38 +68,6 @@ void Op_Diff_PolyVEF_P0P1_Elem::completer()
       Process::exit();
     }
   flux_bords_.resize(dom.premiere_face_int(), ch.valeurs().line_size());
-}
-
-void Op_Diff_PolyVEF_P0P1_Elem::init_op_ext() const
-{
-  if (op_ext.size()) return; //deja fait
-  /* recherche d'operateurs connectes par des Echange_contact_PolyMAC_P0P1NC (eventuellement indirectement) */
-  std::set<const Op_Diff_PolyMAC_P0P1NC_base*> ops_tbd = { this }, ops; //operateurs a scanner pour remplir op_ext, operateurs trouves
-  while (ops_tbd.size())
-    {
-      const Op_Diff_PolyMAC_P0P1NC_base* op = *ops_tbd.begin();
-      ops_tbd.erase(ops_tbd.begin()), ops.insert(op);
-      const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
-      for (int i = 0; i < cls.size(); i++)
-        if (sub_type(Echange_contact_PolyMAC_P0P1NC, cls[i].valeur()))
-          {
-            const Echange_contact_PolyMAC_P0P1NC& cl = ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[i].valeur());
-            cl.init_op();
-            if (!ops.count(&cl.o_diff.valeur())) ops_tbd.insert(&cl.o_diff.valeur()); //on a un nouvel operateur a scanner
-          }
-    }
-  op_ext = { this };
-  for (auto &&op : ops)
-    if (op != this) op_ext.push_back(op); /* remplissage de op_ext avec l'operateur local en 1er */
-
-  /* remplissage des o_idx des Echange_contact_PolyMAC_P0P1NC connectes */
-  const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
-  for (int i = 0; i < cls.size(); i++)
-    if (sub_type(Echange_contact_PolyMAC_P0P1NC, cls[i].valeur()))
-      {
-        const Echange_contact_PolyMAC_P0P1NC& cl = ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[i].valeur());
-        cl.o_idx = (int)(std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin());
-      }
 }
 
 double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
@@ -132,7 +100,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, j, e, eb, s = 0, sb = 0, f, n, M, n_ext = (int)op_ext.size();
+  int i, j, k, e, eb, o_e, s = 0, sb = 0, o_s, f, o_f, m, n, M, p, n_ext = (int)op_ext.size(), semi = (int) semi_impl.count(nom_inco);
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
   std::vector<std::reference_wrapper<const Domaine_PolyVEF>> dom; //domaines
@@ -155,14 +123,34 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
       stencil[i].resize(0, 2);
     }
+  /* probleme local */
+  if (!semi)
+    for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
+      for (i = 0; i < 2 + f_s[0].get().dimension(1); i++)
+        if (i < 2 ? !aux_only && (e = f_e[0](f, i)) >= 0 && e < dom[0].get().nb_elem() : (s = f_s[0](f, i - 2)) >= 0 && s < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
+          for (j = 0; j < 2 + f_s[0].get().dimension(1); j++)
+            if (j < 2 ? !aux_only && (eb = f_e[0](f, j)) >= 0 : (sb = f_s[0](f, j - 2)) >= 0 && scl_d[0](sb) == scl_d[0](sb + 1))
+              for (n = 0; n < N[0]; n++)
+                stencil[0].append_line(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n);
+  /* lignes aux sommets */
+  for (s = 0; s < dom[0].get().nb_som(); s++)
+    for (n = 0; n < N[0]; n++)
+      stencil[0].append_line(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n);
 
-  for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
-    for (i = 0; i < 2 + f_s[0].get().dimension(1); i++)
-      if (i < 2 ? !aux_only && (e = f_e[0](f, i)) >= 0 && e < dom[0].get().nb_elem() : (s = f_s[0](f, i - 2)) >= 0 && s < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
-        for (j = 0; j < 2 + f_s[0].get().dimension(1); j++)
-          if (j < 2 ? !aux_only && (eb = f_e[0](f, j)) >= 0 : (sb = f_s[0](f, j - 2)) >= 0 && scl_d[0](sb) == scl_d[0](sb + 1))
-            for (n = 0; n < N[0]; n++)
-              stencil[0].append_line(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n);
+  /* problemes distants : pour les Echange_contact */
+  const Echange_contact_PolyMAC_P0P1NC *pcl;
+  if (!semi)
+    for (i = 0; i < cls[0].get().size(); i++)
+      if ((pcl = sub_type(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[i].valeur()) ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[i].valeur()) : nullptr))
+        for (pcl->init_fs_dist(), j = 0, p = (int) (std::find(op_ext.begin(), op_ext.end(), &pcl->o_diff.valeur()) - op_ext.begin()); j < pcl->fvf->nb_faces(); j++)
+          for (f = pcl->fvf->num_face(j), o_f = pcl->f_dist(j), k = 0; k < f_s[0].get().dimension(1) && (s = f_s[0](f, k)) >= 0; k++)
+            if (s < dom[0].get().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
+              for (o_s = pcl->s_dist[s], o_e = f_e[p](o_f, 0), n = 0; n < N[0]; n++)
+                for (m = 0; m < N[p]; m++)
+                  {
+                    stencil[p].append_line(N[0] * (!aux_only * ne_tot[0] + s) + n, N[p] * (!aux_only * ne_tot[p] + o_s) + m);
+                    if (!aux_only) stencil[p].append_line(N[0] * (!aux_only * ne_tot[0] + s) + n, N[p] * o_e + m);
+                  }
 
   for (i = 0; i < n_ext; i++)
     if (mat[i])
@@ -215,6 +203,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   for (i = 0; i < n_ext; i++) v_aux.push_back(use_aux_ ? ref_cast(Op_Diff_PolyVEF_P0P1_Elem, *op_ext[i]).var_aux : v_part[i][1]); /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
   DoubleTrav Sa, Gf, Gfa, A; //surface par arete du diamant, gradient non stabilise (par diamant) et stabilise (par arete du diamant), forme bilineaire
+  flux_bords_ = 0;
   for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
     {
       for (ok = 0, i = 0; i < 2 + f_s[0].get().dimension(1); i++) /* si aucun element ou sommet reel autour de f, rien a faire */
@@ -264,28 +253,122 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
               for (n = 0; n < N[0]; n++)
                 {
                   secmem(i < 2 ? e : !aux_only * ne_tot[0] + s, n) -= A(i, j, n) * (j < 2 ? inco[0](eb, n) : v_aux[0](sb, n));
-                  if (mat[0] && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
+                  if (mat[0] && !semi && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
                     (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n) += A(i, j, n);
                 }
 
       /* CLs non Dirichlet -> injection aux sommets */
       if (fcl[0](f, 0) && fcl[0](f, 0) < 5)
-        for (i = 0; i < n_sf; i++)
+        for (e = f_e[0](f, 0), i = 0; i < n_sf; i++)
           if ((s = f_s[0](f, i)) < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
             {
               double surf = dom[0].get().dot(&nf[0](f, 0), &Sa(i, 1, 0)) / fs[0](f); //partie de la surface vers le sommet
-              if (fcl[0](f, 0) == 1)
+              if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
+                {
+                  if (fcl[0](f, 0) != 6 && fcl[0](f, 0) != 7 && fcl[0](f, 0) != 3)
+                    abort(); //cas non geres
+                  const Echange_contact_PolyMAC_P0P1NC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[fcl[0](f, 1)].valeur()) : nullptr;
+                  int o_p = ech ? ech->o_idx : -1, o_s = ech ? ech->s_dist[s] : -1, k1, k2, wall = corr[0]->T_at_wall();
+                  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+                  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
+                                   &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+                                    &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
+                                     &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+                  Flux_parietal_base::input_t in;
+                  Flux_parietal_base::output_t out;
+                  DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
+                  in.N = N[0], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = wall ? &v_aux[0](s, 0) : &inco[0](e, 0), in.p = press(e), in.v = nv.addr();
+                  in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                  in.Tp = ech ? v_aux[o_p](o_s, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
+                  out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi;
+                  for (d = 0; d < D; d++)
+                    for (n = 0; n < N[0]; n++)
+                      nv(n) += vit(f, N[0] * d + n) * vit(f, N[0] * d + n);
+                  for (n = 0; n < N[0]; n++) nv(n) = sqrt(nv[n]);
+                  //appel : on n'est implicite qu'en les temperatures
+                  corr[0]->qp(in, out);
+                  //remplissage
+                  for (n = 0; n < N[0]; n++)
+                    secmem(!aux_only * ne_tot[0] + s, n) += surf * qpk(n); //second membre
+                  if (f < dom[0].get().premiere_face_int())
+                    for (n = 0; n < N[0]; n++)
+                      flux_bords_(f, n) -= surf * qpk(n);
+                  if (mat[0] && !semi && (wall || !aux_only))
+                    for (k1 = 0; k1 < N[0]; k1++)
+                      for (k2 = 0; k2 < N[0]; k2++) //derivees en Tfluide
+                        (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + k1, N[0] * (wall ? !aux_only * ne_tot[0] + s : e) + k2) -= surf * dTf_qpk(k1, k2);
+                  if (ech && mat[o_p] && !semi)
+                    for (n = 0; n < N[0]; n++) /* derivees en Tparoi (si Echange_contact) */
+                      (*mat[o_p])(N[0] * (!aux_only * ne_tot[0] + s) + n, !aux_only * ne_tot[o_p] + o_s) -= surf * dTp_qpk(n);
+                }
+              else if (fcl[0](f, 0) == 3) //Echange_contact
+                {
+                  const Echange_contact_PolyMAC_P0P1NC& ech = ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[fcl[0](f, 1)].valeur());
+                  int o_p = ech.o_idx, o_f = ech.f_dist(fcl[0](f, 2)), o_e = f_e[o_p](o_f, 0), o_s = ech.s_dist[s], k1, k2; //autre pb/face/elem
+                  if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
+                    {
+                      const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
+                      const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
+                                       &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+                                        &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
+                                         &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+                      DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), nv(N[o_p]);
+                      for (d = 0; d < D; d++)
+                        for (n = 0; n < N[o_p]; n++)
+                          nv(n) += vit(o_f, N[o_p] * d + n) * vit(o_f, N[o_p] * d + n);
+                      for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(nv[n]);
+                      Flux_parietal_base::input_t in;
+                      Flux_parietal_base::output_t out;
+                      int wall = corr[o_p]->T_at_wall();
+                      in.N = N[o_p], in.f = o_f, in.D_h = dh(o_e), in.D_ch = dh(o_e), in.alpha = &alpha(o_e, 0), in.T = wall ? &v_aux[o_p](o_s, 0) : &inco[o_p](o_e, 0), in.p = press(o_e), in.v = nv.addr();
+                      in.Tp = v_aux[0](s, 0), in.lambda = &lambda(o_e, 0), in.mu = &mu(o_e, 0), in.rho = &rho(o_e, 0), in.Cp = &Cp(o_e, 0);
+                      out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi, out.nonlinear = &j;
+                      //appel : on n'est implicite qu'en les temperatures
+                      corr[o_p]->qp(in, out);
+                      for (n = 0; n < N[o_p]; n++)
+                        secmem(!aux_only * ne_tot[0] + s, 0) -= surf * qpk(n); //second membre
+                      if (f < dom[0].get().premiere_face_int())
+                        for (n = 0; n < N[0]; n++)
+                          flux_bords_(f, n) += surf * qpk(n);
+                      if (mat[o_p] && !semi && (wall || !aux_only))
+                        for (k1 = 0; k1 < N[o_p]; k1++)
+                          for (k2 = 0; k2 < N[o_p]; k2++) //derivees en Tfluide
+                            (*mat[o_p])(!aux_only * ne_tot[0] + s, N[o_p] * (wall ? !aux_only * ne_tot[o_p] + o_s : o_e) + k2) += surf * dTf_qpk(k1, k2);
+                      if (mat[0] && !semi)
+                        for (n = 0; n < N[o_p]; n++) /* derivees en Tparoi */
+                          (*mat[0])(!aux_only * ne_tot[0] + s, !aux_only * ne_tot[0] + s) += surf * dTp_qpk(n);
+                    }
+                  else for (n = 0; n < N[0]; n++)/* ajout du h(T'-T) */
+                      {
+                        double h = ech.invh_paroi ? 1. / ech.invh_paroi : 1e8;
+                        secmem(!aux_only * ne_tot[0] + s, n) -= surf * h * (v_aux[0](s, n) - v_aux[o_p](o_s, n)); //second membre
+                        if (f < dom[0].get().premiere_face_int())
+                          flux_bords_(f, n) += surf * h * (v_aux[0](s, n) - v_aux[o_p](o_s, n));
+                        if (mat[0] && !semi)
+                          (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n) += surf * h; //derivees
+                        if (mat[o_p] && !semi)
+                          (*mat[o_p])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[o_p] * (!aux_only * ne_tot[o_p] + o_s) + n) -= surf * h;
+                      }
+                }
+              else if (fcl[0](f, 0) == 1 || fcl[0](f, 0) == 2) //Echange_{externe,global}_impose
                 for (n = 0; n < N[0]; n++)
                   {
                     const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
                     double sh = surf * ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
-                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * (v_aux[0](s, n) - T);
-                    if (mat[0])
-                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n) += sh;
+                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
+                    if (f < dom[0].get().premiere_face_int())
+                      flux_bords_(f, n) += sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
+                    if (mat[0] && (fcl[0](f, 0) == 1 || !aux_only) && !semi)
+                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (fcl[0](f, 0) == 1 ? !aux_only * ne_tot[0] + s : e) + n) += sh;
                   }
               else if (fcl[0](f, 0) == 4)
-                for (n = 0; n < N[0]; n++)
-                  secmem(!aux_only * ne_tot[0] + s, n) -= surf * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
+                {
+                  for (n = 0; n < N[0]; n++)
+                    secmem(!aux_only * ne_tot[0] + s, n) -= surf * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
+                  if (f < dom[0].get().premiere_face_int())
+                    for (n = 0; n < N[0]; n++)
+                      flux_bords_(f, n)+= surf * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
+                }
               else abort();
             }
     }
@@ -293,7 +376,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   /* autres equations : sommets de Dirichlet */
   if (!semi && mat[0])
     for (s = 0; s < dom[0].get().nb_som(); s++)
-      for (i = scl_d[0](s); i < scl_d[0](s + 1); s++)
+      for (i = scl_d[0](s); i < scl_d[0](s + 1); i++)
         for (n = 0; n < N[0]; n++)
           {
             secmem(!aux_only * ne_tot[0] + s, n) += (sub_type(Dirichlet, cls[0].get()[scl_c[0](i, 0)].valeur()) ? ref_cast(Dirichlet, cls[0].get()[scl_c[0](i, 0)].valeur()).val_imp(scl_c[0](i, 1), n) : 0) - v_aux[0](s, n);
