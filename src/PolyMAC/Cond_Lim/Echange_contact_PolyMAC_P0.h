@@ -34,10 +34,6 @@ public :
 
   mutable OBS_PTR(Op_Diff_PolyMAC_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 
-  /* faces, sommets de l'autre cote de la frontiere */
-  void init_fs_dist() const; //initialisation de f_dist, s_dist
-  mutable std::map<int, int> s_dist; //s_dist[sommet de ce cote] = sommet de l'autre cote
-  mutable int fs_dist_init_ = 0;
 };
 
 #endif /* Echange_contact_PolyMAC_P0_included */
