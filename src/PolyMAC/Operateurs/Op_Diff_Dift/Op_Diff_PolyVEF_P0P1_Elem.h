@@ -16,7 +16,7 @@
 #ifndef Op_Diff_PolyVEF_P0P1_Elem_included
 #define Op_Diff_PolyVEF_P0P1_Elem_included
 
-#include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Op_Diff_PolyMAC_P0P1NC_Elem.h>
 #include <Matrice_Morse.h>
 
 /*! @brief : class Op_Diff_PolyVEF_P0P1_Elem
@@ -27,7 +27,7 @@
  *
  */
 
-class Op_Diff_PolyVEF_P0P1_Elem : public Op_Diff_PolyMAC_P0P1NC_base
+class Op_Diff_PolyVEF_P0P1_Elem : public Op_Diff_PolyMAC_P0P1NC_Elem
 {
 
   Declare_instanciable_sans_constructeur( Op_Diff_PolyVEF_P0P1_Elem ) ;
@@ -35,7 +35,6 @@ class Op_Diff_PolyVEF_P0P1_Elem : public Op_Diff_PolyMAC_P0P1NC_base
 public :
   Op_Diff_PolyVEF_P0P1_Elem();
   void completer() override;
-  void init_op_ext() const override;
   // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
 
   /* interface {dimensionner,ajouter}_blocs */
