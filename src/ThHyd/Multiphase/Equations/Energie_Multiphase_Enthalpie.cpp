@@ -41,3 +41,13 @@ void Energie_Multiphase_Enthalpie::discretiser()
   Equation_base::discretiser();
   Cerr << "Energie_Multiphase_Enthalpie::discretiser() ok" << finl;
 }
+
+const Champ_Don& Energie_Multiphase_Enthalpie::diffusivite_pour_transport() const
+{
+  return milieu().diffusivite_fois_rho();
+}
+
+const Champ_base& Energie_Multiphase_Enthalpie::diffusivite_pour_pas_de_temps() const
+{
+  return milieu().diffusivite();
+}

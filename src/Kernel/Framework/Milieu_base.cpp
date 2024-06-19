@@ -126,17 +126,13 @@ int Milieu_base::lire_motcle_non_standard(const Motcle& mot_lu, Entree& is)
 void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Cerr << "Medium discretization." << finl;
-  Champ_Don& ch_lambda = conductivite();
-  Champ_Don& ch_alpha = diffusivite();
-  Champ_Don& ch_beta_th = beta_t();
+  Champ_Don& ch_lambda = conductivite(), &ch_alpha = diffusivite(), &ch_alpha_fois_rho = diffusivite_fois_rho(), &ch_beta_th = beta_t();
   const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
-  // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
-  // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
+
+  // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
   // ToDo: reecrire ces deux methodes discretiser
 
-  // E. Saikali
-  // The thermal conductivity and diffusivity fields are considered as
-  // multi_scalaire fields, sure if the number of components read
+  // E. Saikali : The thermal conductivity and diffusivity fields are considered as multi_scalaire fields, sure if the number of components read
   // in the data file for lambda > 1, i.e: case of anisotropic diffusion !
 
   int lambda_nb_comp = 0;
@@ -168,6 +164,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
         {
           double temps=ch_lambda.valeur().temps();
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
         }
       champs_compris_.ajoute_champ(ch_lambda.valeur());
     }
@@ -176,11 +173,14 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       double temps=ch_lambda.valeur().temps();
       // ch_alpha (i.e. diffusivite_thermique) will have same component number as ch_lambda
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
     }
   if (ch_alpha.non_nul())
     {
       dis.nommer_completer_champ_physique(domaine_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"alpha_fois_rho","kg/ms",ch_alpha_fois_rho.valeur(),pb);
       champs_compris_.ajoute_champ(ch_alpha.valeur());
+      champs_compris_.ajoute_champ(ch_alpha_fois_rho.valeur());
     }
   if (ch_beta_th.non_nul())
     {
@@ -541,8 +541,10 @@ void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
     {
-      DoubleTab& tabalpha = alpha.valeurs();
+      DoubleTab& tabalpha = alpha.valeurs(), tab_lambda_sur_cp = alpha_fois_rho.valeurs();
+
       tabalpha = lambda.valeurs();
+      tab_lambda_sur_cp = lambda.valeurs();
 
       // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
       if (sub_type(Champ_Uniforme,rho.valeur()))
@@ -551,9 +553,15 @@ void Milieu_base::calculer_alpha()
         tab_divide_any_shape(tabalpha,rho.valeurs());
 
       if (sub_type(Champ_Uniforme,Cp.valeur()))
-        tabalpha /= Cp.valeurs()(0,0);
+        {
+          tabalpha /= Cp.valeurs()(0,0);
+          tab_lambda_sur_cp /= Cp.valeurs()(0,0);
+        }
       else
-        tab_divide_any_shape(tabalpha,Cp.valeurs());
+        {
+          tab_divide_any_shape(tabalpha,Cp.valeurs());
+          tab_divide_any_shape(tab_lambda_sur_cp,Cp.valeurs());
+        }
     }
   else
     Cerr << "alpha calculation is not possible since lambda is not known." << finl;
@@ -601,6 +609,7 @@ void Milieu_base::mettre_a_jour(double temps)
     {
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
+      alpha_fois_rho.valeur().changer_temps(temps);
     }
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
@@ -697,8 +706,10 @@ void Milieu_base::creer_alpha()
   assert(lambda.non_nul());
   assert(rho.non_nul());
   assert(Cp.non_nul());
-  alpha=lambda;
+  alpha = lambda;
+  alpha_fois_rho = lambda;
   alpha->nommer("alpha");
+  alpha_fois_rho->nommer("alpha_fois_rho");
 }
 
 /*! @brief Renvoie la gravite du milieu si elle a ete associe provoque une erreur sinon.
@@ -753,6 +764,7 @@ int Milieu_base::initialiser(const double temps)
     {
       calculer_alpha();
       alpha.valeur().changer_temps(temps);
+      alpha_fois_rho.valeur().changer_temps(temps);
     }
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
@@ -821,6 +833,16 @@ const Champ_Don& Milieu_base::diffusivite() const
 Champ_Don& Milieu_base::diffusivite()
 {
   return alpha;
+}
+
+const Champ_Don& Milieu_base::diffusivite_fois_rho() const
+{
+  return alpha_fois_rho;
+}
+
+Champ_Don& Milieu_base::diffusivite_fois_rho()
+{
+  return alpha_fois_rho;
 }
 
 /*! @brief Renvoie la conductivite du milieu.
