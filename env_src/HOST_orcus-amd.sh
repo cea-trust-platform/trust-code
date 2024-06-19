@@ -17,16 +17,14 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # ToDo test
-         # On telecharge desormais le meme SDK que sur PC:
-         module="slurm                                 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
+         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
+         module="slurm                                 gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6" # On telecharge desormais le meme SDK que sur PC
       else
-         # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
-         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
-         module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
+         echo "Not supported anymore" && exit -1
       fi
-      echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
-      #module=$module" cmake/3.22.0"
+      #echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
+      # Pour beneficier aussi des V100 d'orcus:
+      echo "export TRUST_CUDA_CC=70 # V100" >> $env
    elif [ $gnu = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
@@ -77,8 +75,8 @@ define_soumission_batch()
    # gpuq         up   infinite      1   idle gpu01
 
    # On se base sur la frontale pour selectionner la queue par defaut: 
-   queue=amdq_naples && [ "$gpu" = 1 ] && queue=gpuq_a100
-   [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
+   queue=amdq_naples && [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
+   [ "$gpu" = 1 ] && queue=gpuq_a100
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
