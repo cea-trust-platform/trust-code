@@ -39,6 +39,12 @@ public:
   Champ_base& affecter_(const Champ_base& ch) override { return Champ_Inc_P0_base::affecter_(ch); }
   int reprendre(Entree& fich) override;
 
+  /* saute la methode de Champ_Elem_PolyMAC */
+  DoubleTab& valeur_aux_faces(DoubleTab& vals) const override
+  {
+    return Champ_Inc_P0_base::valeur_aux_faces(vals);
+  }
+
   // Fonctions pour le calcul des coefficients du gradient
   mutable IntTab fgrad_d, fgrad_e;             // Tables used in domaine_PolyMAC_P0::fgrad
   mutable DoubleTab fgrad_w;
