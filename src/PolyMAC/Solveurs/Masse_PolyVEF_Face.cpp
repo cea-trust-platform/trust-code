@@ -112,9 +112,10 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
             if (mix)
               for (d = 0, i = N * D * f; d < D; d++)
                 for (n = 0; n < N; n++, i++)
-                  for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
-                    for (k = kv.second->get_tab2()(j) - 1, db = 0; db < D; db++)
-                      s_sten[N * db + n].insert(k);
+                  if (kv.second->nb_colonnes())
+                    for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)
+                      for (k = kv.second->get_tab2()(j) - 1, db = 0; db < D; db++)
+                        s_sten[N * db + n].insert(k);
             for (i = 0; i < N * D; i++)
               for (auto &&col : s_sten[i])
                 sten.append_line(N * D * f + i, col);
