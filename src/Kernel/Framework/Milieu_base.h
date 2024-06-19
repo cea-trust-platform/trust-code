@@ -91,6 +91,8 @@ public:
   virtual Champ& masse_volumique();
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don& diffusivite();
+  virtual const Champ_Don& diffusivite_fois_rho() const;
+  virtual Champ_Don& diffusivite_fois_rho();
   virtual const Champ_Don& conductivite() const;
   virtual Champ_Don& conductivite();
   virtual const Champ_Don& capacite_calorifique() const;
@@ -124,7 +126,7 @@ public:
 protected:
   REF(Domaine_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ, diametre_hyd_champ;
+  Champ_Don g, alpha, lambda, alpha_fois_rho, Cp, beta_th, porosites_champ, diametre_hyd_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;

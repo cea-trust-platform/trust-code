@@ -235,6 +235,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
   dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_cinematique", "m2/s", N, temps, nu);
   dis.discretiser_champ("champ_elem", domaine_dis, "diffusivite", "m2/s", N, temps, alpha);
+  dis.discretiser_champ("champ_elem", domaine_dis, "alpha_fois_rho", "kg/m/s", N, temps, alpha_fois_rho);
   dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", N, temps, lambda);
   dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
   dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique_melange", "kg/m^3", 1, temps, rho_m);
@@ -244,7 +245,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   champs_compris_.ajoute_champ(e_int);
   champs_compris_.ajoute_champ(h_ou_T);
 
-  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
+  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m, &h_m};
   for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
   // on discretise les champs sigma / Tsat si besoin ...
@@ -292,7 +293,7 @@ void Milieu_composite::mettre_a_jour(double temps)
   e_int.mettre_a_jour(temps);
   h_ou_T.mettre_a_jour(temps);
 
-  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
+  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m, &h_m};
   for (auto && f: fields) (*f).mettre_a_jour(temps);
 
   mettre_a_jour_tabs();
@@ -345,6 +346,18 @@ void Milieu_composite::mettre_a_jour_tabs()
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides[n]->diffusivite();
+        const int cch = sub_type(Champ_Uniforme, ch_n);
+        for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
+      }
+  }
+
+  /* alpha fois rho */
+  {
+    DoubleTab& tab = alpha_fois_rho.valeurs();
+    const int Nl = alpha_fois_rho.valeurs().dimension_tot(0);
+    for (int n = 0; n < N; n++)
+      {
+        const Champ_base& ch_n = fluides[n]->diffusivite_fois_rho();
         const int cch = sub_type(Champ_Uniforme, ch_n);
         for (int i = 0; i < Nl; i++) tab(i, n) = ch_n.valeurs()(!cch * i, 0);
       }
