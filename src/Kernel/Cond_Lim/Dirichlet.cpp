@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,6 +58,30 @@ double Dirichlet::val_imp_au_temps(double temps, int i) const
     Cerr << "Dirichlet::val_imp error" << finl;
   exit();
   return 0.;
+}
+
+/**
+ * @brief Update the tab_ variable based on the given time.
+ *
+ * This function updates the tab_ variable by assigning the values from the val_imp_au_temps function to it.
+ * If the size of tab_ is 0, it is resized to the total number of faces on the boundary. Then, the values are
+ * assigned to tab_ using the val_imp_au_temps function.
+ *
+ * @param temps The time at which the update is performed.
+ */
+void Dirichlet::mettre_a_jour(double temps)
+{
+  // ToDo Kokkos: not used
+  Cond_lim_base::mettre_a_jour(temps);
+  // Mise a jour de tab_
+  int nb_faces_tot = frontiere_dis().frontiere().nb_faces() + frontiere_dis().frontiere().nb_faces_virt();
+  int nb_comp = le_champ_front.nb_comp();
+  if (tab_.size()==0)
+    tab_.resize(nb_faces_tot,nb_comp);
+  for (int face=0; face<nb_faces_tot; face++)
+    for (int comp=0; comp<nb_comp; comp++)
+      tab_(face, comp) = val_imp(face, comp);
+  tab_view_ = tab_.view_ro();
 }
 
 /*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps precise.

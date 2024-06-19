@@ -87,6 +87,7 @@ using DoubleTabView3 = ViewTab3<double>;
 using DoubleTabView4 = ViewTab4<double>;
 
 using CIntTabView = ConstViewTab<int>;
+using CIntTabView3 = ConstViewTab3<int>;
 using CDoubleTabView = ConstViewTab<double>;
 using CDoubleTabView3 = ConstViewTab3<double>;
 using CDoubleTabView4 = ConstViewTab4<double>;

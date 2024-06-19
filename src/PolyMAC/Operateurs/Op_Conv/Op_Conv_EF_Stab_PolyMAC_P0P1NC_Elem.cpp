@@ -44,8 +44,8 @@ Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, "Op_Conv_EF_Stab_Po
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_P0P1NC_Elem, "Op_Conv_Amont_PolyMAC_P0P1NC_Elem|Op_Conv_Amont_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_P0P1NC_Elem, "Op_Conv_Centre_PolyMAC_P0P1NC_Elem|Op_Conv_Centre_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 
-Op_Conv_Amont_PolyMAC_P0P1NC_Elem::Op_Conv_Amont_PolyMAC_P0P1NC_Elem() { alpha = 1.0; }
-Op_Conv_Centre_PolyMAC_P0P1NC_Elem::Op_Conv_Centre_PolyMAC_P0P1NC_Elem() { alpha = 0.0; }
+Op_Conv_Amont_PolyMAC_P0P1NC_Elem::Op_Conv_Amont_PolyMAC_P0P1NC_Elem() { alpha_ = 1.0; }
+Op_Conv_Centre_PolyMAC_P0P1NC_Elem::Op_Conv_Centre_PolyMAC_P0P1NC_Elem() { alpha_ = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem interprete Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem 1 Class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem
 Sortie& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
@@ -60,7 +60,7 @@ Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn(Entree& is)
   if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
     {
       Param param(que_suis_je());
-      param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
+      param.ajouter("alpha", &alpha_);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
       param.lire_avec_accolades_depuis(is);
     }
 
@@ -190,7 +190,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
           for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (Mv > 1))
             {
-              double v = vit(f, m) ? vit(f, m) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
+              double v = vit(f, m) ? vit(f, m) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha_) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
               dc_flux(i, n) = e >= 0 ? fac * vit(f, m) : 0;
             }
@@ -279,7 +279,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::mettre_a_jour(double temps)
     {
       for (cc_f = 0, i = 0; i < 2; i++)
         for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
-          cc_f(n) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
+          cc_f(n) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
 
       for (n = 0, m = 0; n < N; n++, m += (M > 1))
         flux_bords_(f, n) = pf(f) * fs(f) * vit(f, m) * cc_f(n);
@@ -293,7 +293,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::mettre_a_jour(double temps)
           DoubleTab& v_ph = c_ph.valeurs();
           for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
             for (v_ph(f) = 0, i = 0; i < 2; i++)
-              v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
+              v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
           c_ph.changer_temps(temps);
         }
 
@@ -307,7 +307,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::mettre_a_jour(double temps)
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
           for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
             for (v_ph(f) = 0, i = 0; i < 2; i++)
-              v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
+              v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
           c_ph.changer_temps(temps);
         }
 

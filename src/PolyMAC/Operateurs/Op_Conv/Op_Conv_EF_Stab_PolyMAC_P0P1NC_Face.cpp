@@ -45,13 +45,13 @@ Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::readOn(Entree& is) { return Op_Conv
 
 Entree& Op_Conv_Amont_PolyMAC_P0P1NC_Face::readOn(Entree& is)
 {
-  alpha = 1.0;
+  alpha_ = 1.0;
   return Op_Conv_PolyMAC_base::readOn(is);
 }
 
 Entree& Op_Conv_Centre_PolyMAC_P0P1NC_Face::readOn(Entree& is)
 {
-  alpha = 0.0;
+  alpha_ = 0.0;
   return Op_Conv_PolyMAC_base::readOn(is);
 }
 
@@ -173,7 +173,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, Dou
             //contribution a dfac
             for (e = f_e(f, i), eb = f_e(f, i), n = 0; n < N; n++)
               for (m = 0; m < N; m++)
-                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m) * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha) / 2;
+                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m) * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha_) / 2;
           }
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {

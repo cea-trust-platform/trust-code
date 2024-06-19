@@ -40,7 +40,8 @@ public :
   void calculer_volumes_entrelaces() override;
   void calculer_h_carre();
 
-  inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
+  inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const { return dot(dimension, a, b, ma, mb); }
+  KOKKOS_INLINE_FUNCTION double dot (const int dim, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
   inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 
   IntVect cyclic; // cyclic(i) = 1 i le poly i est cyclique
@@ -63,6 +64,7 @@ public :
 
   //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
   void init_m2() const;
+  // ToDo passer ces tableaux en IntVect et DoubleVect:
   mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
   mutable DoubleTab m2c, w2c;             //          avec le coeff diagonal en premier (facilite Echange_contact_PolyMAC)
   void init_m2solv() const; //pour resoudre m2.v = s
@@ -102,10 +104,10 @@ private:
 };
 
 /* produit scalaire de deux vecteurs */
-inline double Domaine_PolyMAC::dot(const double *a, const double *b, const double *ma, const double *mb) const
+KOKKOS_INLINE_FUNCTION double Domaine_PolyMAC::dot(const int dim, const double *a, const double *b, const double *ma, const double *mb) const
 {
   double res = 0;
-  for (int i = 0; i < dimension; i++) res += (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
+  for (int i = 0; i < dim; i++) res += (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
   return res;
 }
 

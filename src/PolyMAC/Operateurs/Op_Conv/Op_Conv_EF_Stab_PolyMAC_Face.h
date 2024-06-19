@@ -34,7 +34,7 @@ public :
   void set_incompressible(const int flag) override;
 
 protected :
-  double alpha = 1; //alpha = 0 -> centre, alpha = 1 -> amont (par defaut, on fait l'amont)
+  double alpha_ = 1; //alpha = 0 -> centre, alpha = 1 -> amont (par defaut, on fait l'amont)
   DoubleVect porosite_f, porosite_e; //pour F5
 
 private :
