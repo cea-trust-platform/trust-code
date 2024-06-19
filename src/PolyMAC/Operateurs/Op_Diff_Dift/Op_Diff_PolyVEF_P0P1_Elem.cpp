@@ -142,7 +142,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
   if (!semi)
     for (i = 0; i < cls[0].get().size(); i++)
       if ((pcl = sub_type(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[i].valeur()) ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[i].valeur()) : nullptr))
-        for (pcl->init_fs_dist(), j = 0, p = (int) (std::find(op_ext.begin(), op_ext.end(), &pcl->o_diff.valeur()) - op_ext.begin()); j < pcl->fvf->nb_faces(); j++)
+        for (pcl->init_fs_dist(), j = 0, p = (int) (std::find(op_ext.begin(), op_ext.end(), &pcl->o_diff.valeur()) - op_ext.begin()); j < pcl->fvf->nb_faces_tot(); j++)
           for (f = pcl->fvf->num_face(j), o_f = pcl->f_dist(j), k = 0; k < f_s[0].get().dimension(1) && (s = f_s[0](f, k)) >= 0; k++)
             if (s < dom[0].get().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
               for (o_s = pcl->s_dist[s], o_e = f_e[p](o_f, 0), n = 0; n < N[0]; n++)
@@ -263,7 +263,18 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
           if ((s = f_s[0](f, i)) < dom[0].get().domaine().nb_som() && scl_d[0](s) == scl_d[0](s + 1))
             {
               double surf = dom[0].get().dot(&nf[0](f, 0), &Sa(i, 1, 0)) / fs[0](f); //partie de la surface vers le sommet
-              if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
+              if (fcl[0](f, 0) == 1 || fcl[0](f, 0) == 2) //Echange_{externe,global}_impose
+                for (n = 0; n < N[0]; n++)
+                  {
+                    const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
+                    double sh = surf * ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
+                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
+                    if (f < dom[0].get().premiere_face_int())
+                      flux_bords_(f, n) += sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
+                    if (mat[0] && (fcl[0](f, 0) == 1 || !aux_only) && !semi)
+                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (fcl[0](f, 0) == 1 ? !aux_only * ne_tot[0] + s : e) + n) += sh;
+                  }
+              else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
                 {
                   if (fcl[0](f, 0) != 6 && fcl[0](f, 0) != 7 && fcl[0](f, 0) != 3)
                     abort(); //cas non geres
@@ -350,17 +361,6 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                           (*mat[o_p])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[o_p] * (!aux_only * ne_tot[o_p] + o_s) + n) -= surf * h;
                       }
                 }
-              else if (fcl[0](f, 0) == 1 || fcl[0](f, 0) == 2) //Echange_{externe,global}_impose
-                for (n = 0; n < N[0]; n++)
-                  {
-                    const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
-                    double sh = surf * ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
-                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
-                    if (f < dom[0].get().premiere_face_int())
-                      flux_bords_(f, n) += sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
-                    if (mat[0] && (fcl[0](f, 0) == 1 || !aux_only) && !semi)
-                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (fcl[0](f, 0) == 1 ? !aux_only * ne_tot[0] + s : e) + n) += sh;
-                  }
               else if (fcl[0](f, 0) == 4)
                 {
                   for (n = 0; n < N[0]; n++)
