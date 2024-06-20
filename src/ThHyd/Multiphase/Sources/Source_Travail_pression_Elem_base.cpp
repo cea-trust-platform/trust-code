@@ -15,6 +15,7 @@
 
 #include <Source_Travail_pression_Elem_base.h>
 #include <Champ_Inc_P0_base.h>
+#include <Champ_Face_base.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
@@ -66,12 +67,20 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
-  const Champ_Inc_base& ch_a = pbm.equation_masse().inconnue().valeur(), &ch_v = pbm.equation_qdm().inconnue().valeur(),
-                        &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeur();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(),
+                    &fs = domaine.face_surfaces(), &ve = domaine.volumes();
+
+  const Champ_Inc_base& ch_a = pbm.equation_masse().inconnue().valeur(),
+                        &ch_v = pbm.equation_qdm().inconnue().valeur(),
+                         &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeur();
+
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
-  const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
-  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = domaine.face_voisins();
+  const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha,
+                   &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
+
+  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = domaine.face_voisins(),
+                &fcl_v = ref_cast(Champ_Face_base, ch_v).fcl();
+
   DoubleTab b_alpha = ch_a.valeur_aux_bords();
   Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : nullptr,
                  *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : nullptr,
@@ -83,11 +92,14 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   //partie -p d alpha_k / dt et ses derivees
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(e, n) -= pe(e) * ve(e) * press(e, m) * (alpha(e, n) - p_alpha(e, n)) / dt;
+      for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        secmem(e, n) -= pe(e) * ve(e) * press(e, m) * (alpha(e, n) - p_alpha(e, n)) / dt;
       if (Mp)
-        for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*Mp)(N * e + n, M * e + m) += pe(e) * ve(e) * (alpha(e, n) - p_alpha(e, n)) / dt;
+        for (n = 0, m = 0; n < N; n++, m += (M > 1))
+          (*Mp)(N * e + n, M * e + m) += pe(e) * ve(e) * (alpha(e, n) - p_alpha(e, n)) / dt;
       if (Ma)
-        for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*Ma)(N * e + n, N * e + n) += pe(e) * ve(e) * press(e, m) / dt;
+        for (n = 0, m = 0; n < N; n++, m += (M > 1))
+          (*Ma)(N * e + n, N * e + n) += pe(e) * ve(e) * press(e, m) / dt;
     }
 
   //partie -p div (alpha_k v_k)
@@ -99,7 +111,9 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
           for (e = f_e(f, i), n = 0; n < N; n++)
             {
-              double v = vit(f, n) ? vit(f, n) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alp) / 2;
+              const double v = vit(f, n) ? vit(f, n) : DBL_MIN,
+                           fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alp) / 2;
+
               dv_flux(n) += fac * (e >= 0 ? c_alpha(e, n) : b_alpha(f, n)); //f est reelle -> indice trivial dans b_alpha
               dc_flux(i, n) = e >= 0 ? fac * vit(f, n) : 0;
             }
@@ -111,7 +125,7 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 secmem(e, n) -= (i ? -1 : 1) * press(e, m) * dv_flux(n) * vit(f, n);
         //derivees : vitesse
-        if (Mv)
+        if (Mv && (fcl_v(f, 0) < 2 || fcl_v(f, 0) == 5)) // XXX : pas pour CL Dirichlet !
           for (i = 0; i < 2; i++)
             if ((e = f_e(f, i)) >= 0)
               if (e < domaine.nb_elem())
@@ -131,6 +145,7 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
               if (e < domaine.nb_elem())
                 for (j = 0; j < 2; j++)
                   if ((eb = f_e(f, j)) >= 0)
-                    for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*Ma)(N * e + n, N * eb + n) += (i ? -1 : 1) * press(e, m) * dc_flux(j, n);
+                    for (n = 0, m = 0; n < N; n++, m += (M > 1))
+                      (*Ma)(N * e + n, N * eb + n) += (i ? -1 : 1) * press(e, m) * dc_flux(j, n);
       }
 }
