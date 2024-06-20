@@ -2,17 +2,19 @@ rm -f kernels
 # -gpu=loadcache:L1|L2s
 # -gpu=ccnative
 # Aucun effet (meme O3 !) sur le device...
+KOKKOS="-I$TRUST_KOKKOS_ROOT/linux/include -L$TRUST_KOKKOS_ROOT/linux/lib64 -lkokkoscontainers -lkokkoscore" # -expt-extended-lambda -Wext-lambda-captures-this 
 if [ "$ROCM_PATH" != "" ]
 then
-   opt="-O3 -fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
+   OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH -Wno-openmp-mapping -ldl"
 else
-   opt="-O3 -cuda -mp=gpu -I$CUDA_ROOT/include -L$CUDA_ROOT/lib64 -lcudart"
+   OPENMP="-fopenmp -mp=gpu -cuda"
 fi
-echo "opt=$opt"
-$TRUST_CC_BASE $opt -o kernels kernels.cpp || exit -1
+echo $OPENMP
+$TRUST_CC -g -O3 -std=c++17 $OPENMP -o kernels kernels.cpp $KOKKOS
 echo "Build OK"
 rm -f *nsys-rep
-./kernels && [ "$1" = -nsys ] && nsys profile ./kernels && nsys-ui report1.nsys-rep
+touch dumb.data && exec=`pwd`/kernels trust dumb 1
+[ "$1" = -nsys ] && nsys profile ./kernels && nsys-ui report1.nsys-rep
 # A6000 (nvc++)
 # [Kernel  a+=b] gpu: 0 Mean time: 1.87278 ms 2.7 GFLOPS
 # [Kernel  a+=b] gpu: 1 Mean time: 0.101147 ms 51.4 GFLOPS
@@ -33,3 +35,9 @@ rm -f *nsys-rep
 # [Kernel  a+=b] gpu: 1 Mean time: 0.115541 ms 45 GFLOPS
 # [Kernel OpDiv] gpu: 0 Mean time: 126.924 ms 0.1 GFLOPS
 # [Kernel OpDiv] gpu: 1 Mean time: 5.79228 ms 3.5 GFLOPS
+# A3000 (nvc++)
+# [Kernel  a+=b] CPU    Mean time: 2.0595 ms 2.5 GFLOPS
+# [Kernel  a+=b] OMPT   Mean time: 0.219146 ms 23.7 GFLOPS
+# [Kernel OpDiv] CPU    Mean time: 144.328 ms 0.1 GFLOPS
+# [Kernel OpDiv] OMPT   Mean time: 10.7632 ms 1.9 GFLOPS
+# [Kernel OpDiv] Kokkos Mean time: 10.7454 ms 1.9 GFLOPS

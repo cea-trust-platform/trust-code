@@ -13,4 +13,4 @@ else
    OPENMP="-fopenmp -mp -target=gpu -cuda"
 fi
 echo $OPENMP
-$TRUST_CC -std=c++17 $OPENMP -o mix_openmp_kokkos mix_openmp_kokkos.cpp $KOKKOS && touch dumb.data && exec=`pwd`/mix_openmp_kokkos trust dumb 1
+$TRUST_CC -g -O3 -std=c++17 $OPENMP -o mix_openmp_kokkos mix_openmp_kokkos.cpp $KOKKOS && touch dumb.data && exec=`pwd`/mix_openmp_kokkos trust dumb 1
