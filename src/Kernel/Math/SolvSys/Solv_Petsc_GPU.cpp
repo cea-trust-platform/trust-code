@@ -16,6 +16,11 @@
 #include <Solv_Petsc_GPU.h>
 
 Implemente_instanciable_sans_constructeur(Solv_Petsc_GPU,"Solv_Petsc_GPU",Solv_Petsc);
+// XD petsc_gpu petsc petsc_gpu 0 GPU solver via Petsc API
+// XD attr solveur chaine solveur 0 not_set
+// XD attr option_solveur bloc_lecture option_solveur 0 not_set
+// XD attr atol floattant atol 1 Absolute threshold for convergence (same as seuil option)
+// XD attr rtol floattant rtol 1 Relative threshold for convergence
 
 // printOn
 Sortie& Solv_Petsc_GPU::printOn(Sortie& s ) const
