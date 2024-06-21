@@ -61,9 +61,9 @@ void Op_Conv_EF_Stab_PolyVEF_Face::completer()
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
-  if (dom.nb_joints() && dom.joint(0).epaisseur() < 2)
+  if (dom.nb_joints() && dom.joint(0).epaisseur() < 1)
     {
-      Cerr << "Op_Conv_EF_Stab_PolyVEF_Face : largeur de joint insuffisante (minimum 2)!" << finl;
+      Cerr << "Op_Conv_EF_Stab_PolyVEF_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
   porosite_f.ref(equation().milieu().porosite_face());
