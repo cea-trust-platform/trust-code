@@ -326,6 +326,10 @@ int EOS_to_TRUST_generique::tppi_get_all_pb_multiphase_ph(const MSpanD input, ML
   int err1_ = tppi_get_all_properties_h_( { { "enthalpie", bH }, { "pressure", bP } }, bflds_out, bferr, ncomp, id); // bords
   int err2_ = tppi_get_all_properties_h_( { { "enthalpie", H }, { "pressure", P } }, flds_out, ferr, ncomp, id); // interne
 
+  // XXX : put T in C !!
+  SpanD T = inter.at(Loi_en_h::T), bT = bord.at(Loi_en_h::T);
+  Tc_(T), Tc_(bT);
+
   return std::max(err1_, err2_);
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;

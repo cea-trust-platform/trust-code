@@ -170,16 +170,6 @@ void Fluide_base::verifier_coherence_champs(int& err, Nom& msg)
     }
   if ((Cp.non_nul()) && ((lambda.non_nul()) && (beta_th.non_nul()))) // Fluide anisotherme
     {
-//      if (mp_min_vect(Cp.valeurs()) <= 0)
-//        {
-//          msg += "The heat capacity Cp is not striclty positive. \n";
-//          err = 1;
-//        }
-//      if (mp_min_vect(lambda.valeurs()) <= 0)
-//        {
-//          msg += "The conductivity lambda is not positive. \n";
-//          err = 1;
-//        }
       if (sub_type(Champ_Uniforme, Cp.valeur()))
         {
           if (Cp(0, 0) <= 0)
@@ -313,7 +303,6 @@ void Fluide_base::mettre_a_jour(double temps)
 
   // Mise a jour des proprietes radiatives du fluide incompressible
   // (Pour un fluide incompressible semi transparent).
-
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     {
       coeff_absorption_.mettre_a_jour(temps);
@@ -355,7 +344,6 @@ int Fluide_base::initialiser(const double temps)
 
   // Initialisation des proprietes radiatives du fluide incompressible
   // (Pour un fluide incompressible semi transparent).
-
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     {
       Cerr << "Semi transparent fluid properties initialization." << finl;
@@ -391,13 +379,13 @@ void Fluide_base::reset_type_rayo()
 {
   indic_rayo_ = NONRAYO;
 }
+
 void Fluide_base::fixer_type_rayo()
 {
   if ((coeff_absorption_.non_nul()) && (indice_refraction_.non_nul()))
     indic_rayo_ = SEMITRANSP;
   else
     indic_rayo_ = TRANSP;
-
 }
 
 int Fluide_base::longueur_rayo_is_discretised()
@@ -424,13 +412,16 @@ void Fluide_base::creer_e_int() const
 
 void Fluide_base::creer_temperature_multiphase() const
 {
-  if (e_int.est_nul()) creer_e_int();
-  h_ou_T = e_int; // on initialise
-
   const bool res_en_T = equation_.count("temperature") ? true : false;
-  if (res_en_T) throw;
+  if (res_en_T) return; /* Do nothing */
 
   const Equation_base& eq = equation("enthalpie");
+
+  if (e_int.est_nul()) creer_e_int();
+  h_ou_T = e_int; // on initialise
+  h_ou_T->nommer("temperature");
+  h_ou_T->mettre_a_jour(eq.inconnue()->temps());
+
   const Champ_base& ch_h = eq.inconnue().valeur(), &ch_Cp = capacite_calorifique();
   Champ_Inc_base& ch_T = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
   const DoubleTab& h = ch_h.valeurs(), &Cp_ = ch_Cp.valeurs();
@@ -443,7 +434,7 @@ void Fluide_base::creer_temperature_multiphase() const
   // T = T0 + (h - h0) / cp
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++)
-      T(i, n) = T0_ + ( h(i, n0 + n) - h0_) / Cp_(!cCp * i, n);
+      T(i, n) = T0_ + (( h(i, n0 + n) - h0_) / Cp_(!cCp * i, n) - 273.15);
 
   if (ch_Cp.a_un_domaine_dis_base())
     bCp = ch_Cp.valeur_aux_bords();
@@ -455,7 +446,7 @@ void Fluide_base::creer_temperature_multiphase() const
 
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++)
-      bT(i, n) = T0_ + ( bh(i, n0 + n) - h0_) / bCp(!cCp * i, n);
+      bT(i, n) = T0_ + (( bh(i, n0 + n) - h0_) / bCp(!cCp * i, n) - 273.15);
 }
 
 void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
