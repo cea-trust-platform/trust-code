@@ -2723,6 +2723,11 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
       else
 #endif
 #ifdef PETSC_HAVE_HIP
+      if (gpu_)
+        MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
+      else
+#endif
+#ifdef PETSC_HAVE_HIP
         if (gpu_)
           MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
         else
