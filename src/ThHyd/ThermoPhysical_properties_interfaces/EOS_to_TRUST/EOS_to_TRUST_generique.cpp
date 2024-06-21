@@ -265,7 +265,7 @@ int EOS_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_ph(const MSpanD input, 
   const SpanD H = input.at("enthalpie"), P = input.at("pressure");
   if ((int )H.size() != ncomp * (int )P.size()) Process::exit("Ah bon ? NON !");
 
-  const int nb_out = 4; /* 5 variables to fill */
+  const int nb_out = 3; /* 4 variables to fill --- without BETA :: TODO FIXME */
   ArrOfInt tmp((int)P.size());
   EOS_Error_Field ferr(tmp);
   EOS_Fields flds_out(nb_out);
