@@ -306,6 +306,7 @@ struct Matrice_Morse_View
 #else
     abort();
 #endif
+    return zero_;
   }
 };
 
