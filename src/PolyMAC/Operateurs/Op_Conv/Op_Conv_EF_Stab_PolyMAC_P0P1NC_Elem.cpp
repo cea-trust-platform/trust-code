@@ -89,9 +89,9 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::preparer_calcul()
   equation().init_champ_convecte();
   flux_bords_.resize(domaine.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
 
-  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
-      Cerr << "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
+      Cerr << "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
 }
