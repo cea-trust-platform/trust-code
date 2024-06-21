@@ -224,8 +224,10 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
   start_gpu_timer();
   if (kernelOnDevice)
     {
+#ifndef LATATOOLS
       auto data = view_rw();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { data[i] = x; });
+#endif
     }
   else
     {
