@@ -89,7 +89,7 @@ Read pb
             paroi     paroi_fixe
         }
     }
-    Postraitement { format lml Champs dt_post 1e9 { pression elem } }
+    Postraitement { format lml Champs dt_post 1e9 { pression elem critere_q som } }
 }
 EcritureLectureSpecial 0
 Solve pb

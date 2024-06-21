@@ -262,33 +262,33 @@ void Champ_P1NC::verifie_valeurs_cl()
   ch_tab.echange_espace_virtuel();
 }
 
-void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
+void Champ_P1NC::calcul_critere_Q(DoubleVect& tab_Critere_Q) const
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis().valeur());
   const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
-  int num_elem, i, j;
-  double crit, deriv1, deriv2;
+  const int dim = Objet_U::dimension;
 
-  DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
-  gradient_elem = 0.;
-
-  //Champ_P1NC& vit = *this;
+  DoubleTrav tab_gradient_elem(nb_elem_tot, dim, dim);
   const DoubleTab& vitesse = valeurs();
-  Champ_P1NC::calcul_gradient(vitesse, gradient_elem, domaine_Cl_VEF);
+  Champ_P1NC::calcul_gradient(vitesse, tab_gradient_elem, domaine_Cl_VEF);
 
-  for (num_elem = 0; num_elem < nb_elem; num_elem++)
-    {
-      crit = 0.;
-      for (i = 0; i < dimension; i++)
-        for (j = 0; j < dimension; j++)
-          {
-            deriv1 = gradient_elem(num_elem, i, j);
-            deriv2 = gradient_elem(num_elem, j, i);
-
-            crit += -0.25 * deriv1 * deriv2;
-          }
-      Critere_Q[num_elem] = crit;
-    }
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
+  DoubleArrView Critere_Q = tab_Critere_Q.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                         const int num_elem)
+  {
+    double crit = 0.;
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
+        {
+          double deriv1 = gradient_elem(num_elem, i, j);
+          double deriv2 = gradient_elem(num_elem, j, i);
+          crit += -0.25 * deriv1 * deriv2;
+        }
+    Critere_Q[num_elem] = crit;
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect& y_plus) const
