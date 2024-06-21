@@ -1,3 +1,5 @@
+XX/XX/24 (TRUST) GPU          : Enable HIP support in PETSc to get Hypre multigrid available on AMD GPU with: petsc_gpu gcp|gmres { precond boomeramg { } ... } 
+XX/XX/24 (TRUST) GPU          : New available features for VEF discretization: Quasi-compressible (partial), Wale and Smagorinski turbulence models, Semi-implicit scheme, Sources term (Boussinesq, Canal_perio)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
@@ -251,7 +253,7 @@ Release notes version 1.8.3 : Enhancements, modifications and corrected bugs sin
 15/06/21 (TRUST)  New feature : Python package added which allows writing and running prm validation files via jupyter-lab using python & markdown syntax
 11/06/21 (TRUST)  Change      : If some conda packages are updated/added/removed after TRUST install, configuring TRUST again will detect that and re-install TRUST's conda packages as per default.
 07/06/21 (TRUST)  Bug fixed   : Finite Element (EF) BTD or SUPG convection scheme were unavailable in Pb_Thermohydraulique 
-03/06/21 (TRUST)  New feature : Source term "Canal_perio" now supported in VDF for the Conduction_Diffusion_* equation
+03/06/21 (TRUST)  New feature : Source term "a" now supported in VDF for the Conduction_Diffusion_* equation
 31/05/21 (TRUST)  New feature : Parallel partitionning (with ParMetis or Pt-Scotch libraries) thanks to parmetis or ptscotch option with partitionneur keyword
 27/05/21 (TRUST)  Major Change: Class and function templates are used now for the evaluator classes of the VDF diffusion operators
 21/05/21 (TRUST)  Bug fix     : Last backup was not always correctly done, especially within ICoCo context. 

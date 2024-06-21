@@ -272,9 +272,9 @@ with_packages=""
 ################
 # GPU support? #
 ################
+echo "****************************************"
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   echo "****************************************"
    echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
    with_gpu="--with-cuda"
    with_gpu=$with_gpu" --with-cudac=$TRUST_NVCC"
@@ -288,13 +288,15 @@ then
    fi      
    add_package viennacl
    echo "CUDA support for PETSc with: "$with_gpu
-   echo "****************************************"
+elif [ "$TRUST_USE_ROCM" = 1 ]
+then
+   with_gpu="--with-hip --with-hip-arch=$ROCM_ARCH"
+   echo "ROCM support for PETSc with: "$with_gpu
 else
    with_gpu="--with-cudac=0" # Disable the Cuda Compiler search
-   echo "****************************************"
-   echo "CUDA support is not activated for PETSc "
-   echo "****************************************"
+   echo "GPU support is not activated for PETSc "
 fi
+echo "****************************************"
 
 ########################
 # Compilateur alternatif
@@ -446,7 +448,7 @@ add_package metis
 # STRUMPACK #
 #############
 TRUST_USE_STRUMPACK=1
-if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ]
+if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" != 1 ]
 then
    add_package zfp
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
@@ -533,8 +535,11 @@ then
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       # PETSc 3.20 necessite une montee de version pour Hypre sur GPU:
-      [ ! -f ../hypre-2.19.0.tar.gz ] && add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=80" # Necessaire pour topaze, pas a6000 (sm_86) ?
+      [ ! -f ../hypre-2.19.0.tar.gz ] && add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$TRUST_CUDA_CC"
       # Message cudaErrorNoKernelImageForDevice: no kernel image is available for execution on the device
+   elif [ "$TRUST_USE_ROCM" = 1 ]
+   then
+      add_package hypre && with_packages=$with_packages" -download-hypre-arguments=--enable-unified-memory"
    else
       [ $minimal_mumps = 0 ] && add_package hypre
    fi
@@ -651,7 +656,7 @@ do
    log=$PETSC_ROOT/$PETSC_ARCH/configure_$PETSC_ARCH.log
    cp configure.log $log
    echo "Created $log"
-   [ $err != 0 ] && exit $?
+   [ $err != 0 ] && exit $err
    #############
    # Compilation
    #############

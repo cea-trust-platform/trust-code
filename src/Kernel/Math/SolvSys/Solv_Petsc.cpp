@@ -457,7 +457,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // On verifie que le solveur est supporte sur GPU:
   if (gpu_)
     {
-#ifdef PETSC_HAVE_CUDA
+#if defined(PETSC_HAVE_CUDA) || defined(PETSC_HAVE_HIP)
       Cerr << "GPU capabilities of PETSc will be used." << finl;
 #else
       Cerr << "You can not use petsc_gpu keyword cause GPU" << finl;
@@ -1424,7 +1424,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   type_pc_=(Nom)type_pc;
 
   // Pas de version CPU de Hypre si PETSc active le support GPU:
-#ifdef PETSC_HAVE_CUDA
+#if defined(PETSC_HAVE_CUDA) || defined(PETSC_HAVE_HIP)
   if (type_pc_=="hypre") gpu_ = true;
 #endif
 
@@ -2499,10 +2499,17 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
     VecSetSizes(SecondMembrePetsc_, nb_rows_, PETSC_DECIDE);
 
   // Set type:
-  if (Process::is_parallel())
-    VecSetType(SecondMembrePetsc_, gpu_ ? VECMPICUDA : VECMPI);
+#ifdef PETSC_HAVE_CUDA
+  if (gpu_)
+    VecSetType(SecondMembrePetsc_, (Process::is_sequential() ? VECSEQCUDA : VECMPICUDA));
   else
-    VecSetType(SecondMembrePetsc_, gpu_ ? VECSEQCUDA : VECSEQ);
+#endif
+#ifdef PETSC_HAVE_HIP
+    if (gpu_)
+      VecSetType(SecondMembrePetsc_, (Process::is_sequential() ? VECSEQHIP : VECMPIHIP));
+    else
+#endif
+      VecSetType(SecondMembrePetsc_, (Process::is_sequential() ? VECSEQ : VECMPI));
   VecSetOptionsPrefix(SecondMembrePetsc_, option_prefix_);
   VecSetFromOptions(SecondMembrePetsc_);
   // Build b
@@ -2715,7 +2722,12 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
         MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJCUSPARSE : MATMPIAIJCUSPARSE));
       else
 #endif
-        MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
+#ifdef PETSC_HAVE_HIP
+        if (gpu_)
+          MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
+        else
+#endif
+          MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusparse to aijviennacl via CLI

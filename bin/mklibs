@@ -81,6 +81,10 @@ then
             PETSC_L=$PETSC_L" nvToolsExt"
             # En statique:
             [ "$LINK_CUDA" = _static ] && PETSC_L=$PETSC_L" cublasLt_static culibos rt"
+         elif [ "$TRUST_USE_ROCM" = 1 ]
+         then
+            PETSC_P=$PETSC_P" \$ENV{ROCM_PATH}/lib"
+            PETSC_L=$PETSC_L" hipsparse hipblas hipsolver rocsparse rocsolver rocblas rocrand amdhip64"           
          fi
          # PETSc with X11:
          [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ] && SYSLIBS_L=$SYSLIBS_L" X11"
