@@ -110,8 +110,8 @@ Lire pb
             pression_io	pression		periode 1e8 segment 2    0.75 0    0.75 100
             pression_i	pression		periode 1e8 segment 100     50 0	50 1
             pression_o	pression		periode 1e8 segment 100     100 0	100 1
-            nut nu_turb periode 1e8 position_like vitesse
-            mut mu_turb periode 1e8 position_like vitesse
+            nut NU_TURBULENTE periode 1e8 position_like vitesse
+            mut MU_TURBULENTE periode 1e8 position_like vitesse
         }
         format lml
         champs dt_post 1e8
