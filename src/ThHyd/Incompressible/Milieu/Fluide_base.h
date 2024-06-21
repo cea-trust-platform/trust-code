@@ -83,13 +83,13 @@ public :
   void reset_type_rayo();
   int longueur_rayo_is_discretised();
 protected :
-  void creer_e_int() const; //creation sur demande de e_int / h
-  void creer_temperature_multiphase() const; //creation sur demande de e_int / h
+  void creer_e_int() const; // creation sur demande de e_int / h
+  void creer_temperature_multiphase() const; // seulement si Energie_Multiphase_Enthalpie
 
   mutable int e_int_auto_ = 0; //1 si on a cree e_int
-  static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);//fonction de calcul par defaut
+  static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv); // fonction de calcul par defaut
 
-  mutable Champ e_int, h_ou_T; //pour la creation sur demande
+  mutable Champ e_int, h_ou_T; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
   Champ_Don mu, nu, beta_co;
   double h0_ = 0, T0_ = 0;
 

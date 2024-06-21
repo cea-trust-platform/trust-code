@@ -331,7 +331,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
    */
   for (int i = 0; i < Ni; i++) /* interne */
     {
-      val_temp(i,n) = T_REF_[i] + ( enth(i,n) - h_ref_ ) / Cp_[i];
+      val_temp(i,n) = T_REF_[i] + (( enth(i,n) - h_ref_ ) / Cp_[i] - 273.15);
       val_e(i) = enth(i);
       dh_T(i) = 1. / Cp_[i]; /* la seule derivee en incompressible */
       dh_e(i) = 1.; // dh_T(i);
@@ -339,7 +339,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
 
   for (int i = 0; i < Nb; i++) /* bord */
     {
-      bval_temp(i,n) = bT_REF_[i] + ( benth(i,n) - h_ref_ ) / bCp_[i];
+      bval_temp(i,n) = bT_REF_[i] + (( benth(i,n) - h_ref_ ) / bCp_[i] - 273.15);
       bval_e(i) = benth(i);
     }
 }
@@ -634,4 +634,8 @@ void Fluide_reel_base::compute_all_pb_multiphase_h_(const MSpanD input, MLoiSpan
   T_(H, P, T, ncomp, id);
   dP_T_(H, P, dPT, ncomp, id);
   dh_T_(H, P, dHT, ncomp, id);
+
+  // XXX : put T in C !!
+  Tc_(bT);
+  Tc_(T);
 }
