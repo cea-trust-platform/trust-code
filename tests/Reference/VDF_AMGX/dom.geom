@@ -1,1 +1,0 @@
-../GAMELAN/dom.geom
