@@ -62,7 +62,7 @@ void Op_Diff_PolyVEF_base::mettre_a_jour(double t)
   Operateur_base::mettre_a_jour(t);
   //si le champ est constant en temps, alors pas besoin de recalculer nu_ et les interpolations
   if (t <= t_last_maj_) return;
-  if (!nu_constant_) nu_a_jour_ = 0, phif_a_jour_ = 0;
+  if (!nu_constant_) nu_a_jour_ = 0;
   t_last_maj_ = t;
 }
 
@@ -262,13 +262,4 @@ void Op_Diff_PolyVEF_base::update_nu() const
   modifier_mu(nu_);
 
   nu_a_jour_ = 1;
-}
-
-void Op_Diff_PolyVEF_base::update_phif(int full_stencil) const
-{
-  if (!full_stencil && phif_a_jour_) return; //deja fait, sauf si on demande tout le stencil
-  const Champ_Inc_base& ch = equation().inconnue();
-  const IntTab& fcl = sub_type(Champ_Face_PolyVEF, ch) ? ref_cast(Champ_Face_PolyVEF, ch).fcl() : ref_cast(Champ_Elem_PolyVEF_P0, ch).fcl();
-  le_dom_poly_->fgrad(ch.valeurs().line_size(), 0, 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyVEF, ch), full_stencil, phif_d, phif_e, phif_c);
-  phif_a_jour_ = 1;
 }
