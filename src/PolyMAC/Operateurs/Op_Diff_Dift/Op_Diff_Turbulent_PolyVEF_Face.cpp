@@ -20,13 +20,18 @@
 #include <Pb_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <vector>
+#include <Synonyme_info.h>
 
-Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulente_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyVEF_P0P1_Face", Op_Diff_PolyVEF_Face );
+Implemente_instanciable( Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulent_PolyVEF_P0_Face|Op_Diff_Turbulente_PolyVEF_P0_Face", Op_Diff_PolyVEF_Face );
+Add_synonym(Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulent_PolyVEF_P0P1NC_Face");
+Add_synonym(Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulente_PolyVEF_P0P1NC_Face");
+Add_synonym(Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulent_PolyVEF_P0P1_Face");
+Add_synonym(Op_Diff_Turbulent_PolyVEF_Face, "Op_Diff_Turbulente_PolyVEF_P0P1_Face");
 
 
-Sortie& Op_Diff_Turbulent_PolyVEF_Face::printOn(Sortie& os) const { return Op_Diff_PolyVEF_base::printOn(os); }
+Sortie&  Op_Diff_Turbulent_PolyVEF_Face::printOn(Sortie& os) const { return Op_Diff_PolyVEF_Face::printOn(os); }
 
-Entree& Op_Diff_Turbulent_PolyVEF_Face::readOn(Entree& is)
+Entree&  Op_Diff_Turbulent_PolyVEF_Face::readOn(Entree& is)
 {
   //lecture de la correlation de viscosite turbulente
   Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "viscosite_turbulente", is);
