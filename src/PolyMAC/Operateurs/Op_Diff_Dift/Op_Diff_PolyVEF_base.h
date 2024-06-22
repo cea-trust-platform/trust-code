@@ -57,13 +57,6 @@ public:
     return nu_;
   }
 
-  /* flux aux faces (hors Echange_contact): cf. Domaine_PolyVEF::fgrad */
-  void update_phif(int full_stencil = 0) const;
-
-  //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[)
-  mutable IntTab phif_d, phif_e; //stencils
-  mutable DoubleTab phif_c; //coefficients
-
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
   int impr(Sortie& os) const override;
 
@@ -78,10 +71,7 @@ protected:
   void update_nu() const; //mise a jour
   mutable DoubleTab nu_;
 
-  /* liste de sommets traites directement par l'operateur et non par Domaine_PolyVEF::fgrad() (cf. Op_Diff_PolyVEF_Elem) */
-  mutable IntTab som_ext;
-
-  mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0, s_dist_init_ = 0, som_ext_init_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / phif a jour
+  mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0; //nu constant / nu a jour
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
