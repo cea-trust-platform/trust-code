@@ -76,9 +76,8 @@ double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
   const IntTab& e_f = dom.elem_faces();
   const DoubleTab& nf = dom.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
-                    &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
+                    &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs(), &diffu_tot = nu();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
-  update_nu();
 
   int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
   double dt = 1e10;
@@ -87,7 +86,7 @@ double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
-          flux(n) += dom.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+          flux(n) += dom.nu_dot(&diffu_tot, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
