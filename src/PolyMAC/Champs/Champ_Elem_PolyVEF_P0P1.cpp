@@ -106,8 +106,9 @@ DoubleTab& Champ_Elem_PolyVEF_P0P1::valeur_aux_elems(const DoubleTab& positions,
   const DoubleTab& vals = valeurs(), &a_es = alpha_es();
   int e, s, i, j, n, N = valeurs().line_size(), ne_tot = dom.nb_elem_tot();
   for (i = 0; i < polys.size(); i++)
+    if ((e = polys(i)) >= 0 && e < ne_tot)
     {
-      for (e = polys(i), n = 0; n < N; n++) result(i, n) = 0.5 * vals(e, n);
+      for (n = 0; n < N; n++) result(i, n) = 0.5 * vals(e, n);
       for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
         for (n = 0; n < N; n++)
           result(i, n) += 0.5 * a_es(e, j) * vals(ne_tot + s, n);
