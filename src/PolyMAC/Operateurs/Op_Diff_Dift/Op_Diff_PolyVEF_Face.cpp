@@ -76,11 +76,10 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
 {
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
-  const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
+  const DoubleTab& vfd = dom.volumes_entrelaces_dir(), &diffu = nu(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                     *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
-  update_nu();
 
   int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size() / dimension, p0p1 = sub_type(Domaine_PolyVEF_P0P1, dom), skip;
   double dt = 1e10;
@@ -93,7 +92,7 @@ double Op_Diff_PolyVEF_Face::calculer_dt_stab() const
       if (skip) continue;
 
       /* matrice w2, sommes de ses lignes et somme totale */
-      for (dom.W2(&nu_, e, w2), lw2.resize(w2.dimension(0), N), lw2 = 0, tw2 = 0, i = 0; i < w2.dimension(0); i++)
+      for (dom.W2(&diffu, e, w2), lw2.resize(w2.dimension(0), N), lw2 = 0, tw2 = 0, i = 0; i < w2.dimension(0); i++)
         for (j = 0; j < w2.dimension(0); j++)
           for (n = 0; n < N; n++)
             lw2(i, n) += w2(i, j, n), tw2(n) += w2(i, j, n);
@@ -149,7 +148,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : nullptr; //facultatif
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs(), &diffu = nu();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces(), &fcl = ref_cast(Champ_Face_PolyVEF, equation().inconnue()).fcl();
   int i, j, e, f, fb, d, D = dimension, nd, ND = inco.line_size(), n, N = ND / D, skip;
@@ -163,7 +162,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       if (skip) continue;
 
       /* matrice w2, sommes de ses lignes et somme totale */
-      for (dom.W2(&nu_, e, w2), lw2.resize(w2.dimension(0), N), lw2 = 0, tw2 = 0, i = 0; i < w2.dimension(0); i++)
+      for (dom.W2(&diffu, e, w2), lw2.resize(w2.dimension(0), N), lw2 = 0, tw2 = 0, i = 0; i < w2.dimension(0); i++)
         for (j = 0; j < w2.dimension(0); j++)
           for (n = 0; n < N; n++)
             lw2(i, n) += w2(i, j, n), tw2(n) += w2(i, j, n);
@@ -181,5 +180,4 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                       (*mat)(ND * f + nd, ND * fb + nd) += fac;
                   }
     }
-  i++;
 }
