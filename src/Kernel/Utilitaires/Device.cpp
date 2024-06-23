@@ -18,6 +18,7 @@
 #include <ctime>
 #include <string>
 #include <sstream>
+#include <map>
 
 #ifndef LATATOOLS
 #include <comm_incl.h>
@@ -28,7 +29,30 @@ bool init_openmp_ = false;
 bool clock_on = false;
 bool timer_on = true;
 double clock_start;
-int allocated_bytes = 0;
+
+// Memory:
+size_t deviceMemGetInfo(bool print_total) // free or total bytes of the device
+{
+  size_t free=0, total=0;
+#ifndef LATATOOLS
+#ifdef TRUST_USE_CUDA
+  cudaMemGetInfo(&free, &total);
+#endif
+#ifdef TRUST_USE_HIP
+  hipMemGetInfo(&free_bytes, &total_bytes);
+#endif
+#endif
+  return print_total ? total : free;
+}
+std::map<void*, int> memory_map; // Define a map to track memory allocations on device
+size_t initial_free = 0;
+// Activity on GPU may be asked with:
+size_t allocatedBytesOnDevice()
+{
+  size_t free = deviceMemGetInfo(0);
+  initial_free = (initial_free==0) ? free : initial_free;
+  return initial_free - free;
+}
 
 #ifndef NDEBUG
 static int copy_before_exit = -1;
@@ -153,6 +177,7 @@ void init_openmp()
       Cerr << "Or You can force MPI ranks using one device only: CUDA_VISIBLE_DEVICES=0" << finl;
       Process::exit();
     }
+  Process::imprimer_ram_totale(); // Impression avant copie des donnees sur GPU
 }
 #endif
 
@@ -247,23 +272,20 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
       clock_start = Statistiques::get_time_now();
       int bytes = sizeof(_TYPE_) * size;
-      size_t free_bytes=0, total_bytes=0;
-      // ToDo OpenMP use hipMemGetInfo on AMD...
-#ifdef TRUST_USE_CUDA
-      cudaMemGetInfo(&free_bytes, &total_bytes);
+      size_t free_bytes  = deviceMemGetInfo(0);
+      size_t total_bytes = deviceMemGetInfo(1);
       if (bytes>free_bytes)
         {
           Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
           Process::exit();
         }
-#endif
       #pragma omp target enter data map(alloc:ptr[0:size])
+      memory_map[ptr] = size;
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
       #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
       for (int i = 0; i < size; i++) ptr[i] = INVALIDE_;
 #endif
-      allocated_bytes += bytes;
       if (clock_on)
         {
           std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
@@ -306,12 +328,11 @@ void deleteOnDevice(_TYPE_* ptr, int size)
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. Currently allocated: " << allocatedBytesOnDevice() << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
-      allocated_bytes -= bytes;
+      // ToDo : print this map:
+      if (PE_Groups::get_nb_groups()>0) memory_map.erase(ptr);
     }
 #endif
 }
-// Activity on GPU may be asked with:
-int allocatedBytesOnDevice() { return allocated_bytes; }
 
 // Update const array on device if necessary
 // Before		After		Copy ?

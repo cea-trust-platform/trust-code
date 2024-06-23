@@ -39,7 +39,8 @@ void exit_on_copy_condition(int size);
 void set_exit_on_copy_condition(int size);
 void init_openmp();
 void init_cuda();
-int allocatedBytesOnDevice();
+size_t allocatedBytesOnDevice();
+size_t deviceMemGetInfo(bool);
 std::string ptrToString(const void* adr);
 
 #ifdef _OPENMP
