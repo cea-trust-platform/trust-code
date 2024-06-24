@@ -634,8 +634,4 @@ void Fluide_reel_base::compute_all_pb_multiphase_h_(const MSpanD input, MLoiSpan
   T_(H, P, T, ncomp, id);
   dP_T_(H, P, dPT, ncomp, id);
   dh_T_(H, P, dHT, ncomp, id);
-
-  // XXX : put T in C !!
-  Tc_(bT);
-  Tc_(T);
 }
