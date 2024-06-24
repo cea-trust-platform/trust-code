@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ void Fluide_stiffened_gas::set_param(Param& param)
 
 #define ind std::distance(res.begin(), &val)
 
+/* Lois en T */
 void Fluide_stiffened_gas::rho_(const SpanD T, const SpanD P, SpanD res, int ncomp, int id) const
 {
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
@@ -107,6 +108,64 @@ void Fluide_stiffened_gas::lambda_(const SpanD T, const SpanD P, SpanD res, int 
 {
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
   for (auto& val : res) val = lambda__;
+}
+
+/* Lois en h */
+void Fluide_stiffened_gas::rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = gamma_ * (P[ind] + pinf_) / (gamma_ - 1.0) / H[ind * ncomp + id];
+}
+
+void Fluide_stiffened_gas::dP_rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = gamma_ / (gamma_ - 1.0) / H[ind * ncomp + id];
+}
+
+void Fluide_stiffened_gas::dh_rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = - gamma_ * (P[ind] + pinf_) / (gamma_ - 1.0) / H[ind * ncomp + id] / H[ind * ncomp + id];
+}
+
+void Fluide_stiffened_gas::T_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = H[ind * ncomp + id] / gamma_ / Cv_ - 273.15;
+}
+
+void Fluide_stiffened_gas::dP_T_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 0.;
+}
+
+void Fluide_stiffened_gas::dh_T_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 1. /  gamma_ / Cv_;
+}
+
+void Fluide_stiffened_gas::cp_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  cp_(H, P, res, ncomp, id);
+}
+
+void Fluide_stiffened_gas::beta_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )res.size());
+  for (auto& val : res) val = 1.0 / (H[ind * ncomp + id] / (gamma_ * Cv_));
+}
+
+void Fluide_stiffened_gas::mu_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  mu_(H, P, res, ncomp, id);
+}
+
+void Fluide_stiffened_gas::lambda_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int id) const
+{
+  lambda_(H, P, res, ncomp, id);
 }
 
 #undef ind

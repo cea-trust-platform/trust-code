@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ private:
   double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu__, lambda__;
 
 protected :
+  /* Lois en T */
   void rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
   void dP_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
   void dT_rho_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
@@ -43,16 +44,17 @@ protected :
   void mu_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
   void lambda_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
 
-  void rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void dP_rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void dh_rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void dP_T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void dh_T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void cp_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void beta_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void mu_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
-  void lambda_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  /* Lois en h */
+  void rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dh_rho_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void T_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dP_T_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void dh_T_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void cp_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void beta_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void mu_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+  void lambda_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
 };
 
 #endif /* Fluide_stiffened_gas_included */
