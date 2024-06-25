@@ -1,7 +1,7 @@
 # PARALLEL OK 4 #
 
 dimension 3
-Pb_Multiphase_h pb
+$pb pb
 Domaine dom
 
 # BEGIN MESH #
@@ -10,7 +10,7 @@ Mailler dom
     Pave Entree
     {
         Origine 0.  0. 0.
-        Nombre_de_Noeuds 4 4 51
+        Nombre_de_Noeuds  4 4 51
         Longueurs 1.4 1.4 4.2
     }
     {
@@ -54,7 +54,6 @@ Read sch
     {
         criteres_convergence { alpha 1e-5 }
         solveur petsc cli { }
-
         seuil_convergence_implicite 1e30
     }
 }
@@ -67,15 +66,7 @@ Read pb
 {
     Milieu_composite
     {
-        /* liquide_eau        Fluide_generique_eos { model cathare2 fluid waterliquid } */
-        /* liquide_eau     Fluide_Incompressible
-        {
-            rho    Champ_Uniforme 1 1000
-            mu     Champ_Uniforme 1 1e-3
-            lambda Champ_Uniforme 1 1
-            Cp     Champ_Uniforme 1 1
-        } */
-        liquide_eau StiffenedGas { gamma 4.4 pinf 6e8 lambda 1 mu 1 }
+        liquide_eau $fld
         Diametre_hyd_champ champ_uniforme 1 6e-3
     }
 
@@ -86,7 +77,7 @@ Read pb
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
         convection { amont }
-        diffusion  { negligeable }
+        diffusion  { }
         initial_conditions
         {
             vitesse Champ_composite 1
@@ -145,21 +136,21 @@ Read pb
             Xhaut paroi
         }
     }
-    Energie_Multiphase_enthalpie
+    $eq
     {
-        diffusion { negligeable }
+        diffusion { }
         convection { amont }
         initial_conditions
         {
-            enthalpie Champ_composite 1
+            $champ Champ_composite 1
             {
-                Champ_fonc_xyz dom 1 5429
+                Champ_fonc_xyz dom 1 $val
             }
         }
         boundary_conditions
         {
-            Zbas frontiere_ouverte_temperature_imposee Champ_front_fonc_xyz 1  5429
-            Zhaut   frontiere_ouverte T_ext Champ_front_fonc_xyz 1  5429
+            Zbas frontiere_ouverte_temperature_imposee champ_front_uniforme 1   $val
+            Zhaut   frontiere_ouverte T_ext champ_front_uniforme 1  $val
             Ybas paroi_adiabatique
             Yhaut paroi_adiabatique
             Xbas paroi_adiabatique
