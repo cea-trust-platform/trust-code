@@ -410,18 +410,12 @@ void Fluide_base::creer_e_int() const
   e_int_auto_ = 1;
 }
 
-void Fluide_base::creer_temperature_multiphase() const
+void Fluide_base::calculer_temperature_multiphase() const
 {
   const bool res_en_T = equation_.count("temperature") ? true : false;
   if (res_en_T) return; /* Do nothing */
 
   const Equation_base& eq = equation("enthalpie");
-
-  if (e_int.est_nul()) creer_e_int();
-  h_ou_T = e_int; // on initialise
-  h_ou_T->nommer("temperature");
-  h_ou_T->mettre_a_jour(eq.inconnue()->temps());
-
   const Champ_base& ch_h = eq.inconnue().valeur(), &ch_Cp = capacite_calorifique();
   Champ_Inc_base& ch_T = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
   const DoubleTab& h = ch_h.valeurs(), &Cp_ = ch_Cp.valeurs();
@@ -447,6 +441,18 @@ void Fluide_base::creer_temperature_multiphase() const
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++)
       bT(i, n) = T0_ + (( bh(i, n0 + n) - h0_) / bCp(!cCp * i, n) - 273.15);
+}
+
+void Fluide_base::creer_temperature_multiphase() const
+{
+  const bool res_en_T = equation_.count("temperature") ? true : false;
+  if (res_en_T) return; /* Do nothing */
+
+  const Equation_base& eq = equation("enthalpie");
+  if (e_int.est_nul()) creer_e_int();
+  h_ou_T = e_int; // on initialise
+  h_ou_T->nommer("temperature");
+  h_ou_T->mettre_a_jour(eq.inconnue()->temps());
 }
 
 void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
@@ -532,11 +538,13 @@ Champ_base& Fluide_base::enthalpie()
 const Champ_base& Fluide_base::temperature_multiphase() const
 {
   if (h_ou_T.est_nul()) creer_temperature_multiphase();
+  calculer_temperature_multiphase();
   return h_ou_T;
 }
 
 Champ_base& Fluide_base::temperature_multiphase()
 {
   if (h_ou_T.est_nul()) creer_temperature_multiphase();
+  calculer_temperature_multiphase();
   return h_ou_T;
 }
