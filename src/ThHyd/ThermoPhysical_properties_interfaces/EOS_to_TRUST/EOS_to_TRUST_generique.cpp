@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ int EOS_to_TRUST_generique::tppi_get_beta_pT(const SpanD P, const SpanD T, SpanD
 #endif
 }
 
-// methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
+// methodes particulieres par application pour gagner en performance : utilisees dans Pb_Multiphase (pour le moment !)
 #ifdef HAS_EOS
 int EOS_to_TRUST_generique::tppi_get_all_properties_T_(const MSpanD input , EOS_Fields& flds_out, EOS_Error_Field& ferr, int ncomp, int id) const
 {

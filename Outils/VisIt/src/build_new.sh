@@ -45,13 +45,9 @@ else
 fi
 options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
 options=$options" --python --cmake"				# VisIt installe son python (3.7) et son qt (5.14).
-if [ "x$EBROOTQT5" != "x" ]
-then
-   options=$options" --system-qt --alt-qt-dir $EBROOTQT5 " 		# module Qt5 sur orcus 
-else
-    # VisIt 3.3.3 ne s'installe pas si python>=3.8 et si qt>=5.15, on demande a visit de les installer
-    options=$options" --qt"				# VisIt installe son python (3.7) et son qt (5.14).
-fi
+# VisIt 3.3.3 ne s'installe pas si python>=3.8 et si qt>=5.15, on demande a visit de les installer
+options=$options" --qt"				# VisIt installe son python (3.7) et son qt (5.14).
+
 if [ "$build_parallel" != "" ]
 then
    #export PAR_COMPILER=$TRUST_cc
@@ -126,7 +122,3 @@ else
    rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
    exit 0
 fi
-
-#patch src/mesa-17.3.9/src/gallium/auxiliary/util/u_debug_symbol.c
-#sed -i "s/struct util_hash_table/static struct util_hash_table/" src/mesa-17.3.9/src/gallium/auxiliary/util/u_debug_symbol.c
-

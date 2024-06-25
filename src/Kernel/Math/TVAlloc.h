@@ -27,7 +27,7 @@ class TVAlloc : public Alloc
 {
   using a_t = std::allocator_traits<Alloc>;
 public:
-  // Obtain alloc<U> where U ≠ T
+  // Obtain alloc<U> where U != T
   template<typename U>
   struct rebind
   {

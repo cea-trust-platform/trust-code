@@ -398,7 +398,7 @@ option_configure=" -disable-ccache"
 # coolprop
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp_6.6.0"
 # eos
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/EOS_code/install"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/ExternalLibs/EOS/v2.0.0/install"
 # no conda, I disable trustpy too since no PyQt5
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustpy"
 # no trustpy
@@ -716,7 +716,7 @@ do
    elif [ "`basename $TRUST_CC_BASE`" = "icpx" ]
    then
       CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $5}'`
-   elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ] || [ "`basename $TRUST_CC_BASE`" = "crayCC" ]
+   elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ] || [ "`basename $TRUST_CC_BASE`" = "crayCC" ] || [ "`echo $TRUST_CC_BASE | grep spack`" != "" ]
    then
       CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $4}'`
    else

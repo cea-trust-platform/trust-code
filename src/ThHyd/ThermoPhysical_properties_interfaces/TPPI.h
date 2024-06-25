@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -379,12 +379,12 @@ protected:
   virtual int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const { return not_implemented<int>(__func__); }
 
 public:
-  // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase
+  // methodes particulieres par application pour gagner en performance : utilisees dans Pb_Multiphase
   virtual inline int tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
   virtual inline int tppi_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
   virtual inline int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
 
-  // methods particuliers par application pour gagner en performance : utilise dans F5
+  // methodes particulieres par application pour gagner en performance : utilisees dans F5
   virtual inline int tppi_get_all_prop_loi_F5(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<int>(__func__); }
   virtual inline int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
 

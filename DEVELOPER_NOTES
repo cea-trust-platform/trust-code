@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.9.4 : Changes since version 1.9.3 :
 -------------------------------------------------------------
 27/05/24 (TRUST) New feature  : New BALTIK_project_directory environment variable exported in env_BALTIK.sh

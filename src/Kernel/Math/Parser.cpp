@@ -240,14 +240,14 @@ double Parser::evalOp(PNode* node)
     case 3: // DIVIDE
       if (y==0)
         {
-          Cerr << "Error in the Parser : x/y calculated with y equals 0. You are using a formulae with a division per 0." << finl;
+          Cerr << "Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0." << finl;
           Process::exit();
         }
       return x/y;
     case 4: // POWER
       if (y != (int)(y) && x<0)
         {
-          Cerr << "Error in the Parser : x^y calculated with negative value for x and y real." << finl;
+          Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
           Process::exit();
         }
       return pow(x,y);

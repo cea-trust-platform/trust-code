@@ -120,6 +120,7 @@ do
   rm -rf $project_type_report_directory
   rm -rf $project_type_html_report
   rm -f ${project_test_directory}/lance_test_out 
+  rm -rf ${project_test_directory}/share/Validation/Rapports_automatiques/.check_of_all_validation_forms
 done
 if [ $ALL -eq 1 ]
     then

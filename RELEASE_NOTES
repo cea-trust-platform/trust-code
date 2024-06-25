@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.9.4 : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------
 17/05/24 (TRUST) Minor change : In Jupyter validation form Python API, method 'run.description()' is not available anymore. A MarkDown block should be used instead

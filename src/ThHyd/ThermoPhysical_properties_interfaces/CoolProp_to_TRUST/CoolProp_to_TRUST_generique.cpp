@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -377,7 +377,7 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_T_IF97__(const MSpanD i
 #endif
 }
 
-// methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
+// methodes particulieres par application pour gagner en performance : utilisees dans Pb_Multiphase (pour le moment !)
 int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
@@ -749,7 +749,7 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_h__(const MSpanD input,
 #endif
 }
 
-// methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
+// methodes particulieres par application pour gagner en performance : utilisees dans F5 (pour le moment !)
 int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
 {
 #ifdef HAS_COOLPROP

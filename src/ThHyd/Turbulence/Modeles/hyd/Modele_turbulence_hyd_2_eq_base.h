@@ -20,7 +20,7 @@
 
 class Equation_base;
 
-/*! @brief Classe Modele_turbulence_hyd_2_eq_base Classe de base des modeles de type RANS à deux equations
+/*! @brief Classe Modele_turbulence_hyd_2_eq_base Classe de base des modeles de type RANS a deux equations
  *
  * @sa Modele_turbulence_hyd_base
  */

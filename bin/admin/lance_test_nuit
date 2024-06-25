@@ -379,8 +379,8 @@ check_components()
                            # Debut de partie a revoir !!!!
                            WORKBETA=""
                            trustversion=""
-                           [ "$Composant" == "flica5" ] && trustversion=1.9.3
-                           [ "$Composant" == "module3D" ] && trustversion=1.9.3
+                           [ "$Composant" == "flica5" ] && trustversion=1.9.4
+                           [ "$Composant" == "module3D" ] && trustversion=1.9.4
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
                               WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -924,13 +924,13 @@ echo " "
       then
          git remote update
          git checkout .
-         git checkout Issue5484_portage194
+         git checkout Issue5698_portage195
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5484_portage194 KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5698_portage195 KO \" $TRUST_MAIL
          else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5484_portage194 OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5698_portage195 OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
@@ -1672,18 +1672,35 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ####################
 echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES | head -n -1 >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/DEVELOPER_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+if [ -f $TRUST_ROOT/RELEASE_NOTES ]
+then
+   echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+   echo "-------------------------------------- TRUST RELEASE NOTES ---------------------------------------" >> $MESSAGES_NUIT
+   $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES | head -n -1 >> $MESSAGES_NUIT
+   echo "" >> $MESSAGES_NUIT
+fi
+if [ -f $TRUST_ROOT/DEVELOPER_NOTES ]
+then
+   echo "---------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+   echo "-------------------------------------- TRUST DEVELOPER NOTES --------------------------------------" >> $MESSAGES_NUIT
+   $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+   echo "" >> $MESSAGES_NUIT
+fi
+if [ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ]
+then
+   echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+   echo "--------------------------------- EXTERNALPACKAGES RELEASE NOTES ---------------------------------" >> $MESSAGES_NUIT
+   $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+   echo "" >> $MESSAGES_NUIT
+fi
 Composant="triocfd"
-#for Composant in $ComposantsGit
-#do
-  [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-  [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
-#done
+if [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ]
+then
+   echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+   echo "-------------------------------------- TrioCFD RELEASE NOTES -------------------------------------" >> $MESSAGES_NUIT
+   $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+   echo "" >> $MESSAGES_NUIT
+fi
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST WEB site:    https://cea-trust-platform.github.io" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD WEB site:    https://triocfd.cea.fr" >> $MESSAGES_NUIT
@@ -3047,7 +3064,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=77.34 #77.87 v1.9.3 #78.47 v1.9.2 #80.02 v1.9.1 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=77.35 #77.35 v1.9.4 #77.87 v1.9.3 #78.47 v1.9.2 #80.02 v1.9.1 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
