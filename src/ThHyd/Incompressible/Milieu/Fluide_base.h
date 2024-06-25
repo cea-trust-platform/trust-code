@@ -85,6 +85,7 @@ public :
 protected :
   void creer_e_int() const; // creation sur demande de e_int / h
   void creer_temperature_multiphase() const; // seulement si Energie_Multiphase_Enthalpie
+  void calculer_temperature_multiphase() const; // seulement si Energie_Multiphase_Enthalpie
 
   mutable int e_int_auto_ = 0; //1 si on a cree e_int
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv); // fonction de calcul par defaut
