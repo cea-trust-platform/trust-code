@@ -155,23 +155,23 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
 }
 
 
-static inline double maximum(const double x,
-                             const double y)
+static KOKKOS_INLINE_FUNCTION double maximum(const double x,
+                                             const double y)
 {
   if(x<y)
     return y;
   return x;
 }
 
-static inline double maximum(const double x,
-                             const double y,
-                             const double z)
+static KOKKOS_INLINE_FUNCTION double maximum(const double x,
+                                             const double y,
+                                             const double z)
 {
   return maximum(maximum(x,y),z);
 }
 
-static inline double minimum(const double x,
-                             const double y)
+static KOKKOS_INLINE_FUNCTION double minimum(const double x,
+                                             const double y)
 {
   if(x>y)
     return y;
@@ -198,7 +198,7 @@ static inline double Dij(int elem,
   return maximum(-kij,-kji,0);
 }
 
-static inline double limiteur(double r)
+static KOKKOS_INLINE_FUNCTION double limiteur(double r)
 {
   if(r<=0) return 0.;
   return maximum(minimum(2,r),minimum(1,2*r));//SuperBee

@@ -69,6 +69,7 @@ double Dirichlet::val_imp_au_temps(double temps, int i) const
  *
  * @param temps The time at which the update is performed.
  */
+/*
 void Dirichlet::mettre_a_jour(double temps)
 {
   // ToDo Kokkos: not used
@@ -82,7 +83,7 @@ void Dirichlet::mettre_a_jour(double temps)
     for (int comp=0; comp<nb_comp; comp++)
       tab_(face, comp) = val_imp(face, comp);
   tab_view_ = tab_.view_ro();
-}
+}*/
 
 /*! @brief Renvoie la valeur imposee sur la (i,j)-eme composante du champ a la frontiere au temps precise.
  *

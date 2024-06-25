@@ -18,6 +18,7 @@
 
 #include <kokkos++.h>
 
+#ifdef KOKKOS
 // The DualView type allowing semi-automatic sync between host and device.
 // By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
 // We keep Kokkos::LayoutRight for OpenMP now
@@ -93,5 +94,26 @@ using CDoubleTabView3 = ConstViewTab3<double>;
 using CDoubleTabView4 = ConstViewTab4<double>;
 
 extern void kokkos_self_test();
+#else
+
+using IntArrView = IntVect;
+using DoubleArrView = DoubleVect;
+
+using CIntArrView = const IntVect;
+using CDoubleArrView = const DoubleVect;
+
+using IntTabView = IntTab;
+using DoubleTabView = DoubleTab;
+using DoubleTabView3 = DoubleTab;
+using DoubleTabView4 = DoubleTab;
+
+using CIntTabView = IntTab& ;
+using CIntTabView3 = IntTab& ;
+using CDoubleTabView = const DoubleTab& ;
+using CDoubleTabView3 = const DoubleTab;
+using CDoubleTabView4 = const DoubleTab;
+
+#define KOKKOS_INLINE_FUNCTION inline
+#endif
 
 #endif

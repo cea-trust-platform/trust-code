@@ -22,6 +22,7 @@
 #include <Domaine_VEF.h>
 #include <Synonyme_info.h>
 
+
 extern double calculer_coef_som(True_int elem, True_int dimension, True_int& nb_face_diri, True_int* indice_diri);
 
 Implemente_instanciable(Terme_Boussinesq_VEFPreP1B_Face,"Boussinesq_VEFPreP1B_P1NC",Terme_Boussinesq_VEF_Face);
@@ -174,8 +175,8 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
   beta().valeur().valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_beta);
 
   // Extension possible des volumes de controle:
-  int modif_traitement_diri=( sub_type(Domaine_VEF,domaine_VEF) ? ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet() : 0);
-  modif_traitement_diri = 0; // Forcee a 0 car ne marche pas d'apres essais Ulrich&Thomas
+  //int modif_traitement_diri=( sub_type(Domaine_VEF,domaine_VEF) ? ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet() : 0);
+  //modif_traitement_diri = 0; // Forcee a 0 car ne marche pas d'apres essais Ulrich&Thomas
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
 
@@ -195,14 +196,15 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
-    True_int nb_face_diri = 0;
-    True_int indice_diri[4];
-    if (modif_traitement_diri)
-      {
-        True_int rang_elem = (True_int) rang_elem_non_std(elem);
-        True_int type_elem = rang_elem < 0 ? 0 : (True_int) type_elem_Cl(rang_elem);
-        calculer_coef_som(type_elem, dim, nb_face_diri, indice_diri);
-      }
+    /*
+        True_int nb_face_diri = 0;
+        True_int indice_diri[4];
+        if (modif_traitement_diri)
+          {
+            True_int rang_elem = (True_int) rang_elem_non_std(elem);
+            True_int type_elem = rang_elem < 0 ? 0 : (True_int) type_elem_Cl(rang_elem);
+            calculer_coef_som(type_elem, dim, nb_face_diri, indice_diri);
+          } */
 
     double volume=volumes(elem);
 
@@ -224,25 +226,26 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
                 for (int comp=0; comp<nb_comp; comp++)
                   contrib+=Poids*volume*(Scalaire0(comp)-valeurs_scalaire(point,comp))*valeurs_beta(point,comp)*g(d)*valeurs_Psi[pt];
                 Kokkos::atomic_add(&resu(num_face,d), contrib);
-
-                if (modif_traitement_diri)
-                  {
-                    for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
-                      {
-                        int indice=indice_diri[fdiri];
-                        int facel = elem_faces(elem,indice);
-                        if (num_face==facel)
-                          {
-                            Kokkos::atomic_sub(&resu(facel,d), contrib);
-                            double contrib2=contrib/(dim+1-nb_face_diri);
-                            for (int f2=0; f2<dim+1; f2++)
-                              {
-                                int face2=elem_faces(elem,f2);
-                                Kokkos::atomic_add(&resu(face2,d), contrib2);
-                              }
-                          }
-                      }
-                  }
+                /*
+                                if (modif_traitement_diri)
+                                  {
+                                    for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
+                                      {
+                                        int indice=indice_diri[fdiri];
+                                        int facel = elem_faces(elem,indice);
+                                        if (num_face==facel)
+                                          {
+                                            Kokkos::atomic_sub(&resu(facel,d), contrib);
+                                            double contrib2=contrib/(dim+1-nb_face_diri);
+                                            for (int f2=0; f2<dim+1; f2++)
+                                              {
+                                                int face2=elem_faces(elem,f2);
+                                                Kokkos::atomic_add(&resu(face2,d), contrib2);
+                                              }
+                                          }
+                                      }
+                                  }
+                */
               }
           }
       }

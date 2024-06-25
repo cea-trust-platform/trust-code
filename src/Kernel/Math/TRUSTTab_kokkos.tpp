@@ -17,7 +17,7 @@
 #define TRUSTTab_kokkos_TPP_included
 
 #include <TRUSTTab.h>
-
+#ifdef KOKKOS
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// 2D
@@ -416,7 +416,6 @@ inline void TRUSTTab<_TYPE_>::modified_on_host4() const
 template<typename _TYPE_>
 void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, int max_size=-1)
 {
-#ifndef LATATOOLS
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
   int size = max_size;
@@ -437,7 +436,6 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_>& tab, in
       for (True_int j=0; j<nb_compo; j++)
         printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
     }
-#endif
 }
-
+#endif
 #endif

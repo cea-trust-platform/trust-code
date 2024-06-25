@@ -26,8 +26,13 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
+#if defined(NO_HIP) || defined(LATATOOLS)
+#undef KOKKOS
+#else
+#define KOKKOS
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
+#endif
 
 #pragma GCC diagnostic pop
 #ifdef __NVCOMPILER

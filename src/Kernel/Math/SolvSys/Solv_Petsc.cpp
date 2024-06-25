@@ -2723,16 +2723,16 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
       else
 #endif
 #ifdef PETSC_HAVE_HIP
-      if (gpu_)
-        MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
-      else
-#endif
-#ifdef PETSC_HAVE_HIP
         if (gpu_)
           MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
         else
 #endif
-          MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
+#ifdef PETSC_HAVE_HIP
+          if (gpu_)
+            MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
+          else
+#endif
+            MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusparse to aijviennacl via CLI

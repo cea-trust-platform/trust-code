@@ -17,7 +17,7 @@
 #define TRUSTArr_kokkos_TPP_included
 
 #include <TRUSTArray.h>
-
+#ifdef KOKKOS
 // Create internal DualView member, and populate it with current host data
 template<typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::init_view_arr() const
@@ -129,7 +129,6 @@ inline void TRUSTArray<_TYPE_>::modified_on_host() const
 template<typename _TYPE_>
 void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, int max_size=-1)
 {
-#ifndef LATATOOLS
   assert(view_tab.data()==addrOnDevice(tab)); // Verifie meme adress
   Cout << "View size=" << view_tab.size() << finl;
   int size = max_size;
@@ -144,7 +143,7 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_>& tab, 
   #pragma omp target teams distribute parallel for
   for (int i=0; i<size; i++)
     printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
-#endif
 }
-
 #endif
+#endif
+

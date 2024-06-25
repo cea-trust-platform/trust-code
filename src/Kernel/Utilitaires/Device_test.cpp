@@ -16,6 +16,7 @@
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
 #include <Device.h>
+#include <omp.h>
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
@@ -28,7 +29,7 @@ void self_test()
     return;
   else
     self_tested_ = true;
-#ifdef _OPENMP  
+#ifdef _OPENMP
   // Verification que omp_target_is_present fonctionne bien (important)
   {
     DoubleTab a(10);

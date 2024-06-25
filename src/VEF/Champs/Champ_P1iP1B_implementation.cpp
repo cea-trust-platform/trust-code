@@ -100,6 +100,10 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
 
   if (nb_compo_ == 1)
     {
+      // HIP Kokkos prevent from the function calls inside the Kokkos region:
+      // Error: error: reference to __host__ function 'get_alphaE' in __host__ __device__ function
+      bool alphaE = zvef.get_alphaE();
+      bool alphaS = zvef.get_alphaS();
       CDoubleArrView champ_filtre_v = static_cast<DoubleVect&>(champ_filtre_).view_ro();
       CIntTabView sommet_poly_v = sommet_poly.view_ro();
       CDoubleTabView coord_v = coord.view_ro();
@@ -118,10 +122,10 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
         if (le_poly != -1)
           {
             // Contribution P0
-            if (zvef.get_alphaE())
+            if (alphaE)
               val_v(rang_poly, 0) += champ_filtre_v(le_poly);
             // Contribution P1
-            if (zvef.get_alphaS())
+            if (alphaS)
               {
                 double xs = positions_v(rang_poly,0);
                 double ys = positions_v(rang_poly,1);

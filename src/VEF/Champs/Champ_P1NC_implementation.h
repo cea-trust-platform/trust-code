@@ -80,6 +80,7 @@ public:
   DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const override;
   // Retourne la valeur de la composante ncomp du champ au sommet num_som sur l'element le_poly
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
+  KOKKOS_INLINE_FUNCTION
   double valeur_a_sommet_compo(int num_som, int num_elem, int ncomp, CIntTabView elem_faces, CIntTabView sommet_elem, CDoubleTabView ch) const;
 
   DoubleTab& valeur_aux_elems_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs);

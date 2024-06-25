@@ -266,6 +266,7 @@ inline double& Matrice_Morse::operator()(int i, int j)
 }
 
 // Kokkos: First (and quick) implementation of a Matrix view. Future: Kokkos kernels ?
+#ifdef KOKKOS
 struct Matrice_Morse_View
 {
   CIntArrView tab1_v;
@@ -285,7 +286,13 @@ struct Matrice_Morse_View
   KOKKOS_INLINE_FUNCTION
   double& operator()(int i, int j) const
   {
-    if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
+    if ((symetrique_==1) && ((j-i)<0))
+      {
+        // std::swap(i,j) refused by HIP:  reference to __host__ function 'swap<int>' in __host__ __device__ function
+        int k = j;
+        j = i;
+        i = k;
+      }
     int k1=tab1_v(i)-1;
     int k2=tab1_v(i+1)-1;
     // ToDo Kokkos for faster access:
@@ -309,6 +316,6 @@ struct Matrice_Morse_View
     return zero_;
   }
 };
-
+#endif
 #endif
 

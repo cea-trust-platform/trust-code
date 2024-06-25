@@ -1742,7 +1742,7 @@ double Champ_P1NC_implementation::valeur_a_sommet_compo(int num_som, int num_ele
   double val=0;
   if (num_elem != -1)
     {
-      int nb_som = sommet_elem.extent(1);
+      int nb_som = (int)sommet_elem.extent(1);
       for (int i=0; i<nb_som; i++)
         {
           int face = elem_faces(num_elem,i);

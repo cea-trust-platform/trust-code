@@ -49,9 +49,9 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
            # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET
-           #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON -DCMAKE_CXX_STANDARD=17"
            #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
-           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON -DCMAKE_CXX_STANDARD=17"
+           #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
         fi
         # On ne construit les examples que la ou cela marche...

@@ -25,10 +25,7 @@
 #include <vector>
 
 #include <Device.h>
-
-#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <View_Types.h>  // Kokkos stuff
-#endif
 
 /*! @brief Represents a an array of int/int64/double/... values.
  *
@@ -221,7 +218,7 @@ public:
   inline virtual const Span_ get_span() const { return span_; }
   inline virtual const Span_ get_span_tot() const { return span_; }
 
-#ifndef LATATOOLS   // Lata tools without Kokkos
+#ifdef KOKKOS
   // Kokkos accessors
   inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
   inline ViewArr<_TYPE_> view_wo();             // Write-only
@@ -241,7 +238,7 @@ protected:
   inline void init_view_arr() const;
 
 
-#ifndef LATATOOLS  // Lata tools without Kokkos
+#ifdef KOKKOS
   mutable DualViewArr<_TYPE_> dual_view_arr_;
 #endif
 
@@ -288,10 +285,7 @@ using ArrOfInt = TRUSTArray<int>;
  * ******************************* */
 
 #include <TRUSTArray_device.tpp> // OMP stuff
-
-#ifndef LATATOOLS
 #include <TRUSTArray_kokkos.tpp> // Kokkos stuff
-#endif
 
 #include <TRUSTArray.tpp> // The rest here!
 

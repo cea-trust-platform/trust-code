@@ -20,9 +20,7 @@
 #include <TRUSTVect.h>
 #include <math.h>
 
-#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <View_Types.h>  // Kokkos stuff
-#endif
 
 /*! @brief : Tableau a n entrees pour n<= 4.
  *
@@ -258,7 +256,7 @@ public:
   inline void resize_tab(int n, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) override;
 
 public:
-#ifndef LATATOOLS
+#ifdef KOKKOS
   // Kokkos view accessors:
   inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
   inline ViewTab<_TYPE_> view_wo();             // Write-only
@@ -296,7 +294,7 @@ private:
   // Les dimensions dimension_tot(i>=1) sont implicitement egales a dimension(i)
   int dimension_tot_0_;
 
-#ifndef LATATOOLS
+#ifdef KOKKOS
   // Kokkos members
 protected:
 
@@ -345,10 +343,7 @@ using IntTab = TRUSTTab<int>;
  * FONCTIONS MEMBRES DE TRUSTTab *
  * ***************************** */
 
-#ifndef LATATOOLS  // Lata tools without Kokkos
 #include <TRUSTTab_kokkos.tpp> // Kokkos stuff
-#endif
-
 #include <TRUSTTab.tpp> // The rest here!
 
 #endif /* TRUSTTab_included */
