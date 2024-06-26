@@ -149,8 +149,8 @@ Read pb
         }
         boundary_conditions
         {
-            Zbas frontiere_ouverte_temperature_imposee champ_front_uniforme 1   $val
-            Zhaut   frontiere_ouverte T_ext champ_front_uniforme 1  $val
+            Zbas $cl champ_front_uniforme 1 $val
+            Zhaut frontiere_ouverte $t_h_ext champ_front_uniforme 1  $val
             Ybas paroi_adiabatique
             Yhaut paroi_adiabatique
             Xbas paroi_adiabatique
@@ -167,7 +167,6 @@ Read pb
     Post_processing
     {
         Format cgns
-
         Sondes
         {
             sonde_P grav pression periode 100. segment 50 0.7 0.7 0. 0.7 0.7 4.2
