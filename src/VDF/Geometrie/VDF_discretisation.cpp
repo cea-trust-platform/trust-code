@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -447,7 +447,7 @@ void VDF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
   const Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z.valeur());
   const Domaine_Cl_VDF& domaine_cl_vdf=ref_cast(Domaine_Cl_VDF, zcl.valeur());
-  if (domaine_cl_vdf.equation().probleme().que_suis_je() == "Pb_Multiphase")
+  if (domaine_cl_vdf.equation().probleme().que_suis_je().debute_par("Pb_Multiphase"))
     {
       Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
       Noms noms(1), unites(1);

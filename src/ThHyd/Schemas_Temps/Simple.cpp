@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -355,7 +355,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
 
-  if(ok && (eqn.discretisation().is_polymac_family() || eqn.probleme().que_suis_je() == "Pb_Multiphase")) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  if(ok && (eqn.discretisation().is_polymac_family() || eqn.probleme().que_suis_je().debute_par("Pb_Multiphase"))) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
   solveur->reinit();
   return (ok && converge==1);
 }
