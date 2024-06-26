@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s)
                   };
 
   Motcle motlu;
-  Motcles les_motcles(15);
+  Motcles les_motcles(16);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -63,6 +63,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s)
     les_motcles[12] = "k_WIT_ext";
     les_motcles[13] = "a_i_ext";
     les_motcles[14] = "K_Omega_ext";
+    les_motcles[15] = "H_ext"; // enthalpie
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
