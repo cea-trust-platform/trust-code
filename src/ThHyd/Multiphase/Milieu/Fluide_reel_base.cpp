@@ -334,7 +334,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
       val_temp(i,n) = T_REF_[i] + (( enth(i,n) - h_ref_ ) / Cp_[i] - 273.15);
       val_e(i) = enth(i);
       dh_T(i) = 1. / Cp_[i]; /* la seule derivee en incompressible */
-      dh_e(i) = 1.; // dh_T(i);
+      dh_e(i) = 1.;
     }
 
   for (int i = 0; i < Nb; i++) /* bord */
