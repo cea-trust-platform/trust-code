@@ -131,6 +131,4 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
                   }
               }
       }
-  if (!is_m && equation().schema_temps().temps_courant() > 0.68)
-    e++;
 }
