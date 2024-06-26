@@ -541,7 +541,7 @@ void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
     {
-      DoubleTab& tabalpha = alpha.valeurs(), tab_lambda_sur_cp = alpha_fois_rho.valeurs();
+      DoubleTab& tabalpha = alpha.valeurs(), &tab_lambda_sur_cp = alpha_fois_rho.valeurs();
 
       tabalpha = lambda.valeurs();
       tab_lambda_sur_cp = lambda.valeurs();
