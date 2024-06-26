@@ -498,7 +498,7 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
 
 void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  if (discretisation().is_polymac_family() || probleme().que_suis_je() == "Pb_Multiphase")
+  if (discretisation().is_polymac_family() || probleme().que_suis_je().debute_par("Pb_Multiphase"))
     {
       Equation_base::assembler_blocs(matrices, secmem, semi_impl);
       return;

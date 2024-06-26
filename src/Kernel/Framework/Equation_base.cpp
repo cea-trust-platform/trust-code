@@ -1962,7 +1962,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
-  if (!(discretisation().is_polymac_family() || probleme().que_suis_je() == "Pb_Multiphase"))
+  if (!(discretisation().is_polymac_family() || probleme().que_suis_je().debute_par("Pb_Multiphase")))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
