@@ -34,11 +34,12 @@
 class SETS : public Simpler
 {
 
-  Declare_instanciable_sans_constructeur(SETS);
+  Declare_instanciable_sans_constructeur_ni_destructeur(SETS);
 
 public :
 
   SETS();
+  ~SETS();
   Entree& lire(const Motcle&, Entree&) override; /* mot-cle "criteres_convergence" */
   int nb_valeurs_temporelles_pression() const override /* nombres de valeurs temporelles du champ de pression */
   {
@@ -124,6 +125,11 @@ protected :
 
   /* matrice en pression */
   Matrice_Morse matrice_pression;
+
+  /* Newton out file */
+  SFichier newton_evol_;
+  bool header_written_ = false;
+  std::vector<double> incr_var_convergence_;
 };
 
 /*! @brief classe ICE (semi-implicte ICE, a la CATHARE 3D)
