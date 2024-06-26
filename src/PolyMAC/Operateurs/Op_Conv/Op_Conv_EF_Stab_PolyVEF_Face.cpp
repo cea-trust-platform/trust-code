@@ -188,7 +188,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
-  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces();
+  const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& vit = ch.passe(), &nf = dom.face_normales();
   const DoubleVect& pf = porosite_f;
 
@@ -219,6 +219,20 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
       /* produit par pf * fvf */
       for (n = 0; n < N; n++)
         F_f(f, n) *= pf(f) * fvf(n);
+      /* faces de bord: contrib a la convection (avec masse ajoutee) si Neumann */
+      if (fcl(f, 0) == 1)
+        {
+          for (masse = 0, e = f_e(f, 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+          if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++)
+              for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
+                if (F_f(f, m) < 0)
+                  {
+                    secmem(f, N * d + n) += (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m) * inco(f, N * d + m);
+                    if (mat) (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) -= (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_f(f, m);
+                  }
+        }
     }
   F_f.echange_espace_virtuel();
 
