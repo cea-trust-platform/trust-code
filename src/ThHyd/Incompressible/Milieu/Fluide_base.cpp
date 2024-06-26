@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Fluide_Incompressible.h>
 #include <Discretisation_base.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Schema_Temps_base.h>
@@ -428,7 +429,7 @@ void Fluide_base::calculer_temperature_multiphase() const
   // T = T0 + (h - h0) / cp
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++)
-      T(i, n) = T0_ + (( h(i, n0 + n) - h0_) / Cp_(!cCp * i, n) - 273.15);
+      T(i, n) = T0_ + (( h(i, n0 + n) - h0_) / Cp_(!cCp * i, n));
 
   if (ch_Cp.a_un_domaine_dis_base())
     bCp = ch_Cp.valeur_aux_bords();
@@ -440,7 +441,7 @@ void Fluide_base::calculer_temperature_multiphase() const
 
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++)
-      bT(i, n) = T0_ + (( bh(i, n0 + n) - h0_) / bCp(!cCp * i, n) - 273.15);
+      bT(i, n) = T0_ + (( bh(i, n0 + n) - h0_) / bCp(!cCp * i, n));
 }
 
 void Fluide_base::creer_temperature_multiphase() const
@@ -507,7 +508,7 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
       DoubleTab& der_T = deriv["enthalpie"];
       for (der_T.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++)
-          der_T(i, n) = 1. / Cp(!cCp * i, n);
+          der_T(i, n) = 1.;
     }
 }
 
@@ -537,14 +538,22 @@ Champ_base& Fluide_base::enthalpie()
 
 const Champ_base& Fluide_base::temperature_multiphase() const
 {
-  if (h_ou_T.est_nul()) creer_temperature_multiphase();
-  calculer_temperature_multiphase();
+  if (h_ou_T.est_nul())
+    creer_temperature_multiphase();
+
+  if (sub_type(Fluide_Incompressible, *this))
+    calculer_temperature_multiphase(); /* sinon rempli dans Fluide_reel_base */
+
   return h_ou_T;
 }
 
 Champ_base& Fluide_base::temperature_multiphase()
 {
-  if (h_ou_T.est_nul()) creer_temperature_multiphase();
-  calculer_temperature_multiphase();
+  if (h_ou_T.est_nul())
+    creer_temperature_multiphase();
+
+  if (sub_type(Fluide_Incompressible, *this))
+    calculer_temperature_multiphase(); /* sinon rempli dans Fluide_reel_base */
+
   return h_ou_T;
 }
