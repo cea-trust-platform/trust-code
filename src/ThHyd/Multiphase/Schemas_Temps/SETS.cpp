@@ -45,7 +45,7 @@ template class std::map<std::string, matrices_t>;
 template class std::map<std::string, Matrice_Morse>;
 #endif
 
-Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
+Implemente_instanciable_sans_constructeur_ni_destructeur(SETS, "SETS", Simpler);
 // XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, A stability-enhancing two-step method for fluid flow calculations, Journal of Computational Physics, 46, 3, 329 (1982).
 // XD attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
 // XD attr iter_min entier iter_min 1 Number of minimum iterations
@@ -65,6 +65,14 @@ Implemente_instanciable_sans_constructeur(ICE, "ICE", SETS);
 // XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
 SETS::SETS() { sets_ = 1; }
+SETS::~SETS()
+{
+  if (je_suis_maitre() && newton_evol_.is_open())
+    {
+      newton_evol_ << finl;
+      newton_evol_.close();
+    }
+}
 
 ICE::ICE() { sets_ = 0; }
 
@@ -75,6 +83,19 @@ Entree& SETS::readOn(Entree& is )
   /* valeurs par defaut des criteres de convergence */
   crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "enthalpie", 1e4 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e2} };
   Simpler::readOn(is);
+
+  if (je_suis_maitre())
+    {
+      Nom fichier(nom_du_cas() + ".newton_evol");
+      if (!newton_evol_.is_open())
+        {
+          newton_evol_.ouvrir(fichier, ios::out);
+          newton_evol_.setf(ios::scientific);
+          newton_evol_ << "# File showing the simulation time, time step, Newton iterations, status and convergence of the increments." << finl;
+          newton_evol_ << "# Time \t Time_step \t Newton \t Status \t ";
+        }
+    }
+
   return is;
 }
 
@@ -104,16 +125,14 @@ Entree& SETS::lire(const Motcle& mot, Entree& is)
   return is;
 }
 
-
-Sortie& ICE::printOn(Sortie& os ) const
+Sortie& ICE::printOn(Sortie& os) const
 {
   return SETS::printOn(os);
 }
 
-Entree& ICE::readOn(Entree& is )
+Entree& ICE::readOn(Entree& is)
 {
-  SETS::readOn(is);
-  return is;
+  return SETS::readOn(is);
 }
 
 static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr, double& err_a_sum)
@@ -378,7 +397,13 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (!Process::me())
     {
       tp.AddColumn("it", 5);
-      for (auto &&n_i : inco) tp.AddColumn(n_i.first, std::max(12, (True_int) n_i.first.length()));
+      for (auto &&n_i : inco)
+        {
+          tp.AddColumn(n_i.first, std::max(12, (True_int) n_i.first.length()));
+          if (!header_written_)
+            newton_evol_ << n_i.first << "\t ";
+        }
+      header_written_ = true;
       tp.PrintHeader();
     }
 
@@ -451,10 +476,15 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
 
       if (!Process::me()) tp << it + 1;
+      incr_var_convergence_.clear(); // clear if new time-step or Newton incr !
       for (auto &&n_v : incr)
         {
           double vm = mp_min_vect(*n_v.second), vM = mp_max_vect(*n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
-          if (!Process::me()) tp << x;
+          if (!Process::me())
+            {
+              tp << x;
+              incr_var_convergence_.push_back(x);
+            }
         }
 
       /* convergence? */
@@ -469,7 +499,22 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
-  if (!Process::me()) tp.PrintFooter();
+  if (!Process::me())
+    {
+      tp.PrintFooter();
+      newton_evol_ << finl << t << "\t " << eqn.schema_temps().pas_de_temps() << "\t " << it << "\t ";
+
+      /* status ! */
+      if (!cv)
+        newton_evol_ << "*KO*\t ";
+      else
+        newton_evol_ << "OK\t ";
+
+      for (auto& itr : incr_var_convergence_)
+        newton_evol_ << itr << "\t ";
+    }
+
+
   //ha ha ha
   if (ok && cv)
     {
