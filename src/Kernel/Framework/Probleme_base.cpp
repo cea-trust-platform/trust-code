@@ -21,6 +21,7 @@
 #include <LecFicDiffuseBin.h>
 #include <communications.h>
 #include <Probleme_base.h>
+#include <Synonyme_info.h>
 #include <Postraitement.h>
 #include <stat_counters.h>
 #include <FichierHDFPar.h>
@@ -665,21 +666,24 @@ Milieu_base& Probleme_base::milieu()
  */
 const Equation_base& Probleme_base::equation(const Nom& type) const
 {
-  Motcle Type(type);
-  Motcle Type_eqn;
-  for(int i=0; i<nombre_d_equations(); i++)
+  Motcle Type(type), Type_eqn;
+  for (int i = 0; i < nombre_d_equations(); i++)
     {
       Type_eqn = equation(i).que_suis_je();
-      if(Type_eqn==Type)
+      if (Type_eqn == Type)
         return equation(i);
+
+      // on teste si synonyme ...
+      const Synonyme_info *syn_info = Synonyme_info::synonyme_info_from_name(type);
+      if (syn_info != 0)
+        if (Motcle(syn_info->org_name_()) == Type_eqn)
+          return equation(i);
     }
   Cerr << que_suis_je() << " does not contain any equation/medium of type: " << type << finl;
   Cerr << "Here is the list of possible equations for a " << que_suis_je() << " problem: " << finl;
-  for(int i=0; i<nombre_d_equations(); i++)
-    {
-      Cerr << "\t- " << equation(i).que_suis_je() << finl;
-    }
-  exit();
+  for (int i = 0; i < nombre_d_equations(); i++)
+    Cerr << "\t- " << equation(i).que_suis_je() << finl;
+  Process::exit();
   // Pour les compilos;
   return equation(0);
 }
@@ -721,21 +725,24 @@ Equation_base& Probleme_base::getset_equation_by_name(const Nom& un_nom)
  */
 Equation_base& Probleme_base::equation(const Nom& type)
 {
-  Motcle Type(type);
-  Motcle Type_eqn;
-  for(int i=0; i<nombre_d_equations(); i++)
+  Motcle Type(type), Type_eqn;
+  for (int i = 0; i < nombre_d_equations(); i++)
     {
       Type_eqn = equation(i).que_suis_je();
-      if(Type_eqn==Type)
+      if (Type_eqn == Type)
         return equation(i);
+
+      // on teste si synonyme ...
+      const Synonyme_info *syn_info = Synonyme_info::synonyme_info_from_name(type);
+      if (syn_info != 0)
+        if (Motcle(syn_info->org_name_()) == Type_eqn)
+          return equation(i);
     }
   Cerr << que_suis_je() << " does not contain any equation/medium of type: " << type << finl;
   Cerr << "Here is the list of possible equations for a " << que_suis_je() << " problem: " << finl;
-  for(int i=0; i<nombre_d_equations(); i++)
-    {
-      Cerr << "\t- " << equation(i).que_suis_je() << finl;
-    }
-  exit();
+  for (int i = 0; i < nombre_d_equations(); i++)
+    Cerr << "\t- " << equation(i).que_suis_je() << finl;
+  Process::exit();
   // Pour les compilos;
   return equation(0);
 }
