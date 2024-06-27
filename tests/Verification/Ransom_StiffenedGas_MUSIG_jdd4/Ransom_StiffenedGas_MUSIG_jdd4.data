@@ -153,7 +153,7 @@ Read pb
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.11 # Liquide 4 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.13 # Liquide 5 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.15 # Liquide 6 #
-                nbPhases 1 Champ_Fonc_xyz dom 1 0.17 # Liquide 7 #
+                nbPhases 1 Champ_Fonc_xyz dom 1 0.18 # Liquide 7 #
             }
         }
         convection { amont }
@@ -174,7 +174,7 @@ Read pb
                 nbPhases 1 Champ_Front_Uniforme 1 0.11 # Liquide 4 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.13 # Liquide 5 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.15 # Liquide 6 #
-                nbPhases 1 Champ_Front_Uniforme 1 0.17 # Liquide 7 #
+                nbPhases 1 Champ_Front_Uniforme 1 0.18 # Liquide 7 #
             }
             Outlet frontiere_ouverte a_ext Champ_Front_MUSIG {
                 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Gaz 0 #
@@ -188,7 +188,7 @@ Read pb
                 nbPhases 1 Champ_Front_Uniforme 1 0.11 # Liquide 4 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.13 # Liquide 5 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.15 # Liquide 6 #
-                nbPhases 1 Champ_Front_Uniforme 1 0.17 # Liquide 7 #
+                nbPhases 1 Champ_Front_Uniforme 1 0.18 # Liquide 7 #
             }
         }
     }
