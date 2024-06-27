@@ -1,7 +1,7 @@
 # PARALLEL OK 4 #
 
 dimension 3
-$pb pb
+pb_multiphase_h pb
 Domaine dom
 
 # BEGIN MESH #
@@ -22,7 +22,7 @@ Mailler dom
         bord Yhaut Y = 1.4  0. <= X <= 1.4   0. <= Z <= 4.2
     }
 }
-$poly
+polyedriser dom
 # END MESH #
 
 # BEGIN PARTITION
@@ -41,7 +41,7 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-$dis dis
+Polymac_P0 dis
 
 option_vdf { all_options }
 
@@ -49,6 +49,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     seuil_statio -1
     residuals { relative 2 }
     tmax 20
@@ -68,7 +69,7 @@ Read pb
 {
     Milieu_composite
     {
-        liquide_eau $fld
+        liquide_eau Fluide_Incompressible { rho Champ_Uniforme 1 1000 mu Champ_Uniforme 1 1e-3 lambda Champ_Uniforme 1 0.1 Cp Champ_Uniforme 1 1000.0 }
         Diametre_hyd_champ champ_uniforme 1 6e-3
     }
 
@@ -138,21 +139,21 @@ Read pb
             Xhaut paroi
         }
     }
-    $eq
+    energie_multiphase_h
     {
         diffusion { }
         convection { amont }
         initial_conditions
         {
-            $champ Champ_composite 1
+            enthalpie Champ_composite 1
             {
-                Champ_fonc_xyz dom 1 $val
+                Champ_fonc_xyz dom 1 231443.25100000002
             }
         }
         boundary_conditions
         {
-            Zbas $cl champ_front_uniforme 1 $val
-            Zhaut frontiere_ouverte $t_h_ext champ_front_uniforme 1  $val
+            Zbas frontiere_ouverte_enthalpie_imposee champ_front_uniforme 1 231443.25100000002
+            Zhaut frontiere_ouverte H_ext champ_front_uniforme 1  231443.25100000002
             Ybas paroi_adiabatique
             Yhaut paroi_adiabatique
             Xbas paroi_adiabatique
@@ -168,7 +169,7 @@ Read pb
     }
     Post_processing
     {
-        Format cgns
+        Format lml
         Sondes
         {
             sonde_P grav pression periode 100. segment 50 0.7 0.7 0. 0.7 0.7 4.2
