@@ -145,7 +145,7 @@ Read pb
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.03 # Gaz 0 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.04 # Gaz 1 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.05 # Gaz 2 #
-                nbPhases 1 Champ_Fonc_xyz dom 1 0.07 # Gaz 3 #
+                nbPhases 1 Champ_Fonc_xyz dom 1 0.08 # Gaz 3 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.03 # Liquide 0 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.05 # Liquide 1 #
                 nbPhases 1 Champ_Fonc_xyz dom 1 0.07 # Liquide 2 #
@@ -166,7 +166,7 @@ Read pb
                 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Gaz 0 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.04 # Gaz 1 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Gaz 2 #
-                nbPhases 1 Champ_Front_Uniforme 1 0.07 # Gaz 3 #
+                nbPhases 1 Champ_Front_Uniforme 1 0.08 # Gaz 3 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Liquide 0 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Liquide 1 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Liquide 2 #
@@ -180,7 +180,7 @@ Read pb
                 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Gaz 0 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.04 # Gaz 1 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Gaz 2 #
-                nbPhases 1 Champ_Front_Uniforme 1 0.07 # Gaz 3 #
+                nbPhases 1 Champ_Front_Uniforme 1 0.08 # Gaz 3 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Liquide 0 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Liquide 1 #
                 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Liquide 2 #
