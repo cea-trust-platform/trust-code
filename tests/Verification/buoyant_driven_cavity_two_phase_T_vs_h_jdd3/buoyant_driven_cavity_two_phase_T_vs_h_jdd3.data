@@ -1,0 +1,164 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_multiphase_h pbt
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 30 30
+        Longueurs 2 2
+    }
+    {
+        bord gauche X = 0  0 <= Y <= 2
+        bord haut   Y = 2  0 <= X <= 2
+        bord bas    Y = 0  0 <= X <= 2
+        bord droite X = 2  0 <= Y <= 2
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+    ecrire_decoupage dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Schema_euler_implicite sch_ice
+Read sch_ice
+{
+    tinit 0
+	nb_pas_dt_max 3
+    facsec 1
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    residuals { relative 2 }
+    solveur ice
+    {
+        pressure_reduction 1
+        # solveur petsc cli { } #
+        solveur petsc cholesky { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+VDF dis
+option_vdf { all_options }
+
+associate pbt dom
+
+Associate pbt sch_ice
+Discretize pbt dis
+
+Read pbt
+{
+    Milieu_composite
+    {
+        liquide_eau fluide_incompressible
+        {
+            mu       champ_uniforme 1 50.0
+            rho      champ_uniforme 1 2000.0
+            cp       champ_uniforme 1 3075.0
+            lambda   champ_uniforme 1 0.5
+            beta_th  champ_uniforme 1 0.0002
+        }
+        gaz_eau fluide_incompressible
+        {
+            mu       champ_uniforme 1 50.0
+            rho      champ_uniforme 1 2000.0
+            cp       champ_uniforme 1 3075.0
+            lambda   champ_uniforme 1 0.5
+            beta_th  champ_uniforme 1 0.0002
+        }
+    }
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  champ_uniforme 4 0 0 0 0
+            pression champ_uniforme 1 0
+        }
+        boundary_conditions
+        {
+            bas    paroi_fixe
+            gauche paroi_fixe
+            droite paroi_fixe
+            haut   paroi_defilante champ_front_uniforme 4 0.5 0.5 0.0 0.0
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha champ_uniforme 2 0.5 0.5 }
+        convection { amont }
+        boundary_conditions
+        {
+            bas    paroi
+            gauche paroi
+            droite paroi
+            haut   paroi
+        }
+    }
+    energie_multiphase_h
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { enthalpie Champ_Uniforme 2 2767500.0 2767500.0 }
+        boundary_conditions
+        {
+            bas     paroi_adiabatique
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
+            haut    paroi_adiabatique
+        }
+        sources
+        {
+            puissance_thermique champ_fonc_xyz dom 2 1e8*sin(0.5*x*pi)*sin(0.5*y*pi) 1e8*sin(0.5*x*pi)*sin(0.5*y*pi) ,
+            terme_puissance_thermique_echange_impose
+            {
+                himp  champ_uniforme 2 325.2032520325203 325.2032520325203
+                Text  champ_uniforme 2 2767500.0 2767500.0
+            }
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            T_A grav temperature periode 1e8 segment 500 0 1 2 1
+            V_A grav     vitesse periode 1e8 segment 500 0 1 2 1
+            T_B grav temperature periode 1e8 segment 500 1 0 1 2
+            V_B grav     vitesse periode 1e8 segment 500 1 0 1 2
+            H_A grav enthalpie periode 1e8 segment 500 0 1 2 1
+            H_B grav enthalpie periode 1e8 segment 500 1 0 1 2
+        }
+        format lml
+        fields dt_post 10
+        {
+            vitesse     elem
+            temperature elem
+            alpha       elem
+            enthalpie elem
+        }
+    }
+}
+
+Solve pbt
+End
