@@ -29,9 +29,10 @@
 #include <Matrice_Bloc.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <Dirichlet.h>
-#include <Domaine_VF.h>
+#include <SFichier.h>
 #include <EChaine.h>
 #include <Lapack.h>
 #include <Debog.h>
@@ -45,7 +46,7 @@ template class std::map<std::string, matrices_t>;
 template class std::map<std::string, Matrice_Morse>;
 #endif
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(SETS, "SETS", Simpler);
+Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
 // XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, A stability-enhancing two-step method for fluid flow calculations, Journal of Computational Physics, 46, 3, 329 (1982).
 // XD attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
 // XD attr iter_min entier iter_min 1 Number of minimum iterations
@@ -65,14 +66,6 @@ Implemente_instanciable_sans_constructeur(ICE, "ICE", SETS);
 // XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 
 SETS::SETS() { sets_ = 1; }
-SETS::~SETS()
-{
-  if (je_suis_maitre() && newton_evol_.is_open())
-    {
-      newton_evol_ << finl;
-      newton_evol_.close();
-    }
-}
 
 ICE::ICE() { sets_ = 0; }
 
@@ -82,21 +75,7 @@ Entree& SETS::readOn(Entree& is )
 {
   /* valeurs par defaut des criteres de convergence */
   crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "enthalpie", 1e2 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e2} };
-  Simpler::readOn(is);
-
-  if (je_suis_maitre())
-    {
-      Nom fichier(nom_du_cas() + ".newton_evol");
-      if (!newton_evol_.is_open())
-        {
-          newton_evol_.ouvrir(fichier, ios::out);
-          newton_evol_.setf(ios::scientific);
-          newton_evol_ << "# File showing the simulation time, time step, Newton iterations, status and convergence of the increments." << finl;
-          newton_evol_ << "# Time \t Time_step \t Newton \t Status \t ";
-        }
-    }
-
-  return is;
+  return Simpler::readOn(is);
 }
 
 Entree& SETS::lire(const Motcle& mot, Entree& is)
@@ -397,11 +376,23 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (!Process::me())
     {
       tp.AddColumn("it", 5);
+      Nom fichier(nom_du_cas() + ".newton_evol");
+      if (!header_written_)
+        {
+          Cerr << "SETS => File " << fichier << " is created ..." << finl;
+          SFichier newton_evol_(fichier);
+          newton_evol_ << "# File showing the simulation time, time step, Newton iterations, status and convergence of the increments." << finl;
+          newton_evol_ << "# Time \t Time_step \t Newton \t Status \t ";
+        }
+
       for (auto &&n_i : inco)
         {
           tp.AddColumn(n_i.first, std::max(12, (True_int) n_i.first.length()));
           if (!header_written_)
-            newton_evol_ << n_i.first << "\t ";
+            {
+              SFichier newton_evol_(fichier, ios::app);
+              newton_evol_ << n_i.first << "\t ";
+            }
         }
       header_written_ = true;
       tp.PrintHeader();
@@ -502,6 +493,9 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (!Process::me())
     {
       tp.PrintFooter();
+      Nom fichier(nom_du_cas() + ".newton_evol");
+      SFichier newton_evol_(fichier, ios::app);
+      newton_evol_.setf(ios::scientific);
       newton_evol_ << finl << t << "\t " << eqn.schema_temps().pas_de_temps() << "\t " << it << "\t ";
 
       /* status ! */
@@ -513,7 +507,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto& itr : incr_var_convergence_)
         newton_evol_ << itr << "\t ";
     }
-
 
   //ha ha ha
   if (ok && cv)
