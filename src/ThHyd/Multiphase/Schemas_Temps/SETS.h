@@ -31,10 +31,10 @@
  *
  * @sa Simpler Piso
  */
-class SETS : public Simpler
+class SETS: public Simpler
 {
   Declare_instanciable_sans_constructeur(SETS);
-public :
+public:
   SETS();
   Entree& lire(const Motcle&, Entree&) override; /* mot-cle "criteres_convergence" */
   int nb_valeurs_temporelles_pression() const override /* nombres de valeurs temporelles du champ de pression */
@@ -43,8 +43,7 @@ public :
   }
 
   bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) override;
-  void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
-
+  void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&, int nb_iter, int& converge, int& ok) override;
 
   /* elimination par blocs d'un systeme lineaire */
   // entree : ordre -> groupes de (variables, indice de bloc) a eliminer successivement : par ex. { { {"vitesse", 0 } }, { {"alpha", 0 }, {"temperature", 0 } } }
@@ -57,7 +56,6 @@ public :
   // contraintes :  - les inconnues du meme bloc doivent partager un meme MD_Vector
   //                - pour chaque bloc { i_1, i_2 }, la matrice { mats[i_j][i_k] } doit etre diagonale par blocs par rapport a ce MD_Vector
   //                - hors cette diagonale, les inconnues d'un blocs ne peuvent dependre que des blocs precedents et de inco_p
-
   static int eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec,
                       std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p);
 
@@ -69,7 +67,6 @@ public :
   //sortie : systeme matrice.d{inco_p} = secmem
   //
   //contraintes : toutes les autres inconnues doivent etre exprimees dans A_p / b_p
-
   static void assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec,
                         Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
@@ -99,12 +96,15 @@ public :
   void init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norm);
 #endif
 
-  double facsec_diffusion_for_sets() const { return facsec_diffusion_for_sets_;};
+  double facsec_diffusion_for_sets() const
+  {
+    return facsec_diffusion_for_sets_;
+  }
 
-protected :
+protected:
 
   int iter_min_ = 1, iter_max_ = 10; //nombre d'iterations min/max de l'etape non-lineaire
-  int first_call_ = 1;//au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
+  int first_call_ = 1; //au tout premier appel, P peut etre tres mauvais -> on ne predit pas v en SETS
   int pressure_reduction_ = 1; //fait-on la reduction en pression?
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */
@@ -131,7 +131,7 @@ protected :
  *
  * @sa SETS
  */
-class ICE : public SETS
+class ICE: public SETS
 {
   Declare_instanciable(ICE);
 public:
