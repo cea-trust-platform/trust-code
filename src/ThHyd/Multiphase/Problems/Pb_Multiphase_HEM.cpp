@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ void Pb_Multiphase_HEM::typer_lire_correlation_hem()
   // We enforce a interfacial flux correlation with constant coefficient
   if (has_correlation("flux_interfacial"))
     {
-      for (auto &&corr : correlations)
+      for (auto &&corr : correlations_)
         {
           if (corr.second.valeur().que_suis_je() == "Flux_interfacial_Coef_Constant")
             {

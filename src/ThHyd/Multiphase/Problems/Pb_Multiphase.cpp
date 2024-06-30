@@ -94,9 +94,9 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
   for (auto& itr : noms_eq) noms_eq_maj.add(Motcle(itr)); //ha ha ha
   for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
     {
-      eq_opt.add(Equation()); //une autre equation optionelle
-      eq_opt.dernier().typer(mot); //on lui donne le bon type
-      Equation_base& eq = eq_opt.dernier().valeur();
+      eq_opt_.add(Equation()); //une autre equation optionelle
+      eq_opt_.dernier().typer(mot); //on lui donne le bon type
+      Equation_base& eq = eq_opt_.dernier().valeur();
       //memes associations que pour les autres equations : probleme, milieu, schema en temps
       eq.associer_pb_base(*this);
       eq.associer_milieu_base(milieu());
@@ -119,8 +119,8 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
       Process::exit();
     }
   for (is >> mot; mot != "}"; is >> mot)
-    if (correlations.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-    else correlations[mot.getString()].typer_lire(*this, mot, is);
+    if (correlations_.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
+    else correlations_[mot.getString()].typer_lire(*this, mot, is);
   return is;
 }
 
@@ -155,7 +155,7 @@ void Pb_Multiphase::typer_lire_milieu(Entree& is)
  */
 int Pb_Multiphase::nombre_d_equations() const
 {
-  return 3 + eq_opt.size();
+  return 3 + eq_opt_.size();
 }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
@@ -168,16 +168,16 @@ int Pb_Multiphase::nombre_d_equations() const
  */
 const Equation_base& Pb_Multiphase::equation(int i) const
 {
-  if      (i == 0) return eq_qdm;
-  else if (i == 1) return eq_masse;
-  else if (i == 2) return eq_energie;
-  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
+  if      (i == 0) return eq_qdm_;
+  else if (i == 1) return eq_masse_;
+  else if (i == 2) return eq_energie_;
+  else if (i < 3 + eq_opt_.size()) return eq_opt_[i - 3].valeur();
   else
     {
       Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();
     }
-  return eq_qdm; //pour renvoyer quelque chose
+  return eq_qdm_; //pour renvoyer quelque chose
 }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
@@ -189,16 +189,16 @@ const Equation_base& Pb_Multiphase::equation(int i) const
  */
 Equation_base& Pb_Multiphase::equation(int i)
 {
-  if      (i == 0) return eq_qdm;
-  else if (i == 1) return eq_masse;
-  else if (i == 2) return eq_energie;
-  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
+  if      (i == 0) return eq_qdm_;
+  else if (i == 1) return eq_masse_;
+  else if (i == 2) return eq_energie_;
+  else if (i < 3 + eq_opt_.size()) return eq_opt_[i - 3].valeur();
   else
     {
       Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();
     }
-  return eq_qdm; //pour renvoyer quelque chose
+  return eq_qdm_; //pour renvoyer quelque chose
 }
 
 
@@ -234,7 +234,7 @@ int Pb_Multiphase::verifier()
 void Pb_Multiphase::mettre_a_jour(double temps)
 {
   Probleme_base::mettre_a_jour(temps);
-  for (auto &&corr : correlations)
+  for (auto &&corr : correlations_)
     {
       corr.second->mettre_a_jour(temps);
     }
@@ -251,7 +251,7 @@ bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
 {
   Champ_base const * champ = nullptr ;
 
-  for (auto &&corr : correlations)
+  for (auto &&corr : correlations_)
     {
       try
         {
@@ -266,7 +266,7 @@ bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
 
 const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
 {
-  for (auto &&corr : correlations)
+  for (auto &&corr : correlations_)
     {
       try
         {
@@ -286,7 +286,7 @@ void Pb_Multiphase::completer()
 {
   Pb_Fluide_base::completer();
 
-  for (auto &&corr : correlations)
+  for (auto &&corr : correlations_)
     {
       corr.second->completer();
     }

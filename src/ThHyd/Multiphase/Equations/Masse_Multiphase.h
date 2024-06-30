@@ -77,12 +77,10 @@ public :
   inline const Operateur_Grad& operateur_gradient_inconnue() const { return Op_Grad_;}
 
 protected :
-
-  Champ_Inc l_inco_ch;
-  REF(Fluide_base) le_fluide;
+  Champ_Inc l_inco_ch_;
+  REF(Fluide_base) le_fluide_;
   Operateur_Grad Op_Grad_; // Pour calculer le gradient en VDF
-
-  Operateur_Evanescence evanescence;
+  Operateur_Evanescence evanescence_;
 
 private:
   void verifier_somme_alpha();
@@ -95,9 +93,8 @@ private:
  */
 inline const Champ_Inc& Masse_Multiphase::inconnue() const
 {
-  return l_inco_ch;
+  return l_inco_ch_;
 }
-
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H)
  *
@@ -105,7 +102,7 @@ inline const Champ_Inc& Masse_Multiphase::inconnue() const
  */
 inline Champ_Inc& Masse_Multiphase::inconnue()
 {
-  return l_inco_ch;
+  return l_inco_ch_;
 }
 
-#endif
+#endif /* Masse_Multiphase_included */

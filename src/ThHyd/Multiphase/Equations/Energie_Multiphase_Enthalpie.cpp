@@ -24,7 +24,7 @@ Sortie& Energie_Multiphase_Enthalpie::printOn(Sortie& is) const { return Energie
 Entree& Energie_Multiphase_Enthalpie::readOn(Entree& is)
 {
   Energie_Multiphase::readOn(is);
-  l_inco_ch->nommer("enthalpie");
+  l_inco_ch_->nommer("enthalpie");
   return is;
 }
 
@@ -33,11 +33,11 @@ void Energie_Multiphase_Enthalpie::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy-enthalpy equation discretization " << finl;
   const Pb_Multiphase_Enthalpie& pb = ref_cast(Pb_Multiphase_Enthalpie, probleme());
-  dis.enthalpie(schema_temps(), domaine_dis(), l_inco_ch, pb.nb_phases());
-  l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  dis.enthalpie(schema_temps(), domaine_dis(), l_inco_ch_, pb.nb_phases());
+  l_inco_ch_.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
-    l_inco_ch.valeur().fixer_nom_compo(i, Nom("enthalpie_") + pb.nom_phase(i));
-  champs_compris_.ajoute_champ(l_inco_ch);
+    l_inco_ch_.valeur().fixer_nom_compo(i, Nom("enthalpie_") + pb.nom_phase(i));
+  champs_compris_.ajoute_champ(l_inco_ch_);
   Equation_base::discretiser();
   Cerr << "Energie_Multiphase_Enthalpie::discretiser() ok" << finl;
 }

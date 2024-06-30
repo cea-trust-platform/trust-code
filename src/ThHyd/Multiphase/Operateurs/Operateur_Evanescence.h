@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ public:
   inline int op_non_nul() const override { return non_nul(); };
 
 protected:
-  REF(Champ_base) la_diffusivite;
+  REF(Champ_base) la_diffusivite_;
 };
 
 #endif /* Operateur_Evanescence_included */

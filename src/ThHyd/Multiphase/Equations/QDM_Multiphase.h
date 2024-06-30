@@ -16,8 +16,8 @@
 #ifndef QDM_Multiphase_included
 #define QDM_Multiphase_included
 
-#include <Navier_Stokes_std.h>
 #include <Operateur_Evanescence.h>
+#include <Navier_Stokes_std.h>
 #include <vector>
 
 /*! @brief classe QDM_Multiphase Cette classe porte les termes de l'equation de la dynamique
@@ -84,7 +84,7 @@ protected:
   std::vector<Champ_Fonc> grad_vit_phases_; //gradient des vitesses de chaque phase
   Motcles noms_grad_vit_phases_; //leurs noms
 
-  Operateur_Evanescence evanescence;
+  Operateur_Evanescence evanescence_;
 };
 
-#endif
+#endif /* QDM_Multiphase_included */

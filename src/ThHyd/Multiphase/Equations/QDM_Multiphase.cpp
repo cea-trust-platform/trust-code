@@ -40,16 +40,10 @@ Implemente_instanciable(QDM_Multiphase,"QDM_Multiphase",Navier_Stokes_std);
 // attr alpha_res_min flottant alpha_res_min 0 Activation threshold for full replacement of vanishing phase equation (default value : 0)
 // attr alpha_res flottant alpha_res 0 Activation threshold for gradual replacement of vanishing phase equation (tends to full replacement when alpha tends to alpha_res_min)
 
-/*! @brief Simple appel a: Equation_base::printOn(Sortie&) Ecrit l'equation sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& QDM_Multiphase::printOn(Sortie& is) const
 {
   return Equation_base::printOn(is);
 }
-
 
 /*! @brief Appel Equation_base::readOn(Entree& is) En sortie verifie que l'on a bien lu:
  *
@@ -68,7 +62,7 @@ Sortie& QDM_Multiphase::printOn(Sortie& is) const
 
 Entree& QDM_Multiphase::readOn(Entree& is)
 {
-  evanescence.associer_eqn(*this);
+  evanescence_.associer_eqn(*this);
   Navier_Stokes_std::readOn(is);
   assert(le_fluide.non_nul());
   if (!sub_type(Fluide_base,le_fluide.valeur()))
@@ -80,18 +74,18 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   terme_convectif.valeur().set_incompressible(0);
 
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
-  if (evanescence.est_nul() && pb.nb_phases() > 1)
+  if (evanescence_.est_nul() && pb.nb_phases() > 1)
     {
       // Special treatment for Pb_Multiphase_HEM : We enforce the evanescence to a specific value
       if (sub_type(Pb_Multiphase_HEM, probleme()))
         {
           EChaine eva("{ homogene { alpha_res 1 alpha_res_min 0.5 } }");
-          eva >> evanescence;
+          eva >> evanescence_;
         }
       else
         {
           EChaine eva("{ homogene { alpha_res 1e-6 } }");
-          eva >> evanescence;
+          eva >> evanescence_;
         }
     }
 
@@ -115,7 +109,7 @@ void QDM_Multiphase::set_param(Param& param)
 
 int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="evanescence") is >> evanescence;
+  if (mot=="evanescence") is >> evanescence_;
   else return Navier_Stokes_std::lire_motcle_non_standard(mot, is);
   return 1;
 }
@@ -123,13 +117,13 @@ int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 void QDM_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Navier_Stokes_std::dimensionner_matrice_sans_mem(matrice);
-  if (evanescence.non_nul()) evanescence.valeur().dimensionner(matrice);
+  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner(matrice);
 }
 
 int QDM_Multiphase::has_interface_blocs() const
 {
   int ok = Navier_Stokes_std::has_interface_blocs();
-  if (evanescence.non_nul()) ok &= evanescence.valeur().has_interface_blocs();
+  if (evanescence_.non_nul()) ok &= evanescence_.valeur().has_interface_blocs();
   return ok;
 }
 
@@ -137,13 +131,13 @@ int QDM_Multiphase::has_interface_blocs() const
 void QDM_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Navier_Stokes_std::dimensionner_blocs(matrices, semi_impl);
-  if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
 void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Navier_Stokes_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence_.non_nul()) evanescence_.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 void QDM_Multiphase::mettre_a_jour(double temps)
@@ -431,7 +425,7 @@ double QDM_Multiphase::alpha_res() const
 {
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   if (pb.nb_phases() == 1) return 0.;
-  if (evanescence.est_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
-  if sub_type(Operateur_Evanescence_base, evanescence.valeur()) return ref_cast(Operateur_Evanescence_base, evanescence.valeur()).alpha_res();
+  if (evanescence_.est_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
+  if sub_type(Operateur_Evanescence_base, evanescence_.valeur()) return ref_cast(Operateur_Evanescence_base, evanescence_.valeur()).alpha_res();
   return -1.;
 }

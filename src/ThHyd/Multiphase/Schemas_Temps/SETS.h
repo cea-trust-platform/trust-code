@@ -78,8 +78,8 @@ public :
     return 1.2; /* en cas de pas de temps rate, on remonte doucement */
   }
 
-  int iteration = 0;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
-  int p_degen = -1;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
+  int iteration_ = 0;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
+  int p_degen_ = -1;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
   int sets_;      // 1 si on fait l'etape de prediction des vitesses
 
   double unknown_positivation(const DoubleTab& uk, DoubleTab& incr); // brings to 0 unknowns that should stay positive
@@ -108,19 +108,19 @@ protected :
   int pressure_reduction_ = 1; //fait-on la reduction en pression?
 
   /* criteres de convergences par inconnue (en norme Linf), modifiables par le mot-cle "criteres_convergence" */
-  std::map<std::string, double> crit_conv;
+  std::map<std::string, double> crit_conv_;
 
   /* matrices de la resolution semi-implicite */
-  std::map<std::string, matrices_t> mats; // matrices : mats[nom de l'inconnue de l'equation][nom de l'autre inconnue] = matrice
-  Matrice_Bloc mat_semi_impl; //pour stocker les matrices de mats
-  MD_Vector mdv_semi_impl;    //MD_Vector associe
-  std::map<std::string, Matrice_Morse> mat_pred; //matrices de prediction
+  std::map<std::string, matrices_t> mats_; // matrices : mats[nom de l'inconnue de l'equation][nom de l'autre inconnue] = matrice
+  Matrice_Bloc mat_semi_impl_; //pour stocker les matrices de mats
+  MD_Vector mdv_semi_impl_;    //MD_Vector associe
+  std::map<std::string, Matrice_Morse> mat_pred_; //matrices de prediction
 
   /* elimination en pression dv = A_p[nom de la variable]. dp + b_p[nom de la variable] */
-  std::map<std::string, Matrice_Morse> A_p;
+  std::map<std::string, Matrice_Morse> A_p_;
 
   /* matrice en pression */
-  Matrice_Morse matrice_pression;
+  Matrice_Morse matrice_pression_;
 
   /* Newton out file */
   bool header_written_ = false;
