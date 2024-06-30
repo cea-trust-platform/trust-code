@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,13 +87,10 @@ public :
 
 protected :
 
-  Champ_Inc l_inco_ch;
-  Operateur_Evanescence evanescence;
-  REF(Fluide_base) le_fluide;
+  Champ_Inc l_inco_ch_;
+  Operateur_Evanescence evanescence_;
+  REF(Fluide_base) le_fluide_;
 };
-
-
-
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H) (version const)
  *
@@ -101,9 +98,8 @@ protected :
  */
 inline const Champ_Inc& Energie_Multiphase::inconnue() const
 {
-  return l_inco_ch;
+  return l_inco_ch_;
 }
-
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H)
  *
@@ -111,7 +107,7 @@ inline const Champ_Inc& Energie_Multiphase::inconnue() const
  */
 inline Champ_Inc& Energie_Multiphase::inconnue()
 {
-  return l_inco_ch;
+  return l_inco_ch_;
 }
 
-#endif
+#endif /* Energie_Multiphase_included */

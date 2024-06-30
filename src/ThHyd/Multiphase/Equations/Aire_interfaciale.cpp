@@ -45,8 +45,8 @@ Sortie& Aire_interfaciale::printOn(Sortie& is) const
 
 Entree& Aire_interfaciale::readOn(Entree& is)
 {
-  assert(l_inco_ch.non_nul());
-  assert(le_fluide.non_nul());
+  assert(l_inco_ch_.non_nul());
+  assert(le_fluide_.non_nul());
   Convection_Diffusion_std::readOn(is);
 
   terme_convectif.set_fichier("Convection_interfacial_area");
@@ -56,8 +56,8 @@ Entree& Aire_interfaciale::readOn(Entree& is)
 
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
   for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
-  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+    if (pbm->nom_phase(n).debute_par("liquide") && (n_l_ < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l_ = n;
+  if (n_l_ < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
   if (pbm->has_correlation("diametre_bulles")) Process::exit(que_suis_je() + " : the interfacial area equation sets bubble diameter, there cannot be an exterior correlation !");
 
@@ -79,10 +79,10 @@ void Aire_interfaciale::discretiser()
 
   Cerr << "Interfacial area discretization" << finl;
   //On utilise temperature pour la directive car discretisation identique
-  dis.discretiser_champ("temperature",domaine_dis(),"interfacial_area","m-1", N,nb_valeurs_temp,temps,l_inco_ch);//une aire interfaciale par phase
-  l_inco_ch.valeur().fixer_nature_du_champ(multi_scalaire);
-  l_inco_ch.valeur().fixer_nom_compo(0, Nom("tau"));
-  champs_compris_.ajoute_champ(l_inco_ch);
+  dis.discretiser_champ("temperature",domaine_dis(),"interfacial_area","m-1", N,nb_valeurs_temp,temps,l_inco_ch_);//une aire interfaciale par phase
+  l_inco_ch_.valeur().fixer_nature_du_champ(multi_scalaire);
+  l_inco_ch_.valeur().fixer_nom_compo(0, Nom("tau"));
+  champs_compris_.ajoute_champ(l_inco_ch_);
 
   Cerr << "Bubble diameter discretization" << finl;
   //On utilise temperature pour la directive car discretisation identique
@@ -91,9 +91,9 @@ void Aire_interfaciale::discretiser()
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
   const Domaine_dis& z = ref_cast(Domaine_dis, probleme().domaine_dis());
-  dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles);
+  dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles_);
 
-  champs_compris_.ajoute_champ(diametre_bulles);
+  champs_compris_.ajoute_champ(diametre_bulles_);
 
   Equation_base::discretiser();
   Cerr << "Echelle_temporelle_turbulente::discretiser() ok" << finl;
@@ -101,12 +101,12 @@ void Aire_interfaciale::discretiser()
 
 const Milieu_base& Aire_interfaciale::milieu() const
 {
-  return le_fluide.valeur();
+  return le_fluide_.valeur();
 }
 
 Milieu_base& Aire_interfaciale::milieu()
 {
-  return le_fluide.valeur();
+  return le_fluide_.valeur();
 }
 
 int Aire_interfaciale::impr(Sortie& os) const
@@ -122,7 +122,7 @@ const Motcle& Aire_interfaciale::domaine_application() const
 
 void Aire_interfaciale::associer_fluide(const Fluide_base& un_fluide)
 {
-  le_fluide = un_fluide;
+  le_fluide_ = un_fluide;
 }
 
 const Operateur& Aire_interfaciale::operateur(int i) const
@@ -152,14 +152,14 @@ void Aire_interfaciale::mettre_a_jour(double temps)
   int i, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases();
 
   const DoubleTab& alpha = probleme().get_champ("alpha").passe(), &a_i = inconnue().passe();
-  DoubleTab& d_b = diametre_bulles.valeurs();
+  DoubleTab& d_b = diametre_bulles_.valeurs();
 
-  diametre_bulles.mettre_a_jour(temps);
+  diametre_bulles_.mettre_a_jour(temps);
 
   for (n = 0; n < N; n++)
     for (i = 0; i < d_b.dimension_tot(0); i++)
-      if (n != n_l)
+      if (n != n_l_)
         d_b(i, n) = std::max(1.e-8, ((a_i(i, n)>1.e-6) ? 6 * alpha(i, n)/a_i(i, n) : 0));
 
-  for (i = 0; i < d_b.dimension_tot(0); i++) d_b(i, n_l) = 0;
+  for (i = 0; i < d_b.dimension_tot(0); i++) d_b(i, n_l_) = 0;
 }

@@ -27,14 +27,14 @@ public:
   void associer_milieu_base(const Milieu_base& ) override;
   int verifier() override;
 
-  const Equation_base& equation(int i) const override { return (i == 2) ? eq_energie_enthalpie : Pb_Multiphase::equation(i); }
-  Equation_base& equation(int i) override { return (i == 2) ? eq_energie_enthalpie : Pb_Multiphase::equation(i); }
+  const Equation_base& equation(int i) const override { return (i == 2) ? eq_energie_enthalpie_ : Pb_Multiphase::equation(i); }
+  Equation_base& equation(int i) override { return (i == 2) ? eq_energie_enthalpie_ : Pb_Multiphase::equation(i); }
 
-  Equation_base& equation_energie() override { return eq_energie_enthalpie; }
-  const Equation_base& equation_energie() const override { return eq_energie_enthalpie; }
+  Equation_base& equation_energie() override { return eq_energie_enthalpie_; }
+  const Equation_base& equation_energie() const override { return eq_energie_enthalpie_; }
 
 protected:
-  Energie_Multiphase_Enthalpie eq_energie_enthalpie;
+  Energie_Multiphase_Enthalpie eq_energie_enthalpie_;
 };
 
 #endif /* Pb_Multiphase_Enthalpie_included*/

@@ -79,7 +79,7 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
                     ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur()) : nullptr;
 
   int e, i, j, k, n, N = inco.line_size(), m, M = p.line_size(), is_m = ch.le_nom() == "alpha", cR = (rho.dimension_tot(0) == 1),
-                     iter = sch ? sch->iteration : 0, p_degen = is_m && sch ? sch->p_degen : 0;
+                     iter = sch ? sch->iteration_ : 0, p_degen = is_m && sch ? sch->p_degen_ : 0;
   if (N == 1 || p_degen || (is_m && !iter)) return; //pas d'evanescence en simple phase ou si p est degenere
 
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence

@@ -24,13 +24,13 @@ Entree& Pb_Multiphase_Enthalpie::readOn(Entree& is) { return Pb_Multiphase::read
 void Pb_Multiphase_Enthalpie::associer_milieu_base(const Milieu_base& mil)
 {
   equation_qdm().associer_milieu_base(mil);
-  eq_energie_enthalpie.associer_milieu_base(mil);
+  eq_energie_enthalpie_.associer_milieu_base(mil);
   equation_masse().associer_milieu_base(mil);
 }
 
 int Pb_Multiphase_Enthalpie::verifier()
 {
   const Domaine_Cl_dis& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_energie_enthalpie.domaine_Cl_dis();
+  const Domaine_Cl_dis& domaine_Cl_th = eq_energie_enthalpie_.domaine_Cl_dis();
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
 }

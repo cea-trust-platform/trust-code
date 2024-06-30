@@ -38,9 +38,9 @@ Sortie& Energie_Multiphase::printOn(Sortie& is) const { return Convection_Diffus
 
 Entree& Energie_Multiphase::readOn(Entree& is)
 {
-  assert(l_inco_ch.non_nul());
-  assert(le_fluide.non_nul());
-  evanescence.associer_eqn(*this);
+  assert(l_inco_ch_.non_nul());
+  assert(le_fluide_.non_nul());
+  evanescence_.associer_eqn(*this);
   Convection_Diffusion_std::readOn(is);
 
   terme_convectif.set_fichier("Convection_chaleur");
@@ -75,7 +75,7 @@ void Energie_Multiphase::set_param(Param& param)
 
 int Energie_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="evanescence") is >> evanescence;
+  if (mot=="evanescence") is >> evanescence_;
   else return Convection_Diffusion_std::lire_motcle_non_standard(mot, is);
   return 1;
 }
@@ -109,11 +109,11 @@ void Energie_Multiphase::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization " << finl;
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
-  dis.temperature(schema_temps(), domaine_dis(), l_inco_ch, pb.nb_phases());
-  l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  dis.temperature(schema_temps(), domaine_dis(), l_inco_ch_, pb.nb_phases());
+  l_inco_ch_.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
-    l_inco_ch.valeur().fixer_nom_compo(i, Nom("temperature_") + pb.nom_phase(i));
-  champs_compris_.ajoute_champ(l_inco_ch);
+    l_inco_ch_.valeur().fixer_nom_compo(i, Nom("temperature_") + pb.nom_phase(i));
+  champs_compris_.ajoute_champ(l_inco_ch_);
   Equation_base::discretiser();
   Cerr << "Energie_Multiphase::discretiser() ok" << finl;
 }
@@ -153,12 +153,12 @@ Milieu_base& Energie_Multiphase::milieu()
  */
 const Fluide_base& Energie_Multiphase::fluide() const
 {
-  if (!le_fluide.non_nul())
+  if (!le_fluide_.non_nul())
     {
       Cerr << "You forgot to associate the fluid to the problem named " << probleme().le_nom() << finl;
       Process::exit();
     }
-  return le_fluide.valeur();
+  return le_fluide_.valeur();
 }
 
 
@@ -169,8 +169,8 @@ const Fluide_base& Energie_Multiphase::fluide() const
  */
 Fluide_base& Energie_Multiphase::fluide()
 {
-  assert(le_fluide.non_nul());
-  return le_fluide.valeur();
+  assert(le_fluide_.non_nul());
+  return le_fluide_.valeur();
 }
 
 
@@ -227,19 +227,19 @@ const Motcle& Energie_Multiphase::domaine_application() const
  */
 void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 {
-  le_fluide = un_fluide;
+  le_fluide_ = un_fluide;
 }
 
 void Energie_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Convection_Diffusion_std::dimensionner_matrice_sans_mem(matrice);
-  if (evanescence.non_nul()) evanescence.valeur().dimensionner(matrice);
+  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner(matrice);
 }
 
 int Energie_Multiphase::has_interface_blocs() const
 {
   int ok = Convection_Diffusion_std::has_interface_blocs();
-  if (evanescence.non_nul()) ok &= evanescence.valeur().has_interface_blocs();
+  if (evanescence_.non_nul()) ok &= evanescence_.valeur().has_interface_blocs();
   return ok;
 }
 
@@ -247,13 +247,13 @@ int Energie_Multiphase::has_interface_blocs() const
 void Energie_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Convection_Diffusion_std::dimensionner_blocs(matrices, semi_impl);
-  if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
 void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Convection_Diffusion_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence_.non_nul()) evanescence_.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 

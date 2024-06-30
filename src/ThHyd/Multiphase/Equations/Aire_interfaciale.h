@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@ public :
   Aire_interfaciale();
 
   void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const override;
-  inline Champ_Inc& inconnue() override;
+  inline const Champ_Inc& inconnue() const override { return l_inco_ch_; }
+  inline Champ_Inc& inconnue() override { return l_inco_ch_; }
   void discretiser() override;
   const Milieu_base& milieu() const override;
   Milieu_base& milieu() override;
@@ -54,23 +54,11 @@ public :
   const Motcle& domaine_application() const override;
 
 protected :
+  Champ_Inc l_inco_ch_;
+  Champ_Fonc diametre_bulles_;
+  REF(Fluide_base) le_fluide_;
 
-  Champ_Inc l_inco_ch;
-  Champ_Fonc diametre_bulles;
-
-  REF(Fluide_base) le_fluide;
-
-  int n_l=-1 ; // Number of the liquid phase (the one where no IA is stored)
+  int n_l_=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };
 
-inline const Champ_Inc& Aire_interfaciale::inconnue() const
-{
-  return l_inco_ch;
-}
-
-inline Champ_Inc& Aire_interfaciale::inconnue()
-{
-  return l_inco_ch;
-}
-
-#endif
+#endif /* Aire_interfaciale_included */
