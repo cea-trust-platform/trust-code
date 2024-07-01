@@ -28,6 +28,7 @@ void self_test()
     return;
   else
     self_tested_ = true;
+#ifdef _OPENMP  
   // Verification que omp_target_is_present fonctionne bien (important)
   {
     DoubleTab a(10);
@@ -38,6 +39,7 @@ void self_test()
     if (omp_target_is_present(a.data(), omp_get_default_device())!=0)
       Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
   }
+#endif
 #ifndef NDEBUG
   if (Objet_U::computeOnDevice)
     {
