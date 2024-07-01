@@ -5,7 +5,7 @@
 
 #export NVHPC_CUDA_HOME=$CUDA_ROOT # Variable qui permet de changer le CUDA utilise par le compilateur nvc++
 
-KOKKOS="-I$TRUST_KOKKOS_ROOT/linux/include -L$TRUST_KOKKOS_ROOT/linux/lib64 -lkokkoscontainers -lkokkoscore" # -expt-extended-lambda -Wext-lambda-captures-this 
+KOKKOS="-I$TRUST_KOKKOS_ROOT/linux_opt/include -L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore" # -expt-extended-lambda -Wext-lambda-captures-this 
 if [ "$ROCM_PATH" != "" ]
 then
    OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH -Wno-openmp-mapping -ldl"

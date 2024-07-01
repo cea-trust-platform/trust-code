@@ -3,7 +3,7 @@ rm -f kernels
 # -gpu=ccnative
 # Aucun effet (meme O3 !) sur le device...
 KOKKOS_INC="-I$TRUST_KOKKOS_ROOT/linux_opt/include"
-KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore" 
+KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore"
 if [ "$ROCM_PATH" != "" ]
 then
    # Mix OpenMP target and HIP code with separate compilation units:
@@ -22,7 +22,7 @@ then
 else
    # Mix OpenMP target and Kokkos in the same file:
    OPENMP="-fopenmp -mp=gpu -cuda"
-   $TRUST_CC -g -O3 -std=c++17 $OPENMP $KOKKOS_INC $KOKKOS_LIB -o kernels kernels.cpp || exit -1
+   $TRUST_CC -g -O3 -std=c++17 $OPENMP $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
 fi
 echo "Build OK"
 rm -f *nsys-rep
@@ -48,15 +48,20 @@ touch dumb.data && exec=`pwd`/kernels trust dumb 1
 # [Kernel  a+=b] OMPT   Mean time: 0.115541 ms 45 GFLOPS
 # [Kernel OpDiv] CPU    Mean time: 126.924 ms 0.1 GFLOPS
 # [Kernel OpDiv] OMPT   Mean time: 5.79228 ms 3.5 GFLOPS
-# GFX90a (crayCC 17.0) with HIP Kokkos backend: 
+# GFX90a (crayCC 17.0) with HIP Kokkos backend:
 # [Kernel  a+=b] CPU    Mean time: 1.41074 ms 3.6 GFLOPS
 # [Kernel  a+=b] OMPT   Mean time: 0.324143 ms 16 GFLOPS
 # [Kernel OpDiv] CPU    Mean time: 124.607 ms 0.1 GFLOPS
 # [Kernel OpDiv] OMPT   Mean time: 7.9224 ms 2.6 GFLOPS
 # [Kernel OpDiv] Kokkos Mean time: 6.40479 ms 3.2 GFLOPS
+# [Kernel  a+=b] CPU    Mean time: 1.3869  ms  3.7 GFLOPS
+# [Kernel  a+=b] OMPT   Mean time: 0.0686  ms 75.7 GFLOPS
+# [Kernel OpDiv] CPU    Mean time: 123.17  ms  0.1 GFLOPS
+# [Kernel OpDiv] OMPT   Mean time: 5.82141 ms  3.5 GFLOPS
+# [Kernel OpDiv] KOMPT  Mean time: 74.8338 ms  0.2 GFLOPS	!!! x15 slowdown with Kokkos OpenMPtarget backend on MI250 !!!
 # A3000 (nvc++)
-# [Kernel  a+=b] CPU    Mean time: 2.0595 ms 2.5 GFLOPS
-# [Kernel  a+=b] OMPT   Mean time: 0.219146 ms 23.7 GFLOPS
-# [Kernel OpDiv] CPU    Mean time: 144.328 ms 0.1 GFLOPS
-# [Kernel OpDiv] OMPT   Mean time: 10.7632 ms 1.9 GFLOPS
-# [Kernel OpDiv] Kokkos Mean time: 10.7454 ms 1.9 GFLOPS
+# [Kernel  a+=b] CPU    Mean time: 2.0595  ms  2.5 GFLOPS
+# [Kernel  a+=b] OMPT   Mean time: 0.21914 ms 23.7 GFLOPS
+# [Kernel OpDiv] CPU    Mean time: 144.328 ms  0.1 GFLOPS
+# [Kernel OpDiv] OMPT   Mean time: 10.7632 ms  1.9 GFLOPS
+# [Kernel OpDiv] KCUDA  Mean time: 10.7454 ms  1.9 GFLOPS
