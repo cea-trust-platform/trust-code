@@ -156,15 +156,18 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
               for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
           }
       masse *= pf(f) * vf(f) / dt;
-      /* contribution hors CLs */
+      /* contribution hors CLs : terme en temps + Frottement_impose_base */
+      const Frottement_impose_base* fi = fcl(f, 0) == 2 && sub_type(Frottement_impose_base, cls[fcl(f, 1)].valeur()) ? &ref_cast(Frottement_impose_base, cls[fcl(f, 1)].valeur()) : nullptr;
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           {
             for (m = 0; m < N; m++) secmem(f, N * d + n) += masse(n, m) * (passe(f, N * d + m) - resoudre_en_increments * inco(f, N * d + m));
+            if (fi) secmem(f, N * d + n) -= fs(f) * fi->coefficient_frottement(fcl(f, 2), n) * inco(f, N * d + n);
             if (mat)
               for (m = 0; m < N; m++)
                 if (masse(n, m))
                   (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += masse(n, m);
+            if (mat && fi) (*mat)(N * (D * f + d) + n, N * (D * f + d) + n) += fs(f) * fi->coefficient_frottement(fcl(f, 2), n);
           }
 
       if (p0p1 && fcl(f, 0) > (Option_PolyVEF::sym_as_diri ? 1 : 2)) /* Dirichlet en P0P1 : remplacement total par la CL */
