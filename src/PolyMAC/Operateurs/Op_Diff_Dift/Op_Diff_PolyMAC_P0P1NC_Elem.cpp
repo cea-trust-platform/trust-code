@@ -447,7 +447,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
       }
     else if (fcl[0](f, 0) == 4)
       for (n = 0; n < N[0]; n++) //Neumann
-        secmem(!aux_only * ne_tot[0] + f, n) -= fs[0](f) * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
+        secmem(!aux_only * ne_tot[0] + f, n) += fs[0](f) * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
     else if (fcl[0](f, 0) && fcl[0](f, 0) < 3)
       for (e = f_e[0](f, 0), n = 0; n < N[0]; n++) //Echange_global_impose
         {

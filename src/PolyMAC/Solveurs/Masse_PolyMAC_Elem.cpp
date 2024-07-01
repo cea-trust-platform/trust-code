@@ -115,7 +115,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
   for (f = 0; secmem.dimension_tot(0) > ne_tot && f < domaine.nb_faces(); f++)
     if (ch.fcl()(f, 0) == 4)
       for (n = 0; n < N; n++) //Neumann_paroi
-        secmem(N * (ne_tot + f) + n) -= fs(f) * ref_cast(Neumann_paroi, cls[ch.fcl()(f, 1)].valeur()).flux_impose(ch.fcl()(f, 2), n);
+        secmem(N * (ne_tot + f) + n) += fs(f) * ref_cast(Neumann_paroi, cls[ch.fcl()(f, 1)].valeur()).flux_impose(ch.fcl()(f, 2), n);
     else if (ch.fcl()(f, 0) == 6)
       for (n = 0; n < N; n++) //Dirichlet
         secmem(N * (ne_tot + f) + n) += ref_cast(Dirichlet, cls[ch.fcl()(f, 1)].valeur()).val_imp(ch.fcl()(f, 2), n);
