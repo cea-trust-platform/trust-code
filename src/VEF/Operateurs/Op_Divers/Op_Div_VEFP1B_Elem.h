@@ -65,6 +65,7 @@ private:
   mutable IntVect nb_degres_liberte_;
   mutable bool corrige_sommets_sans_degre_liberte_ = false;
   mutable IntTab som_;
+  mutable bool som_initialized_ = false;
 };
 
 #endif /* Op_Div_VEFP1B_Elem_included */

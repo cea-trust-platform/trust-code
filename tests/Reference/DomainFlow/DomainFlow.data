@@ -1,6 +1,5 @@
 # Parallel anisoproc simulation of a flow #
 # PARALLEL ONLY 6 #
-# OPENMP NOT #
 # Dimension #
 dimension 3
 

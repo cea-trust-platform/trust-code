@@ -329,8 +329,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
   int nps = domaine_VEF.numero_premier_sommet();
 
   // Initialisation tableaux constants
-  if (som_.size_array() == 0)
+  if (!som_initialized_)
     {
+      som_initialized_ = true;
       const IntTab& som_elem = domaine.les_elems();
       som_.resize(nb_elem_tot, nfe);
       nb_degres_liberte_.resize(domaine_VEF.domaine().nb_som_tot());
