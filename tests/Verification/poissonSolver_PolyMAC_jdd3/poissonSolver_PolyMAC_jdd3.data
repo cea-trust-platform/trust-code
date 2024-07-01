@@ -1,0 +1,148 @@
+# PARALLEL OK #
+dimension 2
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Read_MED { domain dom file mesh.med }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    partitionneur metis { Nb_parts 4 }
+    nb_parts_tot 4
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC dis
+
+Schema_euler_implicite sch
+Read sch
+{
+
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max  100
+    facsec 1e30
+    seuil_statio 1e-8
+    solveur implicite
+    {
+         solveur petsc cholesky {  }  
+    }
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    solide {
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1.
+    }
+
+    Conduction
+    {
+        diffusion { }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2*cos(x)*sin(y) }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            left paroi_flux_impose Champ_Front_fonc_XYZ 1  -(-sin(x)*sin(y))
+            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
+            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
+            # left  paroi_flux_impose Champ_Front_fonc_XYZ 1 sin(x)*sin(y) # 
+            # up    paroi_flux_impose Champ_Front_fonc_XYZ 1   cos(x)*cos(y) # 
+            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -cos(x)*cos(y)
+        }
+    }
+
+    Post_processings
+    {
+
+			error 
+			{
+				Definition_champs
+    	    {
+						solution transformation {
+							Localisation elem
+							methode formule expression 1 cos(x)*sin(y)
+						}
+    	      
+						erreur transformation
+    	      {
+    	          methode formule expression 1 abs(temp-solution)
+								localisation elem
+								sources 
+								{
+								refChamp { Pb_champ pb temperature nom_source temp } 
+								}
+								sources_reference { solution }
+						}
+						L2_norm reduction_0D {
+    	            methode L2_norm
+									sources_reference { erreur }
+    	        }
+    	      
+						L1_norm reduction_0D {
+    	            methode L1_norm
+									sources_reference { erreur }
+    	        } 
+						
+						Linf_norm reduction_0D {
+    	            methode max
+									sources_reference { erreur }
+    	        } 
+
+    	            /* sources 
+    	            {
+										refChamp { Pb_champ pb temperature nom_source temp } ,
+    	        			transformation
+    	        			{
+    	            		methode formule expression 1 cos(x)*sin(y) localisation elem nom_source T_analytique source refChamp { Pb_champ pb temperature } 
+    	        			}
+    	            } 
+    	        } */ 
+					}
+
+					 Probes			{
+    	        L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	        L1_norm 	L1_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	        Linf_norm 	Linf_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	    }
+
+
+    	    format LATA
+    	    fields dt_post 30.
+    	    {
+    		      temperature elem
+    	        solution elem
+    	        erreur elem
+    	    }
+			}
+	}
+	Post_processing
+	{
+      format lml
+      fields dt_post 30.
+      {
+          temperature elem
+      }
+
+  }
+	
+}
+
+Solve pb
+End
