@@ -73,6 +73,8 @@ public:
     return Echange_impose_base::h_imp();
   }
 
+  bool has_h_imp_grad() const override { return true; }
+
   double h_imp(int i) const override { return h_(i, 0); }
   double h_imp(int i, int j) const override { return h_(i, j); }
   double h_imp_grad(int i) const override { return h_grad_(i, 0); }
