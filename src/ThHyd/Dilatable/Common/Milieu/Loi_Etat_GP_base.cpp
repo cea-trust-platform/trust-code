@@ -63,16 +63,11 @@ void Loi_Etat_GP_base::initialiser()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  int i, ntot=tab_Temp.size_totale();
-  DoubleTab& tab_T = temperature_.valeurs();
-  assert(tab_T.size()==tab_Temp.dimension(0));
-
+  int ntot=tab_Temp.size_totale();
   tab_rho_n=tab_Temp;
-  for (i=0 ; i<ntot ; i++)
-    {
-      tab_rho_n(i) = tab_rho(i,0);
-      tab_T(i,0) = tab_Temp(i,0);
-    }
+  for (int i=0 ; i<ntot ; i++)
+    tab_rho_n(i) = tab_rho(i,0);
+  remplir_T();
 }
 
 /*! @brief Remplit le tableau de la temperature : T=temp+273.
@@ -83,10 +78,7 @@ void Loi_Etat_GP_base::initialiser()
 void Loi_Etat_GP_base::remplir_T()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
-  int i, ntot=tab_Temp.size_totale();
-  ToDo_Kokkos("critical");
-  DoubleTab& tab_T = temperature_.valeurs();
-  for (i=0 ; i<ntot ; i++) tab_T(i,0) = tab_Temp(i,0);
+  temperature_.valeurs() = tab_Temp;
 }
 
 /*! @brief Calcule le Cp NE FAIT RIEN : le Cp est constant
@@ -106,9 +98,6 @@ void Loi_Etat_GP_base::calculer_lambda()
   const DoubleTab& tab_mu = mu.valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
   DoubleTab& tab_lambda =lambda.valeurs();
-
-  int i, n=tab_lambda.size();
-  ToDo_Kokkos("critical");
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
@@ -120,11 +109,12 @@ void Loi_Etat_GP_base::calculer_lambda()
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++) tab_lambda(i,0) = mu0 * Cp_ / Pr_;
+          tab_lambda *= (mu0 * Cp_ / Pr_);
         }
       else
         {
-          for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(i,0) * Cp_ / Pr_;
+          tab_lambda = tab_mu;
+          tab_lambda *= Cp_ / Pr_;
         }
     }
   else
@@ -150,55 +140,40 @@ void Loi_Etat_GP_base::calculer_lambda()
  */
 void Loi_Etat_GP_base::calculer_alpha()
 {
-  const Champ_Don& lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = lambda.valeurs();
-  Champ_Don& alpha=le_fluide->diffusivite();
+  const Champ_Don& champ_lambda = le_fluide->conductivite();
+  const DoubleTab& tab_lambda = champ_lambda.valeurs();
+  Champ_Don& champ_alpha = le_fluide->diffusivite();
   DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   int isVDF=0;
-  if (alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
-  int i, n=tab_alpha.size();
-
+  if (champ_alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  int n=tab_alpha.size();
+  bool lambda_uniforme = sub_type(Champ_Uniforme,champ_lambda.valeur());
   if (isVDF)
     {
-      if (sub_type(Champ_Uniforme,lambda.valeur()))
-        {
-          double lambda0 = tab_lambda(0,0);
-          for (i=0 ; i<n ; i++) tab_alpha(i,0) = lambda0 / (tab_rho(i,0) * Cp_);
-        }
-      else
-        {
-          for (i=0 ; i<n ; i++) tab_alpha(i,0) = tab_lambda(i,0) / (tab_rho(i,0) * Cp_);
-        }
+      ToDo_Kokkos("critical");
+      for (int i=0 ; i<n ; i++)
+        tab_alpha(i,0) = (lambda_uniforme ? tab_lambda(0,0) : tab_lambda(i,0)) / (tab_rho(i,0) * Cp_);
     }
   else
     {
-      ToDo_Kokkos("critical");
-      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
-      double rhoelem;
-      int face, nfe = elem_faces.line_size();
-      if (sub_type(Champ_Uniforme,lambda.valeur()))
-        {
-          double lambda0 = tab_lambda(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
-              rhoelem /= nfe;
-              tab_alpha(i,0) = lambda0 / ( rhoelem * Cp_ );
-            }
-        }
-      else
-        {
-          for (i=0 ; i<n ; i++)
-            {
-              rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
-              rhoelem /= nfe;
-              tab_alpha(i,0) = tab_lambda(i,0) / ( rhoelem * Cp_ );
-            }
-        }
+      const IntTab& tab_elem_faces = ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
+      int nfe = tab_elem_faces.line_size();
+      double Cp = Cp_;
+      CIntTabView elem_faces = tab_elem_faces.view_ro();
+      CDoubleTabView lambda = tab_lambda.view_ro();
+      CDoubleTabView rho = tab_rho.view_ro();
+      DoubleTabView alpha = tab_alpha.view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(
+                             const int i)
+      {
+        double rhoelem=0;
+        for (int face=0; face<nfe; face++) rhoelem += rho(elem_faces(i,face),0);
+        rhoelem /= nfe;
+        alpha(i,0) = (lambda_uniforme ? lambda(0,0) : lambda(i,0))/ ( rhoelem * Cp );
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   tab_alpha.echange_espace_virtuel();
 }
