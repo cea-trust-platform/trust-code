@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,8 @@ class Echange_impose_base : public Cond_lim_base
 public:
   virtual double h_imp(int num) const;
   virtual double h_imp(int num,int k) const;
+
+  virtual bool has_h_imp_grad() const { return false; }
   virtual double h_imp_grad(int num) const { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !" ) ; return -1.e10 ;};
   virtual double h_imp_grad(int num,int k) const  { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !") ; return -1.e10 ;};
   virtual double T_ext(int num) const;
