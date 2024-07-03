@@ -507,6 +507,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(C
 }
 const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stockage) const
 {
+  ToDo_Kokkos("critical");
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
   Champ_Fonc es_tmp;
 

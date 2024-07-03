@@ -85,7 +85,7 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
   vorticite = 0;
   gradient(gradient_elem);
   int num_elem;
-
+  ToDo_Kokkos("critical");
   switch(dimension)
     {
     case 2:
@@ -432,7 +432,7 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   gradient_elem = 0.;
 
   calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
-
+  ToDo_Kokkos("critical");
   for (int elem = 0; elem < nb_elem; elem++)
     {
       int comp = 0;
@@ -586,6 +586,7 @@ static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
   int i = 0;
   double norme = 0;
   int nb_compo_ = u.line_size();
+  ToDo_Kokkos("critical");
   for (; i < nb_faces; i++)
     {
       double s = 0;
@@ -620,7 +621,7 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   //  (i.e etre un scalaire ou etre un vecteur)
   //- la dimension du probleme est arbitraire (1, 2 ou 3).
   //ATTENTION: les prismes ne sont pas supportes.
-
+  ToDo_Kokkos("critical");
   dnorme_H1 = 0.;
   for (int composante = 0; composante < nb_comp(); composante++) //cas scalaire ou vectoriel
     {
@@ -732,7 +733,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
     {
       return gij;
     }
-
+  ToDo_Kokkos("boundary");
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
       //Boucle sur les bords

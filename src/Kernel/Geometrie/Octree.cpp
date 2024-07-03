@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1147,6 +1147,7 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
   pos[0]=x;
   if(Objet_U::dimension>1) pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
+  // ToDo Kokkos: exemple de virtual function facile a implementer:
   for (int ielem = 0; ielem < sz; ielem++)
     {
 

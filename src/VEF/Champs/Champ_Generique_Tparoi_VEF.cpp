@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -144,6 +144,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
 
                   int num1 = 0;
                   int num2 = le_bord.nb_faces_tot();
+                  ToDo_Kokkos("boundary");
                   for (int ind_face=num1; ind_face<num2; ind_face++)
                     {
                       // Tf est la temperature fluide moyenne dans le premier element

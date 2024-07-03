@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
 
   assert(values.line_size() == nb_components);
   assert(result.line_size() == nb_components || nb_components == 1);
-
+  ToDo_Kokkos("critical");
   for (int i = 0; i < nb_polys; i++)
     {
       int cell = polys(i);
@@ -99,6 +99,7 @@ DoubleVect& Champ_implementation_P0::valeur_aux_elems_compo(const DoubleTab& pos
   assert(result.size() == nb_polys);
 
   assert(values.line_size() == ch_base.nb_comp());
+  ToDo_Kokkos("critical");
   for (int i = 0; i < nb_polys; i++)
     {
       int cell = polys(i);
@@ -124,6 +125,7 @@ int Champ_implementation_P0::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   int nb_elem = domaine.nb_elem();
   polys.resize(nb_elem);
   remplir_coord_noeuds(positions);
+  ToDo_Kokkos("critical");
   for (int i = 0; i < nb_elem; i++) polys(i) = i;
   return 1;
 }
@@ -148,7 +150,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) c
 
   assert(result.line_size() == nb_components);
   assert(values.line_size() == nb_components);
-
+  ToDo_Kokkos("critical");
   for (int i = 0; i < nb_cells; i++)
     for (int j = 0; j < nb_nodes_per_cell; j++)
       {
@@ -188,7 +190,7 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
   assert(ncomp < ch_base.nb_comp());
   assert(result.size() == nb_nodes);
   assert(values.line_size() == ch_base.nb_comp());
-
+  ToDo_Kokkos("critical");
   for (int i = 0; i < nb_cells; i++)
     for (int j = 0; j < nb_nodes_per_cell; j++)
       {
