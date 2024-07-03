@@ -388,7 +388,20 @@ void Solv_Petsc::create_solver(Entree& entree)
             add_option("options_view", "");
             add_option("options_left", "");
           }
-
+        if (!amgx_)
+          {
+            // Changement dans PETSc 3.21: plus de preconditioneur par defaut
+            // On met ILU(0) comme auparavant pour ne pas changer tous les jeux de donnees qui ont: "petsc cli { }"
+            Nom current_pc;
+            Nom option="-";
+            option+=option_prefix_;
+            option+="pc_type";
+            if (!has_option(option, current_pc))
+              {
+                add_option("pc_type", "bjacobi");
+                add_option("sub_pc_type", "ilu");
+              }
+          }
         break;
       }
     case 1:
@@ -1554,7 +1567,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
   PCType type_pc;
   PCGetType(PreconditionneurPetsc_, &type_pc);
-  type_pc_=(Nom)type_pc;
+  if (type_pc) type_pc_=(Nom)type_pc;
 
   // Pas de version CPU de Hypre si PETSc active le support GPU:
 #if defined(PETSC_HAVE_CUDA) || defined(PETSC_HAVE_HIP)
@@ -1826,6 +1839,17 @@ void Solv_Petsc::add_amgx_option(const Nom& key_value)
     }
 }
 
+bool Solv_Petsc::has_option(const Nom& option, Nom& current_value)
+{
+  PetscBool flg;
+  Nom vide="                                                                                                 ";
+  char* tmp=strdup(vide);
+  PetscOptionsGetString(PETSC_NULLPTR,PETSC_NULLPTR,option,tmp,vide.longueur(),&flg);
+  current_value = tmp;
+  free(tmp);
+  return current_value!=vide;
+}
+
 int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
 {
   Nom option="-";
@@ -1845,13 +1869,13 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
   // Il ne dit pas non plus qu'elle est unused avec -options_left
   // Nouveau 1.6.3 pour la ligne de commande reste prioritaire, on ne change une option
   // que si elle n'a pas deja ete specifiee...
-  PetscBool flg;
-  Nom vide="                                                                                                 ";
-  char* tmp=strdup(vide);
-  PetscOptionsGetString(PETSC_NULLPTR,PETSC_NULLPTR,option,tmp,vide.longueur(),&flg);
-  Nom actual_value(tmp);
-  free(tmp);
-  if (actual_value==vide)
+  Nom current_value;
+  if (has_option(option, current_value))
+    {
+      if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << current_value << finl;
+      return 0;
+    }
+  else
     {
       if (value=="")
         {
@@ -1864,11 +1888,6 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
           if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << finl;
         }
       return 1;
-    }
-  else
-    {
-      if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << " not taken cause " << option << " already defined to " << actual_value << finl;
-      return 0;
     }
 }
 
@@ -2795,7 +2814,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
 
       /* DMShell : un objet encapsulant la section */
       DMShellCreate(PETSC_COMM_WORLD, &dm_);
-      DMSetSection(dm_, sec);
+      DMSetLocalSection(dm_, sec);
       DMSetUp(dm_);
       PetscSectionDestroy(&sec);
     }

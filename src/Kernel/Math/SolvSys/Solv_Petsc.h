@@ -136,6 +136,7 @@ protected :
     return nouveau_stencil_;
   }; // ToDo: Remonter dans Solveur_Sys avec nouvelle_matrice
   bool enable_ksp_view();
+  bool has_option(const Nom& option, Nom& current_value);
   int add_option(const Nom& option, const double& value, int cli = 0);
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void add_amgx_option(const Nom& key, const Nom& value, const std::string& comment="");

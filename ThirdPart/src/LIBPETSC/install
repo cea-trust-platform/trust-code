@@ -1,6 +1,7 @@
 #!/bin/bash
 # Script d'installation de PETSC
-package=$1
+# wget https://gitlab.com/petsc/petsc/-/archive/main/petsc-main.tar.gz
+package=petsc-main.tar.gz # 0d22010af3296e66ec9f0dd1bf1a4e5cfa71ec87
 
 ######################################
 # Ajout d'un package au build de PETSc
@@ -66,13 +67,7 @@ minimal_mumps=0 # && [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 scotch=1
 [ $minimal_mumps = 1 ] && scotch=0
 
-if [ "$1" = "" ]
-then
-   echo "Usage: `basename $0` package.tar.gz"
-   exit -1
-fi
-
-if [ $package = check ]
+if [ "$1" = check ]
 then
    #############################################################################################
    # Petsc est installe, on verifie maintenant si MPI_Init fonctionne en sequentiel sans mpirun
@@ -225,6 +220,9 @@ cd $ROOT/$package
 #fix mhypre.c pour PCHMG
 patch -p2 < $DIR/fix_mhypre.patch
 [ $? != 0 ] && echo "Patch fix_mhypre.patch impossible a appliquer!" && exit -1
+#fix strumpack pour magma
+patch -p1 < $DIR/fix_strumpack.patch
+[ $? != 0 ] && echo "Patch fix_strumpack.patch impossible a appliquer!" && exit -1
 # Hack sur topaze, sinon plus de place disque (fichiers sous groupe genden...)
 if [ $HOST = topaze ]
 then
@@ -446,7 +444,12 @@ fi
 if [ "$TRUST_USE_MUMPS" = 1 ] && [ "`uname -m`" != aarch64 ] # configure de PETSc plante sur mumps avec ARM
 then
    # On prend MUMPS (plus performant)
-   add_package MUMPS 5.5.1 # 5.6.1 dans extp : des soucis a regler
+   if [ "$TRUST_USE_OPENBLAS" = 1 ]
+   then
+      add_package MUMPS 5.5.1 # F5 Ecarts // des 5.6.0. TRUST: echg_interne_jdd7 avec NNZ plus grand qu'avant...
+   else
+      add_package MUMPS 5.5.1 # Pas d'ecarts sur F5, G+, C3D
+   fi
 fi
 add_package metis
 
@@ -459,9 +462,10 @@ then
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      add_package magma && with_packages=$with_packages" --with-magma-gputarget=Ampere"
-      # Encore des problemes  de build (cublas_lib not found, cmake slate pas a jour encore?) sur cluster GPU (ex topaze)
-      # ou c'est utile (multi-GPU), et meme sur A6000, cela ne fonctionne pas (MPI_multiple_thread) donc on disable:
+      echo "Not using Magma yet cause slower and limited to 1 GPU..." # See https://github.com/pghysels/STRUMPACK/issues/127
+      # add_package magma && with_packages=$with_packages" --with-magma-gputarget=Ampere"
+      # Slate (multi-gpu) necessite OpenMP et MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+      # On desactive car crash au run
       # add_package slate && with_packages=$with_packages" --with-openmp"
    fi
    add_package STRUMPACK
@@ -494,12 +498,14 @@ then
    # New (SuiteSparse/Cholmod/UmfPack):
    if [ "$minimal_mumps" = 0 ]
    then
-      if [ "$TRUST_DISABLE_SUITESPARSE" != 1 ]
+      if [ "$TRUST_USE_CUDA" = 1 ]
       then
+         # La version GPU (Cholmod) n'est disponible que pour les long (pas pratique...) et cela plante encore sur topaze int64
+         echo "SuiteSparse disabled"
+         #disable_gpu=1 && [ "$TRUST_INT64" = 1 ] && disable_gpu=0
+         #add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=$disable_gpu"
+      else
          add_package SuiteSparse
-         # La version GPU (Cholmod) n'est disponible que pour les long (pas pratique...)
-	       # Et cela plante encore sur topaze int64
-         # [ "$TRUST_INT64" = 1 ] && with_packages=$with_packages" --download-suitesparse-disablegpu=0"
       fi
    fi
    # New (Pastix) pb sous cygwin
@@ -537,9 +543,7 @@ then
    #######
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      # PETSc 3.20 necessite une montee de version pour Hypre sur GPU:
-      [ ! -f ../hypre-2.19.0.tar.gz ] && add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$TRUST_CUDA_CC"
-      # Message cudaErrorNoKernelImageForDevice: no kernel image is available for execution on the device
+      add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$TRUST_CUDA_CC"
    elif [ "$TRUST_USE_ROCM" = 1 ]
    then
       add_package hypre && with_packages=$with_packages" -download-hypre-arguments=--enable-unified-memory"
@@ -626,6 +630,8 @@ do
    then
       export COPTFLAGS=$COPTFLAGS" -Wno-implicit-function-declaration"
    fi
+   # Hack pour ROCm 6.0:
+   #[ -f $ROCM_PATH/include/rocm-core/rocm_version.h ] && sed -i "1,$ s?rocm_version.h?rocm-core/rocm_version.h?g" config/BuildSystem/config/packages/hip.py || exit -1
 
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:

@@ -1,5 +1,5 @@
 lib=../../../lib/src/LIBMETIS/lib/libmetis.a
-metis=metis-5.1.0-p10
+metis=metis-5.1.0-p12
 tar=$(metis).tar.gz
 all:$(lib)
 ifdef TRUST_cc_BASE_EXTP
