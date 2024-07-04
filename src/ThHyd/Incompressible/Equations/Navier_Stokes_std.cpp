@@ -1588,6 +1588,7 @@ int Navier_Stokes_std::impr(Sortie& os) const
               exit();
             }
         }
+#ifndef _OPENMP
       // Since 1.6.6, warning to use PETSc Cholesky instead of an iterative method for pressure solver
       int nw=100;
       if (solveur_pression_->solveur_direct()==0 && le_schema_en_temps->nb_pas_dt()<nw && Process::nproc()<256 && la_pression.valeurs().size_array()<40000)
@@ -1597,6 +1598,7 @@ int Navier_Stokes_std::impr(Sortie& os) const
           Cerr << "For the caracteristics of your problem, it will be faster and give a better mass flow balance." << finl;
           Cerr << "**********************************************************************************************" << finl << finl;
         }
+#endif
     }
 
   if ((seuil_divU < 1.) && (sub_type(solv_iteratif,solveur_pression_.valeur())))
