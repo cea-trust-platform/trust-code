@@ -16,7 +16,6 @@
 #ifndef IJK_Field_local_template_included
 #define IJK_Field_local_template_included
 
-#include <simd_tools.h>
 #include <communications.h>
 #include <stat_counters.h>
 #include <Statistiques.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,12 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Field_simd_tools_included
-#define IJK_Field_simd_tools_included
+#ifndef ConstIJK_ptr_included
+#define ConstIJK_ptr_included
+
 #include <IJK_Field.h>
-#include <simd_tools.h>
 
 enum class DIRECTION { X=0, Y=1, Z=2 };
-
-
-/// \cond DO_NOT_DOCUMENT
-class IJK_Field_simd_tools
-{ };
-/// \endcond
-
 
 /*! @brief This class implements a accessor to IJK_Field values.
  *
@@ -356,38 +349,7 @@ private:
   }
 };
 
-// We can automaticaly cast an IJK_ptr to a constIJK_ptr but not reversed.
-template <typename _TYPE_, typename _TYPE_ARRAY_ >
-class IJK_ptr : public ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>
-{
-public:
-  IJK_ptr(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& field, int i, int j, int k): ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>(field, i, j, k)
-  {
-  }
-  /*! @brief Performs the assignment: field(i+i_offset,j,k) = val
-   *
-   */
-  void put_val(int i_offset, const _TYPE_ & val)
-  {
-    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
-    // cast en non const ok car on avait un IJK_Field non const au depart
-    const _TYPE_ *ptr = this->ptr_;
-    ((_TYPE_*)ptr)[i_offset] = val;
-  }
-  void put_val(int i_offset, const Simd_template<_TYPE_>& val)
-  {
-    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
-    const _TYPE_ *ptr = this->ptr_;
-    SimdPut((_TYPE_*)ptr + i_offset, val);
-  }
-};
-
-
 using ConstIJK_float_ptr = ConstIJK_ptr<float, ArrOfFloat>;
 using ConstIJK_double_ptr = ConstIJK_ptr<double, ArrOfDouble>;
-
-using IJK_float_ptr = IJK_ptr<float, ArrOfFloat>;
-using IJK_double_ptr = IJK_ptr<double, ArrOfDouble>;
-
 
 #endif

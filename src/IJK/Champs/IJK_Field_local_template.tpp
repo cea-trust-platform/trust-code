@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,7 @@
 #ifndef IJK_Field_local_template_TPP_H
 #define IJK_Field_local_template_TPP_H
 
+#include <Simd_template.h>
 
 // External storage: false=>normal behaviour, true=>the field will not allocate memory in data_, the user must
 //  provide the storage via set_external_storage() method (used to map memory from elsewhere).

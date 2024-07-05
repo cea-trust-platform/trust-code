@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,6 @@
 
 #ifndef SSE_Kernels_H_TPP
 #define SSE_Kernels_H_TPP
-#include <simd_tools.h>
 #include <iostream>
 #include <sys/time.h>
 #include <IJK_Field.h>

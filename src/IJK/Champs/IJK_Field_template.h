@@ -21,7 +21,6 @@
 #include <IJK_Splitting.h>
 #include <stat_counters.h>
 #include <Statistiques.h>
-#include <simd_tools.h>
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 

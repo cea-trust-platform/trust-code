@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,6 @@
 *****************************************************************************/
 
 #include <Test_SSE_Kernels.h>
-#include <simd_tools.h>
 #include <iostream>
 #include <sys/time.h>
 #include <IJK_Field.h>

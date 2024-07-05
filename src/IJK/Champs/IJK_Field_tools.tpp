@@ -18,7 +18,6 @@
 
 #include <stat_counters.h>
 #include <Statistiques.h>
-#include <simd_tools.h>
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 double norme_ijk(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu)

@@ -22,7 +22,6 @@
 #include <IJK_Splitting.h>
 #include <Statistiques.h>
 #include <TRUST_Vector.h>
-#include <simd_tools.h>
 #include <TRUSTVect.h>
 
 /*! @brief This is an array with [] operator.

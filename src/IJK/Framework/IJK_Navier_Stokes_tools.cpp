@@ -15,7 +15,7 @@
 
 #include <IJK_Navier_Stokes_tools.h>
 #include <Parser.h>
-#include <IJK_Field_simd_tools.h>
+#include <IJK_ptr.h>
 #include <EChaine.h>
 #include <SChaine.h>
 #include <Interprete_bloc.h>

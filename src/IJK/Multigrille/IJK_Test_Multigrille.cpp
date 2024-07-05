@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #include <IJK_Test_Multigrille.h>
 #include <Statistiques.h>
 #include <Interprete_bloc.h>
-#include <simd_tools.h>
 
 Implemente_instanciable(IJK_Test_Multigrille, "IJK_Test_Multigrille", Interprete);
 
