@@ -12,10 +12,12 @@ else
   if [[ "$1" == *.ipynb ]]; then           ze_file=$1;              fi
   if ls $1/*.ipynb 1>/dev/null 2>&1; then  ze_file=`ls $1/*.ipynb`; fi
   if [ "$ze_file" != "" ]; then
+    # Make sure we build/execute in the proper dir! A potential '-dest' option is passed in the JUPYTER_RUN_OPTIONS variable:
+    # This will be interpreted by the run.py API.
     # Some notebooks invoke local Python scripts, so amend PYTHONPATH temporarily:
     src_dir=`readlink -f $(dirname $ze_file)`/src
     PYTHONPATH=$src_dir:$PYTHONPATH
-    python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | wc -l
+    env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | wc -l
   else
     echo "Something wrong ... neither PRM nor Jupyter in this folder, NR cases should be removed"
     #exit -1
