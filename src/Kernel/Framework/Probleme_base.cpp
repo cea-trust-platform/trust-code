@@ -1012,6 +1012,8 @@ void Probleme_base::preparer_calcul()
   // Rq : Si l'une des equations porte la condition a la limite periodique
   //      alors les autres doivent forcement la porter.
   equation(0).domaine_dis().modifier_pour_Cl(equation(0).domaine_Cl_dis().les_conditions_limites());
+  for (int i = 0; i < nombre_d_equations(); i++)
+    equation(i).inconnue().changer_temps(temps), equation(i).domaine_Cl_dis().initialiser(temps);
   milieu().initialiser(temps);
   for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).preparer_calcul();
