@@ -907,9 +907,7 @@ int Equation_base::preparer_calcul()
   initialise_residu();
   double temps=schema_temps().temps_courant();
   inconnue().verifie_valeurs_cl();
-  inconnue().changer_temps(temps);
   if (calculate_time_derivative()) derivee_en_temps().changer_temps(temps);
-  le_dom_Cl_dis->initialiser(temps);
 
   Nom msg=que_suis_je();
   msg+=" dans Equation_base::preparer_calcul 1";
