@@ -50,7 +50,7 @@ then
       [ -f libcmumps.a ] && PETSC_L=$PETSC_L" cmumps dmumps mumps_common smumps zmumps pord"
       [ -f libpastix.a ] && PETSC_L=$PETSC_L" pastix"
       [ -f libml.a ] && PETSC_L=$PETSC_L" ml"
-      for lib in HYPRE strumpack sbutterflypack dbutterflypack cbutterflypack zbutterflypack zfp slate blaspp lapackpp scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetisv3 ptscotch scotch scotcherr scotcherrexit Vc
+      for lib in HYPRE strumpack sbutterflypack dbutterflypack cbutterflypack zbutterflypack zfp slate blaspp lapackpp scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetisv3 ptscotch scotch scotcherr scotcherrexit 
       do
          [ -f lib$lib.a ] && PETSC_L=$PETSC_L" $lib"
       done
@@ -175,14 +175,6 @@ else
 fi
 [ "$sys" -eq 0 ] && ALL_P=$ALL_P" "$LAPACK_P
 ALL_L=$ALL_L" "$LAPACK_L
-
-####
-# VC
-####
-if [ "$TRUST_DISABLE_VC" != 1 ]; then
-    ALL_P=$ALL_P" \$ENV{TRUST_ROOT}/lib/src/LIBVC/lib"
-    ALL_L=$ALL_L" Vc"
-fi
 
 ######
 # CGNS
