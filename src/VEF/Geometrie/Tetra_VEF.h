@@ -164,7 +164,7 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
 #pragma omp end declare target
 
 KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, const double * vs, const double * vsom,
-                                                  CDoubleTabView vitesse_v,True_int type_cl, CDoubleArrView porosite_face_v)
+                                                  CDoubleTabView vitesse,True_int type_cl, CDoubleArrView porosite_face)
 {
   // Passage (justifie vue la taille) en True_int de type_cl et comp car bug nvc++ sinon
   True_int comp;
@@ -181,28 +181,28 @@ KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, c
     case 1: // le tetraedre a une Face de Dirichlet : KEL3
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse_v(Face[3], comp) * porosite_face_v(Face[3]);
+          vc[comp] = vitesse(Face[3], comp) * porosite_face(Face[3]);
         break;
       }
 
     case 2: // le tetraedre a une Face de Dirichlet : KEL2
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse_v(Face[2], comp) * porosite_face_v(Face[2]);
+          vc[comp] = vitesse(Face[2], comp) * porosite_face(Face[2]);
         break;
       }
 
     case 4: // le tetraedre a une Face de Dirichlet : KEL1
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse_v(Face[1], comp) * porosite_face_v(Face[1]);
+          vc[comp] = vitesse(Face[1], comp) * porosite_face(Face[1]);
         break;
       }
 
     case 8: // le tetraedre a une Face de Dirichlet : KEL0
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse_v(Face[0], comp) * porosite_face_v(Face[0]);
+          vc[comp] = vitesse(Face[0], comp) * porosite_face(Face[0]);
         break;
       }
 

@@ -48,7 +48,8 @@ public:
 
   //Methodes annexes
   void remplir_fluent() const override;
-  int is_compressible() const;
+  //int is_compressible() const { return 1;/* is_compressible_; */ }
+
   void completer() override;
 
   //Methodes pour l'explicite
@@ -80,17 +81,16 @@ private :
   DoubleTab& ajouter_antidiffusion_v2(const DoubleTab&, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
 
 
-  inline void calculer_senseur_v1(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
-  inline void calculer_senseur_v2(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
+  KOKKOS_INLINE_FUNCTION void calculer_senseur(CDoubleTabView3, CDoubleTabView4, CDoubleArrView, const int, const int, const int, CIntTabView, CIntTabView, CIntTabView, double&, double&, double&, double&) const;
   void mettre_a_jour_pour_periodicite(const DoubleTab&,const DoubleTab&,DoubleTab&) const;
   void calculer_data_pour_dirichlet();
 
   //Attributs de la classe
   IntTab is_element_for_upwinding_;
-  IntTab is_dirichlet_faces_;
+  IntVect is_dirichlet_faces_;
 
-  ArrOfDouble alpha_tab;
-  ArrOfDouble beta; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
+  //ArrOfDouble alpha_tab;
+  //ArrOfDouble beta_; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.
   //  mutable DoubleTab limiteurs_;//tableau stockant pour chaque face la moyenne algebrique du limiteur
 
   double max_limiteur_ = 1.;
@@ -101,11 +101,11 @@ private :
   int version_ = 2;
   int facsec_auto_ = 0;
 
-//  bool sous_domaine;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
+  // bool sous_domaine;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_domaine;
-  REF(Sous_domaine_VF) le_sous_domaine_dis;
+  //REF(Sous_domaine_VF) le_sous_domaine_dis;
 
-  double (*limiteur_)(double)=nullptr;
+  //double (*limiteur_)(double)=nullptr;
 
 };
 
@@ -113,11 +113,6 @@ inline void Op_Conv_Muscl_New_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
                                                           Matrice_Morse& matrice) const
 {
   ajouter_contribution(inco, matrice);
-}
-
-inline int Op_Conv_Muscl_New_VEF_Face::is_compressible() const
-{
-  return 1;/* is_compressible_; */
 }
 
 #endif

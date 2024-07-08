@@ -29,14 +29,16 @@
 #include <Echange_impose_base.h>
 #include <Periodique.h>
 #include <Neumann_sortie_libre.h>
+#include <Tetra_VEF.h>
+#include <Tri_VEF.h>
 
-static inline double minmod(double r)
+static KOKKOS_INLINE_FUNCTION double minmod(double r)
 {
   if (r<=0.) return 0.;
   if (r<=1.) return r;
   else return 1.;
 }
-static inline double optimum(double a, double b)
+static KOKKOS_INLINE_FUNCTION double optimum(double a, double b)
 {
   if (a>=0.)
     if (b>=0.)
@@ -60,6 +62,7 @@ Sortie& Op_Conv_Muscl_New_VEF_Face::printOn(Sortie& s ) const
 Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
 {
   //Les mots a reconnaitre
+  /*
   Motcles les_mots(8);
   {
     les_mots[0] = "centre";
@@ -76,11 +79,11 @@ Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
     les_mots2[0] = "vanleer";
     les_mots2[1] = "minmod";
     les_mots2[2] = "superbee";
-  }
+  } */
 
   //Les variables a instancier
   alpha_=1.;
-  limiteur_=&minmod;
+  //limiteur_=&minmod;
 
   return s;
 }
@@ -93,188 +96,119 @@ Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
 //
 ////////////////////////////////////////////////////////////////////
 
-void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTab& Kij, DoubleTab& Cij, DoubleTab& Sij, DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity) const
+void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTab& tab_Kij, DoubleTab& tab_Cij, DoubleTab& tab_Sij, DoubleTab& tab_Sij2, const int nb_comp, const DoubleTab& tab_velocity) const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-
-  const DoubleTab& facette_normales = domaine_VEF.facette_normales();
-  const DoubleTab& facette_normales_Cl = domaine_Cl_VEF.normales_facettes_Cl();
-  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-  const DoubleVect& porosite_face = equation().milieu().porosite_face();
-
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
-
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem = domaine_VEF.elem_faces().dimension(1);
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
-  const int nb_som_elem = domaine_VEF.domaine().nb_som_elem();
   const int marq = phi_u_transportant(equation());
+  int nb_dim = Objet_U::dimension;
 
-  ArrOfDouble vc(Objet_U::dimension);
-  ArrOfDouble vs(Objet_U::dimension);
-  DoubleTab vsom(nb_som_elem,Objet_U::dimension);
+  assert(tab_Kij.nb_dim()==3);
+  assert(tab_Kij.dimension(0)==nb_elem_tot);
+  assert(tab_Kij.dimension(1)==tab_Kij.dimension(2));
+  assert(tab_Kij.dimension(1)==nb_faces_elem);
 
-  ArrOfInt face(Objet_U::dimension+1);
+  assert(tab_Cij.nb_dim()==2);
+  assert(tab_Cij.dimension(0)==nb_elem_tot);
+  assert(tab_Cij.dimension(1)==nfa7);
 
-  assert(Kij.nb_dim()==3);
-  assert(Kij.dimension(0)==nb_elem_tot);
-  assert(Kij.dimension(1)==Kij.dimension(2));
-  assert(Kij.dimension(1)==nb_faces_elem);
+  assert(tab_Sij.nb_dim()==2);
+  assert(tab_Sij.dimension(0)==nb_elem_tot);
+  assert(tab_Sij.dimension(1)==nfa7);
 
-  assert(Cij.nb_dim()==2);
-  assert(Cij.dimension(0)==nb_elem_tot);
-  assert(Cij.dimension(1)==nfa7);
-
-  assert(Sij.nb_dim()==2);
-  assert(Sij.dimension(0)==nb_elem_tot);
-  assert(Sij.dimension(1)==nfa7);
-
-  if (Objet_U::dimension==3)
+  if (nb_dim==3)
     {
-      assert(Sij2.nb_dim()==2);
-      assert(Sij2.dimension(0)==nb_elem_tot);
-      assert(Sij2.dimension(1)==nfa7);
+      assert(tab_Sij2.nb_dim()==2);
+      assert(tab_Sij2.dimension(0)==nb_elem_tot);
+      assert(tab_Sij2.dimension(1)==nfa7);
     }
 
   //
   //Calcul des coefficients de l'operateur
   //
-  ToDo_Kokkos("critical");
-  for(int elem=0; elem<nb_elem_tot; elem++)
-    {
-      int rang=rang_elem_non_std(elem);
-      int itypcl=(rang==-1)?0:domaine_Cl_VEF.type_elem_Cl(rang);
+  CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view3_ro();
+  CDoubleTabView3 facette_normales_Cl = domaine_Cl_VEF.normales_facettes_Cl().view3_ro();
+  CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
+  CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+  CDoubleTabView velocity = tab_velocity.view_ro();
+  CDoubleTabView vitesse = vitesse_.valeur().valeurs().view_ro();
+  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+  CDoubleArrView porosite_elem = equation().milieu().porosite_elem().view_ro();
+  CIntArrView type_elem_Cl = domaine_Cl_VEF.type_elem_Cl().view_ro();
+  CIntTabView KEL = domaine_VEF.type_elem().valeur().KEL().view_ro();
+  DoubleTabView Cij = tab_Cij.view_wo();
+  DoubleTabView Sij = tab_Sij.view_wo();
+  DoubleTabView Sij2 = tab_Sij2.view_wo();
+  DoubleTabView3 Kij = tab_Kij.view3_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    double vc[3];
+    double vs[3];
+    double vsom[12];
+    int face[4];
+    int rang=rang_elem_non_std(elem);
+    int itypcl=(rang==-1)?0:type_elem_Cl(rang);
 
+    for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
+      face[facei_loc]=elem_faces(elem,facei_loc);
+
+    for (int dim=0; dim<nb_dim; dim++)
+      {
+        vc[dim] = 0;
+        vs[dim] = 0;
+        for (int facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
+          vs[dim] += velocity(face[facei_loc], dim);
+      }
+    for (int dim=0; dim<nb_dim; dim++)
       for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-        face[facei_loc]=elem_faces(elem,facei_loc);
+        vsom[facei_loc*nb_dim+dim]=vs[dim]-nb_dim*velocity(face[facei_loc],dim);
 
-      vs=0.;
-      for (int dim=0; dim<Objet_U::dimension; dim++)
-        for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-          vs[dim]+=velocity(face[facei_loc],dim);
+    //domaine_VEF.type_elem().valeur().calcul_vc(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
+    if (nb_dim==3)
+      calcul_vc_tetra_views(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
+    else
+      calcul_vc_tri_views(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
 
-      vsom=0;
-      for (int dim=0; dim<Objet_U::dimension; dim++)
-        for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-          vsom(facei_loc,dim)=vs[dim]-Objet_U::dimension*velocity(face[facei_loc],dim);
+    if (marq==0)
+      {
+        double porosite=1./porosite_elem(elem);
+        for (int dim=0; dim<nb_dim; dim++)
+          {
+            for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
+              vsom[facei_loc*nb_dim+dim] *= porosite;
+            vs[dim] *= porosite;
+            vc[dim] *= porosite;
+          }
+      }
+    for (int fa7=0; fa7<nfa7; fa7++)
+      {
+        int facei_loc=KEL(0,fa7);
+        int facej_loc=KEL(1,fa7);
 
-      vc=0.;
-      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,(*this).vitesse(),itypcl,porosite_face);
-      if (marq==0)
-        {
-          double porosite=1./porosite_elem(elem);
+        Cij(elem,fa7)=0.;
+        Sij(elem,fa7)=0.;
+        Sij2(elem,fa7)=0.;
+        for (int dim=0; dim<nb_dim; dim++)
+          {
+            double facette_normale = (rang==-1 ? facette_normales(elem, fa7, dim) : facette_normales_Cl(rang,fa7,dim));
+            Cij(elem, fa7) += vc[dim] * facette_normale;
+            Sij(elem, fa7) += vsom[KEL(2, fa7) * nb_dim + dim] * facette_normale;
+            if (nb_dim == 3) Sij2(elem, fa7) += vsom[KEL(3, fa7) * nb_dim + dim] * facette_normale;
+          }
+        double psc=Cij(elem,fa7)+Sij(elem,fa7)+Sij2(elem,fa7);
+        psc/=nb_dim;
 
-          vsom*=porosite;
-          vs*=porosite;
-          vc*=porosite;
-        }
-
-      if (Objet_U::dimension==2)
-        {
-          if (rang==-1)
-            for (int fa7=0; fa7<nfa7; fa7++)
-              {
-                int facei_loc=KEL(0,fa7);
-                int facej_loc=KEL(1,fa7);
-
-                Cij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc[dim]*facette_normales(elem,fa7,dim);
-
-                Sij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij(elem,fa7)+=vsom(KEL(2,fa7),dim)*facette_normales(elem,fa7,dim);
-
-                double psc=Cij(elem,fa7)+Sij(elem,fa7);
-                psc*=0.5;
-
-                Kij(elem,facei_loc,facej_loc)=psc;
-                Kij(elem,facei_loc,facei_loc)-=psc;//pour l'aspect LED
-                Kij(elem,facej_loc,facei_loc)=-psc;
-                Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
-              }
-          else //rang!=-1
-            for (int fa7=0; fa7<nfa7; fa7++)
-              {
-                int facei_loc=KEL(0,fa7);
-                int facej_loc=KEL(1,fa7);
-
-                Cij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc[dim]*facette_normales_Cl(rang,fa7,dim);
-
-                Sij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij(elem,fa7)+=vsom(KEL(2,fa7),dim)*facette_normales_Cl(rang,fa7,dim);
-
-                double psc=Cij(elem,fa7)+Sij(elem,fa7);
-                psc*=0.5;
-
-                Kij(elem,facei_loc,facej_loc)=psc;
-                Kij(elem,facei_loc,facei_loc)-=psc;//pour l'aspect LED
-                Kij(elem,facej_loc,facei_loc)=-psc;
-                Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
-              }
-        }//fin Objet_U::dimension==2
-      else //Objet_U::dimension==3
-        {
-          if (rang==-1)
-            for (int fa7=0; fa7<nfa7; fa7++)
-              {
-                int facei_loc=KEL(0,fa7);
-                int facej_loc=KEL(1,fa7);
-
-                Cij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc[dim]*facette_normales(elem,fa7,dim);
-
-                Sij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij(elem,fa7)+=vsom(KEL(2,fa7),dim)*facette_normales(elem,fa7,dim);
-
-                Sij2(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij2(elem,fa7)+=vsom(KEL(3,fa7),dim)*facette_normales(elem,fa7,dim);
-
-                double psc=Cij(elem,fa7)+Sij(elem,fa7)+Sij2(elem,fa7);
-                psc/=3.;
-
-                Kij(elem,facei_loc,facej_loc)=psc;
-                Kij(elem,facei_loc,facei_loc)-=psc;//pour l'aspect LED
-                Kij(elem,facej_loc,facei_loc)=-psc;
-                Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
-              }
-          else //rang!=-1
-            for (int fa7=0; fa7<nfa7; fa7++)
-              {
-                int facei_loc=KEL(0,fa7);
-                int facej_loc=KEL(1,fa7);
-
-                Cij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc[dim]*facette_normales_Cl(rang,fa7,dim);
-
-                Sij(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij(elem,fa7)+=vsom(KEL(2,fa7),dim)*facette_normales_Cl(rang,fa7,dim);
-
-                Sij2(elem,fa7)=0.;
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  Sij2(elem,fa7)+=vsom(KEL(3,fa7),dim)*facette_normales_Cl(rang,fa7,dim);
-
-                double psc=Cij(elem,fa7)+Sij(elem,fa7)+Sij2(elem,fa7);
-                psc/=3.;
-
-                Kij(elem,facei_loc,facej_loc)=psc;
-                Kij(elem,facei_loc,facei_loc)-=psc;//pour l'aspect LED
-                Kij(elem,facej_loc,facei_loc)=-psc;
-                Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
-              }
-        }//fin Objet_U::dimension==3
-    }
+        Kij(elem,facei_loc,facej_loc)=psc;
+        Kij(elem,facei_loc,facei_loc)-=psc;//pour l'aspect LED
+        Kij(elem,facej_loc,facei_loc)=-psc;
+        Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
+      }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   //
   // Correction des Kij pour Dirichlet !
@@ -353,11 +287,11 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  int nb_dim = Objet_U::dimension;
 
-
-  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
-  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
-  IntTab face(Objet_U::dimension+1);
+  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,nb_dim);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, nb_dim);  // (du/dx du/dy dv/dx dv/dy) pour un poly
+  IntTab face(nb_dim+1);
 
   assert(Fij.nb_dim()==4);
   assert(Fij.dimension(0)==nb_elem_tot);
@@ -377,7 +311,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
       for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
         face(facei_loc)=elem_faces(elem,facei_loc);
 
-      if (Objet_U::dimension==2)
+      if (nb_dim==2)
         {
           if (rang==-1)
             for (int fa7=0; fa7<nfa7; fa7++)
@@ -411,11 +345,11 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   {
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule de Simspon
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
 
                     double inco_s=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s+=gradient_elem(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
 
                     double inco_c=2.*inco_m-inco_s;
@@ -464,11 +398,11 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   {
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule de Simspon
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
 
                     double inco_s=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s+=gradient_elem(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
 
                     double inco_c=2.*inco_m-inco_s;
@@ -485,8 +419,8 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                     Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect[facej*nb_comp+comp]-flux;
                   }
               }
-        }//fin Objet_U::dimension==2
-      else //Objet_U::dimension==3
+        }//fin nb_dim==2
+      else //nb_dim==3
         {
           if (rang==-1)
             for (int fa7=0; fa7<nfa7; fa7++)
@@ -522,15 +456,15 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   {
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule 3D
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
 
                     double inco_s=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s+=gradient_elem(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
 
                     double inco_s2=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s2+=gradient_elem(elem,comp,dim)*(coord_sommets(s2,dim)-xv(face_amont,dim));
 
                     double inco_c=3.*inco_m-inco_s-inco_s2;
@@ -581,15 +515,15 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   {
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule 3D
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
 
                     double inco_s=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s+=gradient_elem(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
 
                     double inco_s2=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_s2+=gradient_elem(elem,comp,dim)*(coord_sommets(s2,dim)-xv(face_amont,dim));
 
                     double inco_c=3.*inco_m-inco_s-inco_s2;
@@ -606,7 +540,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                     Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect[facej*nb_comp+comp]-flux;
                   }
               }
-        }//fin Objet_U::dimension==3
+        }//fin nb_dim==3
     }
 }
 
@@ -628,10 +562,11 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  int nb_dim = Objet_U::dimension;
 
-  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,nb_dim);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
   if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
-  IntTab face(Objet_U::dimension+1);
+  IntTab face(nb_dim+1);
 
   assert(Fij.nb_dim()==4);
   assert(Fij.dimension(0)==nb_elem_tot);
@@ -688,7 +623,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   {
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule du point milieu
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
-                    for(int dim=0; dim<Objet_U::dimension; dim++)
+                    for(int dim=0; dim<nb_dim; dim++)
                       inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
 
                     //Calcul du flux final : formule du point milieu
@@ -730,7 +665,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 {
                   //Calcul de la valeur de l'inconnue aux points d'integration de la formule du point milieu
                   double inco_m=transporteVect[face_amont*nb_comp+comp];
-                  for(int dim=0; dim<Objet_U::dimension; dim++)
+                  for(int dim=0; dim<nb_dim; dim++)
                     inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
 
                   //Calcul du flux final : formule d'integration du point milieu
@@ -749,22 +684,24 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
 void Op_Conv_Muscl_New_VEF_Face::remplir_fluent() const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const Champ_Inc_base& la_vitesse=vitesse_.valeur();
-  const DoubleTab& velocity=la_vitesse.valeurs();
-  const DoubleTab& face_normales=domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces();
+  const int dim = dimension;
   // calcul de la CFL.
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
-  fluent_ = 0;
-  ToDo_Kokkos("critical");
-  for(int num_face=0; num_face<nb_faces; num_face++)
-    {
-      double psc=0.;
-      for (int i=0; i<dimension; i++)
-        psc+=velocity(num_face,i)*face_normales(num_face,i);
-      fluent_(num_face)=std::fabs(psc);
-    }
+  CDoubleTabView face_normales=domaine_VEF.face_normales().view_ro();
+  CDoubleTabView velocity=vitesse_.valeur().valeurs().view_ro();
+  DoubleArrView fluent = fluent_.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_faces), KOKKOS_LAMBDA(
+                         const int num_face)
+  {
+    double psc=0.;
+    for (int i=0; i<dim; i++)
+      psc+=velocity(num_face,i)*face_normales(num_face,i);
+    fluent(num_face)=std::fabs(psc);
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 
@@ -798,16 +735,12 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
   // cela depend si on transporte avec phi u ou avec u.
   const DoubleTab& velocity=modif_par_porosite_si_flag(vitesse_2,vitesse_face_,marq,porosite_face);
 
+  // ToDo Kokkos (voir allocation):
   DoubleTab Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
   DoubleTab Fij(nb_elem_tot,nb_faces_elem,nb_faces_elem,nb_comp);
   DoubleTab Cij(nb_elem_tot,nfa7);
   DoubleTab Sij(nb_elem_tot,nfa7);
-  DoubleTab Sij2;
-  if (Objet_U::dimension==3)
-    {
-      Sij2.resize(nb_elem_tot,nfa7);
-      Sij2=0.;
-    }
+  DoubleTab Sij2(nb_elem_tot,nfa7);
 
   //Pour tenir compte des conditions de Neumann sortie libre
 
@@ -1084,74 +1017,86 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
 }
 
 DoubleTab&
-Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleTab& transporte, DoubleTab& resu) const
+Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, const DoubleTab& tab_Fij, const DoubleTab& tab_transporte, DoubleTab& tab_resu) const
 {
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
-
-  const IntTab& elem_faces=domaine_VEF.elem_faces();
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
-
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
   const int premiere_face_int = domaine_VEF.premiere_face_int();
   const int nb_faces = domaine_VEF.nb_faces();
 
   int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  const DoubleVect& transporteV = transporte;
-  DoubleVect& resuV = resu;
+  if (tab_transporte.nb_dim()!=1) nb_comp=tab_transporte.dimension(1);
 
   //Faces internes
-  ToDo_Kokkos("critical");
-  for (int elem=0; elem<nb_elem_tot; elem++)
-    for (int fa7=0; fa7<nfa7; fa7++)
-      {
-        int facei_loc=KEL(0,fa7);
-        int  facej_loc=KEL(1,fa7);
+  {
+    CIntTabView KEL = domaine_VEF.type_elem().valeur().KEL().view_ro();
+    CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+    CDoubleTabView4 Fij = tab_Fij.view4_ro();
+    DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+    Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                         Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
+                           const int elem)
+    {
+      for (int fa7 = 0; fa7 < nfa7; fa7++)
+        {
+          int facei_loc = KEL(0, fa7);
+          int facej_loc = KEL(1, fa7);
 
-        int facei=elem_faces(elem,facei_loc);
-        int facej=elem_faces(elem,facej_loc);
+          int facei = elem_faces(elem, facei_loc);
+          int facej = elem_faces(elem, facej_loc);
 
-        for (int dim=0; dim<nb_comp; dim++)
-          {
-            double fij=Fij(elem,facei_loc,facej_loc,dim);
-            double fji=Fij(elem,facej_loc,facei_loc,dim);
+          for (int dim = 0; dim < nb_comp; dim++)
+            {
+              double fij = Fij(elem, facei_loc, facej_loc, dim);
+              double fji = Fij(elem, facej_loc, facei_loc, dim);
 
-            int  ligne=facei*nb_comp+dim;
-            int  colonne=facej*nb_comp+dim;
+              int ligne = facei * nb_comp + dim;
+              int colonne = facej * nb_comp + dim;
 
-            resuV[ligne]+=fij;
-            resuV[colonne]+=fji;
-          }
-      }
+              Kokkos::atomic_add(&resuV[ligne], fij);
+              Kokkos::atomic_add(&resuV[colonne], fji);
+            }
+        }
+    });
+    end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  }
 
   if (old_centered_)
-    for (int facei=premiere_face_int; facei<nb_faces; facei++)
+    {
+      CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+      CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+      CDoubleTabView3 Kij = tab_Kij.view3_ro();
+      CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
+      DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                           Kokkos::RangePolicy<>(premiere_face_int, nb_faces), KOKKOS_LAMBDA(
+                             const int facei)
       {
         //Premier voisin
-        int  elem=face_voisins(facei,0);
-        int   facei_loc=num_fac_loc(facei,0);
-        assert(elem_faces(elem,facei_loc)==facei);
-
-        double fij=Kij(elem,facei_loc,facei_loc);
+        int elem = face_voisins(facei, 0);
+        int facei_loc = num_fac_loc(facei, 0);
+#ifndef _OPENMP
+        assert(elem_faces(elem, facei_loc) == facei);
+#endif
+        double fij = Kij(elem, facei_loc, facei_loc);
 
         //Deuxieme voisin
-        elem=face_voisins(facei,1);
-        facei_loc=num_fac_loc(facei,1);
-        assert(elem_faces(elem,facei_loc)==facei);
+        elem = face_voisins(facei, 1);
+        facei_loc = num_fac_loc(facei, 1);
+#ifndef _OPENMP
+        assert(elem_faces(elem, facei_loc) == facei);
+#endif
+        fij += Kij(elem, facei_loc, facei_loc);
 
-        fij+=Kij(elem,facei_loc,facei_loc);
-
-        for (int dim=0; dim<nb_comp; dim++)
+        for (int dim = 0; dim < nb_comp; dim++)
           {
-            int ligne=facei*nb_comp+dim;
-            resuV[ligne]-=fij*transporteV[ligne];
+            int ligne = facei * nb_comp + dim;
+            resuV[ligne] -= fij * transporteV[ligne];
           }
-      }
-
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+    }
 
   //Faces de bord
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
@@ -1167,30 +1112,36 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
           const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
+          CIntArrView num_face = le_bord.num_face().view_ro();
+          CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
+          CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+          CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+          CDoubleTabView3 Kij = tab_Kij.view3_ro();
+          CDoubleTabView val_ext = la_sortie_libre.tab_ext().view_ro();
+          DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                               Kokkos::RangePolicy<>(0, num2), KOKKOS_LAMBDA(
+                                 const int ind_face)
+          {
+            int facei=num_face(ind_face);
+            int facei_loc=num_fac_loc(facei,0);
+            int elem=face_voisins(facei,0);
+            double psc=Kij(elem,facei_loc,facei_loc);//ATTENTION : SUPPOSE QU'ON EST a DIVERGENCE NULLE
 
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              int facei=le_bord.num_face(ind_face);
-              int facei_loc=num_fac_loc(facei,0);
-              int elem=face_voisins(facei,0);
-              assert(elem_faces(elem,facei_loc)==facei);
-
-
-              double psc=Kij(elem,facei_loc,facei_loc);//ATTENTION : SUPPOSE QU'ON EST a DIVERGENCE NULLE
-
-              if (psc>=0.)
+            if (psc>=0.)
+              {
+                //On ne fait rien car on en a deja tenu compte dans l'operateur centre
+              }
+            else
+              for (int dim=0; dim<nb_comp; dim++)
                 {
-                  //On ne fait rien car on en a deja tenu compte dans l'operateur centre
+                  //On modifie car on a tenu compte dans l'operateur centre de psc*tansporteV[ligne]
+                  int ligne=facei*nb_comp+dim;
+                  resuV[ligne]+=psc*(val_ext(facei,dim)-transporteV[ligne]);
                 }
-              else
-                for (int dim=0; dim<nb_comp; dim++)
-                  {
-                    //On modifie car on a tenu compte dans l'operateur centre de psc*tansporteV[ligne]
-                    int ligne=facei*nb_comp+dim;
-                    resuV[ligne]+=psc*(la_sortie_libre.val_ext(facei,dim)-transporteV[ligne]);
-                  }
 
-            }//fin du for sur "face_i"
+          });//fin du for sur "face_i"
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
         }//fin du if sur "Neumann"
 
@@ -1198,64 +1149,66 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const
 
 
   //Retour du resultat
-  return resu;
+  return tab_resu;
 }
 
 DoubleTab&
-Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& Kij,const DoubleTab& Fij, const DoubleTab& transporte, DoubleTab& resu) const
+Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& tab_Kij,const DoubleTab& tab_Fij, const DoubleTab& tab_transporte, DoubleTab& tab_resu) const
 {
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
-
-  const IntTab& elem_faces=domaine_VEF.elem_faces();
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
-
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
-
   int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-
-  DoubleVect& resuV = resu;
-
+  if (tab_transporte.nb_dim()!=1) nb_comp=tab_transporte.dimension(1);
+  double alpha = alpha_;
   //Pour les faces internes
-  ToDo_Kokkos("critical");
-  for (int elem=0; elem<nb_elem_tot; elem++)
-    for (int fa7=0; fa7<nfa7; fa7++)
+  CIntTabView KEL=domaine_VEF.type_elem().valeur().KEL().view_ro();
+  CIntTabView elem_faces=domaine_VEF.elem_faces().view_ro();
+  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    for (int fa7 = 0; fa7 < nfa7; fa7++)
       {
-        int facei_loc=KEL(0,fa7);
-        int facej_loc=KEL(1,fa7);
+        int facei_loc = KEL(0, fa7);
+        int facej_loc = KEL(1, fa7);
 
-        int facei=elem_faces(elem,facei_loc);
-        int facej=elem_faces(elem,facej_loc);
+        int facei = elem_faces(elem, facei_loc);
+        int facej = elem_faces(elem, facej_loc);
 
-        double psc=Kij(elem,facei_loc,facej_loc);
+        double psc = Kij(elem, facei_loc, facej_loc);
 
-        for (int dim=0; dim<nb_comp; dim++)
+        for (int dim = 0; dim < nb_comp; dim++)
           {
-            double fij=alpha_*Fij(elem,facei_loc,facej_loc,dim);
-            double fji=alpha_*Fij(elem,facej_loc,facei_loc,dim);
+            double fij = alpha * Fij(elem, facei_loc, facej_loc, dim);
+            double fji = alpha * Fij(elem, facej_loc, facei_loc, dim);
 
-            int ligne=facei*nb_comp+dim;
-            int colonne=facej*nb_comp+dim;
+            int ligne = facei * nb_comp + dim;
+            int colonne = facej * nb_comp + dim;
 
-            if (psc>=0.)
+            if (psc >= 0.)
               {
-                resuV[ligne]-=fij;
-                resuV[colonne]+=fij;
+                Kokkos::atomic_sub(&resuV[ligne], fij);
+                Kokkos::atomic_add(&resuV[colonne], fij);
               }
             else
               {
-                resuV[ligne]+=fji;
-                resuV[colonne]-=fji;
+                Kokkos::atomic_add(&resuV[ligne], fji);
+                Kokkos::atomic_sub(&resuV[colonne], fji);
               }
           }
       }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   //Pour les faces de bord :
   //ON N'A RIEN a FAIRE
 
   //Retour du resultat
-  return resu;
+  return tab_resu;
 }
 
 DoubleTab&
@@ -1282,219 +1235,214 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion(const DoubleTab& Kij, const Do
 }
 
 DoubleTab&
-Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const DoubleTab& Fij,const DoubleTab& transporte, DoubleTab& resu) const
+Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& tab_Kij, const DoubleTab& tab_Fij,const DoubleTab& tab_transporte, DoubleTab& tab_resu) const
 {
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
-
-  const DoubleVect& transporteV = transporte;
-
-  const IntTab& elem_faces=domaine_VEF.elem_faces();
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
-
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
-
   int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
+  if (tab_transporte.nb_dim()!=1) nb_comp=tab_transporte.dimension(1);
 
-  //Pour le limiteur
-  ArrOfDouble P_plus(nb_comp),P_moins(nb_comp);
-  ArrOfDouble Q_plus(nb_comp),Q_moins(nb_comp);
-  P_plus=0., P_moins=0.;
-  Q_plus=0., Q_moins=0.;
-
-  DoubleVect& resuV = resu;
-
+  double alpha = alpha_;
   //Pour les faces internes
-  ToDo_Kokkos("critical");
-  for (int elem=0; elem<nb_elem_tot; elem++)
-    for (int fa7=0; fa7<nfa7; fa7++)
-      {
-        int facei_loc=KEL(0,fa7);
-        int facej_loc=KEL(1,fa7);
+  CIntTabView KEL=domaine_VEF.type_elem().valeur().KEL().view_ro();
+  CIntTabView elem_faces=domaine_VEF.elem_faces().view_ro();
+  CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+  CIntTabView face_voisins=domaine_VEF.face_voisins().view_ro();
+  CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
+  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  CIntArrView is_dirichlet_faces = is_dirichlet_faces_.view_ro();
+  DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    for (int dim=0; dim<nb_comp; dim++)
+      for (int fa7 = 0; fa7 < nfa7; fa7++)
+        {
+          int facei_loc = KEL(0, fa7);
+          int facej_loc = KEL(1, fa7);
 
-        int facei=elem_faces(elem,facei_loc);
-        int facej=elem_faces(elem,facej_loc);
+          int facei = elem_faces(elem, facei_loc);
+          int facej = elem_faces(elem, facej_loc);
 
-        double kij=Kij(elem,facei_loc,facej_loc);
+          double kij = Kij(elem, facei_loc, facej_loc);
 
-        P_plus=0., P_moins=0.;
-        Q_plus=0., Q_moins=0.;
-        if (kij>=0.) //facei amont
-          calculer_senseur_v2(Kij,Fij,transporteV,nb_comp,facei,elem_faces,face_voisins,num_fac_loc,P_plus,P_moins,Q_plus,Q_moins);//La face i est amont
-        else //facej amont
-          calculer_senseur_v2(Kij,Fij,transporteV,nb_comp,facej,elem_faces,face_voisins,num_fac_loc,P_plus,P_moins,Q_plus,Q_moins);//La face j est amont
+          int face = kij >= 0. ? facei : facej;
+          double P_plus = 0;
+          double P_moins = 0;
+          double Q_plus = 0;
+          double Q_moins = 0;
+          calculer_senseur(Kij, Fij, transporteV, dim, nb_comp, face, elem_faces, face_voisins, num_fac_loc, P_plus,
+                           P_moins, Q_plus, Q_moins);
 
-        for (int dim=0; dim<nb_comp; dim++)
-          {
-            double fij=alpha_*Fij(elem,facei_loc,facej_loc,dim);
-            double fji=alpha_*Fij(elem,facej_loc,facei_loc,dim);
+          double fij = alpha * Fij(elem, facei_loc, facej_loc, dim);
+          double fji = alpha * Fij(elem, facej_loc, facei_loc, dim);
 
-            int ligne=facei*nb_comp+dim;
-            int  colonne=facej*nb_comp+dim;
+          int ligne = facei * nb_comp + dim;
+          int colonne = facej * nb_comp + dim;
 
-            double fij_low=transporteV[colonne]-transporteV[ligne];
-            fij_low*=kij;
-            double fji_low=fij_low;
+          double fij_low = transporteV[colonne] - transporteV[ligne];
+          fij_low *= kij;
+          double fji_low = fij_low;
 
-            double R;
-            if (kij>=0.) //facei amont
-              {
-                if (fij>=0.) R=(std::fabs(P_plus[dim])<DMINFLOAT)?0.:Q_plus[dim]/P_plus[dim];
-                else R=(std::fabs(P_moins[dim])<DMINFLOAT)?0.:Q_moins[dim]/P_moins[dim];
+          double R;
+          if (kij >= 0.) //facei amont
+            {
+              if (fij >= 0.) R = (std::fabs(P_plus) < DMINFLOAT) ? 0. : Q_plus / P_plus;
+              else R = (std::fabs(P_moins) < DMINFLOAT) ? 0. : Q_moins / P_moins;
 
 
-                R=(*limiteur_)(R);
-                R*=fij;
+              R = minmod(R);
+              R *= fij;
 
-                double tmp;
-                if (!is_dirichlet_faces_(facej))
-                  tmp=optimum(R,fji_low);
-                else
-                  tmp=R;
+              double tmp;
+              if (!is_dirichlet_faces(facej))
+                tmp = optimum(R, fji_low);
+              else
+                tmp = R;
 
-                resuV[ligne]+=tmp;
-                resuV[colonne]-=tmp;
-              }
-            else //facej amont
-              {
-                if (fji<=0.) R=(std::fabs(P_moins[dim])<DMINFLOAT)?0.:Q_moins[dim]/P_moins[dim];
-                else R=(std::fabs(P_plus[dim])<DMINFLOAT)?0.:Q_plus[dim]/P_plus[dim];
+              Kokkos::atomic_add(&resuV[ligne], tmp);
+              Kokkos::atomic_sub(&resuV[colonne], tmp);
+            }
+          else     //facej amont
+            {
+              if (fji <= 0.) R = (std::fabs(P_moins) < DMINFLOAT) ? 0. : Q_moins / P_moins;
+              else R = (std::fabs(P_plus) < DMINFLOAT) ? 0. : Q_plus / P_plus;
 
-                R=(*limiteur_)(R);
-                R*=fji;
+              R = minmod(R);
+              R *= fji;
 
-                double tmp;
-                if (!is_dirichlet_faces_(facei))
-                  tmp=optimum(R,fij_low);
-                else
-                  tmp=R;
+              double tmp;
+              if (!is_dirichlet_faces(facei))
+                tmp = optimum(R, fij_low);
+              else
+                tmp = R;
 
-                resuV[ligne]-=tmp;
-                resuV[colonne]+=tmp;
-              }
-          }
-      }
-
+              Kokkos::atomic_sub(&resuV[ligne], tmp);
+              Kokkos::atomic_add(&resuV[colonne], tmp);
+            }
+        }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   //Pour les faces de bord
   //IL N'Y A RIEN a FAIRE TOUT EST FAIT DANS LA FONCTION AJOUTER_DIFFUSION
   //QUI EST PARFAITEMENT COMPLeTER PAR LA FONCTION AJOUTER_ANTIDIFFUSION
 
   //Retour du resultat
-  return resu;
+  return tab_resu;
 }
 
 DoubleTab&
-Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const DoubleTab& Fij,const DoubleTab& transporte, DoubleTab& resu) const
+Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& tab_Kij, const DoubleTab& tab_Fij,const DoubleTab& tab_transporte, DoubleTab& tab_resu) const
 {
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
-
-  const DoubleVect& transporteV = transporte;
-
-  const IntTab& elem_faces=domaine_VEF.elem_faces();
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
-
   const int nb_elem_tot=domaine_VEF.nb_elem_tot();
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
-
   int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
-  //Pour le limiteur
-  ArrOfDouble Pi_plus(nb_comp),Pi_moins(nb_comp);
-  ArrOfDouble Qi_plus(nb_comp),Qi_moins(nb_comp);
-  Pi_plus=0., Pi_moins=0.;
-  Qi_plus=0., Qi_moins=0.;
+  if (tab_transporte.nb_dim()!=1) nb_comp=tab_transporte.dimension(1);
 
-  //Pour le limiteur
-  ArrOfDouble Pj_plus(nb_comp),Pj_moins(nb_comp);
-  ArrOfDouble Qj_plus(nb_comp),Qj_moins(nb_comp);
-  Pj_plus=0., Pj_moins=0.;
-  Qj_plus=0., Qj_moins=0.;
-
-  DoubleVect& resuV = resu;
-
+  double alpha = alpha_;
   //Pour les faces internes
-  ToDo_Kokkos("critical");
-  for (int elem=0; elem<nb_elem_tot; elem++)
-    for (int fa7=0; fa7<nfa7; fa7++)
-      {
-        int facei_loc=KEL(0,fa7);
-        int facej_loc=KEL(1,fa7);
+  CIntTabView KEL=domaine_VEF.type_elem().valeur().KEL().view_ro();
+  CIntTabView elem_faces=domaine_VEF.elem_faces().view_ro();
+  CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+  CIntTabView face_voisins=domaine_VEF.face_voisins().view_ro();
+  CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
+  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  CIntArrView is_dirichlet_faces = is_dirichlet_faces_.view_ro();
+  DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    for (int dim=0; dim<nb_comp; dim++)
+      for (int fa7 = 0; fa7 < nfa7; fa7++)
+        {
+          int facei_loc = KEL(0, fa7);
+          int facej_loc = KEL(1, fa7);
 
-        int facei=elem_faces(elem,facei_loc);
-        int facej=elem_faces(elem,facej_loc);
+          int facei = elem_faces(elem, facei_loc);
+          int facej = elem_faces(elem, facej_loc);
 
-        double kij=Kij(elem,facei_loc,facej_loc);
+          double kij = Kij(elem, facei_loc, facej_loc);
+          double Pi_plus = 0;
+          double Pi_moins = 0;
+          double Qi_plus = 0;
+          double Qi_moins = 0;
+          calculer_senseur(Kij, Fij, transporteV, dim, nb_comp, facei, elem_faces, face_voisins, num_fac_loc,
+                           Pi_plus,
+                           Pi_moins, Qi_plus, Qi_moins);
+          double Pj_plus = 0;
+          double Pj_moins = 0;
+          double Qj_plus = 0;
+          double Qj_moins = 0;
+          calculer_senseur(Kij, Fij, transporteV, dim, nb_comp, facej, elem_faces, face_voisins, num_fac_loc,
+                           Pj_plus,
+                           Pj_moins, Qj_plus, Qj_moins);
 
-        Pi_plus=0., Pi_moins=0.;
-        Qi_plus=0., Qi_moins=0.;
-        calculer_senseur_v1(Kij,Fij,transporteV,nb_comp,facei,elem_faces,face_voisins,num_fac_loc,Pi_plus,Pi_moins,Qi_plus,Qi_moins);
+          double fij = alpha * Fij(elem, facei_loc, facej_loc, dim);
+          double fji = alpha * Fij(elem, facej_loc, facei_loc, dim);
 
-        Pj_plus=0., Pj_moins=0.;
-        Qj_plus=0., Qj_moins=0.;
-        calculer_senseur_v1(Kij,Fij,transporteV,nb_comp,facej,elem_faces,face_voisins,num_fac_loc,Pj_plus,Pj_moins,Qj_plus,Qj_moins);
+          int ligne = facei * nb_comp + dim;
+          int colonne = facej * nb_comp + dim;
 
-        for (int dim=0; dim<nb_comp; dim++)
-          {
-            double fij=alpha_*Fij(elem,facei_loc,facej_loc,dim);
-            double fji=alpha_*Fij(elem,facej_loc,facei_loc,dim);
+          if (kij >= 0.)
+            {
+              double Ri, Rj;
+              //Face amont : facei
+              if (fij >= 0.)
+                {
+                  Ri = (std::fabs(Pi_plus) < DMINFLOAT) ? 0. : Qi_plus / Pi_plus;
+                  Rj = (std::fabs(Pj_moins) < DMINFLOAT) ? 0. : Qj_moins /
+                       Pj_moins;//car fji=-fij
+                }
+              else
+                {
+                  Ri = (std::fabs(Pi_moins) < DMINFLOAT) ? 0. : Qi_moins / Pi_moins;
+                  Rj = (std::fabs(Pj_plus) < DMINFLOAT) ? 0. : Qj_plus /
+                       Pj_plus;//car fji=-fij
+                }
 
-            int ligne=facei*nb_comp+dim;
-            int colonne=facej*nb_comp+dim;
+              if (is_dirichlet_faces(facej))
+                Rj = DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
+              double R = (Ri <= Rj) ? Ri : Rj;
+              R = minmod(R);
 
-            if (kij>=0.)
-              {
-                double Ri, Rj;
-                //Face amont : facei
-                if (fij>=0.)
-                  {
-                    Ri=(std::fabs(Pi_plus[dim])<DMINFLOAT)?0.:Qi_plus[dim]/Pi_plus[dim];
-                    Rj=(std::fabs(Pj_moins[dim])<DMINFLOAT)?0.:Qj_moins[dim]/Pj_moins[dim];//car fji=-fij
-                  }
-                else
-                  {
-                    Ri=(std::fabs(Pi_moins[dim])<DMINFLOAT)?0.:Qi_moins[dim]/Pi_moins[dim];
-                    Rj=(std::fabs(Pj_plus[dim])<DMINFLOAT)?0.:Qj_plus[dim]/Pj_plus[dim];//car fji=-fij
-                  }
+              double tmp = R * fij;
+              Kokkos::atomic_add(&resuV[ligne], tmp);
+              Kokkos::atomic_sub(&resuV[colonne], tmp);
+            }
+          else
+            {
+              double Ri, Rj;
+              //Face amont : facej
+              if (fji <= 0.)
+                {
+                  Rj = (std::fabs(Pj_moins) < DMINFLOAT) ? 0. : Qj_moins / Pj_moins;
+                  Ri = (std::fabs(Pi_plus) < DMINFLOAT) ? 0. : Qi_plus / Pi_plus;
+                }
+              else
+                {
+                  Rj = (std::fabs(Pj_plus) < DMINFLOAT) ? 0. : Qj_plus / Pj_plus;
+                  Ri = (std::fabs(Pi_moins) < DMINFLOAT) ? 0. : Qi_moins / Pi_moins;
+                }
 
-                if (is_dirichlet_faces_(facej)) Rj=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
-                double R=(Ri<=Rj)?Ri:Rj;
-                R=(*limiteur_)(R);
+              if (is_dirichlet_faces(facei))
+                Ri = DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
+              double R = (Ri <= Rj) ? Ri : Rj;
+              R = minmod(R);
 
-                double tmp=R*fij;
-                resuV[ligne]+=tmp;
-                resuV[colonne]-=tmp;
-              }
-            else
-              {
-                double Ri, Rj;
-                //Face amont : facej
-                if (fji<=0.)
-                  {
-                    Rj=(std::fabs(Pj_moins[dim])<DMINFLOAT)?0.:Qj_moins[dim]/Pj_moins[dim];
-                    Ri=(std::fabs(Pi_plus[dim])<DMINFLOAT)?0.:Qi_plus[dim]/Pi_plus[dim];
-                  }
-                else
-                  {
-                    Rj=(std::fabs(Pj_plus[dim])<DMINFLOAT)?0.:Qj_plus[dim]/Pj_plus[dim];
-                    Ri=(std::fabs(Pi_moins[dim])<DMINFLOAT)?0.:Qi_moins[dim]/Pi_moins[dim];
-                  }
-
-                if (is_dirichlet_faces_(facei)) Ri=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
-                double R=(Ri<=Rj)?Ri:Rj;
-                R=(*limiteur_)(R);
-
-                double tmp=R*fji;
-                resuV[ligne]-=tmp;
-                resuV[colonne]+=tmp;
-              }
-          }
-      }
+              double tmp = R * fji;
+              Kokkos::atomic_sub(&resuV[ligne], tmp);
+              Kokkos::atomic_add(&resuV[colonne], tmp);
+            }
+        }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   //Pour les faces de bord
   //IL N'Y A RIEN a FAIRE TOUT EST FAIT DANS LA FONCTION AJOUTER_DIFFUSION
@@ -1502,44 +1450,28 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
 
   //Retour du resultat
   //     resuV+=antidiff;
-  return resu;
+  return tab_resu;
 }
 
 //ATTENTION : suppose les parametres P_plus, P_moins, Q_plus, Q_moins nuls en entree
-inline void
-Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v2(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleVect& transporteV,
-                                                const int nb_comp, const int face_i,
-                                                const IntTab& elem_faces, const IntTab& face_voisins, const IntTab& num_fac_loc,
-                                                ArrOfDouble& P_plus, ArrOfDouble& P_moins,
-                                                ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const
+KOKKOS_INLINE_FUNCTION void
+Op_Conv_Muscl_New_VEF_Face::calculer_senseur(CDoubleTabView3 Kij, CDoubleTabView4 Fij, CDoubleArrView transporteV,
+                                             const int dim, const int nb_comp, const int face_i,
+                                             CIntTabView elem_faces, CIntTabView face_voisins, CIntTabView num_fac_loc,
+                                             double& P_plus, double& P_moins,
+                                             double& Q_plus, double& Q_moins) const
 {
-  calculer_senseur_v1(Kij,Fij,transporteV,nb_comp,face_i,elem_faces,face_voisins,num_fac_loc,P_plus,P_moins,Q_plus,Q_moins);
-}
-
-//ATTENTION : suppose les parametres P_plus, P_moins, Q_plus, Q_moins nuls en entree
-inline void
-Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleVect& transporteV,
-                                                const int nb_comp, const int face_i,
-                                                const IntTab& elem_faces, const IntTab& face_voisins, const IntTab& num_fac_loc,
-                                                ArrOfDouble& P_plus, ArrOfDouble& P_moins,
-                                                ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const
-{
-  assert(P_plus.size_array()==nb_comp);
-  assert(Q_plus.size_array()==nb_comp);
-  assert(P_moins.size_array()==nb_comp);
-  assert(Q_moins.size_array()==nb_comp);
-
-
-  const int nb_faces_elem=elem_faces.dimension(1);
+  const int nb_faces_elem=(int)elem_faces.extent(1);
   for (int elem_voisin=0; elem_voisin<2; elem_voisin++)
     {
       int elem = face_voisins(face_i,elem_voisin);
       if (elem!=-1)
         {
           int face_i_loc = num_fac_loc(face_i,elem_voisin);
+#ifndef _OPENMP
           assert(face_i_loc>=0);
           assert(face_i_loc<nb_faces_elem);
-
+#endif
           //On travaille sur les faces de "elem"
           for (int face_k_loc=0; face_k_loc<nb_faces_elem; face_k_loc++)
             {
@@ -1548,30 +1480,29 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const Doub
               //
               //Calcul des variables intermediaires
               //
-              for (int dim=0; dim<nb_comp; dim++)
+              double inci=transporteV[face_i*nb_comp+dim];
+              double inck=transporteV[face_k*nb_comp+dim];
+
+              double fik_low=kik*(inck-inci);
+              double fik_high=Fij(elem,face_i_loc,face_k_loc,dim);
+
+              // Codage optimise:
+              if (kik<0)
                 {
-                  double inci=transporteV[face_i*nb_comp+dim];
-                  double inck=transporteV[face_k*nb_comp+dim];
-
-                  double fik_low=kik*(inck-inci);
-                  double fik_high=Fij(elem,face_i_loc,face_k_loc,dim);
-
-                  // Codage optimise:
-                  if (kik<0)
-                    {
-                      if (fik_low>0) Q_plus[dim]+=fik_low;
-                      else       Q_moins[dim]+=fik_low;
-                    }
-                  else
-                    {
-                      if (fik_high>0) P_plus[dim]+=fik_high;
-                      else       P_moins[dim]+=fik_high;
-                    }
-                  assert(P_plus[dim]>=0);
-                  assert(Q_plus[dim]>=0);
-                  assert(P_moins[dim]<=0);
-                  assert(Q_moins[dim]<=0);
-                }//fin du for sur "dim"
+                  if (fik_low>0) Q_plus+=fik_low;
+                  else       Q_moins+=fik_low;
+                }
+              else
+                {
+                  if (fik_high>0) P_plus+=fik_high;
+                  else       P_moins+=fik_high;
+                }
+#ifndef _OPENMP
+              assert(P_plus>=0);
+              assert(Q_plus>=0);
+              assert(P_moins<=0);
+              assert(Q_moins<=0);
+#endif
               //
               //Fin du calcul des variables intermediaires
               //
@@ -1595,6 +1526,7 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
   const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
 
   //Faces de bord
+  int old_centered = old_centered_;
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1621,7 +1553,7 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
                     resuV[ligne]=resuV[ligneAss];
                   }
 
-              if (old_centered_)
+              if (old_centered)
                 {
                   //Pour le 1er element voisin
                   int elem=face_voisins(facei,0);
@@ -1743,11 +1675,11 @@ void Op_Conv_Muscl_New_VEF_Face::completer()
   Op_Conv_VEF_Face::completer();
   calculer_data_pour_dirichlet();
 
-  alpha_tab.resize_array(le_dom_vef->nb_faces_tot());
-  alpha_tab = alpha_;
+  //alpha_tab.resize_array(le_dom_vef->nb_faces_tot());
+  //alpha_tab = alpha_;
 
-  beta.resize_array(le_dom_vef->nb_faces_tot());
-  beta=1.;
+  //beta_.resize_array(le_dom_vef->nb_faces_tot());
+  //beta_=1.;
 }
 
 void Op_Conv_Muscl_New_VEF_Face::ajouter_contribution(const DoubleTab& transporte_2, Matrice_Morse& matrice) const

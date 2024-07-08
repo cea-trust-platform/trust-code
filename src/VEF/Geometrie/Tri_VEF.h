@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,63 @@ public:
                const IntTab& ,const Domaine& )  const override ;
 };
 
+KOKKOS_INLINE_FUNCTION void calcul_vc_tri_views(const int* Face, double *vc, const double * vs, const double * vsom,
+                                                CDoubleTabView vitesse,True_int type_cl, CDoubleArrView porosite_face)
+{
+  True_int comp;
+  switch(type_cl)
+    {
+    case 0: // le triangle n'a pas de Face de Dirichlet
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vs[comp]/3;
+        break;
+      }
+
+    case 1: // le triangle a une Face de Dirichlet :la Face 2
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vitesse(Face[2], comp) * porosite_face(Face[2]);
+        break;
+      }
+
+    case 2: // le triangle a une Face de Dirichlet :la Face 1
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vitesse(Face[1], comp) * porosite_face(Face[1]);
+        break;
+      }
+
+    case 4: // le triangle a une Face de Dirichlet :la Face 0
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vitesse(Face[0], comp) * porosite_face(Face[0]);
+        break;
+      }
+
+    case 3: // le triangle a deux faces de Dirichlet :les faces 1 et 2
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vsom[comp];
+        break;
+      }
+
+    case 5: // le triangle a deux faces de Dirichlet :les faces 0 et 2
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vsom[2+comp];
+        break;
+      }
+
+    case 6: // le triangle a deux faces de Dirichlet :les faces 0 et 1
+      {
+        for (comp=0; comp<2; comp++)
+          vc[comp] = vsom[4+comp];
+        break;
+      }
+
+    } // fin du switch
+}
 #endif
 
 
