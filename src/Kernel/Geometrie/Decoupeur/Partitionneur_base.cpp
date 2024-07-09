@@ -25,6 +25,8 @@
 #include <Param.h>
 
 Implemente_base(Partitionneur_base,"Partitionneur_base",Objet_U);
+// XD partitionneur_deriv objet_u partitionneur_deriv -1 not_set
+// XD  attr nb_parts entier nb_parts 1 The number of non empty parts that must be generated (generally equal to the number of processors in the parallel run).
 
 Sortie& Partitionneur_base::printOn(Sortie& os) const
 {

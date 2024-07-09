@@ -28,6 +28,9 @@
 Implemente_instanciable(Raffiner_Simplexes,"Raffiner_Simplexes",Interprete_geometrique_base) ;
 Add_synonym(Raffiner_Simplexes,"Raffiner_isotrope"); // Raffiner_Simplexes class replaces the obsolete Raffiner_isotrope class
 
+// XD raffiner_isotrope interprete raffiner_isotrope -1 For VDF and VEF discretizations, allows to cut triangles/quadrangles or tetrahedral/hexaedras elements respectively in 4 or 8 new ones by defining new summits located at the middle of edges (and center of faces and elements for quadrangles and hexaedra). Such a cut preserves the shape of original elements (isotropic). For 2D elements: \includetabfig{{raffinerisotri.pdf}}{{4}}{{raffinerisorect.pdf}}{{4}} For 3D elements: \includetabfig{{raffinerisotetra.jpeg}}{{6}}{{raffinerisohexa.jpeg}}{{5}}.
+// XD attr domain_name ref_domaine domain_name 0 Name of domain.
+
 Sortie& Raffiner_Simplexes::printOn(Sortie& os) const
 {
   Interprete::printOn(os);

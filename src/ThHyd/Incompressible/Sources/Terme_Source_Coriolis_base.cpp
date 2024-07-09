@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,8 @@
 #include <Param.h>
 
 Implemente_base(Terme_Source_Coriolis_base,"Terme_Source_Coriolis_base",Source_base);
+// XD coriolis source_base coriolis 0 Keyword for a Coriolis term in hydraulic equation. Warning: Only available in VDF.
+// XD   attr omega chaine omega 0 Value of omega.
 
 Sortie& Terme_Source_Coriolis_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 

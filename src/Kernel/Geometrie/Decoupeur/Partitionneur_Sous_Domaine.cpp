@@ -18,7 +18,7 @@
 #include <Param.h>
 #include <EChaine.h>
 
-// XD partitionneur_sous_dom partitionneur_deriv sous_dom -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sous_domaine. The sub-domain will be partitionned in a conform fashion with the global domain.
+// XD partitionneur_sous_dom partitionneur_deriv sous_dom -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sub_domain. The sub-domain will be partitionned in a conform fashion with the global domain.
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Domaine,"Partitionneur_Sous_Dom",Partitionneur_base);
 
 Partitionneur_Sous_Domaine::Partitionneur_Sous_Domaine()

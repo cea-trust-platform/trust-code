@@ -20,9 +20,9 @@
 #include <Sous_Domaine.h>
 #include <Interprete.h>
 
-// XD partitionneur_union partitionneur_deriv union 0 Let several local domains be generated from a bigger one using the keyword create_domain_from_sous_domaine, and let their partitions be generated in the usual way. Provided the list of partition files for each small domain, the keyword 'union' will partition the global domain in a conform fashion with the smaller domains.
-// XD attr liste bloc_lecture liste 0 List of the partition files with the following syntaxe: {sous_domaine1 decoupage1  ... sous_domaineim decoupageim } where sous_domaine1 ... sous_zomeim are small domains names and decoupage1 ... decoupageim are partition files.
 Implemente_instanciable(Partitionneur_Union,"Partitionneur_Union",Partitionneur_base);
+// XD partitionneur_union partitionneur_deriv union 0 Let several local domains be generated from a bigger one using the keyword create_domain_from_sub_domain, and let their partitions be generated in the usual way. Provided the list of partition files for each small domain, the keyword 'union' will partition the global domain in a conform fashion with the smaller domains.
+// XD attr liste bloc_lecture liste 0 List of the partition files with the following syntaxe: {sous_domaine1 decoupage1  ... sous_domaineim decoupageim } where sous_domaine1 ... sous_zomeim are small domains names and decoupage1 ... decoupageim are partition files.
 
 /*! @brief Lecture des parametres du partitionneur sur disque.
  *

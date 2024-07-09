@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,16 @@ Implemente_instanciable(champ_init_canal_sinal,"champ_init_canal_sinal",TRUSTCha
 // XD attr dim entier dim 0 Number of field components.
 // XD attr bloc bloc_lec_champ_init_canal_sinal bloc 0 Parameters for the class champ_init_canal_sinal.
 
+// XD bloc_lec_champ_init_canal_sinal objet_lecture nul 1 Parameters for the class champ_init_canal_sinal. NL2 in 2D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand+ampli_sin*sin(omega*x) NL2 rand: unpredictable value between -1 and 1. NL2 in 3D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand1+ampli_sin*sin(omega*x) NL2 W=ampli_bruit*rand2 NL2 rand1 and rand2: unpredictables values between -1 and 1.
+// XD attr ucent floattant ucent 0 Velocity value at the center of the channel.
+// XD attr h floattant h 0 Half hength of the channel.
+// XD attr ampli_bruit floattant ampli_bruit 0 Amplitude for the disturbance.
+// XD attr ampli_sin floattant ampli_sin 1 Amplitude for the sinusoidal disturbance (by default equals to ucent/10).
+// XD attr omega floattant omega 0 Value of pulsation for the of the sinusoidal disturbance.
+// XD attr dir_flow entier(into=[0,1,2]) dir_flow 1 Flow direction for the initialization of the flow in a channel. NL2 - if dir_flow=0, the flow direction is X NL2 - if dir_flow=1, the flow direction is Y NL2 - if dir_flow=2, the flow direction is Z NL2 Default value for dir_flow is 0
+// XD attr dir_wall entier(into=[0,1,2]) dir_wall 1 Wall direction for the initialization of the flow in a channel. NL2 - if dir_wall=0, the normal to the wall is in X direction NL2 - if dir_wall=1, the normal to the wall is in Y direction NL2 - if dir_wall=2, the normal to the wall is in Z direction NL2 Default value for dir_flow is 1
+// XD attr min_dir_flow floattant min_dir_flow 1 Value of the minimum coordinate in the flow direction for the initialization of the flow in a channel. Default value for dir_flow is 0.
+// XD attr min_dir_wall floattant min_dir_wall 1 Value of the minimum coordinate in the wall direction for the initialization of the flow in a channel. Default value for dir_flow is 0.
 
 Sortie& champ_init_canal_sinal::printOn(Sortie& os) const { return os; }
 

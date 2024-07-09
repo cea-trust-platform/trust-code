@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,6 +58,10 @@ Implemente_instanciable(Porosites,"Porosites",Objet_U);
 // XD attr sous_zone2 chaine sous_zone2 1 Name of the 2nd sub-area to which porosity are allocated.
 // XD attr bloc2 bloc_lecture_poro bloc2 1 Surface and volume porosity values.
 // XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
+
+// XD bloc_lecture_poro objet_lecture nul 1 Surface and volume porosity values.
+// XD  attr volumique floattant volumique 0 Volume porosity value.
+// XD  attr surfacique list surfacique 0 Surface porosity values (in X, Y, Z directions).
 
 Sortie& Porosites::printOn(Sortie& os) const { return Objet_U::printOn(os); }
 

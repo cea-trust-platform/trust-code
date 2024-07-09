@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,21 +18,15 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Perte_Charge_Isotrope_VEF_P1NC,"Perte_Charge_Isotrope_VEF_P1NC",Perte_Charge_VEF);
-
-
-// printOn
-//
+// XD perte_charge_isotrope source_base perte_charge_isotrope 1 Isotropic pressure loss (available in VEF and PolyMAC).
+// XD  attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
+// XD  attr diam_hydr champ_don_base diam_hydr 0 Hydraulic diameter value.
+// XD  attr sous_zone chaine sous_zone 1 Optional sub-area where pressure loss applies.
 
 Sortie& Perte_Charge_Isotrope_VEF_P1NC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
 }
-
-////////////////////////////////////////////////////////////////
-//                                                            //
-//                         readOn                             //
-//                                                            //
-////////////////////////////////////////////////////////////////
 
 Entree& Perte_Charge_Isotrope_VEF_P1NC::readOn(Entree& s )
 {

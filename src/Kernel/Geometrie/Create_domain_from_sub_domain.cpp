@@ -47,7 +47,7 @@ int Create_domain_from_sub_domain::lire_motcle_non_standard(const Motcle& mot, E
       noms_sous_domaines.reset(), noms_doms.reset();
       Nom ssz, dom;
       is >> ssz;
-      if (ssz != "{") Process::exit("Create_domaine_from_sous_domaine::domaines : { expected");
+      if (ssz != "{") Process::exit("Create_domain_from_sub_domain::domaines : { expected");
       for (is >> ssz; ssz != "}"; is >> ssz)
         is >> dom, noms_sous_domaines.add(ssz), noms_doms.add(dom);
       return 1;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,14 @@
 #include <Schema_Temps_base.h>
 
 Implemente_base_sans_constructeur(Terme_Source_Acceleration,"Terme_Source_Acceleration",Source_base);
+// XD acceleration source_base acceleration 1 Momentum source term to take in account the forces due to rotation or translation of a non Galilean referential R\' (centre 0\') into the Galilean referential R (centre 0).
+// XD attr vitesse field_base vitesse 1 Keyword for the velocity of the referential R\' into the R referential (dOO\'/dt term [m.s-1]). The velocity is mandatory when you want to print the total cinetic energy into the non-mobile Galilean referential R (see Ec_dans_repere_fixe keyword).
+// XD attr acceleration field_base acceleration 1 Keyword for the acceleration of the referential R\' into the R referential (d2OO\'/dt2 term [m.s-2]). field_base is a time dependant field (eg: Champ_Fonc_t).
+// XD attr omega field_base omega 1 Keyword for a rotation of the referential R\' into the R referential [rad.s-1]. field_base is a 3D time dependant field specified for example by a Champ_Fonc_t keyword. The time_field field should have 3 components even in 2D (In 2D: 0 0 omega).
+// XD attr domegadt field_base domegadt 1 Keyword to define the time derivative of the previous rotation [rad.s-2]. Should be zero if the rotation is constant. The time_field field should have 3 components even in 2D (In 2D: 0 0 domegadt).
+// XD attr centre_rotation field_base centre_rotation 1 Keyword to specify the centre of rotation (expressed in R\' coordinates) of R\' into R (if the domain rotates with the R\' referential, the centre of rotation is 0\'=(0,0,0)). The time_field should have 2 or 3 components according the dimension 2 or 3.
+// XD attr option chaine(into=["terme_complet","coriolis_seul","entrainement_seul"]) option 1 Keyword to specify the kind of calculation: terme_complet (default option) will calculate both the Coriolis and centrifugal forces, coriolis_seul will calculate the first one only, entrainement_seul will calculate the second one only.
+
 
 Terme_Source_Acceleration::Terme_Source_Acceleration()
 {

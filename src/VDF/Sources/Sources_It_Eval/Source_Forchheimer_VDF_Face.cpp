@@ -22,6 +22,8 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face,"Forchheimer_VDF_Face",Terme_Source_VDF_base);
+// XD forchheimer source_base forchheimer 0 Class to add the source term of Forchheimer -Cf/sqrt(K)*V2 in the Navier-Stokes equations. We must precise a permeability model : constant or Ergun\'s law. Moreover we can give the constant Cf : by default its value is 1. Forchheimer source term is available also for quasi compressible calculation. A new keyword is aded for porosity (porosite).
+// XD attr bloc bloc_lecture bloc 0 Description.
 
 Sortie& Source_Forchheimer_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
