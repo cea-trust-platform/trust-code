@@ -312,6 +312,10 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
             {
               con = 1;
               solveur.resoudre_systeme(matrice,resu,current);
+              if (eqn.positive_unkown())
+                for (int i = 0; i < current.dimension_tot(0); i++)
+                  for (int j = 0; j < current.line_size(); j++)
+                    current(i, j) = std::max(current(i, j), 0.);
               ok = eqn.milieu().check_unknown_range(); //verification que l'inconnue est dans les bornes du milieu
 
               if (ok)
