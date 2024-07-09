@@ -21,7 +21,7 @@ Implemente_instanciable(Pb_Multiphase_Enthalpie, "Pb_Multiphase_Enthalpie|Pb_Mul
 // XD attr correlations bloc_lecture correlations 1 List of correlations used in specific source terms (i.e. interfacial flux,  interfacial friction, ...)
 // XD attr QDM_Multiphase QDM_Multiphase QDM_Multiphase 0 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
 // XD attr Masse_Multiphase Masse_Multiphase Masse_Multiphase 0 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
-// XD attr Energie_Multiphase_Enthalpie Energie_Multiphase_Enthalpie Energie_Multiphase_h 0 Internal energy conservation equation for a multi-phase problem where the unknown is the enthalpy
+// XD attr Energie_Multiphase_h Energie_Multiphase_Enthalpie Energie_Multiphase_Enthalpie 0 Internal energy conservation equation for a multi-phase problem where the unknown is the enthalpy
 // XD attr Energie_Multiphase suppress_param Energie_Multiphase 1 del
 
 Sortie& Pb_Multiphase_Enthalpie::printOn(Sortie& os) const { return Pb_Multiphase::printOn(os); }
