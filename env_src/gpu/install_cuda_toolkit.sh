@@ -19,10 +19,10 @@ then
       echo "It may take some minutes to install Cuda Toolkit..."
       # --override pour ne pas verifier la version de gcc par rapport a Cuda (risque...)
       # ToDo supprimer la fenetre lors d'une remote install par ssh... Done: --nox11
-      log=/tmp/cuda-installer.log
+      log=$TRUST_TMP/cuda-installer.log
       rm -f $log 
       [ $? != 0 ] && echo "Error, you need to delete $log file before install." && exit -1
-      bash $TRUST_TMP/$installer --override --silent --no-drm --no-man-page --toolkit --nox11 --installpath=`dirname $CUDA_BIN`
+      bash $TRUST_TMP/$installer --override --silent --no-drm --no-man-page --toolkit --nox11 --installpath=`dirname $CUDA_BIN` --tmpdir=$TRUST_TMP
       err=$?
       rm -f $log
       [ $err != 0 ] && echo "Error during Cuda install under `dirname $CUDA_BIN`" && exit -1

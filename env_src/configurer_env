@@ -912,7 +912,7 @@ then
          [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
        done
     fi
-	[ `uname -s` = Darwin ] && ln -s python3-config python-config #on MacOS, we need python-config to point to the Conda install
+    [ `uname -s` = Darwin ] && ln -s python3-config python-config #on MacOS, we need python-config to point to the Conda install
     cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
