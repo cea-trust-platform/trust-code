@@ -107,16 +107,20 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
 
 int Fluide_reel_base::initialiser(const double temps)
 {
-  const Equation_base& eqn = res_en_T_ ? equation("temperature") : equation("enthalpie");
-  Champ_Inc_base *pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : nullptr;
-  Champ_Inc_base& ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
+  const bool has_thermal_properties = equation_.count("temperature") || equation_.count("enthalpie");
+  if (has_thermal_properties)
+    {
+      const Equation_base& eqn = res_en_T_ ? equation("temperature") : equation("enthalpie");
+      Champ_Inc_base *pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : nullptr;
+      Champ_Inc_base& ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
 
-  if (pch_rho) pch_rho->associer_eqn(eqn), pch_rho->resize_val_bord(), pch_rho->set_val_bord_fluide_multiphase(true);
-  ch_h_ou_T.associer_eqn(eqn), ch_h_ou_T.resize_val_bord(), ch_h_ou_T.set_val_bord_fluide_multiphase(true);
-  ch_e.associer_eqn(eqn), ch_e.resize_val_bord(), ch_e.set_val_bord_fluide_multiphase(true);
+      if (pch_rho) pch_rho->associer_eqn(eqn), pch_rho->resize_val_bord(), pch_rho->set_val_bord_fluide_multiphase(true);
+      ch_h_ou_T.associer_eqn(eqn), ch_h_ou_T.resize_val_bord(), ch_h_ou_T.set_val_bord_fluide_multiphase(true);
+      ch_e.associer_eqn(eqn), ch_e.resize_val_bord(), ch_e.set_val_bord_fluide_multiphase(true);
 
-  // XXX Elie Saikali : utile pour cas reprise !
-  ch_e.changer_temps(temps), ch_h_ou_T.changer_temps(temps);
+      // XXX Elie Saikali : utile pour cas reprise !
+      ch_e.changer_temps(temps), ch_h_ou_T.changer_temps(temps);
+    }
 
   Cp.initialiser(temps);
   mu.initialiser(temps);
@@ -159,11 +163,6 @@ void Fluide_reel_base::mettre_a_jour(double t)
   beta_th.mettre_a_jour(t);
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(t);
 
-  const Champ_Inc_base& ch_T_ou_h = res_en_T_ ? equation("temperature").inconnue().valeur() : equation("enthalpie").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
-
-  const DoubleTab& temp_ou_enthalp = ch_T_ou_h.valeurs(), &pres = ch_p.valeurs();
-
   DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_alpha_fois_rho = alpha_fois_rho.valeurs(),
              &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs(), &tab_beta = beta_th.valeurs(), &tab_rCp = rho_cp_comme_T_.valeurs();
 
@@ -188,6 +187,10 @@ void Fluide_reel_base::mettre_a_jour(double t)
         res_en_T_ ? _compute_CPMLB_pb_multiphase_(spans_interne) : _compute_CPMLB_pb_multiphase_h_(spans_interne_h);
       else
         {
+          const Champ_Inc_base& ch_T_ou_h = res_en_T_ ? equation("temperature").inconnue().valeur() : equation("enthalpie").inconnue().valeur(),
+                                &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
+          const DoubleTab& temp_ou_enthalp = ch_T_ou_h.valeurs(), &pres = ch_p.valeurs();
+
           assert(pres.line_size() == 1 && tab_Cp.line_size() == 1 && tab_mu.line_size() == 1 && tab_lambda.line_size() == 1 && tab_beta.line_size() == 1);
           const int n_comp = temp_ou_enthalp.line_size(); /* on a temp(xx,id_composite) */
           MSpanD spans_input;
@@ -261,6 +264,9 @@ bool Fluide_reel_base::initTimeStep(double dt)
 void Fluide_reel_base::calculate_fluid_properties_incompressible()
 {
   assert (is_incompressible() && res_en_T_);
+  const bool has_thermal_properties = equation_.count("temperature");
+  if (!has_thermal_properties) return;
+
   const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur();
   const DoubleTab& T = ch_T.valeurs(), &bT = ch_T.valeur_aux_bords();
 
