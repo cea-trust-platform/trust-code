@@ -36,8 +36,12 @@ Entree& Fluide_generique_CoolProp::readOn(Entree& is)
   tmin_ = TPPI_->tppi_get_T_min();
   tmax_ = TPPI_->tppi_get_T_max();
 
-  hmin_ = TPPI_->tppi_get_h_min();
-  hmax_ = TPPI_->tppi_get_h_max();
+  // XXX Elie Saikali : attention appel parfois invalide a coolprop ...
+  if (!res_en_T_)
+    {
+      hmin_ = TPPI_->tppi_get_h_min();
+      hmax_ = TPPI_->tppi_get_h_max();
+    }
 
   pmin_ = TPPI_->tppi_get_p_min();
   pmax_ = TPPI_->tppi_get_p_max();
