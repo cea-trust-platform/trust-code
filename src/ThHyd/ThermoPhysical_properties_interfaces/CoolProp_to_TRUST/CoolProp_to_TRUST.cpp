@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,8 +93,10 @@ double CoolProp_to_TRUST::tppi_get_p_max() const
 double CoolProp_to_TRUST::tppi_get_h_min() const
 {
 #ifdef HAS_COOLPROP
-  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
-  throw;
+  const double T_min = fluide->Tmin(), p_min = fluide->p_triple();
+  std::array<double,1> t = { T_min }, p = { p_min }, h = { 0. };
+  tppi_get_h_pT(p, t , h);
+  return h[0];
 #else
   Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
@@ -104,8 +106,10 @@ double CoolProp_to_TRUST::tppi_get_h_min() const
 double CoolProp_to_TRUST::tppi_get_h_max() const
 {
 #ifdef HAS_COOLPROP
-  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
-  throw;
+  const double T_max = fluide->Tmax(), p_max = fluide->pmax();
+  std::array<double,1> t = { T_max }, p = { p_max }, h = { 0. };
+  tppi_get_h_pT(p, t , h);
+  return h[0];
 #else
   Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
