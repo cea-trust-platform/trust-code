@@ -272,8 +272,8 @@ struct Matrice_Morse_View
   CIntArrView tab1_v;
   CIntArrView tab2_v;
   mutable DoubleArrView coeff_v;
-  int symetrique_;
-  int sorted_;
+  int symetrique_ = 0;
+  int sorted_ = 0;
   mutable double zero_ = 0;
   void set(Matrice_Morse& matrice)
   {
