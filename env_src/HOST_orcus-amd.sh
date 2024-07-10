@@ -33,14 +33,10 @@ define_modules_config()
       #source="source mpivars.sh release -ofi_internal" # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
       # La version Intel sur orcus provoque des ennuis divers (performance/plantages) avec MUMPS. Ne pas utiliser! 
       # A priori, on utilise encore Intel au CCRT (mais surement des versions plus a jour, moins buggees), mais la tendance est de petit à petit ne plus utiliser sauf exception
-      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # cf bt#195561
+      #module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # cf bt#195561
       # 02/10/2023 : Ajout module qt/5.14 pour VisIt
-      module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020 qt5/gcc_9.3.0/5.14.2" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
-      if [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ]
-      then
-         echo "module use /product/rocky9-x86_64_cluster/modulefiles/all" >> $env
-         module="slurm gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6"
-      fi
+      #module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020 qt5/gcc_9.3.0/5.14.2" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
+      module="slurm gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312"
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
@@ -52,7 +48,7 @@ define_modules_config()
       echo "export TRUST_FORCE_F77=flang; " >> $env
       # echo "export UCX_NET_DEVICES=mlx5_0:1; " >> $env #pour eviter de prendre la mauvaise carte IB sur n0[37-48]
    fi
-   echo "# Module $module detected and loaded on $HOST."   
+   echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
    echo $source >> $env

@@ -530,7 +530,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Coolprop_qc</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoolProp_water_HEOS_QC TARGET=p>CoolProp_water_HEOS_QC</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoolProp_water_IF97_QC TARGET=p>CoolProp_water_IF97_QC</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoolProp_water_RefProp_QC TARGET=p>CoolProp_water_RefProp_QC</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoolProp_water_BICUBIC_HEOS_QC TARGET=p>CoolProp_water_BICUBIC_HEOS_QC</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Coriolis</b></FONT></td>
@@ -785,10 +785,22 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#grad_rot_jdd1 TARGET=p>grad_rot_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>Energie_Multiphase_h</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd5 TARGET=p>Pb_multi_T_vs_h_jdd5</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd6 TARGET=p>Pb_multi_T_vs_h_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd7 TARGET=p>Pb_multi_T_vs_h_jdd7</A></FONT></td>
+</tr>
+<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Energie_multiphase</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_cat2 TARGET=p>EOS_cat2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_refP_R12 TARGET=p>EOS_refP_R12</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#grad_rot_jdd1 TARGET=p>grad_rot_jdd1</A></FONT></td>
+</tr>
+<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>Energie_multiphase_h</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd5 TARGET=p>Pb_multi_T_vs_h_jdd5</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd6 TARGET=p>Pb_multi_T_vs_h_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd7 TARGET=p>Pb_multi_T_vs_h_jdd7</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Entree_temperature_imposee_h</b></FONT></td>
@@ -931,6 +943,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Boussinesq TARGET=p>Boussinesq</A></FONT></td>
 </tr>
 <tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>Frontiere_ouverte_enthalpie_imposee</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd5 TARGET=p>Pb_multi_T_vs_h_jdd5</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd6 TARGET=p>Pb_multi_T_vs_h_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd7 TARGET=p>Pb_multi_T_vs_h_jdd7</A></FONT></td>
+</tr>
+<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Frontiere_ouverte_fraction_massique_imposee</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#GAMELAN2 TARGET=p>GAMELAN2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Gaz_pemfc TARGET=p>Gaz_pemfc</A></FONT></td>
@@ -969,12 +987,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#GAMELAN TARGET=p>GAMELAN</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#GAMELAN2 TARGET=p>GAMELAN2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#VDF_AMGX TARGET=p>VDF_AMGX</A></FONT></td>
-</tr>
-<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>Frontiere_ouverte_temperature_imposee</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cx TARGET=p>Cx</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Debog TARGET=p>Debog</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cl_var TARGET=p>Cl_var</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Frontiere_ouverte_vitesse_imposee</b></FONT></td>
@@ -1047,6 +1059,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#muscl TARGET=p>muscl</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#muscl_new TARGET=p>muscl_new</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#coude_irreg TARGET=p>coude_irreg</A></FONT></td>
+</tr>
+<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>H_ext</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd5 TARGET=p>Pb_multi_T_vs_h_jdd5</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd6 TARGET=p>Pb_multi_T_vs_h_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd7 TARGET=p>Pb_multi_T_vs_h_jdd7</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>IBICGSTAB</b></FONT></td>
@@ -1641,6 +1659,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_cat2 TARGET=p>EOS_cat2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_refP_R12 TARGET=p>EOS_refP_R12</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#grad_rot_jdd1 TARGET=p>grad_rot_jdd1</A></FONT></td>
+</tr>
+<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>Pb_multiphase_h</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd5 TARGET=p>Pb_multi_T_vs_h_jdd5</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd6 TARGET=p>Pb_multi_T_vs_h_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd7 TARGET=p>Pb_multi_T_vs_h_jdd7</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Pb_thermohydraulique</b></FONT></td>
@@ -2651,7 +2675,7 @@
 <td WIDTH=40%><FONT Size=-1><b>all_options</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Grad_VDF_PolyMAC TARGET=p>Grad_VDF_PolyMAC</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Grad_VDF_corners TARGET=p>Grad_VDF_corners</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_reprise_vdf TARGET=p>Pb_multi_reprise_vdf</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd1 TARGET=p>Pb_multi_T_vs_h_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>all_times</b></FONT></td>
@@ -3271,6 +3295,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diametre_hyd_champ</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Diametre_hyd_champ TARGET=p>Diametre_hyd_champ</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd1 TARGET=p>Pb_multi_T_vs_h_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd2 TARGET=p>Pb_multi_T_vs_h_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diffusion</b></FONT></td>
@@ -3796,6 +3822,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Gaz_pemfc TARGET=p>Gaz_pemfc</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#fvca_jdd1 TARGET=p>fvca_jdd1</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#fvca_jdd2 TARGET=p>fvca_jdd2</A></FONT></td>
+</tr>
+<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>frontiere_ouverte_temperature_imposee</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cx TARGET=p>Cx</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Debog TARGET=p>Debog</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cl_var TARGET=p>Cl_var</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>function_coord_y</b></FONT></td>
@@ -5015,6 +5047,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#k_regul_dp_impose_jdd3 TARGET=p>k_regul_dp_impose_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>relative</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd1 TARGET=p>Pb_multi_T_vs_h_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd2 TARGET=p>Pb_multi_T_vs_h_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd3 TARGET=p>Pb_multi_T_vs_h_jdd3</A></FONT></td>
+</tr>
+<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>relax_pression</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Hyd_Cx_segsol TARGET=p>Hyd_Cx_segsol</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#docond_segsol TARGET=p>docond_segsol</A></FONT></td>
@@ -5035,6 +5073,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>residuals</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Residuals_jdd2 TARGET=p>Residuals_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd1 TARGET=p>Pb_multi_T_vs_h_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pb_multi_T_vs_h_jdd2 TARGET=p>Pb_multi_T_vs_h_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>resolution_monolithique</b></FONT></td>
