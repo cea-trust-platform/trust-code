@@ -22,9 +22,10 @@ define_modules_config()
       else
          echo "Not supported anymore" && exit -1
       fi
-      #echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
+      echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
       # Pour beneficier aussi des V100 d'orcus:
-      echo "export TRUST_CUDA_CC=70 # V100" >> $env
+      # echo "export TRUST_CUDA_CC=70 # V100" >> $env
+      # Embetant Kokkos configure impose l'un ou l'autre pas les 2. Si on met V100, cela ne tourne pas sur A100 et vice-versa (mismatch arch lors du Kokkos::initialize())
    elif [ $gnu = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
@@ -105,6 +106,8 @@ define_soumission_batch()
    then 
       binding="--map-by numa --bind-to core"
       mpirun="mpirun $binding -n \$SLURM_NTASKS"
-   fi   
+   else
+      mpirun="srun -n \$SLURM_NTASKS"
+   fi
    sub=SLURM
 }
