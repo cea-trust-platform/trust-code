@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug :
-build_debug=$TRUST_ENABLE_KOKKOS_DEBUG
-[ $HOST = $TRUST_HOST_ADMIN ] && build_debug=1
+if [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
+then
+   # Kokkos pour SIMD ou GPU (C++17):
+   archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
+else
+   # Kokkos Serial (C++14)
+   archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
+fi
 
-archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
-# Attention 4.x C++17 pour TRUST GPU mais necessaire pour nvc++ -cuda
-[ "$TRUST_USE_OPENMP" = 1 ] && archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
-# Attention pour SIMD, pareil C++17 et Kokkos 4.2. Ajout option -kokkos_simd dans le configure de TRUST...
-[ "$TRUST_USE_KOKKOS_SIMD" = 1 ] && archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
 build_dir=$TRUST_ROOT/build/kokkos
 KOKKOS_ROOT_DIR=$TRUST_ROOT/lib/src/LIBKOKKOS
 # Log file of the process:
@@ -23,14 +23,29 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       cd $build_dir
       tar xzf $archive || exit -1
       src_dir=$build_dir/kokkos
-      extra_build=""
-      [ "$build_debug" = "1" ] && extra_build="Debug"
-      for CMAKE_BUILD_TYPE in Release $extra_build
+      
+      # Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug or when developping on GPU:
+      if [ $HOST = $TRUST_HOST_ADMIN ] || [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         build_debug=1
+      else
+         build_debug=$TRUST_ENABLE_KOKKOS_DEBUG
+      fi
+      BUILD_TYPES="Release `[ "$build_debug" = "1" ] && echo Debug`"
+      for CMAKE_BUILD_TYPE in $BUILD_TYPES
       do
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-        CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_CXX_FLAGS=-fPIC"
+	if [ "$TRUST_CC_BASE_EXTP_A_TESTER" != "" ]
+	then
+           CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
+	else
+	   CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
+	   # To use nvc++ as device compiler (nvcc ~ nvc++ -gpu):
+	   [ "`basename $TRUST_CC_BASE`" = nvc++ ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON"
+	fi    
+	CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
@@ -45,7 +60,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
               echo "KOKKOS_ARCH not set!" && exit -1
            fi
            # To mix Kokkos with OpenMP:
-           [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
+           [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
            # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET

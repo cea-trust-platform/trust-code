@@ -40,21 +40,6 @@ int main(int argc, char* argv[]) {
 
   {
     
-  Foo_1* deviceInstance = (Foo_1*)Kokkos::kokkos_malloc<Kokkos::CudaUVMSpace>(sizeof(Foo_1));
-  Kokkos::parallel_for( "CreateObjects", 1, KOKKOS_LAMBDA(const int&)
-  {
-    new((Foo_1*)deviceInstance) Foo_1(); // initialize an instance, and place the result in the pointer deviceInstance
-  });
-  deviceInstance->set_value(-1); //OK
-
-  Kokkos::parallel_for( "CreateObjects", 1, KOKKOS_LAMBDA(const int&)
-  {
-    Kokkos::printf("value=%d \n", deviceInstance->value());
-  });
-  //std::cerr << deviceInstance->value() << std::endl;
-  //deviceInstance->setAField(someHostValue); // set some field on the host
-
-  /*
     Foo* f_1 = (Foo*)Kokkos::kokkos_malloc(sizeof(Foo_1));
     Foo* f_2 = (Foo*)Kokkos::kokkos_malloc(sizeof(Foo_2));
 
@@ -83,7 +68,6 @@ int main(int argc, char* argv[]) {
 
     Kokkos::kokkos_free(f_1);
     Kokkos::kokkos_free(f_2);
-    */
   }
 
   Kokkos::finalize();
