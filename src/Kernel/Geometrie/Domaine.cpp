@@ -1405,6 +1405,7 @@ void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, 
        << " cells) to " << le_nom() << " (" << Process::mp_sum(loc->getMesh()->getNumberOfCells()) << " cells) : ";
   std::set<True_int> pcs;
   for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
+  loc->zipCoords(), dist->zipCoords();
   /* a bit technical */
   decs.emplace(std::piecewise_construct,
                std::forward_as_tuple(&other_domain, dist->getNature()),
