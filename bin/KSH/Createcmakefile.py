@@ -390,6 +390,7 @@ include_directories(SYSTEM
     ${TRUST_KOKKOS_ROOT}/${TRUST_ARCH}${OPT}/include
     ${TRUST_ROOT}/include/EOS 
     ${TRUST_ROOT}/include/CoolProp
+    ${TRUST_ROOT}/lib/src/LIBPDI/include 
 )
 if ( NOT ${ROCM_PATH} STREQUAL "")
   include_directories(SYSTEM

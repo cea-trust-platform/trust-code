@@ -233,6 +233,7 @@ daf5160ff9cde3a468556965329085b9  Miniforge/local_channel/noarch/webencodings-0.
 f372c576b8774922da83cda2b12f9d29  Miniforge/local_channel/noarch/websocket-client-1.8.0-pyhd8ed1ab_0.conda
 6372cd99502721bd7499f8d16b56268d  Miniforge/local_channel/noarch/widgetsnbextension-4.0.13-pyhd8ed1ab_0.conda
 4daaed111c05672ae669f7036ee5bba3  Miniforge/local_channel/noarch/zipp-3.20.2-pyhd8ed1ab_0.conda
+31b7871cc29cdb71ddafe0231383ce58  PDI/pdi-1.6.0.tar.gz
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
 cd2d81a8ea3a83d2721b88c0c3916ddd  SALOME/configuration-9.14.0.tar.gz
 07e3c56f7c8c78d53efbeb881d34f9f4  SALOME/medcoupling-9.14.0.tar.gz

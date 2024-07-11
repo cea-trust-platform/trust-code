@@ -1,0 +1,48 @@
+#!/bin/bash
+package=$1
+path_package=$TRUST_ROOT/externalpackages/PDI/$package.tar.gz
+[ ! -f $path_package ] && echo "$path_package not found! Update your makefile." && exit -1
+
+# Path to library build
+build_dir=$TRUST_ROOT/build/lib/LIBPDI
+rm -fr $build_dir
+mkdir -p $build_dir
+
+# Path to library install
+install_dir=$TRUST_ROOT/lib/src/LIBPDI
+rm -rf $install_dir
+mkdir -p $install_dir
+
+# Building library
+cd $build_dir
+tar -xzvf $path_package
+cd $package
+mkdir -p build
+cd build
+
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   CC=$TRUST_cc_BASE_EXTP
+   FC=$TRUST_F77_BASE_EXTP
+else
+   FC=$TRUST_F77
+   CC=$TRUST_cc
+fi
+
+# configuration (we use the hdf5 of TRUST)
+options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF"
+env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
+
+# make & install
+$TRUST_MAKE
+make install
+status=$?
+
+if ! [ $status -eq 0 ]; then
+  echo "@@@@@@@@@@@@@@@@@@@@@"
+  echo "Error at compilation/install."
+  exit -1
+fi
+
+# cleaning
+rm -rf $build_dir
