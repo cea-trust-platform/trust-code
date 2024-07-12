@@ -1,0 +1,102 @@
+# PARALLEL OK 8 #
+# OPENMP NOT # # Gmgres+Boomeramg GPU diverges in parallel: Bicgstab+Boomeramg works #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  2 11
+        longueurs 1 1
+    }
+    {
+        bord  bas       Y = 0.0    0.0 <= X <= 1.0
+        bord  haut      Y = 1.0    0.0 <= X <= 1.0
+        bord  boundary  X = 0.0    0.0 <= Y <= 1.0
+        bord  boundary  X = 1.0    0.0 <= Y <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    facsec 1e8
+    dt_max 0.1
+    seuil_statio 1e-3
+    Solveur implicite { solveur petsc cli { } }
+}
+
+pb_hydraulique pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    Fluide_sodium_liquide
+    {
+        P_ref 1e5 T_ref 500
+        porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>0.5)
+    }
+
+    navier_stokes_standard
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse champ_uniforme 2 0 1 }
+        boundary_conditions
+        {
+            boundary symetrie
+            bas      frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 2 0 1
+            haut     frontiere_ouverte_pression_imposee       champ_front_uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            v       grav vitesse               periode 1e8 segment 10 0.5 0 0.5 1
+            p       grav pression              periode 1e8 segment 10 0.5 0 0.5 1
+            rho     grav masse_volumique       periode 1e8 segment 10 0.5 0 0.5 1
+            mu      grav viscosite_dynamique   periode 1e8 segment 10 0.5 0 0.5 1
+            nu      grav viscosite_cinematique periode 1e8 segment 10 0.5 0 0.5 1
+        }
+        Format lml
+        fields dt_post 0
+        {
+            vitesse elem
+            pression elem
+            pression_pa elem
+            masse_volumique elem
+            viscosite_cinematique elem
+            viscosite_dynamique elem
+        }
+    }
+}
+Solve pb
+End
