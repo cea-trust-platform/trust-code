@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,9 @@
 
 #ifdef HAS_EOS
 #pragma GCC diagnostic push
+#if __GNUC__ > 5 || __clang_major__ > 10
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #include <EOS/API/EOS_Std_Error_Handler.hxx>
 #include <EOS/API/EOS.hxx>
