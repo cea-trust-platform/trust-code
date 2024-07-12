@@ -396,9 +396,9 @@ option_configure=" -disable-ccache"
 # system mpi, for cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -force_system_mpi"
 # coolprop
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp_6.6.0"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -with-coolprop=$WORKDIR/ExternalLibs/CoolProp_6.6.0"
 # eos
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/ExternalLibs/EOS/v2.0.0/install"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.0.0/install"
 # no conda, I disable trustpy too since no PyQt5
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustpy"
 # no trustpy

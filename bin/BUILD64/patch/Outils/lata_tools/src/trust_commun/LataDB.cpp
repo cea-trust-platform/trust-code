@@ -566,7 +566,7 @@ void LataDataFile::read(float *ptr, BigEntier n)
 void LataDataFile::write(const LataDBInt32 *ptr, BigEntier n, BigEntier columns)
 {
   Journal(verb_level_data_bloc+1) << "Writing int data bloc size=" << n << endl;
-  if (type_ != LataDBDataType::INT32)
+  if (type_ != LataDBDataType::INT64 && type_ != LataDBDataType::INT32)
     {
       Journal() << "Error in lataDB bloc write: trying to write integer data to non integer file block" << endl;
       throw LataDBError(LataDBError::DATA_ERROR);

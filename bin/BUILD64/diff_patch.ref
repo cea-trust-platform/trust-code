@@ -3,6 +3,10 @@ diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils
 <       if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32))
 ---
 >       if (type_ != LataDBDataType::INT32)
+569c569
+<   if (type_ != LataDBDataType::INT64 && type_ != LataDBDataType::INT32)
+---
+>   if (type_ != LataDBDataType::INT32)
 684d683
 <     case LataDBDataType::INT64:
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
