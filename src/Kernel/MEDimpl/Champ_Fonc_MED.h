@@ -49,7 +49,7 @@ public :
                                   ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ);
 #endif
 
-  const Domaine& domaine() const { return mon_dom; }
+  const Domaine& domaine() const override { return mon_dom; }
   virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps() { return nb_dt; }
   using Champ_Fonc_base::valeurs;
