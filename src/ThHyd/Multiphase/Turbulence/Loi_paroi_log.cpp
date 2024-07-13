@@ -51,7 +51,7 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
 
   const bool is_polyVEF = pb_->discretisation().is_polyvef(), is_VDF = pb_->discretisation().is_vdf();
 
-  int nf_tot = domaine.nb_faces_tot(), D = dimension, N = vit.line_size() / (is_polyVEF ? D : 1);
+  int nf_tot = domaine.nb_faces_tot(), D = dimension, N = vit.line_size() / (is_polyVEF ? D : 1), c_visc = nu_visc.dimension_tot(0) == 1;
 
   DoubleTab pvit_elem(0, N * D);
   if (is_VDF)
@@ -122,8 +122,8 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
         // for (int d = 0; d <D ; d++) residu += u_parallel(d)*n_f(f,d)/fs(f);
         // if (residu > 1e-8) Process::exit("Loi_paroi_adaptative : Error in the calculation of the parallel velocity for wall laws");
 
-        y_p(f, n) = std::max(y_p_min_, calc_y_plus_loc(norm_u_parallel, nu_visc(e, n), yloc, y_p(f, n)));
-        u_t(f, n) = y_p(f, n) * nu_visc(e, n) / yloc;
+        y_p(f, n) = std::max(y_p_min_, calc_y_plus_loc(norm_u_parallel, nu_visc(!c_visc * e, n), yloc, y_p(f, n)));
+        u_t(f, n) = y_p(f, n) * nu_visc(!c_visc * e, n) / yloc;
       }
 }
 
