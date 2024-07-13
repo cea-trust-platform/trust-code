@@ -37,6 +37,7 @@
 #include <Extraire_surface.h>
 #include <MD_Vector_std.h>
 #include <Domaine_VF.h>
+#include <Statistiques.h>
 
 Implemente_instanciable_sans_constructeur_32_64( Domaine_32_64, "Domaine", Domaine_base );
 // XD domaine objet_u domaine -1 Keyword to create a domain.
@@ -1398,7 +1399,10 @@ void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, 
 #if defined(MEDCOUPLING_) && defined(MPI_)
   using namespace MEDCoupling;
 
-  Cerr << "Building DEC of nature " << (int)dist->getNature() << " between " << le_nom() << " and " << other_domain.le_nom() << " : ";
+  double t0 = Statistiques::get_time_now();
+  Cerr << "Building DEC of nature" << MEDCouplingNatureOfField::GetRepr(dist->getNature())
+       << "from " << other_domain.le_nom() << " (" << Process::mp_sum(dist->getMesh()->getNumberOfCells())
+       << " cells) to " << le_nom() << " (" << Process::mp_sum(loc->getMesh()->getNumberOfCells()) << " cells) : ";
   std::set<True_int> pcs;
   for (True_int i=0; i<Process::nproc(); i++) pcs.insert(i);
   /* a bit technical */
@@ -1411,7 +1415,7 @@ void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, 
   dec.attachTargetLocalField(loc);
   dec.synchronize();
 
-  Cerr << "OK" << finl;
+  Cerr << Statistiques::get_time_now() - t0 << " s" << finl;
 #else
   Process::exit("Domaine::prepare_dec_with() should not be called since it requires a TRUST version compiled with MEDCoupling and MPI!");
 #endif
