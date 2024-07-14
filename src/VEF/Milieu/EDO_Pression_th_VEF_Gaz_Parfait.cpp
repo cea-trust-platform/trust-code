@@ -14,31 +14,21 @@
 *****************************************************************************/
 
 #include <EDO_Pression_th_VEF_Gaz_Parfait.h>
+#include <Frontiere_ouverte_rho_u_impose.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Domaine_VEF.h>
-
+#include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
 #include <Loi_Etat_GP_QC.h>
-
-#include <Dirichlet.h>
-#include <Neumann_sortie_libre.h>
-#include <Frontiere_ouverte_rho_u_impose.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
+#include <Dirichlet.h>
 
-Implemente_instanciable(EDO_Pression_th_VEF_Gaz_Parfait,"EDO_Pression_th_VEF_Gaz_Parfait",EDO_Pression_th_VEF);
+Implemente_instanciable(EDO_Pression_th_VEF_Gaz_Parfait, "EDO_Pression_th_VEF_Gaz_Parfait", EDO_Pression_th_VEF);
 
-Sortie& EDO_Pression_th_VEF_Gaz_Parfait::printOn(Sortie& os) const
-{
-  os <<que_suis_je()<< finl;
-  return os;
-}
+Sortie& EDO_Pression_th_VEF_Gaz_Parfait::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 
-Entree& EDO_Pression_th_VEF_Gaz_Parfait::readOn(Entree& is)
-{
-  return is;
-}
-
+Entree& EDO_Pression_th_VEF_Gaz_Parfait::readOn(Entree& is) { return is; }
 
 /*! @brief Resoud l'EDO
  *
@@ -50,16 +40,16 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
 
   int traitPth = le_fluide_->getTraitementPth();
 
-  if (traitPth==2)  // Pth constant
+  if (traitPth == 2)  // Pth constant
     return Pth_n;
 
   double present = le_fluide_->vitesse()->equation().schema_temps().temps_courant();
-  double dt      = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
-  double futur   = present+dt;
+  double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+  double futur = present + dt;
   const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(futur);    // T(n+1)
   const DoubleTab& tempn = le_fluide_->inco_chaleur()->valeurs(present);    // T(n)
   int nb_faces = le_dom->nb_faces();
-  double Pth=0;
+  double Pth = 0;
 
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, le_dom.valeur());
 
@@ -80,7 +70,7 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
       S /= rho_moy;
       //    double Pth = (Pth_n + S*dt/V);
       //double Pth = Pth_n/(1- S*dt);
-      Pth = Pth_n/(1- S*dt);
+      Pth = Pth_n / (1 - S * dt);
       //test pour faire apparaitre la difference sur Pth
       //Pth *= 1e10;
     }
@@ -101,7 +91,7 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
 
       // Attention il faudrait prendre en compte les porosites dans les integrales !!!
 
-      double debit_u_imp=0,debit_rho_u_imp=0;
+      double debit_u_imp = 0, debit_rho_u_imp = 0;
 
       // On veut que rho_np1 soit calcule avec T(n+1) et Pth_n pour les CLs en rho_u impose
       le_fluide_->calculer_masse_volumique();
@@ -117,41 +107,41 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
       const double masse_np1 = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
 
       // Calcul de debit_u_imp et debit_rho_u_imp
-      for (int n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
         {
           const Cond_lim_base& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord).valeur();
           if (sub_type(Dirichlet, la_cl))
             {
-              const Dirichlet& diri=ref_cast(Dirichlet,la_cl);
-              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Dirichlet& diri = ref_cast(Dirichlet, la_cl);
+              const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
               int ndeb = la_front_dis.num_premiere_face();
               int nfin = ndeb + la_front_dis.nb_faces();
-              for (int face=ndeb; face<nfin; face++)
+              for (int face = ndeb; face < nfin; face++)
                 {
-                  double debit_v=0;
-                  for (int d=0; d<dimension; d++)
-                    debit_v += le_dom->face_normales(face,d)*diri.val_imp_au_temps(futur,face-ndeb,d)/tempnp1(face);
-                  int n0 = le_dom->face_voisins(face,0);
+                  double debit_v = 0;
+                  for (int d = 0; d < dimension; d++)
+                    debit_v += le_dom->face_normales(face, d) * diri.val_imp_au_temps(futur, face - ndeb, d) / tempnp1(face);
+                  int n0 = le_dom->face_voisins(face, 0);
                   if (n0 == -1)
-                    debit_v=-debit_v;
+                    debit_v = -debit_v;
                   if (sub_type(Frontiere_ouverte_rho_u_impose, la_cl))
-                    debit_rho_u_imp+=debit_v;
+                    debit_rho_u_imp += debit_v;
                   else
-                    debit_u_imp+=debit_v;
+                    debit_u_imp += debit_v;
                 }
             }
           else if (sub_type(Neumann_sortie_libre, la_cl))
             {
-              Cerr<<la_cl.que_suis_je()<<" est incompatible avec le traitement conservation_masse."<<finl;
+              Cerr << la_cl.que_suis_je() << " est incompatible avec le traitement conservation_masse." << finl;
               exit();
             }
         }
       // On fait la somme sur les procs
-      debit_u_imp=mp_sum(debit_u_imp);
-      debit_rho_u_imp=mp_sum(debit_rho_u_imp);
+      debit_u_imp = mp_sum(debit_u_imp);
+      debit_rho_u_imp = mp_sum(debit_rho_u_imp);
 
       // Calcul de Pth(n+1)
-      Pth = Pth_n * (masse_n - dt*debit_rho_u_imp) / (masse_np1 + dt*debit_u_imp);
+      Pth = Pth_n * (masse_n - dt * debit_rho_u_imp) / (masse_np1 + dt * debit_u_imp);
     }
 
   return Pth;

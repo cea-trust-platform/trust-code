@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,25 +13,49 @@
 *
 *****************************************************************************/
 
+#include <Sortie_libre_pression_imposee_QC.h>
 #include <EDO_Pression_th_base.h>
+#include <Domaine_Cl_dis.h>
+#include <Cond_lim.h>
 
-Implemente_base(EDO_Pression_th_base,"EDO_Pression_th_base",Objet_U);
+Implemente_base(EDO_Pression_th_base, "EDO_Pression_th_base", Objet_U);
 
-Sortie& EDO_Pression_th_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& EDO_Pression_th_base::printOn(Sortie& os) const { return os; }
 
-Entree& EDO_Pression_th_base::readOn(Entree& is)
-{
-  return is;
-}
+Entree& EDO_Pression_th_base::readOn(Entree& is) { return is; }
 
 /*! @brief Associe le fluide a l'EDO
  *
- * @param (Fluide_Quasi_Compressible& fl) le fluide associe
+ * @param (Fluide_Dilatable_base& fl) le fluide associe
  */
-void EDO_Pression_th_base::associer_fluide(const Fluide_Quasi_Compressible& fl)
+void EDO_Pression_th_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   le_fluide_ = fl;
+}
+
+void EDO_Pression_th_base::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
+{
+  le_dom = ref_cast(Domaine_VF, domaine.valeur());
+  le_dom_Cl = domaine_cl;
+}
+
+void EDO_Pression_th_base::completer()
+{
+  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
+  double Pth = le_fluide_->pression_th();
+  M0 = masse_totale(Pth, tab_ICh);
+  le_fluide_->checkTraitementPth(le_dom_Cl.valeur());
+}
+
+void EDO_Pression_th_base::mettre_a_jour_CL(double P)
+{
+  for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      if (sub_type(Sortie_libre_pression_imposee_QC, la_cl.valeur()))
+        {
+          Sortie_libre_pression_imposee_QC& cl = ref_cast_non_const(Sortie_libre_pression_imposee_QC, la_cl.valeur());
+          cl.set_Pth(P);
+        }
+    }
 }

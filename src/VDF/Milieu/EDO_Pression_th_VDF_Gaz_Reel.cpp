@@ -22,18 +22,11 @@
 #include <Domaine_VDF.h>
 #include <TRUSTTrav.h>
 
-Implemente_instanciable(EDO_Pression_th_VDF_Gaz_Reel,"EDO_Pression_th_VDF_Gaz_Reel",EDO_Pression_th_VDF);
+Implemente_instanciable(EDO_Pression_th_VDF_Gaz_Reel, "EDO_Pression_th_VDF_Gaz_Reel", EDO_Pression_th_VDF);
 
-Sortie& EDO_Pression_th_VDF_Gaz_Reel::printOn(Sortie& os) const
-{
-  os <<que_suis_je()<< finl;
-  return os;
-}
+Sortie& EDO_Pression_th_VDF_Gaz_Reel::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 
-Entree& EDO_Pression_th_VDF_Gaz_Reel::readOn(Entree& is)
-{
-  return is;
-}
+Entree& EDO_Pression_th_VDF_Gaz_Reel::readOn(Entree& is) { return is; }
 
 /*! @brief Resoud l'EDO
  *
@@ -42,8 +35,9 @@ Entree& EDO_Pression_th_VDF_Gaz_Reel::readOn(Entree& is)
  */
 double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
 {
-  int n_bord ;
-  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
+  const Domaine_VDF& dom = ref_cast(Domaine_VDF, le_dom.valeur());
+  int n_bord;
+  for (n_bord = 0; n_bord < dom.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
@@ -58,88 +52,78 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   const OWN_PTR(Loi_Etat_base)& loi_ = le_fluide_->loi_etat();
   //const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 
-  int elem, nb_elem=le_dom->nb_elem(),i;
+  int elem, nb_elem = dom.nb_elem(), i;
   double V = 0; //mesure du domaine
   double Fn = 0; //integrale 1 a l'etape n
   double Fnp1 = 0; //integrale 1 a l'etape n+1
   double S = 0; //second membre
 
   double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
-  double v,al,b, bnp1, hn,hnp1, divu;
+  double v, al, b, bnp1, hn, hnp1, divu;
 
-  const IntTab& elem_faces = le_dom->elem_faces();
+  const IntTab& elem_faces = dom.elem_faces();
   DoubleTrav divU(tab_vit.dimension(0), 1);
-  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit,divU);
+  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit, divU);
   DoubleTrav gradh(tab_vit.dimension(0));
   DoubleTrav Hstar(tab_vit.dimension(0));
-  for (elem=0 ; elem<nb_elem ; elem++)
+  for (elem = 0; elem < nb_elem; elem++)
     {
-      Hstar(elem) = .5*(tab_hn(elem)+tab_hnp1(elem));
+      Hstar(elem) = .5 * (tab_hn(elem) + tab_hnp1(elem));
     }
-  calculer_grad(Hstar,gradh);
+  calculer_grad(Hstar, gradh);
   DoubleTab u_gradh(nb_elem);
-  int f1,f2;
-  for (elem=0 ; elem<nb_elem ; elem++)
+  int f1, f2;
+  for (elem = 0; elem < nb_elem; elem++)
     {
-      u_gradh(elem)=0;
-      for (i=0 ; i<dimension ; i++)
+      u_gradh(elem) = 0;
+      for (i = 0; i < dimension; i++)
         {
-          f1 = elem_faces(elem,i);
-          f2 = elem_faces(elem,i+dimension);
-          u_gradh(elem) += .25* (gradh(f1)+gradh(f2)) * (tab_vit(f1)+tab_vit(f2));
+          f1 = elem_faces(elem, i);
+          f2 = elem_faces(elem, i + dimension);
+          u_gradh(elem) += .25 * (gradh(f1) + gradh(f2)) * (tab_vit(f1) + tab_vit(f2));
         }
     }
 
-  for (elem=0 ; elem<nb_elem ; elem++)
+  for (elem = 0; elem < nb_elem; elem++)
     {
-      v = le_dom->volumes(elem);
+      v = dom.volumes(elem);
       V += v;
-      hn   = tab_hn(elem);
+      hn = tab_hn(elem);
       hnp1 = tab_hnp1(elem);
-      al = loi_->Drho_DT(Pth_n,hn) / loi_->Drho_DP(Pth_n,hn);
-      b = tab_rho(elem) / loi_->Drho_DP(Pth_n,hn);
-      bnp1 = tab_rho(elem) / loi_->Drho_DP(Pth_n,hnp1);
+      al = loi_->Drho_DT(Pth_n, hn) / loi_->Drho_DP(Pth_n, hn);
+      b = tab_rho(elem) / loi_->Drho_DP(Pth_n, hn);
+      bnp1 = tab_rho(elem) / loi_->Drho_DP(Pth_n, hnp1);
       //S += al.dh/dt
-      S -= v*al * ((hnp1-hn)/dt);
+      S -= v * al * ((hnp1 - hn) / dt);
       divu = divU(elem);
       //S -= al.u.gradT*
-      S -= v*al * u_gradh(elem);
+      S -= v * al * u_gradh(elem);
       //F += b.div(U)
-      Fn += v*b * divu;
-      Fnp1 += v*bnp1 * divu;
+      Fn += v * b * divu;
+      Fnp1 += v * bnp1 * divu;
     }
 
-  Pth = Pth_n + dt/V *(S-Fn);
-  //   Cerr<<"Volume="<<V<<finl;
-  //   Cerr<<"Fn="<<Fn<<finl;
-  //   Cerr<<"S="<<S<<finl;
-  //   Cerr<<"Pression thermo recalculee (expl) = "<<Pth<<finl;
-  Pth = Pth_n + dt/V *(S-.5*(Fn+Fnp1));
-  //   Cerr<<"Fnp1="<<Fnp1<<finl;
-  //   Cerr<<"Pression thermo recalculee (impl) = "<<Pth<<finl;
-  double tmp=0,r;
-  int k=0;
-  while (std::fabs(tmp-Pth)/Pth>1e-9 && k++<20)
+  Pth = Pth_n + dt / V * (S - Fn);
+  Pth = Pth_n + dt / V * (S - .5 * (Fn + Fnp1));
+  double tmp = 0, r;
+  int k = 0;
+  while (std::fabs(tmp - Pth) / Pth > 1e-9 && k++ < 20)
     {
       tmp = Pth;
       Fnp1 = 0;
-      for (elem=0 ; elem<nb_elem ; elem++)
+      for (elem = 0; elem < nb_elem; elem++)
         {
-          v = le_dom->volumes(elem);
+          v = dom.volumes(elem);
           hnp1 = tab_hnp1(elem);
-          r = loi_->calculer_masse_volumique(Pth,hnp1);
-          bnp1 = r / loi_->Drho_DP(Pth,hnp1);
-          for (i=0 ; i<dimension ; i++)
+          r = loi_->calculer_masse_volumique(Pth, hnp1);
+          bnp1 = r / loi_->Drho_DP(Pth, hnp1);
+          for (i = 0; i < dimension; i++)
             {
-              Fnp1 += v*bnp1 * (tab_vit(elem_faces(elem,i+dimension))-tab_vit(elem_faces(elem,i)))/le_dom->dim_elem(elem,i);
+              Fnp1 += v * bnp1 * (tab_vit(elem_faces(elem, i + dimension)) - tab_vit(elem_faces(elem, i))) / dom.dim_elem(elem, i);
             }
         }
-      Pth = Pth_n + dt/V *(S-.5*(Fn+Fnp1));
-      //     Cerr<<"Fnp1="<<Fnp1<<finl;
-      Cerr<<"Pression thermo recalculee (impl"<<k<<") = "<<Pth<<finl;
+      Pth = Pth_n + dt / V * (S - .5 * (Fn + Fnp1));
+      Cerr << "Pression thermo recalculee (impl" << k << ") = " << Pth << finl;
     }
-
   return Pth;
 }
-
-

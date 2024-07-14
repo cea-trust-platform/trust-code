@@ -22,18 +22,11 @@
 #include <Domaine_VEF.h>
 #include <TRUSTTrav.h>
 
-Implemente_instanciable(EDO_Pression_th_VEF_Gaz_Reel,"EDO_Pression_th_VEF_Gaz_Reel_non",EDO_Pression_th_VEF);
+Implemente_instanciable(EDO_Pression_th_VEF_Gaz_Reel, "EDO_Pression_th_VEF_Gaz_Reel_non", EDO_Pression_th_VEF);
 
-Sortie& EDO_Pression_th_VEF_Gaz_Reel::printOn(Sortie& os) const
-{
-  os <<que_suis_je()<< finl;
-  return os;
-}
+Sortie& EDO_Pression_th_VEF_Gaz_Reel::printOn(Sortie& os) const { return os << que_suis_je() << finl; }
 
-Entree& EDO_Pression_th_VEF_Gaz_Reel::readOn(Entree& is)
-{
-  return is;
-}
+Entree& EDO_Pression_th_VEF_Gaz_Reel::readOn(Entree& is) { return is; }
 
 /*! @brief Resoud l'EDO
  *
@@ -42,8 +35,8 @@ Entree& EDO_Pression_th_VEF_Gaz_Reel::readOn(Entree& is)
  */
 double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
 {
-  int n_bord ;
-  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
+  int n_bord;
+  for (n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
@@ -57,58 +50,58 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   const OWN_PTR(Loi_Etat_base)& loi_ = le_fluide_->loi_etat();
   //  const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 
-  int elem, nb_elem=le_dom->nb_elem();
+  int elem, nb_elem = le_dom->nb_elem();
   double V = 0; //mesure du domaine
   double Fn = 0; //integrale 1 a l'etape n
   double Fnp1 = 0; //integrale 1 a l'etape n+1
   double S = 0; //second membre
 
   double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
-  double v,al,bn, bnp1, hn,hnp1, divu;
+  double v, al, bn, bnp1, hn, hnp1, divu;
 
-  int i, face,nb_faces=le_dom->nb_faces();
+  int i, face, nb_faces = le_dom->nb_faces();
   //calcul T* aux elements
   DoubleTab HstarP0(nb_elem);
-  DoubleTab gradh(nb_faces,dimension);
+  DoubleTab gradh(nb_faces, dimension);
   DoubleTab u_gradh(nb_faces);
   int nfe = le_dom->domaine().nb_faces_elem();
   const IntTab& elem_faces = le_dom->elem_faces();
-  for (elem=0 ; elem<nb_elem ; elem++)
+  for (elem = 0; elem < nb_elem; elem++)
     {
       HstarP0(elem) = 0;
-      for (face=0 ; face<nfe ; face++)
+      for (face = 0; face < nfe; face++)
         {
-          hn = tab_hn(elem_faces(elem,face));
-          hnp1 = tab_hnp1(elem_faces(elem,face));
-          HstarP0(elem) += .5*(hn+hnp1);
+          hn = tab_hn(elem_faces(elem, face));
+          hnp1 = tab_hnp1(elem_faces(elem, face));
+          HstarP0(elem) += .5 * (hn + hnp1);
         }
       HstarP0(elem) /= nfe;
     }
   //calcul gradT*
-  calculer_grad(HstarP0,gradh);
+  calculer_grad(HstarP0, gradh);
   //calcul u.gradT*
-  for (face=0 ; face<nb_faces ; face++)
+  for (face = 0; face < nb_faces; face++)
     {
-      u_gradh(face)=0;
-      for (i=0 ; i<dimension ; i++)
+      u_gradh(face) = 0;
+      for (i = 0; i < dimension; i++)
         {
-          u_gradh(face) += gradh(face,i) * tab_vit(face,i);
+          u_gradh(face) += gradh(face, i) * tab_vit(face, i);
         }
     }
   //calcul divU en P0 et P1
   DoubleTrav divUP0(nb_elem);
-  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit,divUP0);
+  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit, divUP0);
   DoubleTrav divU(nb_faces);
-  int e0,e1;
-  for (face=0 ; face<nb_faces ; face++)
+  int e0, e1;
+  for (face = 0; face < nb_faces; face++)
     {
-      e0 = le_dom->face_voisins(face,0);
-      e1 = le_dom->face_voisins(face,1);
-      if (e0!=-1 && e1!=-1)
+      e0 = le_dom->face_voisins(face, 0);
+      e1 = le_dom->face_voisins(face, 1);
+      if (e0 != -1 && e1 != -1)
         {
-          divU(face) = .5*(divUP0(e0)+divUP0(e1));
+          divU(face) = .5 * (divUP0(e0) + divUP0(e1));
         }
-      else if (e0!=-1)
+      else if (e0 != -1)
         {
           divU(face) = divUP0(e0);
         }
@@ -118,49 +111,40 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
         }
     }
 
-  for (face=0 ; face<nb_faces ; face++)
+  for (face = 0; face < nb_faces; face++)
     {
       v = le_dom->volumes_entrelaces(face);
       V += v;
-      hn   = tab_hn(face);
+      hn = tab_hn(face);
       hnp1 = tab_hnp1(face);
-      al = loi_->Drho_DT(Pth_n,hn) / loi_->Drho_DP(Pth_n,hn);
-      bn = tab_rho(face)/ loi_->Drho_DP(Pth_n,hn);
-      bnp1 = loi_->calculer_masse_volumique(Pth_n,hnp1) / loi_->Drho_DP(Pth_n,hnp1);
+      al = loi_->Drho_DT(Pth_n, hn) / loi_->Drho_DP(Pth_n, hn);
+      bn = tab_rho(face) / loi_->Drho_DP(Pth_n, hn);
+      bnp1 = loi_->calculer_masse_volumique(Pth_n, hnp1) / loi_->Drho_DP(Pth_n, hnp1);
       divu = divU(face);
 
-      S -= v *al *((hnp1-hn)/dt + u_gradh(face));
+      S -= v * al * ((hnp1 - hn) / dt + u_gradh(face));
       Fn += v * bn * divu;
       Fnp1 += v * bnp1 * divu;
     }
 
-
-  Pth = Pth_n + dt/V *(S-Fn);
-  //   Cerr<<"Volume="<<V<<finl;
-  //   Cerr<<"Fn="<<Fn<<finl;
-  //   Cerr<<"S="<<S<<finl;
-  //   Cerr<<"Pression thermo recalculee (expl) = "<<Pth<<finl;
-  Pth = Pth_n + dt/V *(S-.5*(Fn+Fnp1));
-  //   Cerr<<"Fnp1="<<Fnp1<<finl;
-  //   Cerr<<"Pression thermo recalculee (impl) = "<<Pth<<finl;
-  double tmp=0,r;
-  int k=0;
-  while (std::fabs(tmp-Pth)/Pth>1e-9 && k++<20)
+  Pth = Pth_n + dt / V * (S - Fn);
+  Pth = Pth_n + dt / V * (S - .5 * (Fn + Fnp1));
+  double tmp = 0, r;
+  int k = 0;
+  while (std::fabs(tmp - Pth) / Pth > 1e-9 && k++ < 20)
     {
       tmp = Pth;
       Fnp1 = 0;
-      for (face=0 ; face<nb_faces ; face++)
+      for (face = 0; face < nb_faces; face++)
         {
           v = le_dom->volumes_entrelaces(face);
           hnp1 = tab_hnp1(face);
-          r = loi_->calculer_masse_volumique(Pth,hnp1);
-          bnp1 = r / loi_->Drho_DP(Pth,hnp1);
+          r = loi_->calculer_masse_volumique(Pth, hnp1);
+          bnp1 = r / loi_->Drho_DP(Pth, hnp1);
           Fnp1 += v * bnp1 * divU(face);
         }
-      Pth = Pth_n + dt/V *(S-.5*(Fn+Fnp1));
-      //     Cerr<<"Fnp1="<<Fnp1<<finl;
-      Cerr<<"Pression thermo recalculee (impl"<<k<<") = "<<Pth<<finl;
+      Pth = Pth_n + dt / V * (S - .5 * (Fn + Fnp1));
+      Cerr << "Pression thermo recalculee (impl" << k << ") = " << Pth << finl;
     }
   return Pth;
 }
-
