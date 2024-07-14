@@ -27,6 +27,7 @@ Entree& Viscosite_turbulente_Smagorinsky::readOn(Entree& is)
 {
   mod_const_ = 0.18; // par default
   Param param(que_suis_je());
+  set_param(param);
   param.ajouter("cs", &mod_const_); // XD_ADD_P floattant Smagorinsky's model constant. By default it is se to 0.18.
   param.lire_avec_accolades_depuis(is);
 
