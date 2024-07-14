@@ -29,6 +29,7 @@ Entree& Viscosite_turbulente_WALE::readOn(Entree& is)
 {
   mod_const_ = 0.5; // par default
   Param param(que_suis_je());
+  set_param(param);
   param.ajouter("cw", &mod_const_); // XD_ADD_P floattant WALE's model constant. By default it is se to 0.5.
   param.lire_avec_accolades_depuis(is);
 
