@@ -55,5 +55,5 @@ void Transport_turbulent_GGDH::modifier_mu(const Convection_Diffusion_std& eq, c
     for (n = 0; n < N; n++)
       for (d = 0; d < D; d++)
         for (db = 0; db < D; db++)
-          nu(i, n, d, db) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) / nu0(i, n) * C_s * std::max(k_sur_eps(i, n) * Rij(i, n, d, db), visc_turb.limiteur() * nu(i, n, d, db));
+          nu(i, n, d, db) += (alp ? (*alp)(i, n) : 1) * mu0(i, n) / nu0(i, n) * C_s * std::min(std::max(k_sur_eps(i, n) * Rij(i, n, d, db), visc_turb.min_ev_ratio() * nu(i, n, d, db)), visc_turb.max_ev_ratio() * nu(i, n, d, db));
 }
