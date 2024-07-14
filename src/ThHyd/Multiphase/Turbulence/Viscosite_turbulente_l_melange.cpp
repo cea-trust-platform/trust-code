@@ -28,6 +28,7 @@ Sortie& Viscosite_turbulente_l_melange::printOn(Sortie& os) const { return os; }
 Entree& Viscosite_turbulente_l_melange::readOn(Entree& is)
 {
   Param param(que_suis_je());
+  set_param(param);
   param.ajouter("l_melange", &l_melange_, Param::REQUIRED); // XD_ADD_P floattant not_set
   param.lire_avec_accolades_depuis(is);
   Cerr << "l_melange = " << l_melange_ << finl ;
