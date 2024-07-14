@@ -16,35 +16,41 @@
 #ifndef EDO_Pression_th_base_included
 #define EDO_Pression_th_base_included
 
+#include <Fluide_Dilatable_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <TRUST_Ref.h>
-#include <Objet_U.h>
 
-class Fluide_Quasi_Compressible;
+class Domaine_VF;
 
 /*! @brief classe EDO_Pression_th_base Cette classe est la base de la hierarchie des EDO sur la pression
  *
- *      associees a la resolution du schema pour les fluides quasi compressibles
+ *      associees a la resolution du schema pour les fluides dilatables
  *
- * @sa Fluide_Quasi_Compressible, Classe abstraite dont toutes les lois d'etat doivent deriver., Methodes abstraites:, void calculer_coeff_T(), void Resoudre_EDO_PT(), void calculer_masse_volumique()
+ * @sa Fluide_Dilatable_base, Classe abstraite dont toutes les lois d'etat doivent deriver., Methodes abstraites:, void calculer_coeff_T(), void Resoudre_EDO_PT(), void calculer_masse_volumique()
  */
 
 class EDO_Pression_th_base : public Objet_U
 {
   Declare_base(EDO_Pression_th_base);
 public :
-  void associer_fluide(const Fluide_Quasi_Compressible&);
+  void associer_fluide(const Fluide_Dilatable_base&);
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&);
+  const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); };
+  inline const double& getM0() const { return M0; }
+  virtual void completer();
+  virtual void mettre_a_jour_CL(double);
+
   // Virtuelles pure
-  virtual void completer() =0;
-  virtual void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) =0;
-  virtual void mettre_a_jour_CL(double) = 0;
   virtual double masse_totale(double P,const DoubleTab& T)=0;
   virtual double resoudre(double) =0;
 
 protected :
-  REF(Fluide_Quasi_Compressible) le_fluide_;
+  REF(Fluide_Dilatable_base) le_fluide_;
+  REF(Domaine_Cl_dis) le_dom_Cl;
+  REF(Domaine_VF) le_dom;
+  double M0 = -1.;// la masse totale initiale
 };
 
 #endif /* EDO_Pression_th_base_included */
