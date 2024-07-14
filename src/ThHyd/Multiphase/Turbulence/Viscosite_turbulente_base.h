@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,16 +35,18 @@ class Viscosite_turbulente_base : public Correlation_base
 {
   Declare_base(Viscosite_turbulente_base);
 public:
+  virtual void set_param(Param& param);
   virtual void modifier_mu(DoubleTab& nu_t) const;
   virtual void eddy_viscosity(DoubleTab& nu_t) const = 0;
   virtual void reynolds_stress(DoubleTab& R_ij) const = 0;
   virtual void k_over_eps(DoubleTab& k_sur_eps) const = 0;
   virtual void eps(DoubleTab& eps) const = 0;
-  inline double limiteur() const {return limiter_;};
+  inline double min_ev_ratio() const {return min_ev_ratio_;};
+  inline double max_ev_ratio() const {return max_ev_ratio_;};
   virtual int gradu_required() const  {  return 0; };
 
-private:
-  double limiter_ = 0.01; //"limiteur" fournissant une valeur minimale de la viscosite turbulente
+protected:
+  double min_ev_ratio_ = 1e-2, max_ev_ratio_ = 1e3; //limiteurs du ratio nu_t / nu : min_ev_ratio_ <= nu_t / nu <= max_ev_ratio_
 };
 
 #endif
