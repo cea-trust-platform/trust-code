@@ -18,6 +18,7 @@
 #include <TRUSTVect.h>
 #include <TRUST_Error.h>
 #include <Matrice_Dense.h>
+#include <Matrice_Morse.h>
 #include <SFichier.h>
 
 class MatriceDenseTest: public CPPUNIT_NS::TestFixture
