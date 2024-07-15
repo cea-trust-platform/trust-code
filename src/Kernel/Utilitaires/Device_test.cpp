@@ -16,7 +16,9 @@
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
 #include <Device.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
