@@ -37,7 +37,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-	if [ "$TRUST_CC_BASE_EXTP_A_TESTER" != "" ]
+	if [ "$TRUST_CC_BASE_EXTP" != "" ]
 	then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
 	else
