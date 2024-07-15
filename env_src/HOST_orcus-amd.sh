@@ -18,7 +18,7 @@ define_modules_config()
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
          module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
-         module="slurm                                 gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6" # On telecharge desormais le meme SDK que sur PC
+         module="slurm                                 gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
       else
          echo "Not supported anymore" && exit -1
       fi
