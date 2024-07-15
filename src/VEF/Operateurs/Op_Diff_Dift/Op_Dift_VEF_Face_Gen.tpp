@@ -566,7 +566,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                                    Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                                      const int ind_face)
               {
-                double le_mauvais_gradient[3];
+                double le_mauvais_gradient[3] = { 0., 0., 0.};
                 for (int nc = 0; nc < nb_comp; nc++)
                   {
                     int num_face = le_bord_num_face(ind_face);
