@@ -839,7 +839,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
 
   Champ_P1NC::calcul_gradient(la_vitesse, duidxj, domaine_Cl_VEF);
 
-  int dimension = Objet_U::dimension;
+  int dim = Objet_U::dimension;
   CDoubleTabView3 duidxj_v = duidxj.view3_ro();
   DoubleArrView SMA_barre_v = SMA_barre.view_wo();
   start_gpu_timer();
@@ -847,8 +847,8 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
                          const int elem)
   {
     double temp = 0.;
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++)
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
         {
           double Sij = 0.5 * (duidxj_v(elem, i, j) + duidxj_v(elem, j, i));
           temp += Sij * Sij;
