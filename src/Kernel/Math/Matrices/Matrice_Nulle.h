@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,8 @@ public :
   DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override;
   DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
+
+  void clean( void ) override;
 
   void scale(const double x) override;
   void get_stencil(IntTab& stencil) const override;

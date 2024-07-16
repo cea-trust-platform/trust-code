@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,10 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
-#include <TRUSTLists.h>
 #include <Matrice.h>
+#include <TRUSTLists.h>
+#include <vector>
+#include <TRUST_Vector.h>
 
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -61,6 +63,8 @@ public :
 
   // multiplication par un scalaire
   void scale( const double x ) override;
+  // mise a zero des valeurs de la matrice
+  void clean( void ) override;
 
   void get_stencil( IntTab& stencil ) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
@@ -113,11 +117,14 @@ public :
 
 protected :
   VECT(Matrice) blocs_;           // les blocs de la matrices source A
+  std::vector<Matrice_Base*> blocs_non_nuls_;     // les blocs non nuls
   int N_;                       // 1ere dim de A
   int M_;                       // 2eme dim de A
   int nb_blocs_;                   // nb total des blocs de A (= N_ * M_)
 
   ArrOfInt offsets_;
+  std::vector<int> line_offsets_;
+  std::vector<int> column_offsets_;
 
   template<typename _TAB_T_, typename _VAL_T_>
   void get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeff_sp) const;

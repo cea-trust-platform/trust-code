@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,6 +106,11 @@ DoubleTab& Matrice_Diagonale::ajouter_multTab_( const DoubleTab& x, DoubleTab& r
 void Matrice_Diagonale::scale( const double x )
 {
   coefficients_ *= x;
+}
+
+void Matrice_Diagonale::clean( void )
+{
+  coefficients_ = 0.;
 }
 
 void Matrice_Diagonale::get_stencil( IntTab& stencil ) const

@@ -118,7 +118,7 @@ public :
   }
 
   //methode pour nettoyer la matrice.
-  void clean();
+  void clean() override;
 
   // operateurs :
   // 0<=i,j<=n-1

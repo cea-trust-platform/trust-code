@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ public :
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
   void scale(const double x) override;
+  void clean( void ) override;
   void get_stencil(IntTab& stencil) const override;
   void get_symmetric_stencil(IntTab& stencil) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;

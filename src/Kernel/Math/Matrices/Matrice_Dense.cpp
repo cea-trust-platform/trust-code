@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Matrice_Dense.h>
-#include <Matrice_Morse.h>
 #include <fstream>
 #include <iostream>
 #include <Lapack.h>
+#include <Matrice_Morse.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Dense,"Matrice_Dense",Matrice_Base);
 
@@ -336,6 +336,18 @@ void Matrice_Dense::scale( const double x )
 }
 
 
+void Matrice_Dense::clean( void )
+{
+  const int nb_lines = nb_lignes( );
+  const int nb_cols  = nb_colonnes( );
+  for(int i=0; i<nb_lines; i++)
+    {
+      for(int j=0; j<nb_cols; j++)
+        {
+          Matrix_( i , j ) = 0. ;
+        }
+    }
+}
 
 void Matrice_Dense::get_stencil( IntTab& stencil ) const
 {
@@ -344,7 +356,6 @@ void Matrice_Dense::get_stencil( IntTab& stencil ) const
   const int nb_cols  = nb_colonnes( );
 
   stencil.resize( 0, 2 );
-
 
   for(int i=0; i<nb_lines; i++)
     {
@@ -355,7 +366,6 @@ void Matrice_Dense::get_stencil( IntTab& stencil ) const
     }
 
   const int new_size = stencil.dimension( 0 );
-
   stencil.resize( new_size, 2 );
 
 }

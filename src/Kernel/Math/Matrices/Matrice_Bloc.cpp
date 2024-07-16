@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Matrix_tools.h>
 #include <TRUSTArrays.h>
 #include <TRUSTTabs.h>
+#include <Matrice_Nulle.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Bloc,"Matrice_Bloc",Matrice_Base);
 
@@ -174,6 +175,26 @@ void Matrice_Bloc::scale( const double x )
     }
 }
 
+void Matrice_Bloc::clean( void )
+{
+
+  if ( is_stencil_up_to_date_ )
+    {
+      for ( const auto& b : blocs_non_nuls_ )
+        {
+          b->clean( );
+        }
+    }
+  else
+    {
+
+      for (int i=0; i<nb_blocs_; ++i)
+        {
+          Matrice_Base& matrix = blocs_[ i ].valeur( );
+          matrix.clean( );
+        }
+    }
+}
 
 void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 {
@@ -272,6 +293,10 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 
 void Matrice_Bloc::build_stencil( void )
 {
+  std::fill(line_offsets_.begin( ),line_offsets_.end( ), 0.);
+  std::fill(column_offsets_.begin( ),line_offsets_.end( ), 0.);
+  blocs_non_nuls_.clear( );
+
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );
   const int nb_stencils      = nb_line_blocks * nb_column_blocks;
@@ -290,6 +315,12 @@ void Matrice_Bloc::build_stencil( void )
       for ( int j=0; j<nb_column_blocks; ++j )
         {
           const Matrice_Base& local_matrix = get_bloc( i, j ).valeur( );
+          if ( ! sub_type( Matrice_Nulle, local_matrix ))
+            {
+              blocs_non_nuls_.push_back( &get_bloc( i, j ).valeur( ) );
+              line_offsets_.push_back( imin );
+              column_offsets_.push_back( jmin );
+            }
 
           imax = imin + local_matrix.nb_lignes( );
           jmax = jmin + local_matrix.nb_colonnes( );
@@ -397,31 +428,29 @@ void Matrice_Bloc::get_stencil_coeff_templ( IntTab& stencil, _TAB_T_& coeff_sp) 
       IntTab      local_stencil;
       _TAB_T_     local_coeff;
 
-      for ( int i=0; i<nb_line_blocks; ++i )
+
+      for ( size_t i=0; i<blocs_non_nuls_.size(); ++i )
         {
-          for ( int j=0; j<nb_column_blocks; ++j )
+          const Matrice_Base& local_matrix = *blocs_non_nuls_[ i ];
+
+          imin = line_offsets_[i];
+          jmin = column_offsets_[i];
+          imax = imin + local_matrix.nb_lignes( );
+          jmax = jmin + local_matrix.nb_colonnes( );
+
+          _get_sub_stencil_coeff<_TAB_T_>(local_matrix, local_stencil, local_coeff);
+
+          const int size = local_stencil.dimension( 0 );
+
+          for ( int k=0; k<size; ++k )
             {
-              const Matrice_Base& local_matrix = get_bloc( i, j ).valeur( );
+              const int line           = local_stencil( k, 0 ) + imin;
+              const int index          = offsets[ line ];
 
-              imax = imin + local_matrix.nb_lignes( );
-              jmax = jmin + local_matrix.nb_colonnes( );
+              coeff_sp[index] = local_coeff[ k ];
 
-              _get_sub_stencil_coeff<_TAB_T_>(local_matrix, local_stencil, local_coeff);
-
-              const int size = local_stencil.dimension( 0 );
-              for ( int k=0; k<size; ++k )
-                {
-                  const int line           = local_stencil( k, 0 ) + imin;
-                  const int index          = offsets[ line ];
-
-                  coeff_sp[index] = local_coeff[ k ];
-
-                  offsets[ line ] += 1;
-                }
-              jmin = jmax;
+              offsets[ line ] += 1;
             }
-          imin = imax;
-          jmin = 0;
         }
       return;
     }

@@ -50,6 +50,7 @@ public :
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
   void scale( const double x ) override ;
+  void clean( void ) override;
   void get_stencil( IntTab& stencil ) const override;
 
   // Perform the matrix inversion
