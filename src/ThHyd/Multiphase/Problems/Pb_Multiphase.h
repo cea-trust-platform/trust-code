@@ -59,18 +59,6 @@ public:
   const Noms& noms_phases() const { return noms_phases_; }
 
   double calculer_pas_de_temps() const override;
-  const Correlation& get_correlation(std::string nom_correlation) const
-  {
-    Motcle mot(nom_correlation);
-    return correlations_.at(mot.getString());
-  }
-
-  int has_correlation(std::string nom_correlation) const
-  {
-    Motcle mot(nom_correlation);
-    return (int)correlations_.count(mot.getString());
-  }
-
   virtual void typer_lire_correlation_hem() { /* Do nothing */}
 
   virtual Equation_base& equation_qdm() { return eq_qdm_; }
@@ -84,13 +72,11 @@ public:
 
 protected:
   Noms noms_phases_;
-  std::map<std::string, Correlation> correlations_;
 
   // equations
   QDM_Multiphase eq_qdm_;
   Energie_Multiphase eq_energie_;
   Masse_Multiphase eq_masse_;
-  LIST(Equation) eq_opt_; //autres equations (turbulence, aire interfaciale...)
 };
 
 #endif /* Pb_Multiphase_included */
