@@ -556,7 +556,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
   return div;
 }
 
-DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, DoubleTab& div) const
+DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, DoubleTab& tab_div) const
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
@@ -564,7 +564,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
   // L'espace virtuel de vitesse_face_absolue doit etre a jour (Le test est fait si check_enabled==1)
   assert_espace_virtuel_vect(vitesse_face_absolue);
   // On s'en fiche de l'espace virtuel de div a l'entree, mais on fait += dessus.
-  assert_invalide_items_non_calcules(div, 0.);
+  assert_invalide_items_non_calcules(tab_div, 0.);
 
 #ifndef NDEBUG
   // On s'assure que la periodicite est respectee sur vitesse_face_absolue (Voir FA814)
@@ -607,13 +607,13 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
 
   static int init = 1;
   if (!init)
-    ::verifier(*this, init, domaine_VEF, vit, div);
+    ::verifier(*this, init, domaine_VEF, vit, tab_div);
   if (domaine_VEF.get_alphaE())
-    ajouter_elem(vit, div);
+    ajouter_elem(vit, tab_div);
   if (domaine_VEF.get_alphaS())
-    ajouter_som(vit, div, flux_b);
+    ajouter_som(vit, tab_div, flux_b);
   if (domaine_VEF.get_alphaA())
-    ajouter_aretes(vit, div);
+    ajouter_aretes(vit, tab_div);
 
   // correction de de div u si pression sommet imposee de maniere forte
   if ((domaine_VEF.get_alphaS()) && ((domaine_VEF.get_cl_pression_sommet_faible() == 0)))
@@ -626,30 +626,33 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
           if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_val_ext, la_cl.valeur()))
             {
               const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
-              const IntTab& faces_sommets = domaine_VEF.face_sommets();
               int nb_faces = la_front_dis.nb_faces_tot();
               int nsf = 0;
               if (nb_faces != 0)
-                nsf = faces_sommets.dimension(1);
-
-              int num2 = nb_faces;
-              for (int ind_face = 0; ind_face < num2; ind_face++)
-                {
-                  int face = la_front_dis.num_face(ind_face);
-                  for (int som = 0; som < nsf; som++)
-                    {
-                      int som1 = faces_sommets(face, som);
-                      div(nps + som1) = 0.;
-                    }
-                }
+                nsf = domaine_VEF.face_sommets().dimension(1);
+              CIntArrView num_face = la_front_dis.num_face().view_ro();
+              CIntTabView faces_sommets = domaine_VEF.face_sommets().view_ro();
+              DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_wo();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__) ,
+                                   Kokkos::RangePolicy<>(0, nb_faces), KOKKOS_LAMBDA(
+                                     const int ind_face)
+              {
+                int face = num_face(ind_face);
+                for (int som = 0; som < nsf; som++)
+                  {
+                    int som1 = faces_sommets(face, som);
+                    div(nps + som1) = 0.;
+                  }
+              });
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
         }
     }
   if (domaine_VEF.get_alphaS() && corrige_sommets_sans_degre_liberte_)
     degres_liberte();
   //Optimisation, pas necessaire:
-  //div.echange_espace_virtuel();
-  return div;
+  //tab_div.echange_espace_virtuel();
+  return tab_div;
 }
 
 #ifdef VersionP1
