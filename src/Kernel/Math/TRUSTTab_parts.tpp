@@ -19,8 +19,6 @@
 template<typename _TYPE_>
 inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& parts, TRUSTTab<_TYPE_> *dummy_type_ptr)
 {
-  vect.checkDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU
-
   const MD_Vector& md = vect.get_md_vector();
   TRUSTTab<_TYPE_>* tab_ptr = dynamic_cast<TRUSTTab<_TYPE_>*>(&vect);
   if (! md.non_nul() || !sub_type(MD_Vector_composite, md.valeur()))
@@ -34,6 +32,7 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
     }
   else
     {
+      vect.checkDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU
       ArrOfInt shape;
       const int line_size = vect.line_size();
       if (tab_ptr)
