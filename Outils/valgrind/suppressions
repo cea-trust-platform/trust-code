@@ -24,6 +24,21 @@
 }
 
 ######
+###### Cas test upwind sur Rhel 9.4 avec mpich 3.4.2
+######
+{
+   <mpich 3.4.2>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   obj:/usr/lib64/libpciaccess.so.0.11.1
+   ...
+   fun:MPII_hwtopo_init
+   ...
+}
+
+
+######
 ###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair
 ###### * ajoutees dans le cas ou TRUST est compile en int64
 ######
