@@ -1351,6 +1351,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   copyPartialFromDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   copyPartialFromDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
   copyPartialFromDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
+  copyPartialFromDevice(vitesse_face, 0, premiere_face_int * dimension, "vitesse_face on boundary");
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
@@ -1445,6 +1446,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   copyPartialToDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
   copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
+  copyPartialToDevice(vitesse_face, 0, premiere_face_int * dimension, "vitesse_face on boundary");
   modifier_flux(*this);
   return resu;
 }
