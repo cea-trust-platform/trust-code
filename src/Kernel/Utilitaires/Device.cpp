@@ -447,6 +447,8 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
       end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
       if (clock_on) printf("\n");
+      if (size>1e6)
+        ToDo_Kokkos("D2H copy of large array! If not I/O, add a breakpoint into Device::copyFromDevice() to find the cause.");
     }
 #endif
 }
