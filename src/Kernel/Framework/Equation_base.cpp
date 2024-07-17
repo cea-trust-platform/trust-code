@@ -1346,8 +1346,9 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
       Cout << "Convection Semi Implicite: Number of Sub-Cycles : " << nstep << " with dt_loc = " << dt_loc << " dt =" << dt << finl ;
 
       secmem = 0;
-      DoubleTab solution_loc(solution) ;
-      DoubleTab derivee;
+      DoubleTrav solution_loc(solution);
+      solution_loc = solution;
+      DoubleTrav derivee;
       derivee.copy(secmem, RESIZE_OPTIONS::NOCOPY_NOINIT);
       for (int i=0; i<nstep; i++)
         {
@@ -1414,9 +1415,11 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           Process::exit();
         }
       statistiques().begin_count(assemblage_sys_counter_);
-      DoubleTab present(solution); // I(n)
+      DoubleTrav present(solution); // I(n)
+      present = solution;
       // On multiplie secmem par M (qui etait divise par M avant l'appel...)
-      DoubleTab copie(secmem);
+      DoubleTrav copie(secmem);
+      copie = secmem;
       secmem = 0;
       solveur_masse.ajouter_masse(1, secmem, copie);
       // Build matrix A:
@@ -1471,11 +1474,14 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       // Le nombre maximal d'iteration peut etre desormais borne par niter_max_diff_impl
       int nmax = le_schema_en_temps->niter_max_diffusion_implicite();
 
-      DoubleTab p(solution);
+      DoubleTrav p(solution);
       p = 0;
-      DoubleTab phiB(p); // la partie Bord de l'operateur.
-      DoubleTab resu(p);
-      DoubleTab merk(solution);
+      DoubleTrav phiB(p); // la partie Bord de l'operateur.
+      phiB = 0;
+      DoubleTrav resu(p);
+      resu = 0;
+      DoubleTrav merk(solution);
+      merk = solution;
       double aCKN = 1; // Crank - Nicholson -> 0.5
 
       // Calcul de la matrice Diagonale
@@ -1585,7 +1591,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       // fait maintenant avant l'appel
       //solveur_masse.appliquer(secmem);
 
-      DoubleTab sol;
+      DoubleTrav sol;
       if (size_terme_mul)
         {
           sol = solution;
@@ -1615,9 +1621,10 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       resu *= -1.;
       resu.ajoute(1. / dt, sol, VECT_REAL_ITEMS);
 
-      DoubleTab residu(resu); // residu = Ax
+      DoubleTrav residu(resu); // residu = Ax
+      residu = resu;
       residu -= secmem;      // residu = Ax-B
-      DoubleTab z;
+      DoubleTrav z;
       if (precond_diag)
         {
           z = residu;
