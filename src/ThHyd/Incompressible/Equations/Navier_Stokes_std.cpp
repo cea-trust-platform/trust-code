@@ -938,14 +938,14 @@ int Navier_Stokes_std::preparer_calcul()
   const double temps = schema_temps().temps_courant();
   sources().mettre_a_jour(temps);
   Equation_base::preparer_calcul();
-  bool is_QC = que_suis_je().finit_par("_QC");
+  bool is_dilatable = probleme().is_dilatable();
   if ( is_IBM () )
     {
-      preparer_calcul_IBM(is_QC);
+      preparer_calcul_IBM(is_dilatable);
     }
   else
     {
-      if (!is_QC)
+      if (!is_dilatable)
         {
           assembleur_pression_->assembler(matrice_pression_);
         }

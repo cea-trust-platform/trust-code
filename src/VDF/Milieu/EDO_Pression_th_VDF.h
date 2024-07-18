@@ -32,6 +32,7 @@ class EDO_Pression_th_VDF: public EDO_Pression_th_base
 public :
   void calculer_grad(const DoubleTab&,DoubleTab&);
   double masse_totale(double P,const DoubleTab& T) override;
+  double masse_totale(const DoubleTab& P,const DoubleTab& T) override;
 };
 
 #endif /* EDO_Pression_th_VDF_included */

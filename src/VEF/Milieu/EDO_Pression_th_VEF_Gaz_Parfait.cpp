@@ -146,3 +146,99 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
 
   return Pth;
 }
+
+void EDO_Pression_th_VEF_Gaz_Parfait::resoudre(DoubleTab& Pth_n)
+{
+
+  const int traitPth = le_fluide_->getTraitementPth();
+  if (traitPth == 2)
+    return; // rien a faire
+  else if (traitPth == 0)
+    {
+      for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
+        {
+          const Cond_lim& la_cl = le_dom_Cl->valeur().les_conditions_limites(n_bord);
+          if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
+            return; // rien a faire
+        }
+
+      Cerr << "EDO_Pression_th_VEF_Gaz_Parfait::" << __func__ << " not yet coded ! Call the 911 !!" << finl;
+      Process::exit();
+    }
+  else
+    {
+      const double present = le_fluide_->vitesse()->equation().schema_temps().temps_courant();
+      const double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+      const double futur = present + dt;
+      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(futur);    // T(n+1)
+      const DoubleTab& tempn = le_fluide_->inco_chaleur()->valeurs(present);    // T(n)
+      const int nb_faces = le_dom->nb_faces();
+      const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, le_dom.valeur());
+
+      // On veut Masse(n+1) - Masse(n) = dt * Debits_aux_bords
+      // or Masse = Pth / R * sum(Vi/Ti) en volume
+      // et Debit = Pth / R * sum(Sj.Uj/Tj) aux faces Dirichlet
+
+      // Donc si on note masse_n = sum(Vi/Ti(n))
+      // debit_u_imp = sum(Sj.Uj(impose)/Tj(n+1)) pour les vitesses imposees
+      // et debit_rho_u_imp = sum(Sj.Uj(impose)/Tj(n+1)) pour les rho_u imposes
+      //                      ou U(impose) = (rho.U)(impose) / rho(Pth(n),T(n+1))
+      // il faut Pth(n+1)*masse_np1 - Pth(n)*masse_n = Pth(n+1) * debit_u_imp * dt
+      //                                             + Pth(n) * debit_rho_u_imp * dt
+
+      // Attention il faudrait prendre en compte les porosites dans les integrales !!!
+
+      double debit_u_imp = 0, debit_rho_u_imp = 0;
+
+      // On veut que rho_np1 soit calcule avec T(n+1) et Pth_n pour les CLs en rho_u impose
+      le_fluide_->calculer_masse_volumique();
+
+      // Calcul de masse_n et masse_np1
+      DoubleVect tmp;
+      tmp.copy(tempn, RESIZE_OPTIONS::NOCOPY_NOINIT); // copier uniquement la structure
+      for (int i = 0; i < nb_faces; i++)
+        tmp[i] = 1. / tempn[i];
+      const double masse_n = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
+      for (int i = 0; i < nb_faces; i++)
+        tmp[i] = 1. / tempnp1[i];
+      const double masse_np1 = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
+
+      // Calcul de debit_u_imp et debit_rho_u_imp
+      for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
+        {
+          const Cond_lim_base& la_cl = le_dom_Cl->valeur().les_conditions_limites(n_bord).valeur();
+          if (sub_type(Dirichlet, la_cl))
+            {
+              const Dirichlet& diri = ref_cast(Dirichlet, la_cl);
+              const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+              int ndeb = la_front_dis.num_premiere_face();
+              int nfin = ndeb + la_front_dis.nb_faces();
+              for (int face = ndeb; face < nfin; face++)
+                {
+                  double debit_v = 0;
+                  for (int d = 0; d < dimension; d++)
+                    debit_v += le_dom->face_normales(face, d) * diri.val_imp_au_temps(futur, face - ndeb, d) / tempnp1(face);
+                  int n0 = le_dom->face_voisins(face, 0);
+                  if (n0 == -1)
+                    debit_v = -debit_v;
+                  if (sub_type(Frontiere_ouverte_rho_u_impose, la_cl))
+                    debit_rho_u_imp += debit_v;
+                  else
+                    debit_u_imp += debit_v;
+                }
+            }
+          else if (sub_type(Neumann_sortie_libre, la_cl))
+            {
+              Cerr << la_cl.que_suis_je() << " est incompatible avec le traitement conservation_masse." << finl;
+              exit();
+            }
+        }
+      // On fait la somme sur les procs
+      debit_u_imp = mp_sum(debit_u_imp);
+      debit_rho_u_imp = mp_sum(debit_rho_u_imp);
+
+      // Calcul de Pth(n+1)
+      for (int f = 0; f < nb_faces; f++)
+        Pth_n(f) = Pth_n(f) * (masse_n - dt * debit_rho_u_imp) / (masse_np1 + dt * debit_u_imp);
+    }
+}

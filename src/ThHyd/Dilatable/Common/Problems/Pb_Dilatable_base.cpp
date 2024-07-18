@@ -121,7 +121,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
   le_fluide_->calculer_masse_volumique();
 
   //4. Solve EDO equation (pressure) if needed (ie. QC)
-  solve_pressure_thermo();
+  le_fluide_->Resoudre_EDO_PT();
 
   //5. Compute volumic mass
   le_fluide_->calculer_masse_volumique();

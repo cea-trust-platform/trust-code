@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Fluide_Dilatable_base.h>
+#include <Neumann_sortie_libre.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Discretisation_base.h>
 #include <Champ_Fonc_Fonction.h>
@@ -23,13 +24,12 @@
 #include <Domaine_VF.h>
 #include <Param.h>
 
-Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
+Implemente_base(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
 // XD fluide_dilatable_base fluide_base fluide_dilatable_base -1 Basic class for dilatable fluids.
-
-Fluide_Dilatable_base::Fluide_Dilatable_base():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
 
 Sortie& Fluide_Dilatable_base::printOn(Sortie& os) const
 {
+  os << que_suis_je() << finl;
   Fluide_base::ecrire(os);
   return os;
 }
@@ -108,6 +108,25 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       loi_etat_->associer_fluide(*this);
       return 1;
     }
+  else if (mot=="Traitement_PTh")
+    {
+      Motcle trait;
+      is >> trait;
+      Motcles les_options(3);
+      {
+        les_options[0] = "edo";
+        les_options[1] = "conservation_masse";
+        les_options[2] = "constant";
+      }
+      traitement_PTh=les_options.search(trait);
+      if (traitement_PTh == -1)
+        {
+          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
+          Cerr<< "One of the following options was expected : " << les_options << finl;
+          Process::exit();
+        }
+      return 1;
+    }
   else if (mot=="mu")
     {
       is>>mu;
@@ -159,6 +178,44 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       return -1;
     }
   else return Fluide_base::lire_motcle_non_standard(mot,is);
+}
+
+/*
+ * traitement_PTh=0 => resolution classique de l'edo
+ * traitement_PTh=1 => pression calculee pour conserver la masse
+ * traitement_PTh=2 => pression laissee cste.
+ */
+void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
+{
+  if (traitement_PTh==0)
+    {
+      /* Do nothing*/
+    }
+  else
+    {
+      int pression_imposee=0;
+      int size=domaine_cl->les_conditions_limites().size();
+      assert(size!=0);
+      for (int n=0; n<size; n++)
+        {
+          const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n);
+          if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
+        }
+
+      if (pression_imposee && traitement_PTh!=2)
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
+          Process::exit();
+        }
+
+      if (!pression_imposee && traitement_PTh!=1)
+        {
+          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
+          Process::exit();
+        }
+    }
 }
 
 void Fluide_Dilatable_base::warn_syntax_Sutherland()
@@ -284,6 +341,7 @@ void Fluide_Dilatable_base::preparer_pas_temps()
 {
   loi_etat_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
   eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  if (traitement_PTh != 2 ) EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
 
 void Fluide_Dilatable_base::abortTimeStep()
@@ -494,4 +552,65 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   initialiser_inco_ch();
   eos_tools_->mettre_a_jour(pb.schema_temps().temps_courant());
   loi_etat_->initialiser();
+
+  if (traitement_PTh != 2) completer_edo(pb);
+}
+
+void Fluide_Dilatable_base::completer_edo(const Probleme_base& pb)
+{
+  assert(traitement_PTh != 2);
+  Nom typ = pb.equation(0).discretisation().que_suis_je();
+  if (typ=="VEFPreP1B") typ = "VEF";
+  typ += "_";
+
+  // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
+  // typer Gaz_Parfait instead to use when traitement_PTh=1...
+  if (pb.que_suis_je().debute_par("Pb_Hydraulique_Melange_Binaire_"))
+    typ +="Gaz_Parfait";
+  else
+    typ += loi_etat_->type_fluide();
+
+  typ = Nom("EDO_Pression_th_") + typ;
+  Cerr << "Typage de l'EDO sur la pression : " << typ << finl;
+  EDO_Pth_.typer(typ);
+  EDO_Pth_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
+  EDO_Pth_->associer_fluide(*this);
+  EDO_Pth_->mettre_a_jour_CL(Pth_);
+
+  // Write in file
+  output_file_ = Objet_U::nom_du_cas();
+  output_file_ += "_";
+  output_file_ += pb.le_nom();
+  output_file_ += ".evol_glob";
+
+  Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
+  write_header_edo();
+}
+
+void Fluide_Dilatable_base::prepare_pressure_edo()
+{
+  if (traitement_PTh != 2) EDO_Pth_->completer();
+
+  eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+}
+
+void Fluide_Dilatable_base::write_header_edo()
+{
+  if (je_suis_maitre())
+    {
+      SFichier fic(output_file_);
+      fic << "# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]" << finl;
+    }
+}
+
+void Fluide_Dilatable_base::write_mean_edo(double temps)
+{
+  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeur().valeurs());
+  const double rhom = eos_tools_->moyenne_vol(rho->valeurs());
+
+  if (je_suis_maitre() && traitement_PTh != 2)
+    {
+      SFichier fic(output_file_, ios::app);
+      fic << temps << " " << Ch_m << " " << rhom << " " << Pth_ << finl;
+    }
 }

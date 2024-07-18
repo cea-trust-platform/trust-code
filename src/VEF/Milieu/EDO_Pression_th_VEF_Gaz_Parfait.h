@@ -31,6 +31,7 @@ class EDO_Pression_th_VEF_Gaz_Parfait :  public EDO_Pression_th_VEF
   Declare_instanciable(EDO_Pression_th_VEF_Gaz_Parfait);
 public :
   double resoudre(double) override;
+  void resoudre(DoubleTab&) override;
 };
 
 #endif /* EDO_Pression_th_VEF_Gaz_Parfait_included */

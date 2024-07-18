@@ -14,7 +14,9 @@
 *****************************************************************************/
 
 #include <Sortie_libre_pression_imposee_QC.h>
+#include <Fluide_Weakly_Compressible.h>
 #include <EDO_Pression_th_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Domaine_Cl_dis.h>
 #include <Cond_lim.h>
 
@@ -41,17 +43,27 @@ void EDO_Pression_th_base::associer_domaines(const Domaine_dis& domaine, const D
 
 void EDO_Pression_th_base::completer()
 {
-  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
-  double Pth = le_fluide_->pression_th();
-  M0 = masse_totale(Pth, tab_ICh);
+  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur()->valeurs();
+  const double Pth = le_fluide_->pression_th();
+
+  if (Pth > -1.)
+    M0 = masse_totale(Pth, tab_ICh);
+  else
+    {
+      assert(sub_type(Fluide_Weakly_Compressible, le_dom.valeur()));
+      M0 = masse_totale(ref_cast(Fluide_Weakly_Compressible, le_dom.valeur()).pression_th_tab(), tab_ICh);
+    }
+
   le_fluide_->checkTraitementPth(le_dom_Cl.valeur());
 }
 
 void EDO_Pression_th_base::mettre_a_jour_CL(double P)
 {
+  if (sub_type(Fluide_Weakly_Compressible, le_dom.valeur())) return; /* bof */
+
   for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Sortie_libre_pression_imposee_QC, la_cl.valeur()))
         {
           Sortie_libre_pression_imposee_QC& cl = ref_cast_non_const(Sortie_libre_pression_imposee_QC, la_cl.valeur());

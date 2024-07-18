@@ -16,6 +16,7 @@
 #ifndef Fluide_Dilatable_base_included
 #define Fluide_Dilatable_base_included
 
+#include <EDO_Pression_th_base.h>
 #include <EOS_Tools_base.h>
 #include <Domaine_Cl_dis.h>
 #include <Loi_Etat_base.h>
@@ -35,10 +36,8 @@ class Probleme_base;
 
 class Fluide_Dilatable_base : public Fluide_base
 {
-  Declare_base_sans_constructeur(Fluide_Dilatable_base);
-
+  Declare_base(Fluide_Dilatable_base);
 public :
-  Fluide_Dilatable_base();
   void verifier_coherence_champs(int& err,Nom& message) override;
   void set_Cp(double);
   void update_rho_cp(double temps) override;
@@ -52,7 +51,7 @@ public :
   Champ_Don& ch_temperature();
 
   virtual void calculer_pression_tot();
-  virtual void preparer_pas_temps();
+  void preparer_pas_temps();
   void abortTimeStep() override;
   void set_param(Param& param) override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
@@ -61,12 +60,14 @@ public :
   void preparer_calcul() override;
   virtual void completer(const Probleme_base&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  virtual void checkTraitementPth(const Domaine_Cl_dis&);
+  void prepare_pressure_edo();
+  virtual void write_mean_edo(double);
+  virtual void write_header_edo();
 
   // Virtuelles pure
-  virtual void checkTraitementPth(const Domaine_Cl_dis&)=0;
-  virtual void prepare_pressure_edo()=0;
-  virtual void write_mean_edo(double )=0;
   virtual void secmembre_divU_Z(DoubleTab& ) const=0;
+  virtual void Resoudre_EDO_PT()=0;
 
   // Methodes de l interface des champs postraitables
   const Champ_base& get_champ(const Motcle& nom) const override;
@@ -115,13 +116,17 @@ public :
 
 protected :
   virtual void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) = 0;
-  int traitement_PTh; // flag pour le traitement de la pression thermo
-  double Pth_, Pth_n, Pth1;
+  void completer_edo(const Probleme_base& );
+
+  int traitement_PTh = 0; // flag pour le traitement de la pression thermo
+  double Pth_ = -1., Pth_n = -1., Pth1 = -1.;
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   REF(Probleme_base) le_probleme_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   OWN_PTR(Loi_Etat_base) loi_etat_;
   OWN_PTR(EOS_Tools_base) eos_tools_;
+  OWN_PTR(EDO_Pression_th_base) EDO_Pth_;
+  Nom output_file_;
 };
 
 inline void Fluide_Dilatable_base::calculer_coeff_T()

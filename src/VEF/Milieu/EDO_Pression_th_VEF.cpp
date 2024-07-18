@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Loi_Etat_Multi_GP_WC.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <EDO_Pression_th_VEF.h>
 #include <Domaine_VEF.h>
@@ -222,6 +223,35 @@ double EDO_Pression_th_VEF::masse_totale(double P, const DoubleTab& T)
         {
           double r = 8.3143 / Masse_mol_mel[i];
           tmp[i] = loi_mel_GP.calculer_masse_volumique(P, T[i], r);
+        }
+    }
+  const double M = Champ_P1NC::calculer_integrale_volumique(dom, tmp, FAUX_EN_PERIO);
+  return M;
+}
+
+double EDO_Pression_th_VEF::masse_totale(const DoubleTab& P, const DoubleTab& T)
+{
+  const Domaine_VEF& dom = ref_cast(Domaine_VEF, le_dom.valeur());
+  int nb_faces = dom.nb_faces();
+
+  assert(P.dimension(0) == T.dimension(0));
+  const Loi_Etat_base& loi_ = ref_cast(Loi_Etat_base, le_fluide_->loi_etat().valeur());
+
+  DoubleVect tmp;
+  tmp.copy(T, RESIZE_OPTIONS::NOCOPY_NOINIT); // just copy the structure
+  if (!sub_type(Loi_Etat_Multi_GP_WC, loi_))
+    {
+      for (int i = 0; i < nb_faces; i++)
+        tmp[i] = loi_.calculer_masse_volumique(P(i), T(i));
+    }
+  else
+    {
+      const Loi_Etat_Multi_GP_WC& loi_mel_GP = ref_cast(Loi_Etat_Multi_GP_WC, loi_);
+      const DoubleTab& Masse_mol_mel = loi_mel_GP.masse_molaire();
+      for (int i = 0; i < nb_faces; i++)
+        {
+          double r = 8.3143 / Masse_mol_mel[i];
+          tmp[i] = loi_mel_GP.calculer_masse_volumique(P(i), T(i), r);
         }
     }
   const double M = Champ_P1NC::calculer_integrale_volumique(dom, tmp, FAUX_EN_PERIO);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,10 +30,4 @@ void Pb_QC_base::associer_milieu_base(const Milieu_base& mil)
       Cerr << "Un milieu de type " << mil.que_suis_je() << " ne peut etre associe a un probleme Quasi Compressible !" << finl;
       Process::exit();
     }
-}
-
-void Pb_QC_base::solve_pressure_thermo()
-{
-  Fluide_Quasi_Compressible& le_fluide_QC = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
-  le_fluide_QC.Resoudre_EDO_PT();
 }
