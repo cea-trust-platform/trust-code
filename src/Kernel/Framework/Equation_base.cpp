@@ -1512,6 +1512,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               exit();
             }
           if (diag_.ordre()==1) diag_.dimensionne_diag(n);
+          diag_.clean(); // Set to 0
           operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag_);
           for (int i = 0; i < size_s; i++)
             if (marq[i])
