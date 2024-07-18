@@ -37,6 +37,46 @@
    ...
 }
 
+######
+###### Cas test upwind sur Ubuntu 22
+######
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   fun:*alloc
+   ...
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_exception
+   fun:_dl_map_object_deps
+   fun:dl_open_worker_begin
+   fun:_dl_catch_exception
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+}
+
+######
+###### 17/07/2024 : Erreurs venant d'EOS lorsque linke a TRUST
+######
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Zn*
+   ...
+   fun:_ZN7NEPTUNE12RegisterTypeEPKcS1_*jPFRN13TYPESHANDLING15RegisteredClassEvE
+   ...
+   fun:__libc_csu_init
+   fun:(below main)
+}
+
 
 ######
 ###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair
