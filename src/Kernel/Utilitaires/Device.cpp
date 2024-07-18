@@ -326,9 +326,8 @@ void deleteOnDevice(_TYPE_* ptr, int size)
         clock = "[clock]  ";
       int bytes = sizeof(_TYPE_) * size;
       if (clock_on)
-        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. Currently allocated: " << allocatedBytesOnDevice() << endl << flush;
+        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << memory_map.size()-1 << " memory blocks with a total of " << allocatedBytesOnDevice() << " bytes." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
-      // ToDo : print this map:
       if (PE_Groups::get_nb_groups()>0) memory_map.erase(ptr);
     }
 #endif
