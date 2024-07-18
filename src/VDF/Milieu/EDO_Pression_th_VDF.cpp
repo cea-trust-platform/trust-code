@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Loi_Etat_Multi_GP_WC.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <EDO_Pression_th_VDF.h>
 #include <Domaine_VDF.h>
@@ -32,7 +33,7 @@ double EDO_Pression_th_VDF::masse_totale(double P, const DoubleTab& T)
   int elem, nb_elem = le_dom->nb_elem();
   const DoubleVect& volumes = le_dom->volumes();
   const Loi_Etat_base& loi_ = ref_cast(Loi_Etat_base, le_fluide_->loi_etat().valeur());
-  double M = 0;
+  double M = 0.;
   if (!sub_type(Loi_Etat_Multi_GP_QC, loi_))
     {
       for (elem = 0; elem < nb_elem; elem++)
@@ -51,6 +52,36 @@ double EDO_Pression_th_VDF::masse_totale(double P, const DoubleTab& T)
           double v = volumes(elem);
           double r = 8.3143 / Masse_mol_mel(elem);
           M += v * loi_mel_GP.calculer_masse_volumique(P, T[elem], r);
+        }
+    }
+  M = Process::mp_sum(M);
+  return M;
+}
+
+double EDO_Pression_th_VDF::masse_totale(const DoubleTab& P, const DoubleTab& T)
+{
+  int elem, nb_elem = le_dom->nb_elem();
+  const DoubleVect& volumes = le_dom->volumes();
+  const Loi_Etat_base& loi_ = ref_cast(Loi_Etat_base, le_fluide_->loi_etat().valeur());
+  double M = 0.;
+  if (!sub_type(Loi_Etat_Multi_GP_WC, loi_))
+    {
+      for (elem = 0; elem < nb_elem; elem++)
+        {
+          double v = volumes(elem);
+          M += v * loi_.calculer_masse_volumique(P(elem), T(elem));
+        }
+    }
+  else
+    {
+      const Loi_Etat_Multi_GP_WC& loi_mel_GP = ref_cast(Loi_Etat_Multi_GP_WC, loi_);
+      const DoubleTab& Masse_mol_mel = loi_mel_GP.masse_molaire();
+
+      for (elem = 0; elem < nb_elem; elem++)
+        {
+          double v = volumes(elem);
+          double r = 8.3143 / Masse_mol_mel(elem);
+          M += v * loi_mel_GP.calculer_masse_volumique(P(elem), T(elem), r);
         }
     }
   M = Process::mp_sum(M);

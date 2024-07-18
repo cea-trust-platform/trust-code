@@ -62,7 +62,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
     }
   else if (traitPth == 1)
     {
-      const DoubleTab &tempn = le_fluide_->inco_chaleur()->passe();
+      const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();
       double cn1 = 0, cn = 0, v;
       int elem, nb_elem = le_dom->nb_elem();
       for (elem = 0; elem < nb_elem; elem++)
@@ -209,4 +209,79 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 
   //return Pth1;
   return Pth;
+}
+
+void EDO_Pression_th_VDF_Gaz_Parfait::resoudre(DoubleTab& Pth_n)
+{
+  const int traitPth = le_fluide_->getTraitementPth();
+  if (traitPth == 2)
+    return; // rien a faire
+  else if (traitPth == 0)
+    {
+      for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
+        {
+          const Cond_lim& la_cl = le_dom_Cl->valeur().les_conditions_limites(n_bord);
+          if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
+            return; // rien a faire
+        }
+
+      Cerr << "EDO_Pression_th_VDF_Gaz_Parfait::" << __func__ << " not yet coded ! Call the 911 !!" << finl;
+      Process::exit();
+    }
+  else
+    {
+      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(); //actuel
+      const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();
+      const double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+
+      double cn1 = 0., cn = 0., v = -123.;
+
+      for (int elem = 0; elem < le_dom->nb_elem(); elem++)
+        {
+          v = le_dom->volumes(elem);
+          cn1 += v / tempnp1(elem);
+          cn += v / tempn(elem);
+        }
+
+      double cm = 0.;
+      const IntTab& face_voisins = le_dom->face_voisins();
+      const DoubleVect& Surface = le_dom->face_surfaces();
+      // ce n'est pas la bonne vitesse mais on essaye
+      const IntVect& orientation = le_dom->orientation();
+      for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
+        {
+          const Cond_lim_base& la_cl = le_dom_Cl->valeur().les_conditions_limites(n_bord).valeur();
+          if (sub_type(Dirichlet, la_cl))
+            {
+              const Dirichlet& diri = ref_cast(Dirichlet, la_cl);
+              const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+              int ndeb = la_front_dis.num_premiere_face();
+              int nfin = ndeb + la_front_dis.nb_faces();
+              for (int num_face = ndeb; num_face < nfin; num_face++)
+                {
+                  int n0 = face_voisins(num_face, 0);
+                  double S = Surface(num_face);
+                  if (n0 == -1)
+                    {
+                      n0 = face_voisins(num_face, 1);
+                      S *= -1;
+                    }
+                  cm += S / tempnp1(n0) * diri.val_imp(num_face - ndeb, orientation(num_face));
+                }
+            }
+
+          else if (sub_type(Neumann_sortie_libre, la_cl))
+            {
+              Cerr << la_cl.que_suis_je() << " est incompatible avec le traitement conservation_masse pour l'instant" << finl;
+              Process::exit();
+            }
+        }
+
+      double cnt = mp_sum(cn);
+      double cn1t = mp_sum(cn1);
+      double cmt = mp_sum(cm);
+
+      for (int elem = 0; elem < le_dom->nb_elem(); elem++)
+        Pth_n(elem) = Pth_n(elem) * cnt / cn1t / (1. + dt / cn1t * cmt);
+    }
 }

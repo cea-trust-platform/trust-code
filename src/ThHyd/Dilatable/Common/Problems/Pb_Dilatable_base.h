@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,6 @@ public:
   void associer_sch_tps_base(const Schema_Temps_base&) override;
   virtual void update_pressure_fields(double );
   bool iterateTimeStep(bool& converged) override;
-  virtual void solve_pressure_thermo() = 0;
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide_;

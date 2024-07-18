@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@ class Pb_WC_base : public Pb_Dilatable_base
   Declare_base(Pb_WC_base);
 public:
   void associer_milieu_base(const Milieu_base& ) override;
-  void solve_pressure_thermo() override;
 };
 
 #endif /* Pb_WC_base_included */

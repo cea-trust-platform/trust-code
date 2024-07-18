@@ -31,6 +31,11 @@ class EDO_Pression_th_VEF_Gaz_Reel :  public EDO_Pression_th_VEF
   Declare_instanciable(EDO_Pression_th_VEF_Gaz_Reel);
 public :
   double resoudre(double) override;
+  void resoudre(DoubleTab&) override
+  {
+    Cerr << "EDO_Pression_th_VDF_Gaz_Reel::" << __func__ << " not yet coded ! Call the 911 !!" << finl;
+    Process::exit();
+  }
 };
 
 #endif /* EDO_Pression_th_VEF_Gaz_Reel_included */

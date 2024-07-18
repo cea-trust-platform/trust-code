@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <Fluide_Quasi_Compressible.h>
-#include <Probleme_base.h>
-#include <Discretisation_base.h>
-#include <Loi_Etat_Multi_GP_QC.h>
-#include <Param.h>
-#include <Champ_Fonc_Fonction.h>
 #include <Neumann_sortie_libre.h>
+#include <Loi_Etat_Multi_GP_QC.h>
+#include <Discretisation_base.h>
+#include <Champ_Fonc_Fonction.h>
+#include <Probleme_base.h>
+#include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable_base);
+Implemente_instanciable(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable_base);
 // XD fluide_quasi_compressible fluide_dilatable_base fluide_quasi_compressible -1 Quasi-compressible flow with a low mach number assumption; this means that the thermo-dynamic pressure (used in state law) is uniform in space.
 // XD attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
 // XD attr pression double pression 1 Initial thermo-dynamic pressure used in the assosciated state law.
@@ -44,102 +44,32 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 // XD attr C chaine(into=["C"]) C 0 not_set
 // XD attr c_val double c_val 0 not_set
 
-Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
-  temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }
+Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const { return Fluide_Dilatable_base::printOn(os); }
 
-Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
-{
-  os << que_suis_je() << finl;
-  Fluide_Dilatable_base::ecrire(os);
-  return os;
-}
-
-Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
-{
-  Fluide_Dilatable_base::readOn(is);
-  return is;
-}
-
-void Fluide_Quasi_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
-{
-  /*
-   * traitement_PTh=0 => resolution classique de l'edo
-   * traitement_PTh=1 => pression calculee pour conserver la masse
-   * traitement_PTh=2 => pression laissee cste.
-   */
-
-  if (traitement_PTh==0)
-    {
-      /* Do nothing*/
-    }
-  else
-    {
-      int pression_imposee=0;
-      int size=domaine_cl->les_conditions_limites().size();
-      assert(size!=0);
-      for (int n=0; n<size; n++)
-        {
-          const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n);
-          if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
-        }
-
-      if (pression_imposee && traitement_PTh!=2)
-        {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
-          Process::exit();
-        }
-
-      if (!pression_imposee && traitement_PTh!=1)
-        {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
-          Process::exit();
-        }
-    }
-}
+Entree& Fluide_Quasi_Compressible::readOn(Entree& is) { return Fluide_Dilatable_base::readOn(is); }
 
 void Fluide_Quasi_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
-  param.ajouter("temps_debut_prise_en_compte_drho_dt",&temps_debut_prise_en_compte_drho_dt_);
-  param.ajouter("omega_relaxation_drho_dt",&omega_drho_dt_);
-  param.ajouter_non_std("pression",(this),Param::REQUIRED);
-  param.ajouter_non_std("Traitement_rho_gravite",(this));
+  param.ajouter("temps_debut_prise_en_compte_drho_dt", &temps_debut_prise_en_compte_drho_dt_);
+  param.ajouter("omega_relaxation_drho_dt", &omega_drho_dt_);
+  param.ajouter_non_std("pression", (this), Param::REQUIRED);
+  param.ajouter_non_std("Traitement_rho_gravite", (this));
 }
 
 int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="pression")
+  if (mot == "pression")
     {
-      is>>Pth_;
+      is >> Pth_;
       Pth_n = Pth_;
       rho.typer("Champ_Uniforme");
-      DoubleTab& tab_rho=rho->valeurs();
-      tab_rho.resize(1,1);
-      tab_rho(0,0) = 1.;
+      DoubleTab& tab_rho = rho->valeurs();
+      tab_rho.resize(1, 1);
+      tab_rho(0, 0) = 1.;
       return 1;
     }
-  else if (mot=="Traitement_PTh")
-    {
-      Motcle trait;
-      is >> trait;
-      Motcles les_options(3);
-      {
-        les_options[0] = "edo";
-        les_options[1] = "conservation_masse";
-        les_options[2] = "constant";
-      }
-      traitement_PTh=les_options.search(trait);
-      if (traitement_PTh == -1)
-        {
-          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
-          Cerr<< "One of the following options was expected : " << les_options << finl;
-          Process::exit();
-        }
-      return 1;
-    }
-  else if (mot=="Traitement_rho_gravite")
+  else if (mot == "Traitement_rho_gravite")
     {
       Motcle trait;
       is >> trait;
@@ -148,16 +78,17 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
         les_options[0] = "standard";
         les_options[1] = "moins_rho_moyen";
       }
-      traitement_rho_gravite_=les_options.search(trait);
+      traitement_rho_gravite_ = les_options.search(trait);
       if (traitement_rho_gravite_ == -1)
         {
-          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
-          Cerr<< "One of the following options was expected : " << les_options << finl;
+          Cerr << trait << " is not understood as an option of the keyword " << mot << finl;
+          Cerr << "One of the following options was expected : " << les_options << finl;
           Process::exit();
         }
       return 1;
     }
-  else return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+  else
+    return Fluide_Dilatable_base::lire_motcle_non_standard(mot, is);
 }
 
 /*! @brief Complete le fluide avec les champs inconnus associes au probleme
@@ -166,9 +97,8 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
  */
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
-  Cerr<<"Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
-  if ((loi_etat_->que_suis_je() == "Loi_Etat_rhoT_Gaz_Parfait_QC" || loi_etat_->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC" )
-      && traitement_PTh == 0)
+  Cerr << "Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
+  if ((loi_etat_->que_suis_je() == "Loi_Etat_rhoT_Gaz_Parfait_QC" || loi_etat_->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC") && traitement_PTh == 0)
     {
       Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;
       Cerr << "Set **traitement_pth** constant or conservation_masse in the Fluide_Quasi_Compressible bloc definition." << finl;
@@ -176,88 +106,25 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
     }
 
   Fluide_Dilatable_base::completer(pb);
-  if (traitement_PTh != 2) completer_edo(pb);
 }
 
-/*! @brief Prepare le pas de temps
- *
- */
-void Fluide_Quasi_Compressible::preparer_pas_temps()
+void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
 {
-  Fluide_Dilatable_base::preparer_pas_temps();
-  if (traitement_PTh != 2 ) EDO_Pth_->mettre_a_jour_CL(Pth_);
-}
-
-void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
-{
-  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
-  double temps=pb.schema_temps().temps_courant();
+  const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
+  double temps = pb.schema_temps().temps_courant();
 
   // In *_Melange_Binaire_QC we do not even have a temperature variable ...
   // it is the species mass fraction Y1... Although named ch_temperature
   Champ_Don& ch_TK = ch_temperature();
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    dis.discretiser_champ("temperature",domaine_dis,"fraction_massique","neant",1,temps,ch_TK);
+  if (pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
+    dis.discretiser_champ("temperature", domaine_dis, "fraction_massique", "neant", 1, temps, ch_TK);
   else
-    dis.discretiser_champ("temperature",domaine_dis,"temperature","K",1,temps,ch_TK);
+    dis.discretiser_champ("temperature", domaine_dis, "temperature", "K", 1, temps, ch_TK);
 
-  if (type_fluide()!="Gaz_Parfait")
+  if (type_fluide() != "Gaz_Parfait")
     loi_etat()->champs_compris().ajoute_champ(ch_TK);
 
-  Fluide_Dilatable_base::discretiser(pb,dis);
-}
-
-void Fluide_Quasi_Compressible::prepare_pressure_edo()
-{
-  if (traitement_PTh != 2) EDO_Pth_->completer();
-
-  eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
-}
-
-void Fluide_Quasi_Compressible::write_mean_edo(double temps)
-{
-  double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeur().valeurs());
-  double rhom = eos_tools_->moyenne_vol(rho->valeurs());
-
-  if(je_suis_maitre() && traitement_PTh != 2)
-    {
-      SFichier fic (output_file_,ios::app);
-      fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
-    }
-}
-
-void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
-{
-  assert(traitement_PTh != 2);
-  Nom typ = pb.equation(0).discretisation().que_suis_je();
-  if (typ=="VEFPreP1B") typ = "VEF";
-  typ += "_";
-  // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
-  // typer Gaz_Parfait instead to use when traitement_PTh=1...
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    typ +="Gaz_Parfait";
-  else
-    typ += loi_etat_->type_fluide();
-
-  typ = Nom("EDO_Pression_th_") + typ;
-  Cerr << "Typage de l'EDO sur la pression : " << typ << finl;
-  EDO_Pth_.typer(typ);
-  EDO_Pth_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
-  EDO_Pth_->associer_fluide(*this);
-  EDO_Pth_->mettre_a_jour_CL(Pth_);
-
-  // Write in file
-  output_file_ = Objet_U::nom_du_cas();
-  output_file_ += "_";
-  output_file_ += pb.le_nom();
-  output_file_ += ".evol_glob";
-
-  Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
-  if(je_suis_maitre())
-    {
-      SFichier fic (output_file_);
-      fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
-    }
+  Fluide_Dilatable_base::discretiser(pb, dis);
 }
 
 void Fluide_Quasi_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& tab_PHydro, DoubleTab& tab_PTot)
