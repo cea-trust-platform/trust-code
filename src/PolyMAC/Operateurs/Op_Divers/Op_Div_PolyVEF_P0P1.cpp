@@ -91,7 +91,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
   double vz[3] = { 0, 0, 1 }, xa[3], fac;
   DoubleTrav v(2, D);
-  flux_bords_.resize(dom.nb_faces_bord(), N);
+  flux_bords_.resize(dom.nb_faces_bord(), N), flux_bords_ = 0;
   for (i = 0; i < cls.size(); i++)
     if (sub_type(Neumann_sortie_libre,cls[i].valeur())) has_P_ref = 1;
   if (matp && !has_P_ref)
