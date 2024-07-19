@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -148,7 +148,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-
+              ToDo_Kokkos("To avoid an expensive copy D2H of array velocity.");
               for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
                   elem = face_voisins(num_face, 0);
@@ -216,10 +216,6 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
   const Equation_base& eqn_hydr = mon_modele_turb_hyd->equation();
   if (sub_type(Fluide_base, eqn_hydr.milieu()))
     {
-      int ndeb, nfin, elem, l_unif;
-      double norm_tau, u_etoile, norm_v = 0, dist = 0, val1, val2, val3, d_visco, visco = 1.;
-      IntVect num(dimension);
-
       const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
       const IntTab& face_voisins = domaine_VEF.face_voisins();
       const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -228,16 +224,18 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
       const DoubleTab& tab_visco = ch_visco_cin->valeurs();
       const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
 
+      double visco;
+      bool l_unif;
       if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
         {
           if (tab_visco(0, 0) > DMINFLOAT)
             visco = tab_visco(0, 0);
           else
             visco = DMINFLOAT;
-          l_unif = 1;
+          l_unif = true;
         }
       else
-        l_unif = 0;
+        l_unif = false;
       if ((!l_unif) && (tab_visco.local_min_vect() < DMINFLOAT))
         {
           Cerr << " visco <=0 ?" << finl;
@@ -251,65 +249,39 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-              ndeb = le_bord.num_premiere_face();
-              nfin = ndeb + le_bord.nb_faces();
-
+              int ndeb = le_bord.num_premiere_face();
+              int nfin = ndeb + le_bord.nb_faces();
+              int dim = Objet_U::dimension;
+              // Minimal port with: Partial copy of velocity on the host, loop on the host, velocity back on the device
+              // A full Kokkos port will involve more work with distance_XD/norm_XD_vit1 KOKKOS_INLINE_FUNCTION
+              copyPartialFromDevice(vit, ndeb * dim, nfin * dim, __KERNEL_NAME__);
+              start_gpu_timer(__KERNEL_NAME__);
               for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
-                  elem = face_voisins(num_face, 0);
-                  if (dimension == 2)
+                  int num[3] {};
+                  double val[3] {};
+                  int elem = face_voisins(num_face, 0);
+                  int fac=0;
+                  for (int i=0; i<dim; i++)
                     {
+                      if (elem_faces(elem, fac)==num_face) fac++;
+                      num[i] = elem_faces(elem, fac);
+                      fac++;
+                    }
 
-                      num[0] = elem_faces(elem, 0);
-                      num[1] = elem_faces(elem, 1);
+                  double dist = dim==2 ? distance_2D(num_face, elem, domaine_VEF) : distance_3D(num_face, elem, domaine_VEF);
+                  dist *= (dim+1.)/dim;                      // pour se ramener a distance paroi / milieu de num[0]-num[1]
+                  double norm_v = dim==2 ? norm_2D_vit1(vit, num[0], num[1], num_face, domaine_VEF, val[0], val[1]) : norm_3D_vit1(vit, num_face, num[0], num[1], num[2], domaine_VEF, val[0], val[1], val[2]);
 
-                      if (num[0] == num_face)
-                        num[0] = elem_faces(elem, 2);
-                      else if (num[1] == num_face)
-                        num[1] = elem_faces(elem, 2);
-
-                      dist = distance_2D(num_face, elem, domaine_VEF);
-                      dist *= 3. / 2.;                      // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                      //norm_v=norm_2D_vit1_lp(vit,num_face,num[0],num[1],domaine_VEF,val1,val2);
-                      norm_v = norm_2D_vit1(vit, num[0], num[1], num_face, domaine_VEF, val1, val2);
-
-                    } // dim 2
-                  else if (dimension == 3)
-                    {
-
-                      num[0] = elem_faces(elem, 0);
-                      num[1] = elem_faces(elem, 1);
-                      num[2] = elem_faces(elem, 2);
-
-                      if (num[0] == num_face)
-                        num[0] = elem_faces(elem, 3);
-                      else if (num[1] == num_face)
-                        num[1] = elem_faces(elem, 3);
-                      else if (num[2] == num_face)
-                        num[2] = elem_faces(elem, 3);
-
-                      dist = distance_3D(num_face, elem, domaine_VEF);
-                      dist *= 4. / 3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
-                      //norm_v=norm_3D_vit1_lp(vit, num_face, num[0], num[1], num[2], domaine_VEF, val1, val2, val3);
-                      norm_v = norm_3D_vit1(vit, num_face, num[0], num[1], num[2], domaine_VEF, val1, val2, val3);
-
-                    }                      // dim 3
-
-                  if (l_unif)
-                    d_visco = visco;
-                  else
-                    d_visco = tab_visco[elem];
-
-                  norm_tau = d_visco * norm_v / dist;
-                  u_etoile = sqrt(norm_tau);
+                  double d_visco = l_unif ? visco : tab_visco[elem];
+                  double norm_tau = d_visco * norm_v / dist;
+                  double u_etoile = sqrt(norm_tau);
                   tab_u_star_(num_face) = u_etoile;
-
                 }                      // loop on faces
-
+              copyPartialToDevice(vit, ndeb * dim, nfin * dim, __KERNEL_NAME__);
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }                      // Fin de paroi fixe
-
         }                      // Fin boucle sur les bords
-
     }
   return 1;
 }
