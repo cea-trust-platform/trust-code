@@ -77,7 +77,7 @@ private:
 
 inline void Fluide_Weakly_Compressible::Resoudre_EDO_PT()
 {
-  if (Pth_ > -1. && !use_total_pressure() && !use_hydrostatic_pressure())
+  if (Pth_ > -1.)
     {
       Pth_n = Pth_;
       Pth_n_tab_ = Pth_tab_;
@@ -92,12 +92,23 @@ inline void Fluide_Weakly_Compressible::Resoudre_EDO_PT()
               abort();
             }
 
-          const int n = Pth_tab_.dimension_tot(0);
-          for (int i=0; i<n; i++) Pth_tab_(i) = Pth_;
+          if (use_hydrostatic_pressure())
+            {
+              assert (a_gravite());
+              calculer_pression_hydro();
+            }
+          else if (use_total_pressure())
+            remplir_champ_pression_for_EOS();
+          else // simple .. equiv QC
+            for (int i = 0; i < Pth_tab_.dimension_tot(0); i++)
+              Pth_tab_(i) = Pth_;
         }
     }
   else
     {
+      Cerr << "Fluide_Weakly_Compressible:: " << __func__ << " Not yet coded with pression_xyz ..." << finl;
+      Process::exit();
+
       Pth_n_tab_ = Pth_tab_;
 
       if (traitement_PTh != 2)
