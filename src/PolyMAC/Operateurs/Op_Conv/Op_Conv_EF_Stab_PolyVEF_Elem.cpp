@@ -211,13 +211,11 @@ void Op_Conv_EF_Stab_PolyVEF_Elem::mettre_a_jour(double temps)
         for (m = 0; m < M; m++)
           fvn(m) += nf(f, d) * vit(f, M * d + m);
       for (cc_f = 0, i = 0; i < 2; i++)
-        for (e = f_e(f, i), d = 0; d < D; d++)
-          for (n = 0, m = 0; n < N; n++, m += (M > 1))
-            cc_f(n) += (1. + (fvn(m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
+        for (n = 0, m = 0, e = f_e(f, i); n < N; n++, m += (M > 1))
+          cc_f(n) += (1. + (fvn(m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
 
-      for (d = 0; d < D; d++)
-        for (n = 0, m = 0; n < N; n++, m += (M > 1))
-          flux_bords_(f, n) = pf(f) * nf(f, d) * vit(f, M * d + m) * cc_f(n);
+      for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        flux_bords_(f, n) = pf(f) * fvn(m) * cc_f(n);
     }
 
   if (cc_phases_.size())
