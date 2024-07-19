@@ -105,13 +105,13 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
  */
 Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 {
-  DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
-  const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
+  DoubleTab& tab_alpha_t = diffusivite_turbulente_.valeurs();
+  const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeurs();
   double temps = la_viscosite_turbulente_->temps();
   const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis().valeur()).xp();
 
-  int n = alpha_t.size();
-  if (nu_t.size() != n)
+  int n = tab_alpha_t.size();
+  if (tab_nu_t.size() != n)
     {
       Cerr << "Les DoubleTab des champs diffusivite_turbulente et viscosite_turbulente" << finl;
       Cerr << "doivent avoir le meme nombre de valeurs nodales" << finl;
@@ -140,38 +140,53 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
           d_alpha = alpha(0, 0);
           fonction_.setVar("alpha", d_alpha);
         }
+      ToDo_Kokkos("Critical");
       for (int i = 0; i < n; i++)
         {
           if (!is_alpha_unif)
             fonction_.setVar("alpha", alpha(i));
-          fonction_.setVar("nu_t", nu_t[i]);
+          fonction_.setVar("nu_t", tab_nu_t[i]);
 
-          alpha_t[i] = fonction_.eval();
+          tab_alpha_t[i] = fonction_.eval();
         }
     }
   else
-    for (int i = 0; i < n; i++)
-      {
-        if (LePrdt_fct_ != Nom())
+    {
+      if (LePrdt_fct_ != Nom())
+        {
+          ToDo_Kokkos("Critical");
+          for (int i = 0; i < n; i++)
+            {
+              double x = xp(i, 0);
+              double y = xp(i, 1);
+              double z = 0;
+              if (xp.nb_dim() == 3)
+                {
+                  z = xp(i, 2);
+                }
+              fonction1_.setVar("x", x);
+              fonction1_.setVar("y", y);
+              fonction1_.setVar("z", z);
+              double NbPrandtlCell = fonction1_.eval();
+              tab_alpha_t[i] = tab_nu_t[i] / NbPrandtlCell;
+            }
+        }
+      else
+        {
+          double inv_LePrdt = 1./LePrdt_;
+          // ToDo Kokkos: implement operator_mutiply(u,v,alpha);
+          // if u = v * alpha is a regular pattern in the code...
+          CDoubleArrView nu_t = static_cast<const DoubleVect&>(tab_nu_t).view_ro();
+          DoubleArrView alpha_t = static_cast<DoubleVect&>(tab_alpha_t).view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                               Kokkos::RangePolicy<>(0, n), KOKKOS_LAMBDA(
+                                 const int i)
           {
-            double x = xp(i, 0);
-            double y = xp(i, 1);
-            double z = 0;
-            if (xp.nb_dim() == 3)
-              {
-                z = xp(i, 2);
-              }
-            fonction1_.setVar("x", x);
-            fonction1_.setVar("y", y);
-            fonction1_.setVar("z", z);
-            double NbPrandtlCell = fonction1_.eval();
-            alpha_t[i] = nu_t[i] / NbPrandtlCell;
-          }
-        else
-          {
-            alpha_t[i] = nu_t[i] / LePrdt_;
-          }
-      }
+            alpha_t[i] = nu_t[i] * inv_LePrdt;
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+        }
+    }
 
   diffusivite_turbulente_.changer_temps(temps);
 
