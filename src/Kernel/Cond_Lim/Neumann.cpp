@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,3 +54,21 @@ double Neumann::flux_impose(int i, int j) const
   else
     return le_champ_front(i, j);
 }
+
+/*! @brief Retourne le tableau flux_impose_ mis a jour
+ *
+ */
+const DoubleTab& Neumann::flux_impose() const
+{
+  const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
+  int nb_faces_tot = le_bord.nb_faces_tot();
+  if (flux_impose_.dimension(0)!=nb_faces_tot) flux_impose_.resize(nb_faces_tot, le_champ_front.valeurs().dimension(1));
+  int size = flux_impose_.dimension(0);
+  int nb_comp = flux_impose_.dimension(1);
+  for (int i=0; i<size; i++)
+    for (int j=0; j<nb_comp; j++)
+      flux_impose_(i,j) = flux_impose(i,j);
+  return flux_impose_;
+}
+
+
