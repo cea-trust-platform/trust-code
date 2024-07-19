@@ -527,9 +527,10 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
       if ((domaine_vef.get_cl_pression_sommet_faible() == 0) && (domaine_vef.get_alphaS()))
         {
           int nps = domaine_vef.numero_premier_sommet();
-          DoubleTab& pression = ref_cast(Navier_Stokes_std,ch->equation()).pression().valeurs();
           int nbsom_tot = domaine_vef.nb_som_tot();
-          ArrOfDouble surf_loc(nbsom_tot);
+          DoubleTrav tab_surf_loc(nbsom_tot);
+          tab_surf_loc = 0;
+          DoubleTab& tab_pression = ref_cast(Navier_Stokes_std,ch->equation()).pression().valeurs();
           int nb_cond_lims = nb_cond_lim();
           // On boucle une premiere fois pour mettre a zero la pression aux sommets
           for (int i = 0; i < nb_cond_lims; i++)
@@ -538,18 +539,23 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
               if (sub_type(Neumann_sortie_libre, la_cl))
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  const IntTab& faces = domaine_vef.face_sommets();
-                  int nbsf = faces.dimension(1);
+                  int nbsf = domaine_vef.face_sommets().dimension(1);
                   int num2 = le_bord.nb_faces_tot();
-                  for (int ind_face = 0; ind_face < num2; ind_face++)
-                    {
-                      int face = le_bord.num_face(ind_face);
-                      for (int som = 0; som < nbsf; som++)
-                        {
-                          int som_glob = faces(face, som);
-                          pression(nps + som_glob) = 0;
-                        }
-                    }
+                  CIntTabView faces = domaine_vef.face_sommets().view_ro();
+                  CIntArrView num_face = le_bord.num_face().view_ro();
+                  DoubleArrView pression = static_cast<DoubleVect&>(tab_pression).view_rw();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                       Kokkos::RangePolicy<>(0, num2), KOKKOS_LAMBDA(
+                                         const int ind_face)
+                  {
+                    int face = num_face(ind_face);
+                    for (int som = 0; som < nbsf; som++)
+                      {
+                        int som_glob = faces(face, som);
+                        Kokkos::atomic_assign(&pression(nps + som_glob), 0);
+                      }
+                  });
+                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
                 }
             }
 
@@ -561,21 +567,29 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                 {
                   const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl);
                   const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  const IntTab& faces = domaine_vef.face_sommets();
-                  int nbsf = faces.dimension(1);
+                  int nbsf = domaine_vef.face_sommets().dimension(1);
                   int num2 = le_bord.nb_faces_tot();
-                  for (int ind_face = 0; ind_face < num2; ind_face++)
-                    {
-                      int face = le_bord.num_face(ind_face);
-                      double P_imp = la_sortie_libre.flux_impose(ind_face);
-                      double face_surf = domaine_vef.face_surfaces(face);
-                      for (int som = 0; som < nbsf; som++)
-                        {
-                          int som_glob = faces(face, som);
-                          pression(nps + som_glob) += P_imp * face_surf;
-                          surf_loc[som_glob] += face_surf;
-                        }
-                    }
+                  CIntArrView num_face = le_bord.num_face().view_ro();
+                  CIntTabView faces = domaine_vef.face_sommets().view_ro();
+                  CDoubleArrView flux_impose = static_cast<const DoubleVect&>(la_sortie_libre.flux_impose()).view_ro();
+                  CDoubleArrView face_surfaces = domaine_vef.face_surfaces().view_ro();
+                  DoubleArrView surf_loc = static_cast<DoubleVect&>(tab_surf_loc).view_rw();
+                  DoubleArrView pression = static_cast<DoubleVect&>(tab_pression).view_rw();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                       Kokkos::RangePolicy<>(0, num2), KOKKOS_LAMBDA(
+                                         const int ind_face)
+                  {
+                    int face = num_face(ind_face);
+                    double P_imp = flux_impose(ind_face);
+                    double face_surf = face_surfaces(face);
+                    for (int som = 0; som < nbsf; som++)
+                      {
+                        int som_glob = faces(face, som);
+                        Kokkos::atomic_add(&pression(nps + som_glob), P_imp * face_surf);
+                        Kokkos::atomic_add(&surf_loc[som_glob], face_surf);
+                      }
+                  });
+                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
                 }
             }
           // On boucle une troisieme fois pour diviser par la surface
@@ -584,28 +598,23 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
               const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
               if (sub_type(Neumann_sortie_libre, la_cl))
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-                  const IntTab& faces = domaine_vef.face_sommets();
-                  int nbsf = faces.dimension(1);
-                  int num2 = le_bord.nb_faces_tot();
-                  for (int ind_face = 0; ind_face < num2; ind_face++)
-                    {
-                      int face = le_bord.num_face(ind_face);
-                      for (int som = 0; som < nbsf; som++)
-                        {
-                          int som_glob = faces(face, som);
-                          double& surf = surf_loc[som_glob];
-                          if (surf > 0)
-                            {
-                              pression(nps + som_glob) /= surf;
-                              surf = -1;
-                            }
-                        }
-                    }
+                  DoubleArrView surf_loc = static_cast<DoubleVect&>(tab_surf_loc).view_rw();
+                  DoubleArrView pression = static_cast<DoubleVect&>(tab_pression).view_rw();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                       Kokkos::RangePolicy<>(0, nbsom_tot), KOKKOS_LAMBDA(
+                                         const int som_glob)
+                  {
+                    if (surf_loc[som_glob] > 0)
+                      {
+                        pression(nps + som_glob) /= surf_loc[som_glob];
+                        surf_loc[som_glob] = 0;
+                      }
+                  });
+                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
                 }
             }
-          pression.echange_espace_virtuel();
-          Debog::verifier("pression dans Domaine_Cl_VEF::imposer_cond_lim", pression);
+          tab_pression.echange_espace_virtuel();
+          Debog::verifier("pression dans Domaine_Cl_VEF::imposer_cond_lim", tab_pression);
         }
     }
 }
