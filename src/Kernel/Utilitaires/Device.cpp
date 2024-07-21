@@ -399,6 +399,8 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
       std::stringstream message;
       message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
       end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
+      if (size>1e6)
+        ToDo_Kokkos("H2D copy of large array! Add a breakpoint into Device::copyToDevice() to find the cause.");
     }
 #endif
 }
@@ -522,7 +524,7 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
 template <typename _TYPE_>
 inline void printKernel(bool flag, const TRUSTArray<_TYPE_>& tab, std::string kernel_name)
 {
-  if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=nullptr)
+  if (kernel_name!="??" && tab.size_array()>100 && clock_on)
     {
       std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
       std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name

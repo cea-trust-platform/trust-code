@@ -73,7 +73,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
       if (clock_on) clock_start = Statistiques::get_time_now();
       if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_, false);
 #ifdef TRUST_USE_CUDA
-      nvtxRangePush(str.c_str());
+      if (!str.empty()) nvtxRangePush(str.c_str());
 #endif
     }
 #endif
@@ -100,10 +100,10 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
           std::string clock(Process::is_parallel() ? "[clock]#" + std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
           if (bytes == -1)
-            if (onDevice)
-              printf("%s %7.3f ms [Device] %15s\n", clock.c_str(), ms, str.c_str());
-            else
-              printf("%s %7.3f ms [Host]   %15s\n", clock.c_str(), ms, str.c_str());
+            {
+              if (!str.empty())
+                printf("%s %7.3f ms [%s] %15s\n", clock.c_str(), ms, onDevice ? "Device" : "Host", str.c_str());
+            }
           else
             {
               double mo = (double) bytes / 1024 / 1024;
@@ -117,7 +117,7 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
           fflush(stdout);
         }
 #ifdef TRUST_USE_CUDA
-      nvtxRangePop();
+      if (!str.empty()) nvtxRangePop();
 #endif
     }
 #endif

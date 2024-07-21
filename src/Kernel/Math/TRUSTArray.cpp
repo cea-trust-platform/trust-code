@@ -223,7 +223,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 {
   const int size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
-  start_gpu_timer();
+  start_gpu_timer(size>100 ? __KERNEL_NAME__ : "");
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
@@ -236,7 +236,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
       _TYPE_ *data = span_.data();
       for (int i = 0; i < size; i++) data[i] = x;
     }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(kernelOnDevice, size>100 ? __KERNEL_NAME__ : "");
   return *this;
 }
 

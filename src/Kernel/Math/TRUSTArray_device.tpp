@@ -59,7 +59,7 @@ inline bool TRUSTArray<_TYPE_>::isDataOnDevice() const
 template<typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::printKernel(bool flag, const TRUSTArray<_TYPE_>& tab, std::string kernel_name) const
 {
-  if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=nullptr)
+  if (kernel_name!="??" && tab.size_array()>100 && clock_on)
     {
       std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
       std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
