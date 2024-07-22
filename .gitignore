@@ -30,6 +30,7 @@ src/**/CMakeLists.txt
 src/MAIN/instancie_appel*
 *.swp
 .idea/
+*egg-info
 
 # XDATA stuff
 Outils/TRIOXDATA/IHMTRIO.sh

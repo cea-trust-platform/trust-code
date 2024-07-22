@@ -1,0 +1,9 @@
+* builtin_value a sync avec la valeur pydantic -> override __setattr__() ?
+    ET SURTOUT pouvoir setter un attribut en utilisant son synonyme !! Fix JY NB
+
+* check TODO pour info de debug
+* doc + doc TRUSTIFY_DEBUG env var
+* test info de debug sur cas complet
+* couverture Python
+* factorize inheritance extraction (everytime we use __base__ ...)
+* attribute doc as docstring

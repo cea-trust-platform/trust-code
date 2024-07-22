@@ -1,0 +1,42 @@
+interprete objet_u interprete 0 Basic class for interpreting a data file. Interpretors allow some operations to be carried out on objects.
+Read_MED interprete lire_med 1 Keyword to read MED mesh files where \'domain\' corresponds to the domain name, \'file\' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading \'file\', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in \'file\' will be considered by TRUST as a boundary named \'wall\' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sub_domain keyword. NL2 NB: If the MED file contains one or several subdomaine defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subdomaines for sequential and/or parallel calculations. These subdomaines will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ; 
+  attr convertalltopoly|syno1 rien syno2 1 Option to convert mesh with mixed cells into polyhedral/polygonal cells
+  attr no_family_names_from_group_names rien no_family_names_from_group_names 1 Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+  attr file|fichier chaine file 0 File (written in the MED format, with extension \'.med\') containing the mesh
+  attr mesh|maillage chaine mesh 1 Name of the mesh in med file. If not specified, the first mesh will be read.
+  attr exclude_groups|exclure_groupes listchaine exclude_groups 1 List of face groups to skip in the MED file.
+
+toto_base objet_u toto_base 0 just so that it has _base at the end of the name ... this triggers type reading.
+  attr top_attr chaine top_attr_syno 1 attribute that will be inherited later
+Read_MED_bidon toto_base lire_med_bidon 1 Keyword to read MED mesh files where \'domain\' corresponds to the domain name, \'file\' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading \'file\', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in \'file\' will be considered by TRUST as a boundary named \'wall\' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sub_domain keyword. NL2 NB: If the MED file contains one or several subdomaine defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subdomaines for sequential and/or parallel calculations. These subdomaines will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ; 
+  attr convertalltopoly|syno1 rien syno2 1 Option to convert mesh with mixed cells into polyhedral/polygonal cells
+  attr no_family_names_from_group_names rien no_family_names_from_group_names 1 Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
+  attr file|fichier chaine file 0 File (written in the MED format, with extension \'.med\') containing the mesh
+  attr mesh|maillage chaine mesh 1 Name of the mesh in med file. If not specified, the first mesh will be read.
+  attr exclude_groups|exclure_groupes listchaine exclude_groups 1 List of face groups to skip in the MED file.
+
+field_base objet_u champ_base 0 Basic class of fields.
+champ_don_base field_base champ_don_base -1 Basic class for data fields (not calculated), p.e. physics properties.
+uniform_field champ_don_base champ_uniforme -1 Field that is constant in space and stationary.
+  attr flag_bidon chaine(into=["flag_bidon"]) flag_bidon 1 Un flag bidon optionnel juste pour test
+  attr val list val 0 Values of field components.
+  attr flag_bidon2 chaine(into=["flag_bidon2"]) flag_bidon2 1 Un autre flag bidon optionnel juste pour test
+  attr val2 list val2 1 Values of field components.
+
+coucou_base objet_u coucou_base 1 not set
+coucou coucou_base coucou -1 Basic class for medium (physics properties of medium). 
+  attr attr_bidon uniform_field attr_bidon 1 just to have a leaf type (unif field).
+  attr gravite field_base gravite 1 Gravity field (optional).
+  attr porosites_champ field_base porosites_champ 1 The porosity is given at each element and the porosity at each face, Psi(face), is calculated by the average of the porosities of the two neighbour elements Psi(elem1), Psi(elem2) : Psi(face)=2/(1/Psi(elem1)+1/Psi(elem2)). This keyword is optional.
+
+nom objet_u nom 0 Class to name the TRUST objects.
+  attr mot chaine mot 1 Chain of characters.
+nom_anonyme nom nul -1 not_set
+
+list_nom_virgule listobj list_nom_virgule 1 nom_anonyme 1 List of name.
+
+listobj listobj_impl listobj -1 List of objects.
+listcoucou listobj nul 1 coucou 1 List of coucous.
+
+bidon toto_base bidon 1 Just to test list attribute and inherited member from toto_base
+  attr ma_liste listcoucou ma_liste 0 List attribute
