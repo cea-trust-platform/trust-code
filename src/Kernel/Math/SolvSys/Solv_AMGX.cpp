@@ -89,46 +89,18 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
 
 void Solv_AMGX::Create_vectors(const DoubleVect& b)
 {
-  if (lhs_amgx_.size_array()==0)
-    {
-      lhs_amgx_.resize(nb_rows_);
-      rhs_amgx_.resize(nb_rows_);
-    }
+  Create_lhs_rhs_onDevice();
 }
 
 void Solv_AMGX::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 {
-  // Assemblage du second membre et de la solution
-  int size=solution.size_array();
-  const int* index_addr = mapToDevice(index_);
-  const double* solution_addr = mapToDevice(solution, "solution");
-  const double* secmem_addr = mapToDevice(secmem, "secmem");
-  double* lhs_amgx_addr = computeOnTheDevice(lhs_amgx_, "lhs_amgx_");
-  double* rhs_amgx_addr = computeOnTheDevice(rhs_amgx_, "rhs_amgx_");
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
-      {
-        lhs_amgx_addr[index_addr[i]] = solution_addr[i];
-        rhs_amgx_addr[index_addr[i]] = secmem_addr[i];
-      }
-  end_gpu_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_vectors");
+  Update_lhs_rhs_onDevice(secmem, solution);
   if (reorder_matrix_) Process::exit("Option not supported yet for AmgX.");
 }
 
 void Solv_AMGX::Update_solution(DoubleVect& solution)
 {
-  int size = index_.size_array();
-  const int* index_addr = mapToDevice(index_);
-  const double* lhs_amgx_addr = mapToDevice(lhs_amgx_, "lhs_amgx_");
-  double* solution_addr = computeOnTheDevice(solution, "solution");
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
-      solution_addr[i] = lhs_amgx_addr[index_addr[i]];
-  end_gpu_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_solution");
+  Update_solution_onDevice(solution);
 }
 
 // Fonction de conversion Petsc ->CSR
@@ -268,17 +240,17 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
 {
   if (computeOnDevice)
     {
-      mapToDevice(rhs_amgx_);
-      computeOnTheDevice(lhs_amgx_);
+      mapToDevice(rhs_);
+      computeOnTheDevice(lhs_);
       statistiques().begin_count(gpu_library_counter_);
       // Offer device pointers to AmgX:
-      SolveurAmgX_.solve(addrOnDevice(lhs_amgx_), addrOnDevice(rhs_amgx_), nRowsLocal, seuil_);
+      SolveurAmgX_.solve(addrOnDevice(lhs_), addrOnDevice(rhs_), nRowsLocal, seuil_);
       statistiques().end_count(gpu_library_counter_);
     }
   else
     {
       // Offer host pointers to AmgX:
-      SolveurAmgX_.solve(lhs_amgx_.addr(), rhs_amgx_.addr(), nRowsLocal, seuil_);
+      SolveurAmgX_.solve(lhs_.addr(), rhs_.addr(), nRowsLocal, seuil_);
     }
   Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,9 @@ protected:
   void construit_matrice_morse_intermediaire(const Matrice_Base&, Matrice_Morse& );
   void construit_renum(const DoubleVect&);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
+  void Create_lhs_rhs_onDevice();
+  void Update_lhs_rhs_onDevice(const DoubleVect& secmem, DoubleVect& solution);
+  void Update_solution_onDevice(DoubleVect& solution);
   IntTab renum_;                // Tableau de renumerotation globale lignes matrice TRUST -> matrice CSR
   IntTab index_;                // Tableau de renumerotation locale
   ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice CSR la ligne item de la matrice TRUST ?
@@ -47,6 +50,8 @@ protected:
   int decalage_local_global_;   // Decalage numerotation local/global pour matrice CSR et vecteur
   int matrice_symetrique_;      // Drapeau sur la symetrie de la matrice
   int secmem_sz_;               // (Local) second member size
+  ArrOfDouble lhs_;             // Premier membre avec les items conserves
+  ArrOfDouble rhs_;             // Second membre avec les items conserves
 };
 
 
