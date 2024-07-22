@@ -1,0 +1,165 @@
+# PARALLEL OK 4 #
+
+dimension 2
+pb_multiphase pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 6 61 /* 501 */
+        Longueurs  1.0 100.0
+    }
+    {
+        Bord wall X = 0. 0. <= Y <= 100.0
+        Bord wall X = 1.0 0. <= Y <= 100.0
+        Bord out Y = 0. 0. <= X <= 1.0
+        Bord wall Y = 100.0 0. <= X <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+option_vdf { all_options }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0.
+    # tmax 100000. #
+    dt_min 1.e-11
+    dt_max 5000.
+    dt_impr 1.e1
+    dt_start dt_calc
+    seuil_statio 1.e-6
+    residuals { relative 2 }
+    solveur ice
+    {
+        pression_degeneree 0
+        criteres_convergence { alpha 1e-5  pression 1 vitesse 1 } 
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    Milieu_composite
+    {
+        liquide_eau StiffenedGas { cv 717.8571428571429 pinf 0 lambda 5.e-3  mu 5.e-3 gamma 1.4 }
+    }
+
+    correlations { }
+
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse Champ_uniforme 2 0 0
+            pression Champ_uniforme 1 1e+5
+        }
+
+        boundary_conditions
+        {
+            wall paroi_fixe
+            out frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1 1e5
+        }
+        sources
+        {
+            source_qdm champ_uniforme 2 0 -9.81
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha Champ_uniforme 1 1
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            wall paroi
+            out  frontiere_ouverte a_ext  Champ_Front_Uniforme 1 1
+        }
+    }
+    energie_multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions
+        {
+            temperature champ_fonc_xyz dom 1 333.15-273.15-y
+        }
+        boundary_conditions
+        {
+            wall paroi_adiabatique
+            out frontiere_ouverte T_ext champ_front_fonc_xyz 1 333.15-273.15
+        }
+        sources
+        {
+            travail_pression
+        }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            exact_t transformation { methode formule expression 1 333.15-9.81/1005*y localisation elem }
+            temp transformation { methode formule expression 1 tt+273.15 source refChamp { Pb_Champ pb temperature nom_source tt } }
+            error_t transformation { methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
+        }
+        Probes
+        {
+            T_A grav temp periode 1e8 segment 500 0.5 0 0.5 100
+            R_A grav masse_volumique periode 1e8 segment 500 0.5 0 0.5 100
+            EX_A grav exact_t periode 1e8 segment 500 0.5 0 0.5 100
+            ER_A grav     error_t periode 1e8 segment 500 0.5 0 0.5 100
+            PT_A grav     pression periode 1e8 segment 500 0.5 0 0.5 100
+        }
+        format lata
+        Champs dt_post 1e4
+        {
+            pression elem
+            temperature elem
+            masse_volumique elem
+            vitesse elem
+            temp elem
+            exact_t elem
+            error_t elem
+            /* viscosite_cinematique elem
+            viscosite_dynamique elem
+            conductivite elem
+            capacite_calorifique elem
+            energie_interne elem
+            enthalpie elem */
+        }
+    }
+}
+Solve pb
+End
