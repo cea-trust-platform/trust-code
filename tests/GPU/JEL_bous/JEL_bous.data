@@ -1,0 +1,145 @@
+# PARALLEL OK #
+# Quasi compressible test case on GPU with still a lot of D2H copies: #
+# copyFromDevice 25 #
+dimension 3
+Pb_thermohydraulique_Turbulent pb1
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Entree
+        {
+        Origine 0. 0. 0.
+        /* Nombre_de_Noeuds 11 11 101 */
+        Nombre_de_Noeuds 4 4 26
+        Longueurs 1 1 10
+        }
+        {
+        Bord walls X = 0.  0. <= Y <= 1. 0. <= Z <= 10.
+        Bord walls X = 1.  0. <= Y <= 1. 0. <= Z <= 10.
+        Bord walls Y = 0.  0. <= X <= 1. 0. <= Z <= 10.
+        Bord walls Y = 1.  0. <= X <= 1. 0. <= Z <= 10.
+        Bord inlet Z = 0.  0. <= X <= 1. 0. <= Y <= 1.
+        Bord outlet Z = 10.  0. <= X <= 1. 0. <= Y <= 1.
+        }
+}
+Tetraedriser_homogene dom
+VerifierCoin dom {  }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+vef dis
+Runge_Kutta_Rationnel_ordre_2 sch
+Lire sch
+{
+nb_pas_dt_max 10
+    tinit 0.
+ tcpumax 47.00
+    dt_start dt_calc
+    tmax 2.
+    dt_min 1.e-10
+    dt_max 6.e-3
+    seuil_statio 1.e-14
+    facsec 1
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-10
+}
+
+
+Associer pb1 dom
+Associer pb1 sch
+Discretiser pb1 dis
+
+Lire pb1
+{
+
+   fluide_incompressible 
+   {
+    gravite champ_uniforme 3 0 0 -9.81 
+    mu Champ_Uniforme 1 0.008
+    rho Champ_Uniforme 1 995.2
+    lambda Champ_Uniforme 1 0.062
+    Cp Champ_Uniforme 1 4.1802
+    beta_th Champ_Uniforme 1 0.002902383982248589
+   }
+
+    Navier_Stokes_turbulent
+    {
+        solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
+#
+        solveur_pression petsc cli
+        {   -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
+            -ksp_type cg
+            -ksp_rtol 1e-6
+            -ksp_max_it 5000
+        }
+#
+        convection { muscl }
+        diffusion { }
+        conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+        sources { boussinesq_temperature { T0 30. } }
+        conditions_limites
+        {
+            inlet frontiere_ouverte_vitesse_imposee Champ_front_uniforme 3 0. 0. 0.31
+            walls	 paroi_fixe
+            outlet frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0
+        }
+
+        Modele_turbulence Sous_maille_wale
+        {
+            cw 0.5
+            turbulence_paroi negligeable
+        }
+    }
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { muscl }
+        conditions_initiales { temperature champ_fonc_xyz dom 1 ((x*x+y*y)[(10e-3*10e-3)*(z[0.06))*20+20 }
+        boundary_conditions 
+        {
+            outlet  frontiere_ouverte T_ext champ_front_uniforme 1 20 
+            inlet  frontiere_ouverte_temperature_imposee  champ_front_uniforme 1 40
+            walls  Paroi_adiabatique
+        }
+        Modele_turbulence Prandtl
+        {
+            turbulence_paroi negligeable_scalaire
+        }
+    }
+
+    Postraitement
+    {
+        format lml
+        Champs dt_post 1e6
+        {
+            temperature som
+        }
+    }
+
+}
+
+ecriturelecturespecial 0
+Resoudre pb1
+Fin

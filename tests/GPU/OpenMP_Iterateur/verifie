@@ -4,7 +4,8 @@ if [ "$TRUST_USE_OPENMP" = 1 ] && [ ${exec%mpi_opt} != $exec ]
 then
    NP=1 && [ ${1#PAR} != $1 ] && NP=2
    TRUST_CLOCK_ON=1 trust $1 $NP 1>$1.out_err 2>&1 
-   awk -v NP=$NP '/Copy from device/ && /detected/ && ($(NF-4)>1000) {n+=1} END {limit=4;copy=n/10/NP;print copy"<"limit" copyFromDevice per time step.";exit (copy<limit)}' $1.out_err
+   limit=`awk '/copyFromDevice/ {print $3}' $1.data`
+   awk -v NP=$NP -v limit=$limit '/Copy from device/ && /detected/ && ($(NF-4)>1000) {n+=1} END {copy=n/10/NP;print copy"<"limit" copyFromDevice per time step.";exit (copy<limit)}' $1.out_err
    OK=$?
    [ $OK = 0 ] && echo "See `pwd`/$1.out_err" && exit -1
 fi
@@ -18,7 +19,7 @@ message()
    #echo $msg
 }
 err=0
-for file in `ls *.ref`
+for file in `ls *.ref 2>/dev/null`
 do
    msg="compare_sonde $file ${file%.ref}"
    eval $msg 1>verifie.log 2>&1
