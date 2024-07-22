@@ -2072,24 +2072,43 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 {
   // Assemblage du second membre et de la solution
   double start = Statistiques::get_time_now();
-  // ToDo OpenMP afficher un warning pour dire d'utiliser un solveur GPU si solution est sur le GPU
-  secmem.checkDataOnHost();
-  solution.checkDataOnHost();
-  PetscInt size=ix.size_array();
-  if (gpu_) statistiques().begin_count(gpu_copytodevice_counter_);
-  VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-  VecSetValues(SecondMembrePetsc_, size, (PetscInt*)ix.addr(), secmem.addr(), INSERT_VALUES);
-  VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-  VecSetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr(), INSERT_VALUES);
-  VecAssemblyBegin(SecondMembrePetsc_);
-  VecAssemblyEnd(SecondMembrePetsc_);
-  VecAssemblyBegin(SolutionPetsc_);
-  VecAssemblyEnd(SolutionPetsc_);
-  if (gpu_) statistiques().end_count(gpu_copytodevice_counter_);
-  if (reorder_matrix_)
+  bool DataOnDevice = solution.checkDataOnDevice(secmem, __KERNEL_NAME__);
+  if (gpu_ && DataOnDevice && !isViennaCLVector()) // The 2 arrays are up to date on the device and the solver is a GPU one (fastest strategy)
     {
-      VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
-      VecPermute(SolutionPetsc_, colperm, PETSC_FALSE);
+      // We update PETSc vectors with the arrays on device:
+      Update_lhs_rhs_onDevice(secmem, solution);
+#ifdef PETSC_HAVE_CUDA
+      VecCUDAPlaceArray(SecondMembrePetsc_, addrOnDevice(rhs_));
+      VecCUDAPlaceArray(SolutionPetsc_, addrOnDevice(lhs_));
+#endif
+#ifdef PETSC_HAVE_HIP
+      VecHIPPlaceArray(SecondMembrePetsc_, addrOnDevice(rhs_));
+      VecHIPPlaceArray(SolutionPetsc_, addrOnDevice(lhs_));
+#endif
+      if (reorder_matrix_) Process::exit("reorder_matrix option is not supported yet on GPU");
+      if (different_partition_) Process::exit("different_partition option is not supported yet on GPU");
+    }
+  else
+    {
+      // ToDo OpenMP afficher un warning pour dire d'utiliser un solveur GPU si solution est sur le GPU
+      secmem.checkDataOnHost();
+      solution.checkDataOnHost();
+      PetscInt size=ix.size_array();
+      if (gpu_) statistiques().begin_count(gpu_copytodevice_counter_);
+      VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+      VecSetValues(SecondMembrePetsc_, size, (PetscInt*)ix.addr(), secmem.addr(), INSERT_VALUES);
+      VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+      VecSetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr(), INSERT_VALUES);
+      VecAssemblyBegin(SecondMembrePetsc_);
+      VecAssemblyEnd(SecondMembrePetsc_);
+      VecAssemblyBegin(SolutionPetsc_);
+      VecAssemblyEnd(SolutionPetsc_);
+      if (gpu_) statistiques().end_count(gpu_copytodevice_counter_);
+      if (reorder_matrix_)
+        {
+          VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
+          VecPermute(SolutionPetsc_, colperm, PETSC_FALSE);
+        }
     }
   if (verbose) Cout << "[Petsc] Time to update vectors: \t" << Statistiques::get_time_now() - start << finl;
 
@@ -2097,35 +2116,58 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 //  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
 }
 
+bool Solv_Petsc::isViennaCLVector()
+{
+  VecType type;
+  VecGetType(SecondMembrePetsc_, &type);
+  return strcmp(type, VECSEQVIENNACL)==0 || strcmp(type, VECMPIVIENNACL)==0;
+}
+
 void Solv_Petsc::Update_solution(DoubleVect& solution)
 {
   // Recuperation de la solution
   double start = Statistiques::get_time_now();
-  int size=ix.size_array();
-  if (reorder_matrix_)
-    VecPermute(SolutionPetsc_, rowperm, PETSC_TRUE);
-  // ToDo un seul VecGetValues comme VecSetValues
-  if (different_partition_)
+  bool DataOnDevice = solution.checkDataOnDevice(__KERNEL_NAME__);
+  if (gpu_ && DataOnDevice && !isViennaCLVector()) // solution is on the device to SolutionPetsc_ -> solution update without copy
     {
-      // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
-      VecScatterBegin(VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
-      VecScatterEnd  (VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
-      // Use the local vector to get the solution:
-      PetscInt colonne_locale=0;
-      for (int i=0; i<size; i++)
-        if (items_to_keep_[i])
-          {
-            VecGetValues(LocalSolutionPetsc_, 1, &colonne_locale, &solution(i));
-            colonne_locale++;
-          }
-      assert(nb_rows_==colonne_locale);
+      Update_solution_onDevice(solution);
+#ifdef PETSC_HAVE_CUDA
+      VecCUDAResetArray(SecondMembrePetsc_);
+      VecCUDAResetArray(SolutionPetsc_);
+#endif
+#ifdef PETSC_HAVE_HIP
+      VecHIPResetArray(SecondMembrePetsc_);
+      VecHIPResetArray(SolutionPetsc_);
+#endif
     }
   else
     {
-      // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
-      if (gpu_) statistiques().begin_count(gpu_copyfromdevice_counter_);
-      VecGetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr());
-      if (gpu_) statistiques().end_count(gpu_copyfromdevice_counter_);
+      int size=ix.size_array();
+      if (reorder_matrix_)
+        VecPermute(SolutionPetsc_, rowperm, PETSC_TRUE);
+      // ToDo un seul VecGetValues comme VecSetValues
+      if (different_partition_)
+        {
+          // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
+          VecScatterBegin(VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
+          VecScatterEnd  (VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
+          // Use the local vector to get the solution:
+          PetscInt colonne_locale=0;
+          for (int i=0; i<size; i++)
+            if (items_to_keep_[i])
+              {
+                VecGetValues(LocalSolutionPetsc_, 1, &colonne_locale, &solution(i));
+                colonne_locale++;
+              }
+          assert(nb_rows_==colonne_locale);
+        }
+      else
+        {
+          // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
+          if (gpu_) statistiques().begin_count(gpu_copyfromdevice_counter_);
+          VecGetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr());
+          if (gpu_) statistiques().end_count(gpu_copyfromdevice_counter_);
+        }
     }
   if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
 }
@@ -2490,6 +2532,11 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
 {
   if (SecondMembrePetsc_!=nullptr) return; // Deja construit
+  if (gpu_)
+    {
+      // For GPU solvers, allocate 2 arrays on device to avoid 2 H2D and 1 D2H copy later during each solve.
+      Create_lhs_rhs_onDevice();
+    }
   // Build x
   VecCreate(PETSC_COMM_WORLD,&SecondMembrePetsc_);
   // Set sizes:

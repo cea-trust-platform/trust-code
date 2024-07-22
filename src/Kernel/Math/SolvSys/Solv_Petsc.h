@@ -115,6 +115,7 @@ public :
   static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
 protected :
 #ifdef PETSCKSP_H
+  bool isViennaCLVector();
   void check_aij(const Matrice_Morse&);
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
   virtual void Create_objects(const Matrice_Morse&, int); // Construit differents objets PETSC dont matrice

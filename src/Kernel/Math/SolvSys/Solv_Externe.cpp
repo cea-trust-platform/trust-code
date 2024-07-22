@@ -163,7 +163,6 @@ void Solv_Externe::Create_lhs_rhs_onDevice()
 
 void Solv_Externe::Update_lhs_rhs_onDevice(const DoubleVect& tab_secmem, DoubleVect& tab_solution)
 {
-  assert(tab_secmem.isDataOnDevice() && tab_solution.isDataOnDevice());
   CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
   CDoubleArrView secmem = tab_secmem.view_ro();
   CDoubleArrView solution = tab_solution.view_ro();
@@ -182,7 +181,6 @@ void Solv_Externe::Update_lhs_rhs_onDevice(const DoubleVect& tab_secmem, DoubleV
 
 void Solv_Externe::Update_solution_onDevice(DoubleVect& tab_solution)
 {
-  assert(tab_solution.isDataOnDevice());
   CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
   CDoubleArrView lhs = lhs_.view_ro();
   DoubleArrView solution = tab_solution.view_wo();
