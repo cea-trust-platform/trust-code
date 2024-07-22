@@ -782,12 +782,12 @@ do
             cd $dev_dir
             cp -r $TRUST_ROOT/bin/baltik/share/self_test/basic_with_prerequisite/* .
             # Modication d'un .cpp du Kernel:
-            sed "s?Construction of?TEST_ATELIER_OK Construction of?g" $TRUST_ROOT/src/Kernel/Geometrie/Octree.cpp > src/Octree.cpp
-            chmod +w src/Octree.cpp
+            sed "s?Construction of?TEST_ATELIER_OK Construction of?g" $TRUST_ROOT/src/Kernel/Geometrie/Octree.cpp > $dev_dir/src/Octree.cpp
+            chmod +w $dev_dir/src/Octree.cpp
             # Modification d'un .h du Kernel:
-            cp $TRUST_ROOT/src/Kernel/Postraitement/Postraitement.h src
-            chmod +w src/Postraitement.h
-            echo " " >> src/Postraitement.h
+            cp $TRUST_ROOT/src/Kernel/Postraitement/Postraitement.h $dev_dir/src
+            chmod +w $dev_dir/src/Postraitement.h
+            echo " " >> $dev_dir/src/Postraitement.h
             # On efface le repertoire
             baltik_build_configure -execute 1>Makeatelier.log 2>&1
             make optim 1>Makeatelier.log 2>&1
@@ -817,7 +817,7 @@ do
             echo "--------------------------------------------------------"
             echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
 
-            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ] || [ $OpenMPI = 1 ] || [ $Latest_MPICH = 1 ]
+            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ] || [ $OpenMPI = 1 ] #|| [ $Latest_MPICH = 1 ]
             then
               OK="NOT"
             elif [ "${TRUST_cc_BASE%nvc}" != "$TRUST_cc_BASE" ]
