@@ -20,27 +20,12 @@ def init_logger():
 logger = init_logger()
 
 
-filename = "src/trustpy/test/TRAD_2_GENEPI_V17"
-filename = pathlib.Path(filename)
+################################################################
 
-trad2 = TRAD2Content.BuildContentFromTRAD2(filename)
 
-objet_u = TRAD2Block()
-objet_u.nam = "objet_u"
-objet_u.mode = 1
-listobj_impl = TRAD2Block()
-listobj_impl.nam = "listobj_impl"
-listobj_impl.mode = 1
-
-# initialize two base classes that are not in TRAD2 file
-trad2.data += [objet_u, listobj_impl]
-
-# mapping used for ordering the dependencies
-ALL_CLASSES = { block.nam: block for block in trad2.data }
-
-written = []
 
 def valid_variable_name(s):
+    """ Make a valid variable name from any str. """
 
     import re
     import keyword
@@ -58,12 +43,12 @@ def valid_variable_name(s):
     return s
 
 
-def write(block, file):
+def write_block(block, file, all_blocks):
     """ Write a TRAD2Block as pydantic class. """
 
     assert isinstance(block, TRAD2Block)
 
-    if block.nam in written:
+    if block.written:
         return
 
     logger.debug(block.nam)
@@ -71,10 +56,9 @@ def write(block, file):
     # dependencies must be written before self
     dependencies = [block.name_base] + [a.typ for a in block.attrs]
     for dependency in dependencies:
-        dependency = ALL_CLASSES.get(dependency, None)
+        dependency = all_blocks.get(dependency, None)
         if dependency:
-            write(dependency, file)
-
+            write_block(dependency, file, all_blocks)
 
     lines = [
         f'#' * 64,
@@ -85,12 +69,13 @@ def write(block, file):
         f'    __synonyms: str = {block.synos}',
     ]
 
-    suppressed_params = []
+    if block.name_base in all_blocks:        
+        block.suppress_params += all_blocks[block.name_base].suppress_params
 
     for attribute in block.attrs:
 
         assert isinstance(attribute, TRAD2Attr)
-        # attr_name, attr_type, attr_syno, attr_mode, attr_desc = attribute
+        
         attr_name = attribute.nam
         attr_type = attribute.typ
         attr_syno = attribute.synos
@@ -101,8 +86,8 @@ def write(block, file):
 
         args = f'default_factory=lambda: eval("{attr_type}()")'
 
-        if attr_type in ALL_CLASSES:
-            cls = ALL_CLASSES[attr_type]
+        if attr_type in all_blocks:
+            cls = all_blocks[attr_type]
             if isinstance(cls, TRAD2BlockList):
                 attr_type = f'typing.Annotated[typing.List["{cls.classtype}"], {cls.comma}]'
                 attr_desc = cls.desc
@@ -124,15 +109,15 @@ def write(block, file):
 
         elif attr_type in ["list", "listf"]:
             attr_type = "typing.List[float]"
-            args = "default=[]"
+            args = "default_factory=list"
 
         elif attr_type in ["listentier", "listentierf"]:
             attr_type = "typing.List[int]"
-            args = "default=[]"
+            args = "default_factory=list"
 
         elif attr_type in ["listchaine", "listchainef"]:
             attr_type = "typing.List[str]"
-            args = "default=[]"
+            args = "default_factory=list"
 
         elif attr_type.startswith("chaine(into="):
             choices = attr_type[13:].split("]")[0]
@@ -155,7 +140,7 @@ def write(block, file):
             args = f'default=False'
 
         elif attr_type == "suppress_param":
-            suppressed_params.append(attr_name)
+            block.suppress_params.append(attr_name)
             continue
 
         elif attr_type.startswith("ref_"):
@@ -171,51 +156,110 @@ def write(block, file):
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
-    if suppressed_params:
+    if block.suppress_params:        
+
+        # TODO pydantic does not handle correctly fields that were removed in parent class
+        # 
+        # example : 
+        # 
+        # from pydantic import BaseModel, Field
+        # class A(BaseModel):
+        #     a: str = "a"
+        # class B(A):
+        #     b: str = "b"
+        # B.model_fields.pop("a")
+        # class C(B):
+        #     a: None = None
+        #     c: str = "c"
+        # C.model_fields.pop("a")
+        # print(B.model_fields) # a is not in the fields
+        # print(C.model_fields) # a is not in the fields
+        # print(B()) # ok
+        # print(C()) # raise error because 'a' is required
+
+        # TODO handle case where param is marked as suppressed, but is redefined
+        # 
+        # example : attr inco below
+        # 
+        # champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a function of another field.
+        #     attr dim suppress_param dim 1 del
+        #     attr bloc suppress_param bloc 1 del
+        #     attr inco suppress_param inco 1 del
+        #     attr problem_name ref_pb_base problem_name 0 Name of problem.
+        #     attr inco chaine inco 0 Name of the field (for example: temperature).
+
         lines.append('')
         lines.append('# suppress fields from parent class')
-        for param in suppressed_params:
+        for param in block.suppress_params:
             lines.append(f'{block.nam}.model_fields.pop("{param}")')
 
     lines.append('\n')
 
+    # actual file writing
     file.write('\n'.join(lines))
 
-    written.append(block.nam)
+    # mark this block as written
+    block.written = True
 
 
-header = f'''
-    ################################################################
-    # This file was generated automatically from :
-    # {str(filename.resolve())}
-    # {datetime.datetime.now().strftime(r"%y-%m-%d at %H:%M:%S")}
-    ################################################################
+def generate_pydantic(trad2_filename, output_filename, testing=False):
 
-    import sys
-    if sys.version_info >= (3, 8):
-        import typing
-    else:
-        import typing_extensions as typing
-    from pydantic import BaseModel, Field
-'''
+    trad2_filename = pathlib.Path(trad2_filename)
+
+    all_blocks = TRAD2Content.BuildContentFromTRAD2(trad2_filename).data
+
+    # add two base classes that are required and not declared in TRAD2 file
+    objet_u = TRAD2Block()
+    objet_u.nam = "objet_u"
+    objet_u.mode = 1
+    listobj_impl = TRAD2Block()
+    listobj_impl.nam = "listobj_impl"
+    listobj_impl.mode = 1
+    all_blocks += [objet_u, listobj_impl]
+
+    # make a dict to easily find block by name
+    all_blocks = { block.nam: block for block in all_blocks }
+
+    # add two properties used during writing of blocks
+    for block in all_blocks.values():
+        block.written = False
+        block.suppress_params = []
+
+    header = f'''
+        ################################################################
+        # This file was generated automatically from :
+        # {str(trad2_filename.resolve())}
+        # {datetime.datetime.now().strftime(r"%y-%m-%d at %H:%M:%S")}
+        ################################################################
+
+        import sys
+        if sys.version_info >= (3, 8):
+            import typing
+        else:
+            import typing_extensions as typing
+        from pydantic import BaseModel, Field
+    '''
+
+    if output_filename is None:
+        output_filename = trad2_filename.name + ".py"
+
+    with open(output_filename, "w", encoding="utf-8") as file:
+        file.write(textwrap.dedent(header).strip())
+        file.write("\n" * 3)
+        for block in all_blocks.values():
+            write_block(block, file, all_blocks)
+
+    if testing:
+        test_filename = output_filename.replace(".py", "_test.py")
+        with open(test_filename, "w", encoding="utf-8") as file:            
+            file.write(f'import {trad2_filename.name}')
+            file.write("\n" * 3)
+            for cls in all_blocks.keys():
+                file.write(f'{trad2_filename.name}.{cls}()\n')
 
 
-output_filename = filename.name + ".py"
-with open(output_filename, "w", encoding="utf-8") as file:
-    file.write(textwrap.dedent(header).strip())
-    file.write("\n" * 3)
-    for data in trad2.data:
-        write(data, file)
-    
+if __name__ == '__main__': 
 
-
-test_filename = filename.name + "_test.py"
-
-with open(test_filename, "w", encoding="utf-8") as file:
-    
-    file.write(f'import {filename.name}')
-    file.write("\n" * 3)
-
-    for cls in written:
-        file.write(f'{filename.name}.{cls}()\n')
-
+    trad2_filename = pathlib.Path("src/trustpy/test/TRAD_2_GENEPI_V17")
+    output_filename = trad2_filename.name + ".py"
+    generate_pydantic(trad2_filename, output_filename, testing=True)
