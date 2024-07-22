@@ -472,7 +472,7 @@ then
       if [ -d /ccc ] || [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=24
-      elif [ "${HOST#aar}" != $HOST ] || [ "${HOST#grenx}" != $HOST ] || [ "${HOST#gutta}" != $HOST ]
+      elif [ "${HOST#aar}" != $HOST ] || [ "${HOST#grenx}" != $HOST ] || [ "${HOST#gutta}" != $HOST ] || [ "${HOST#mezel}" != $HOST ]
       then
         TRUST_NB_PROCS=4
       elif [ "${HOST#summer}" != $HOST ]
@@ -1879,7 +1879,7 @@ case $TRUST_ARCH_CC in
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
-        m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
+        m="# TMPDIR ?";e="TMPDIR=\"\$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
         Defines="-D_COMPILE_AVEC_PGCC"
         CppFlags=""
         if [ "$TRUST_USE_KOKKOS" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
