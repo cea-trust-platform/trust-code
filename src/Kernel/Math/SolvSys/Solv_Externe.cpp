@@ -157,45 +157,39 @@ void Solv_Externe::construit_matrice_morse_intermediaire(const Matrice_Base& la_
 
 void Solv_Externe::Create_lhs_rhs_onDevice()
 {
-  if (lhs_.size_array() == 0)
-    {
-      lhs_.resize(nb_rows_);
-      rhs_.resize(nb_rows_);
-    }
+  lhs_.resize(nb_rows_);
+  rhs_.resize(nb_rows_);
 }
 
-void Solv_Externe::Update_lhs_rhs_onDevice(const DoubleVect& secmem, DoubleVect& solution)
+void Solv_Externe::Update_lhs_rhs_onDevice(const DoubleVect& tab_secmem, DoubleVect& tab_solution)
 {
-  // ToDo OMPT -> Kokkos
-  // Assemblage du second membre et de la solution
-  int size=solution.size_array();
-  const int* index_addr = mapToDevice(index_);
-  const double* solution_addr = mapToDevice(solution, "solution");
-  const double* secmem_addr = mapToDevice(secmem, "secmem");
-  double* lhs_addr = computeOnTheDevice(lhs_, "lhs_");
-  double* rhs_addr = computeOnTheDevice(rhs_, "rhs_");
-  start_gpu_timer(__KERNEL_NAME__);
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
+  assert(tab_secmem.isDataOnDevice() && tab_solution.isDataOnDevice());
+  CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
+  CDoubleArrView secmem = tab_secmem.view_ro();
+  CDoubleArrView solution = tab_solution.view_ro();
+  DoubleArrView rhs = rhs_.view_wo();
+  DoubleArrView lhs = lhs_.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), index_.size_array(), KOKKOS_LAMBDA(const int i)
+  {
+    if (index[i]!=-1)
       {
-        lhs_addr[index_addr[i]] = solution_addr[i];
-        rhs_addr[index_addr[i]] = secmem_addr[i];
+        lhs[index[i]] = solution[i];
+        rhs[index[i]] = secmem[i];
       }
+  });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
-void Solv_Externe::Update_solution_onDevice(DoubleVect& solution)
+void Solv_Externe::Update_solution_onDevice(DoubleVect& tab_solution)
 {
-  // ToDo OMPT -> Kokkos
-  int size = index_.size_array();
-  const int* index_addr = mapToDevice(index_);
-  const double* lhs_addr = mapToDevice(lhs_, "lhs_");
-  double* solution_addr = computeOnTheDevice(solution, "solution");
-  start_gpu_timer(__KERNEL_NAME__);
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
-      solution_addr[i] = lhs_addr[index_addr[i]];
+  assert(tab_solution.isDataOnDevice());
+  CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
+  CDoubleArrView lhs = lhs_.view_ro();
+  DoubleArrView solution = tab_solution.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), index_.size_array(), KOKKOS_LAMBDA(const int i)
+  {
+    if (index[i]!=-1)
+      solution[i] = lhs[index[i]];
+  });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
