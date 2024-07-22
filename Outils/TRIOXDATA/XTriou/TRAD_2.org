@@ -25,6 +25,7 @@ floatfloat objet_lecture nul 0 Two reals.
 entierfloat objet_lecture nul 0 An integer and a real.
   attr the_int entier the_int 0 Integer.
   attr the_float floattant the_float 0 Real.
+class_generic objet_u class_generic -1 not_set
 stat_post_deriv objet_lecture stat_post_deriv 0 not_set
 list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
 listchamp_generique listobj nul 1 champ_generique_base 1 XXX

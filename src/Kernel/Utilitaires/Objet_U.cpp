@@ -21,8 +21,6 @@
 #include <Interprete_bloc.h>
 #include <Lire.h>
 
-// XD class_generic objet_u class_generic -1 not_set
-
 int Objet_U::dimension=0;
 int Objet_U::format_precision_geom=11;
 int Objet_U::axi=0;
