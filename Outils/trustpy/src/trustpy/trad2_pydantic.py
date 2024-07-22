@@ -38,11 +38,7 @@ trad2.data += [objet_u, listobj_impl]
 # mapping used for ordering the dependencies
 ALL_CLASSES = { block.nam: block for block in trad2.data }
 
-
-# add a new property to know whether this block is already written
-for data in trad2.data:
-    data.written = False
-
+written = []
 
 def valid_variable_name(s):
 
@@ -67,7 +63,7 @@ def write(block, file):
 
     assert isinstance(block, TRAD2Block)
 
-    if block.written:
+    if block.nam in written:
         return
 
     logger.debug(block.nam)
@@ -185,7 +181,7 @@ def write(block, file):
 
     file.write('\n'.join(lines))
 
-    block.written = True
+    written.append(block.nam)
 
 
 header = f'''
@@ -204,17 +200,22 @@ header = f'''
 '''
 
 
-
 output_filename = filename.name + ".py"
 with open(output_filename, "w", encoding="utf-8") as file:
-
     file.write(textwrap.dedent(header).strip())
-    file.write("\n"*3)
-
+    file.write("\n" * 3)
     for data in trad2.data:
         write(data, file)
+    
 
 
-from TRAD_2_GENEPI_V17 import fermeture_genepi
-print(fermeture_genepi())
+test_filename = filename.name + "_test.py"
+
+with open(test_filename, "w", encoding="utf-8") as file:
+    
+    file.write(f'import {filename.name}')
+    file.write("\n" * 3)
+
+    for cls in written:
+        file.write(f'{filename.name}.{cls}()\n')
 
