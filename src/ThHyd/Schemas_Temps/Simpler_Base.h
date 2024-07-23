@@ -24,11 +24,10 @@
 class Solveur_Implicite_Base;
 class Schema_Temps_base;
 class Equation_base;
-class Equation;
+class Matrice_Morse;
 class Matrice;
 class Sources;
 class Motcle;
-class Matrice_Morse;
 
 //Description
 //

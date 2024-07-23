@@ -27,7 +27,6 @@ class Probleme_base;
 class Equation_base;
 class Matrice_Base;
 class SFichier;
-class Equation;
 class Motcle;
 class Param;
 
@@ -55,7 +54,7 @@ class Param;
  * l'appel de valeurs() - donc notamment dans les operateurs.
  * Pour le moment n'est respecte que par les Champ_Front des CLs.
  *
- * @sa Equation Equation_base Probleme_base Algo_MG_base
+ * @sa Equation_base Probleme_base Algo_MG_base
  *
  * Classe abstraite dont tous les schemas en temps doivent deriver.
  *

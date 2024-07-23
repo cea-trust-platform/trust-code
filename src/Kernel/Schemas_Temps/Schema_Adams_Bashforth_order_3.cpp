@@ -14,45 +14,27 @@
 *****************************************************************************/
 
 #include <Schema_Adams_Bashforth_order_3.h>
-#include <Equation.h>
+#include <Equation_base.h>
 #include <TRUSTTrav.h>
-
 
 Implemente_instanciable(Schema_Adams_Bashforth_order_3,"Schema_Adams_Bashforth_order_3",Schema_Adams_Bashforth_base);
 // XD schema_adams_bashforth_order_3 schema_temps_base schema_adams_bashforth_order_3 -1 not_set
 
-
-
-/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Schema_Adams_Bashforth_order_3::printOn(Sortie& s) const
 {
   return  Schema_Adams_Bashforth_base::printOn(s);
 }
 
-
-/*! @brief Lit le schema en temps a partir d'un flot d'entree.
- *
- * Simple appel a: Schema_Temps_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Schema_Adams_Bashforth_order_3::readOn(Entree& s)
 {
   return Schema_Adams_Bashforth_base::readOn(s) ;
 }
-
 
 ////////////////////////////////
 //                            //
 // Caracteristiques du schema //
 //                            //
 ////////////////////////////////
-
 
 /*! @brief Renvoie le nombre de valeurs temporelles a conserver.
  *

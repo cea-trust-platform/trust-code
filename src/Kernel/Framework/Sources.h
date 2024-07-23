@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
  *      Sources. Un objet Sources est un morceaux d'equation, cette classe
  *      herite donc de MorEqn.
  *
- * @sa Source MorEqn Equation
+ * @sa Source MorEqn
  */
 class Sources : public LIST(Source), public MorEqn
 {

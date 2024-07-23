@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #ifndef List_Equations_Scalaires_Passifs_Especes_included
 #define List_Equations_Scalaires_Passifs_Especes_included
 
+#include <Equation_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
-#include <Equation.h>
 
 class Milieu_base;
 
@@ -33,14 +34,13 @@ class Milieu_base;
 class List_Equations_Scalaires_Passifs_Especes : public Equation_base
 {
   Declare_instanciable(List_Equations_Scalaires_Passifs_Especes);
-
 public :
-  const  Equation_base& equation(int i) const { return list_eq(i).valeur(); }
+  const Equation_base& equation(int i) const { return list_eq(i).valeur(); }
   int nb_equation() { return list_eq.size(); }
   int nb_equation() const { return list_eq.size(); }
   int complete() { return complet; }
   int complete() const { return complet; }
-  void discretiser() override { };
+  void discretiser() override { }
   void associer_milieu_equation() override;
   void associer_milieu_base(const Milieu_base& mil1) override { mil=mil1; }
   const Milieu_base& milieu() const override { return mil.valeur(); }
@@ -55,40 +55,40 @@ public :
         Process::exit();
       }
     return list_eq(i).valeur();
-  };
+  }
 
   const Operateur& operateur(int) const override
   {
     Process::exit();
-    Equation bidon;;
-    return bidon.operateur(0);
+    OWN_PTR(Equation_base) bidon;;
+    return bidon->operateur(0);
   }
 
   Operateur& operateur(int) override
   {
     Process::exit();
-    Equation bidon;
-    return bidon.operateur(0);
+    OWN_PTR(Equation_base) bidon;
+    return bidon->operateur(0);
   }
 
   const Champ_Inc& inconnue() const override
   {
     Process::exit(); ;
-    Equation bidon;
-    return bidon.inconnue();
+    OWN_PTR(Equation_base) bidon;
+    return bidon->inconnue();
   }
 
   Champ_Inc& inconnue() override
   {
     Process::exit();
-    Equation bidon ;
-    return bidon.inconnue();
+    OWN_PTR(Equation_base) bidon ;
+    return bidon->inconnue();
   }
 
 protected :
-  LIST(Equation) list_eq;
+  LIST(OWN_PTR(Equation_base)) list_eq;
   REF(Milieu_base) mil;
-  int complet;
+  int complet = 0;
 };
 
 #endif /* List_Equations_Scalaires_Passifs_Especes_included */

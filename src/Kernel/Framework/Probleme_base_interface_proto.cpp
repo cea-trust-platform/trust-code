@@ -17,7 +17,7 @@
 #include <ICoCoExceptions.h>
 #include <Probleme_base.h>
 #include <Postraitement.h>
-#include <Equation.h>
+#include <Equation_base.h>
 #include <Debog.h>
 
 using ICoCo::WrongArgument;

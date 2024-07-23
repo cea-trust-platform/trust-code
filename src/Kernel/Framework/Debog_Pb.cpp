@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <PE_Groups.h>
 #include <Debog_Pb.h>
-#include <Equation.h>
+#include <Equation_base.h>
 #include <EChaine.h>
 #include <Domaine_VF.h>
 #include <Domaine.h>

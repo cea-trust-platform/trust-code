@@ -21,7 +21,7 @@
 #include <stat_counters.h>
 #include <LecFicDiffuse.h>
 #include <stat_counters.h>
-#include <Equation.h>
+#include <Equation_base.h>
 #include <sys/stat.h>
 #include <SFichier.h>
 #include <Param.h>

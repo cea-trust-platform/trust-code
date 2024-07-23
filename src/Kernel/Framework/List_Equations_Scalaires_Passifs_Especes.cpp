@@ -16,32 +16,28 @@
 #include <List_Equations_Scalaires_Passifs_Especes.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(List_Equations_Scalaires_Passifs_Especes,"Equations_Scalaires_Passifs|Equations_Especes",Equation_base);
-
-List_Equations_Scalaires_Passifs_Especes::List_Equations_Scalaires_Passifs_Especes() : complet(0) { }
+Implemente_instanciable(List_Equations_Scalaires_Passifs_Especes,"Equations_Scalaires_Passifs|Equations_Especes",Equation_base);
 
 Sortie& List_Equations_Scalaires_Passifs_Especes::printOn(Sortie& os) const { return os; }
 
 Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
 {
   // Ici se situe un gros piratage
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
   Motcle motlu;
+
   is >> motlu;
-  if (motlu!=accolade_ouverte)
+  if (motlu != "{")
     {
-      Cerr<<"Big problem in List_Equations_Scalaires_Passifs_Especes::readOn , we expected "<<accolade_ouverte;
+      Cerr << "Big problem in List_Equations_Scalaires_Passifs_Especes::readOn , we expected : { and not " << motlu << " !!!" << finl;
       Process::exit();
     }
   is >> motlu;
-  while (motlu!=accolade_fermee)
+  while (motlu != "}")
     {
-      Equation toto;
       Nom nume(list_eq.size());
-      Equation& Eqn_nvelle=list_eq.add(toto);
+      OWN_PTR(Equation_base) &Eqn_nvelle = list_eq.add(OWN_PTR(Equation_base)());
       Eqn_nvelle.typer(motlu);
-      Equation_base& Eqn = ref_cast(Equation_base,Eqn_nvelle.valeur());
+      Equation_base& Eqn = ref_cast(Equation_base, Eqn_nvelle.valeur());
 
       // maintenant on associe le pb
       Eqn.associer_pb_base(probleme());
@@ -54,23 +50,23 @@ Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
 
       // on change le nom de l'inconnue et de l equation
       Nom nom;
-      nom=Eqn.inconnue()->le_nom();
+      nom = Eqn.inconnue()->le_nom();
       Nom nom_eq;
       nom_eq = Eqn.le_nom();
-      nom+=nume;
-      Cerr<<"The unknown name is modified : new name "<<nom<<finl;
+      nom += nume;
+      Cerr << "The unknown name is modified : new name " << nom << finl;
       Eqn.inconnue()->nommer(nom);
       Eqn.add_champs_compris(Eqn.inconnue());
 
-      nom_eq+=nume;
-      Cerr<<"The equation name is modified : new name "<<nom_eq<<finl;
+      nom_eq += nume;
+      Cerr << "The equation name is modified : new name " << nom_eq << finl;
       Eqn.nommer(nom_eq);
       // enfin on lit
       is >> Eqn;
       is >> motlu;
     }
-  complet=1;
-  return is ;
+  complet = 1;
+  return is;
 }
 
 void List_Equations_Scalaires_Passifs_Especes::associer_milieu_equation()

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,40 +13,21 @@
 *
 *****************************************************************************/
 
+#include <Equation_base.h>
 #include <Leap_frog.h>
-#include <Equation.h>
 
 Implemente_instanciable(Leap_frog,"Leap_frog",Schema_Temps_base);
 // XD leap_frog schema_temps_base leap_frog -1 This is the leap-frog scheme.
 
-
-
-/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Leap_frog::printOn(Sortie& s) const
 {
   return  Schema_Temps_base::printOn(s);
 }
 
-
-/*! @brief Lit le schema en temps a partir d'un flot d'entree.
- *
- * Simple appel a: Schema_Temps_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Leap_frog::readOn(Entree& s)
 {
-  //
-  // VERIFIER ICI QU'ON A BIEN TOUT LU;
-  //
   return Schema_Temps_base::readOn(s) ;
 }
-
 
 ////////////////////////////////
 //                            //

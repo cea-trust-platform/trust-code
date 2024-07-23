@@ -14,31 +14,17 @@
 *****************************************************************************/
 
 #include <Schema_Adams_Bashforth_base.h>
+#include <Equation_base.h>
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
-#include <Equation.h>
 
 Implemente_base(Schema_Adams_Bashforth_base,"Schema_Adams_Bashforth_base",Schema_Explicite_Multi_TimeStep_base);
 
-
-/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Schema_Adams_Bashforth_base::printOn(Sortie& s) const
 {
   return Schema_Explicite_Multi_TimeStep_base::printOn(s);
 }
 
-
-/*! @brief Lit le schema en temps a partir d'un flot d'entree.
- *
- * Simple appel a: Schema_Temps_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Schema_Adams_Bashforth_base::readOn(Entree& s)
 {
   return Schema_Explicite_Multi_TimeStep_base::readOn(s) ;

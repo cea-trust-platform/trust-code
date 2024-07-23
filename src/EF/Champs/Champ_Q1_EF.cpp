@@ -16,7 +16,7 @@
 #include <Champ_Q1_EF.h>
 #include <Domaine_EF.h>
 #include <Domaine.h>
-#include <Equation.h>
+#include <Equation_base.h>
 #include <distances_EF.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 
 #include <Terme_Source_Qdm.h>
 #include <Operateur_Conv.h>
-#include <Equation.h>
+#include <Equation_base.h>
 
 class Probleme_base;
 /*! @brief class Terme_Source_Th_TdivU_VEF_Face

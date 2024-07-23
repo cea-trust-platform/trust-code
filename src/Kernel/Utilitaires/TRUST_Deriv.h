@@ -52,11 +52,6 @@
  *   L'instance de Type_Derive est detruite si on appelle a nouveau "typer()"
  *   ou si l'objet deriv_type est detruit.
  *
- *   Exemples :
- *    Equation_base     Operateur_Diff_base  ... ( <=> Type_base )
- *    Navier_Stokes_std Op_Diff_VDF_var_Face     ( <=> Type_derive )
- *    Equation          Operateur_Diff           ( <=> DERIV(Type_base) )
- *
  */
 
 // MACRO to replace DERIV(THECLASS) by Deriv_THECLASS & keep previous syntax for some developers

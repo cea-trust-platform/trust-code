@@ -101,7 +101,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
     noms_eq_maj.add(Motcle(itr)); //ha ha ha
   for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
     {
-      eq_opt_.add(Equation()); //une autre equation optionelle
+      eq_opt_.add(OWN_PTR(Equation_base)()); //une autre equation optionelle
       eq_opt_.dernier().typer(mot); //on lui donne le bon type
       Equation_base& eq = eq_opt_.dernier().valeur();
       //memes associations que pour les autres equations : probleme, milieu, schema en temps

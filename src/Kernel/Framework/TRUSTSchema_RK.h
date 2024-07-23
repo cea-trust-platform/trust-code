@@ -16,9 +16,9 @@
 #ifndef TRUSTSchema_RK_included
 #define TRUSTSchema_RK_included
 
-#include <type_traits>
 #include <Schema_Temps_base.h>
-#include <Equation.h>
+#include <Equation_base.h>
+#include <type_traits>
 
 using ARR1 = std::array<double, 1>; // OK je sais mais bon ... ne demande pas alors :-)
 using ARR2 = std::array<double, 2>;

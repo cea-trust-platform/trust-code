@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Schema_Euler_explicite.h>
-#include <Equation.h>
+#include <Equation_base.h>
 
 Implemente_instanciable(Schema_Euler_explicite,"Schema_euler_explicite|Scheme_euler_explicit",TRUSTSchema_RK<Ordre_RK::UN>);
 // XD euler_scheme schema_temps_base schema_euler_explicite -1 This is the Euler explicit scheme.

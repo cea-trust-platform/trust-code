@@ -70,7 +70,6 @@ enum Type_modele { TURBULENCE };
  *        Milieu_base& milieu()
  *        Entree& lire(const Motcle&, Entree&) [protegee]
  *
- * @sa Equation
  */
 class Equation_base : public Champs_compris_interface, public Objet_U
 {

@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Equation_base.h>
 #include <Champ_Q1NC.h>
 #include <Periodique.h>
-#include <Equation.h>
 #include <Debog.h>
 
 Implemente_instanciable(Champ_Q1NC,"Champ_Q1NC",Champ_Inc_base);

@@ -21,9 +21,9 @@
 #include <Pb_Fluide_base.h>
 #include <QDM_Multiphase.h>
 #include <Correlation.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <Interprete.h>
-#include <Equation.h>
 #include <Verif_Cl.h>
 
 /*! @brief classe Pb_Multiphase Cette classe represente un probleme de thermohydraulique multiphase de type "3*N equations" :
@@ -97,7 +97,7 @@ protected:
   QDM_Multiphase eq_qdm_;
   Energie_Multiphase eq_energie_;
   Masse_Multiphase eq_masse_;
-  LIST(Equation) eq_opt_; //autres equations (turbulence, aire interfaciale...)
+  LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)
 };
 
 #endif /* Pb_Multiphase_included */
