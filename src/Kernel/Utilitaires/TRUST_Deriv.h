@@ -61,6 +61,7 @@
 
 // MACRO to replace DERIV(THECLASS) by Deriv_THECLASS & keep previous syntax for some developers
 #define DERIV(_TYPE_) TRUST_Deriv<_TYPE_>
+#define OWN_PTR(_TYPE_) TRUST_Deriv<_TYPE_>
 
 template<typename _CLASSE_>
 class TRUST_Deriv: public Objet_U_ptr
@@ -159,6 +160,16 @@ public:
   {
     const Type_info * type_info = _CLASSE_::info();
     return *type_info; /* type de base accepte par la ref */
+  }
+
+  Entree& typer_lire_simple(Entree& is, const std::string msg = "??")
+  {
+    if (msg != "??") Cerr << msg << finl;
+    Nom type;
+    is >> type;
+    typer(type); // on type :-)
+    is >> valeur(); // et on lit :-)
+    return is;
   }
 };
 
