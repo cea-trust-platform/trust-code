@@ -31,7 +31,7 @@ void Op_Diff_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
 
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr, mat2;
-  Op_VDF_Face::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
+  Op_VDF_Face::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 
 }
@@ -40,7 +40,7 @@ void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 {
   statistiques().begin_count(diffusion_counter_);
   assert_invalide_items_non_calcules(secmem, 0.);
-  iter->ajouter_blocs(matrices, secmem, semi_impl);
+  iter_->ajouter_blocs(matrices, secmem, semi_impl);
 
   // On ajoute des termes si axi ...
   Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices, secmem, semi_impl);
@@ -48,5 +48,5 @@ void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   statistiques().end_count(diffusion_counter_);
 }
 
-double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_base::calculer_dt_stab_(iter->domaine()); }
+double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_base::calculer_dt_stab_(iter_->domaine()); }
 

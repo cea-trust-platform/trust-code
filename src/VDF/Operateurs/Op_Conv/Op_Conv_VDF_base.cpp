@@ -58,18 +58,18 @@ inline void eval_fluent(const double psc, const int num1, const int num2, const 
 void Op_Conv_VDF_base::completer()
 {
   Operateur_base::completer();
-  iter->completer_();
+  iter_->completer_();
 }
 
 int Op_Conv_VDF_base::impr(Sortie& os) const
 {
-  return iter->impr(os);
+  return iter_->impr(os);
 }
 
 void Op_Conv_VDF_base::preparer_calcul()
 {
   Operateur_Conv_base::preparer_calcul(); /* ne fait rien */
-  iter->set_convective_op_pb_type(true /* convective op */, sub_type(Pb_Multiphase, equation().probleme()));
+  iter_->set_convective_op_pb_type(true /* convective op */, sub_type(Pb_Multiphase, equation().probleme()));
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_elem()
@@ -78,26 +78,26 @@ void Op_Conv_VDF_base::associer_champ_convecte_elem()
 
   Op_Conv_VDF_base::preparer_calcul();
   const Champ_Inc_base& cc = equation().has_champ_convecte() ? equation().champ_convecte() : (le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur());
-  iter->associer_champ_convecte_ou_inc(cc, &vitesse());
-  iter->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
+  iter_->associer_champ_convecte_ou_inc(cc, &vitesse());
+  iter_->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_face()
 {
   Op_Conv_VDF_base::preparer_calcul();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue().valeur();
-  iter->associer_champ_convecte_ou_inc(cc, &vitesse());
-  iter->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
+  iter_->associer_champ_convecte_ou_inc(cc, &vitesse());
+  iter_->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
 }
 
 void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_base) const
 {
-  const_cast<Iterateur_VDF&>(iter)->associer_champ_convecte_ou_inc(ch_unite, nullptr, use_base);
+  const_cast<OWN_PTR(Iterateur_VDF_base)&>(iter_)->associer_champ_convecte_ou_inc(ch_unite, nullptr, use_base);
 }
 
 void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const
 {
-  const Domaine_VDF& domaine = iter->domaine();
+  const Domaine_VDF& domaine = iter_->domaine();
   const IntTab& f_e = domaine.face_voisins();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const int hcc = equation().has_champ_convecte();
@@ -137,7 +137,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
 
 void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_VDF& domaine = iter->domaine();
+  const Domaine_VDF& domaine = iter_->domaine();
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs();
@@ -177,14 +177,14 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(convection_counter_);
-  iter->ajouter_blocs(mats, secmem, semi_impl);
+  iter_->ajouter_blocs(mats, secmem, semi_impl);
   statistiques().end_count(convection_counter_);
 }
 
 double Op_Conv_VDF_base::calculer_dt_stab() const
 {
-  const Domaine_VDF& domaine_VDF = iter->domaine();
-  const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = iter_->domaine_Cl();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const DoubleVect& volumes = domaine_VDF.volumes();
   const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
@@ -261,8 +261,8 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
 // Calculation of local time: Vect of size number of faces of the domain This is the equivalent of "Op_Conv_VDF_base :: calculer_dt_stab ()"
 void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 {
-  const Domaine_VDF& domaine_VDF = iter->domaine();
-  const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = iter_->domaine_Cl();
   const DoubleVect& volumes_entrelaces= domaine_VDF.volumes_entrelaces();
   const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
   //const DoubleVect& vit= vitesse_pour_pas_de_temps_->valeurs();
@@ -361,8 +361,8 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      const Domaine_VDF& domaine_VDF = iter->domaine();
-      const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+      const Domaine_VDF& domaine_VDF = iter_->domaine();
+      const Domaine_Cl_VDF& domaine_Cl_VDF = iter_->domaine_Cl();
       const IntTab& face_voisins = domaine_VDF.face_voisins();
       const DoubleVect& volumes = domaine_VDF.volumes();
       const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
@@ -479,7 +479,7 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
 
   if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
     {
-      const Domaine_VDF& domaine = iter->domaine();
+      const Domaine_VDF& domaine = iter_->domaine();
       const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
       const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
       const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();

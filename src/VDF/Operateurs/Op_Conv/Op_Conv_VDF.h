@@ -16,22 +16,23 @@
 #ifndef Op_Conv_VDF_included
 #define Op_Conv_VDF_included
 
-#include <type_traits>
-#include <Iterateur_VDF.h>
+#include <Iterateur_VDF_base.h>
+#include <TRUST_Deriv.h>
 #include <Op_VDF_Elem.h>
 #include <Op_VDF_Face.h>
+#include <type_traits>
 
 template <typename OP_TYPE>
 class Op_Conv_VDF : public Op_VDF_Elem, public Op_VDF_Face
 {
 protected:
   // pour operateurs elem
-  inline void dimensionner_elem(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter_()->domaine(), iter_()->domaine_Cl(), matrice); }
-  inline void modifier_pour_Cl_elem(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter_()->domaine(), iter_()->domaine_Cl(), matrice, secmem); }
+  inline void dimensionner_elem(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter_vdf()->domaine(), iter_vdf()->domaine_Cl(), matrice); }
+  inline void modifier_pour_Cl_elem(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter_vdf()->domaine(), iter_vdf()->domaine_Cl(), matrice, secmem); }
 
   // pour operateurs face
-  inline void dimensionner_face(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter_()->domaine(), iter_()->domaine_Cl(), matrice); }
-  inline void modifier_pour_Cl_face(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter_()->domaine(), iter_()->domaine_Cl(), matrice, secmem); }
+  inline void dimensionner_face(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter_vdf()->domaine(), iter_vdf()->domaine_Cl(), matrice); }
+  inline void modifier_pour_Cl_face(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter_vdf()->domaine(), iter_vdf()->domaine_Cl(), matrice, secmem); }
 
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
@@ -66,28 +67,28 @@ protected:
   void associer_vitesse_impl(const Champ_base& ch_vit)
   {
     const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vit);
-    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_conv.associer(vit);
   }
 
   template <typename EVAL_TYPE>
   const Champ_base& vitesse_impl() const
   {
-    const EVAL_TYPE& eval_conv = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const EVAL_TYPE& eval_conv = static_cast<const EVAL_TYPE&>(iter_vdf()->evaluateur());
     return eval_conv.vitesse();
   }
 
   template <typename EVAL_TYPE>
   Champ_base& vitesse_impl()
   {
-    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     return eval_conv.vitesse();
   }
 
 private:
   // CRTP pour recuperer l'iter
-  inline const Iterateur_VDF& iter_() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
-  inline Iterateur_VDF& iter_() { return static_cast<OP_TYPE *>(this)->get_iter(); }
+  inline const OWN_PTR(Iterateur_VDF_base)& iter_vdf() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
+  inline OWN_PTR(Iterateur_VDF_base)& iter_vdf() { return static_cast<OP_TYPE *>(this)->get_iter(); }
 
   // Methode enorme pour tout le monde !
   template <typename EVAL_TYPE, bool is_QUICK, bool is_CENTRE4>
@@ -95,8 +96,8 @@ private:
   {
     const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
     const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
-    iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this)); // Et ouiiiiiiiii
-    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&> (iter_()->evaluateur()); // Mais ouiiiiiiiiiiii
+    iter_vdf()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this)); // Et ouiiiiiiiii
+    EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur()); // Mais ouiiiiiiiiiiii
     eval_conv.associer_domaines(zvdf, zclvdf );
 
     if (is_QUICK || is_CENTRE4)

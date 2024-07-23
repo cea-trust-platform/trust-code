@@ -44,7 +44,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   //      le max de coeff est atteint sur l'element qui realise
   //      a la fois le min de dx le min de dy et le min de dz
   double dt_stab = DMAXFLOAT;
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
 
   if (sub_type(Champ_Uniforme,diffusivite_pour_pas_de_temps()) && !has_champ_masse_volumique())
@@ -66,9 +66,9 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
-  const Domaine_VDF& domaine = iter->domaine();
+  const Domaine_VDF& domaine = iter_->domaine();
   const IntTab& f_e = domaine.face_voisins();
-  const Domaine_Cl_VDF& zcl = iter->domaine_Cl();
+  const Domaine_Cl_VDF& zcl = iter_->domaine_Cl();
   int l;
 
   // boucle sur les cl pour trouver un paroi_contact
@@ -88,16 +88,16 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
             int e = f_e(f, 0) == -1 ? f_e(f, 1) : f_e(f, 0);
             f2e[f] = std::make_pair(e, l);
           }
-      iter->ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
+      iter_->ajouter_contribution_autre_pb(inco, matrice, la_cl, f2e);
     }
 }
 
 void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
   const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
-  const Domaine_VDF& domaine = iter->domaine();
+  const Domaine_VDF& domaine = iter_->domaine();
   const IntTab& f_e = domaine.face_voisins();
-  const Conds_lim& cls = iter->domaine_Cl().les_conditions_limites();
+  const Conds_lim& cls = iter_->domaine_Cl().les_conditions_limites();
   int i, j, l, f, n, N = ch.valeurs().line_size();
 
   IntTab stencil(0, 2);
@@ -141,10 +141,10 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
-      if(i==0) Op_VDF_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
+      if(i==0) Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2);
       else
         {
-          int nl = N[0] * iter->domaine().nb_elem_tot();
+          int nl = N[0] * iter_->domaine().nb_elem_tot();
           int nc = N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot();
           dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
         }
@@ -158,7 +158,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   if (!op_ext_init_) init_op_ext();
 
   // On commence par l'operateur locale; i.e. *this !
-  iter->ajouter_blocs(matrices, secmem, semi_impl);
+  iter_->ajouter_blocs(matrices, secmem, semi_impl);
 
   // On ajoute des termes si axi ...
   Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices, secmem, semi_impl);

@@ -22,7 +22,7 @@ Entree& Op_Dift_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
 double Op_Dift_VDF_Face_base::calculer_dt_stab() const
 {
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   return calculer_dt_stab(domaine_VDF);
 }
 
@@ -101,7 +101,7 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Domaine_VDF& domaine_VDF) c
 
 void Op_Dift_VDF_Face_base::calculer_borne_locale(DoubleVect& borne_visco_turb,double dt,double dt_diff_sur_dt_conv) const
 {
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const Champ_base& champ_diffu = diffusivite();
   const DoubleVect& diffu = champ_diffu.valeurs();
   const int diffu_variable = (diffu.size() == 1) ? 0 : 1, nb_elem = domaine_VDF.nb_elem();
@@ -127,6 +127,6 @@ void Op_Dift_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
 
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr, mat2;
-  Op_VDF_Face::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
+  Op_VDF_Face::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,8 +29,8 @@ void Op_Div_VDF_Elem::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_
   // On n'associe pas div a la vitesse car non P0.
   // On n'associe pas div a la pression car div(P) n'a pas de sens. Donc on fait rien !
 
-  iter->associer(zvdf,zclvdf,*this);
-  Eval_Div_VDF_Elem& eval_div = static_cast<Eval_Div_VDF_Elem&> (iter->evaluateur());
+  iter_->associer(zvdf,zclvdf,*this);
+  Eval_Div_VDF_Elem& eval_div = static_cast<Eval_Div_VDF_Elem&> (iter_->evaluateur());
   eval_div.associer_domaines(zvdf, zclvdf );
 
   le_dom_vdf = zvdf;

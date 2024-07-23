@@ -32,7 +32,7 @@ Entree& Op_Dift_VDF_base::readOn(Entree& is) { return Op_Diff_VDF_base::readOn(i
 void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(diffusion_counter_);
-  iter->ajouter_blocs(matrices,secmem,semi_impl);
+  iter_->ajouter_blocs(matrices,secmem,semi_impl);
 
   // On ajoute des termes si axi ...
   Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices, secmem, semi_impl);
@@ -51,7 +51,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
 
       if (Objet_U::bidim_axi == 1)
         {
-          const Domaine_VDF& zvdf = iter->domaine();
+          const Domaine_VDF& zvdf = iter_->domaine();
           const DoubleTab& xv = zvdf.xv();
           const IntVect& ori = zvdf.orientation();
           const IntTab& face_voisins = zvdf.face_voisins();
@@ -59,7 +59,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
           int face, nb_faces = zvdf.nb_faces(); //, cst;
           double db_diffusivite;
 
-          const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
+          const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter_->evaluateur());
           const Champ_base& ch = eval.get_diffusivite();
           const DoubleTab& tab_diffusivite = ch.valeurs();
           const int N = tab_diffusivite.dimension(1);
@@ -71,7 +71,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
           const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
           if (is_turb()) // Cas turbulence multiphase
             {
-              const Eval_Dift_Multiphase_VDF& eval_dift = dynamic_cast<const Eval_Dift_Multiphase_VDF&>(iter->evaluateur()) ;
+              const Eval_Dift_Multiphase_VDF& eval_dift = dynamic_cast<const Eval_Dift_Multiphase_VDF&>(iter_->evaluateur()) ;
               const DoubleTab& diffusivite_turb = eval_dift.tab_nu_t() ;
               const DoubleTab& alpharho = equation().probleme().equation(1).champ_conserve().passe();
               assert(diffusivite_turb.nb_dim()==2);

@@ -31,7 +31,7 @@ Entree& Op_Dift_VDF_Elem_base::readOn(Entree& s ) { return s ; }
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
 {
   double dt_stab, coef = -1.e10;
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_Espece"));
@@ -80,7 +80,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
 {
   double dt_stab, coef = -1.e10;
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   double alpha_local,h_x,h_y,h_z;
@@ -118,7 +118,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_var_axi() const
 {
   double dt_stab, coef = -1.e10;
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   const int D = dimension;
@@ -150,6 +150,6 @@ void Op_Dift_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
 
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr, mat2;
-  Op_VDF_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
+  Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

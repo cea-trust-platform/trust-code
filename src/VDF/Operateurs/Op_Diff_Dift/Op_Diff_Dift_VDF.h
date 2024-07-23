@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,12 @@
 #define Op_Diff_Dift_VDF_included
 
 #include <Modele_turbulence_scal_base.h>
-#include <type_traits>
 #include <Modele_turbulence_hyd_base.h>
-#include <Iterateur_VDF.h>
+#include <Iterateur_VDF_base.h>
 #include <Champ_P0_VDF.h>
 #include <Correlation.h>
+#include <TRUST_Deriv.h>
+#include <type_traits>
 
 class Turbulence_paroi_scal;
 class Champ_Fonc;
@@ -51,14 +52,14 @@ protected:
   template <typename EVAL_TYPE>
   void associer_diffusivite_impl(const Champ_base& ch_diff)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer(ch_diff);
   }
 
   template <typename EVAL_TYPE>
   void associer_pb(const Probleme_base& pb)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_pb(pb);
   }
 
@@ -66,7 +67,7 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
   associer_corr_impl(const Correlation& corr)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_corr(corr);
   }
 
@@ -74,7 +75,7 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, const DoubleTab&>
   get_diffusivite_turbulente_multiphase_impl() const
   {
-    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_vdf()->evaluateur());
     return eval_diff_turb.get_diffusivite_turbulente_multiphase();
   }
 
@@ -82,7 +83,7 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
   set_nut_impl(const DoubleTab& nut)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.set_nut(nut, true /* need alpha * rho */ );
   }
 
@@ -90,21 +91,21 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
   set_nut_impl(const DoubleTab& nut)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.set_nut(nut, false /* DO NOT need alpha * rho */);
   }
 
   template <typename EVAL_TYPE>
   const Champ_base& diffusivite_impl() const
   {
-    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_vdf()->evaluateur());
     return eval_diff_turb.get_diffusivite();
   }
 
   template <typename EVAL_TYPE>
   const double& alpha_impl(const int i) const // TODO : FIXME : pour multiphase faut ajouter compo
   {
-    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_vdf()->evaluateur());
     const Champ_base& diffu = eval_diff_turb.get_diffusivite();
     const int is_var = eval_diff_turb.is_var();
     return diffu.valeurs()(is_var * i);
@@ -113,7 +114,7 @@ protected:
   template <typename EVAL_TYPE>
   const DoubleTab& tab_alpha_impl() const
   {
-    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_vdf()->evaluateur());
     const Champ_base& diffu = eval_diff_turb.get_diffusivite();
     return diffu.valeurs();
   }
@@ -123,7 +124,7 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_FACE, void>
   mettre_a_jour_impl()
   {
-    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
     eval_diff.mettre_a_jour();
   }
 
@@ -132,7 +133,7 @@ protected:
   associer_diffusivite_turbulente_impl(const Champ_Fonc& visc_ou_diff_turb)
   {
     static_cast<OP_TYPE *>(this)->associer_diffusivite_turbulente_base(visc_ou_diff_turb); // hohohoho
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_diff_turb(visc_ou_diff_turb);
   }
 
@@ -140,7 +141,7 @@ protected:
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
   associer_loipar_impl(const Turbulence_paroi_scal& loi_paroi)
   {
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_loipar(loi_paroi);
   }
 
@@ -158,7 +159,7 @@ protected:
         const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
         if (loipar.non_nul()) associer_loipar_impl<_TYPE_,EVAL_TYPE>(loipar); // Et YES !
 
-        EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+        EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
         eval_diff_turb.init_ind_fluctu_term(); // utile juste pour Const/Var Elem... sinon on fait rien
       }
     else // bizarre mais V2 (on fait comme le cas de l'Op_FACE mais sans assoscier un modele ...)
@@ -177,22 +178,22 @@ protected:
     const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
     const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
     associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(visc_turb);
-    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
     eval_diff_turb.associer_modele_turbulence(mod_turb);
   }
 
 private:
   // CRTP pour recuperer l'iter
-  inline const Iterateur_VDF& iter_() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
-  inline Iterateur_VDF& iter_() { return static_cast<OP_TYPE *>(this)->get_iter(); }
+  inline const OWN_PTR(Iterateur_VDF_base)& iter_vdf() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
+  inline OWN_PTR(Iterateur_VDF_base)& iter_vdf() { return static_cast<OP_TYPE *>(this)->get_iter(); }
 
   template <typename EVAL_TYPE>
   inline EVAL_TYPE& associer_(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
   {
     const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
     const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
-    iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this));
-    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    iter_vdf()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this));
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
     eval_diff.associer_domaines(zvdf,zclvdf);
     return eval_diff;
   }

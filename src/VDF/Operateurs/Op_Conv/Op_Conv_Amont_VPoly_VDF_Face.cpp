@@ -23,14 +23,14 @@ Entree& Op_Conv_Amont_VPoly_VDF_Face::readOn(Entree& s ) { return s ; }
 
 void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_VDF& domaine = iter->domaine();
+  const Domaine_VDF& domaine = iter_->domaine();
   // okok je sais ... tgv
   DoubleTab& tab_flux_bords = flux_bords();
   tab_flux_bords.resize(domaine.nb_faces_bord(), dimension);
   tab_flux_bords = 0.;
 
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
-  const Conds_lim& cls = iter->domaine_Cl().les_conditions_limites();
+  const Conds_lim& cls = iter_->domaine_Cl().les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& vit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir();
   const DoubleVect& fs = domaine.face_surfaces(), &pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();

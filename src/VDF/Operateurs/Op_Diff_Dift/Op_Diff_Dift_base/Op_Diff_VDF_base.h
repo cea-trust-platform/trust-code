@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,8 @@
 #define Op_Diff_VDF_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Iterateur_VDF.h>
+#include <Iterateur_VDF_base.h>
+#include <TRUST_Deriv.h>
 
 class Champ_Fonc;
 
@@ -28,27 +29,27 @@ class Op_Diff_VDF_base : public Operateur_Diff_base
 {
   Declare_base(Op_Diff_VDF_base);
 public:
-  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
+  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) { iter_ = iter_base; }
   void completer() override;
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 
-  inline const Iterateur_VDF& get_iter() const { return iter; }
-  inline Iterateur_VDF& get_iter() { return iter; }
+  inline const OWN_PTR(Iterateur_VDF_base)& get_iter() const { return iter_; }
+  inline OWN_PTR(Iterateur_VDF_base)& get_iter() { return iter_; }
 
   inline int has_interface_blocs() const override { return 1; }
   void init_op_ext() const override;
 
   virtual void calculer_flux_bord(const DoubleTab& inco, const DoubleTab& val_b) const = delete;
-  void contribuer_au_second_membre(DoubleTab& resu) const override { iter->contribuer_au_second_membre(resu); }
+  void contribuer_au_second_membre(DoubleTab& resu) const override { iter_->contribuer_au_second_membre(resu); }
   void check_multiphase_compatibility() const override { }
 
 protected:
   double calculer_dt_stab_(const Domaine_VDF& zone_VDF) const;
   void ajoute_terme_pour_axi(matrices_t , DoubleTab& , const tabs_t& ) const;
 
-  Iterateur_VDF iter;
+  OWN_PTR(Iterateur_VDF_base) iter_;
   mutable int op_ext_init_ = 0;
 };
 

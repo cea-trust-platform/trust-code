@@ -71,7 +71,7 @@ void Op_Dift_Multiphase_VDF_Face::mettre_a_jour(double temps)
 double Op_Dift_Multiphase_VDF_Face::calculer_dt_stab() const
 {
   double dt_stab, coef = -1.e10;
-  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_VDF& domaine_VDF = iter_->domaine();
   const Champ_base& champ_diffu = diffusivite_pour_pas_de_temps();
   const DoubleTab& diffu = diffusivite().valeurs() /* mu */, &rho = equation().milieu().masse_volumique().passe(), &diffu_dt = champ_diffu.valeurs() /* nu */;
   const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe();

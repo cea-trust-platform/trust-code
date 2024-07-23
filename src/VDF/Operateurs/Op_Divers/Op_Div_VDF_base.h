@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Op_Div_VDF_base_included
 #define Op_Div_VDF_base_included
 
+#include <Iterateur_VDF_base.h>
 #include <Operateur_Div.h>
-#include <Iterateur_VDF.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief class Op_Div_VDF_base Classe de base des operateurs de divergence VDF
  *
@@ -26,16 +27,16 @@ class Op_Div_VDF_base : public Operateur_Div_base
 {
   Declare_base(Op_Div_VDF_base);
 public:
-  inline Op_Div_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
+  inline Op_Div_VDF_base(const Iterateur_VDF_base& iter_base) { iter_ = iter_base; }
 
   void completer() override;
   int impr(Sortie& os) const override;
 
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter->ajouter(inco,resu); } // ajoute la contribution de la divergence a resu
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco,resu); } // calcule la contribution de la divergence
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter_->ajouter(inco,resu); } // ajoute la contribution de la divergence a resu
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter_->calculer(inco,resu); } // calcule la contribution de la divergence
 
 protected:
-  Iterateur_VDF iter;
+  OWN_PTR(Iterateur_VDF_base) iter_;
 };
 
 #endif /* Op_Div_VDF_base_included */
