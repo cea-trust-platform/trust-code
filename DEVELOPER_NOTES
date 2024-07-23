@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) Fix          : .son,.out,.lata files were not re-initialized after pb.resetTime() call during calculations run into a same directory
 -------------------------------------------------------------
 Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
 -------------------------------------------------------------

@@ -92,8 +92,6 @@ inline int version_format_sauvegarde() { return 184; }
 
 Probleme_base::~Probleme_base()
 {
-  glob_noms_fichiers.vide();
-  glob_derniers_posts.vide();
 }
 
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un probleme sur un flot de sortie.
@@ -1659,6 +1657,9 @@ void Probleme_base::finir()
   for (auto os : get_set_out_files())
     if (os->is_open())
       os->close(); // Fermeture des fichiers .out
+  // Vide les variables globales suivantes (utile pour resetTime dans un meme repertoire)
+  glob_noms_fichiers.vide();
+  glob_derniers_posts.vide();
 
   if (schema_temps().temps_sauv() > 0.0)
     sauver();
