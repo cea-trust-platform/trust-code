@@ -56,6 +56,8 @@ Entree& Entree_fluide_vitesse_imposee_libre::readOn(Entree& s)
 /* ========================================================================================= */
 
 Implemente_instanciable(Entree_fluide_alpha_impose, "Frontiere_ouverte_alpha_impose", Dirichlet_entree_fluide);
+// XD frontiere_ouverte_alpha_impose dirichlet frontiere_ouverte_alpha_impose -1 Imposed alpha condition at the open boundary.
+// XD attr ch front_field_base ch 0 Boundary field type.
 Sortie& Entree_fluide_alpha_impose::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 Entree& Entree_fluide_alpha_impose::readOn(Entree& s)
 {
