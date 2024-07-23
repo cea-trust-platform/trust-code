@@ -17,7 +17,7 @@
 #define Fluide_MUSIG_included
 
 #include <Fluide_base.h>
-#include <Fluide.h>
+#include <TRUST_Deriv.h>
 #include <vector>
 #include <map>
 
@@ -35,16 +35,20 @@ class Fluide_MUSIG : public Fluide_base
 {
   Declare_instanciable( Fluide_MUSIG ) ;
 public :
-  inline DoubleTab getdiametres() { return diametres_; }
-  inline int getNbSubPhase() { return nbSubPhases_; }
-  inline Fluide getFluide() { return fluide_; }
+  inline DoubleTab& getdiametres() { return diametres_; }
+  inline const DoubleTab& getdiametres() const { return diametres_; }
+
+  inline const int& getNbSubPhase() const { return nbSubPhases_; }
+
+  inline OWN_PTR(Fluide_base)& getFluide() { return fluide_; }
+  inline const OWN_PTR(Fluide_base)& getFluide() const { return fluide_; }
 
   int initialiser(const double temps) override;
 
 protected :
   DoubleTab diametres_;
   int nbSubPhases_ = -1;
-  Fluide fluide_;
+  OWN_PTR(Fluide_base) fluide_;
 };
 
 #endif /* Fluide_MUSIG_included */

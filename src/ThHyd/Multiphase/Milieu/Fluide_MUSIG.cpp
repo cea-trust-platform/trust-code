@@ -34,9 +34,9 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
     {
       if(Motcle(mot) == "FLUIDE")
         {
+          OWN_PTR(Fluide_base) fluide;
+          fluide.typer_lire_simple(is, std::string("Typing the fluid medium ..."));
 
-          Fluide fluide;
-          is >> fluide;
           verifFluide++;
           if (fluide->get_porosites_champ().non_nul())
             {

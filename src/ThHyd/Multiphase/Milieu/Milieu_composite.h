@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Milieu_composite_included
 
 #include <Saturation_base.h>
-#include <Interface.h>
-#include <Fluide.h>
+#include <Interface_base.h>
+#include <TRUST_Deriv.h>
+#include <Fluide_base.h>
 #include <vector>
 #include <set>
 
@@ -61,14 +62,14 @@ public :
   inline const Noms& noms_phases() const { return noms_phases_; }
 
 protected :
-  Champ_Don rho_m, h_m;
+  Champ_Don rho_m_, h_m_;
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;
   bool res_en_T_ = true; // par defaut resolution en T
-  std::vector<std::vector<Interface_base *>> tab_interface;
-  std::vector<Fluide> fluides;
-  Interface sat_lu, inter_lu;
+  std::vector<std::vector<Interface_base *>> tab_interface_;
+  std::vector<OWN_PTR(Fluide_base)> fluides_;
+  OWN_PTR(Interface_base) sat_lu_, inter_lu_;
 
   std::pair<std::string, int> check_fluid_name(const Nom& name);
   void mettre_a_jour_tabs();

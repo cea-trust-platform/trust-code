@@ -51,15 +51,15 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
           Nom nomPhase(mot);
 
           Cerr << "Milieu_MUSIG : ajout la phase " << mot << " ... " << finl;
-          Fluide fluide;
-          is >> fluide;
+          OWN_PTR(Fluide_base) fluide;
+          fluide.typer_lire_simple(is, std::string("Typing the fluid medium ..."));
 
           if(fluide->que_suis_je() == "Fluide_MUSIG")
             {
               Fluide_MUSIG& fluide_cast = ref_cast(Fluide_MUSIG,fluide.valeur());
               for(int k =0; k<fluide_cast.getNbSubPhase(); k++)
                 {
-                  Fluide subFluide(fluide_cast.getFluide());
+                  OWN_PTR(Fluide_base) subFluide(fluide_cast.getFluide());
 
                   if (subFluide->get_porosites_champ().non_nul())
                     {
@@ -84,9 +84,9 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
                   noms_phases_.add(nomPhase+"_"+std::to_string(k));
                   subFluide->set_id_composite(i++);
                   subFluide->nommer(nomPhase+"_"+std::to_string(k)); // XXX
-                  fluides.push_back(subFluide);
+                  fluides_.push_back(subFluide);
                   std::vector<int> lineIndex;
-                  lineIndex.push_back((int)fluides.size()-1);
+                  lineIndex.push_back((int)fluides_.size()-1);
                   lineIndex.push_back((int)fluidesMUSIG_.size());
                   lineIndex.push_back(k);
                   indexMilieuToIndexFluide_.push_back(lineIndex);
@@ -121,10 +121,10 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
               noms_phases_.add(nomPhase);
               fluide->set_id_composite(i++);
               fluide->nommer(nomPhase); // XXX
-              fluides.push_back(fluide);
+              fluides_.push_back(fluide);
 
               std::vector<int> lineIndex;
-              lineIndex.push_back((int)fluides.size()-1);
+              lineIndex.push_back((int)fluides_.size()-1);
               lineIndex.push_back(-1);
               lineIndex.push_back(-1);
               indexMilieuToIndexFluide_.push_back(lineIndex);
@@ -136,13 +136,13 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
         {
           has_saturation_ = true;
           Cerr << "Milieu_composite : ajout la saturation " << mot << " ... " << finl;
-          is >> sat_lu;
+          sat_lu_.typer_lire_simple(is, std::string("Typing the saturation ..."));
         }
       else // on ajout l'interface
         {
           has_interface_ = true;
           Cerr << "Milieu_composite : ajout l'interface " << mot << " ... " << finl;
-          is >> inter_lu;
+          inter_lu_.typer_lire_simple(is, std::string("Typing the interface ..."));
         }
     }
 
@@ -154,7 +154,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
     }
 
   // Traitement pour les interfaces
-  const int N = (int)fluides.size();
+  const int N = (int)fluides_.size();
   for (int n = 0; n < N; n++)
     {
       std::vector<Interface_base *> inter;
@@ -165,20 +165,20 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
 
           if (pn != pm && (has_interface() || (espn == espm && has_saturation())))
             {
-              Cerr << "Interface between fluid " << n << " : " << fluides[n]->le_nom() << " and " << m << " : " << fluides[m]->le_nom() << finl;
-              inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu.valeur() : inter_lu.valeur()));
+              Cerr << "Interface between fluid " << n << " : " << fluides_[n]->le_nom() << " and " << m << " : " << fluides_[m]->le_nom() << finl;
+              inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu_.valeur() : inter_lu_.valeur()));
               const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : nullptr;
               if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {
                   const double hn = pn ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
                                hm = pm ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
                                T0 = sat->Tsat(sat->get_Pref());
-                  fluides[n]->set_h0_T0(hn, T0), fluides[m]->set_h0_T0(hm, T0);
+                  fluides_[n]->set_h0_T0(hn, T0), fluides_[m]->set_h0_T0(hm, T0);
                 }
             }
           else inter.push_back(nullptr);
         }
-      tab_interface.push_back(inter);
+      tab_interface_.push_back(inter);
     }
 
   return is;
