@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ const Champ_base& Champ_Generique_refChamp_special::get_champ(Champ& espace_stoc
 
     Objet_U& ob = Interprete::objet(nom_pb_);
     const Probleme_base& pb = ref_cast(Probleme_base,ob);
-    const Nom& nom_cible = ref_champ_.valeur().le_nom();
+    const Nom& nom_cible = ref_champ_->le_nom();
     pb.get_champ(nom_cible);
 
     espace_stockage= get_ref_champ_base();

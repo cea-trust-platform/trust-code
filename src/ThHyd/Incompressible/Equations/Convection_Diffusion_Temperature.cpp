@@ -310,7 +310,7 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
       return champs_compris_.get_champ(nom);
     }
   if (h_echange.non_nul())
-    if (nom==h_echange.valeur().le_nom())
+    if (nom==h_echange->le_nom())
       {
         double temps_init = schema_temps().temps_init();
         Champ_Fonc_base& ch_hconv=ref_cast_non_const(Champ_Fonc_base,h_echange.valeur());
@@ -542,7 +542,7 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
 
   statistiques().begin_count(source_counter_);
   for (int i = 0; i < les_sources.size(); i++)
-    les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+    les_sources(i)->ajouter_blocs(matrices, secmem, semi_impl);
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
@@ -1123,7 +1123,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
       const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
-      const DoubleTab& tab_cp = fluide_inc.capacite_calorifique().valeur().valeurs();
+      const DoubleTab& tab_cp = fluide_inc.capacite_calorifique()->valeurs();
       const double cp = tab_cp(0,0);
 
       //  Methode pour calculer le flux total sur les ibc

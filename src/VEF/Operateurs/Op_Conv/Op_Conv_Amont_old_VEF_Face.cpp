@@ -214,7 +214,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
       rang = rang_elem_non_std(poly);
@@ -469,7 +469,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 

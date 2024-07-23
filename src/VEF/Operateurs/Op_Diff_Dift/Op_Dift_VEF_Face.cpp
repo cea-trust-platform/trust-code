@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -139,7 +139,7 @@ void Op_Dift_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
       Champ_P1NC::calcul_gradient(inconnue, grad, domaine_Cl_VEF);
       DoubleTab gradsa(grad);
 
-      if (le_modele_turbulence.valeur().utiliser_loi_paroi())
+      if (le_modele_turbulence->utiliser_loi_paroi())
         Champ_P1NC::calcul_duidxj_paroi(grad, nu, nu_turb, tau_tan_, domaine_Cl_VEF);
 
       grad -= gradsa;

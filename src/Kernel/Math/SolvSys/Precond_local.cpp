@@ -28,14 +28,14 @@ Entree& Precond_local::readOn(Entree& is )
 {
   is >> le_precond_local_;
   // Pour eviter trop d'affichage (Convergence)
-  if (!le_precond_local_.valeur().limpr())
-    le_precond_local_.valeur().fixer_limpr(-1);
+  if (!le_precond_local_->limpr())
+    le_precond_local_->fixer_limpr(-1);
   return is;
 }
 
 void Precond_local::prepare_(const Matrice_Base& la_matrice, const DoubleVect& secmem)
 {
-  le_precond_local_.valeur().reinit();
+  le_precond_local_->reinit();
 
   if(sub_type(Matrice_Bloc_Sym,la_matrice))
     {
@@ -55,7 +55,7 @@ void Precond_local::prepare_(const Matrice_Base& la_matrice, const DoubleVect& s
       if(!sub_type(Matrice_Morse_Sym,MB00.valeur()))
         {
           Cerr<<"Precond_local::prepare_ MB00 is not of type deriving from matrice_morse_sym "
-              <<MB00.valeur().que_suis_je()<<finl;
+              <<MB00->que_suis_je()<<finl;
           exit();
         }
       matrice_a_resoudre_ = MB00.valeur();

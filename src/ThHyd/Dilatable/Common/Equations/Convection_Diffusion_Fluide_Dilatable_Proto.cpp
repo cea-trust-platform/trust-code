@@ -329,7 +329,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
 
   statistiques().begin_count(source_counter_);
   for (int i = 0; i < eqn.sources().size(); i++)
-    eqn.sources()(i).valeur().ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
+    eqn.sources()(i)->ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
@@ -427,7 +427,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
   Champ_Inc p_tab = inco; // Same discretization normally
   p_tab->nommer("Pression_EOS");
   Nom field_tag(p_tab->le_nom());
-  field_tag += p_tab.valeur().que_suis_je();
+  field_tag += p_tab->que_suis_je();
   field_tag += pb.domaine().le_nom();
   field_tag += Nom(temps,pb.reprise_format_temps());
 

@@ -1555,7 +1555,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   int phi_u_transportant_yes=phi_u_transportant(equation());
   for (poly=0; poly<nb_elem_tot; poly++)
     {

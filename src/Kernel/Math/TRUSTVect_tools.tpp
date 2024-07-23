@@ -264,7 +264,7 @@ inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
 #ifndef LATATOOLS
   _TYPE_ s = mp_somme_vect(x), n;
   const MD_Vector& md = x.get_md_vector();
-  if (md.non_nul()) n = md.valeur().nb_items_seq_tot() * x.line_size();
+  if (md.non_nul()) n = md->nb_items_seq_tot() * x.line_size();
   else
     {
       assert(Process::is_sequential()); // Coding error: mp_moyenne_vect is used on a not distributed TRUSTVect<double> !
@@ -466,7 +466,7 @@ inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -541,7 +541,7 @@ inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUST
   if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();

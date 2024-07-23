@@ -115,7 +115,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       elem_part.resize(sz);
       std::copy(field_values, field_values + sz, elem_part.addr());
       // Sanity check
-      const int nelem = ref_domaine_.valeur().nb_elem();
+      const int nelem = ref_domaine_->nb_elem();
       if (nelem != sz)
         {
           Cerr << "Error in Partitionneur_Fichier_MED::construire_partition" << finl;
@@ -166,9 +166,9 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       Champ_Fonc_MED partition_field_outer_domain;
       ech >> partition_field_outer_domain;
       // Mapping between local domain and the field domain:
-      int nb_elem = ref_domaine_.valeur().nb_elem();
+      int nb_elem = ref_domaine_->nb_elem();
       DoubleTab xp_elems;
-      ref_domaine_.valeur().calculer_centres_gravite(xp_elems);
+      ref_domaine_->calculer_centres_gravite(xp_elems);
       IntVect elems(nb_elem);
       partition_field_outer_domain.domaine().chercher_elements(xp_elems, elems);
       DoubleTab double_elem_part(nb_elem);
@@ -176,7 +176,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       partition_field_outer_domain.valeur_aux_elems(xp_elems, elems, double_elem_part);
       if (local_min_vect(double_elem_part)<0)
         {
-          Cerr << "The domain " << ref_domaine_.valeur().le_nom() << " it not fully included into the domain " <<  ffield->getMesh()->getName() << " ! " << finl;
+          Cerr << "The domain " << ref_domaine_->le_nom() << " it not fully included into the domain " <<  ffield->getMesh()->getName() << " ! " << finl;
           Cerr << "It is mandatory to use the partition field from " << filename_ << finl;
           Process::exit();
         }

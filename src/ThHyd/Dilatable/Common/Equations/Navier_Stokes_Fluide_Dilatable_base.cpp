@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ void Navier_Stokes_Fluide_Dilatable_base::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   dis.vitesse(schema_temps(), domaine_dis(), rho_la_vitesse_);
   rho_la_vitesse_.nommer("rho_u");
-  rho_la_vitesse_.valeur().nommer("rho_u");
+  rho_la_vitesse_->nommer("rho_u");
 }
 
 DoubleTab& Navier_Stokes_Fluide_Dilatable_base::derivee_en_temps_inco(DoubleTab& vpoint)

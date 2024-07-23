@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,8 +73,8 @@ void PlaqThVDF::mettre_a_jour(double )
           // double e2 = loipar.d_equiv(nbfs2+face);
           int local_face=le_dom_VDF.front_VF(boundary_index).num_local_face(face);
           int local_face2=le_dom_VDF.front_VF(boundary_index).num_local_face(nbfs2+face);
-          double e1 = loipar.valeur().equivalent_distance(boundary_index,local_face);
-          double e2 = loipar.valeur().equivalent_distance(boundary_index,local_face2);
+          double e1 = loipar->equivalent_distance(boundary_index,local_face);
+          double e2 = loipar->equivalent_distance(boundary_index,local_face2);
           tab(face,0) = tab(nbfs2+face,0) =
                           2./(1./h+e1/le_milieu.diffusivite()(0,0)
                               +e2/le_milieu.diffusivite()(0,0));

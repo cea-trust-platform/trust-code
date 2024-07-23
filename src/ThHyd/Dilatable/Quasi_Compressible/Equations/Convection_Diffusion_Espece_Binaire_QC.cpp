@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,6 @@ Entree& Convection_Diffusion_Espece_Binaire_QC::readOn(Entree& is)
 
 void Convection_Diffusion_Espece_Binaire_QC::completer()
 {
-  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC");
+  assert(le_fluide->loi_etat()->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC");
   Convection_Diffusion_Espece_Binaire_base::completer();
 }

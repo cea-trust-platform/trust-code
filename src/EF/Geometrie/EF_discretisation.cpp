@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ void EF_discretisation::discretiser_champ(
   else
     {
       Cerr << "EF_discretisation::discretiser_champ :\n L'element geometrique ";
-      Cerr << domaine_EF.type_elem().valeur().que_suis_je();
+      Cerr << domaine_EF.type_elem()->que_suis_je();
       Cerr << " n'est pas supporte." << finl;
       exit();
     }
@@ -178,9 +178,9 @@ void EF_discretisation::discretiser_champ(
               directive, que_suis_je());
   if (nature == multi_scalaire)
     {
-      champ.valeur().fixer_nature_du_champ(nature);
-      champ.valeur().fixer_unites(unites);
-      champ.valeur().fixer_noms_compo(noms);
+      champ->fixer_nature_du_champ(nature);
+      champ->fixer_unites(unites);
+      champ->fixer_noms_compo(noms);
     }
 
 }
@@ -643,7 +643,7 @@ void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vd
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
   ch_tab_lambda_dis.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
 // ch_tab_lambda_dis.fixer_unite(unite);
-  ch_tab_lambda_dis.changer_temps(champs_param[0].valeur().temps());
+  ch_tab_lambda_dis.changer_temps(champs_param[0]->temps());
 }
 
 Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF(Champ_base)& champ_sup) const

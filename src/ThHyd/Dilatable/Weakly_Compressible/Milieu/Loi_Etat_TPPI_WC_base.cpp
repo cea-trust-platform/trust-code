@@ -57,7 +57,7 @@ void Loi_Etat_TPPI_WC_base::calculer_Cp()
   DoubleTab& tab_alpha = alpha.valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
-  const bool isVDF = (alpha.valeur().que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
+  const bool isVDF = (alpha->que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
 
   if (isVDF)
     for (int i = 0; i < tab_alpha.dimension(0); i++)

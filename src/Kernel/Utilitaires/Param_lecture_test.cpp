@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -447,7 +447,7 @@ public:
       /*
         on bloque le test pour l'instant car Comm_Group_MPI::readOn fait exit
         param.lire_avec_accolades_depuis(is);
-        CPPUNIT_ASSERT_MESSAGE("typage correct du deriv ?",deriv.valeur().que_suis_je()=="Comm_Group_MPI");
+        CPPUNIT_ASSERT_MESSAGE("typage correct du deriv ?",deriv->que_suis_je()=="Comm_Group_MPI");
       */
     }
     {

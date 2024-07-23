@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
     {
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
       is >> motbidon;
       //on lit la fin de diffusion { }
@@ -144,7 +144,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
     {
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
     }
   else if (motbidon == "stab")
@@ -161,7 +161,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
       if (discr == "EF")
         type = "Op_Dift_EF_Q1_option";
       terme_diffusif.typer(type);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif.l_op_base().associer_eqn(*this);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
       is >> terme_diffusif.valeur();
@@ -181,7 +181,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
         type += "_P1NC";
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
     }
   return is;
@@ -197,7 +197,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 int Navier_Stokes_Turbulent::preparer_calcul()
 {
 
-  Turbulence_paroi& loipar = le_modele_turbulence.valeur().loi_paroi();
+  Turbulence_paroi& loipar = le_modele_turbulence->loi_paroi();
   if (loipar.non_nul())
     loipar.init_lois_paroi();
 
@@ -238,7 +238,7 @@ int Navier_Stokes_Turbulent::reprendre(Entree& is)
 {
   Navier_Stokes_std::reprendre(is);
   double temps = schema_temps().temps_courant();
-  Nom ident_modele(le_modele_turbulence.valeur().que_suis_je());
+  Nom ident_modele(le_modele_turbulence->que_suis_je());
   ident_modele += probleme().domaine().le_nom();
   ident_modele += Nom(temps, probleme().reprise_format_temps());
 

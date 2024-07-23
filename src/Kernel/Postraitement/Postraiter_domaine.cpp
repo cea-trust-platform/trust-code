@@ -359,7 +359,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
               for (int i = 0; i < nb_raccords; i++)
                 {
                   num = i + nglob;
-                  Nom nom_fr = dom.raccord(i).valeur().le_nom();
+                  Nom nom_fr = dom.raccord(i)->le_nom();
                   if (je_suis_maitre())
                     envoyer(nom_fr, 0, -1, 11);
                   else

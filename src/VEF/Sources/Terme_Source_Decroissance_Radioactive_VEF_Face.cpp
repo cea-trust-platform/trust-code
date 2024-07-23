@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& re
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
   const DoubleTab& c = equation().inconnue().valeurs();
-  const int nb_faces = le_dom_VEF.valeur().nb_faces(), N = c.line_size();
+  const int nb_faces = le_dom_VEF->nb_faces(), N = c.line_size();
 
   for (int f = 0; f < nb_faces; f++)
     for (int l = 0; l < N; l++)
@@ -83,7 +83,7 @@ void Terme_Source_Decroissance_Radioactive_VEF_Face::contribuer_a_avec(const Dou
 {
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
-  const int nb_faces = le_dom_VEF.valeur().nb_faces(), N = equation().inconnue().valeurs().line_size();
+  const int nb_faces = le_dom_VEF->nb_faces(), N = equation().inconnue().valeurs().line_size();
 
   for (int f = 0; f < nb_faces; f++)
     for (int l = 0; l < N; l++)

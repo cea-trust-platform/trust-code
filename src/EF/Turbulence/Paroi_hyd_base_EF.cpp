@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
         {
           // Boucle sur les frontieres pour recuperer u_star si tab_u_star dimensionne
           const Domaine_Cl_dis& zcl = my_eqn.domaine_Cl_dis();
-          int nb_front = my_eqn.domaine_dis().valeur().nb_front_Cl();
+          int nb_front = my_eqn.domaine_dis()->nb_front_Cl();
           for (int n_bord = 0; n_bord < nb_front; n_bord++)
             {
               const Cond_lim& la_cl = zcl.les_conditions_limites(n_bord);

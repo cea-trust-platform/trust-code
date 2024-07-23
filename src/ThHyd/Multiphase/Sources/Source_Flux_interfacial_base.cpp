@@ -164,7 +164,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   int i, j, col, e, d, D = dimension, k, l, n, N = inco.line_size(), is_therm;
   const int cL = (lambda.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), cCp = (Cp.dimension_tot(0) == 1);
 
-  const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
+  const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_->valeur());
   const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase").valeur()) : nullptr;
   double dt = equation().schema_temps().pas_de_temps(), alpha_min = 1.e-6;
 
@@ -198,7 +198,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
     eq_m.operateur(i).l_op_base().ajouter_blocs(mat_m, sec_m, semi_impl);
   for (i = 0; i < eq_m.sources().size(); i++)
     if (!sub_type(Source_Flux_interfacial_base, eq_m.sources()(i).valeur())) /* toutes les sources sauf le flux interfacial */
-      eq_m.sources()(i).valeur().ajouter_blocs(mat_m, sec_m, semi_impl);
+      eq_m.sources()(i)->ajouter_blocs(mat_m, sec_m, semi_impl);
   std::vector<std::array<Matrice_Morse *, 2>> vec_m; //vecteur "matrice source, matrice de destination"
   for (auto &&n_m : matrices)
     if (n_m.first.find("/") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});

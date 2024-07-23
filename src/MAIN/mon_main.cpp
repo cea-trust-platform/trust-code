@@ -202,7 +202,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // Initialisation des groupes de communication.
   PE_Groups::initialize(groupe_trio_);
   arguments_info += "Parallel engine initialized : ";
-  arguments_info += groupe_trio_.valeur().que_suis_je();
+  arguments_info += groupe_trio_->que_suis_je();
   arguments_info += " with ";
   arguments_info += Nom(Process::nproc());
   arguments_info += " processors\n";

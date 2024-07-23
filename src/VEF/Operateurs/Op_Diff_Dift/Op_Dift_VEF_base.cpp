@@ -39,7 +39,7 @@ void Op_Dift_VEF_base::mettre_a_jour(double)
         if (le_modele_turbulence->loi_paroi()->use_shear())
           {
             // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque l'initialisation
-            const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
+            const DoubleTab& tab = le_modele_turbulence->loi_paroi()->Cisaillement_paroi();
             if (tab.size_array() > 0) tau_tan_.ref(tab);
           }
     }

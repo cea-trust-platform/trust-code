@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,13 +49,13 @@ void Interpolation_IBM_power_law_tbl_u_star::discretise(const Discretisation_bas
   if ((&corresp_elems_lu_)->non_nul())
     {
       dis.discretiser_champ("champ_elem",le_dom_EF,"corresp_elems","none",1,0., corresp_elems_);
-      corresp_elems_.valeur().affecter(corresp_elems_lu_);
+      corresp_elems_->affecter(corresp_elems_lu_);
     }
   dis.discretiser_champ("champ_sommets",le_dom_EF,"solid_elems","none",1,0., solid_elems_);
-  solid_elems_.valeur().affecter(solid_elems_lu_);
+  solid_elems_->affecter(solid_elems_lu_);
   dis.discretiser_champ("champ_sommets",le_dom_EF,"is_dirichlet","none",1,0., is_dirichlet_);
-  is_dirichlet_.valeur().affecter(is_dirichlet_lu_);
+  is_dirichlet_->affecter(is_dirichlet_lu_);
   dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0., solid_points_);
-  solid_points_.valeur().affecter(solid_points_lu_);
+  solid_points_->affecter(solid_points_lu_);
   computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_);
 }

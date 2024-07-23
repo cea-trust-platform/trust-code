@@ -785,7 +785,7 @@ static void build_frontier(const Frontiere&         src,
 void Raffiner_Simplexes::refine_domain(const Domaine& src,
                                        Domaine&        dest)
 {
-  const Nom&        cell_type          = src.type_elem().valeur().que_suis_je();
+  const Nom&        cell_type          = src.type_elem()->que_suis_je();
   const IntTab&     nodes_of_cells_src = src.les_elems();
   const DoubleTab& nodes_src          = src.les_sommets();
 
@@ -865,8 +865,8 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
       {
         boundaries_dest.add(Raccord());
-        boundaries_dest[boundary].typer(boundaries_src[boundary].valeur().que_suis_je());
-        const Type_Face& face_type = boundaries_src[boundary].valeur().faces().type_face();
+        boundaries_dest[boundary].typer(boundaries_src[boundary]->que_suis_je());
+        const Type_Face& face_type = boundaries_src[boundary]->faces().type_face();
         build_frontier(boundaries_src[boundary].valeur(),
                        face_type,
                        nodes_of_cells_src,

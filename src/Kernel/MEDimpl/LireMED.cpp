@@ -832,7 +832,7 @@ void LireMED::lire_geom(bool subDom)
     }
 
   // Converting from MED to TRUST connectivity
-  Nom type_elem_n = type_elem_.valeur().que_suis_je();  // prepare_som_and_elem() has performed the 'typer' operation on type_elem_
+  Nom type_elem_n = type_elem_->que_suis_je();  // prepare_som_and_elem() has performed the 'typer' operation on type_elem_
   conn_trust_to_med(les_elems2,type_elem_n,false);
   conn_trust_to_med(all_faces_bords,type_face_,false);
 

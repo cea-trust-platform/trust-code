@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ void Op_Dift_EF_base::mettre_a_jour(double )
           {
             // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque
             // l'initialisation
-            const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
+            const DoubleTab& tab = le_modele_turbulence->loi_paroi()->Cisaillement_paroi();
             if (tab.size_array() > 0)
               tau_tan_.ref(tab);
           }

@@ -144,7 +144,7 @@ void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
       for (int i = 0; i < num_faces.size(); i++)
         for (int j = 0; j < dimension; j++)
           xvf(i, j) = dom.xv()(num_faces(i), j);
-      DP_.valeur().valeur_aux(xvf, DP);
+      DP_->valeur_aux(xvf, DP);
 
       for (int i = 0, f; i < num_faces.size(); i++)
         if ((f = num_faces(i)) < dom.nb_faces())

@@ -299,7 +299,7 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
       const DoubleTab& inut=futur;
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+      convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       if (!ok) return false; //echec total -> on sort sans traiter les equations suivantes
       convergence_pb = convergence_pb&&convergence_eqn;
       futur=present;
@@ -312,7 +312,7 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       //   eqn.inconnue().mettre_a_jour(temps);
 
       //   eqn.inconnue().reculer();
-      eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+      eqn.inconnue()->Champ_base::changer_temps(temps);
       Cout << finl;
     }
   return (convergence_pb==true);
@@ -474,7 +474,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           eqs[k]->probleme().updateGivenFields();
                         }
                       Cout << " } are solved by assembling a single matrix." << finl;
-                      bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, ok);
+                      bool convergence_eqs = le_solveur->iterer_eqs(eqs, compteur, ok);
                       convergence_pbc = convergence_pbc && convergence_eqs;
                     }
                   else
@@ -492,14 +492,14 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
                           const DoubleTab& inut=futur;
-                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+                          bool convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
                           if (!ok) break;
                           convergence_pbc = convergence_pbc && convergence_eqn;
                           futur = present;
                           eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           present = futur;
 
-                          eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                          eqn.inconnue()->Champ_base::changer_temps(temps);
                           Cout << finl;
                         }
                     }
@@ -562,7 +562,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
       Cout<<"Schema_Euler_Implicite: Implicit iteration " << compteur << " on the "<<eqn.que_suis_je() << " equation of the problem "<< eqn.probleme().le_nom()<< " :" <<finl;
       Cout<<"==================================================================================" << finl;
       const DoubleTab& inut=futur;
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+      convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       if (!ok) return 0; //si echec total
       futur=present;
       eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());

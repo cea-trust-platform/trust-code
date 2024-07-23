@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ int test_Ref()
   xx=x;                                        //Operateur = const T&.
   xx=yy;                                        //Operateur = const Deriv<T>&.
   assert(xx->size() == x.size());                //Operateur ->
-  assert(yy.valeur().size() == zz->size());        //valeur()
+  assert(yy->size() == zz->size());        //valeur()
   assert(xx == yy);                                //Operateur ==
   (static_cast<DoubleVect&>(xx))[2]=1;                        //cast
   assert (xx == x);                                //Operateur !=
@@ -48,7 +48,7 @@ int test_Deriv()
   xx=x;                                        //Operateur = const T&.
   xx=yy;                                        //Operateur = const Deriv<T>&.
   assert(xx->size() == x.size());                //Operateur ->
-  assert(yy.valeur().size() == zz->size());        //valeur()
+  assert(yy->size() == zz->size());        //valeur()
   assert(xx == yy);                                //Operateur ==
   (static_cast<DoubleVect&>(xx))[2]=1;                        //cast
   assert (xx != x);                                //Operateur !=

@@ -160,7 +160,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
             tpfa(f, n) = 0;
 
   tableau_trier_retirer_doublons(stencil);
-  Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * (domaine.md_vector_faces().valeur().nb_items_seq_tot() + D * domaine.domaine().md_vector_elements().valeur().nb_items_seq_tot())) << " " << mp_somme_vect(tpfa) * 100. / (N * domaine.md_vector_faces().valeur().nb_items_seq_tot())
+  Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * (domaine.md_vector_faces()->nb_items_seq_tot() + D * domaine.domaine().md_vector_elements()->nb_items_seq_tot())) << " " << mp_somme_vect(tpfa) * 100. / (N * domaine.md_vector_faces()->nb_items_seq_tot())
        << "% TPFA " << finl;
   Matrix_tools::allocate_morse_matrix(N * (nf_tot + ne_tot * D), N * (nf_tot + ne_tot * D), stencil, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;

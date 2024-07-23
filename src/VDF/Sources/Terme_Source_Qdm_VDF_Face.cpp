@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,10 +35,10 @@ Sortie& Terme_Source_Qdm_VDF_Face::printOn(Sortie& s) const { return s << que_su
 Entree& Terme_Source_Qdm_VDF_Face::readOn(Entree& s)
 {
   s >> la_source;
-  if (la_source->nb_comp() != equation().inconnue().valeur().nb_comp())
+  if (la_source->nb_comp() != equation().inconnue()->nb_comp())
     {
       Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
-      Cerr << "le champ source doit avoir " << equation().inconnue().valeur().nb_comp() << " composantes" << finl;
+      Cerr << "le champ source doit avoir " << equation().inconnue()->nb_comp() << " composantes" << finl;
       exit();
     }
   return s;

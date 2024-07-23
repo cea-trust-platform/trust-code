@@ -146,9 +146,9 @@ void VDF_discretisation::discretiser_champ(
 
   if (nature == multi_scalaire)
     {
-      champ.valeur().fixer_nature_du_champ(nature);
-      champ.valeur().fixer_unites(unites);
-      champ.valeur().fixer_noms_compo(noms);
+      champ->fixer_nature_du_champ(nature);
+      champ->fixer_unites(unites);
+      champ->fixer_noms_compo(noms);
     }
 
 }
@@ -500,7 +500,7 @@ void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_d
   le_champ_tabule_dis.nommer(le_champ_tabule.le_nom()); // We give a name to this field, help for debug
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
   le_champ_tabule_dis.fixer_nb_valeurs_nodales(domaine_dis.nb_elem());
-  le_champ_tabule_dis.changer_temps(ch_inc[0].valeur().temps());
+  le_champ_tabule_dis.changer_temps(ch_inc[0]->temps());
 }
 
 
@@ -594,7 +594,7 @@ void VDF_discretisation::residu( const Domaine_dis& z, const Champ_Inc& ch_inco,
 
   Motcle loc;
   int nb_comp;
-  Nom type_ch = ch_inco.valeur().que_suis_je();
+  Nom type_ch = ch_inco->que_suis_je();
   if (type_ch.debute_par("Champ_Face"))
     {
       loc= "champ_face";

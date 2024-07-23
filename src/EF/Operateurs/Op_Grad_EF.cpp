@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ void Op_Grad_EF::associer(const Domaine_dis& domaine_dis,
       Champ_Don champ_lu;
       EChaine ee("champ_fonc_med last_time termes.med MAILLAGE_GENEPI terme_pression_limite_qdm_10 som 0.");
       ee>>champ_lu;
-      int_P_bord_.valeur().affecter(champ_lu);
+      int_P_bord_->affecter(champ_lu);
     }
   }
 #endif

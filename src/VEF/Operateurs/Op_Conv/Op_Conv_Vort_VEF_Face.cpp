@@ -167,7 +167,7 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
   // Boucle pour ajouter la partie : Gradient(U^2/2)
   // ******* boucle sur les elements
   // 06/01/2000 On ne s'occupe pas encore des conditions aux limites (sauf periodique)
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 

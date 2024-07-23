@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ Entree& Schema_Backward_Differentiation_base::readOn(Entree& s)
 
 double Schema_Backward_Differentiation_base::changer_temps(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+  eqn.inconnue()->Champ_base::changer_temps(temps);
   return temps;
 }
 

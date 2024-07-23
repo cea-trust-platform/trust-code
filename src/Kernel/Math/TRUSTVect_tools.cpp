@@ -44,7 +44,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -119,7 +119,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left_size = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -209,7 +209,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -335,7 +335,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -505,7 +505,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -579,7 +579,7 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   const int line_size = resu.line_size();
   if (opt == VECT_ALL_ITEMS || (!md.non_nul())) return; // no invalid values
   assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-  const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+  const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
   const int blocs_size = items_blocs.size_array();
   int i = 0;
   bool kernelOnDevice = resu.checkDataOnDevice();
@@ -626,7 +626,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, 
   if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();

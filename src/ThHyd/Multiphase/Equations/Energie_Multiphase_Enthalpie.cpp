@@ -35,9 +35,9 @@ void Energie_Multiphase_Enthalpie::discretiser()
   Cerr << "Energy-enthalpy equation discretization " << finl;
   const Pb_Multiphase_Enthalpie& pb = ref_cast(Pb_Multiphase_Enthalpie, probleme());
   dis.enthalpie(schema_temps(), domaine_dis(), l_inco_ch_, pb.nb_phases());
-  l_inco_ch_.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  l_inco_ch_->fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
-    l_inco_ch_.valeur().fixer_nom_compo(i, Nom("enthalpie_") + pb.nom_phase(i));
+    l_inco_ch_->fixer_nom_compo(i, Nom("enthalpie_") + pb.nom_phase(i));
   champs_compris_.ajoute_champ(l_inco_ch_);
   Equation_base::discretiser();
   Cerr << "Energie_Multiphase_Enthalpie::discretiser() ok" << finl;

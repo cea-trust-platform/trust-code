@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,9 +54,9 @@ void PE_Groups::create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) & group
   else
     {
       // On cree un groupe du meme type que le groupe_TRUST
-      group.typer(groups[0].valeur().que_suis_je());
+      group.typer(groups[0]->que_suis_je());
     }
-  group.valeur().init_group(liste_pe);
+  group->init_group(liste_pe);
 }
 
 /*! @brief Si le processeur local appartient au groupe, le groupe courant pour ce processeur devient "group" et on renvoie 1, sinon on renvoie 0.

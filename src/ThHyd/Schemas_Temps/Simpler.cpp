@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -198,7 +198,7 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
       eqnNS.assembler_avec_inertie(matrice,current,resu);
     }
 
-  le_solveur_.valeur().reinit();
+  le_solveur_->reinit();
 
   //Resolution du systeme : D[Uk-1]UPk = E[Uk-1]Uk-1 + Sv + Ss -BtPk-1 + (M/dt)Uk-1
   //matrice = A[Uk-1] = D - E avec D partie diagonale de A
@@ -211,14 +211,14 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
   Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
   assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
   SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
-  solveur_pression_.valeur().reinit();
+  solveur_pression_->reinit();
 
   //Calcul de BUPk
   divergence.calculer(correction_en_vitesse,secmem);
   secmem *= -1;
   secmem.echange_espace_virtuel();
   if (nb_ite==1)
-    eqnNS.assembleur_pression().valeur().modifier_secmem(secmem);
+    eqnNS.assembleur_pression()->modifier_secmem(secmem);
 
   //Resolution du systeme (BD-1Bt)P*_k = BUPk
   //correction_en_pression = P*_k ; secmem = BUPk
@@ -228,10 +228,10 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
   //Calcul de Pk = Pk-1 + P*_k
   operator_add(pression, correction_en_pression, VECT_ALL_ITEMS);
 
-  eqnNS.assembleur_pression().valeur().modifier_solution(pression);
+  eqnNS.assembleur_pression()->modifier_solution(pression);
 
   //Calcul de Bt P*_k et ajustement de resu a -Bt Pk
-  gradient.valeur().multvect(correction_en_pression,gradP);
+  gradient->multvect(correction_en_pression,gradP);
   resu -= gradP;
   resu.echange_espace_virtuel();
   Debog::verifier("Simpler::iterer_NS resu",resu);

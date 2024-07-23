@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,6 @@ Entree& Dirichlet_paroi_fixe::readOn(Entree& s)
 
   Dirichlet_homogene::readOn(s);
   int nb_comp = Objet_U::dimension;
-  le_champ_front.valeur().fixer_nb_comp(nb_comp);
+  le_champ_front->fixer_nb_comp(nb_comp);
   return s;
 }

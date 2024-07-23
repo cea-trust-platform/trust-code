@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +94,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
 
 const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage) const
 {
-  int nb_comp = integrale().valeur().nb_comp();
+  int nb_comp = integrale()->nb_comp();
   //Nature_du_champ nature_source = source.nature_du_champ();
   //Pas completement exact car il y a le cas de la correlation vecteur-vecteur et dans
   //ce cas c est un tenseur qui est manipule (la nature n est pas scalaire ou vectorielle)
@@ -201,7 +201,7 @@ const Motcle Champ_Generique_Correlation::get_directive_pour_discr() const
   if (support_corr==1)
     directive = "champ_elem";
   else
-    directive = Op_Correlation_.la_moyenne_a().integrale().le_champ().valeur().get_directive_pour_discr();
+    directive = Op_Correlation_.la_moyenne_a().integrale().le_champ()->get_directive_pour_discr();
 
   return directive;
 }

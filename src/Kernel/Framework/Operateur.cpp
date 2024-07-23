@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -282,7 +282,7 @@ DoubleTab& Operateur::calculer(const Champ_Inc& ch,DoubleTab& resu) const
  */
 DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 {
-  return ajouter(le_champ_inco.valeur().valeurs(), resu);
+  return ajouter(le_champ_inco->valeurs(), resu);
 }
 
 /*! @brief Applique l'operateur au champ inconnu et renvoie le resultat.
@@ -295,7 +295,7 @@ DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 DoubleTab& Operateur::calculer(DoubleTab& resu) const
 {
   resu=0.;
-  return ajouter(le_champ_inco.valeur().valeurs(), resu);
+  return ajouter(le_champ_inco->valeurs(), resu);
 }
 
 void Operateur::set_fichier(const Nom& nom)

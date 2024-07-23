@@ -64,8 +64,8 @@ inline void Eval_Darcy_VDF_Face::mettre_a_jour()
   if (sub_type(Champ_Uniforme,diffusivite_.valeur())) db_diffusivite = diffusivite_.valeur()(0,0);
   else
     {
-      const DoubleTab& val_diff = diffusivite_.valeur().valeurs();
-      const IntTab& face_vois = le_dom.valeur().face_voisins();
+      const DoubleTab& val_diff = diffusivite_->valeurs();
+      const IntTab& face_vois = le_dom->face_voisins();
       const ArrOfDouble& volumes = ref_cast(Domaine_VDF,le_dom.valeur()).volumes();
       db_diffusivite = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))

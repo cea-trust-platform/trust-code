@@ -202,7 +202,7 @@ static void compute_cell_qualities_for_tetrahedron(const Domaine& domain, ArrOfD
 
 static void compute_cell_qualities(const Domaine& domain, ArrOfDouble& quality)
 {
-  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem()->que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";

@@ -269,7 +269,7 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
   SolveurSys& solv = get_and_set_parametre_implicite(eqn).solveur();
   eqn.assembler_blocs_avec_inertie( { { nom_inco, &mat_pred_[nom_pb_inco] } }, secmem, semi_impl);
   mat_pred_[nom_pb_inco].ajouter_multvect(current, secmem); //passage increment -> variable
-  solv.valeur().reinit();
+  solv->reinit();
   solv.resoudre_systeme(mat_pred_[nom_pb_inco], secmem, current);
 
   if (eqn.positive_unkown() == 1)
@@ -339,7 +339,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
 
       /* resolution et stockage de la vitesse pedite dans current */
       SolveurSys& solv_qdm = get_and_set_parametre_implicite(eqn).solveur();
-      solv_qdm.valeur().reinit();
+      solv_qdm->reinit();
       mat_pred_["vitesse"].ajouter_multvect(current, secmem); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
       solv_qdm.resoudre_systeme(mat_pred_["vitesse"], secmem, current);
       semi_impl["vitesse"] = current;
@@ -453,7 +453,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
           /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
           tabs_t b_p;
           std::vector<std::set<std::pair<std::string, int>>> ordre;
-          if (eq_qdm.domaine_dis().valeur().le_nom() == "PolyMAC_P0")
+          if (eq_qdm.domaine_dis()->le_nom() == "PolyMAC_P0")
             ordre.push_back( { { "vitesse", 1 } }); //si PolyMAC_P0: on commence par ve
           ordre.push_back( { { "vitesse", 0 } }), ordre.push_back( { }); //puis vf, puis toutes les autres inconnues simultanement
           for (auto &&nom : noms)
@@ -476,7 +476,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
           if (mp_max_abs_vect(*sec["pression"]) > 1e-16)
             {
               matrice_pression_.ajouter_multvect(inco["pression"]->valeurs(), *sec["pression"]); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-              solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+              solv_p->reinit(), solv_p->set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
               ok = (solv_p.resoudre_systeme(matrice_pression_, *sec["pression"], *incr["pression"]) >= 0);
               if (!ok)
                 break; //le solveur a echoue -> on sort
@@ -497,7 +497,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       else /* pas de reduction en pression : on passe directement par mat_semi_impl */
         {
           mat_semi_impl_.ajouter_multvect(v_inco, v_sec); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-          solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+          solv_p->reinit(), solv_p->set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
           ok = (solv_p.resoudre_systeme(mat_semi_impl_, v_sec, v_incr) >= 0);
           if (!ok)
             break; //le solveur a echoue -> on sort

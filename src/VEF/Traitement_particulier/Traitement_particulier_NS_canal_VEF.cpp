@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -226,7 +226,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_Temp(DoubleT
   const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
   const DoubleTab& xv = domaine_VEF.xv();
-  const DoubleTab& temperature = Temp.valeur().valeurs();
+  const DoubleTab& temperature = Temp->valeurs();
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   double y,u,v,wl,T;
   int nb_faces = domaine_VEF.nb_faces();

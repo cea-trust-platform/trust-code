@@ -189,7 +189,7 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const DoubleVect& volumes = domaine_VDF.volumes();
   const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
   const DoubleTab& vit_associe = vitesse().valeurs();
-  const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
+  const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_->valeurs(): vit_associe);
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   if (!fluent_.get_md_vector().non_nul())
@@ -265,7 +265,7 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
   const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
   const DoubleVect& volumes_entrelaces= domaine_VDF.volumes_entrelaces();
   const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
-  //const DoubleVect& vit= vitesse_pour_pas_de_temps_.valeur().valeurs();
+  //const DoubleVect& vit= vitesse_pour_pas_de_temps_->valeurs();
   const DoubleVect& vit=equation().inconnue().valeurs();
   DoubleTrav fluent(volumes_entrelaces);
 
@@ -485,7 +485,7 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
       const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
       const DoubleTab& vit = vitesse().valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = domaine.xv(), &xp = domaine.xp();
       DoubleTab balp;
-      if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
+      if (vd_phases_.size()) balp = equation().inconnue()->valeur_aux_bords();
 
       int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
       //DoubleTrav cc_f(N); //valeur du champ convecte aux faces

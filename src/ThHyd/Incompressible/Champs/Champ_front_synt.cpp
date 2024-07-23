@@ -227,7 +227,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
 {
 
   // Acceder a l'equation depuis l'inconnue, ensuite acceder au milieu
-  const Equation_base& equ = ref_inco_.valeur().equation();
+  const Equation_base& equ = ref_inco_->equation();
   const Milieu_base& mil = equ.milieu();
 
   /*
@@ -244,7 +244,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
       Cerr << "visco dynamique = " << visco(0,0) << finl;
     else
       {
-        const DoubleTab& val_visco = visco.valeur().valeurs();
+        const DoubleTab& val_visco = visco->valeurs();
         Cerr << "valeurs viscosite = " << val_visco << finl;\
       }
   */

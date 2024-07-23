@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -157,7 +157,7 @@ int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, i
 {
   Cerr << "The hydraulic and thermal boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_th.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
-  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_th.valeur().que_suis_je() << " !! " << finl;
+  Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_th->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
 }
@@ -264,7 +264,7 @@ int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, in
 {
   Cerr << "The hydraulic and concentration boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
-  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_co.valeur().que_suis_je() << " !! " << finl;
+  Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_co->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
 }
@@ -385,7 +385,7 @@ int message_erreur_fraction_massique(const Cond_lim& la_cl_hydr, const Cond_lim&
 {
   Cerr << "The hydraulic and massic fraction boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_frac_mass.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
-  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_frac_mass.valeur().que_suis_je() << " !! " << finl;
+  Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_frac_mass->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
 }

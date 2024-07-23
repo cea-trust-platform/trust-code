@@ -61,7 +61,7 @@ void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
   const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
                              sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const int M = press.line_size();
-  double t_past = equation().inconnue().valeur().recuperer_temps_passe();
+  double t_past = equation().inconnue()->recuperer_temps_passe();
   if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX)))
     return; //deja calcule a ce temps -> rien a faire
 

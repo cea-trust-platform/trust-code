@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,7 +133,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
   int nb_som_elem=domaine_ef.domaine().nb_som_elem();
 
   int N = resu.line_size();
-  Nature_du_champ nat= equation().inconnue().valeur().nature_du_champ();
+  Nature_du_champ nat= equation().inconnue()->nature_du_champ();
   if (nat==vectoriel)
     {
       if ((dimension==3)&&(nb_som_elem==8))

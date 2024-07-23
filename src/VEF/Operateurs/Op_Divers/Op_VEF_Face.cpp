@@ -238,7 +238,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
             }
         }
       if (sub_type(Symetrie, la_cl.valeur()))
-        if (le_dom_cl.equation().inconnue().valeur().nature_du_champ() == vectoriel)
+        if (le_dom_cl.equation().inconnue()->nature_du_champ() == vectoriel)
           {
             const IntVect& tab2 = la_matrice.get_tab2();
             const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());

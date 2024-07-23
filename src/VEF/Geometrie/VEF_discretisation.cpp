@@ -191,7 +191,7 @@ void VEF_discretisation::discretiser_champ_(const Motcle& directive, const Domai
   else
     {
       Cerr << "VEF_discretisation::discretiser_champ :\n L'element geometrique ";
-      Cerr << domaine_vef.type_elem().valeur().que_suis_je();
+      Cerr << domaine_vef.type_elem()->que_suis_je();
       Cerr << " n'est pas supporte." << finl;
       exit();
     }
@@ -262,9 +262,9 @@ void VEF_discretisation::discretiser_champ_(const Motcle& directive, const Domai
   creer_champ(champ, z, type, noms[0], unites[0], nb_comp, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
   if (nature == multi_scalaire)
     {
-      champ.valeur().fixer_nature_du_champ(nature);
-      champ.valeur().fixer_unites(unites);
-      champ.valeur().fixer_noms_compo(noms);
+      champ->fixer_nature_du_champ(nature);
+      champ->fixer_unites(unites);
+      champ->fixer_noms_compo(noms);
     }
 
 }
@@ -390,7 +390,7 @@ void VEF_discretisation::discretiser_champ_fonc_don_(const Motcle& directive, co
 
   // Le type de champ de vitesse depend du type d'element :
   Nom type_champ_vitesse, type_champ_sommets;
-  Nom type_elem_domaine = domaine_vef.domaine().type_elem().valeur().que_suis_je();
+  Nom type_elem_domaine = domaine_vef.domaine().type_elem()->que_suis_je();
   if (Motcle(type_elem_domaine) != "Segment")
     {
       const Elem_VEF_base& elem_vef = domaine_vef.type_elem().valeur();
@@ -814,7 +814,7 @@ void VEF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_d
   le_champ_tabule_dis.nommer(le_champ_tabule.le_nom()); // We give a name to this field, help for debug
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
   le_champ_tabule_dis.fixer_nb_valeurs_nodales(domaine_dis.nb_elem());
-  le_champ_tabule_dis.changer_temps(ch_inc[0].valeur().temps());
+  le_champ_tabule_dis.changer_temps(ch_inc[0]->temps());
 }
 
 void VEF_discretisation::residu(const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const
@@ -835,6 +835,6 @@ void VEF_discretisation::residu(const Domaine_dis& z, const Champ_Inc& ch_inco, 
 void VEF_discretisation::discretiser(REF(Domaine_dis) &dom) const
 {
   Discretisation_base::discretiser(dom);
-  Domaine_VEF& zvef = ref_cast(Domaine_VEF, dom.valeur().valeur());
+  Domaine_VEF& zvef = ref_cast(Domaine_VEF, dom->valeur());
   zvef.discretiser_suite(*this);
 }

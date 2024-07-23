@@ -91,7 +91,7 @@ void PDF_model::affecter_vitesse_imposee(Domaine_VF& le_dom, const DoubleTab& co
     {
       int nb_som_tot = le_dom.nb_som_tot();
 
-      DoubleTab& vitesse_imposee_ref = vitesse_imposee_.valeur().valeurs();
+      DoubleTab& vitesse_imposee_ref = vitesse_imposee_->valeurs();
 
       int dim = Objet_U::dimension;
 

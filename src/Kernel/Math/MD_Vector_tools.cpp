@@ -59,10 +59,10 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTION
            << " Vector already has a parallel vector structure" << finl;
       Process::exit();
     }
-  int sz = md.valeur().get_nb_items_tot();
+  int sz = md->get_nb_items_tot();
   // Attention, sz_r peut valoir -1 dans certains cas. Alors le test n==sz_r sera toujours faux,
   //  mais c'est bien ce qu'on veut...
-  int sz_r = md.valeur().get_nb_items_reels();
+  int sz_r = md->get_nb_items_reels();
   int err = 0;
   TAB* vv = dynamic_cast<TAB*>(&v);
   if (vv)
@@ -672,7 +672,7 @@ void MD_Vector_tools::restore_vector_with_md(DoubleVect& v, Entree& is)
 
   // Astuce pour restaurer le line_size:
   DoubleTab toto;
-  toto.resize(md_ptr.valeur().get_nb_items_tot(), line_size, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  toto.resize(md_ptr->get_nb_items_tot(), line_size, RESIZE_OPTIONS::NOCOPY_NOINIT);
   int size_tot;
   is >> size_tot;
   is.get(toto.addr(), size_tot);
@@ -688,7 +688,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
   if (Process::mp_max((int)items.size()) == 0) return src; //rien a faire
   /* remplissage de : recep[p] -> liste des items qu'on veut recevoir du processeur p
                       items[{p, i}] -> ou on va placer chaque item dans le MD_Vector elargi */
-  int i, j, p, nb_items_tot = src.valeur().get_nb_items_tot(), idx = nb_items_tot;
+  int i, j, p, nb_items_tot = src->get_nb_items_tot(), idx = nb_items_tot;
   const MD_Vector_std *mds = nullptr;
   if (sub_type(MD_Vector_std, src.valeur())) mds = &ref_cast(MD_Vector_std, src.valeur());
   else if (sub_type(MD_Vector_composite, src.valeur())) mds = &ref_cast(MD_Vector_composite, src.valeur()).global_md_;

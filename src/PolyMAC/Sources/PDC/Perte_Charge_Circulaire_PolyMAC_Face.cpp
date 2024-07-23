@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ void Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect&
   // Calcul de v et ||v||^2
   av_valeur.resize(dimension);
 
-  v.valeur().valeur_a(pos, av_valeur);
+  v->valeur_a(pos, av_valeur);
   // on norme v
   {
     double vcarre = 0;

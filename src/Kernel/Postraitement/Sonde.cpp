@@ -1274,7 +1274,7 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
 //      Champ espace_stockage;
 //      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
 //        ma_source_mod.mettre_a_jour(un_temps);
-      ma_source.valeur().mettre_a_jour(un_temps);
+      ma_source->mettre_a_jour(un_temps);
 
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->les_sondes().get_update_positions())
@@ -1317,9 +1317,9 @@ void Sonde::postraiter()
   else
     {
       if (ncomp == -1)
-        ma_source.valeur().valeur_aux_elems(les_positions(),elem_, valeurs_locales);
+        ma_source->valeur_aux_elems(les_positions(),elem_, valeurs_locales);
       else
-        ma_source.valeur().valeur_aux_elems_compo(les_positions(),elem_,valeurs_locales, ncomp);
+        ma_source->valeur_aux_elems_compo(les_positions(),elem_,valeurs_locales, ncomp);
     }
 
   if (gravcl)

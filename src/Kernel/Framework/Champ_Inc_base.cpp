@@ -730,7 +730,7 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
   const IntTab& f_e = domaine.face_voisins(), &f_s = domaine.face_sommets();
   DoubleTrav result(domaine.xv_bord().dimension_tot(0), valeurs().line_size());
 
-  const Conds_lim& cls = domaine_Cl_dis().valeur().les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
   int j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
   for (const auto& itr : cls)
     {

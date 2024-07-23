@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ Entree& Multi_Sch_ThHyd::readOn(Entree& s)
  */
 int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
 {
-  return std::max(sch_ns.valeur().nb_valeurs_temporelles(),sch_scalaires.valeur().nb_valeurs_temporelles());
+  return std::max(sch_ns->nb_valeurs_temporelles(),sch_scalaires->nb_valeurs_temporelles());
 }
 
 
@@ -70,8 +70,8 @@ int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
  */
 int Multi_Sch_ThHyd::nb_valeurs_futures() const
 {
-  int n=sch_ns.valeur().nb_valeurs_futures();
-  assert (n==sch_scalaires.valeur().nb_valeurs_futures());
+  int n=sch_ns->nb_valeurs_futures();
+  assert (n==sch_scalaires->nb_valeurs_futures());
   return n;
 }
 
@@ -82,8 +82,8 @@ int Multi_Sch_ThHyd::nb_valeurs_futures() const
  */
 double Multi_Sch_ThHyd::temps_futur(int i) const
 {
-  double t=sch_ns.valeur().temps_futur(i);
-  assert(t==sch_scalaires.valeur().temps_futur(i));
+  double t=sch_ns->temps_futur(i);
+  assert(t==sch_scalaires->temps_futur(i));
   return t;
 }
 
@@ -94,8 +94,8 @@ double Multi_Sch_ThHyd::temps_futur(int i) const
  */
 double Multi_Sch_ThHyd::temps_defaut() const
 {
-  double t=sch_ns.valeur().temps_defaut();
-  assert(t==sch_scalaires.valeur().temps_defaut());
+  double t=sch_ns->temps_defaut();
+  assert(t==sch_scalaires->temps_defaut());
   return t;
 }
 
@@ -199,7 +199,7 @@ int Multi_Sch_ThHyd::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
       sch_scalaires->set_dt()=pas_de_temps();
       sch_scalaires.faire_un_pas_de_temps_eqn_base(eqn);
     }
-  set_stationnaire_atteint()=sch_ns.valeur().isStationary() && sch_scalaires.valeur().isStationary() ;
+  set_stationnaire_atteint()=sch_ns->isStationary() && sch_scalaires->isStationary() ;
   return 1;
 }
 
@@ -240,8 +240,8 @@ bool Multi_Sch_ThHyd::iterateTimeStep(bool& converged)
  */
 bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
 {
-  bool ok=sch_ns.valeur().corriger_dt_calcule(dt);
-  ok = ok && sch_scalaires.valeur().corriger_dt_calcule(dt);
+  bool ok=sch_ns->corriger_dt_calcule(dt);
+  ok = ok && sch_scalaires->corriger_dt_calcule(dt);
   ok = ok && Schema_Temps_base::corriger_dt_calcule(dt);
   return ok;
 }
@@ -253,8 +253,8 @@ bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
  */
 void Multi_Sch_ThHyd::changer_temps_courant(const double t)
 {
-  sch_ns.valeur().changer_temps_courant(t);
-  sch_scalaires.valeur().changer_temps_courant(t);
+  sch_ns->changer_temps_courant(t);
+  sch_scalaires->changer_temps_courant(t);
 
   Schema_Temps_base::changer_temps_courant(t);
 }
@@ -271,8 +271,8 @@ void Multi_Sch_ThHyd::changer_temps_courant(const double t)
  */
 int Multi_Sch_ThHyd::stop() const
 {
-  int ls2 = sch_ns.valeur().stop();
-  int ls3 = sch_scalaires.valeur().stop();
+  int ls2 = sch_ns->stop();
+  int ls3 = sch_scalaires->stop();
 
   return (ls2 | ls3 | Schema_Temps_base::stop());
 }
@@ -285,8 +285,8 @@ int Multi_Sch_ThHyd::stop() const
  */
 void Multi_Sch_ThHyd::imprimer(Sortie& os) const
 {
-  sch_ns.valeur().imprimer(os);
-  sch_scalaires.valeur().imprimer(os);
+  sch_ns->imprimer(os);
+  sch_scalaires->imprimer(os);
 
   Schema_Temps_base::imprimer(os);
 }

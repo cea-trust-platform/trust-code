@@ -101,7 +101,7 @@ void Loi_Etat_GP_base::calculer_lambda()
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
-      lambda.valeur().mettre_a_jour(temperature_.valeur().temps());
+      lambda->mettre_a_jour(temperature_->temps());
       return;
     }
   if (!sub_type(Champ_Uniforme,lambda.valeur()))
@@ -147,7 +147,7 @@ void Loi_Etat_GP_base::calculer_alpha()
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   int isVDF=0;
-  if (champ_alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (champ_alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   int n=tab_alpha.size();
   bool lambda_uniforme = sub_type(Champ_Uniforme,champ_lambda.valeur());
   if (isVDF)

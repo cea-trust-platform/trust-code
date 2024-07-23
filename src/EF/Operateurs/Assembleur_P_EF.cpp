@@ -67,7 +67,7 @@ void calculer_inv_volume(DoubleTab& inv_volumes_som, const Domaine_Cl_EF& domain
     {
       DoubleTab marqueur(*doubleT);
       marqueur=1;
-      domaine_Cl_EF.equation().solv_masse().valeur().appliquer_impl(marqueur);
+      domaine_Cl_EF.equation().solv_masse()->appliquer_impl(marqueur);
       calculer_inv_volume_special(inv_volumes_som, domaine_Cl_EF,*doubleT,marqueur);
       return;
     }
@@ -537,7 +537,7 @@ int Assembleur_P_EF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int n,nb_elem=le_dom_EF.valeur().domaine().nb_elem();
+      int n,nb_elem=le_dom_EF->domaine().nb_elem();
       for(n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];

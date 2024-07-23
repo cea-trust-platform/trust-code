@@ -75,7 +75,7 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
             }
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
-          shape_i[0] = md_part.valeur().get_nb_items_tot();
+          shape_i[0] = md_part->get_nb_items_tot();
           TRUSTTab<_TYPE_>& part = parts[i];
           // Fait pointer le domaine de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
           part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], (int)1)); // int cast necessary for 64b transcription

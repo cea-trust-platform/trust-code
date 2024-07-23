@@ -87,7 +87,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
       else
         {
           const DoubleTab& val_rho = rho.valeurs();
-          const IntTab& face_vois = le_dom.valeur().face_voisins();
+          const IntTab& face_vois = le_dom->face_voisins();
           const DoubleVect& volumes = ref_cast(Domaine_VF,le_dom.valeur()).volumes();
           coef = 0.;
           for (int fac = 0; fac < nb_faces_tot; fac++)

@@ -53,8 +53,8 @@ Entree& Modele_turbulence_scal_null::readOn(Entree& is)
       Cerr << "Erreur dans Modele_turbulence_scal_null::readOn : la discretisation " << discr << " n'est pas prise en charge" << finl;
       Process::exit();
     }
-  loipar_.valeur().associer_modele(*this);
-  loipar_.valeur().associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
+  loipar_->associer_modele(*this);
+  loipar_->associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
 
   // Pas envie de debugger XDATA ... je penalise tt le monde alors
   Param param(que_suis_je());

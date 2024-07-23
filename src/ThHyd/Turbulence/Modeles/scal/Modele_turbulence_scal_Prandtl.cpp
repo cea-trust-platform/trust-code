@@ -124,7 +124,7 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
       // Pe-t est un nombre de Peclet turbulent defini par Pr*(nut/nu)
       // On a alors alpha_t = nut * nut / ( 0.7 alpha + 0.85 nut )
 
-      const Milieu_base& milieu = mon_equation_.valeur().milieu();
+      const Milieu_base& milieu = mon_equation_->milieu();
       const Champ_Don& alpha = milieu.diffusivite();
       if (!alpha.non_nul())
         {

@@ -95,7 +95,7 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
   if (le_champ_front.non_nul())
     {
       const Equation_base& eq = domaine_Cl_dis().equation();
-      const int nb_comp = le_champ_front.valeur().nb_comp();
+      const int nb_comp = le_champ_front->nb_comp();
 
       if ((que_suis_je() == "Frontiere_ouverte") || (que_suis_je() == "Frontiere_ouverte_rayo_semi_transp") || (que_suis_je() == "Frontiere_Ouverte_Rayo_transp")
           || (que_suis_je() == "Sortie_libre_temperature_imposee_H"))

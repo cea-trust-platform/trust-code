@@ -184,8 +184,8 @@ void Debog_Pb::write_geometry_data()
       Cerr << "Error in Debog.cpp: cannot write geometry data in parallel." << finl;
       Process::exit();
     }
-  const Domaine& dom = ref_pb_.valeur().domaine();
-  const Domaine_dis_base& zd = ref_pb_.valeur().domaine_dis().valeur();
+  const Domaine& dom = ref_pb_->domaine();
+  const Domaine_dis_base& zd = ref_pb_->domaine_dis().valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zd);
   {
     SFichier f(fichier_domaine_);
@@ -274,8 +274,8 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
 
 void Debog_Pb::read_geometry_data()
 {
-  const Domaine& dom = ref_pb_.valeur().domaine();
-  const Domaine_dis_base& zd = ref_pb_.valeur().domaine_dis().valeur();
+  const Domaine& dom = ref_pb_->domaine();
+  const Domaine_dis_base& zd = ref_pb_->domaine_dis().valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zd);
   {
     DoubleTab coord_som_seq; // sommets
@@ -397,7 +397,7 @@ void Debog_Pb::verifier_matrice(const char *const msg, const Matrice_Base& matri
   Nom id;
 
   // Boucle sur les items sequentiels du vecteur x de A*x=b
-  const int nb_colonnes = md_colonnes.valeur().nb_items_seq_tot();
+  const int nb_colonnes = md_colonnes->nb_items_seq_tot();
 
   for (int i = 0; i < nb_colonnes; i++)
     {

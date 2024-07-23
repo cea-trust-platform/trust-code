@@ -80,8 +80,8 @@ void Aire_interfaciale::discretiser()
   Cerr << "Interfacial area discretization" << finl;
   //On utilise temperature pour la directive car discretisation identique
   dis.discretiser_champ("temperature",domaine_dis(),"interfacial_area","m-1", N,nb_valeurs_temp,temps,l_inco_ch_);//une aire interfaciale par phase
-  l_inco_ch_.valeur().fixer_nature_du_champ(multi_scalaire);
-  l_inco_ch_.valeur().fixer_nom_compo(0, Nom("tau"));
+  l_inco_ch_->fixer_nature_du_champ(multi_scalaire);
+  l_inco_ch_->fixer_nom_compo(0, Nom("tau"));
   champs_compris_.ajoute_champ(l_inco_ch_);
 
   Cerr << "Bubble diameter discretization" << finl;

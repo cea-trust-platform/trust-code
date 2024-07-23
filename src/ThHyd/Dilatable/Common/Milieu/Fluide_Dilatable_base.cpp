@@ -241,7 +241,7 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }
   rho_cp_comme_T_.changer_temps(temps);
-  rho_cp_comme_T_.valeur().changer_temps(temps);
+  rho_cp_comme_T_->changer_temps(temps);
   DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
   if (sub_type(Champ_Uniforme,rho))
     rho_cp = rho.valeurs()(0, 0);
@@ -309,7 +309,7 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
                 double lold=-1;
                 if (lambda.non_nul())
                   lold=lambda.valeurs()(0,0);
-                lambda.typer(mu.valeur().le_type());
+                lambda.typer(mu->le_type());
                 lambda=mu;
 
                 loi_etat_->calculer_lambda();

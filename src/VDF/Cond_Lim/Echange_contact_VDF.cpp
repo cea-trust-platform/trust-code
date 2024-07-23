@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,7 +109,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
     {
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Turbulence_paroi_scal& loi_par = mod_turb_scal.loi_paroi();
-      if( loi_par.valeur().use_equivalent_distance() )
+      if( loi_par->use_equivalent_distance() )
         {
           int boundary_index=-1;
           dequiv=true;
@@ -122,7 +122,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
             }
           for (int ind_face=0; ind_face<nb_faces; ind_face++)
             {
-              e(ind_face)=loi_par.valeur().equivalent_distance(boundary_index,ind_face);
+              e(ind_face)=loi_par->equivalent_distance(boundary_index,ind_face);
             }
         }
     }
@@ -178,7 +178,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
   DoubleVect e;
   int i;
   int nb_comp = le_milieu.conductivite()->nb_comp();
-  int nb_faces_raccord1 =tab.dimension(0); //= domaine_dis1.domaine().raccord(nom_racc1).valeur().nb_faces();
+  int nb_faces_raccord1 =tab.dimension(0); //= domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
   bool dequiv=false;
 
   const RefObjU& modele_turbulence = une_eqn.get_modele(TURBULENCE);
@@ -187,11 +187,11 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
 
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Turbulence_paroi_scal& loi_par = mod_turb_scal.loi_paroi();
-      if( loi_par.valeur().use_equivalent_distance() )
+      if( loi_par->use_equivalent_distance() )
         {
           dequiv=true;
           DoubleVect d_equiv_tmp;
-          front_vf.frontiere().trace_face_distant( loi_par.valeur().equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
+          front_vf.frontiere().trace_face_distant( loi_par->equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
           // const Paroi_scal_hyd_base_VDF& loip = ref_cast(Paroi_scal_hyd_base_VDF,loi_par.valeur());
           // front_vf.frontiere().trace_face(loip.d_equiv_nom(d_equiv_tmp,nom_racc2),e);
         }
@@ -252,7 +252,7 @@ void Echange_contact_VDF::calculer_h_autre_pb(DoubleTab& tab,double invhparoi,in
   Nom nom_racc1=frontiere_dis().frontiere().le_nom();
   Nom nom_racc2=ch.nom_bord_oppose();
 
-  int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1).valeur().nb_faces();
+  int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
   if (tab.dimension(0)!=nb_faces_raccord1
       ||tab.dimension(1)!=nb_comp)
     {
@@ -260,7 +260,7 @@ void Echange_contact_VDF::calculer_h_autre_pb(DoubleTab& tab,double invhparoi,in
       Cerr << "Le dimensionnement est fait dans Echange_contact_VDF::initialiser." << finl;
       exit();
     }
-  if (domaine_dis1.domaine().raccord(nom_racc1).valeur().que_suis_je() =="Raccord_distant_homogene")
+  if (domaine_dis1.domaine().raccord(nom_racc1)->que_suis_je() =="Raccord_distant_homogene")
     {
       calculer_h_distant(tab,une_eqn,zvdf_2,front_vf,le_milieu,invhparoi,opt,nom_racc2);
     }
@@ -287,13 +287,13 @@ int Echange_contact_VDF::initialiser(double temps)
   int nb_comp = le_milieu.conductivite()->nb_comp();
   Nom nom_racc1 = frontiere_dis().frontiere().le_nom();
   Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis().valeur();
-  int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1).valeur().nb_faces();
+  int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
 
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(nb_comp);
   h_imp_.valeurs().resize(nb_faces_raccord1,nb_comp);
 
-  if (domaine_dis1.domaine().raccord(nom_racc1).valeur().que_suis_je() !="Raccord_distant_homogene")
+  if (domaine_dis1.domaine().raccord(nom_racc1)->que_suis_je() !="Raccord_distant_homogene")
     verifier_correspondance();
 
   autre_h.resize(nb_faces_raccord1,nb_comp);

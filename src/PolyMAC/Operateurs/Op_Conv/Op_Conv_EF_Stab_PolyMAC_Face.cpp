@@ -155,7 +155,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& tab_inc
 
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
+  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
 
 
   domaine.init_ve();

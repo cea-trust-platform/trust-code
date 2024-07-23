@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ void test_un_solveur(SolveurSys& solveur, const Matrice_Base& matrice, const Dou
       statistiques().get_stats(solv_sys_counter_l, stat_resol_0);
       Cout<<"------------------------------------"<<finl;
       Cout<<"Try " << i << " of solver " << solveur <<finl;
-      //solveur.valeur().fixer_limpr(0);
+      //solveur->fixer_limpr(0);
       statistiques().begin_count(solv_sys_counter_l);
       solveur.nommer("test_solver");
 
@@ -220,7 +220,7 @@ Entree& Test_solveur::interpreter(Entree& is)
     entree.ouvrir(fichier_matrice);
     entree>>matrice;
     Cout<<" size of system "<<matrice.valeur( ).nb_colonnes()<<finl;
-    //matrice.valeur().imprimer_formatte(Cout);
+    //matrice->imprimer_formatte(Cout);
   }
   {
     LecFicDistribue entree;

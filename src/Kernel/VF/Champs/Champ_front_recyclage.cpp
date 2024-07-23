@@ -499,11 +499,11 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   ArrOfInt elem_list;
 
 
-  const Domaine& domaine1 = l_inconnue1.valeur().equation().domaine_dis().valeur().domaine();
+  const Domaine& domaine1 = l_inconnue1->equation().domaine_dis()->domaine();
   const int nb_elem_domaine1 = domaine1.nb_elem();
   const int dim = remote_coords[moi].dimension(1);
 
-  const Domaine_dis_base& zdis = l_inconnue1.valeur().equation().domaine_dis().valeur();
+  const Domaine_dis_base& zdis = l_inconnue1->equation().domaine_dis().valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,zdis);
   const DoubleTab& xp = zvf.xp();
   DoubleVect remote_point(3);
@@ -691,9 +691,9 @@ void Champ_front_recyclage::mettre_a_jour(double temps)
 
       const int n = elems.size_array();
       values_to_send[pe].resize(n,nb_compo_);
-      l_inconnue1.valeur().valeur_aux_elems(inconnues1_coords_to_eval_[pe],
-                                            elems,
-                                            values_to_send[pe]);
+      l_inconnue1->valeur_aux_elems(inconnues1_coords_to_eval_[pe],
+                                    elems,
+                                    values_to_send[pe]);
 
     }
   envoyer_all_to_all(values_to_send, values_to_recv);

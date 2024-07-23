@@ -60,7 +60,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
       parser_.parseString();
     }
   else
-    assert(rho_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
+    assert(rho_xyz_->que_suis_je() == "Champ_Fonc_xyz" );
 
   return is;
 }
@@ -70,17 +70,17 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 void Loi_Etat_rhoT_GP_QC::initialiser_rho()
 {
   int isVDF = 0;
-  if (le_fluide->masse_volumique().valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (le_fluide->masse_volumique()->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
   int nb_elems = le_fluide->viscosite_dynamique().valeurs().size();
   // The Champ_Don rho_xyz_ is evaluated on elements
-  assert (rho_xyz_.valeur().valeurs().size() == nb_elems);
+  assert (rho_xyz_->valeurs().size() == nb_elems);
 
   if (isVDF)
     {
       // Disc VDF => rho_ & rho_xyz_ on elems => we do nothing
       rho_.resize(nb_elems, 1);
-      DoubleTab& fld = rho_xyz_.valeur().valeurs();
+      DoubleTab& fld = rho_xyz_->valeurs();
       for (int i=0; i<nb_elems; i++) rho_(i,0)=fld(i,0);
     }
   else

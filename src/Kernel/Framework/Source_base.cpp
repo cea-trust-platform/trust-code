@@ -93,7 +93,7 @@ void Source_base::completer()
   associer_domaines(zdis, zcldis);
   associer_pb(eqn.probleme());
   // Initialize the bilan_ array:
-  bilan_.resize(eqn.inconnue().valeur().nb_comp());
+  bilan_.resize(eqn.inconnue()->nb_comp());
   bilan_=0;
 }
 

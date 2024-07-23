@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ Entree& Loi_paroi_log::readOn(Entree& is)
 
 void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
 {
-  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_.valeur().domaine_dis().valeur());
+  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
   DoubleTab& u_t = valeurs_loi_paroi_["u_tau"], &y_p = valeurs_loi_paroi_["y_plus"];
   const DoubleTab& n_f = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces();

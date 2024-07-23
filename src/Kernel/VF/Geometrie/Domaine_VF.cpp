@@ -688,14 +688,14 @@ void Domaine_VF::infobord()
   Raccords& raccords=domaine().faces_raccord();
   for (int i=0; i<raccords.nb_raccords(); i++)
     {
-      Faces& faces=raccords(i).valeur().faces();
+      Faces& faces=raccords(i)->faces();
       faces.associer_domaine(domaine());
       faces.calculer_surfaces(surfaces);
       double s=0;
       for (int j=0; j<faces.nb_faces(); j++)
         s=s+surfaces(j);
       s=mp_sum(s);
-      raccords(i).valeur().set_aire(s);
+      raccords(i)->set_aire(s);
       Cerr<<"Area of "<<raccords(i).le_nom()<<"  \t= "<<s<<finl;
     }
 
@@ -718,9 +718,9 @@ void Domaine_VF::infobord()
 
 void Domaine_VF::info_elem_som()
 {
-  const int nbelem = domaine().les_elems().get_md_vector().valeur().nb_items_seq_tot();
-  const int nbsom = domaine().les_sommets().get_md_vector().valeur().nb_items_seq_tot();
-  const int nbfaces = face_voisins().get_md_vector().valeur().nb_items_seq_tot();
+  const int nbelem = domaine().les_elems().get_md_vector()->nb_items_seq_tot();
+  const int nbsom = domaine().les_sommets().get_md_vector()->nb_items_seq_tot();
+  const int nbfaces = face_voisins().get_md_vector()->nb_items_seq_tot();
   Cerr<<"Calculation of elements and nodes on " << domaine().le_nom() << " :" << finl;
   Cerr<<"Total number of elements = "<<nbelem<<finl;
   Cerr<<"Total number of nodes = "<<nbsom<<finl;
@@ -805,7 +805,7 @@ const DoubleTab& Domaine_VF::xv_bord() const
  */
 inline int Domaine_VF::nb_faces_bord_tot() const
 {
-  return md_vector_faces_bord().valeur().get_nb_items_tot();
+  return md_vector_faces_bord()->get_nb_items_tot();
 }
 
 /*! @brief calcul le tableau xgr pour le calcul des moments des forces aux bords :

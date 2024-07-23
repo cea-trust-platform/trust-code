@@ -143,7 +143,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       lambda_nb_comp = ch_lambda.nb_comp( );
       if (sub_type(Champ_Fonc_MED,ch_lambda.valeur()))
         {
-          double temps=ch_lambda.valeur().temps();
+          double temps=ch_lambda->temps();
           Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
           Champ_Don ch_lambda_prov;
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
@@ -151,18 +151,18 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           ch_lambda.detach();
           ch_alpha.detach();
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
-          ch_lambda.valeur().valeurs()=ch_lambda_prov.valeur().valeurs();
+          ch_lambda->valeurs()=ch_lambda_prov->valeurs();
         }
 
       if(lambda_nb_comp >1) // Pour anisotrope
-        ch_lambda.valeur().fixer_nature_du_champ(multi_scalaire);
+        ch_lambda->fixer_nature_du_champ(multi_scalaire);
 
       dis.nommer_completer_champ_physique(domaine_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
 
       // le vrai nom sera donne plus tard
       if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
         {
-          double temps=ch_lambda.valeur().temps();
+          double temps=ch_lambda->temps();
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
         }
@@ -170,7 +170,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (!ch_alpha.non_nul()&&(ch_lambda.non_nul()))
     {
-      double temps=ch_lambda.valeur().temps();
+      double temps=ch_lambda->temps();
       // ch_alpha (i.e. diffusivite_thermique) will have same component number as ch_lambda
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
@@ -608,8 +608,8 @@ void Milieu_base::mettre_a_jour(double temps)
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
       calculer_alpha();
-      alpha.valeur().changer_temps(temps);
-      alpha_fois_rho.valeur().changer_temps(temps);
+      alpha->changer_temps(temps);
+      alpha_fois_rho->changer_temps(temps);
     }
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);
@@ -646,7 +646,7 @@ void Milieu_base::update_rho_cp(double temps)
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }
   rho_cp_elem_.changer_temps(temps);
-  rho_cp_elem_.valeur().changer_temps(temps);
+  rho_cp_elem_->changer_temps(temps);
   DoubleTab& rho_cp=rho_cp_elem_.valeurs();
   if (sub_type(Champ_Uniforme,rho.valeur()))
     rho_cp=rho.valeurs()(0,0);
@@ -661,7 +661,7 @@ void Milieu_base::update_rho_cp(double temps)
   else
     tab_multiply_any_shape(rho_cp,Cp.valeurs());
   rho_cp_comme_T_.changer_temps(temps);
-  rho_cp_comme_T_.valeur().changer_temps(temps);
+  rho_cp_comme_T_->changer_temps(temps);
   const MD_Vector& md_som = rho_cp_elem_.domaine_dis_base().domaine().md_vector_sommets(),
                    &md_faces = ref_cast(Domaine_VF,rho_cp_elem_.domaine_dis_base()).md_vector_faces();
   if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
@@ -763,8 +763,8 @@ int Milieu_base::initialiser(const double temps)
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
       calculer_alpha();
-      alpha.valeur().changer_temps(temps);
-      alpha_fois_rho.valeur().changer_temps(temps);
+      alpha->changer_temps(temps);
+      alpha_fois_rho->changer_temps(temps);
     }
 
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(temps);

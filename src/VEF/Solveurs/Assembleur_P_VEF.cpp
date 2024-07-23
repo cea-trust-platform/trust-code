@@ -38,7 +38,7 @@ int Assembleur_P_VEF::assembler(Matrice& la_matrice)
   // Si rho est constant, on resout avec la pression P*=P/rho
   const DoubleVect& volumes_entrelaces_ref=le_dom_VEF->volumes_entrelaces();
   DoubleVect volumes_entrelaces(volumes_entrelaces_ref);
-  const DoubleVect& volumes_entrelaces_cl=le_dom_Cl_VEF.valeur().volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_cl=le_dom_Cl_VEF->volumes_entrelaces_Cl();
   int size=volumes_entrelaces_cl.size();
   for (int f=0; f<size; f++)
     if (volumes_entrelaces_cl(f)!=0)
@@ -637,7 +637,7 @@ int Assembleur_P_VEF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int n,nb_elem=le_dom_VEF.valeur().domaine().nb_elem();
+      int n,nb_elem=le_dom_VEF->domaine().nb_elem();
       for(n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];
@@ -670,7 +670,7 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
       int element_referent=0;
       double distance=DMAXFLOAT;
       const DoubleTab& coord=le_dom_VEF->xp();
-      int n = le_dom_VEF.valeur().nb_elem();
+      int n = le_dom_VEF->nb_elem();
       for(int i=0; i<n; i++)
         {
           double tmp=0;

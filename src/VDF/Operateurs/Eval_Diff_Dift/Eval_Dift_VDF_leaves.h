@@ -94,7 +94,7 @@ class Eval_Dift_VDF_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_VDF_Face>, pu
 public:
   static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
   inline void associer_modele_turbulence(const Modele_turbulence_hyd_base& mod) { le_modele_turbulence = mod;  }
-  inline bool uses_wall() const { return le_modele_turbulence.valeur().utiliser_loi_paroi(); }
+  inline bool uses_wall() const { return le_modele_turbulence->utiliser_loi_paroi(); }
   void mettre_a_jour() override;
   double tau_tan_impl(int face,int k) const;
 

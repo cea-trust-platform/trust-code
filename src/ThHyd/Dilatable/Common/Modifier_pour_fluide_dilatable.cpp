@@ -34,7 +34,7 @@ static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int divise
 // Modif B.M: on ne remplit que la partie reelle du tableau.
 void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_fluide, int diviser)
 {
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, le_fluide.vitesse().valeur().domaine_dis_base());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, le_fluide.vitesse()->domaine_dis_base());
   // Descripteurs des tableaux aux elements et aux faces:
   const Domaine& domaine = zvf.domaine();
   const MD_Vector& md_elem = domaine.les_elems().get_md_vector();
@@ -138,7 +138,7 @@ void correction_nut_et_cisaillement_paroi_si_qc(Modele_turbulence_hyd_base& mod)
       multiplier_diviser_rho(nut, le_fluide, 0 /* multiplier */);
 
       // 2  On modifie le ciasaillement paroi
-      const DoubleTab& cisaillement_paroi = mod.loi_paroi().valeur().Cisaillement_paroi();
+      const DoubleTab& cisaillement_paroi = mod.loi_paroi()->Cisaillement_paroi();
       DoubleTab& cisaillement = ref_cast_non_const(DoubleTab, cisaillement_paroi);
       multiplier_diviser_rho(cisaillement, le_fluide, 0 /* multiplier */);
       cisaillement.echange_espace_virtuel();

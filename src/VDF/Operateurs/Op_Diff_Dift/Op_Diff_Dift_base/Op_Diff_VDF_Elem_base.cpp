@@ -75,7 +75,7 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
   for (int i = 0; i < domaine.nb_front_Cl(); i++)
     {
       const Cond_lim& la_cl = zcl.les_conditions_limites(i);
-      if (!la_cl.valeur().que_suis_je().debute_par("Paroi_Echange_contact")) continue; //pas un Echange_contact
+      if (!la_cl->que_suis_je().debute_par("Paroi_Echange_contact")) continue; //pas un Echange_contact
       const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
       if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem
 

@@ -958,7 +958,7 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
               const Turbulence_paroi& loipar = mod_turb.loi_paroi();
               DoubleTab tau_tan;
 
-              if (loipar.non_nul() && loipar.valeur().use_shear() )
+              if (loipar.non_nul() && loipar->use_shear() )
                 {
                   tau_tan.ref(loipar->Cisaillement_paroi());
 

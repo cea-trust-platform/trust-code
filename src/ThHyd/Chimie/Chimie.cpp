@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,7 @@ void  Chimie::completer(const Probleme_base& pb)
         {
           const Convection_Diffusion_Concentration& eq= ref_cast(Convection_Diffusion_Concentration,pb.equation(n));
           masses_molaires[nb]=eq.masse_molaire();
-          alias[nb]=eq.inconnue().valeur().le_nom();
+          alias[nb]=eq.inconnue()->le_nom();
           REF(Champ_Inc_base) inco;
           inco = eq.inconnue().valeur();
           liste_C_.add(inco);
@@ -151,7 +151,7 @@ void  Chimie::completer(const Probleme_base& pb)
     }
   if (liste_Y_.size()>0)
     {
-      Puissance_volumique_=(liste_Y_[0].valeur().valeurs()); // dimensionnement du tableau...
+      Puissance_volumique_=(liste_Y_[0]->valeurs()); // dimensionnement du tableau...
       Puissance_volumique_=0.;
     }
   else
@@ -207,11 +207,11 @@ void  Chimie::mettre_a_jour(double temps)
             }
 
           for (int i=0; i<liste_C_.size(); i++)
-            liste_C_[i].valeur().valeurs().echange_espace_virtuel();
+            liste_C_[i]->valeurs().echange_espace_virtuel();
           return;
         }
       const int vef = (int)pb_->discretisation().is_vef();
-      Domaine_VF& zvf = ref_cast(Domaine_VF,liste_C_[0].valeur().equation().domaine_dis().valeur());
+      Domaine_VF& zvf = ref_cast(Domaine_VF,liste_C_[0]->equation().domaine_dis().valeur());
 
       const IntTab& face_voisins = zvf.face_voisins();
       const ArrOfDouble& volume=zvf.volumes();
@@ -293,9 +293,9 @@ void  Chimie::mettre_a_jour(double temps)
           if (modele_micro_melange_>0)
             {
 
-              const DoubleTab& visc_turb=liste_C_[0].valeur().equation().probleme().get_champ("viscosite_turbulente").valeurs();
+              const DoubleTab& visc_turb=liste_C_[0]->equation().probleme().get_champ("viscosite_turbulente").valeurs();
               tau_mel=visc_turb;
-              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0].valeur().equation()).constituant().diffusivite_constituant().valeurs();
+              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0]->equation()).constituant().diffusivite_constituant().valeurs();
               double D_mol=0.;
               if (D_moleculaire.dimension(0) == 1)
                 D_mol = D_moleculaire(0, 0);
@@ -313,7 +313,7 @@ void  Chimie::mettre_a_jour(double temps)
                 }
               tau_mel.echange_espace_virtuel();
             }
-          int nb_elem=liste_C_[0].valeur().valeurs().size();
+          int nb_elem=liste_C_[0]->valeurs().size();
           ArrOfDouble C(nbc);
 
           for (int elem=0; elem<nb_elem; elem++)
@@ -336,7 +336,7 @@ void  Chimie::mettre_a_jour(double temps)
               // recuperation des valeurs initiales
               for (int i=0; i<nbc; i++)
                 {
-                  C[i]=liste_C_[i].valeur().valeurs()(elem);
+                  C[i]=liste_C_[i]->valeurs()(elem);
 
                 }
               for (int i=0; i<nbc; i++)
@@ -363,10 +363,10 @@ void  Chimie::mettre_a_jour(double temps)
               F77NAME(DLSODECHIMIES)(&nbc, C.addr(),&t, &tout,&tau_melange, &itol, &rtol, &atol, rwork.addr(), &lrw, iwork.addr(), &liw);
               // mise a jour des inconnues
               for (int i=0; i<liste_C_.size(); i++)
-                liste_C_[i].valeur().valeurs()(elem)=C[i];
+                liste_C_[i]->valeurs()(elem)=C[i];
             }
           for (int i=0; i<liste_C_.size(); i++)
-            liste_C_[i].valeur().valeurs().echange_espace_virtuel();
+            liste_C_[i]->valeurs().echange_espace_virtuel();
           return;
         }
       // on calcule le nb_sous_pas_temps_max
@@ -399,7 +399,7 @@ void  Chimie::mettre_a_jour(double temps)
 
       ArrOfDouble C(nbc),C_tmp(nbc), proportion_eq(nbr_directe);
 
-      int nb_elem=liste_C_[0].valeur().valeurs().size();
+      int nb_elem=liste_C_[0]->valeurs().size();
       for (int elem=0; elem<nb_elem; elem++)
         {
 
@@ -407,7 +407,7 @@ void  Chimie::mettre_a_jour(double temps)
           // recuperation des valeurs initiales
           for (int i=0; i<nbc; i++)
             {
-              C[i]=liste_C_[i].valeur().valeurs()(elem);
+              C[i]=liste_C_[i]->valeurs()(elem);
             }
           for (int n=0; n<nb_sous_pas_de_temps_reaction_max; n++)
             {
@@ -518,12 +518,12 @@ void  Chimie::mettre_a_jour(double temps)
             }
           // reaction.reagir(liste_C_,dt_chimie);
           for (int i=0; i<liste_C_.size(); i++)
-            liste_C_[i].valeur().valeurs()(elem)=C[i];
+            liste_C_[i]->valeurs()(elem)=C[i];
 
         }
 
       for (int i=0; i<liste_C_.size(); i++)
-        liste_C_[i].valeur().valeurs().echange_espace_virtuel();
+        liste_C_[i]->valeurs().echange_espace_virtuel();
 
       return;
     }

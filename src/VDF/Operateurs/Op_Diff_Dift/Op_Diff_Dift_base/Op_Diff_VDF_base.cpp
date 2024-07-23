@@ -87,7 +87,7 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
     {
       const std::string& nom_inco = equation().inconnue().le_nom().getString();
       Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
-      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeur().valeurs();
+      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->valeurs();
 
       if (Objet_U::bidim_axi == 1)
         {

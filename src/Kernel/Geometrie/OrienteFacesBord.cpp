@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
   int nombre_faces_rayonnantes=dom.nb_bords()+dom.nb_raccords();
   for (int iface=0; iface<nombre_faces_rayonnantes; iface++)
     {
-      const IntTab& som=(iface<dom.nb_bords()?dom.bord(iface).faces().les_sommets():dom.raccord(iface-dom.nb_bords()).valeur().faces().les_sommets());
+      const IntTab& som=(iface<dom.nb_bords()?dom.bord(iface).faces().les_sommets():dom.raccord(iface-dom.nb_bords())->faces().les_sommets());
       int nb_faces=som.dimension(0);
       IntTab new_faces(nb_faces,som.dimension(1));
 
@@ -254,7 +254,7 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
       if (iface<dom.nb_bords())
         dom.bord(iface).faces().les_sommets().ref(new_faces);
       else
-        dom.raccord(iface-dom.nb_bords()).valeur().faces().les_sommets().ref(new_faces);
+        dom.raccord(iface-dom.nb_bords())->faces().les_sommets().ref(new_faces);
     }
 
 }

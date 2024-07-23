@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ DoubleTab& Source_Qdm_EF::ajouter(DoubleTab& resu) const
 
   if (sub_type(Champ_Uniforme,la_source.valeur()))
     is_source_unif=1;
-  const DoubleTab& tab_source=la_source.valeur().valeurs();
+  const DoubleTab& tab_source=la_source->valeurs();
   for (int num_elem=0; num_elem<nb_elems; num_elem++)
     for (int comp=0; comp<ncomp; comp++)
       {

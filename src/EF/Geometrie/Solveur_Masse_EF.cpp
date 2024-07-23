@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -175,10 +175,10 @@ void Solveur_Masse_EF::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& l
 
 Matrice_Base& Solveur_Masse_EF::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
-  if (penalisation||(le_dom_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_EF->equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF->equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   inco.fixer_nature_du_champ(vectoriel);
@@ -190,11 +190,11 @@ Matrice_Base& Solveur_Masse_EF::ajouter_masse(double dt, Matrice_Base& matrice, 
 
 DoubleTab& Solveur_Masse_EF::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
-  if (penalisation||(le_dom_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_EF->equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
 
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF->equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
   inco.fixer_nature_du_champ(vectoriel);

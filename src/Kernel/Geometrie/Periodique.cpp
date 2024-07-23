@@ -97,7 +97,7 @@ void Periodique::completer()
   const int nb_faces_front_tot = tab_face_associee.size_totale();
   ArrOfInt index(nb_faces_front_tot);
   index = -2;
-  const int nb_faces_domaine = domaine_Cl_dis().domaine_dis().valeur().face_sommets().dimension(0);
+  const int nb_faces_domaine = domaine_Cl_dis().domaine_dis()->face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {
       const int face_domaine = frontiere.face_virt(i); // Indice d'une face du domaine

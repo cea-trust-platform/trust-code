@@ -127,7 +127,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
         {
           post.typer("Postraitement");
         }
-      post.valeur().associer_nom_et_pb_base("neant", mon_pb);
+      post->associer_nom_et_pb_base("neant", mon_pb);
       is >> post.valeur();
     }
   else if (lerang == 1 || lerang == 2 || lerang == 3 )
@@ -179,7 +179,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
 
           DERIV(Postraitement_base) & post = add( DERIV(Postraitement_base)() );
           post.typer(type);
-          post.valeur().associer_nom_et_pb_base(nom_du_post, mon_pb);
+          post->associer_nom_et_pb_base(nom_du_post, mon_pb);
           is >> post.valeur();
           /*
           // Check if statistic block is defined several times

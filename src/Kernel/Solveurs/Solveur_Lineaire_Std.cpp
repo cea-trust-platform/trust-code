@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ bool Solveur_Lineaire_Std::iterer_eqn(Equation_base& equation, const DoubleTab& 
   DoubleTrav    rhs(result);
   equation.dimensionner_matrice(matrix);
   equation.assembler_avec_inertie(matrix, inconnue, rhs);
-  solveur.valeur().reinit();
+  solveur->reinit();
   solveur.resoudre_systeme(matrix, rhs, result);
   return true;
 }

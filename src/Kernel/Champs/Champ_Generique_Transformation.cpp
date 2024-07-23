@@ -453,7 +453,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
 
 void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domaine_VF& zvf,const Motcle& loc,bool champ_normal_faces)
 {
-  const Nom& type_elem=zvf.domaine().type_elem().valeur().que_suis_je();
+  const Nom& type_elem=zvf.domaine().type_elem()->que_suis_je();
   if ((champ_normal_faces)||(loc!="elem")|| (type_elem!="Quadrangle"))
     {
       Cerr<<"option composante_normale not coded in this case"<<finl;

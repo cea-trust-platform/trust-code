@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
+  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
   int i, j, k, e, f, fb, a, nf_tot = domaine.nb_faces_tot(), idx;
 

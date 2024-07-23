@@ -367,7 +367,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       DoubleTrav xvf(compteur, Objet_U::dimension), ori(compteur, Objet_U::dimension);
       for (int i = 0; i < compteur; i++)
         for (int j = 0; j < Objet_U::dimension; j++) xvf(i, j) = xv(les_faces(i), j);
-      orientation.valeur().valeur_aux(xvf, ori);
+      orientation->valeur_aux(xvf, ori);
       for (int i = 0; i < compteur; i++)
         {
           double scal = 0;

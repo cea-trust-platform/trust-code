@@ -50,7 +50,7 @@ Entree& Masse_Multiphase::readOn(Entree& is)
     {
       int check_source_FICC(0);
       for (int ii = 0; ii < sources().size(); ii++)
-        if (sources()(ii).valeur().que_suis_je().debute_par("Flux_interfacial"))
+        if (sources()(ii)->que_suis_je().debute_par("Flux_interfacial"))
           check_source_FICC = 1;
       if (check_source_FICC == 0)
         {
@@ -100,13 +100,13 @@ Operateur& Masse_Multiphase::operateur(int i)
 void Masse_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Equation_base::dimensionner_matrice_sans_mem(matrice);
-  evanescence_.valeur().dimensionner(matrice);
+  evanescence_->dimensionner(matrice);
 }
 
 int Masse_Multiphase::has_interface_blocs() const
 {
   int ok = Convection_Diffusion_std::has_interface_blocs();
-  if (evanescence_.non_nul()) ok &= evanescence_.valeur().has_interface_blocs();
+  if (evanescence_.non_nul()) ok &= evanescence_->has_interface_blocs();
   return ok;
 }
 
@@ -114,13 +114,13 @@ int Masse_Multiphase::has_interface_blocs() const
 void Masse_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Equation_base::dimensionner_blocs(matrices, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->dimensionner_blocs(matrices, semi_impl);
 }
 
 void Masse_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Equation_base::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 /*! @brief Associe un milieu physique a l'equation, le milieu est en fait caste en Fluide_base
@@ -140,7 +140,7 @@ void Masse_Multiphase::associer_milieu_base(const Milieu_base& un_milieu)
 void Masse_Multiphase::completer()
 {
   Equation_base::completer();
-  terme_convectif.valeur().check_multiphase_compatibility();
+  terme_convectif->check_multiphase_compatibility();
 
   const Domaine_dis& zdis = domaine_dis();
   if (discretisation().is_vdf())
@@ -189,9 +189,9 @@ void Masse_Multiphase::discretiser()
   //On utilise temperature pour la directive car discretisation identique
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   dis.discretiser_champ("temperature",domaine_dis(),"alpha","sans_dimension", pb.nb_phases(),nb_valeurs_temp,temps,l_inco_ch_);
-  l_inco_ch_.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  l_inco_ch_->fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
-    l_inco_ch_.valeur().fixer_nom_compo(i, Nom("alpha_") + pb.nom_phase(i));
+    l_inco_ch_->fixer_nom_compo(i, Nom("alpha_") + pb.nom_phase(i));
   champs_compris_.ajoute_champ(l_inco_ch_);
   Equation_base::discretiser();
 

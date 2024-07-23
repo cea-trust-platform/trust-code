@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::completer()
   else
     Process::exit(Nom("Op_Diff_PolyMAC_P0P1NC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D) + ")!");
 
-  le_dom_poly_.valeur().domaine().creer_tableau_elements(nu_);
+  le_dom_poly_->domaine().creer_tableau_elements(nu_);
 }
 
 int Op_Diff_PolyMAC_P0P1NC_base::impr(Sortie& os) const
@@ -318,7 +318,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_aux(double t) const
       solv_aux->fixer_limpr(-1);
     }
 
-  solv_aux.valeur().reinit();
+  solv_aux->reinit();
   solv_aux.resoudre_systeme(mat_aux, secmem, inco);
   /* maj de var_aux / t_last_aux dans tous les operateurs */
   for (i = 0; i < n_ext; i++)

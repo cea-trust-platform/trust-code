@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch, Domaine
   unit[0] = "K2";
   unit[1] = "m2s-3";
   discretiser_champ("temperature", z.valeur(), multi_scalaire, noms, unit, 2, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
-  ch.valeur().nommer("Fluctu_Temperature");
+  ch->nommer("Fluctu_Temperature");
 }
 void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Inc& ch) const
 {

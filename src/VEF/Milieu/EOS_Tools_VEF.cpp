@@ -82,7 +82,7 @@ double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
   // La facon simple de faire serait celle-ci, mais c'est faux a cause de FAUX_EN_PERIO
   //  qui compte deux fois les volumes entrelaces des faces periodiques:
   DoubleVect un;
-  le_dom.valeur().creer_tableau_faces(un, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  le_dom->creer_tableau_faces(un, RESIZE_OPTIONS::NOCOPY_NOINIT);
   un = 1.;
   double y = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), un, FAUX_EN_PERIO);
   return x / y;

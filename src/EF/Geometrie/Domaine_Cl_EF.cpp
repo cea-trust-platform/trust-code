@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -211,7 +211,7 @@ void Domaine_Cl_EF::remplir_type_elem_Cl(const Domaine_EF& le_dom_EF)
         }
     }
   // On cree la connectivite sommet -> face de bord symetrie
-  if (equation().inconnue().valeur().nature_du_champ()==vectoriel)
+  if (equation().inconnue()->nature_du_champ()==vectoriel)
     {
       equation().probleme().discretisation().discretiser_champ("VITESSE",le_dom_EF,"normales_nodales","1",dimension,0.,normales_symetrie_);
       equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",le_dom_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_bis_);
@@ -243,7 +243,7 @@ void Domaine_Cl_EF::remplir_type_elem_Cl(const Domaine_EF& le_dom_EF)
               double norm_n=norme_array(n);
               n/=norm_n;
               for (int d=0; d<dimension; d++)
-                normales_symetrie_.valeur().valeurs()(som,d)=n[d];
+                normales_symetrie_->valeurs()(som,d)=n[d];
               //	    Cerr<<som<<" on doit annuler une premiere direction "<<n(0) << " " <<n(1)<<" "<<n(dimension==3?2:1)<<finl;
 
               for (int f=0; f<nbf; f++)
@@ -276,7 +276,7 @@ void Domaine_Cl_EF::remplir_type_elem_Cl(const Domaine_EF& le_dom_EF)
                       //	    Cerr<<som<<" on doit annuler une deuxieme direction "<<t1(0) << " " <<t1(1)<<" "<<t1(dimension==3?2:1)<<finl;
                       f=nbf;
                       for (int d=0; d<dimension; d++)
-                        normales_symetrie_bis_.valeur().valeurs()(som,d)=t1[d];
+                        normales_symetrie_bis_->valeurs()(som,d)=t1[d];
                       //assert(v==0);
                     }
 
@@ -309,14 +309,14 @@ void Domaine_Cl_EF::remplir_type_elem_Cl(const Domaine_EF& le_dom_EF)
                       if (!normales_symetrie_ter_.non_nul())
                         equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",le_dom_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_ter_);
                       for (int d=0; d<dimension; d++)
-                        normales_symetrie_ter_.valeur().valeurs()(som,d)=t2[d];
+                        normales_symetrie_ter_->valeurs()(som,d)=t2[d];
                       //exit();
                     }
                 }
             }
         }
-      normales_symetrie_.valeur().valeurs().echange_espace_virtuel();
-      normales_symetrie_bis_.valeur().valeurs().echange_espace_virtuel();
+      normales_symetrie_->valeurs().echange_espace_virtuel();
+      normales_symetrie_bis_->valeurs().echange_espace_virtuel();
       //exit();
     }
 }
@@ -335,8 +335,8 @@ void Domaine_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym)
   int nb_som_tot=z.nb_som_tot();
   assert(values.dimension_tot(0)==nb_som_tot);
 
-  const DoubleTab& n =normales_symetrie_.valeur().valeurs();
-  const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
+  const DoubleTab& n =normales_symetrie_->valeurs();
+  const DoubleTab& n_bis =normales_symetrie_bis_->valeurs();
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int som=0; som<nb_som_tot; som++)
@@ -344,7 +344,7 @@ void Domaine_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym)
       {
         for (int dir=0; dir<dirmax; dir++)
           {
-            const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
+            const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_->valeurs()));
             double prod=0;
             for (int d=0; d<dimension; d++)
               prod+=values(som,d)*nn(som,d);
@@ -360,8 +360,8 @@ void Domaine_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms&
   int nb_som_face=faces_sommets.dimension(1);
 
 
-  const DoubleTab& n =normales_symetrie_.valeur().valeurs();
-  const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
+  const DoubleTab& n =normales_symetrie_->valeurs();
+  const DoubleTab& n_bis =normales_symetrie_bis_->valeurs();
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   int nbcond=nb_cond_lim();
@@ -411,7 +411,7 @@ void Domaine_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms&
                     {
                       for (int dir=0; dir<dirmax; dir++)
                         {
-                          const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
+                          const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_->valeurs()));
                           double prod=0;
                           for (int d=0; d<dimension; d++)
                             prod+=values(som,d)*nn(som,d);
@@ -430,15 +430,15 @@ void Domaine_Cl_EF::modifie_gradient(ArrOfDouble& grad_mod, const ArrOfDouble& g
   assert(grad_mod.size_array()==dimension);
 
 
-  const DoubleTab& n =normales_symetrie_.valeur().valeurs();
-  const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
+  const DoubleTab& n =normales_symetrie_->valeurs();
+  const DoubleTab& n_bis =normales_symetrie_bis_->valeurs();
 
   assert ( type_sommet_[som]>=1);
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int dir=0; dir<dirmax; dir++)
     {
-      const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
+      const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_->valeurs()));
       double prod=0;
       for (int d=0; d<dimension; d++)
         prod+=grad[d]*nn(som,d);
@@ -460,8 +460,8 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
   int nb_som=z.nb_som();
   assert(secmem.dimension(0)==nb_som);
   int nb_comp=secmem.dimension(1);
-  const DoubleTab& n =normales_symetrie_.valeur().valeurs();
-  const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
+  const DoubleTab& n =normales_symetrie_->valeurs();
+  const DoubleTab& n_bis =normales_symetrie_bis_->valeurs();
   ArrOfDouble normale(dimension);
 
   const IntVect& tab1=la_matrice.get_tab1();
@@ -475,7 +475,7 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
       {
         for (int dir=0; dir<dirmax; dir++)
           {
-            const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
+            const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_->valeurs()));
             for (int d=0; d<dimension; d++) normale[d]=nn(som,d);
             // On commence par recalculer secmem=secmem-A *present pour pouvoir modifier A (on en profite pour projeter)
             int nb_coeff_ligne=tab1[som*nb_comp+1] - tab1[som*nb_comp];
@@ -657,7 +657,7 @@ void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
           const Dirichlet& la_cl_diri = ref_cast(Dirichlet,la_cl);
           if (sub_type(Champ_front_softanalytique,la_cl_diri.champ_front().valeur()))
             {
-              Cerr<<" Il faut utiliser Champ_front_fonc_txyz et non "<<la_cl_diri.champ_front().valeur().que_suis_je()<<finl;
+              Cerr<<" Il faut utiliser Champ_front_fonc_txyz et non "<<la_cl_diri.champ_front()->que_suis_je()<<finl;
               exit();
             }
           int avec_valeur_aux_sommets=0;

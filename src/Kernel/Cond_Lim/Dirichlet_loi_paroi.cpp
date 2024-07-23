@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ Entree& Dirichlet_loi_paroi::readOn(Entree& s) { le_champ_front.typer("Champ_fro
 
 void Dirichlet_loi_paroi::liste_faces_loi_paroi(IntTab& tab)
 {
-  int nf = la_frontiere_dis.valeur().frontiere().nb_faces(), f1 = la_frontiere_dis.valeur().frontiere().num_premiere_face();
+  int nf = la_frontiere_dis->frontiere().nb_faces(), f1 = la_frontiere_dis->frontiere().num_premiere_face();
   int N = tab.line_size();
 
   for (int f =0 ; f < nf ; f++)
@@ -52,6 +52,6 @@ void Dirichlet_loi_paroi::mettre_a_jour(double tps)
 int Dirichlet_loi_paroi::initialiser(double temps)
 {
   d_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
-  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(d_);
+  la_frontiere_dis->frontiere().creer_tableau_faces(d_);
   return 1;
 }

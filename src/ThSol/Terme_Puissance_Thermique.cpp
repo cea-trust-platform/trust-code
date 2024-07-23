@@ -60,8 +60,8 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());
-  la_puissance.valeur().valeurs() = 0;
-  la_puissance.valeur().affecter(ch_puissance_lu);
+  la_puissance->valeurs() = 0;
+  la_puissance->affecter(ch_puissance_lu);
 }
 
 void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base& eqn)
@@ -78,7 +78,7 @@ void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base&
 void Terme_Puissance_Thermique::mettre_a_jour(double temps)
 {
   la_puissance_lu.mettre_a_jour(temps);
-  la_puissance.valeur().affecter(la_puissance_lu.valeur());
+  la_puissance->affecter(la_puissance_lu.valeur());
 }
 
 void Terme_Puissance_Thermique::resetTime(double temps)

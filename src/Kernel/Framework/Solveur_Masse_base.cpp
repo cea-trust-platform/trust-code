@@ -110,8 +110,8 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
       else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
         {
           DoubleTab nodes;
-          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
-          ref_coeff.valeur().valeur_aux(nodes,values);
+          equation().inconnue()->remplir_coord_noeuds(nodes);
+          ref_coeff->valeur_aux(nodes,values);
         }
 
       Debog::verifier("Solveur_Masse_base::appliquer coeffs",values);

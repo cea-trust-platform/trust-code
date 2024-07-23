@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
     return 0;
   ch_inco_ = inco;
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  flow_rate_.valeur().initialiser(tps,inco);
+  flow_rate_->initialiser(tps,inco);
   if ( !sub_type(Champ_front_uniforme,flow_rate_.valeur()) && !sub_type(Ch_front_input_uniforme,flow_rate_.valeur()) && !sub_type(Champ_front_t,flow_rate_.valeur()) && !sub_type(Champ_front_Tabule,flow_rate_.valeur()))
     {
       Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nflow_rate must be of type champ_front_uniforme, ch_front_input_uniforme, champ_front_tabule or champ_front_fonc_t!" << finl;
@@ -58,8 +58,8 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
     }
   if (!flow_rate_alone_)
     {
-      velocity_profil_.valeur().initialiser(tps,inco);
-      if (velocity_profil_.valeur().nb_comp()!=dimension)
+      velocity_profil_->initialiser(tps,inco);
+      if (velocity_profil_->nb_comp()!=dimension)
         {
           Cerr << "\nError in Champ_front_xyz_debit::initialiser() \nvelocity_profil must have " << dimension << " components!" << finl;
           exit();
@@ -69,10 +69,10 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 
   // For tabular sizing only
   normal_vectors_=les_valeurs[0].valeurs();
-  integrale_.resize(flow_rate_.valeur().valeurs().line_size());
+  integrale_.resize(flow_rate_->valeurs().line_size());
   DoubleTab velocity_user;
   if (!flow_rate_alone_)
-    velocity_user=velocity_profil_.valeur().valeurs();
+    velocity_user=velocity_profil_->valeurs();
   calculer_normales_et_integrale(le_bord,velocity_user);
 
   // the flow rate Q_user and the velocity profil U_user are imposed on the boundary
@@ -130,7 +130,7 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
     for (int n = 0; n < N; ++n)
       for(int j = 0; j < dimension; j++)
         {
-          double v_mult = flow_rate_.valeur().valeurs_au_temps(temps)(0, n) / integrale_(n) ; //the profile/normals must be multiplied by this to get the correct inward flow
+          double v_mult = flow_rate_->valeurs_au_temps(temps)(0, n) / integrale_(n) ; //the profile/normals must be multiplied by this to get the correct inward flow
           double n_mult = flow_rate_alone_ ? normal_vectors_(i,j) : (velocity_user(velocity_user.size() > dimension ? i : 0, j));
           velocity_field(i, N * j + n) = v_mult * n_mult;
         }
@@ -138,28 +138,28 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
 
 void Champ_front_xyz_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
-  flow_rate_.valeur().associer_fr_dis_base(fr);
+  flow_rate_->associer_fr_dis_base(fr);
 //  Cerr << "Champ_front_xyz_debit::associer_fr_dis_base flow_rate_alone_ " << flow_rate_alone_ << finl;
   if (!flow_rate_alone_)
-    velocity_profil_.valeur().associer_fr_dis_base(fr);
+    velocity_profil_->associer_fr_dis_base(fr);
   Champ_front_normal::associer_fr_dis_base(fr);
 }
 
 void Champ_front_xyz_debit::set_temps_defaut(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::set_temps_defaut" << finl;
-  flow_rate_.valeur().set_temps_defaut(temps);
+  flow_rate_->set_temps_defaut(temps);
   if (!flow_rate_alone_)
-    velocity_profil_.valeur().set_temps_defaut(temps);
+    velocity_profil_->set_temps_defaut(temps);
   Champ_front_normal::set_temps_defaut(temps);
 }
 
 void Champ_front_xyz_debit::fixer_nb_valeurs_temporelles(int nb_cases)
 {
 //  Cerr << "Champ_front_xyz_debit::fixer_nb_valeurs_temporelles" << finl;
-  flow_rate_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
+  flow_rate_->fixer_nb_valeurs_temporelles(nb_cases);
   if (!flow_rate_alone_)
-    velocity_profil_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
+    velocity_profil_->fixer_nb_valeurs_temporelles(nb_cases);
   Champ_front_normal::fixer_nb_valeurs_temporelles(nb_cases);
 }
 
@@ -167,9 +167,9 @@ void Champ_front_xyz_debit::changer_temps_futur(double temps,int i)
 {
 //  Cerr << "Champ_front_xyz_debit::changer_temps_futur" << finl;
   Champ_front_normal::changer_temps_futur(temps,i);
-  flow_rate_.valeur().changer_temps_futur(temps,i);
+  flow_rate_->changer_temps_futur(temps,i);
   if (!flow_rate_alone_)
-    velocity_profil_.valeur().changer_temps_futur(temps,i);
+    velocity_profil_->changer_temps_futur(temps,i);
 }
 
 /*! @brief Turn the wheel of the CL
@@ -179,9 +179,9 @@ int Champ_front_xyz_debit::avancer(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::avancer" << finl;
   Champ_front_normal::avancer(temps);
-  if (flow_rate_.valeur().avancer(temps))
+  if (flow_rate_->avancer(temps))
     if (!flow_rate_alone_)
-      return velocity_profil_.valeur().avancer(temps);
+      return velocity_profil_->avancer(temps);
     else
       return 1;
   else
@@ -195,9 +195,9 @@ int Champ_front_xyz_debit::reculer(double temps)
 {
 //  Cerr << "Champ_front_xyz_debit::reculer" << finl;
   Champ_front_normal::reculer(temps);
-  if (flow_rate_.valeur().reculer(temps))
+  if (flow_rate_->reculer(temps))
     if (!flow_rate_alone_)
-      return velocity_profil_.valeur().reculer(temps);
+      return velocity_profil_->reculer(temps);
     else
       return 1;
   else
@@ -210,11 +210,11 @@ void Champ_front_xyz_debit::mettre_a_jour(double temps)
   if (update_coeff_) update_coeff(temps);
   DoubleTab velocity_user;
 
-  flow_rate_.valeur().mettre_a_jour(temps);
+  flow_rate_->mettre_a_jour(temps);
   if (!flow_rate_alone_)
     {
-      velocity_profil_.valeur().mettre_a_jour(temps);
-      velocity_user=velocity_profil_.valeur().valeurs_au_temps(temps);
+      velocity_profil_->mettre_a_jour(temps);
+      velocity_user=velocity_profil_->valeurs_au_temps(temps);
     }
   else
     {

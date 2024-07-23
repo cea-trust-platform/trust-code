@@ -105,7 +105,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
 
-      if( loiparth.valeur().use_equivalent_distance() )
+      if( loiparth->use_equivalent_distance() )
         {
           // const Paroi_scal_hyd_base_VEF& paroi_scal_vef = ref_cast(Paroi_scal_hyd_base_VEF,loiparth.valeur());
 
@@ -132,14 +132,14 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
                 {
                   ldp_appli=1;
                   // if (paroi_scal_vef.get_flag_calcul_ldp_en_flux_impose() )
-                  if (loiparth.valeur().get_flag_calcul_ldp_en_flux_impose() )
+                  if (loiparth->get_flag_calcul_ldp_en_flux_impose() )
                     ldp_appli=0;
                 }
 
               if (ldp_appli)
                 {
                   // const DoubleVect& d_equiv = paroi_scal_vef.equivalent_distance(n_bord);
-                  const DoubleVect& d_equiv = loiparth.valeur().equivalent_distance(n_bord);
+                  const DoubleVect& d_equiv = loiparth->equivalent_distance(n_bord);
                   // d_equiv contient la distance equivalente pour le bord
                   // Dans d_equiv, pour les faces qui ne sont pas paroi_fixe (eg periodique, symetrie, etc...)
                   // il y a la distance geometrique grace a l'initialisation du tableau dans la loi de paroi.

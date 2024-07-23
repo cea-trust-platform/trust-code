@@ -191,10 +191,10 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
     }
   if (n > 0)
     {
-      if (omega_.valeur().valeurs().dimension(0) != 1
-          || domegadt_.valeur().valeurs().dimension(0) != 1
-          || omega_.valeur().valeurs().dimension(1) != 3
-          || domegadt_.valeur().valeurs().dimension(1) != 3)
+      if (omega_->valeurs().dimension(0) != 1
+          || domegadt_->valeurs().dimension(0) != 1
+          || omega_->valeurs().dimension(1) != 3
+          || domegadt_->valeurs().dimension(1) != 3)
         {
           Cerr << "Erreur dans Terme_Source_Acceleration::lire_data" << finl;
           Cerr << " les champs OMEGA et DOMEGADT doivent etre des champs" << finl;
@@ -205,7 +205,7 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
     }
   if (champ_acceleration_.non_nul())
     {
-      if (champ_acceleration_.valeur().valeurs().dimension(0) != 1)
+      if (champ_acceleration_->valeurs().dimension(0) != 1)
         {
           Cerr << "Erreur dans Terme_Source_Acceleration::lire_data" << finl;
           Cerr << " Le champ ACCELERATION doit etre un champ uniforme" << finl;
@@ -283,7 +283,7 @@ Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces)
 
     if (champ_acceleration_.non_nul())
       {
-        const DoubleTab& a_ = champ_acceleration_.valeur().valeurs();
+        const DoubleTab& a_ = champ_acceleration_->valeurs();
         for (j = 0; j < dim; j++)
           a[j] = a_(0, j);
       }
@@ -291,9 +291,9 @@ Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces)
     if (omega_.non_nul())
       {
         // L'utilisateur a specifie un mouvement de rotation solide
-        const DoubleTab& champ_w  = omega_          .valeur().valeurs();
-        const DoubleTab& champ_dw = domegadt_       .valeur().valeurs();
-        const DoubleTab& champ_c  = centre_rotation_.valeur().valeurs();
+        const DoubleTab& champ_w  = omega_          ->valeurs();
+        const DoubleTab& champ_dw = domegadt_       ->valeurs();
+        const DoubleTab& champ_c  = centre_rotation_->valeurs();
         // Attention: en 2D, le vecteur rotation est typiquement oriente
         // dans la direction Z : donc boucle jusqu'a 3 dans tous les cas:
         for (j = 0; j < 3; j++) w[j]  = champ_w(0,j);

@@ -148,7 +148,7 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
       Process::exit();
     }
 
-  DoubleTab& gradP=gradient_pression.valeur().valeurs();
+  DoubleTab& gradP=gradient_pression->valeurs();
   DoubleTrav Mmoins1grad(gradP);
 
   // We use the incremental pressure-projection algorithm (Chorin)
@@ -287,14 +287,14 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   // sources
   statistiques().begin_count(source_counter_);
   for (int i = 0; i < eqn.sources().size(); i++)
-    eqn.sources()(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+    eqn.sources()(i)->ajouter_blocs(matrices, secmem, semi_impl);
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
   // on resout en rho u on stocke donc rho u dans present
   rho_vitesse_impl(tab_rho_face_np1,present,ref_cast_non_const(DoubleTab,present));
   mat->ajouter_multvect(present,secmem);
-  eqn.operateur_gradient().valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  eqn.operateur_gradient()->ajouter_blocs(matrices, secmem, semi_impl);
 
   /*
    * contribution a la matrice de l'inertie :
@@ -454,7 +454,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& vit = eqn.vitesse().valeurs();
   const Conds_lim& lescl=eqn.domaine_Cl_dis().les_conditions_limites();
-  const IntTab& face_voisins = eqn.domaine_dis().valeur().face_voisins();
+  const IntTab& face_voisins = eqn.domaine_dis()->face_voisins();
   const int taille = vpoint.line_size();
 
   if (taille==1)

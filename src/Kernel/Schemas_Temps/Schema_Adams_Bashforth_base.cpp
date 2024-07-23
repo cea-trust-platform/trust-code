@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,10 +75,10 @@ void Schema_Adams_Bashforth_base::modifier_second_membre(const Equation_base& eq
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset   =  nb_valeurs_passees()-i;
-          times[i] =  eqn_bis.inconnue().valeur().recuperer_temps_passe(offset); //past
+          times[i] =  eqn_bis.inconnue()->recuperer_temps_passe(offset); //past
         }
-      times[nb_valeurs_passees()]   = eqn_bis.inconnue().valeur().recuperer_temps_futur(0); //present
-      times[nb_valeurs_passees()+1] = eqn_bis.inconnue().valeur().recuperer_temps_futur(1); //future
+      times[nb_valeurs_passees()]   = eqn_bis.inconnue()->recuperer_temps_futur(0); //present
+      times[nb_valeurs_passees()+1] = eqn_bis.inconnue()->recuperer_temps_futur(1); //future
 
       compute_coefficients(time_step,times);
 

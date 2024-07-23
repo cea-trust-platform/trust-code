@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -236,8 +236,8 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
         assert(0);
 
       // Calcul du terme source aux points d'integration :
-      la_source.valeur().valeur_aux_elems(les_positions,les_polygones,
-                                          valeurs_source);
+      la_source->valeur_aux_elems(les_positions,les_polygones,
+                                  valeurs_source);
       bool RT = sub_type(VEF_discretisation, equation().discretisation()) && (ref_cast(VEF_discretisation, equation().discretisation()).get_alphaRT() );
       if (!RT)
         {

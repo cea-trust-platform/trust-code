@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ void Op_Dift_EF_Q1::remplir_marqueur_elem_CL_paroi(ArrOfInt& marqueur,const Doma
 {
   const IntTab& face_voisins=domaine_EF.face_voisins();
   marqueur.resize_array(domaine_EF.nb_elem_tot());
-  if (!(le_modele_turbulence.valeur().utiliser_loi_paroi())) return;
+  if (!(le_modele_turbulence->utiliser_loi_paroi())) return;
 
   int nb_bords=domaine_EF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
@@ -130,7 +130,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu
   int nb_som_elem=domaine_ef.domaine().nb_som_elem();
 
   int N = resu.line_size();
-  Nature_du_champ nat= equation().inconnue().valeur().nature_du_champ();
+  Nature_du_champ nat= equation().inconnue()->nature_du_champ();
   if (nat==vectoriel)
     {
       if ((dimension==3)&&(nb_som_elem==8))
@@ -468,7 +468,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
           if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
               sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) )
             {
-              if (le_modele_turbulence.valeur().utiliser_loi_paroi())
+              if (le_modele_turbulence->utiliser_loi_paroi())
                 {
                   DoubleVect n(dimension);
                   DoubleTrav Tgrad(dimension,dimension);

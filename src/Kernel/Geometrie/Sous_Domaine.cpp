@@ -1036,10 +1036,10 @@ int Sous_Domaine::add_poly(const int poly)
 int Sous_Domaine::remove_poly(const int poly)
 {
   assert(0<=poly);
-  assert(poly<=le_dom_.valeur().nb_elem());
+  assert(poly<=le_dom_->nb_elem());
   int nb_poly=les_polys_.size();
   IntVect les_polys_tmp;
-  les_polys_tmp.resize(le_dom_.valeur().nb_elem());
+  les_polys_tmp.resize(le_dom_->nb_elem());
   int compteur=0;
   for(int i=0; i<nb_poly; i++)
     if(les_polys_(i)!=poly)

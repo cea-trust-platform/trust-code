@@ -311,7 +311,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   Champ_P1NC::calcul_gradient(inconnue,grad_,domaine_Cl_VEF);
 
   /* ToDo OpenMP : factoriser avec Op_Dift_VEF_Face.cpp dans une classe template
-  if (le_modele_turbulence.valeur().utiliser_loi_paroi())
+  if (le_modele_turbulence->utiliser_loi_paroi())
    {
       Champ_P1NC::calcul_duidxj_paroi(grad_,nu,nu_turb,tau_tan_,domaine_Cl_VEF);
       grad_.echange_espace_virtuel(); // gradient_elem a jour sur les elements virtuels
@@ -320,7 +320,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   Re.resize(0, Objet_U::dimension, Objet_U::dimension);
   domaine_VEF.domaine().creer_tableau_elements(Re);
   Re = 0.;
-  if (le_modele_turbulence.valeur().calcul_tenseur_Re(nu_turb, grad_, Re))
+  if (le_modele_turbulence->calcul_tenseur_Re(nu_turb, grad_, Re))
   {
       Cerr << "On utilise une diffusion turbulente non linaire dans NS" << finl;
       for (int elem=0; elem<nb_elem; elem++)

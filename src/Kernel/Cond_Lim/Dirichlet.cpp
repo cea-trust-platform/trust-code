@@ -104,7 +104,7 @@ void Dirichlet::verifie_ch_init_nb_comp() const
   if (le_champ_front.non_nul())
     {
       const Equation_base& eq = domaine_Cl_dis().equation();
-      const int nb_comp = le_champ_front.valeur().nb_comp();
+      const int nb_comp = le_champ_front->nb_comp();
       eq.verifie_ch_init_nb_comp_cl(eq.inconnue(), nb_comp, *this);
     }
 }

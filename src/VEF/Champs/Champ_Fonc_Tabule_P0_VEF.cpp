@@ -50,7 +50,7 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
 
   // Estimate the field parameter on cells:
   for (int i = 0; i < nb_param; i++)
-    les_ch_param[i].valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_params_aux_elems[i]);
+    les_ch_param[i]->valeur_aux_elems(centres_de_gravites, les_polys, val_params_aux_elems[i]);
   // Compute the field according to the parameter field
   if (table.isfonction() != 2)
     {

@@ -82,7 +82,7 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
       pb.get_noms_champs_postraitables(liste_noms);
       pb.creer_champ(nom_champ_);
       ref_champ = pb.get_champ(nom_champ_);
-      ref_champ.valeur().corriger_unite_nom_compo();
+      ref_champ->corriger_unite_nom_compo();
       set_ref_champ(ref_champ.valeur());
       return 1;
     }

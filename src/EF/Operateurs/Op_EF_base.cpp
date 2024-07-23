@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -338,7 +338,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
 
   // On modifie pour la symetrie
 
-  if (le_dom_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
+  if (le_dom_cl.equation().inconnue()->nature_du_champ()==vectoriel)
     {
       le_dom_cl.imposer_symetrie_matrice_secmem(la_matrice,secmem);
     }

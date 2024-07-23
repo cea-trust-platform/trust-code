@@ -71,7 +71,7 @@ Entree& QDM_Multiphase::readOn(Entree& is)
       exit();
     }
   divergence.set_description((Nom)"Mass flow rate=Integral(rho*u*ndS) [kg.s-1]");
-  terme_convectif.valeur().set_incompressible(0);
+  terme_convectif->set_incompressible(0);
 
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   if (evanescence_.est_nul() && pb.nb_phases() > 1)
@@ -117,13 +117,13 @@ int QDM_Multiphase::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 void QDM_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Navier_Stokes_std::dimensionner_matrice_sans_mem(matrice);
-  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner(matrice);
+  if (evanescence_.non_nul()) evanescence_->dimensionner(matrice);
 }
 
 int QDM_Multiphase::has_interface_blocs() const
 {
   int ok = Navier_Stokes_std::has_interface_blocs();
-  if (evanescence_.non_nul()) ok &= evanescence_.valeur().has_interface_blocs();
+  if (evanescence_.non_nul()) ok &= evanescence_->has_interface_blocs();
   return ok;
 }
 
@@ -131,13 +131,13 @@ int QDM_Multiphase::has_interface_blocs() const
 void QDM_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Navier_Stokes_std::dimensionner_blocs(matrices, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->dimensionner_blocs(matrices, semi_impl);
 }
 
 void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Navier_Stokes_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 void QDM_Multiphase::mettre_a_jour(double temps)
@@ -200,9 +200,9 @@ void QDM_Multiphase::mettre_a_jour(double temps)
       }
   if (gradient_P.non_nul())
     {
-      gradient_P.valeur().valeurs() = 0;
-      gradient.valeur().ajouter(la_pression.valeur().valeurs(), gradient_P.valeur().valeurs());
-      solv_masse().valeur().appliquer_impl(gradient_P.valeur().valeurs());
+      gradient_P->valeurs() = 0;
+      gradient->ajouter(la_pression->valeurs(), gradient_P->valeurs());
+      solv_masse()->appliquer_impl(gradient_P->valeurs());
     }
 }
 

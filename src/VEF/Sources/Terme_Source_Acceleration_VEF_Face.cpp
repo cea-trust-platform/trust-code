@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int dernie
   // Pointeur constant sur tableau constant.
   // Pointeur nul si ref_rho_ est une reference nulle.
   const DoubleTab * const rho_elem =
-    (ref_rho.non_nul()) ? &(ref_rho.valeur().valeurs()) : 0;
+    (ref_rho.non_nul()) ? &(ref_rho->valeurs()) : 0;
   const int dim = Objet_U::dimension;
 
   for (num_face=premiere_face; num_face<derniere_face; num_face++)
@@ -142,7 +142,7 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
 
-  DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();
+  DoubleTab& s_face = get_set_terme_source_post()->valeurs();
   s_face = 0.;
 
   // Calcul de la_source_ en fonction des champs d'acceleration et de la
@@ -237,7 +237,7 @@ const DoubleTab& Terme_Source_Acceleration_VEF_Face::calculer_vitesse_faces(
   DoubleTab& v_faces_stockage) const
 {
   const Champ_Inc& v_faces = get_eq_hydraulique().inconnue();
-  return v_faces.valeur().valeurs();
+  return v_faces->valeurs();
 }
 
 /*! @brief Associe le champ de masse volumique=> Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).

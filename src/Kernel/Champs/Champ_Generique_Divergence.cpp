@@ -104,7 +104,7 @@ const Champ_base& Champ_Generique_Divergence::get_champ(Champ& espace_stockage) 
 Entity Champ_Generique_Divergence::get_localisation(const int index) const
 {
   Entity loc;
-  Nom type_op = Op_Div_.valeur().que_suis_je();
+  Nom type_op = Op_Div_->que_suis_je();
   if (((type_op=="Op_Div_VEF_P1NC") || (type_op=="Op_Div_VDF_Face")) && (index <= 0))
     loc = Entity::ELEMENT;
   else

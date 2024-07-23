@@ -341,7 +341,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   //////////////////////////////////////////////////////////////////////////////////////
   // boucle sur les polys
   //////////////////////////////////////////////////////////////////////////////////////
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem; poly++)
     {
       rang = rang_elem_non_std(poly);

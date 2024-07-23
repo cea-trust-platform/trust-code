@@ -107,7 +107,7 @@ void Perte_Charge_Anisotrope_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u, 
   // Calcul de v et ||v||^2
   //  DoubleVect v_valeur(dimension);
   double vcarre=0;
-  v.valeur().valeur_a(pos,v_valeur);
+  v->valeur_a(pos,v_valeur);
   for (int dim=0; dim<dimension; dim++)
     vcarre+=v_valeur[dim]*v_valeur[dim];
   v_valeur/=sqrt(vcarre);

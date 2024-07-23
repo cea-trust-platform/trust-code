@@ -125,10 +125,10 @@ void Loi_Etat_base::calculer_mu()
     {
       // E. Saikali : Pourquoi pas Champ_fonc_xyz pour mu ???
       if (sub_type(Champ_Fonc_Tabule,mu.valeur()) || sub_type(Champ_Don_base,mu.valeur()))
-        mu.mettre_a_jour(temperature_.valeur().temps());
+        mu.mettre_a_jour(temperature_->temps());
       else
         {
-          Cerr<<"The viscosity field mu of type "<<mu.valeur().que_suis_je()<<" is not recognized.";
+          Cerr<<"The viscosity field mu of type "<<mu->que_suis_je()<<" is not recognized.";
           Process::exit();
         }
     }
@@ -174,7 +174,7 @@ void Loi_Etat_base::calculer_nu()
   DoubleTab& tab_nu = nu.valeurs();
 
   int n = tab_nu.size(), isVDF=0;
-  if (nu.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (nu->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
 
   if (isVDF)
     {

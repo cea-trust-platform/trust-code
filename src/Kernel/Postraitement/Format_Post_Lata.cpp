@@ -743,7 +743,7 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
       Cerr << "Error in Format_Post_Lata::ecrire_domaine\n" << " status = RESET. Uninitialized object" << finl;
       Process::exit();
     }
-  Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
+  Motcle type_elem = domaine.type_elem()->que_suis_je();
 
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 

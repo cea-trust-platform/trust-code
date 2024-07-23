@@ -95,7 +95,7 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
   // remplissage du domaine cl modifiee avec 1 partout au bord...
   zcl_modif_ = domaine_Cl_dis();
 
-  Conds_lim& condlims = zcl_modif_.valeur().les_conditions_limites();
+  Conds_lim& condlims = zcl_modif_->les_conditions_limites();
   int nb = condlims.size();
   for (int i = 0; i < nb; i++)
     {
@@ -106,12 +106,12 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
         }
       if (sub_type(Dirichlet, condlims[i].valeur()))
         {
-          const Frontiere_dis_base& frdis = condlims[i].valeur().frontiere_dis();
+          const Frontiere_dis_base& frdis = condlims[i]->frontiere_dis();
           EChaine toto(" Champ_front_uniforme 1 1");
           toto >> condlims[i].valeur();
-          condlims[i].valeur().associer_fr_dis_base(frdis);
+          condlims[i]->associer_fr_dis_base(frdis);
         }
-      DoubleTab& T = condlims[i].valeur().champ_front().valeurs();
+      DoubleTab& T = condlims[i]->champ_front().valeurs();
       T = 1.;
     }
 }
@@ -263,7 +263,7 @@ void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices
 
   statistiques().begin_count(source_counter_);
   for (int i = 0; i < sources().size(); i++)
-    sources()(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+    sources()(i)->ajouter_blocs(matrices, secmem, semi_impl);
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);

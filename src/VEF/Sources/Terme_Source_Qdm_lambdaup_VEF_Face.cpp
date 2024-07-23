@@ -146,7 +146,7 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   const DoubleVect& volumes_entrelaces=domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const DoubleTab& vitesse=la_vitesse.valeur().valeurs();
+  const DoubleTab& vitesse=la_vitesse->valeurs();
   DoubleTab ubar(vitesse);
   DoubleTab uprime(vitesse);
   const int nb_faces = domaine_VEF.nb_faces();
@@ -154,7 +154,7 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
 
   int nb_comp = resu.line_size();
 
-  la_vitesse.valeur().filtrer_L2(ubar);
+  la_vitesse->filtrer_L2(ubar);
   uprime-=ubar;
   double normbar=mp_norme_vect(ubar);
   double normprim=mp_norme_vect(uprime);
@@ -183,7 +183,7 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
           }
       }
 
-  double dt=la_vitesse.valeur().equation().schema_temps().pas_de_temps();
+  double dt=la_vitesse->equation().schema_temps().pas_de_temps();
   resu.ajoute(-lambda/dt, uprime);
   rapport_old=rapport;
   return resu;
@@ -248,7 +248,7 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_H1(const DoubleTab& vitesse) co
 
 double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2_H1(const DoubleTab& u) const
 {
-  double pas_de_temps = la_vitesse.valeur().equation().schema_temps().pas_de_temps();
+  double pas_de_temps = la_vitesse->equation().schema_temps().pas_de_temps();
 
   return ((1./pas_de_temps)*norme_L2(u))+norme_H1(u);
 }

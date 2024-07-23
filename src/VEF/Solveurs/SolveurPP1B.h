@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,12 +31,12 @@ public :
   inline void reinit() override
   {
     SolveurSys_base::reinit();
-    solveur_pression_.valeur().reinit();
+    solveur_pression_->reinit();
   }
 
   int associer(const Assembleur_P_VEFPreP1B&, const SolveurSys&);
-  inline int solveur_direct() const override { return solveur_pression_.valeur().solveur_direct(); }
-  inline void fixer_schema_temps_limpr(int l) override { solveur_pression_.valeur().fixer_schema_temps_limpr(l); }
+  inline int solveur_direct() const override { return solveur_pression_->solveur_direct(); }
+  inline void fixer_schema_temps_limpr(int l) override { solveur_pression_->fixer_schema_temps_limpr(l); }
 
 protected :
   SolveurSys solveur_pression_;

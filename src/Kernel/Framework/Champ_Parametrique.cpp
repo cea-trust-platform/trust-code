@@ -49,7 +49,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
       Champ_Don ch;
       fic >> ch;
       champs_.add(ch);
-      //Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl;
+      //Cerr << "[Parameter] Reading: " << ch->que_suis_je() << finl;
       fic >> motlu;
       // Pour eviter de surcharger plusieurs methodes de Champ_Don_base:
       fixer_nb_comp(ch.nb_comp());
@@ -69,10 +69,10 @@ std::string Champ_Parametrique::newCompute() const
       if (index_)
         {
           previous_field = " from ";
-          previous_field += champ().valeur().que_suis_je();
+          previous_field += champ()->que_suis_je();
         }
       index_++;
-      Nom next_field = champ().valeur().que_suis_je();
+      Nom next_field = champ()->que_suis_je();
       Cerr << "[Parameter] Updating field" << previous_field << " to " << next_field << finl;
       return Champ_Parametrique::dirnameCompute(index_);
     }

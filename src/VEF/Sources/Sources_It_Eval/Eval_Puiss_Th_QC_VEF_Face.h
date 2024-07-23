@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard(const int 
   const int size = source.size_array();
   if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
 
-  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+  if (sub_type(Champ_Uniforme, la_puissance->valeur()))
     for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces[num_face] * porosite_surf[num_face];
   else
     {
@@ -77,7 +77,7 @@ inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard(int nu
   const int size = source.size_array();
   if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
 
-  if (sub_type(Champ_Uniforme, la_puissance.valeur().valeur()))
+  if (sub_type(Champ_Uniforme, la_puissance->valeur()))
     for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces_Cl[num_face] * porosite_surf(num_face);
   else
     {

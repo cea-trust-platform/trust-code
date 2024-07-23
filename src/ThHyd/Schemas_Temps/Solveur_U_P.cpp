@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,13 +100,13 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
       eqnNS.dimensionner_matrice(matrice);
       eqnNS.assembler_avec_inertie(matrice,current,residu_parts[0]);
-      gradient.valeur().dimensionner( mat_grad);
-      gradient.valeur().contribuer_a_avec(pression, mat_grad);
+      gradient->dimensionner( mat_grad);
+      gradient->contribuer_a_avec(pression, mat_grad);
       mat_grad.get_set_coeff()*=-1;
       /* pour repasser en increments */
       residu_parts[0]*=-1;
       matrice.ajouter_multvect(current, residu_parts[0]);
-      gradient.valeur().ajouter(pression,residu_parts[0]);
+      gradient->ajouter(pression,residu_parts[0]);
       residu_parts[0]*=-1;
     }
 
@@ -116,8 +116,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
       Operateur_Div& divergence = eqnNS.operateur_divergence();
       Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
       Matrice_Morse& mat_div=ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
-      divergence.valeur().dimensionner(mat_div);
-      divergence.valeur().contribuer_a_avec( current,mat_div);
+      divergence->dimensionner(mat_div);
+      divergence->contribuer_a_avec( current,mat_div);
       divergence.calculer(current, residu_parts[1]);
 
       Matrice_global.get_bloc(1,1).typer("Matrice_Diagonale");
@@ -138,8 +138,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
         mat_grad.get_set_tab1()(i) = mat_grad.get_tab1()(i - 1);
       mat_div.set_nb_columns(n - 1);
 
-      le_solveur_.valeur().reinit();
-      le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
+      le_solveur_->reinit();
+      le_solveur_->resoudre_systeme(Matrice_global,residu,Inconnues);
 
       //Calcul de Uk = U*_k + U'k
       current  += Inconnues_parts[0];
@@ -187,8 +187,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
           mat_div_p.dimensionner(mat_div_v.nb_lignes());
           if (!has_P_ref && !Process::me()) mat_div_p.coeff(0, 0) += 1; //revient a imposer P(0) = 0
         }
-      le_solveur_.valeur().reinit();
-      le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
+      le_solveur_->reinit();
+      le_solveur_->resoudre_systeme(Matrice_global,residu,Inconnues);
 
       //Calcul de Uk = U*_k + U'k
       current  += Inconnues_parts[0];

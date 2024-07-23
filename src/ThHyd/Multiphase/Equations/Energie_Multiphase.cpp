@@ -55,7 +55,7 @@ Entree& Energie_Multiphase::readOn(Entree& is)
     {
       int check_source_FICC(0);
       for (int ii = 0; ii < sources().size(); ii++)
-        if (sources()(ii).valeur().que_suis_je().debute_par("Flux_interfacial"))
+        if (sources()(ii)->que_suis_je().debute_par("Flux_interfacial"))
           check_source_FICC = 1;
       if (check_source_FICC == 0)
         {
@@ -110,9 +110,9 @@ void Energie_Multiphase::discretiser()
   Cerr << "Energy equation discretization " << finl;
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   dis.temperature(schema_temps(), domaine_dis(), l_inco_ch_, pb.nb_phases());
-  l_inco_ch_.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  l_inco_ch_->fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
-    l_inco_ch_.valeur().fixer_nom_compo(i, Nom("temperature_") + pb.nom_phase(i));
+    l_inco_ch_->fixer_nom_compo(i, Nom("temperature_") + pb.nom_phase(i));
   champs_compris_.ajoute_champ(l_inco_ch_);
   Equation_base::discretiser();
   Cerr << "Energie_Multiphase::discretiser() ok" << finl;
@@ -233,13 +233,13 @@ void Energie_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 void Energie_Multiphase::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Convection_Diffusion_std::dimensionner_matrice_sans_mem(matrice);
-  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner(matrice);
+  if (evanescence_.non_nul()) evanescence_->dimensionner(matrice);
 }
 
 int Energie_Multiphase::has_interface_blocs() const
 {
   int ok = Convection_Diffusion_std::has_interface_blocs();
-  if (evanescence_.non_nul()) ok &= evanescence_.valeur().has_interface_blocs();
+  if (evanescence_.non_nul()) ok &= evanescence_->has_interface_blocs();
   return ok;
 }
 
@@ -247,13 +247,13 @@ int Energie_Multiphase::has_interface_blocs() const
 void Energie_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Convection_Diffusion_std::dimensionner_blocs(matrices, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().dimensionner_blocs(matrices, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->dimensionner_blocs(matrices, semi_impl);
 }
 
 void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Convection_Diffusion_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
-  if (evanescence_.non_nul()) evanescence_.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (evanescence_.non_nul()) evanescence_->ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 
@@ -348,7 +348,7 @@ void Energie_Multiphase::init_champ_convecte() const
   if (champ_convecte_.non_nul()) return; //deja fait
   int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
   //champ_convecte_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_convecte_, domaine_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_convecte_, domaine_dis().valeur(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
   champ_convecte_->nommer(nom_fonc.first);

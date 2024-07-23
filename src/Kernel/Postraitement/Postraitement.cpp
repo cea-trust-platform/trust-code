@@ -1014,7 +1014,7 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
       if ((motlu2=="elem") || (motlu2=="som") || (motlu2=="faces"))
         {
           //Prise en compte des pb_med
-          if (mon_probleme.valeur().que_suis_je()!="Pb_MED")
+          if (mon_probleme->que_suis_je()!="Pb_MED")
             creer_champ_post(motlu,motlu2,s);
           else
             creer_champ_post_med(motlu,motlu2,s);
@@ -1927,13 +1927,13 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   Entree_complete s_complete(ajout,s);
   s_complete>>champ;
 
-  //if ((le_domaine.valeur().le_nom()!=mon_probleme.valeur().domaine().le_nom()) && ((motlu2!="natif"))) {
+  //if ((le_domaine->le_nom()!=mon_probleme->domaine().le_nom()) && ((motlu2!="natif"))) {
   {
 
     if ((motlu2!="natif")&&(motlu2!="faces"))
       {
         Champ_Generique_Interpolation& champ_interp = ref_cast(Champ_Generique_Interpolation,champ.valeur());
-        champ_interp.set_domaine(le_domaine.valeur().le_nom());
+        champ_interp.set_domaine(le_domaine->le_nom());
         // champ_interp.discretiser_domaine(*this);
       }
   }
@@ -1976,7 +1976,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
     }
 
 
-  nom_champ = Motcle(nom_champ_ref)+"_"+motlu2+"_"+le_domaine.valeur().le_nom();
+  nom_champ = Motcle(nom_champ_ref)+"_"+motlu2+"_"+le_domaine->le_nom();
   champ->nommer(nom_champ);
 
   //On nomme la source d un Champ_Generique_Interpolation cree par macro
@@ -2031,18 +2031,18 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   if (motlu2!="natif")
     {
       if (motlu2!="faces")
-        nom_champ_a_post = motlu1+"_"+motlu2+"_"+le_domaine.valeur().le_nom();
+        nom_champ_a_post = motlu1+"_"+motlu2+"_"+le_domaine->le_nom();
       else
         //Dans le cas d une localisation aux faces on test s il s agit d une composante ou du champ
         {
           int ncomp = Champ_Generique_base::composante(motlu1,nom_champ_ref,composantes,source_syno);
           if (ncomp==-1)
-            nom_champ_a_post = motlu1+"_"+motlu2+"_"+le_domaine.valeur().le_nom();
+            nom_champ_a_post = motlu1+"_"+motlu2+"_"+le_domaine->le_nom();
           else
             {
               //On determine le numero de composante
               Nom nume(ncomp);
-              nom_champ_a_post = nom_champ_ref+"_"+motlu2+"_"+le_domaine.valeur().le_nom()+nume;
+              nom_champ_a_post = nom_champ_ref+"_"+motlu2+"_"+le_domaine->le_nom()+nume;
             }
         }
       if (noms_champs_a_post_.contient(nom_champ_a_post))
@@ -2084,16 +2084,16 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
       Entree_complete s_complete(ajout,s);
       s_complete>>champ;
 
-      //if (le_domaine.valeur().le_nom()!=mon_probleme.valeur().domaine().le_nom()) {
+      //if (le_domaine->le_nom()!=mon_probleme->domaine().le_nom()) {
       Champ_Generique_Interpolation& champ_interp = ref_cast(Champ_Generique_Interpolation,champ.valeur());
-      champ_interp.set_domaine(le_domaine.valeur().le_nom());
+      champ_interp.set_domaine(le_domaine->le_nom());
       // champ_interp.discretiser_domaine(*this);
       //}
 
       if (motlu3!="Correlation")
-        nom_champ = motlu3+"_"+motlu1+"_"+motlu2+"_"+le_domaine.valeur().le_nom();
+        nom_champ = motlu3+"_"+motlu1+"_"+motlu2+"_"+le_domaine->le_nom();
       else
-        nom_champ = motlu3+"_"+motlu1+"_"+motlu4+"_"+motlu2+"_"+le_domaine.valeur().le_nom();
+        nom_champ = motlu3+"_"+motlu1+"_"+motlu4+"_"+motlu2+"_"+le_domaine->le_nom();
 
       champ->nommer(nom_champ);
 
@@ -2330,17 +2330,17 @@ void Postraitement::creer_champ_post_med(const Motcle& motlu1,const Motcle& motl
       Cerr<< "we must change the name "<< motlu1;
       //Cerr<<test_loc_bis<< " "<<test_loc<<finl;
       int ss=champs_post_complet_.size();
-      Nom ancien=champs_post_complet_(ss-1).valeur().get_nom_post();
+      Nom ancien=champs_post_complet_(ss-1)->get_nom_post();
       ancien.suffix(test_loc);
       //Cerr<<ancien<<" ";
       Nom Nouveau(test_loc_bis);
       Nouveau+=ancien;
       Cerr<<" to " <<Nouveau<<finl;
-      champs_post_complet_(ss-1).valeur().nommer(Nouveau);
+      champs_post_complet_(ss-1)->nommer(Nouveau);
       noms_champs_a_post_(noms_champs_a_post_.size()-1)=Nouveau;
     }
   //int ss=champs_post_complet_.size();
-  //Cerr<<champs_post_complet_(ss-1).valeur().get_nom_post()<<finl;
+  //Cerr<<champs_post_complet_(ss-1)->get_nom_post()<<finl;
   //ss=noms_champs_a_post_.size();
   //Cerr<<noms_champs_a_post_(ss-1)<<finl; //exit();
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,8 +57,8 @@ Entree& Navier_Stokes_IBM_impl::readOn_IBM(Entree& is, Navier_Stokes_std& eq)
   Cerr << "nb_source : " << nb_source << finl;
   for(int i = 0; i<nb_source; i++)
     {
-      //Cerr << (sources())[i].valeur().que_suis_je() << ", " << (sources())[i].valeur().que_suis_je().find("gne") << finl;
-      if ((eq.sources())[i].valeur().que_suis_je().find("Source_PDF") > -1)
+      //Cerr << (sources())[i]->que_suis_je() << ", " << (sources())[i]->que_suis_je().find("gne") << finl;
+      if ((eq.sources())[i]->que_suis_je().find("Source_PDF") > -1)
         {
           i_source = i;
           nb_source_pdf++;
@@ -74,8 +74,8 @@ Entree& Navier_Stokes_IBM_impl::readOn_IBM(Entree& is, Navier_Stokes_std& eq)
   i_source_pdf_ = i_source;
   if (i_source_pdf_ != -1)
     {
-      eq.sources()[i_source_pdf_].valeur().set_description((Nom)"Sum of the source term on the obstacle (~= force induced by the obstacle under some assumptions)");
-      eq.sources()[i_source_pdf_].valeur().set_fichier((Nom)"Force_induced_by_obstacle");
+      eq.sources()[i_source_pdf_]->set_description((Nom)"Sum of the source term on the obstacle (~= force induced by the obstacle under some assumptions)");
+      eq.sources()[i_source_pdf_]->set_fichier((Nom)"Force_induced_by_obstacle");
     }
   return is;
 }
@@ -151,7 +151,7 @@ void Navier_Stokes_IBM_impl::matrice_pression_IBM( )
   const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eq_NS->sources())[i_source_pdf_].valeur());
   src.multiply_coeff_volume(coeff);
   coeff.echange_espace_virtuel();
-  eq_NS->assembleur_pression().valeur().assembler_mat(eq_NS->matrice_pression(),coeff,1,1);
+  eq_NS->assembleur_pression()->assembler_mat(eq_NS->matrice_pression(),coeff,1,1);
 }
 
 
@@ -177,7 +177,7 @@ void Navier_Stokes_IBM_impl::preparer_calcul_IBM(const bool& is_QC)
       inv_coeff *= champ_coeff_pdf_som_;
       src.multiply_coeff_volume(inv_coeff);
       inv_coeff.echange_espace_virtuel();
-      eq_NS->assembleur_pression().valeur().assembler_mat(eq_NS->matrice_pression(),inv_coeff,1,1);
+      eq_NS->assembleur_pression()->assembler_mat(eq_NS->matrice_pression(),inv_coeff,1,1);
     }
   else
     {
@@ -213,7 +213,7 @@ bool Navier_Stokes_IBM_impl::initTimeStep_IBM(bool ddt)
       inv_coeff *= champ_coeff_pdf_som_;
       src.multiply_coeff_volume(inv_coeff);
       inv_coeff.echange_espace_virtuel();
-      eq_NS->assembleur_pression().valeur().assembler_mat(eq_NS->matrice_pression(),inv_coeff,1,1);
+      eq_NS->assembleur_pression()->assembler_mat(eq_NS->matrice_pression(),inv_coeff,1,1);
     }
 
   return ddt;

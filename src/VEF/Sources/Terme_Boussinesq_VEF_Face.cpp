@@ -56,9 +56,9 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   int nbcomp_param = param.line_size(), nbcomp = resu.line_size();
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   const double* Scalaire0_addr = mapToDevice(Scalaire0_);
-  const double* beta_addr = mapToDevice(beta().valeur().valeurs());
-  const int beta_dimension0 = beta().valeur().valeurs().dimension(0);
-  const int beta_nb_dim = beta().valeur().valeurs().nb_dim();
+  const double* beta_addr = mapToDevice(beta()->valeurs());
+  const int beta_dimension0 = beta()->valeurs().dimension(0);
+  const int beta_nb_dim = beta()->valeurs().nb_dim();
   const double* g_addr = mapToDevice(gravite().valeurs());
   const double* xv_addr = mapToDevice(domaine_VEF.xv());
   const double* xp_addr = mapToDevice(domaine_VEF.xp());

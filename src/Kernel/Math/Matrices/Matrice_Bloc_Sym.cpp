@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ Sortie& Matrice_Bloc_Sym::imprimer(Sortie& os) const
   int i,j;
   for(i=0; i<N_; i++)
     for(j=i; j<M_; j++)
-      (*this).get_bloc(i,j).valeur().imprimer(os);
+      (*this).get_bloc(i,j)->imprimer(os);
   return os;
 }
 
@@ -63,7 +63,7 @@ Sortie& Matrice_Bloc_Sym::imprimer_formatte(Sortie& os) const
           os<<"----------"<<finl;
           os<<"Bloc ("<<i<<","<<j<<"):"<<finl;
           os<<"----------"<<finl;
-          (*this).get_bloc(i,j).valeur().imprimer_formatte(os);
+          (*this).get_bloc(i,j)->imprimer_formatte(os);
         }
     }
   return os;

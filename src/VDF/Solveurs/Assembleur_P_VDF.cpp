@@ -58,11 +58,11 @@ int Assembleur_P_VDF::liste_faces_periodiques(ArrOfInt& faces)
 {
   // On commence par surestimer largement la taille du tableau :
   // nombre de faces de bord
-  const int nb_faces_bord = le_dom_VDF.valeur().nb_faces_bord();
+  const int nb_faces_bord = le_dom_VDF->nb_faces_bord();
   faces.resize_array(nb_faces_bord);
 
   // Recherche des faces periodiques dans les conditions aux limites:
-  const Conds_lim& les_cl = le_dom_Cl_VDF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VDF->les_conditions_limites();
   const int nb_cl = les_cl.size();
   int nb_faces_periodiques = 0;
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
@@ -383,7 +383,7 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
     }
 
   // Traitement des conditions aux limites
-  const Conds_lim& les_cl = le_dom_Cl_VDF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VDF->les_conditions_limites();
   const int nb_cl = les_cl.size();
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
@@ -636,7 +636,7 @@ int Assembleur_P_VDF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int nb_elem=le_dom_VDF.valeur().domaine().nb_elem();
+      int nb_elem=le_dom_VDF->domaine().nb_elem();
       for(int n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];

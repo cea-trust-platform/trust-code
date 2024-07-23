@@ -139,7 +139,7 @@ void Pb_Multiphase::typer_lire_milieu(Entree& is)
   is >> le_milieu_[0]; // On commence par la lecture du milieu
   if (!sub_type(Milieu_composite, le_milieu_[0].valeur()))
     {
-      Cerr << "Error: Fluid of type " << le_milieu_[0].valeur().le_type() << " is not compatible with " << que_suis_je() << " problem which accepts only Milieu_composite medium" << finl;
+      Cerr << "Error: Fluid of type " << le_milieu_[0]->le_type() << " is not compatible with " << que_suis_je() << " problem which accepts only Milieu_composite medium" << finl;
       Cerr << "Check your datafile!" << finl;
       Process::exit();
     }

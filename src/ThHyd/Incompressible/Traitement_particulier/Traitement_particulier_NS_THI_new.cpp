@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -150,7 +150,7 @@ int& Traitement_particulier_NS_THI_new::calcul_nb_som_dir(const Domaine& domaine
   const char* methode_actuelle="Traitement_particulier_NS_THI_new::calcul_nb_som_dir";
 
   // Sert a calculer le nombre de sommet commun en parallele
-  double nb_som = domaine.md_vector_sommets().valeur().nb_items_seq_tot();
+  double nb_som = domaine.md_vector_sommets()->nb_items_seq_tot();
   // Somme sur tous les processeurs
 
   double nb=pow(nb_som*1.,1./3.);

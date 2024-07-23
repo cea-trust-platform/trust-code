@@ -92,7 +92,7 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
       is >> loipar_;
       is >> loipar_.valeur();
     }
-  else if (loipar_.valeur().que_suis_je() != "negligeable_VDF" && loipar_.valeur().que_suis_je() != "negligeable_VEF" && !loipar_.valeur().que_suis_je().debute_par("negligeable_PolyMAC_P0P1NC"))
+  else if (loipar_->que_suis_je() != "negligeable_VDF" && loipar_->que_suis_je() != "negligeable_VEF" && !loipar_->que_suis_je().debute_par("negligeable_PolyMAC_P0P1NC"))
     {
       if (mot == "dt_impr_ustar")
         {

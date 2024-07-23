@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -315,7 +315,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
       Process::exit();
     }
 
-  mu_sur_Sc.valeur().changer_temps(rho.temps());
+  mu_sur_Sc->changer_temps(rho.temps());
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
@@ -342,6 +342,6 @@ void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = coeff_diffusion_especes()->valeurs()(0,0);
 
   double temps_champ = le_fluide->masse_volumique().temps();
-  nu_sur_Sc.valeur().changer_temps(temps_champ);
+  nu_sur_Sc->changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }

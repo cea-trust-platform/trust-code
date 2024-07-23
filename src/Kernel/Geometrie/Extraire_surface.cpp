@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfac
   // Copie des sommets
   domaine_surfacique.les_sommets()=domaine_volumique.les_sommets();
   const DoubleTab& coord=domaine_surfacique.les_sommets();
-  const Nom& type_elem=domaine_vf.domaine().type_elem().valeur().que_suis_je();
+  const Nom& type_elem=domaine_vf.domaine().type_elem()->que_suis_je();
 
   if (dimension==3)
     if (type_elem==Motcle("Tetraedre"))

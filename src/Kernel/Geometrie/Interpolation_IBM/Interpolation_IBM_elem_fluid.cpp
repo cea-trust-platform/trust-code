@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,16 +51,16 @@ void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Do
   Noms c_nam(nb_comp);
 
   dis.discretiser_champ("champ_sommets",le_dom_EF,"fluid_elems","none",1,0., fluid_elems_);
-  fluid_elems_.valeur().affecter(fluid_elems_lu_);
+  fluid_elems_->affecter(fluid_elems_lu_);
   if ((&corresp_elems_lu_)->non_nul())
     {
       dis.discretiser_champ("champ_elem",le_dom_EF,"corresp_elems","none",1,0., corresp_elems_);
-      corresp_elems_.valeur().affecter(corresp_elems_lu_);
+      corresp_elems_->affecter(corresp_elems_lu_);
     }
   dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0.,fluid_points_);
-  fluid_points_.valeur().affecter(fluid_points_lu_);
+  fluid_points_->affecter(fluid_points_lu_);
   dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0.,solid_points_);
-  solid_points_.valeur().affecter(solid_points_lu_);
+  solid_points_->affecter(solid_points_lu_);
   computeFluidElems(le_dom_EF);
 }
 
@@ -74,9 +74,9 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Domaine_dis_base& le_dom_EF
   const DoubleTab& coordsDom = le_dom_EF.domaine().coord_sommets();
   // const IntTab& elems = le_dom_EF.domaine().les_elems();
 
-  DoubleTab& elems_fluid_ref = fluid_elems_.valeur().valeurs();
-  DoubleTab& fluid_points_ref = fluid_points_.valeur().valeurs();
-  DoubleTab& solid_points_ref = solid_points_.valeur().valeurs();
+  DoubleTab& elems_fluid_ref = fluid_elems_->valeurs();
+  DoubleTab& fluid_points_ref = fluid_points_->valeurs();
+  DoubleTab& solid_points_ref = solid_points_->valeurs();
 
   // La numerotation des elements peut avoir changee entre l'etape pre_pro et
   // l'etape calcul (cas du pre_pro Salome)
@@ -84,7 +84,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Domaine_dis_base& le_dom_EF
   // et un champ d'element reprenant ces etiquettes
   if ((&corresp_elems_)->non_nul())
     {
-      DoubleTab& corresp_elems_ref = corresp_elems_.valeur().valeurs();
+      DoubleTab& corresp_elems_ref = corresp_elems_->valeurs();
       int nb_tag_max = -1;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {

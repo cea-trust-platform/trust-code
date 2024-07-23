@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ Entree& Champ_Front_Fonction::readOn(Entree& is)
 }
 void Champ_Front_Fonction::mettre_a_jour(double temps)
 {
-  const Champ_base& ch=ref_pb.valeur().get_champ(nom_champ_parametre_);
+  const Champ_base& ch=ref_pb->get_champ(nom_champ_parametre_);
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
   const Domaine_VF& zvf = ref_cast(Domaine_VF, frontiere_dis().domaine_dis());
   DoubleTab& tab=valeurs_au_temps(temps);

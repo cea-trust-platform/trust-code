@@ -270,7 +270,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::mettre_a_jour(double temps)
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = domaine.xv(), &xp = domaine.xp();
   DoubleTab balp;
   if (vd_phases_.size())
-    balp = equation().inconnue().valeur().valeur_aux_bords();
+    balp = equation().inconnue()->valeur_aux_bords();
 
   int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
   DoubleTrav cc_f(N); //valeur du champ convecte aux faces

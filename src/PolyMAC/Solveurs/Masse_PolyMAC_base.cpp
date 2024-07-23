@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,8 +81,8 @@ void Masse_PolyMAC_base::appliquer_coef(DoubleVect& coef) const
       else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
         {
           DoubleTab nodes;
-          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
-          ref_coeff.valeur().valeur_aux(nodes,values);
+          equation().inconnue()->remplir_coord_noeuds(nodes);
+          ref_coeff->valeur_aux(nodes,values);
         }
       tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
     }

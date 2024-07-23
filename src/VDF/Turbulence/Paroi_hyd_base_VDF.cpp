@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ void Paroi_hyd_base_VDF::init_lois_paroi_()
   if (!Cisaillement_paroi_.get_md_vector().non_nul())
     {
       Cisaillement_paroi_.resize(0, dimension);
-      le_dom_VDF.valeur().creer_tableau_faces_bord(Cisaillement_paroi_);
+      le_dom_VDF->creer_tableau_faces_bord(Cisaillement_paroi_);
     }
 }
 

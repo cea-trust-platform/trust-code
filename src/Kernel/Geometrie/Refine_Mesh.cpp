@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ void Refine_Mesh::check_dimension(void) const
 
 void Refine_Mesh::check_cell_type(void) const
 {
-  const Nom& cell_type = domaine().type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domaine().type_elem()->que_suis_je();
 
   if (!((cell_type == Motcle("Triangle")) || (cell_type == Motcle("Tetraedre"))))
     {
@@ -85,7 +85,7 @@ void Refine_Mesh::apply_2D(void)
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert(domain.type_elem().valeur().que_suis_je() == Motcle("Triangle"));
+  assert(domain.type_elem()->que_suis_je() == Motcle("Triangle"));
 
   IntTab nodes_of_edges;
   IntTab edges_of_cells;
@@ -126,7 +126,7 @@ void Refine_Mesh::apply_3D(void)
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  assert(domain.type_elem().valeur().que_suis_je() == Motcle("Tetraedre"));
+  assert(domain.type_elem()->que_suis_je() == Motcle("Tetraedre"));
 
   IntTab nodes_of_edges;
   IntTab edges_of_cells;

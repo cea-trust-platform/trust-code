@@ -185,7 +185,7 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
       const DoubleTab& inut=futur;
 
       store_equation_parameters(eqn,stored_parameters);
-      convergence_eqn = le_solveur.valeur().iterer_eqn(eqn,inut, present, dt_,ite, ok);
+      convergence_eqn = le_solveur->iterer_eqn(eqn,inut, present, dt_,ite, ok);
       modify_equation_parameters(eqn,stored_parameters);
 
       convergence_pb  = convergence_pb&&convergence_eqn;
@@ -399,10 +399,10 @@ void Schema_Implicite_Multi_TimeStep_base::ajouter_inertie(Matrice_Base& mat_mor
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset   =  nb_valeurs_passees()-i;
-          times[i] =  eqn_bis.inconnue().valeur().recuperer_temps_passe(offset); //past time
+          times[i] =  eqn_bis.inconnue()->recuperer_temps_passe(offset); //past time
         }
-      times[nb_valeurs_passees()]   = eqn_bis.inconnue().valeur().recuperer_temps_futur(0); //present time
-      times[nb_valeurs_passees()+1] = eqn_bis.inconnue().valeur().recuperer_temps_futur(1); //future time
+      times[nb_valeurs_passees()]   = eqn_bis.inconnue()->recuperer_temps_futur(0); //present time
+      times[nb_valeurs_passees()+1] = eqn_bis.inconnue()->recuperer_temps_futur(1); //future time
 
       compute_coefficients(time_step,times);
       add_multi_timestep_data(eqn, mat_morse, secmem);
@@ -453,7 +453,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
 
       const DoubleTab& inut=futur;
       store_equation_parameters(eqn,stored_parameters);
-      convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+      convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       modify_equation_parameters(eqn,stored_parameters);
       futur=present;
       eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());

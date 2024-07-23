@@ -358,10 +358,10 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       if (ncomp==-1)
         {
           DoubleTab val_temp;
-          copie_source.valeur().calculer_valeurs_som_post(val_temp,
-                                                          nb_sommets,
-                                                          nom_champ_interpole,
-                                                          domaine);
+          copie_source->calculer_valeurs_som_post(val_temp,
+                                                  nb_sommets,
+                                                  nom_champ_interpole,
+                                                  domaine);
           for (int i_val=0; i_val<imax; i_val++)
             for (int j_val=0; j_val<nb_comp; j_val++)
               espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
@@ -370,11 +370,11 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
         {
           DoubleTab val_temp;
-          copie_source.valeur().calculer_valeurs_som_compo_post(val_temp,
-                                                                ncomp,
-                                                                nb_sommets,
-                                                                nom_champ_interpole,
-                                                                domaine);
+          copie_source->calculer_valeurs_som_compo_post(val_temp,
+                                                        ncomp,
+                                                        nb_sommets,
+                                                        nom_champ_interpole,
+                                                        domaine);
 
           int dim0 = val_temp.dimension(0);
           for (int i=0; i<dim0; i++)
@@ -639,7 +639,7 @@ const Domaine_dis_base& Champ_Generique_Interpolation::get_ref_domaine_dis_base(
           Cerr << "The domain " << domaine_->le_nom() << " is not built." << finl;
           exit();
         }
-      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur().valeur();
+      const Domaine_dis_base& domaine_dis = le_dom_dis->valeur();
       return domaine_dis;
     }
   else
@@ -685,13 +685,13 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       Nom type_discr = discr.que_suis_je();
       if (type_discr == "VEFPreP1B") type_discr = "VEF";
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
-      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().type_elem().valeur()) ? "Domaine_" : "NO_FACE_Domaine_";
+      // Nom type = sub_type(Poly_geom_base, domaine_->type_elem().valeur()) ? "Domaine_" : "NO_FACE_Domaine_";
       Nom type = "NO_FACE_Domaine_";
       if (localisation_=="faces")
         {
           type="Domaine_";
           // On verifie que la localisation aux faces est possible sur le domaine (sinon elem ou som)
-          if (domaine_.valeur().type_elem().valeur().nb_som_face()<=2 && dimension==3)
+          if (domaine_->type_elem()->nb_som_face()<=2 && dimension==3)
             {
               Cerr << "'localisation faces' is not possible in 3D on the 2D surface mesh " << domaine_->le_nom() << " with the field: " << get_property("NOM")[0] << finl;
               Cerr << "Please use 'localisation elem' instead." << finl;

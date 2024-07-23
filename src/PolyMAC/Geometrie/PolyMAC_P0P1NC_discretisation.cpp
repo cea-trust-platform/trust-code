@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,9 +125,9 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ(const Motcle& directive, c
   creer_champ(champ, z, type, noms[0], unites[0], nb_comp, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
   if (nature == multi_scalaire)
     {
-      champ.valeur().fixer_nature_du_champ(nature);
-      champ.valeur().fixer_unites(unites);
-      champ.valeur().fixer_noms_compo(noms);
+      champ->fixer_nature_du_champ(nature);
+      champ->fixer_unites(unites);
+      champ->fixer_noms_compo(noms);
     }
 }
 
@@ -300,7 +300,7 @@ void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis& z, const Champ_Inc
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 
-  Nom type_ch = ch_inco.valeur().que_suis_je();
+  Nom type_ch = ch_inco->que_suis_je();
   if (type_ch.debute_par("Champ_Face"))
     {
       Motcle loc = "champ_face";

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ void grad_U_Champ_Face_PolyMAC::associer_champ(const Champ_Face_PolyMAC& la_vite
 
 void grad_U_Champ_Face_PolyMAC::me_calculer(double tps)
 {
-  vitesse_->interp_gve(vitesse_.valeur().valeurs(), valeurs());
+  vitesse_->interp_gve(vitesse_->valeurs(), valeurs());
 }
 
 

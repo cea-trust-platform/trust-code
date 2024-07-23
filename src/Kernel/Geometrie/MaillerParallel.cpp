@@ -354,11 +354,11 @@ static void find_joint_faces(const Domaine& domaine, IntTab& faces)
   const IntTab& elements = domaine.les_elems();
   const int nb_som = domaine.nb_som();
   construire_connectivite_som_elem(nb_som, elements, som_elem, 0 /* do not include virtual elements */);
-  const int nb_som_faces = domaine.type_elem().valeur().nb_som_face();
+  const int nb_som_faces = domaine.type_elem()->nb_som_face();
   faces.resize(0, nb_som_faces);
 
   IntTab faces_element_reference;
-  domaine.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference);
+  domaine.type_elem()->get_tab_faces_sommets_locaux(faces_element_reference);
   const int nb_faces_elem = faces_element_reference.dimension(0);
   // Mark faces of elements that are on a boundary
   const int nb_elem = elements.dimension(0);
@@ -454,7 +454,7 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
             joint.associer_domaine(domaine);
             joint.affecte_epaisseur(epaisseur_joint);
             joint.affecte_PEvoisin(pe);
-            joint.faces().typer(domaine.type_elem().valeur().type_face());
+            joint.faces().typer(domaine.type_elem()->type_face());
             ArrOfInt& sommets_joint = joint.set_joint_item(Joint::SOMMET).set_items_communs();
             sommets_joint.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
             for (i = 0; i < n; i++)
@@ -507,10 +507,10 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
                 joint.associer_domaine(domaine);
                 joint.affecte_epaisseur(epaisseur_joint);
                 joint.affecte_PEvoisin(pe);
-                joint.faces().typer(domaine.type_elem().valeur().type_face());
+                joint.faces().typer(domaine.type_elem()->type_face());
                 ref_joint = joint;
               }
-            Faces& les_faces = ref_joint.valeur().faces();
+            Faces& les_faces = ref_joint->faces();
             les_faces.dimensionner(n);
             IntTab& faces_sommets = les_faces.les_sommets();
             for (ii = 0; ii < n; ii++)
@@ -732,7 +732,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       Cerr << "MaillerParallel::construire_domaine  erreur" << finl;
       exit();
     }
-  elem.valeur().associer_domaine(domaine);
+  elem->associer_domaine(domaine);
 
   BlocData data;
   Noms liste_bords_perio;
@@ -771,7 +771,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
     {
       Bord& bord = bords[num_bord];
       bord.associer_domaine(domaine);
-      bord.faces().typer(domaine.type_elem().valeur().type_face());
+      bord.faces().typer(domaine.type_elem()->type_face());
       // important pour dimensionner le linesize du tableau des faces pour les frontieres vides
       bord.faces().dimensionner(0);
     }

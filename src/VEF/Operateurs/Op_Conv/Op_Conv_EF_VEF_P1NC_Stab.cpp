@@ -538,7 +538,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent() const
   const int nb_faces = domaine_VEF.nb_faces();
   int nb_comp = Objet_U::dimension;
   CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
-  CDoubleTabView tab_vitesse = vitesse_.valeur().valeurs().view_ro();
+  CDoubleTabView tab_vitesse = vitesse_->valeurs().view_ro();
   DoubleArrView fluent = fluent_.view_rw();
   start_gpu_timer();
   Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent",
@@ -648,7 +648,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
-  DoubleTab tab_vitesse(vitesse_.valeur().valeurs());
+  DoubleTab tab_vitesse(vitesse_->valeurs());
   for (int i=0; i<tab_vitesse.dimension(0); i++)
     for (int j=0; j<tab_vitesse.dimension(1); j++)
       tab_vitesse(i,j)*=porosite_face(i);
@@ -2532,7 +2532,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_partie_compressible(const Do
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
-  DoubleTab tab_vitesse(vitesse_.valeur().valeurs());
+  DoubleTab tab_vitesse(vitesse_->valeurs());
   for (int i=0; i<tab_vitesse.dimension(0); i++)
     for (int j=0; j<tab_vitesse.line_size(); j++)
       tab_vitesse(i,j)*=porosite_face(i);
@@ -2888,7 +2888,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_implicite() const
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   const DoubleTab& unknown=equation().inconnue().valeurs();
-  const DoubleTab& tab_vitesse=vitesse_.valeur().valeurs();
+  const DoubleTab& tab_vitesse=vitesse_->valeurs();
 
   DoubleTab tab_test(unknown);
   DoubleVect& test2 = tab_test;

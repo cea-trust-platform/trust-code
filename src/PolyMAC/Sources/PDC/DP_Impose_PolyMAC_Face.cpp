@@ -113,7 +113,7 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
       DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
       for (int i = 0; i < num_faces.size(); i++)
         for (int j = 0; j < dimension; j++) xvf(i, j) = domaine_poly.xv()(num_faces(i), j);
-      DP_.valeur().valeur_aux(xvf, DP);
+      DP_->valeur_aux(xvf, DP);
       for (int i = 0, f; i < num_faces.size(); i++)
         if ((f = num_faces(i)) < domaine_poly.nb_faces())
           {

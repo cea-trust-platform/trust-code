@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -153,8 +153,8 @@ void Op_Diff_PolyMAC_base::completer()
 {
   Operateur_base::completer();
   nu_.resize(0, equation().que_suis_je() == "Transport_K_Eps" ? 2 : diffusivite().valeurs().line_size());
-  le_dom_poly_.valeur().domaine().creer_tableau_elements(nu_);
-  le_dom_poly_.valeur().creer_tableau_faces(nu_fac_);
+  le_dom_poly_->domaine().creer_tableau_elements(nu_);
+  le_dom_poly_->creer_tableau_faces(nu_fac_);
   nu_a_jour_ = 0;
 }
 
@@ -382,7 +382,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
   // utilise-t-on des lois de paroi ?
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()) &&
-                ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
+                ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi()->use_equivalent_distance();
 
   for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
     {
@@ -391,7 +391,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
       for (f = deb; f < deb + num; f++) //nu par composante a chaque face
         {
           if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
-            nu_fac_(f) = domaine.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
+            nu_fac_(f) = domaine.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi()->equivalent_distance(i, f - deb);
           else
             nu_fac_(f) = equation().milieu().porosite_face(f); //par defaut : facteur du a la porosite
           if (nu_fac_mod.size())

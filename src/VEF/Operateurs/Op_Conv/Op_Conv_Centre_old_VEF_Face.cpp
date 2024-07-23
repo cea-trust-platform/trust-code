@@ -52,7 +52,7 @@ void Op_Conv_Centre_old_VEF_Face::associer(const Domaine_dis& domaine_dis,
   champ_transporte = le_ch_transporte;
 
   fluent_.reset();
-  le_dom_vef.valeur().creer_tableau_faces(fluent_);
+  le_dom_vef->creer_tableau_faces(fluent_);
 }
 
 DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
@@ -193,7 +193,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -122,7 +122,7 @@ static void choose_internal_diagonal_for_tetrahedron(Domaine& domain)
 
 static void choose_internal_diagonal(Domaine& domain)
 {
-  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem()->que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";
@@ -222,7 +222,7 @@ static void ensure_positive_volumes_for_tetrahedron(Domaine& domain)
 
 static void ensure_positive_volumes(Domaine& domain)
 {
-  const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
+  const Nom& cell_type = domain.type_elem()->que_suis_je();
 
   Motcles understood_keywords(2);
   understood_keywords[0] = "Triangle";

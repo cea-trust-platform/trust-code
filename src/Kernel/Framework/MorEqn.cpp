@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,6 @@ void MorEqn::check_multiphase_compatibility() const
 {
   const Objet_U *obj = dynamic_cast<const Objet_U *>(this);
   if (!obj) abort(); //on n'est meme pas un Objet_U ?
-  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation.valeur().que_suis_je() <<"!" << finl;
+  Cerr << obj->que_suis_je() << " is not compatible with " << mon_equation->que_suis_je() <<"!" << finl;
   Process::exit();
 }

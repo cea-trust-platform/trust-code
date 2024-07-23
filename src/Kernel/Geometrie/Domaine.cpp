@@ -397,7 +397,7 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
   if (!deformable() && positions.dimension(0) > 1)
     {
       set_cache = true;
-      if (!deriv_octree_.non_nul() || !deriv_octree_.valeur().construit())
+      if (!deriv_octree_.non_nul() || !deriv_octree_->construit())
         {
           // Vide le cache
           cached_elements_.reset();

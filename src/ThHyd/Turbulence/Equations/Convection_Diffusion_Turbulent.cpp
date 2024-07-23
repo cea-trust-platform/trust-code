@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
 
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(eqn);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
 
       assert(motbidon == accfermee);
@@ -109,7 +109,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
 
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(eqn);
-      Cerr << terme_diffusif.valeur().que_suis_je() << finl;
+      Cerr << terme_diffusif->que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
     }
   return is;

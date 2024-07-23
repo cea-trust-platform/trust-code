@@ -245,7 +245,7 @@ void Probleme_base_interface_proto::getOutputFieldsNames_impl(const Probleme_bas
         {
           const Liste_Champ_Generique& liste_champ = ref_cast(Postraitement,pb.postraitements()(i).valeur()).champs_post_complet();
           for (int ii = 0; ii < liste_champ.size(); ii++)
-            noms.add(liste_champ(ii).valeur().get_nom_post());
+            noms.add(liste_champ(ii)->get_nom_post());
         }
     }
 }

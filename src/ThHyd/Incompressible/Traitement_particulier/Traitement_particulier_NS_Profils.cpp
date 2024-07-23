@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@ Entree& Traitement_particulier_NS_Profils::lire(Entree& is)
                 // For eddy viscosity profile
                 oui_profil_nu_t = 1;
                 Cerr << "User asked for statistics on eddy-viscosity..." << finl;
-                const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
+                const RefObjU& modele_turbulence = mon_equation->get_modele(TURBULENCE);
                 const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
                 if(sub_type(Modele_turbulence_hyd_base,mod_turb))
                   Cerr << "Statistics for eddy-viscosity : OK !" << finl;

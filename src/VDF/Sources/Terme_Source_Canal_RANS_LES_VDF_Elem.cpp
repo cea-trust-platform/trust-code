@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -249,7 +249,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
           pb_rans = ref_cast(Probleme_base, obj);
         }
 
-      U_RANS = pb_rans.valeur().equation(1).inconnue().valeurs();
+      U_RANS = pb_rans->equation(1).inconnue().valeurs();
 
     }
   //***************************************************

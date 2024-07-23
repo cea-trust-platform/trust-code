@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -188,7 +188,7 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
 
   ArrOfDouble C(size),C0(size);
 
-  int nb_case= liste_C[0].valeur().valeurs().size();
+  int nb_case= liste_C[0]->valeurs().size();
   if ((beta_!=0)||(Ea_!=0)||((c_r_Ea_!=0)&&(contre_reaction_>0)))
     {
       Cerr<<"Reaction :  Donnees incompatibles avec le fait que l on n a pas de temperature"<<finl;
@@ -205,7 +205,7 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
         {
           if (coeff_Y_[i]!=0.) // c'est un reactif ou un produit
             {
-              C[i]=liste_C[i].valeur().valeurs()(elem);
+              C[i]=liste_C[i]->valeurs()(elem);
               if (C[i]<0)
                 {
 
@@ -229,7 +229,7 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
       for (int i=0; i<size; i++)
         if (coeff_Y_[i]!=0.) // c'est un reactif ou un produit
           {
-            DoubleTab& C_i = liste_C[i].valeur().valeurs(); // kg/kg
+            DoubleTab& C_i = liste_C[i]->valeurs(); // kg/kg
             //    C_i(elem)-=proportion*coeff_stoechio_[i];
             C_i(elem)=C0[i]-proportion*coeff_stoechio_[i];
           }

@@ -1512,7 +1512,7 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   table_.reset();
   MD_Vector_tools::creer_tableau_distribue(md_items, table_);
 
-  const int nb_entites = md_items.valeur().get_nb_items_tot();
+  const int nb_entites = md_items->get_nb_items_tot();
   const int decal = mppartial_sum(nb_entites);
   premier_indice_global_ = decal;
 
@@ -1706,8 +1706,8 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
                                                    IntTab& tableau,
                                                    const int error_is_fatal)
 {
-  if (tableau.dimension_tot(0) != md_indice.valeur().get_nb_items_reels()
-      && (tableau.dimension_tot(0) != md_indice.valeur().get_nb_items_tot()))
+  if (tableau.dimension_tot(0) != md_indice->get_nb_items_reels()
+      && (tableau.dimension_tot(0) != md_indice->get_nb_items_tot()))
     {
       Cerr << "[PE " << Process::me()
            << "] Error in Scatter::construire_espace_virtuel_traduction\n"

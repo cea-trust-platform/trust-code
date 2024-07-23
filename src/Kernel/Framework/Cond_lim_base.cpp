@@ -169,7 +169,7 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 void Cond_lim_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl)
 {
   mon_dom_cl_dis = zcl;
-  le_champ_front.valeur().verifier(*this);
+  le_champ_front->verifier(*this);
 }
 
 /*! @brief Renvoie 1 si la condition aux limites est compatible avec la discretisation passee en parametre.

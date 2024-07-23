@@ -235,15 +235,15 @@ inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
   int size_r = TRUSTArray<_TYPE_>::size_array();
   if (md_vector.non_nul())
     {
-      size_r = md_vector.valeur().get_nb_items_reels();
+      size_r = md_vector->get_nb_items_reels();
       if (size_r >= 0) size_r *= line_size_;
       else size_r = -1; // Cas particulier ou la size_reelle ne veut rien dire
 
-      int size_tot = md_vector.valeur().get_nb_items_tot() * line_size_;
+      int size_tot = md_vector->get_nb_items_tot() * line_size_;
       if (size_tot != TRUSTArray<_TYPE_>::size_array())
         {
           Cerr << "Internal error in TRUSTVect::set_md_vector(): wrong array size\n"
-               << " Needed size = " << md_vector.valeur().get_nb_items_tot() << " x " << line_size_
+               << " Needed size = " << md_vector->get_nb_items_tot() << " x " << line_size_
                << "\n Actual size = " << TRUSTArray<_TYPE_>::size_array() << finl;
           Process::exit();
         }

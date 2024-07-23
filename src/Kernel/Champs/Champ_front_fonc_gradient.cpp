@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ void Champ_front_fonc_gradient::associer_ch_inc_base(const Champ_Inc_base& inc)
 
 const Cond_lim_base& Champ_front_fonc_gradient::condition_limite(const Nom& nom_bord)
 {
-  const Domaine_Cl_dis_base& zcl=inconnue.valeur().equation().domaine_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl=inconnue->equation().domaine_Cl_dis().valeur();
   int n=zcl.nb_cond_lim();
   for(int i=0; i<n ; i++)
     {

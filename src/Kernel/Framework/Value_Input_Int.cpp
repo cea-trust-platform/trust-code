@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ Entree& Value_Input_Int::readOn(Entree& is )
 
   //complete Probleme_base register
   mon_pb=ref_cast(Probleme_base,Interprete::objet(nom_pb));
-  mon_pb.valeur().setInputIntValue(name,value);
+  mon_pb->setInputIntValue(name,value);
 
   return is;
 }

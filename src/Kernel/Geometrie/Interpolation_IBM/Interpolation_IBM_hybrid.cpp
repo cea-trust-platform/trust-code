@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,9 +45,9 @@ void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Domain
   Interpolation_IBM_elem_fluid::discretise(dis,le_dom_EF);
 
   dis.discretiser_champ("champ_sommets",le_dom_EF,"solid_elems","none",1,0., solid_elems_);
-  solid_elems_.valeur().affecter(solid_elems_lu_);
+  solid_elems_->affecter(solid_elems_lu_);
   dis.discretiser_champ("champ_sommets",le_dom_EF,"is_dirichlet","none",1,0., is_dirichlet_);
-  is_dirichlet_.valeur().affecter(is_dirichlet_lu_);
+  is_dirichlet_->affecter(is_dirichlet_lu_);
 
   computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_);
 }

@@ -234,7 +234,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
 
   Nom localisation;
   Motcle es;
-  le_ch_fonc.valeur().nommer(motlu);
+  le_ch_fonc->nommer(motlu);
 
   int flag=0;
   Nom test("_");
@@ -258,7 +258,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
                 localisation="elem";
             }
           Cerr<<"One wishes to read the field "<<es<<" choice "<<localisation<<" readen word in the data set "<<motlu<<finl;
-          le_ch_fonc.valeur().nommer(es);
+          le_ch_fonc->nommer(es);
           flag=1;
         }
     }
@@ -268,12 +268,12 @@ void Pb_MED::creer_champ(const Motcle& motlu)
 
   if (flag)
     {
-      chmed.le_champ().nommer(le_ch_fonc.valeur().le_nom());
+      chmed.le_champ().nommer(le_ch_fonc->le_nom());
       chmed.le_champ().corriger_unite_nom_compo();
       chmed.le_champ().nommer(motlu);
     }
 
-  le_ch_fonc.valeur().nommer(motlu);
+  le_ch_fonc->nommer(motlu);
   chmed.le_champ().nommer(motlu);
   if (!le_ch_fonc.non_nul())
     {

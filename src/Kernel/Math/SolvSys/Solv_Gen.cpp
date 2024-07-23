@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ void Solv_Gen::reinit()
 {
   if(le_precond_.non_nul())
     {
-      le_precond_.valeur().reinit();
+      le_precond_->reinit();
     }
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,10 +93,10 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_domaine_cl()
   if (domaine_cl_mod_) return;
   domaine_cl_mod_=1;
   Domaine_Cl_dis& mon_domcl=ref_cast(Domaine_Cl_dis,mon_domcl_);
-  mon_domcl=eqn_t.valeur().domaine_Cl_dis();
-  domainecl_sa=eqn_t.valeur().domaine_Cl_dis().valeur();
+  mon_domcl=eqn_t->domaine_Cl_dis();
+  domainecl_sa=eqn_t->domaine_Cl_dis().valeur();
   Conds_lim& condlims=mon_domcl.les_conditions_limites();
-  Conds_lim& condlims_sa=domainecl_sa.valeur().les_conditions_limites();
+  Conds_lim& condlims_sa=domainecl_sa->les_conditions_limites();
   int nb=condlims.size();
 
   for (int i=0; i<nb*0; i++)
@@ -132,7 +132,7 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_domaine_cl()
         {
           EChaine cons("Frontiere_ouverte T_ext Champ_front_uniforme 1 1");
           //EChaine cons("symetrie");
-          Frontiere_dis_base& frdis=condlims[i].valeur().frontiere_dis();
+          Frontiere_dis_base& frdis=condlims[i]->frontiere_dis();
           cons>>condlims[i];
           Cond_lim_base& cl_m=condlims[i].valeur();
 

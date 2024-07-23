@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
-  DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();
+  DoubleTab& s_face = get_set_terme_source_post()->valeurs();
   s_face = 0.;
 
   // Calcul de la_source_ en fonction des champs d'acceleration et de la
@@ -153,7 +153,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
       const int nfin = ndeb + le_bord.nb_faces();
       TSAVDF_ajouter_liste_faces(ndeb, nfin,
                                  volumes_entrelaces,
-                                 le_dom_VDF_.valeur().volumes(),
+                                 le_dom_VDF_->volumes(),
                                  porosite_surf,
                                  orientation,
                                  face_voisins,
@@ -170,7 +170,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
     const int nfin = domaine_VDF.nb_faces();
     TSAVDF_ajouter_liste_faces(ndeb, nfin,
                                volumes_entrelaces,
-                               le_dom_VDF_.valeur().volumes(),
+                               le_dom_VDF_->volumes(),
                                porosite_surf,
                                orientation,
                                face_voisins,

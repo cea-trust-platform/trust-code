@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,7 +167,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
 
   secmem *= -1; // car div =-B
   // Correction du second membre d'apres les conditions aux limites :
-  mon_equation->assembleur_pression().valeur().modifier_secmem(secmem);
+  mon_equation->assembleur_pression()->modifier_secmem(secmem);
 
   //solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre,mon_equation->pression().valeur());
   solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre);

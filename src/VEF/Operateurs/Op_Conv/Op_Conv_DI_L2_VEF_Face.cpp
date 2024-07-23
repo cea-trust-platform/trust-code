@@ -532,7 +532,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
   // boucle sur les polys
 
   int nlim = -1 ;
-  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 

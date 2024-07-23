@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,14 +33,14 @@ Entree& PrecondSolv::readOn(Entree& is )
   is >> solveur;
   solveur.nommer("PrecondSolv");
   // Pour eviter trop d'affichage (Convergence)
-  if (!solveur.valeur().limpr())
-    solveur.valeur().fixer_limpr(-1);
+  if (!solveur->limpr())
+    solveur->fixer_limpr(-1);
   return is;
 }
 
 void PrecondSolv::prepare_(const Matrice_Base& m, const DoubleVect& src)
 {
-  solveur.valeur().reinit();
+  solveur->reinit();
   Precond_base::prepare_(m, src);
 }
 

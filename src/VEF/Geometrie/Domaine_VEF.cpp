@@ -611,7 +611,7 @@ void Domaine_VEF::construire_ok_arete()
   ArrOfBit marqueurs_aretes;
   const MD_Vector& md_aretes = md_vector_aretes();
   MD_Vector_tools::get_sequential_items_flags(md_aretes, marqueurs_aretes);
-  const int nb_aretes_seq = md_aretes.valeur().nb_items_seq_tot();
+  const int nb_aretes_seq = md_aretes->nb_items_seq_tot();
 
   if (Process::je_suis_maitre())
     fic_ok_arete_ << nb_aretes_seq << finl;
@@ -905,7 +905,7 @@ int Domaine_VEF::lecture_ok_arete()
 
   int n;
   fic_ok_arete_ >> n;
-  if (n != md_vector_aretes().valeur().nb_items_seq_tot())
+  if (n != md_vector_aretes()->nb_items_seq_tot())
     {
       Cerr << "File " << fichier << " is not compatible with the current mesh." << finl;
       return 0;
@@ -1213,7 +1213,7 @@ DoubleTab& Domaine_VEF::vecteur_face_facette()
       const int nfa7 = type_elem().nb_facette();
       const int nb_poly_tot = nb_elem_tot();
       vecteur_face_facette_.resize(nb_poly_tot, nfa7, dimension, 2);
-      const IntTab& KEL = type_elem().valeur().KEL();
+      const IntTab& KEL = type_elem()->KEL();
       const IntTab& les_Polys = domaine().les_elems();
       const DoubleTab& coord = domaine().coord_sommets();
       const DoubleTab& xg = xp();

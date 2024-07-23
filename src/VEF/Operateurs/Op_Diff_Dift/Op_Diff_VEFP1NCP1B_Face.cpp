@@ -182,11 +182,11 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis& domaine_dis,
   for (int i = 0; i<zclvef.nb_cond_lim(); i++)
     {
       Cond_lim la_cl = zclvef.les_conditions_limites(i);
-      if ( sub_type(Symetrie,la_cl.valeur()) && (ch_diffuse.valeur().nature_du_champ()==vectoriel) )
+      if ( sub_type(Symetrie,la_cl.valeur()) && (ch_diffuse->nature_du_champ()==vectoriel) )
         {
           Cerr << "\nBoundary conditions of 'Symetrie' type with P1NCP1B diffusion operator are only allowed for Conduction equation!" << finl;
           Cerr << "Here you use a P1NCP1B diffusion operator in a '" << equation().que_suis_je() << "' equation where" << finl;
-          Cerr << "boundary condition number " << i << ", on boundary '" << la_cl.frontiere_dis().le_nom() << "' has been assigned to: '" << la_cl.valeur().que_suis_je() << "'." << finl;
+          Cerr << "boundary condition number " << i << ", on boundary '" << la_cl.frontiere_dis().le_nom() << "' has been assigned to: '" << la_cl->que_suis_je() << "'." << finl;
           Process::exit();
         }
     }
@@ -2992,7 +2992,7 @@ void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
   const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const int nb_faces_tot=domaine_VEF.nb_faces_tot();
-  const int nb_comp = inconnue_.valeur().valeurs().line_size();
+  const int nb_comp = inconnue_->valeurs().line_size();
 
   int face=0;
   int i=0,size=0;

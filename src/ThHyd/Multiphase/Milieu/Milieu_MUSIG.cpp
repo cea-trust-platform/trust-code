@@ -54,7 +54,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
           Fluide fluide;
           is >> fluide;
 
-          if(fluide.valeur().que_suis_je() == "Fluide_MUSIG")
+          if(fluide->que_suis_je() == "Fluide_MUSIG")
             {
               Fluide_MUSIG& fluide_cast = ref_cast(Fluide_MUSIG,fluide.valeur());
               for(int k =0; k<fluide_cast.getNbSubPhase(); k++)

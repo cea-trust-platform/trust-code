@@ -30,7 +30,7 @@ void Pb_Multiphase_HEM::typer_lire_correlation_hem()
     {
       for (auto &&corr : correlations_)
         {
-          if (corr.second.valeur().que_suis_je() == "Flux_interfacial_Coef_Constant")
+          if (corr.second->que_suis_je() == "Flux_interfacial_Coef_Constant")
             {
               Cout << "Flux_interfacial_Coef_Constant is already defined." << finl;
             }

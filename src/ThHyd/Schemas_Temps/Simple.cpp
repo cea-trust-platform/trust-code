@@ -265,7 +265,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
     }
   else
     {
-      solveur.valeur().reinit();
+      solveur->reinit();
       DoubleTrav resu_temp(current); /* residu en increments */
       if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
@@ -473,7 +473,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
         }
 
   // resolution
-  solveur.valeur().reinit();
+  solveur->reinit();
   solveur.resoudre_systeme(Mglob, residus, inconnues);
   inconnues.echange_espace_virtuel();
 
@@ -497,7 +497,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
       const double t = eqs[i]->schema_temps().temps_courant() + eqs[i]->schema_temps().pas_de_temps();
       eqs[i]->domaine_Cl_dis()->imposer_cond_lim(eqs[i]->inconnue(), t);
       eqs[i]->inconnue().valeurs() = eqs[i]->inconnue().futur();
-      eqs[i]->inconnue().valeur().Champ_base::changer_temps(t);
+      eqs[i]->inconnue()->Champ_base::changer_temps(t);
     }
   for(i = 0; i < eqs.size(); i++) eqs[i]->probleme().mettre_a_jour(eqs[i]->schema_temps().temps_courant());
 
@@ -512,7 +512,7 @@ void Simple::calculer_correction_en_vitesse(const DoubleTrav& correction_en_pres
 {
   int deux_entrees = 0;
   if (correction_en_vitesse.nb_dim()==2) deux_entrees = 1;
-  gradient.valeur().multvect(correction_en_pression,gradP);
+  gradient->multvect(correction_en_pression,gradP);
   int nb_comp = 1;
   if(deux_entrees)
     nb_comp = correction_en_vitesse.dimension(1);
@@ -585,7 +585,7 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
       eqnNS.assembler_avec_inertie(matrice,current,resu);
     }
 
-  solveur.valeur().reinit();
+  solveur->reinit();
 
   //Resolution du systeme A[Uk-1]U* = -BtP* + Sv + Ss + (M/dt)Uk-1
   //current = U*
@@ -604,7 +604,7 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
   Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
   assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
   SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
-  solveur_pression_.valeur().reinit();
+  solveur_pression_->reinit();
 
   //Calcul de secmem = BU* (en incompressible) BU* -drho/dt (en quasi-compressible)
   if (is_dilat)
@@ -638,7 +638,7 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
   //Correction de la vitesse U = U* + beta_u*U' (beta_u=1)
 
   pression.ajoute(beta_,correction_en_pression);
-  eqnNS.assembleur_pression().valeur().modifier_solution(pression);
+  eqnNS.assembleur_pression()->modifier_solution(pression);
 
   current += correction_en_vitesse;
 

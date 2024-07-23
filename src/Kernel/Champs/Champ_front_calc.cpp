@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
   if (sub_type(Champ_Inc_base, rch.valeur()))
     {
       l_inconnue = ref_cast(Champ_Inc_base, rch.valeur());
-      fixer_nb_comp(rch.valeur().nb_comp());
+      fixer_nb_comp(rch->nb_comp());
     }
   else
     {

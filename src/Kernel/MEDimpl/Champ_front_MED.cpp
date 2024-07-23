@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ Entree& Champ_front_MED::readOn(Entree& is)
   param.ajouter("champ_volumique",&champ_volumique_,Param::REQUIRED);  // XD attr champ_fonc_med field_base champ_fonc_med 0 a champ_fonc_med loading the values of the unknown on a domain boundary
   param.lire_sans_accolade(is);
 
-  fixer_nb_comp(champ_volumique_.valeur().nb_comp());
+  fixer_nb_comp(champ_volumique_->nb_comp());
   pos_.resize(1,dimension);
   val_.resize(1,nb_comp());
   return is;
@@ -94,6 +94,6 @@ double Champ_front_MED::valeur_au_temps_et_au_point(double temps,int som,double 
   pos_(0,1)=y;
   if (dimension>2)
     pos_(0,2)=z;
-  champ_volumique_.valeur().valeur_aux(pos_,val_);
+  champ_volumique_->valeur_aux(pos_,val_);
   return val_(0,comp);
 }

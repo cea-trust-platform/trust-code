@@ -22,7 +22,7 @@ template <typename _T_>
 void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
 {
   norme_colonne = 0.;
-  const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_sum();
+  const TRUSTArray<int>& blocs = tableau.get_md_vector()->get_items_to_sum();
   const int nblocs = blocs.size_array() >> 1;
   const TRUSTVect<_T_>& vect = tableau;
   const int lsize = vect.line_size();
@@ -46,7 +46,7 @@ template <typename _T_>
 void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
 {
   max_colonne = std::numeric_limits<_T_>::min();
-  const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_compute();
+  const TRUSTArray<int>& blocs = tableau.get_md_vector()->get_items_to_compute();
   const int nblocs = blocs.size_array() >> 1;
   const TRUSTVect<_T_>& vect = tableau;
   const int lsize = vect.line_size();

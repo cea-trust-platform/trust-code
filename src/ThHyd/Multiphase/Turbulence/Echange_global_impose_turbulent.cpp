@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ Entree& Echange_global_impose_turbulent::readOn(Entree& s )
 
 void Echange_global_impose_turbulent::liste_faces_loi_paroi(IntTab& tab)
 {
-  int nf = la_frontiere_dis.valeur().frontiere().nb_faces(), f1 = la_frontiere_dis.valeur().frontiere().num_premiere_face();
+  int nf = la_frontiere_dis->frontiere().nb_faces(), f1 = la_frontiere_dis->frontiere().num_premiere_face();
   int N = tab.line_size();
 
   for (int f =0 ; f < nf ; f++)
@@ -60,13 +60,13 @@ void Echange_global_impose_turbulent::mettre_a_jour(double tps)
 int Echange_global_impose_turbulent::initialiser(double temps)
 {
   h_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
-  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(h_);
+  la_frontiere_dis->frontiere().creer_tableau_faces(h_);
 
   h_grad_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
-  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(h_grad_);
+  la_frontiere_dis->frontiere().creer_tableau_faces(h_grad_);
 
   T_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
-  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(T_);
+  la_frontiere_dis->frontiere().creer_tableau_faces(T_);
 
   correlation_loi_paroi_ = ref_cast(Pb_Multiphase, domaine_Cl_dis().equation().probleme()).get_correlation("Loi_paroi");
 

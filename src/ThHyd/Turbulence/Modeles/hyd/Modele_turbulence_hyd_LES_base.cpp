@@ -76,7 +76,7 @@ void Modele_turbulence_hyd_LES_base::verifie_loi_paroi_diphasique()
 {
   const Milieu_base& mil = equation().milieu(); // returns Fluide_Diphasique or Fluide_Incompressible
   const Nom& nom_mil = mil.que_suis_je();
-  const Nom& nom_loipar = loipar_.valeur().que_suis_je();
+  const Nom& nom_loipar = loipar_->que_suis_je();
   const Nom& nom_eq = equation().que_suis_je();
 
   if ((nom_loipar == "loi_standard_hydr_VEF" || nom_loipar == "loi_standard_hydr_VDF") && nom_eq == "Navier_Stokes_FT_Disc" && nom_mil == "Fluide_Diphasique")
@@ -97,8 +97,8 @@ void Modele_turbulence_hyd_LES_base::verifie_loi_paroi_diphasique()
           Cerr << "Unknown discretization type !!!";
           Process::exit();
         }
-      loipar_.valeur().associer_modele(*this);
-      loipar_.valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
+      loipar_->associer_modele(*this);
+      loipar_->associer(equation().domaine_dis(), equation().domaine_Cl_dis());
     }
 }
 

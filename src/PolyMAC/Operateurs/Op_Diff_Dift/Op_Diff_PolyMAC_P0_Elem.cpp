@@ -285,8 +285,8 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
 
   for (auto &&st : stencil)
     n_sten += st.dimension(0); //n_sten : nombre total de points du stencil de l'operateur
-  Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * domaine.domaine().md_vector_elements().valeur().nb_items_seq_tot()) << " "
-       << mp_somme_vect(tpfa) * 100. / (N[0] * domaine.md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
+  Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * domaine.domaine().md_vector_elements()->nb_items_seq_tot()) << " "
+       << mp_somme_vect(tpfa) * 100. / (N[0] * domaine.md_vector_faces()->nb_items_seq_tot()) << "% TPFA " << finl;
 }
 
 void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

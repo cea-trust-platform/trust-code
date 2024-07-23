@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,8 +56,8 @@ void Schema_Adams_Moulton_base::associer_pb(const Probleme_base& un_probleme)
 
 double Schema_Adams_Moulton_base::changer_temps(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue().valeur().Champ_base::changer_temps(temps);
-  eqn.derivee_en_temps().valeur().Champ_base::changer_temps(temps);
+  eqn.inconnue()->Champ_base::changer_temps(temps);
+  eqn.derivee_en_temps()->Champ_base::changer_temps(temps);
   return temps;
 }
 

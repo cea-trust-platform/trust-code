@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ void Correlation_Vec_Sca_VDF::associer_champ_Sca(const Champ_base& le_champ_Sca)
 
 void Correlation_Vec_Sca_VDF::mettre_a_jour(double tps)
 {
-  int nb_elem=le_dom_VF.valeur().domaine().nb_elem();
+  int nb_elem=le_dom_VF->domaine().nb_elem();
 
   const DoubleTab& centres_de_gravites = le_dom_VF->xp();
 

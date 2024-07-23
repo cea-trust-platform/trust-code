@@ -46,8 +46,8 @@ Entree& Modele_turbulence_hyd_null::readOn(Entree& is)
       Cerr << finl;
       exit();
     }
-  loipar_.valeur().associer_modele(*this);
-  loipar_.valeur().associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
+  loipar_->associer_modele(*this);
+  loipar_->associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
 
   // Pas envie de debugger XDATA ... je penalise tt le monde alors
   Param param(que_suis_je());

@@ -168,7 +168,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
   }
 
   {
-    const int n_reels = md_.valeur().get_nb_items_reels();
+    const int n_reels = md_->get_nb_items_reels();
     voisins_.dimensionner(n_reels);
     coeffs_.dimensionner(n_reels);
     coeff_diag_.resize(n_reels);
@@ -241,7 +241,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
     carre.dimensionner(n_reels, nnz);
     carre.remplir(voisins_, coeffs_, coeff_diag_);
-    rect.dimensionner(n_reels, md_.valeur().get_nb_items_tot() - n_reels, nnz_virt);
+    rect.dimensionner(n_reels, md_->get_nb_items_tot() - n_reels, nnz_virt);
     rect.remplir(voisins_virt_, coeffs_virt_);
 
     voisins_ = IntLists();

@@ -48,7 +48,7 @@ Sortie& Polygone::printOn(Sortie& s ) const
 void Polygone::rebuild_index()
 {
 
-  const IntTab& les_elems = mon_dom.valeur().les_elems();
+  const IntTab& les_elems = mon_dom->les_elems();
   int nb_elem=les_elems.dimension_tot(0);
   ArrOfInt   PolygonIndex_OK(nb_elem+1);
   PolygonIndex_OK[0]=0;
@@ -75,7 +75,7 @@ void Polygone::rebuild_index()
 
 void Polygone::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const
 {
-  const IntTab& les_elems = mon_dom.valeur().les_elems();
+  const IntTab& les_elems = mon_dom->les_elems();
   type_elem.typer("Polygone");
   Polygone& reduced = ref_cast(Polygone, type_elem.valeur());
   reduced.nb_som_elem_max_  = nb_som_elem_max_;
@@ -104,7 +104,7 @@ void Polygone::compute_virtual_index()
 
 int Polygone::get_somme_nb_faces_elem() const
 {
-  return PolygonIndex_[mon_dom.valeur().nb_elem()];
+  return PolygonIndex_[mon_dom->nb_elem()];
 }
 /*! @brief NE FAIT RIEN
  *
@@ -125,7 +125,7 @@ int Polygone::get_nb_som_elem_max() const
   if (nb_som_elem_max_>-1)
     return nb_som_elem_max_ ;
   else
-    return mon_dom.valeur().les_elems().dimension(1);
+    return mon_dom->les_elems().dimension(1);
 }
 
 /*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
@@ -305,7 +305,7 @@ int Polygone::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
   /*
    les elems pas remplis
     int nb_face2=get_nb_som_elem_max();
-    const IntTab& les_elems = mon_dom.valeur().les_elems();
+    const IntTab& les_elems = mon_dom->les_elems();
 
     {
 

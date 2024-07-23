@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,17 +41,17 @@ Entree& Loi_paroi_base::readOn(Entree& is)
 
 void Loi_paroi_base::completer()
 {
-  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_.valeur().domaine_dis().valeur());
+  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
   int nf_tot = domaine.nb_faces_tot();
 
   // We create the table that enables us to know for which BC we must calculate the boundary law
   Faces_a_calculer_.resize(nf_tot, 1);
   domaine.creer_tableau_faces(Faces_a_calculer_);
 
-  for (int i = 0 ; i <pb_.valeur().nombre_d_equations() ; i++)
-    for (int j = 0 ; j<pb_.valeur().equation(i).domaine_Cl_dis()->nb_cond_lim(); j++)
+  for (int i = 0 ; i <pb_->nombre_d_equations() ; i++)
+    for (int j = 0 ; j<pb_->equation(i).domaine_Cl_dis()->nb_cond_lim(); j++)
       {
-        Cond_lim& cond_lim_loc = pb_.valeur().equation(i).domaine_Cl_dis()->les_conditions_limites(j);
+        Cond_lim& cond_lim_loc = pb_->equation(i).domaine_Cl_dis()->les_conditions_limites(j);
         if sub_type(Dirichlet_loi_paroi, cond_lim_loc.valeur())
           ref_cast(Dirichlet_loi_paroi, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
         else if sub_type(Frottement_global_impose, cond_lim_loc.valeur())
@@ -81,7 +81,7 @@ void Loi_paroi_base::mettre_a_jour(double temps)
 
       if (sub_type(QDM_Multiphase, pb_->equation(0)) && pb_->has_champ("y_plus"))
         {
-          Domaine_VF& domaine = ref_cast(Domaine_VF, pb_.valeur().domaine_dis().valeur());
+          Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
           const IntTab& f_e = domaine.face_voisins();
           int nf_tot = domaine.nb_faces_tot();
           DoubleTab& y_p = valeurs_loi_paroi_["y_plus"], &y_p_e = valeurs_loi_paroi_["y_plus_elem"];

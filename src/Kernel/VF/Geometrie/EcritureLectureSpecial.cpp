@@ -235,7 +235,7 @@ static int ecriture_special_part2(const Domaine_VF& zvf, Sortie& fich, const Dou
   else
     {
       Cerr << "EcritureLectureSpecial::ecriture_special_part: Error, unknown Metadata vector type : "
-           << md.valeur().que_suis_je() << finl;
+           << md->que_suis_je() << finl;
       Process::exit();
     }
   return bytes;
@@ -252,7 +252,7 @@ int EcritureLectureSpecial::ecriture_special(const Domaine_VF& zvf, Sortie& fich
       Cerr << "EcritureLectureSpecial::ecriture_special: error, cannot save an array with no metadata" << finl;
       Process::exit();
     }
-  const int nb_items_seq = md.valeur().nb_items_seq_tot();
+  const int nb_items_seq = md->nb_items_seq_tot();
   if (nb_items_seq == 0)
     return 0;
 
@@ -496,7 +496,7 @@ static int lecture_special_part2(const Domaine_VF& zvf, Entree& fich, DoubleTab&
   else
     {
       Cerr << "EcritureLectureSpecial::lecture_special_part2: Error, unknown Metadata vector type : "
-           << md.valeur().que_suis_je() << finl;
+           << md->que_suis_je() << finl;
       Process::exit();
     }
   return ntot;
@@ -514,7 +514,7 @@ void EcritureLectureSpecial::lecture_special(const Domaine_VF& zvf, Entree& fich
       Cerr << "EcritureLectureSpecial::ecriture_special: error, cannot save an array with no metadata" << finl;
       Process::exit();
     }
-  const int nb_items_seq = md_vect.valeur().nb_items_seq_tot();
+  const int nb_items_seq = md_vect->nb_items_seq_tot();
   if (nb_items_seq == 0)
     return;
 

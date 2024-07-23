@@ -150,7 +150,7 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
     }
 
   double temps_champ = rho.temps();
-  mu_sur_Sc.valeur().changer_temps(temps_champ);
+  mu_sur_Sc->changer_temps(temps_champ);
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
@@ -173,7 +173,7 @@ void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = diff_coeff_;
 
   double temps_champ = le_fluide->masse_volumique().temps();
-  nu_sur_Sc.valeur().changer_temps(temps_champ);
+  nu_sur_Sc->changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }
 

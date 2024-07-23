@@ -173,7 +173,7 @@ int Polyedre::get_nb_som_elem_max() const
   if (nb_som_elem_max_>-1)
     return nb_som_elem_max_ ;
   else
-    return mon_dom.valeur().les_elems().dimension(1);
+    return mon_dom->les_elems().dimension(1);
 }
 
 /*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
@@ -583,11 +583,11 @@ void Polyedre::compute_virtual_index()
   // Methode brutale mais il faut bien commencer ....
 
   IntTab faces_som(0,nb_face_elem_max_,nb_som_face_max_);
-  mon_dom.valeur().creer_tableau_elements(faces_som);
+  mon_dom->creer_tableau_elements(faces_som);
 
   IntTab faces_som_local;
-  int nb_elem=mon_dom.valeur().nb_elem();
-  int nb_elem_tot=mon_dom.valeur().nb_elem_tot();
+  int nb_elem=mon_dom->nb_elem();
+  int nb_elem_tot=mon_dom->nb_elem_tot();
   for (int ele=0; ele<nb_elem; ele++)
     {
       get_tab_faces_sommets_locaux(faces_som_local,ele);
@@ -671,6 +671,6 @@ void Polyedre::compute_virtual_index()
 int Polyedre::get_somme_nb_faces_elem() const
 {
 
-  int titi= PolyhedronIndex_[mon_dom.valeur().nb_elem()];
+  int titi= PolyhedronIndex_[mon_dom->nb_elem()];
   return titi;
 }

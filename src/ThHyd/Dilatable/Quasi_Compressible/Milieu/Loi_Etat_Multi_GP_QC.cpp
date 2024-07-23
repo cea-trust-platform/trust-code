@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,8 +66,8 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
 
   for (int i=0; i<liste_Y.size(); i++)
     {
-      double M_i=liste_especes(i).valeur().masse_molaire();
-      const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
+      double M_i=liste_especes(i)->masse_molaire();
+      const DoubleTab& Y_i=liste_Y(i)->valeurs();
       double min_Y_i=local_min_vect(Y_i);
       double max_Y_i=local_max_vect(Y_i);
       if ((min_Y_i<0.-dtol_fraction_)||(max_Y_i>1.+dtol_fraction_))
@@ -84,7 +84,7 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
         }
     }
 
-  assert(liste_Y(0).valeur().valeurs().size()==size);
+  assert(liste_Y(0)->valeurs().size()==size);
 
   for (int elem=0; elem<size; elem++)
     if (inv_M[elem]>1.e-8)
@@ -100,8 +100,8 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
   tab_Cp=0;
   for (int i=0; i<liste_Y.size(); i++)
     {
-      const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
-      const double cp_i=liste_especes(i).valeur().capacite_calorifique().valeurs()(0,0);
+      const DoubleTab& Y_i=liste_Y(i)->valeurs();
+      const double cp_i=liste_especes(i)->capacite_calorifique().valeurs()(0,0);
       assert(cp_i>0);
       for (int elem=0; elem<Y_i.size(); elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
     }
@@ -112,12 +112,12 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
  */
 void Loi_Etat_Multi_GP_QC::rabot(int futur)
 {
-  DoubleTab test( liste_Y(0).valeur().valeurs()) ;
+  DoubleTab test( liste_Y(0)->valeurs()) ;
   test=0;
 
   for (int i=0; i<liste_Y.size(); i++)
     {
-      DoubleTab& Y_i=liste_Y(i).valeur().futur(futur);
+      DoubleTab& Y_i=liste_Y(i)->futur(futur);
       double min_Y_i=local_min_vect(Y_i);
       double max_Y_i=local_max_vect(Y_i);
       Cerr << "Verification of the " << i << "th mass fraction:" << finl;
@@ -150,7 +150,7 @@ void Loi_Etat_Multi_GP_QC::rabot(int futur)
   Cerr << "  Sum(max_Y_i) =  " << max_s << finl;
   for (int i=0; i<liste_Y.size(); i++)
     {
-      DoubleTab& Y_i=liste_Y(i).valeur().futur(futur);
+      DoubleTab& Y_i=liste_Y(i)->futur(futur);
       for (int elem=0; elem<Y_i.size(); elem++) Y_i(elem,0)/=(test(elem)+DMINFLOAT);
     }
   if ((!est_egal(min_s,1.,dtol_fraction_))||(!est_egal(max_s,1.,dtol_fraction_)))
@@ -239,7 +239,7 @@ double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
  */
 void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 {
-  const int size = liste_Y(0).valeur().valeurs().size(), list_size = liste_Y.size();
+  const int size = liste_Y(0)->valeurs().size(), list_size = liste_Y.size();
   DoubleTab phi(size), mu(size);
   mu = 0.;
   phi = 0.;
@@ -247,25 +247,25 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
   for (int i = 0; i < list_size; i++)
     {
       phi = 0.;
-      const double M_i = liste_especes(i).valeur().masse_molaire();
-      const double mu_i = liste_especes(i).valeur().viscosite_dynamique().valeurs()(0, 0);
+      const double M_i = liste_especes(i)->masse_molaire();
+      const double mu_i = liste_especes(i)->viscosite_dynamique().valeurs()(0, 0);
 
       for (int j = 0; j < list_size; j++)
         if (j != i) // sinon phi_ii = 1
           {
-            const double M_j = liste_especes(j).valeur().masse_molaire();
-            const double mu_j = liste_especes(j).valeur().viscosite_dynamique().valeurs()(0, 0);
+            const double M_j = liste_especes(j)->masse_molaire();
+            const double mu_j = liste_especes(j)->viscosite_dynamique().valeurs()(0, 0);
 
             double a = 1. + sqrt(mu_i / mu_j) * pow(M_j / M_i, 0.25);
             double b = sqrt(8. * (1. + (M_i / M_j)));
             double phi_ij = ( M_i / M_j ) * a * a / b;
 
-            const DoubleVect& y_j = liste_Y(j).valeur().valeurs();
+            const DoubleVect& y_j = liste_Y(j)->valeurs();
             // node is elem (VDF) or face (VEF)
             for (int node = 0; node < y_j.size(); node++) phi(node) += y_j(node) * phi_ij;
           }
       // We add the mass fraction when i = j
-      const DoubleVect& y_i = liste_Y(i).valeur().valeurs();
+      const DoubleVect& y_i = liste_Y(i)->valeurs();
       for (int node = 0; node < y_i.size(); node++) mu(node) += mu_i * y_i(node) / (y_i(node) + phi(node));
     }
 
@@ -294,6 +294,6 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_sur_Sc()
     tab_mu_sur_Sc(0,0) = tab_mu(0,0) / Sc_;
 
   double temps_champ = mu->temps();
-  mu_sur_Sc.valeur().changer_temps(temps_champ);
+  mu_sur_Sc->changer_temps(temps_champ);
   tab_mu_sur_Sc.echange_espace_virtuel();
 }

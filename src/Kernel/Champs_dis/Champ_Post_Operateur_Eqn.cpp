@@ -61,7 +61,7 @@ Entree& Champ_Post_Operateur_Eqn::readOn(Entree& s )
 void Champ_Post_Operateur_Eqn::verification_cas_compo() const
 {
   // On applique compo a un vecteur
-  const Nature_du_champ& nature_ch=ref_eq_.valeur().inconnue().valeur().nature_du_champ();
+  const Nature_du_champ& nature_ch=ref_eq_->inconnue()->nature_du_champ();
   if ((nature_ch != vectoriel) && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
@@ -70,7 +70,7 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo() const
     }
 
   // Verification de compo
-  const int nb_compo= ref_eq_.valeur().inconnue().valeur().nb_comp();
+  const int nb_compo= ref_eq_->inconnue()->nb_comp();
   if ((compo_<-1)||(compo_>nb_compo-1))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
@@ -135,7 +135,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
   const Equation_base& eqn=ref_eq_.valeur();
   const MD_Vector& mdf = eqn.inconnue().valeurs().get_md_vector(),
                    md = sub_type(MD_Vector_composite, mdf.valeur()) ? ref_cast(MD_Vector_composite, mdf.valeur()).get_desc_part(0) : mdf;
-  const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_.valeur().domaine_dis().valeur());
+  const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_->domaine_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
     {
       localisation_inco_=Entity::FACE;
@@ -161,7 +161,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
 
 const Champ_base& Champ_Post_Operateur_Eqn::get_champ_without_evaluation(Champ& espace_stockage) const
 {
-  espace_stockage = ref_eq_.valeur().inconnue();
+  espace_stockage = ref_eq_->inconnue();
   return espace_stockage;
 }
 
@@ -191,9 +191,9 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 
     }
   int nb_comp = 1;
-  ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->domaine_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
+  ref_eq_->discretisation().discretiser_champ(directive,ref_eq_->domaine_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage = espace_stockage_fonc;
-  espace_stockage.valeur().fixer_nature_du_champ(scalaire);
+  espace_stockage->fixer_nature_du_champ(scalaire);
 
   return espace_stockage;
 }
@@ -218,9 +218,9 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
     else if ((numero_masse_!=-1) && ref_eq_->has_interface_blocs())
       es=0, ref_eq_->schema_temps().ajouter_blocs({},es,ref_eq_.valeur());
     if (!sans_solveur_masse_)
-      ref_eq_->solv_masse().valeur().appliquer_impl(es); //On divise par le volume
+      ref_eq_->solv_masse()->appliquer_impl(es); //On divise par le volume
     // Hack: car Masse_PolyMAC_Face::appliquer_impl ne divise pas par le volume (matrice de masse)....
-    if (ref_eq_->solv_masse().valeur().que_suis_je()=="Masse_PolyMAC_Face")
+    if (ref_eq_->solv_masse()->que_suis_je()=="Masse_PolyMAC_Face")
       {
         //Cerr << "Volumic source terms on faces with PolyMAC can't be post-processed yet." << finl;
         Cerr << "Warning, source terms on faces with PolyMAC are post-processed as S*dV not as volumic source terms S." << finl;
@@ -265,7 +265,7 @@ const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
       {
         if (compo_==-1)
           {
-            int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
+            int nb_comp= ref_eq_->inconnue()->nb_comp();
             Noms compo(nb_comp);
             for (int i=0; i<nb_comp; i++)
               {
@@ -286,7 +286,7 @@ const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
       {
         if (compo_==-1)
           {
-            int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
+            int nb_comp= ref_eq_->inconnue()->nb_comp();
             Noms unites(nb_comp);
             //Noms source_unites = get_source(0).get_property("unites");
             for (int i=0; i<nb_comp; i++)

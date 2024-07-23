@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,15 +33,15 @@ void Eval_Dift_VDF_Face::mettre_a_jour()
   if (le_modele_turbulence->loi_paroi().non_nul())
     {
       // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle
-      const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
+      const DoubleTab& tab = le_modele_turbulence->loi_paroi()->Cisaillement_paroi();
       if (tab.size_array() > 0) tau_tan_.ref(tab);
     }
 }
 
 double Eval_Dift_VDF_Face::tau_tan_impl(int face, int k) const
 {
-  const int nb_faces = le_dom.valeur().nb_faces();
-  const ArrOfInt& ind_faces_virt_bord = le_dom.valeur().ind_faces_virt_bord();
+  const int nb_faces = le_dom->nb_faces();
+  const ArrOfInt& ind_faces_virt_bord = le_dom->ind_faces_virt_bord();
   int f = (face >= tau_tan_.dimension(0)) ? ind_faces_virt_bord[face-nb_faces] : face;
   if(f >= tau_tan_.dimension_tot(0))
     {

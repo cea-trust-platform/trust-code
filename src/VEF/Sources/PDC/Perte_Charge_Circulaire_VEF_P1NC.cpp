@@ -109,7 +109,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   // Calcul de v et ||v||^2
   av_valeur.resize(dimension);
 
-  v.valeur().valeur_a(pos,av_valeur);
+  v->valeur_a(pos,av_valeur);
   // on norme v
   {
     double vcarre=0;

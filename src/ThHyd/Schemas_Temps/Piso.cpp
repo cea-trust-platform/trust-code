@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -188,7 +188,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     }
   // </IBM>
 
-  gradient.valeur().calculer(pression,gradP);
+  gradient->calculer(pression,gradP);
   if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
@@ -202,7 +202,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       eqnNS.assembler_avec_inertie(matrice,current,resu);
     }
 
-  le_solveur_.valeur().reinit();
+  le_solveur_->reinit();
 
   //sometimes we need a second special treatement like for ALE for example
   second_special_treatment( eqn, current, resu, matrice );
@@ -215,7 +215,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (avancement_crank_==0)
     {
       assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
-      solveur_pression_.valeur().reinit();
+      solveur_pression_->reinit();
     }
 
   //Etape predicteur
@@ -256,7 +256,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   Debog::verifier("Piso::iterer_NS secmem",secmem);
 
   // GF il ne faut pas modifier le scd membre le terme en du/dt au bord a deja ete pris en compte dans la resolution precedente
-  //  eqnNS.assembleur_pression().valeur().modifier_secmem(secmem);
+  //  eqnNS.assembleur_pression()->modifier_secmem(secmem);
 
   //Etape de correction 1
   Cout << "Solving mass equation :" << finl;
@@ -273,7 +273,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     {
       //calcul de Un+1
       //Calcul de Bt(delta_t*delta_P)
-      gradient.valeur().multvect(correction_en_pression,gradP);
+      gradient->multvect(correction_en_pression,gradP);
       eqn.solv_masse().appliquer(gradP);
       if ((i_source_PDF != -1) && (eqnNS.get_correction_vitesse_modifie()==1))
         {
@@ -308,7 +308,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           pression += correction_en_pression;
         }
       // </IBM>
-      eqnNS.assembleur_pression().valeur().modifier_solution(pression);
+      eqnNS.assembleur_pression()->modifier_solution(pression);
       pression.echange_espace_virtuel();
       Debog::verifier("Piso::iterer_NS pression finale",pression);
       Debog::verifier("Piso::iterer_NS current final",current);
@@ -324,7 +324,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
   //Calcul de P* = Pn + P'
   pression += correction_en_pression;
-  eqnNS.assembleur_pression().valeur().modifier_solution(pression);
+  eqnNS.assembleur_pression()->modifier_solution(pression);
   //Resolution du systeme D[Un]U' = -BtP'
   DoubleTrav correction_en_vitesse(current);
   calculer_correction_en_vitesse(correction_en_pression,gradP,correction_en_vitesse,matrice,gradient);
@@ -394,7 +394,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pression_norme_old = pression_norme;
       //Calcul de P** = P* + P''
       pression += correction_en_pression;
-      eqnNS.assembleur_pression().valeur().modifier_solution(pression);
+      eqnNS.assembleur_pression()->modifier_solution(pression);
 
       //Calcul de U*** = U** + U''
       current += correction_en_vitesse;
@@ -430,7 +430,7 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleT
   op_grad.ajouter(pression, secmem_NS);
   secmem_NS *= -1;
   eqnNS.assembler_avec_inertie(matrice, current, secmem_NS);
-  le_solveur_.valeur().reinit();
+  le_solveur_->reinit();
   le_solveur_.resoudre_systeme(matrice, secmem_NS, v_new);
   v_new.echange_espace_virtuel();
 
@@ -456,15 +456,15 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleT
           for (int j = 0; j < p_sec[1].dimension(0); j++)
             diag(j) = dt * matrice(j, j);
           diag.echange_espace_virtuel();
-          eqn.assembleur_pression().valeur().assembler_mat(mat_press, diag, 1, 1);
-          eqn.solveur_pression().valeur().reinit();
+          eqn.assembleur_pression()->assembler_mat(mat_press, diag, 1, 1);
+          eqn.solveur_pression()->reinit();
         }
 
       //resolution
       Cerr << "PISO : |sec dp| < " << mp_max_abs_vect(p_sec[0]) << " |sec dv| < " << mp_max_abs_vect(p_sec[1]) << finl;
       eqn.solveur_pression().resoudre_systeme(avancement_crank_ == 1 ? mat_press_orig.valeur() : mat_press.valeur(), secmem_M, sol_M);
       //mises a jour : v^(i) = v^(i-1)+dv^(i), p^(i) = p^(i-1) + dp^(i)
-      eqn.assembleur_pression().valeur().corriger_vitesses(sol_M, dv);
+      eqn.assembleur_pression()->corriger_vitesses(sol_M, dv);
       Cerr << "PISO : |dp| < " << mp_max_abs_vect(p_sol[0]) / dt << " |dv| < " << mp_max_abs_vect(dv);
       v_new += dv, sol_M /= dt, pression -= sol_M;
       //

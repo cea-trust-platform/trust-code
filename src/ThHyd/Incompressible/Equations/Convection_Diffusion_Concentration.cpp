@@ -87,9 +87,9 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
       Motcle nom; // Question: veut-on le mettre en majuscules ?
       is >> nom;
       Cerr << "The unknow of a Convection_Diffusion_Concentration equation is renamed"
-           << "\n Old name : " << inconnue().valeur().le_nom()
+           << "\n Old name : " << inconnue()->le_nom()
            << "\n New name : " << nom << finl;
-      inconnue().valeur().nommer(nom);
+      inconnue()->nommer(nom);
       champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }
@@ -98,9 +98,9 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
       Motcle nom; // Question: veut-on le mettre en majuscules ?
       is >> nom;
       Cerr << "nom_inconnue: On renomme l'equation et son inconnue"
-           << "\n Ancien nom : " << inconnue().valeur().le_nom()
+           << "\n Ancien nom : " << inconnue()->le_nom()
            << "\n Nouveau nom : " << nom << finl;
-      inconnue().valeur().nommer(nom);
+      inconnue()->nommer(nom);
       champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }

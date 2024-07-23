@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ inline void Eval_Puiss_Th_VDF_Elem::associer_champs(const Champ_Don& Q)
 template <typename Type_Double>
 void Eval_Puiss_Th_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
-  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : num_elem, size = source.size_array();
+  const int k = sub_type(Champ_Uniforme,la_puissance->valeur()) ? 0 : num_elem, size = source.size_array();
   for (int i = 0; i < size; i++) source[i] = puissance(k, i) * volumes(num_elem) * porosite_vol(num_elem);
 }
 

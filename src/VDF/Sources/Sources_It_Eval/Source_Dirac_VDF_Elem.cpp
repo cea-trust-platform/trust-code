@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,8 @@ void Source_Dirac_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, co
   Terme_Puissance_Thermique_VDF_base::associer_domaines(domaine_dis,domaine_cl_dis);
   Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter->evaluateur());
   eval_dirac.associer_domaines(domaine_dis.valeur(),domaine_cl_dis.valeur());
-  const int nb_elem = domaine_dis.valeur().nb_elem();
-  const Domaine& mon_dom = domaine_dis.valeur().domaine();
+  const int nb_elem = domaine_dis->nb_elem();
+  const Domaine& mon_dom = domaine_dis->domaine();
   nb_dirac = 0;
 
   for (int elem = 0; elem < nb_elem; elem++)

@@ -54,7 +54,7 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   if (nom_dom_dist == "??") dom_dist_ = pb_dist_->domaine();
   else dom_dist_ = ref_cast(Domaine, Interprete::objet(nom_dom_dist));
 
-  is_elem_trgt_ = (pb_loc_->domaine_dis().valeur().que_suis_je() != "Domaine_VEF");
+  is_elem_trgt_ = (pb_loc_->domaine_dis()->que_suis_je() != "Domaine_VEF");
 
   if (nat == "IntensiveMaximum") nature_ = IntensiveMaximum;
   else if (nat == "IntensiveConservation") nature_ = IntensiveConservation;
@@ -157,7 +157,7 @@ void Champ_Fonc_Interp::update_fields()
   local_field_->setArray(local_array_);
 
   // Source Stuff
-  if (pb_dist_->domaine_dis().valeur().que_suis_je() == "Domaine_VEF"
+  if (pb_dist_->domaine_dis()->que_suis_je() == "Domaine_VEF"
       && pb_dist_->domaine_dis()->nb_elem() > 0
       && distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot())
     {

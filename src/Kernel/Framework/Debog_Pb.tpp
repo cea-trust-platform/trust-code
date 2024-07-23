@@ -49,7 +49,7 @@ void Debog_Pb::verifier_gen(const char *const msg, const TRUSTVect<_TYPE_>& arr,
   debog_data_file_ >> reference;
 
   const int n = reference.size_array();
-  const int nb_items_seq = arr.get_md_vector().valeur().nb_items_seq_tot();
+  const int nb_items_seq = arr.get_md_vector()->nb_items_seq_tot();
   const int ls = arr.line_size();
 
   if (n != nb_items_seq * ls)
@@ -81,7 +81,7 @@ void Debog_Pb::verifier_partie(const TRUSTVect<_TYPE_>& reference, const TRUSTVe
           // (le tableau de reference contient toutes les valeurs sequentielles, sous-partie par sous-partie, la taille de la sous-partie est egale au nombre total
           // d'items sequentiels multiplie par le linesize de la sous-partie). Attention, toutes les sous-parties n'ont pas forcement la meme linesize
           const TRUSTTab<_TYPE_>& part = parts[i];
-          const int sequential_size = part.get_md_vector().valeur().nb_items_seq_tot();
+          const int sequential_size = part.get_md_vector()->nb_items_seq_tot();
           const int line_size = part.line_size();
           // ref_array() veut un tableau non const, mais on va l'utiliser uniquement en const...
           TRUSTArray<_TYPE_>& cast_array = ref_cast_non_const(TRUSTArray<_TYPE_>, reference);

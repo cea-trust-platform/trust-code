@@ -112,7 +112,7 @@ void Solv_GCP::reinit()
     reinit_ = 1;
   SolveurSys_base::reinit();
   if (le_precond_.non_nul())
-    le_precond_.valeur().reinit();
+    le_precond_->reinit();
 }
 
 void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution)
@@ -165,8 +165,8 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       // Descripteur contenant uniquement les items utiles:
       MD_Vector md;
       MD_Vector_tools::creer_md_vect_renum_auto(renum_, md);
-      const int sz_tot = md.valeur().get_nb_items_tot();
-      const int sz = md.valeur().get_nb_items_reels();
+      const int sz_tot = md->get_nb_items_tot();
+      const int sz = md->get_nb_items_reels();
 
       // Calcul de la taille memoire requise:
       int mem_size = 0;
@@ -402,7 +402,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
 {
   const int n_items_reels = solution.size_reelle_ok() ? solution.size_reelle() : solution.size_totale();
   {
-    const int nb_items_seq = solution.get_md_vector().valeur().nb_items_seq_tot();
+    const int nb_items_seq = solution.get_md_vector()->nb_items_seq_tot();
     const int ls = secmem.line_size();
     const int nb_inco_tot = nb_items_seq * ls;
     nmax = std::max(nb_inco_tot, nmax);
@@ -410,7 +410,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
 
   const int avec_precond = le_precond_.non_nul();
   const int precond_requires_echange_espace_virtuel =
-    avec_precond && (le_precond_.valeur().get_flag_updated_input());
+    avec_precond && (le_precond_->get_flag_updated_input());
 
   const int optimized = optimized_;
 
@@ -454,9 +454,9 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
         residu_.echange_espace_virtuel();
 
       if (optimized)
-        le_precond_.valeur().preconditionner(tmp_mat_, residu_, tmp_p_);
+        le_precond_->preconditionner(tmp_mat_, residu_, tmp_p_);
       else
-        le_precond_.valeur().preconditionner(matrice, residu_, tmp_p_);
+        le_precond_->preconditionner(matrice, residu_, tmp_p_);
 
     }
   else
@@ -516,9 +516,9 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
           if (precond_requires_echange_espace_virtuel)
             residu_.echange_espace_virtuel();
           if (optimized)
-            le_precond_.valeur().preconditionner(tmp_mat_, residu_, resu_);
+            le_precond_->preconditionner(tmp_mat_, residu_, resu_);
           else
-            le_precond_.valeur().preconditionner(matrice, residu_, resu_);
+            le_precond_->preconditionner(matrice, residu_, resu_);
 
           double residu_scalaire_resu = local_prodscal(residu_, resu_);
           norme = norme_residu_locale;

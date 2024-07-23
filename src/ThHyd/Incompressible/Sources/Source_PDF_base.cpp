@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ Entree& Source_PDF_base::readOn(Entree& s)
   param.lire_avec_accolades(s);
   if ((&interpolation_lue_)->non_nul())
     {
-      if (!(interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_aucune"))
+      if (!(interpolation_lue_->que_suis_je() == "Interpolation_IBM_aucune"))
         {
           interpolation_bool_ = true;
         }
@@ -219,23 +219,23 @@ void Source_PDF_base::calculer_vitesse_imposee()
 {
   if (interpolation_bool_)
     {
-      if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_element_fluide")
+      if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_element_fluide")
         {
           calculer_vitesse_imposee_elem_fluid();
         }
-      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen")
+      else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_gradient_moyen")
         {
           calculer_vitesse_imposee_mean_grad();
         }
-      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_hybride")
+      else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_hybride")
         {
           calculer_vitesse_imposee_hybrid();
         }
-      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl")
+      else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl")
         {
           calculer_vitesse_imposee_power_law_tbl();
         }
-      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
+      else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
         {
           calculer_vitesse_imposee_power_law_tbl_u_star();
         }
@@ -316,10 +316,10 @@ void Source_PDF_base::updateChampRho()
 {
   if (equation().probleme().que_suis_je() == "Pb_Melange")
     {
-      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique_melange"));
+      champ_rho_->affecter(equation().probleme().get_champ("masse_volumique_melange"));
     }
   else
     {
-      champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
+      champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
     }
 }

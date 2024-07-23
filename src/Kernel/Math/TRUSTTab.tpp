@@ -527,7 +527,7 @@ inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
   if (md_vector.non_nul())
     {
       // renvoie -1 si l'appel est invalide ou si le MD_Vector est mix (cf doc MD_Vector_base2):
-      dim0 = md_vector.valeur().get_nb_items_reels();
+      dim0 = md_vector->get_nb_items_reels();
     }
   dimensions_[0] = dim0;
   assert(verifie_LINE_SIZE());
@@ -631,7 +631,7 @@ inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(_T_ alpha, const TRUSTTab
   int nb_blocs = 1;
   if (v.get_md_vector().non_nul())
     {
-      const TRUSTArray<int>& blk = v.get_md_vector().valeur().get_items_to_compute();
+      const TRUSTArray<int>& blk = v.get_md_vector()->get_items_to_compute();
       blocs = blk.addr();
       nb_blocs = blk.size_array() / 2;
     }

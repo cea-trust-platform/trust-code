@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie, la_cl.valeur()))
         {
-          if (nfin > ndeb && est_egal(le_dom.valeur().face_surfaces()[ndeb], 0))
+          if (nfin > ndeb && est_egal(le_dom->face_surfaces()[ndeb], 0))
             {
               Cerr << "Error in the definition of the boundary conditions. The axis of revolution for this 2D calculation is along Y." << finl;
               Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
@@ -303,13 +303,13 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       int boundary_index = -1;
-      if (le_dom.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+      if (le_dom->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
         boundary_index = num_cl;
 
       int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
       for (int face = ndeb; face < nfin; face++)
         {
-          const int local_face = le_dom.valeur().front_VF(boundary_index).num_local_face(face);
+          const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
           flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
           fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
         }
@@ -324,7 +324,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
           DoubleTab val_b = use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords();
           for (int face = ndeb; face < nfin; face++)
             {
-              const int local_face = le_dom.valeur().front_VF(boundary_index).num_local_face(face);
+              const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
               flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, boundary_index, face, local_face, cl, ndeb, aef);
 
               for (int i = 0; i < 2; i++)
@@ -337,7 +337,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
       if (mat || d_cc.size() > 0)
         for (int face = ndeb; face < nfin; face++)
           {
-            const int local_face = le_dom.valeur().front_VF(boundary_index).num_local_face(face);
+            const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
             flux_evaluateur.coeffs_face(boundary_index, face, local_face, ndeb, cl, aii, ajj);
             fill_coeffs_matrices(face, aii, ajj, mat, d_cc); // XXX : Attention Yannick pour d_cc c'est pas tout a fait comme avant ... N et M ...
           }

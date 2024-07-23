@@ -2588,7 +2588,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       PetscSectionCreate(PETSC_COMM_WORLD, &sec);
       PetscSectionSetNumFields(sec, (int)champ.size());
       PetscSectionSetChart(sec, decalage_local_global_,
-                           decalage_local_global_ + b.line_size() * b.get_md_vector().valeur().nb_items_seq_local());
+                           decalage_local_global_ + b.line_size() * b.get_md_vector()->nb_items_seq_local());
       int idx = 0;
       for (auto &&kv : champ)
         {

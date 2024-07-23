@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ Entree& Loi_Etat_Multi_GP_base::readOn(Entree& is)
 
 void Loi_Etat_Multi_GP_base::initialiser_inco_ch()
 {
-  const int num = liste_Y(0).valeur().valeurs().size();
+  const int num = liste_Y(0)->valeurs().size();
   masse_mol_mel.resize(num,1);
   calculer_masse_molaire();
   Loi_Etat_base::initialiser_inco_ch();
@@ -84,7 +84,7 @@ void Loi_Etat_Multi_GP_base::calculer_lambda()
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
-      lambda.valeur().mettre_a_jour(temperature_.valeur().temps());
+      lambda->mettre_a_jour(temperature_->temps());
       return;
     }
   if (!sub_type(Champ_Uniforme,lambda.valeur()))
@@ -113,7 +113,7 @@ void Loi_Etat_Multi_GP_base::calculer_alpha()
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
   int i, n = tab_alpha.size(), isVDF = 0;
-  if (alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
 
   if (isVDF)
     {
@@ -197,7 +197,7 @@ void Loi_Etat_Multi_GP_base::calculer_mu()
   Champ_Don& mu = le_fluide->viscosite_dynamique();
   if (!sub_type(Champ_Uniforme,mu.valeur()))
     {
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur())) mu.mettre_a_jour(temperature_.valeur().temps());
+      if (sub_type(Champ_Fonc_Tabule,mu.valeur())) mu.mettre_a_jour(temperature_->temps());
       else calculer_mu_wilke();
     }
 }

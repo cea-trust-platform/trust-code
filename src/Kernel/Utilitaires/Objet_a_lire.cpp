@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -199,7 +199,7 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
           ptrParam& ptr = dictionnaire_params[rang];
           if (ptr.non_nul())
             {
-              ptr.valeur().lire_avec_accolades_depuis(is);
+              ptr->lire_avec_accolades_depuis(is);
             }
         }
       break;
@@ -252,7 +252,7 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
       }
     case PARAM:
       {
-        param_interne.valeur().lire_avec_accolades_depuis(is);
+        param_interne->lire_avec_accolades_depuis(is);
         break;
       }
     default:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,7 +207,7 @@ DoubleTab Op_Correlation::calculer_valeurs() const
       const double dt_b = dt_integration_b();
       assert(est_egal(dt_a,dt_ab));
       assert(est_egal(dt_b,dt_ab));
-      correlation.ajoute_produit_tensoriel(-1/(dt_a*dt_b),integrale_tps_a_.valeur().valeur(),integrale_tps_b_.valeur().valeur());
+      correlation.ajoute_produit_tensoriel(-1/(dt_a*dt_b),integrale_tps_a_->valeur(),integrale_tps_b_->valeur());
     }
   return correlation.valeurs();
 }

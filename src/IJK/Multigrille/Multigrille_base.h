@@ -61,7 +61,7 @@ protected:
 
   Matrice_Grossiere& set_coarse_matrix()
   {
-    solveur_grossier_.valeur().reinit();
+    solveur_grossier_->reinit();
     return coarse_matrix_;
   }
   enum StorageId { STORAGE_RHS, STORAGE_X, STORAGE_RESIDUE };

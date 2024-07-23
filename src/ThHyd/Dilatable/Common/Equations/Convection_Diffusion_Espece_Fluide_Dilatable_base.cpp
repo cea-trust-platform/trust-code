@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,13 +37,13 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
   // remplissage du domaine cl modifiee avec 1 partout au bord...
   zcl_modif_=(domaine_Cl_dis());
 
-  Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
+  Conds_lim& condlims=zcl_modif_->les_conditions_limites();
   int nb=condlims.size();
   for (int i=0; i<nb; i++)
     {
       // pour chaque condlim on recupere le champ_front et on met 1
       // meme si la cond lim est un flux (dans ce cas la convection restera nullle.)
-      DoubleTab& T=condlims[i].valeur().champ_front().valeurs();
+      DoubleTab& T=condlims[i]->champ_front().valeurs();
       T=1.;
       if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
         ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;

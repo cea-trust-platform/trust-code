@@ -54,12 +54,12 @@ Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
 
       // on change le nom de l'inconnue et de l equation
       Nom nom;
-      nom=Eqn.inconnue().valeur().le_nom();
+      nom=Eqn.inconnue()->le_nom();
       Nom nom_eq;
       nom_eq = Eqn.le_nom();
       nom+=nume;
       Cerr<<"The unknown name is modified : new name "<<nom<<finl;
-      Eqn.inconnue().valeur().nommer(nom);
+      Eqn.inconnue()->nommer(nom);
       Eqn.add_champs_compris(Eqn.inconnue());
 
       nom_eq+=nume;

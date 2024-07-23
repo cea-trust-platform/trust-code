@@ -109,7 +109,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const Discretisation_base
         nu.detach();
         dis.discretiser_champ("champ_elem", domaine_dis, "neant", "neant", 1, temps, mu);
 
-        mu.valeur().valeurs() = mu_prov.valeur().valeurs();
+        mu->valeurs() = mu_prov->valeurs();
 
       }
   if (mu.est_nul())
@@ -297,7 +297,7 @@ void Fluide_base::mettre_a_jour(double temps)
     beta_co.mettre_a_jour(temps);
   mu.mettre_a_jour(temps);
   calculer_nu();
-  nu.valeur().changer_temps(temps);
+  nu->changer_temps(temps);
   nu->valeurs().echange_espace_virtuel();
   if (e_int_auto_)
     e_int.mettre_a_jour(temps);

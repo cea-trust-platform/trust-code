@@ -154,7 +154,7 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       Cerr << "Reading and typing of pressure solver : " << finl;
       is >> solveur_pression_;
-      Cerr<<"Pressure solver type : "<<solveur_pression_.valeur().que_suis_je()<< finl;
+      Cerr<<"Pressure solver type : "<<solveur_pression_->que_suis_je()<< finl;
       solveur_pression_.nommer("solveur_pression");
       return 1;
     }
@@ -367,15 +367,15 @@ void Navier_Stokes_std::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
 
   discretiser_vitesse();
-  la_vitesse.valeur().add_synonymous(Nom("velocity"));
+  la_vitesse->add_synonymous(Nom("velocity"));
   champs_compris_.ajoute_champ(la_vitesse);
 
   dis.pression(schema_temps(), domaine_dis(), la_pression);
-  la_pression.valeur().add_synonymous(Nom("P_star"));
+  la_pression->add_synonymous(Nom("P_star"));
   champs_compris_.ajoute_champ(la_pression);
 
   dis.pression_en_pa(schema_temps(), domaine_dis(), la_pression_en_pa);
-  la_pression_en_pa.valeur().add_synonymous(Nom("Pressure"));
+  la_pression_en_pa->add_synonymous(Nom("Pressure"));
   champs_compris_.ajoute_champ(la_pression_en_pa);
 
 
@@ -682,7 +682,7 @@ Entree& Navier_Stokes_std::lire_cond_init(Entree& is)
  */
 DoubleTab& Navier_Stokes_std::corriger_derivee_expl(DoubleTab& derivee)
 {
-  if (assembleur_pression_.valeur().get_resoudre_increment_pression())
+  if (assembleur_pression_->get_resoudre_increment_pression())
     {
       // PL: Pour ne pas calculer ce gradient, il faut
       // A) postraitement_gradient_P_==0 car sinon grad contient alors M-1BtP
@@ -757,7 +757,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
 
   const bool is_ALE = ( sub_type(Op_Conv_ALE, terme_convectif.valeur()) );
 
-  if (assembleur_pression_.valeur().get_resoudre_increment_pression())
+  if (assembleur_pression_->get_resoudre_increment_pression())
     {
       if( is_ALE )
         {
@@ -1255,7 +1255,7 @@ int Navier_Stokes_std::reprendre(Entree& is)
   Equation_base::reprendre(is);
   double temps = schema_temps().temps_courant();
   Nom ident_pression(la_pression.le_nom());
-  ident_pression += la_pression.valeur().que_suis_je();
+  ident_pression += la_pression->que_suis_je();
   ident_pression += probleme().domaine().le_nom();
   ident_pression += Nom(temps,probleme().reprise_format_temps());
   avancer_fichier(is, ident_pression);
@@ -1660,7 +1660,7 @@ static void construire_matrice_implicite(Operateur_base& op,
           mat = new_mat;
           // Reinitialisation du solveur (recalcul des preconditionnements, factorisation, etc...)
           //ref_cast_non_const(SolveurSys_base,op.get_solveur().valeur()).reinit();
-          op.set_solveur().valeur().reinit();
+          op.set_solveur()->reinit();
         }
     }
 }
@@ -1669,26 +1669,26 @@ static void construire_matrice_implicite(Operateur_base& op,
 void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Equation_base::dimensionner_matrice_sans_mem(matrice);
-  if (gradient.valeur().has_interface_blocs())
-    gradient.valeur().dimensionner_blocs({{ "vitesse", &matrice }});
+  if (gradient->has_interface_blocs())
+    gradient->dimensionner_blocs({{ "vitesse", &matrice }});
 }
 
 int Navier_Stokes_std::has_interface_blocs() const
 {
-  return Equation_base::has_interface_blocs() && gradient.valeur().has_interface_blocs();
+  return Equation_base::has_interface_blocs() && gradient->has_interface_blocs();
 }
 
 /* le gradient passe en dernier */
 void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   Equation_base::dimensionner_blocs(matrices, semi_impl);
-  gradient.valeur().dimensionner_blocs(matrices, semi_impl);
+  gradient->dimensionner_blocs(matrices, semi_impl);
 }
 
 void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  gradient->ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)

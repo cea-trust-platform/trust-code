@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -158,7 +158,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine.valeur().face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -313,12 +313,12 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -430,7 +430,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine.valeur().face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -568,12 +568,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
                   if ( (elem(face,0)) > -1)
                     {
@@ -668,7 +668,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine.valeur().face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -841,12 +841,12 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
                   if ( (elem1=elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
@@ -1302,12 +1302,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -1555,12 +1555,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
                   if ( (elem1=elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
@@ -1852,12 +1852,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -2126,12 +2126,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(face);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
                   elem1 = elem(face,0);
                   elem2 = elem(face,1);
@@ -2402,12 +2402,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
               int boundary_index=-1;
-              if (la_domaine.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (int f = ndeb; f < nfin; f++)
                 {
-                  int local_face=la_domaine.valeur().front_VF(boundary_index).num_local_face(f);
+                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(f);
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
                   if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) -= aef;

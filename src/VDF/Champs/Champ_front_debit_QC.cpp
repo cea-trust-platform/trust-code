@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ void Champ_front_debit_QC::mettre_a_jour(double tps)
   const Front_VF& front_vf=ref_cast(Front_VF,la_frontiere_dis.valeur());
   int ndeb = front_vf.num_premiere_face();
   int nfin = ndeb + nb_faces;
-  const DoubleTab& tab_rhonp1P0 =fluide.valeur().loi_etat()->rho_np1();
+  const DoubleTab& tab_rhonp1P0 =fluide->loi_etat()->rho_np1();
   if (ismoyen==0)
 
     for (int num_face=ndeb; num_face<nfin; num_face++)

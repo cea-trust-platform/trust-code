@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -308,16 +308,16 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
   shapes_.append_array(shape);
   names_.add(name);
 
-  nb_items_tot_ += part.valeur().get_nb_items_tot() * multiplier;
-  if (data_.size() > 1 || part.valeur().get_nb_items_reels() < 0)
+  nb_items_tot_ += part->get_nb_items_tot() * multiplier;
+  if (data_.size() > 1 || part->get_nb_items_reels() < 0)
     nb_items_reels_ = -1; // size() will be invalid for arrays with this descriptor
   else
-    nb_items_reels_ = part.valeur().get_nb_items_reels() * multiplier;
-  nb_items_seq_tot_ += part.valeur().nb_items_seq_tot() * multiplier;
-  nb_items_seq_local_ += part.valeur().nb_items_seq_local() * multiplier;
+    nb_items_reels_ = part->get_nb_items_reels() * multiplier;
+  nb_items_seq_tot_ += part->nb_items_seq_tot() * multiplier;
+  nb_items_seq_local_ += part->nb_items_seq_local() * multiplier;
 
-  append_blocs(blocs_items_to_sum_, part.valeur().get_items_to_sum(), offset, multiplier);
-  append_blocs(blocs_items_to_compute_, part.valeur().get_items_to_compute(), offset, multiplier);
+  append_blocs(blocs_items_to_sum_, part->get_items_to_sum(), offset, multiplier);
+  append_blocs(blocs_items_to_compute_, part->get_items_to_compute(), offset, multiplier);
 
   if (sub_type(MD_Vector_std, part.valeur()))
     append_global_md(global_md_, ref_cast(MD_Vector_std, part.valeur()), offset, multiplier);
@@ -325,7 +325,7 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
     append_global_md(global_md_, ref_cast(MD_Vector_composite, part.valeur()).global_md_, offset, multiplier);
   else
     {
-      Cerr << "Internal error in MD_Vector_composite::add_part: unknown part type " << part.valeur().que_suis_je() << finl;
+      Cerr << "Internal error in MD_Vector_composite::add_part: unknown part type " << part->que_suis_je() << finl;
       Process::exit();
     }
 }

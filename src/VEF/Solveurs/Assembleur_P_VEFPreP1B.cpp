@@ -380,7 +380,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
     }
 
   // Si pas deja fait, on prends un solveur (SolveurPP1B) qui fera les changements de base pour la solution et le second membre
-  if (changement_base() && solveur_pression.valeur().que_suis_je() != "SolveurPP1B")
+  if (changement_base() && solveur_pression->que_suis_je() != "SolveurPP1B")
     {
       SolveurSys solveur_pression_lu = solveur_pression;
       solveur_pression.typer("SolveurPP1B");
@@ -708,7 +708,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
   faces=-1;
   const IntTab& face_sommets=domaine_Vef().face_sommets();
   Faces_de_Dirichlet=0;
-  const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VEF->les_conditions_limites();
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
@@ -823,7 +823,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
 {
   int matrice_modifiee=0;
   has_P_ref=0;
-  const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VEF->les_conditions_limites();
   const Domaine_VEF& domaine_VEF = domaine_Vef();
   // Recherche s'il y'a une pression de reference, et si oui la matrice n'est pas modifiee
   for(int i=0; i<les_cl.size(); i++)

@@ -132,7 +132,7 @@ int Format_Post_CGNS::ecrire_domaine_low_level(const Domaine * dom,const Nom& no
 
 int Format_Post_CGNS::ecrire_domaine(const Domaine& domaine, const int est_le_premier_post)
 {
-  Motcle type_e = domaine.type_elem().valeur().que_suis_je();
+  Motcle type_e = domaine.type_elem()->que_suis_je();
   ecrire_domaine_low_level(&domaine, domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_e);
 
   // Si on a des frontieres domaine, on les ecrit egalement

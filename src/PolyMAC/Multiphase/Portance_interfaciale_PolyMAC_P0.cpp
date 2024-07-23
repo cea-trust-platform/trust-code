@@ -268,7 +268,7 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
   if ( (temps>1.e-8) && (wobble.non_nul()) && (C_lift.non_nul()))
     {
       const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-      const DoubleTab& pvit = equation().inconnue().valeur().passe(),
+      const DoubleTab& pvit = equation().inconnue()->passe(),
                        &alpha = pbm.equation_masse().inconnue().passe(),
                         &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                          &rho   = equation().milieu().masse_volumique().passe(),

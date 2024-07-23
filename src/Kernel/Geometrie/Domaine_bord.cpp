@@ -130,9 +130,9 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
   dest.nommer(src.le_nom() + Nom("_") + nom_bord);
   // Type des elements du domaine dest:
   Motcle type_elem;
-  type_face_to_type_elem(src.type_elem().valeur(), src.type_elem().valeur().type_face(), type_elem);
+  type_face_to_type_elem(src.type_elem().valeur(), src.type_elem()->type_face(), type_elem);
   dest.type_elem().typer(type_elem);
-  dest.type_elem().valeur().associer_domaine(dest);
+  dest.type_elem()->associer_domaine(dest);
 
   const Frontiere& front = src.frontiere(nom_bord);
   const int nb_faces = front.faces().nb_faces();

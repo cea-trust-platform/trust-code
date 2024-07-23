@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,27 +48,27 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
 
   if (sub_type(Champ_Uniforme,la_source_lu_.valeur()))
     {
-      la_source_.typer(la_source_lu_.valeur().que_suis_je());
+      la_source_.typer(la_source_lu_->que_suis_je());
       la_source_.valeur()=la_source_lu_.valeur();
     }
 // else if (sub_type(Champ_couplage_primaire_secondaire,la_source_lu_.valeur()))
-  else if (la_source_lu_.valeur().que_suis_je()=="Champ_couplage_primaire_secondaire")
+  else if (la_source_lu_->que_suis_je()=="Champ_couplage_primaire_secondaire")
     {
       la_source_=la_source_lu_;
     }
   else
     {
       equation().discretisation().discretiser_champ("champ_elem",equation().domaine_dis(),"source",",",1,0.,la_source_);
-      la_source_.valeur().affecter(la_source_lu_);
+      la_source_->affecter(la_source_lu_);
       la_source_lu_.detach();
     }
   //  const Equation_base& eqn = pb.equation(0);
   equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(),"Puissance_volumique","W/m3",la_source_,pb);
   champs_compris_.ajoute_champ(la_source_);
-  if (la_source_->nb_comp() != equation().inconnue().valeur().nb_comp())
+  if (la_source_->nb_comp() != equation().inconnue()->nb_comp())
     {
       Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
-      Cerr << "le champ source doit avoir " << equation().inconnue().valeur().nb_comp() << " composantes" << finl;
+      Cerr << "le champ source doit avoir " << equation().inconnue()->nb_comp() << " composantes" << finl;
       exit();
     }
 
@@ -86,7 +86,7 @@ void Source_Scalaire_EF::associer_domaines(const Domaine_dis& domaine_dis,
 DoubleTab& Source_Scalaire_EF::ajouter(DoubleTab& resu) const
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  int ncomp=equation().inconnue().valeur().nb_comp();
+  int ncomp=equation().inconnue()->nb_comp();
   const IntTab& elems= domaine_EF.domaine().les_elems() ;
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
@@ -100,7 +100,7 @@ DoubleTab& Source_Scalaire_EF::ajouter(DoubleTab& resu) const
 
   if (sub_type(Champ_Uniforme,la_source_.valeur()))
     is_source_unif=1;
-  const DoubleTab& tab_source=la_source_.valeur().valeurs();
+  const DoubleTab& tab_source=la_source_->valeurs();
   if (ncomp>1)
     for (int num_elem=0; num_elem<nb_elems; num_elem++)
       for (int comp=0; comp<ncomp; comp++)

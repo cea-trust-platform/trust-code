@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,8 @@ protected :
 inline void Solv_GCP_NS::reinit()
 {
   SolveurSys_base::reinit();
-  solveur_poisson1.valeur().reinit();
-  solveur_poisson0.valeur().reinit();
+  solveur_poisson1->reinit();
+  solveur_poisson0->reinit();
 }
 
 #endif

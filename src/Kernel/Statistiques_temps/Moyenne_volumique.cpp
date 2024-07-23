@@ -253,7 +253,7 @@ int Moyenne_volumique::get_champ(const Nom& nom_pb,
           const int nstat = stats.size();
           for (int i_stat = 0; i_stat < nstat; i_stat++)
             {
-              Motcle tmp(stats[i_stat].valeur().le_nom() );
+              Motcle tmp(stats[i_stat]->le_nom() );
 
               if (tmp == mc_nom_champ)
                 {
@@ -462,7 +462,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   Cerr << "Writing of the post-processing domain : " << nom_dom << finl;
   REF(Champ_base) ref_champ;
   get_champ(nom_pb, noms_champs[0], ref_champ);
-  const double temps = ref_champ.valeur().temps();
+  const double temps = ref_champ->temps();
   if (!fichier_post.non_nul())
     {
       if (nom_fichier_post == "??")
@@ -482,7 +482,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
           nom_fichier_post = nom_du_cas();
         }
       fichier_post.typer(Motcle("FORMAT_POST_") + format_post);
-      fichier_post.valeur().initialize(nom_fichier_post, 1 /* binaire */, "SIMPLE");
+      fichier_post->initialize(nom_fichier_post, 1 /* binaire */, "SIMPLE");
     }
   else
     {

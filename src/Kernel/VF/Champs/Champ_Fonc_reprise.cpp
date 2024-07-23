@@ -262,7 +262,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   Nom nom_ident;
   Nom nom_ident_champ_stat;
   Nom nom_ident_champ_keps;
-  Nom type=ref_ch.valeur().que_suis_je();
+  Nom type=ref_ch->que_suis_je();
   Nom nom_temps=Nom(un_temps,time_format_from(format_sauvegarde));
   if (reprend_champ_moyen)
     {

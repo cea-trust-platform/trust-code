@@ -70,8 +70,8 @@ inline void Eval_Darcy_VEF_Face::mettre_a_jour()
     db_diffusivite = diffusivite_.valeur()(0, 0);
   else
     {
-      const DoubleTab& val_diff = diffusivite_.valeur().valeurs();
-      const IntTab& face_vois = le_dom.valeur().face_voisins();
+      const DoubleTab& val_diff = diffusivite_->valeurs();
+      const IntTab& face_vois = le_dom->face_voisins();
       const DoubleVect& volumes = ref_cast(Domaine_VEF,le_dom.valeur()).volumes();
       db_diffusivite = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,7 +156,7 @@ void Echange_impose_base::mettre_a_jour(double temps)
 int Echange_impose_base::initialiser(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().initialiser(temps, domaine_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
+    h_imp_->initialiser(temps, domaine_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
 }
 
@@ -164,38 +164,38 @@ int Echange_impose_base::initialiser(double temps)
 void Echange_impose_base::set_temps_defaut(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().set_temps_defaut(temps);
+    h_imp_->set_temps_defaut(temps);
   Cond_lim_base::set_temps_defaut(temps);
 }
 void Echange_impose_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().fixer_nb_valeurs_temporelles(nb_cases);
+    h_imp_->fixer_nb_valeurs_temporelles(nb_cases);
   Cond_lim_base::fixer_nb_valeurs_temporelles(nb_cases);
 }
 //
 void Echange_impose_base::changer_temps_futur(double temps, int i)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().changer_temps_futur(temps, i);
+    h_imp_->changer_temps_futur(temps, i);
   Cond_lim_base::changer_temps_futur(temps, i);
 }
 int Echange_impose_base::avancer(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().avancer(temps);
+    h_imp_->avancer(temps);
   return Cond_lim_base::avancer(temps);
 }
 
 int Echange_impose_base::reculer(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().reculer(temps);
+    h_imp_->reculer(temps);
   return Cond_lim_base::reculer(temps);
 }
 void Echange_impose_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   if (h_imp_.non_nul())
-    h_imp_.valeur().associer_fr_dis_base(fr);
+    h_imp_->associer_fr_dis_base(fr);
   Cond_lim_base::associer_fr_dis_base(fr);
 }

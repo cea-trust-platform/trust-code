@@ -84,7 +84,7 @@ DoubleTab& Op_Diff_RotRot::calculer(const DoubleTab& vitesse, DoubleTab& diffusi
 DoubleTab& Op_Diff_RotRot::ajouter(const DoubleTab& vitesse, DoubleTab& diffusion) const
 {
   Cerr << "je suis dans OpDiffRotRot" << finl;
-  DoubleTab curl(matrice_vorticite_.valeur().ordre());
+  DoubleTab curl(matrice_vorticite_->ordre());
 
   //Marche car Champ_Inc est mutable
   curl_.calculer(vitesse, curl);
@@ -560,7 +560,7 @@ int Op_Diff_RotRot::tester() const
 {
   //  const Domaine& domaine = domaine_Vef().domaine();
 
-  //   if (vorticite_.valeur().nb_valeurs_nodales() !=
+  //   if (vorticite_->nb_valeurs_nodales() !=
   //       domaine.nb_elem()+domaine.nb_som()-1 )
   //     {
   //       Cerr << "Probleme dans la definition de la vorticite." << finl;

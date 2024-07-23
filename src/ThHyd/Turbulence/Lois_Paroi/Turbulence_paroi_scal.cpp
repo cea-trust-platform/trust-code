@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,10 +55,10 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
   const Turbulence_paroi& loi = mod_turb_hydr.loi_paroi();
 
   if (typ != "negligeable_scalaire")
-    if ((loi.valeur().que_suis_je() == "negligeable_VDF") || (loi.valeur().que_suis_je() == "negligeable_VEF"))
+    if ((loi->que_suis_je() == "negligeable_VDF") || (loi->que_suis_je() == "negligeable_VEF"))
       {
         Cerr << "La loi de paroi de type " << typ << " choisie pour le scalaire n'est pas compatible avec" << finl;
-        Cerr << "la loi de type " << loi.valeur().que_suis_je() << " choisie pour l'hydraulique" << finl;
+        Cerr << "la loi de type " << loi->que_suis_je() << " choisie pour l'hydraulique" << finl;
         Cerr << "Utiliser le type 'negligeable_scalaire' pour le scalaire ou utiliser une loi de paroi" << finl;
         Cerr << "non negligeable pour l hydraulique" << finl;
         exit();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,13 +101,13 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   if (nb_parties_ == 1)
     {
 
-      int nb_elem = ref_domaine_.valeur().nb_elem();
+      int nb_elem = ref_domaine_->nb_elem();
       elem_part.resize_array(nb_elem);
       elem_part = 0;
       return;
     }
 
-  if (ref_domaine_.valeur().nb_elem() == 0)
+  if (ref_domaine_->nb_elem() == 0)
     return;
 
   Cerr << "Partitionneur_Parmetis::construire_partition" << finl;
@@ -153,8 +153,8 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
 
-  MD_Vector_tools::creer_tableau_distribue(ref_domaine_.valeur().md_vector_elements(), elem_part);
-  const int n = ref_domaine_.valeur().nb_elem();
+  MD_Vector_tools::creer_tableau_distribue(ref_domaine_->md_vector_elements(), elem_part);
+  const int n = ref_domaine_->nb_elem();
   for (int i = 0; i < n; i++)
     elem_part[i] = partition[i];
 

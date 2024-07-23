@@ -44,7 +44,7 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
       Champ_front ch;
       fic >> ch;
       champs_.add(ch);
-      //Cerr << "[Parameter] Reading: " << ch.valeur().que_suis_je() << finl; //" " << ch.valeur() << finl;
+      //Cerr << "[Parameter] Reading: " << ch->que_suis_je() << finl; //" " << ch.valeur() << finl;
       fic >> motlu;
     }
   // On fixe le premier parametre:
@@ -62,10 +62,10 @@ std::string Champ_front_Parametrique::newCompute() const
       if (index_)
         {
           previous_field = " from ";
-          previous_field += champ().valeur().que_suis_je();
+          previous_field += champ()->que_suis_je();
         }
       index_++;
-      Nom next_field = champ().valeur().que_suis_je();
+      Nom next_field = champ()->que_suis_je();
       Cerr << "[Parameter] Updating boundary field" << previous_field << " to " << next_field << finl;
       return Champ_Parametrique::dirnameCompute(index_);
     }

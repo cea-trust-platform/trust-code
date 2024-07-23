@@ -202,7 +202,7 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
     dis.discretiser_champ("temperature",domaine_dis,"temperature","K",1,temps,ch_TK);
 
   if (type_fluide()!="Gaz_Parfait")
-    loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
+    loi_etat()->champs_compris().ajoute_champ(ch_TK);
 
   Fluide_Dilatable_base::discretiser(pb,dis);
 }

@@ -74,8 +74,8 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
 {
   const Domaine_VF& domaine_VF = le_dom_VEF.valeur();
   const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF.valeur().volumes_entrelaces_Cl();
-  int premiere_face_std=le_dom_VEF.valeur().premiere_face_std() ;
+  const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF->volumes_entrelaces_Cl();
+  int premiere_face_std=le_dom_VEF->premiere_face_std() ;
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   ArrOfDouble s;
   s = source();

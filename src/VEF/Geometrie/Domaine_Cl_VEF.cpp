@@ -214,7 +214,7 @@ void Domaine_Cl_VEF::remplir_normales_facettes_Cl(const Domaine_VEF& le_dom_VEF)
   const IntVect& rang_elem = le_dom_VEF.rang_elem_non_std();
   const IntTab& elem_faces = le_dom_VEF.elem_faces();
   const DoubleTab& xv = le_dom_VEF.xv();
-  const IntTab& KEL = elemvef.valeur().KEL();
+  const IntTab& KEL = elemvef->KEL();
 
   int num_elem, fa7;
   int isom, ncomp;
@@ -521,7 +521,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 
   // PARTIE PRESSION
   // dans le cas Navier stokes et si la condition est forte en pression aux sommets on impose la valeur aux sommets
-  if (sub_type(Navier_Stokes_std, ch.valeur().equation()))
+  if (sub_type(Navier_Stokes_std, ch->equation()))
     {
       const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
       if ((domaine_vef.get_cl_pression_sommet_faible() == 0) && (domaine_vef.get_alphaS()))

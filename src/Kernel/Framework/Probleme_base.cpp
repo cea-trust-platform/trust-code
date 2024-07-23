@@ -553,7 +553,7 @@ void Probleme_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_
   if (le_schema_en_temps_.non_nul())
     {
       Cerr << finl;
-      Cerr<<"Error: Problem "<<le_nom()<<" was already associated with the scheme "<< le_schema_en_temps_.valeur().le_nom()<<" and we try to associate it with "<<un_schema_en_temps.le_nom() << "." <<finl;
+      Cerr<<"Error: Problem "<<le_nom()<<" was already associated with the scheme "<< le_schema_en_temps_->le_nom()<<" and we try to associate it with "<<un_schema_en_temps.le_nom() << "." <<finl;
       exit();
     }
   le_schema_en_temps_=un_schema_en_temps;
@@ -1710,7 +1710,7 @@ std::string Probleme_base::newCompute()
           const Sources& sources = eq.sources();
           for (auto &source: sources)
             {
-              for (auto const &champ_don: source.valeur().champs_don())
+              for (auto const &champ_don: source->champs_don())
                 {
                   if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
                     {

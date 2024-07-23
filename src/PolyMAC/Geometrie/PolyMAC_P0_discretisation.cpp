@@ -157,7 +157,7 @@ void PolyMAC_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& c
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 
-  Nom type_ch = ch_inco.valeur().que_suis_je();
+  Nom type_ch = ch_inco->que_suis_je();
   if (type_ch.debute_par("Champ_Face"))
     {
       Motcle loc = "champ_face";

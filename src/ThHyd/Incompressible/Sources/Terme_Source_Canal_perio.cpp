@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -131,10 +131,10 @@ void Terme_Source_Canal_perio::completer()
       set_fichier("Canal_perio");
       set_description("Energy source term = Integral(P*dv) [W]");
     }
-  int nb_bords = equation().domaine_dis().valeur().nb_front_Cl();
+  int nb_bords = equation().domaine_dis()->nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = equation().domaine_Cl_dis().valeur().les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = equation().domaine_Cl_dis()->les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& perio = ref_cast(Periodique,la_cl.valeur());
@@ -283,10 +283,10 @@ double Terme_Source_Canal_perio::compute_heat_flux() const
     }
   // Loop on boundaries to evaluate total heat flux:
   double heat_flux=0;
-  int nb_bords = equation().domaine_dis().valeur().nb_front_Cl();
+  int nb_bords = equation().domaine_dis()->nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = equation().domaine_Cl_dis().valeur().les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = equation().domaine_Cl_dis()->les_conditions_limites(n_bord);
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           // Loop on boundary faces with imposed flux condition (Neumann)

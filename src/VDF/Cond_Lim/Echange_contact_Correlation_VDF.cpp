@@ -160,7 +160,7 @@ void Echange_contact_Correlation_VDF::completer()
 
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int nb_faces_bord = ma_front_vf.nb_faces();
-  DoubleTab& Text_valeurs = T_ext().valeur().valeurs();
+  DoubleTab& Text_valeurs = T_ext()->valeurs();
   Text_valeurs.resize(nb_faces_bord,1);
 
   mon_h.resize(nb_faces_bord,1);
@@ -610,7 +610,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
   DoubleTab& mon_h= h_imp_->valeurs();
   calculer_h_mon_pb(mon_h);
   const int taille=mon_h.dimension(0);
-  DoubleTab& Text_valeurs = T_ext().valeur().valeurs();
+  DoubleTab& Text_valeurs = T_ext()->valeurs();
 
   for (int ii=0; ii<taille; ii++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
   int nb_front=domaine_VEF.nb_front_Cl();
 
 
-  const Probleme_base& pb = mon_equation.valeur().probleme();
+  const Probleme_base& pb = mon_equation->probleme();
   int flag=0;
 
   for(int i=0; i<pb.nombre_d_equations(); i++)
@@ -83,7 +83,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
       exit();
     }
 
-  const DoubleTab& tab_temperature = mon_equation_NRJ.valeur().inconnue().valeurs();
+  const DoubleTab& tab_temperature = mon_equation_NRJ->inconnue().valeurs();
 
   const DoubleTab& vitesse = pb.get_champ(Motcle("vitesse")).valeurs();
   const Champ_base& rho_ = pb.milieu().masse_volumique().valeur();

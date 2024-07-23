@@ -249,7 +249,7 @@ void Op_Conv_VEF_base::associer(const Domaine_dis& domaine_dis,
   roue= -1;
   //  roue2=-1;
 
-  le_dom_vef.valeur().creer_tableau_faces(fluent_);
+  le_dom_vef->creer_tableau_faces(fluent_);
 }
 
 int Op_Conv_VEF_base::impr(Sortie& os) const

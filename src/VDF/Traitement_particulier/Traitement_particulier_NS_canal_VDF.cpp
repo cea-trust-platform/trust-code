@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -308,7 +308,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_nut(DoubleTa
   const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   //const DoubleTab& xp = domaine_VDF.xp();
-  const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
+  const RefObjU& modele_turbulence = mon_equation->get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
   const DoubleTab& nu_t = mod_turb.viscosite_turbulente()->valeurs();
 
@@ -332,7 +332,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_Temp(DoubleT
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   //const DoubleTab& xp = domaine_VDF.xp();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleTab& temperature = Temp.valeur().valeurs();
+  const DoubleTab& temperature = Temp->valeurs();
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   double u,v,wl,T;
   int nb_elems = domaine_VDF.domaine().nb_elem();

@@ -131,7 +131,7 @@ void Champ_Gen_de_Champs_Gen::mettre_a_jour(double temps)
 {
   const int n = sources_.size();
   for (int i = 0; i < n; i++)
-    sources_[i].valeur().mettre_a_jour(temps);
+    sources_[i]->mettre_a_jour(temps);
 }
 
 Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ& nature,
@@ -207,7 +207,7 @@ int Champ_Gen_de_Champs_Gen::sauvegarder(Sortie& os) const
   const int n = sources_.size();
   int bytes = 0;
   for (int i = 0; i < n; i++)
-    bytes += sources_[i].valeur().sauvegarder(os);
+    bytes += sources_[i]->sauvegarder(os);
   return bytes;
 }
 
@@ -218,7 +218,7 @@ int Champ_Gen_de_Champs_Gen::reprendre(Entree& is)
 {
   const int n = sources_.size();
   for (int i = 0; i < n; i++)
-    sources_[i].valeur().reprendre(is);
+    sources_[i]->reprendre(is);
   return 1;
 }
 
@@ -380,7 +380,7 @@ void Champ_Gen_de_Champs_Gen::nommer_sources(const Postraitement_base& post)
       else
         {
           Cerr<<"There is no method nommer_source() for this type of field "<<finl;
-          Cerr<<"sources_[i].valeur().que_suis_je()"<<finl;
+          Cerr<<"sources_[i]->que_suis_je()"<<finl;
           exit();
         }
     }

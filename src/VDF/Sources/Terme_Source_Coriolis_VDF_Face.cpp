@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ void Terme_Source_Coriolis_VDF_Face::associer_pb(const Probleme_base& pb)
     }
 
   la_source.resize(0,dimension);
-  le_dom_VDF.valeur().domaine().creer_tableau_elements(la_source);
+  le_dom_VDF->domaine().creer_tableau_elements(la_source);
 }
 
 

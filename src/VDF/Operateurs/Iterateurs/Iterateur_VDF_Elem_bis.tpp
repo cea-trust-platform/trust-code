@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
 template <class _TYPE_>
 int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
-  const Domaine_VDF& le_dom_vdf=ref_cast(Domaine_VDF,op_base.valeur().equation().domaine_dis().valeur());
+  const Domaine_VDF& le_dom_vdf=ref_cast(Domaine_VDF,op_base->equation().domaine_dis().valeur());
   const Domaine& madomaine=le_dom->domaine();
   const int impr_bord=(madomaine.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
@@ -253,10 +253,10 @@ void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echang
     {
       Type_Double flux(ncomp);
       int boundary_index=-1;
-      if (le_dom.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      if (le_dom->front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
         {
-          int local_face=le_dom.valeur().front_VF(boundary_index).num_local_face(face);
+          int local_face=le_dom->front_VF(boundary_index).num_local_face(face);
           flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
           fill_flux_tables_(face,ncomp,1.0 /* coeff */,flux,resu);
         }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
       is_polyedre_=1;
     }
   else
-    domaine.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference_old_);
+    domaine.type_elem()->get_tab_faces_sommets_locaux(faces_element_reference_old_);
   // Tableau de taille (nb_faces, nb_sommets par face),
   // pour chaque face, les indices de ses sommets dans le domaine.
   // L'ordre des sommets est celui donne par l'element de reference,
@@ -274,7 +274,7 @@ void Faces_builder::check_erreur_faces(const char * message,
         << " elem1 elem2 = neighbouring element number\n"
         << "facenumber som1 (x1 y1 z1) som2 (x2 y2 z2) [som3 (x3 y3 z3)...] elem1 elem2" << finl;
       char s[1000];
-      const DoubleTab& coord = ref_domaine_.valeur().coord_sommets();
+      const DoubleTab& coord = ref_domaine_->coord_sommets();
       const IntTab&     faces = faces_sommets_.valeur();
       const IntTab&     face_elem = face_elem_.valeur();
       const int dim = Objet_U::dimension;
