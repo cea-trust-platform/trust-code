@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_PDF_base_included
 #define Source_PDF_base_included
 
+#include <Interpolation_IBM_base.h>
 #include <Source_dep_inco_base.h>
-#include <Interpolation_IBM.h>
+#include <TRUST_Deriv.h>
 #include <Champ_Don.h>
 #include <PDF_model.h>
 #include <TRUSTTab.h>
@@ -38,14 +38,8 @@ class Source_PDF_base : public Source_dep_inco_base
   Declare_base(Source_PDF_base);
 
 public:
-  inline int getInterpolationBool()
-  {
-    return interpolation_bool_;
-  };
-  inline bool get_matrice_pression_variable_bool_()
-  {
-    return  matrice_pression_variable_bool_;
-  };
+  inline const int& getInterpolationBool() const { return interpolation_bool_; }
+  inline const bool& get_matrice_pression_variable_bool_() const { return  matrice_pression_variable_bool_; }
   void associer_pb(const Probleme_base& ) override;
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const override;
   virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
@@ -64,20 +58,12 @@ public:
   virtual void correct_vitesse(const DoubleTab&,DoubleTab&) const;
   void calculer_vitesse_imposee();
   void updateChampRho();
-  inline const PDF_model& get_modele() const
-  {
-    return modele_lu_;
-  }
+  inline const PDF_model& get_modele() const { return modele_lu_; }
   int impr(Sortie&) const override;
   void ouvrir_fichier(SFichier&, const Nom&, const int) const override;
-  inline const DoubleTab& get_sec_mem_pdf() const
-  {
-    return sec_mem_pdf;
-  }
-  inline void set_sec_mem_pdf(DoubleTab& it)
-  {
-    sec_mem_pdf = it;
-  }
+  inline const DoubleTab& get_sec_mem_pdf() const { return sec_mem_pdf; }
+  inline void set_sec_mem_pdf(DoubleTab& it) { sec_mem_pdf = it; }
+
 protected:
   virtual void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double);
   virtual void calculer_vitesse_imposee_hybrid();
@@ -90,11 +76,9 @@ protected:
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   virtual void compute_indicateur_nodal_champ_aire();
   int type_vitesse_imposee_ = -1;
-  Champ_Don champ_rotation_lu_;
-  Champ_Don champ_rotation_;
-  Champ_Don champ_aire_lu_;
-  Champ_Don champ_aire_;
-  Champ_Don champ_rho_;
+
+  Champ_Don champ_rotation_lu_, champ_rotation_, champ_aire_lu_, champ_aire_, champ_rho_;
+
   int transpose_rotation_ = -1;
   DoubleTab indicateur_nodal_champ_aire_;
   DoubleTab vitesse_imposee_;
@@ -104,10 +88,10 @@ protected:
   bool matrice_pression_variable_bool_ = false;
   bool penalized_ = false;
   DoubleTab sec_mem_pdf; // part of the source term computed with the imposed velocity
+
   // FOR THE INTERPOLATION
-  Interpolation_IBM interpolation_lue_;
+  OWN_PTR(Interpolation_IBM_base) interpolation_lue_;
   int interpolation_bool_ = 0;
-  //
 };
 
-#endif
+#endif /* Source_PDF_base */
