@@ -314,7 +314,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
 {
 
   // flag nul on n'ouvre pas le fichier
-  if (flag==0)
+  if (flag==0 || os.is_open())
     return ;
 
   if (!je_suis_maitre())
@@ -417,6 +417,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
     }
   os.precision(precision);
   os.setf(ios::scientific);
+  // Ajout de os a la liste des fichiers a fermer lors de l'appel a Probleme_base::finir()
+  pb.get_set_out_files().add(os);
 }
 
 /*! @brief Ouverture/creation d'un fichier d'impression d'un operateur A surcharger dans les classes derivees.

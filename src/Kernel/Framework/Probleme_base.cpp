@@ -1654,8 +1654,12 @@ void Probleme_base::sauver() const
 void Probleme_base::finir()
 {
   Debog::set_nom_pb_actuel(le_nom());
-  schema_temps().finir();
-  les_postraitements_.finir();
+  schema_temps().finir(); // Fermeture du .dt_ev
+  les_postraitements_.finir(); // Fermeture des fichiers de postraitements
+  for (auto os : get_set_out_files())
+    if (os->is_open())
+      os->close(); // Fermeture des fichiers .out
+
   if (schema_temps().temps_sauv() > 0.0)
     sauver();
 

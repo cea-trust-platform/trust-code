@@ -1070,8 +1070,7 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
   mp_sum_for_each_item(flux_bords2);
   if (je_suis_maitre())
     {
-      //SFichier Flux;
-      if (!Flux.is_open()) op_base->ouvrir_fichier(Flux,"",1);
+      op_base->ouvrir_fichier(Flux,"",1);
       Flux.add_col(temps);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {

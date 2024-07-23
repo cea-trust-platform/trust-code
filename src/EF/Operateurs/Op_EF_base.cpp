@@ -411,12 +411,9 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const int impr_bord=(le_dom_EF.domaine().bords_a_imprimer().est_vide() ? 0:1);
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
-  //SFichier Flux;
-  if (!Flux.is_open()) op.ouvrir_fichier( Flux,"",flag);
-  //SFichier Flux_moment;
-  if (!Flux_moment.is_open()) op.ouvrir_fichier(Flux_moment,"moment",impr_mom&&flag);
-  //SFichier Flux_sum;
-  if (!Flux_sum.is_open()) op.ouvrir_fichier(Flux_sum,"sum",impr_sum&&flag);
+  op.ouvrir_fichier( Flux,"",flag);
+  op.ouvrir_fichier(Flux_moment,"moment",impr_mom&&flag);
+  op.ouvrir_fichier(Flux_sum,"sum",impr_sum&&flag);
   EcrFicPartage Flux_face;
   op.ouvrir_fichier_partage(Flux_face,"",impr_bord);
 

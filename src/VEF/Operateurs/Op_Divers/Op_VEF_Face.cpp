@@ -508,16 +508,9 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   // Ecriture dans les fichiers
   if (Process::je_suis_maitre())
     {
-      // Open files if needed
-      //SFichier Flux;
-      if (!Flux.is_open())
-        op.ouvrir_fichier(Flux, "", 1);
-      //SFichier Flux_moment;
-      if (!Flux_moment.is_open())
-        op.ouvrir_fichier(Flux_moment, "moment", impr_mom);
-      //SFichier Flux_sum;
-      if (!Flux_sum.is_open())
-        op.ouvrir_fichier(Flux_sum, "sum", impr_sum);
+      op.ouvrir_fichier(Flux, "", 1);
+      op.ouvrir_fichier(Flux_moment, "moment", impr_mom);
+      op.ouvrir_fichier(Flux_sum, "sum", impr_sum);
 
       // Write time
       Flux.add_col(sch.temps_courant());

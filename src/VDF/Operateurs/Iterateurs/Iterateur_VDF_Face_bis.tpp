@@ -118,15 +118,9 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
   mp_sum_for_each_item(flux_bords2);
   if (je_suis_maitre())
     {
-      //SFichier Flux;
-      if (!Flux.is_open())
-        op_base->ouvrir_fichier(Flux, "", 1);
-      //SFichier Flux_moment;
-      if (!Flux_moment.is_open())
-        op_base->ouvrir_fichier(Flux_moment, "moment", impr_mom);
-      //SFichier Flux_sum;
-      if (!Flux_sum.is_open())
-        op_base->ouvrir_fichier(Flux_sum, "sum", impr_sum);
+      op_base->ouvrir_fichier(Flux, "", 1);
+      op_base->ouvrir_fichier(Flux_moment, "moment", impr_mom);
+      op_base->ouvrir_fichier(Flux_sum, "sum", impr_sum);
       Flux.add_col(sch.temps_courant());
       if (impr_mom)
         Flux_moment.add_col(sch.temps_courant());

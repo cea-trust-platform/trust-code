@@ -1803,7 +1803,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           int flag = Process::je_suis_maitre();
           if(flag)
             {
-              if (!Flux.is_open()) ouvrir_fichier(Flux,"",flag);
+              ouvrir_fichier(Flux,"",flag);
               Flux << temps << espace << bilan_(0) << espace << bilan_(1) << espace << bilan_(2) << finl;
             }
         }

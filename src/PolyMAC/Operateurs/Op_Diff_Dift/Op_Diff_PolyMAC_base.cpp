@@ -216,15 +216,9 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
 
   if (je_suis_maitre() && nb_comp > 0)
     {
-      //SFichier Flux;
-      if (!Flux.is_open())
-        ouvrir_fichier(Flux, "", 1);
-      //SFichier Flux_moment;
-      if (!Flux_moment.is_open())
-        ouvrir_fichier(Flux_moment, "moment", impr_mom);
-      //SFichier Flux_sum;
-      if (!Flux_sum.is_open())
-        ouvrir_fichier(Flux_sum, "sum", impr_sum);
+      ouvrir_fichier(Flux, "", 1);
+      ouvrir_fichier(Flux_moment, "moment", impr_mom);
+      ouvrir_fichier(Flux_sum, "sum", impr_sum);
       Flux.add_col(sch.temps_courant());
       if (impr_mom)
         Flux_moment.add_col(sch.temps_courant());

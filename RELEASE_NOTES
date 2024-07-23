@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) Fix          : .out files were not closed at the end of the calculation leaving opened file descriptors
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------

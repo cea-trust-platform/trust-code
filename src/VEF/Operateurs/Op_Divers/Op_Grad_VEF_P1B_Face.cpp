@@ -771,16 +771,9 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
 
   if (je_suis_maitre())
     {
-      // Open files if needed
-      //SFichier Flux_grad;
-      if (!Flux_grad.is_open())
-        ouvrir_fichier(Flux_grad, "", 1);
-      //SFichier Flux_grad_moment;
-      if (!Flux_grad_moment.is_open())
-        ouvrir_fichier(Flux_grad_moment, "moment", impr_mom);
-      //SFichier Flux_grad_sum;
-      if (!Flux_grad_sum.is_open())
-        ouvrir_fichier(Flux_grad_sum, "sum", impr_sum);
+      ouvrir_fichier(Flux_grad, "", 1);
+      ouvrir_fichier(Flux_grad_moment, "moment", impr_mom);
+      ouvrir_fichier(Flux_grad_sum, "sum", impr_sum);
 
       // Write time
       Flux_grad.add_col(sch.temps_courant());
