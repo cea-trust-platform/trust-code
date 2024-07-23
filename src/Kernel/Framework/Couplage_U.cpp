@@ -82,13 +82,14 @@ bool Couplage_U::isStationary() const
 
 std::string Couplage_U::newCompute()
 {
+  Cerr << "[Parameter] ----------------------------" << finl;
+  std::string dir="";
   for(int i=0; i<nb_problemes(); i++)
     {
-      std::string dir = ref_cast(Probleme_base, probleme(i)).newCompute();
-      if (!dir.empty()) return dir;
+      std::string dirname = ref_cast(Probleme_base, probleme(i)).newCompute();
+      dir = dirname.empty() ? dir : dirname;
     }
-  //if (compute && !isStationary()) Process::exit("Unexpected case. Stationary not reached and Champ_parametrique used.");
-  return "";
+  return dir;
 }
 
 void Couplage_U::setStationary(bool flag)

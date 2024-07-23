@@ -85,7 +85,7 @@ void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName,
 #ifdef MEDCOUPLING_
   MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName,fieldName));
   std::vector<double> tps;
-  std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);
+  std::vector< std::pair<True_int,True_int> > tst = ft1->getTimeSteps(tps);
 
   temps_sauv.resize_array(1);
 
@@ -153,10 +153,6 @@ void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)
   if (domainebidon_inst.nb_elem() > 0)
     {
       double frac = la_table.val(t);
-      if (frac_==DMAXFLOAT)
-        frac_ = frac;
-      else if (frac!=frac_)
-        set_instationnaire(true); // table non constante
       const DoubleTab& vals0 = le_champ0().valeurs();
       DoubleTab& vals = le_champ().valeurs();
 
@@ -165,4 +161,9 @@ void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)
     }
   Champ_Fonc_base::mettre_a_jour(t);
   le_champ().Champ_Fonc_base::mettre_a_jour(t);
+}
+
+bool Champ_Fonc_MED_Table_Temps::instationnaire() const
+{
+  return la_table.instationnaire();
 }

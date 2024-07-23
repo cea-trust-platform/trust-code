@@ -325,6 +325,8 @@ bool Probleme_U::run()
       std::string newDirectory = stop ? newCompute() : "";
       if (!newDirectory.empty())
         {
+          // ToDo: ameliorer le message
+          //if (!isStationary()) Process::exit("Error, the parametric problem is not stationary! Check the convergence.");
           // Keep on the resolution if parametric variation in a new directory:
           stop = false;
           setStationary(stop);

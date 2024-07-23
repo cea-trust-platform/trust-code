@@ -54,16 +54,31 @@ public :
   inline Champ_front& h_eff() { return coeff_heff; }
   inline const Champ_front& h_eff() const { return coeff_heff; }
 
+  // Type echange effectif
+  inline Champ_front& tep_eff() { return type_echange_eff; }
+  inline const Champ_front& tep_eff() const { return type_echange_eff; }
+
   // Temperature effective
   inline Champ_front& T_eff() { return temperature_Teff; }
   inline const Champ_front& T_eff() const { return temperature_Teff; }
+
+  // Rapport Echauffement Critique a la paroi
+  inline Champ_front& rec_paroi() { return rftc_paroi; }
+  inline const Champ_front& rec_paroi() const { return rftc_paroi; }
+
+  // Flux critique a la paroi
+  inline Champ_front& phic_paroi() { return flux_critique_paroi; }
+  inline const Champ_front&  phic_paroi() const { return flux_critique_paroi; }
 
 protected :
   double couplage_ = -1.;
   Champ_front coeff_ap;
   Champ_front coeff_sp;
   Champ_front coeff_heff;
+  Champ_front type_echange_eff;
   Champ_front temperature_Teff;
+  Champ_front rftc_paroi;
+  Champ_front flux_critique_paroi;
   Lecture_Champ lec_champs;
   bool reprise_ = false, divise_par_rho_cp_ = true;
 };

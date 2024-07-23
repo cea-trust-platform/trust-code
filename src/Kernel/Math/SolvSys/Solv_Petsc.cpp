@@ -1986,7 +1986,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   // Keep precond ?
   if (nouvelle_matrice_)
     {
-      set_reuse_preconditioner(false); // Par defaut, precond est refait
+      //set_reuse_preconditioner(false); // Par defaut, precond est refait
       PetscBool flg;
       PetscOptionsHasName(PETSC_NULLPTR,option_prefix_,"-ksp_reuse_preconditioner",&flg);
       if (flg)

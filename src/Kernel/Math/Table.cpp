@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -323,4 +323,21 @@ void Table::remplir(const DoubleVects& params, const DoubleVect& aval)
   les_valeurs = aval;
   les_parametres.dimensionner(params.size());
   for (int i = 0; i < params.size(); i++) les_parametres[i].ref(params[i]);
+}
+
+static bool checked=false;
+bool Table::instationnaire() const
+{
+  if (!checked)
+    {
+      for (int comp = 0; comp < les_valeurs.dimension(1); comp++)
+        {
+          double val_ = les_valeurs(0, comp);
+          for (int i = 1; i < les_valeurs.dimension(0); i++)
+            if (val_ != les_valeurs(i, comp))
+              instationnaire_ = true;
+        }
+      checked = true;
+    }
+  return instationnaire_;
 }

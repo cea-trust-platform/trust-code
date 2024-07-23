@@ -955,7 +955,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
       break;
     }
   is >> motlu;
-  if (motlu=="union")
+  while (motlu=="union")
     {
       Nom nom_ss_domaine;
       is >> nom_ss_domaine;

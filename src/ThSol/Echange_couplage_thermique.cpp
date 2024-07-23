@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,10 +78,25 @@ void Echange_couplage_thermique::completer()
   coeff_heff->associer_fr_dis_base(frontiere_dis());
   coeff_heff->fixer_nb_valeurs_temporelles(3);
 
+  type_echange_eff.typer("Ch_front_var_instationnaire_dep");
+  type_echange_eff->fixer_nb_comp(1);
+  type_echange_eff->associer_fr_dis_base(frontiere_dis());
+  type_echange_eff->fixer_nb_valeurs_temporelles(3);
+
   temperature_Teff.typer("Ch_front_var_instationnaire_dep");
   temperature_Teff->fixer_nb_comp(1);
   temperature_Teff->associer_fr_dis_base(frontiere_dis());
   temperature_Teff->fixer_nb_valeurs_temporelles(3);
+
+  rftc_paroi.typer("Ch_front_var_instationnaire_dep");
+  rftc_paroi->fixer_nb_comp(1);
+  rftc_paroi->associer_fr_dis_base(frontiere_dis());
+  rftc_paroi->fixer_nb_valeurs_temporelles(3);
+
+  flux_critique_paroi.typer("Ch_front_var_instationnaire_dep");
+  flux_critique_paroi->fixer_nb_comp(1);
+  flux_critique_paroi->associer_fr_dis_base(frontiere_dis());
+  flux_critique_paroi->fixer_nb_valeurs_temporelles(3);
 
   Nom nom_pb=mon_dom_cl_dis->equation().probleme().que_suis_je();
   const Champ_base& rho=mon_dom_cl_dis->equation().milieu().masse_volumique().valeur();
@@ -123,7 +138,10 @@ void Echange_couplage_thermique::changer_temps_futur(double temps, int i)
   coeff_ap->changer_temps_futur(temps,i);
   coeff_sp->changer_temps_futur(temps,i);
   coeff_heff->changer_temps_futur(temps,i);
+  type_echange_eff->changer_temps_futur(temps,i);
   temperature_Teff->changer_temps_futur(temps,i);
+  rftc_paroi->changer_temps_futur(temps,i);
+  flux_critique_paroi->changer_temps_futur(temps,i);
 }
 
 int Echange_couplage_thermique::avancer(double temps)
@@ -131,7 +149,10 @@ int Echange_couplage_thermique::avancer(double temps)
   coeff_ap->avancer(temps);
   coeff_sp->avancer(temps);
   coeff_heff->avancer(temps);
+  type_echange_eff->avancer(temps);
   temperature_Teff->avancer(temps);
+  rftc_paroi->avancer(temps);
+  flux_critique_paroi->avancer(temps);
   return  Echange_global_impose::avancer(temps);
 }
 
@@ -140,7 +161,10 @@ int Echange_couplage_thermique::reculer(double temps)
   coeff_ap->reculer(temps);
   coeff_sp->reculer(temps);
   coeff_heff->reculer(temps);
+  type_echange_eff->reculer(temps);
   temperature_Teff->reculer(temps);
+  rftc_paroi->reculer(temps);
+  flux_critique_paroi->reculer(temps);
   return  Echange_global_impose::reculer(temps);
 }
 
@@ -150,7 +174,10 @@ void Echange_couplage_thermique::set_temps_defaut(double temps)
   coeff_ap->set_temps_defaut(temps);
   coeff_sp->set_temps_defaut(temps);
   coeff_heff->set_temps_defaut(temps);
+  type_echange_eff->set_temps_defaut(temps);
   temperature_Teff->set_temps_defaut(temps);
+  rftc_paroi->set_temps_defaut(temps);
+  flux_critique_paroi->set_temps_defaut(temps);
 }
 
 void Echange_couplage_thermique::mettre_a_jour(double temps)
@@ -159,28 +186,50 @@ void Echange_couplage_thermique::mettre_a_jour(double temps)
   coeff_ap->mettre_a_jour(temps);
   coeff_sp->mettre_a_jour(temps);
   coeff_heff->mettre_a_jour(temps);
+  type_echange_eff->mettre_a_jour(temps);
   temperature_Teff->mettre_a_jour(temps);
+  rftc_paroi->mettre_a_jour(temps);
+  flux_critique_paroi->mettre_a_jour(temps);
 }
 
+static bool initialized = false;
 int Echange_couplage_thermique::initialiser(double temps)
 {
-  Echange_global_impose::initialiser(temps);
-
-  if (reprise_)
+  if (!initialized)
     {
-      Champ_Inc ch = domaine_Cl_dis().equation().inconnue();
-      ch->affecter(lec_champs.champ_lu("temperature_paroi"));
-      DoubleTab& vals1 =le_champ_front->valeurs();
-      ch->trace(frontiere_dis(),vals1,temps,0);
+      Echange_global_impose::initialiser(temps);
+      if (reprise_)
+        {
+          Champ_Inc ch = domaine_Cl_dis().equation().inconnue();
+          ch->affecter(lec_champs.champ_lu("temperature_paroi"));
+          DoubleTab& vals1 =le_champ_front->valeurs();
+          ch->trace(frontiere_dis(),vals1,temps,0);
 
-      ch->affecter(lec_champs.champ_lu("flux_paroi"));
-      DoubleTab& vals = phi_ext_->valeurs();
-      ch->trace(frontiere_dis(),vals,temps,0);
+          ch->affecter(lec_champs.champ_lu("flux_paroi"));
+          DoubleTab& vals = phi_ext_->valeurs();
+          ch->trace(frontiere_dis(),vals,temps,0);
+        }
+    }
+  else
+    {
+      // Cas du multi-calcul ou l'on reinitialise le calcul (on veut garder le phi_ext et champ_front precedents)
+      phi_ext_->set_temps_defaut(temps);
+      phi_ext_->mettre_a_jour(temps);
+      phi_ext_->changer_temps_futur(temps,0);
+      le_champ_front->set_temps_defaut(temps);
+      le_champ_front->mettre_a_jour(temps);
+      le_champ_front->changer_temps_futur(temps,0);
+      reprise_ = true;
     }
   coeff_ap->initialiser(temps,domaine_Cl_dis().inconnue());
   coeff_sp->initialiser(temps,domaine_Cl_dis().inconnue());
   coeff_heff->initialiser(temps,domaine_Cl_dis().inconnue());
+  type_echange_eff->initialiser(temps,domaine_Cl_dis().inconnue());
   temperature_Teff->initialiser(temps,domaine_Cl_dis().inconnue());
-
+  rftc_paroi->initialiser(temps,domaine_Cl_dis().inconnue());
+  rftc_paroi->valeurs()=1e20;
+  flux_critique_paroi->initialiser(temps,domaine_Cl_dis().inconnue());
+  flux_critique_paroi->valeurs()=1e20;
+  initialized = true;
   return 1;
 }

@@ -32,6 +32,7 @@ class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED, public Champ_lu_proto
 public:
   void lire_donnees_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, ArrOfDouble& temps_sauv, int& size, int& nbcomp, Nom& type_champ) override;
   void lire(double tps, int given_iteration = -1) override;
+  bool instationnaire() const override;
 
 protected :
   void set_param(Param& param) override;
@@ -42,7 +43,6 @@ protected :
   Table la_table;
   Champ_Fonc vrai_champ0_;
   bool table_lue_ = false;
-  double frac_=DMAXFLOAT;
 };
 
 #endif /* Champ_Fonc_MED_Table_Temps_included */

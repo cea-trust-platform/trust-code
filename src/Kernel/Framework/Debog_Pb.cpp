@@ -252,11 +252,10 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
       if (k != 1)
         {
           Cerr << "Debog::add_renum_item: Error. Id=" << id
-               << "\n Item with following coordinates was found " << k << " times within epsilon=" << epsilon
-               << "\n in the reference geometry: " << center << finl;
+               << "\n Item " << i << " with following coordinates was found " << k << " times within epsilon=" << epsilon << " in the reference geometry: " << center << finl;
           if (noeuds_doubles_ignores_==0)
             {
-              Cerr << "If you wan't to discard nodes comparison in the mesh, add 'noeuds_doubles_ignores 1' option in debog_pb keyword." << finl;
+              Cerr << "If you want to discard nodes comparison in the mesh, add 'noeuds_doubles_ignores 1' option in debog_pb keyword." << finl;
               exit();
             }
           else
@@ -265,8 +264,11 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
               renum[i] = -1;
             }
         }
-      // renum[i] is the index of the i-th local item in the reference geometry
-      renum[i] = elements[0];
+      else
+        {
+          // renum[i] is the index of the i-th local item in the reference geometry
+          renum[i] = elements[0];
+        }
     }
 }
 
@@ -368,6 +370,7 @@ const IntVect& Debog_Pb::find_renum_vector(const MD_Vector& mdv, Nom& id) const
           return renum;
         }
     }
+  Cerr << "Erreur, on ne trouve pas le renum_vector pour le tableau sur item: "<< id << finl;
   throw RENUM_ARRAY_NOT_FOUND;
 }
 
