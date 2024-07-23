@@ -370,7 +370,7 @@ const IntVect& Debog_Pb::find_renum_vector(const MD_Vector& mdv, Nom& id) const
           return renum;
         }
     }
-  Cerr << "Erreur, on ne trouve pas le renum_vector pour le tableau sur item: "<< id << finl;
+  Cerr << "Error, we don't find renum_vector for the array on item: "<< id << finl;
   throw RENUM_ARRAY_NOT_FOUND;
 }
 

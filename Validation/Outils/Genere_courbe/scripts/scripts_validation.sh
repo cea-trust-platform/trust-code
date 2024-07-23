@@ -1,6 +1,5 @@
 #!/bin/bash 
 
-
 echo "def Extract_Times [-revert] DIR [<output_dir>]"
 Extract_Times()
 {
@@ -137,6 +136,8 @@ compare_pdf_batch()
 {
     batch_mode=""
     [ "$1" = "-batch" ] && batch_mode="-batch" && shift
+    skip_first_page_comp=""
+    [ "$1" = "-skip_1st_page_comp" ] && skip_first_page_comp="-f 2" && shift
     new=$1
     ref=$2
 
@@ -155,8 +156,8 @@ compare_pdf_batch()
     mkdir -p $ppm_dir_new
     mkdir -p $ppm_dir_ref
     mkdir -p $ppm_dir_diff
-    pdftoppm -r 100 ${ref}  $ppm_dir_ref/${base_ref}_oo
-    pdftoppm -r 100 ${new}  $ppm_dir_new/${base_new}_oo
+    pdftoppm $skip_first_page_comp -r 100 ${ref}  $ppm_dir_ref/${base_ref}_oo
+    pdftoppm $skip_first_page_comp -r 100 ${new}  $ppm_dir_new/${base_new}_oo
     ret_code=0
 
     for file_ref in `\ls $ppm_dir_ref/${base_ref}_oo*ppm`
@@ -208,11 +209,13 @@ compare_pdf()
 # For a single PRM, compare old and new report.
 # If -batch is specified, do not stop to ask whether differences are ok or not and just produce difference files.
 #
-echo "def comp_fiche [ -batch ]"
+echo "def comp_fiche [ -batch ] [ -skip_1st_page_comp ]"
 comp_fiche()
 {
     batch_mode=""
     [ "$1" = "-batch" ] && batch_mode="-batch" && shift
+    skip_first_page_comp=""
+    [ "$1" = "-skip_1st_page_comp" ] && skip_first_page_comp="-skip_1st_page_comp" && shift
     fiche=$1
     echo "Comparing $fiche"
     [ "$fiche" = "" ] && return -1
@@ -229,7 +232,7 @@ comp_fiche()
 
     rm -rf avoir 
 
-    compare_pdf_batch $batch_mode new_rap/$fiche old_rap/$fiche
+    compare_pdf_batch $batch_mode $skip_first_page_comp new_rap/$fiche old_rap/$fiche
     ret_code=$?
 
     OK="n"

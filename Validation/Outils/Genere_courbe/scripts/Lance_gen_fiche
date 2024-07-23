@@ -195,7 +195,7 @@ genere_fiche()
 }
 
 ###
-### MAIN:q
+### MAIN
 ###
 
 org=`pwd`
