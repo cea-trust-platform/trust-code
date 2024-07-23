@@ -18,18 +18,18 @@
 
 #include <Probleme_base_interface_proto.h>
 #include <Champs_compris_interface.h>
+#include <Champ_front_Parametrique.h>
 #include <Sortie_Fichier_base.h>
+#include <Champ_Parametrique.h>
 #include <Probleme_Couple.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
 #include <Domaine_dis.h>
+#include <Milieu_base.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <TRUST_Ref.h>
-#include <Milieu.h>
-#include <Champ_front_Parametrique.h>
-#include <Champ_Parametrique.h>
 
 class Loi_Fermeture_base;
 class Schema_Temps_base;
@@ -95,8 +95,8 @@ public:
   virtual void discretiser_equations();
   virtual void finir();
 
-  inline std::vector<Milieu>& milieu_vect() { return le_milieu_; }
-  inline const std::vector<Milieu>& milieu_vect() const { return le_milieu_; }
+  inline std::vector<OWN_PTR(Milieu_base)>& milieu_vect() { return le_milieu_; }
+  inline const std::vector<OWN_PTR(Milieu_base)>& milieu_vect() const { return le_milieu_; }
 
   const Schema_Temps_base& schema_temps() const;
   Schema_Temps_base& schema_temps();
@@ -193,7 +193,7 @@ public:
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
 protected :
-  std::vector<Milieu> le_milieu_;
+  std::vector<OWN_PTR(Milieu_base)> le_milieu_;
   REF(Domaine_dis) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
   Postraitements les_postraitements_;
   REF(Domaine) le_domaine_;

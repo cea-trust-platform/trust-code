@@ -190,7 +190,7 @@ void Probleme_base::typer_lire_milieu(Entree& is)
 
   for (int i = 0; i < nb_milieu; i++)
     {
-      is >> le_milieu_[i]; // On commence par la lecture du milieu
+      le_milieu_[i].typer_lire_simple(is, std::string("Typing the medium ...")); // On commence par la lecture du milieu
       associer_milieu_base(le_milieu_[i].valeur()); // On l'associe a chaque equations (methode virtuelle pour chaque pb ...)
     }
 
