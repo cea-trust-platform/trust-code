@@ -124,7 +124,6 @@ Sonde::Sonde(const Nom& nom)  :
   gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords via domaine Cl du champ post-traite
   som(false),
   nb_bip(0.),
-  reprise(0),
   orientation_faces_(-1)
 {}
 
@@ -1084,169 +1083,168 @@ void Sonde::initialiser()
  */
 void Sonde::ouvrir_fichier()
 {
-  if (je_suis_maitre())
+  if (je_suis_maitre() && !le_fichier_.is_open())
     {
-      if (!le_fichier_.is_open())
+      struct stat f;
+      int reprise = !stat(nom_fichier_, &f) && mon_post->probleme().reprise_effectuee();
+      if (reprise)
         {
-          //struct stat f {}; Pb sur 4.8.5
-          struct stat f;
-          const char *sonde_file = nom_fichier_;
-          if (stat(sonde_file, &f))
-            reprise = 0;
-          else if (reprise == 0)
-            reprise = mon_post->probleme().reprise_effectuee();
-
-          if (reprise == 0)
-            le_fichier_.ouvrir(nom_fichier_);
-          else
-            le_fichier_.ouvrir(nom_fichier_, ios::app);
-
+          // Reprise d'un calcul, on ecrit a la suite:
+          le_fichier_.ouvrir(nom_fichier_, ios::app);
           le_fichier_.setf(ios::scientific);
           le_fichier_.precision(8);
         }
-      SFichier& s = le_fichier_;
-      // Ecriture de l'en tete des fichiers sondes :
-      if ((dim==0 || dim==1) && reprise==0)
+      else
         {
-          reprise=1;
-          const DoubleTab& p=les_positions_sondes();
-          int nbre_points = les_positions_sondes_.dimension(0);
-          s << "# " << nom_fichier_ << finl;
-          s << "# Temps";
-          for(int i=0; i<nbre_points; i++)
+          // Demarrage calcul ou fichier inexistant:
+          le_fichier_.ouvrir(nom_fichier_);
+          le_fichier_.setf(ios::scientific);
+          le_fichier_.precision(8);
+          // Ecriture en tete:
+          SFichier& s = le_fichier_;
+          // Ecriture de l'en tete des fichiers sondes :
+          if (dim == 0 || dim == 1)
             {
-              s << " x= " << p(i,0) << " y= " << p(i,1) ;
-              if (dimension==3) fichier() << " z= " << p(i,2) ;
+              const DoubleTab& p = les_positions_sondes();
+              int nbre_points = les_positions_sondes_.dimension(0);
+              s << "# " << nom_fichier_ << finl;
+              s << "# Temps";
+              for (int i = 0; i < nbre_points; i++)
+                {
+                  s << " x= " << p(i, 0) << " y= " << p(i, 1);
+                  if (dimension == 3) fichier() << " z= " << p(i, 2);
+                }
+              s << finl;
+              if (mon_champ.non_nul())
+                {
+                  const Noms unites = mon_champ->get_property("unites");
+                  s << "# Champ " << nom_champ_lu_ << " [" << unites[ncomp == -1 ? 0 : ncomp] << "]" << finl;
+                }
+              else
+                s << "# Champ " << nom_champ_lu_ << " [??]" << finl;
+              s << "# Type " << get_type() << finl;
             }
-          s << finl;
-          if (mon_champ.non_nul())
-            {
-              const Noms unites = mon_champ->get_property("unites");
-              s << "# OWN_PTR(Champ_base) " << nom_champ_lu_ << " [" << unites[ncomp == -1 ? 0 : ncomp] << "]" << finl;
-            }
+          // Ecriture de l'en tete des fichiers plan :
           else
-            s << "# OWN_PTR(Champ_base) " << nom_champ_lu_ << " [??]" << finl;
-          s << "# Type " << get_type() << finl;
-        }
-      // Ecriture de l'en tete des fichiers plan :
-      if (dim>1 && reprise==0)
-        {
-          reprise=1;
-          s << "TRUST   Version1  01/09/96" << finl;
-          s << nom_du_cas() << finl;
-          s << "TRUST" << finl;
-          s << "GRILLE";
-          const DoubleTab& p = les_positions_sondes();
-          // Nouveau on ajoute des informations pour Run_sonde
-          s << " " << get_type() << " " << nom_champ_lu_ << " " << nbre_points1 << " " << nbre_points2;
-          for (int j=0; j<dimension; j++) s << " " << p(0,j);
-          for (int j=0; j<dimension; j++) s << " " << p((nbre_points1-1)*nbre_points2,j);
-          for (int j=0; j<dimension; j++) s << " " << p(nbre_points2-1,j);
-          s << finl;
-          Nom nom_grille("Grille");
-          Nom nom_topologie("Topologie");
-          nom_grille += "_";
-          nom_grille += nom_;
-          nom_topologie += "_";
-          nom_topologie += nom_;
-          int k,kn;
-          int nbre_points = les_positions_sondes_.dimension(0);
-          if (dim==2)
             {
-              double xn=0.,yn=0.,zn=0.,norme=0.;
-              int p1=1 ,p_nbre_points2=nbre_points2;
-              while (p(0,0)==p(p1,0) && p(0,1)==p(p1,1) && p(0,2)==p(p1,2))
+              s << "TRUST   Version1  01/09/96" << finl;
+              s << nom_du_cas() << finl;
+              s << "TRUST" << finl;
+              s << "GRILLE";
+              const DoubleTab& p = les_positions_sondes();
+              // Nouveau on ajoute des informations pour Run_sonde
+              s << " " << get_type() << " " << nom_champ_lu_ << " " << nbre_points1 << " " << nbre_points2;
+              for (int j = 0; j < dimension; j++) s << " " << p(0, j);
+              for (int j = 0; j < dimension; j++) s << " " << p((nbre_points1 - 1) * nbre_points2, j);
+              for (int j = 0; j < dimension; j++) s << " " << p(nbre_points2 - 1, j);
+              s << finl;
+              Nom nom_grille("Grille");
+              Nom nom_topologie("Topologie");
+              nom_grille += "_";
+              nom_grille += nom_;
+              nom_topologie += "_";
+              nom_topologie += nom_;
+              int k, kn;
+              int nbre_points = les_positions_sondes_.dimension(0);
+              if (dim == 2)
                 {
-                  p1+=1;
-                  assert(p1<nbre_points);
-                }
-              while (p(0,0)==p(p_nbre_points2,0) && p(0,1)==p(p_nbre_points2,1) && p(0,2)==p(p_nbre_points2,2))
-                {
-                  p_nbre_points2+=1;
-                  assert(p_nbre_points2<nbre_points);
-                }
-              while (p(p1,0)==p(p_nbre_points2,0) && p(p1,1)==p(p_nbre_points2,1) && p(p1,2)==p(p_nbre_points2,2))
-                {
-                  p_nbre_points2+=1;
-                  assert(p_nbre_points2<nbre_points);
-                }
-
-              if (dimension==3)
-                {
-                  xn=(p(p1,2)-p(0,2))*(p(p_nbre_points2,1)-p(0,1))
-                     -(p(p1,1)-p(0,1))*(p(p_nbre_points2,2)-p(0,2));
-                  yn=(p(p1,0)-p(0,0))*(p(p_nbre_points2,2)-p(0,2))
-                     -(p(p1,2)-p(0,2))*(p(p_nbre_points2,0)-p(0,0));
-                }
-              else if (dimension==2)
-                {
-                  xn=0.;
-                  yn=0.;
-                }
-              zn=(p(p1,1)-p(0,1))*(p(p_nbre_points2,0)-p(0,0))
-                 -(p(p1,0)-p(0,0))*(p(p_nbre_points2,1)-p(0,1));
-              norme=std::fabs(xn)+std::fabs(yn)+std::fabs(zn);
-              xn/=norme;
-              yn/=norme;
-              zn/=norme;
-              s << nom_grille << " 3 " << 2*nbre_points << finl;
-              int i;
-              for(i=0; i<nbre_points; i++)
-                {
-                  s << p(i,0) << " " << p(i,1) ;
-                  if (dimension==3) fichier() << " " << p(i,2) << finl;
-                  else if (dimension==2) s << " 0." << finl;
-                }
-              for(i=0; i<nbre_points; i++)
-                {
-                  s << p(i,0)+xn << " " << p(i,1)+yn ;
-                  if (dimension==3) s << " " << p(i,2)+zn << finl;
-                  else if (dimension==2) s << " " << zn << finl;
-                }
-              s << "TOPOLOGIE" << finl;
-              s << nom_topologie << " " << nom_grille << finl;
-              s << "MAILLE" << finl;
-              s << (nbre_points1-1)*(nbre_points2-1) << finl;
-              for(int j=0; j<nbre_points2-1; j++)
-                for(i=0; i<nbre_points1-1; i++)
-                  {
-                    k=j*nbre_points1+i+1;
-                    kn=k+nbre_points;
-                    s << "VOXEL8 " << k << " " << k+1 << " ";
-                    s<< k+nbre_points1 << " " << k+nbre_points1+1;
-                    s<< " " << kn << " " << kn+1 << " " << kn+nbre_points1;
-                    s  << " " << kn+nbre_points1+1 << finl;
-                  }
-              s << "FACE" << finl;
-              s << "0" << finl;
-            }
-          else if (dim==3)
-            {
-              const DoubleTab& pbis=les_positions_sondes();
-              s << nom_grille << " 3 " << nbre_points << finl;
-              int i;
-              for(i=0; i<nbre_points; i++)
-                {
-                  s << pbis(i,0) << " " << pbis(i,1) ;
-                  s << " " << pbis(i,2) << finl;
-                }
-              s << "TOPOLOGIE" << finl;
-              s << nom_topologie << " " << nom_grille << finl;
-              s << "MAILLE" << finl;
-              s << (nbre_points1-1)*(nbre_points2-1)*(nbre_points3-1) << finl;
-              for(int m=0; m<nbre_points3-1; m++)
-                for(int j=0; j<nbre_points2-1; j++)
-                  for(i=0; i<nbre_points1-1; i++)
+                  double xn = 0., yn = 0., zn = 0., norme = 0.;
+                  int p1 = 1, p_nbre_points2 = nbre_points2;
+                  while (p(0, 0) == p(p1, 0) && p(0, 1) == p(p1, 1) && p(0, 2) == p(p1, 2))
                     {
-                      k=m*nbre_points2*nbre_points1+j*nbre_points1+i+1;
-                      kn=k+nbre_points2*nbre_points1;
-                      s << "VOXEL8 " << k << " " << k+1 << " ";
-                      s  << k+nbre_points1 << " " << k+nbre_points1+1;
-                      s  << " " << kn << " " << kn+1 << " " << kn+nbre_points1;
-                      s  << " " << kn+nbre_points1+1 << finl;
+                      p1 += 1;
+                      assert(p1 < nbre_points);
                     }
-              s << "FACE" << finl;
-              s << "0" << finl;
+                  while (p(0, 0) == p(p_nbre_points2, 0) && p(0, 1) == p(p_nbre_points2, 1) &&
+                         p(0, 2) == p(p_nbre_points2, 2))
+                    {
+                      p_nbre_points2 += 1;
+                      assert(p_nbre_points2 < nbre_points);
+                    }
+                  while (p(p1, 0) == p(p_nbre_points2, 0) && p(p1, 1) == p(p_nbre_points2, 1) &&
+                         p(p1, 2) == p(p_nbre_points2, 2))
+                    {
+                      p_nbre_points2 += 1;
+                      assert(p_nbre_points2 < nbre_points);
+                    }
+
+                  if (dimension == 3)
+                    {
+                      xn = (p(p1, 2) - p(0, 2)) * (p(p_nbre_points2, 1) - p(0, 1))
+                           - (p(p1, 1) - p(0, 1)) * (p(p_nbre_points2, 2) - p(0, 2));
+                      yn = (p(p1, 0) - p(0, 0)) * (p(p_nbre_points2, 2) - p(0, 2))
+                           - (p(p1, 2) - p(0, 2)) * (p(p_nbre_points2, 0) - p(0, 0));
+                    }
+                  else if (dimension == 2)
+                    {
+                      xn = 0.;
+                      yn = 0.;
+                    }
+                  zn = (p(p1, 1) - p(0, 1)) * (p(p_nbre_points2, 0) - p(0, 0))
+                       - (p(p1, 0) - p(0, 0)) * (p(p_nbre_points2, 1) - p(0, 1));
+                  norme = std::fabs(xn) + std::fabs(yn) + std::fabs(zn);
+                  xn /= norme;
+                  yn /= norme;
+                  zn /= norme;
+                  s << nom_grille << " 3 " << 2 * nbre_points << finl;
+                  int i;
+                  for (i = 0; i < nbre_points; i++)
+                    {
+                      s << p(i, 0) << " " << p(i, 1);
+                      if (dimension == 3) fichier() << " " << p(i, 2) << finl;
+                      else if (dimension == 2) s << " 0." << finl;
+                    }
+                  for (i = 0; i < nbre_points; i++)
+                    {
+                      s << p(i, 0) + xn << " " << p(i, 1) + yn;
+                      if (dimension == 3) s << " " << p(i, 2) + zn << finl;
+                      else if (dimension == 2) s << " " << zn << finl;
+                    }
+                  s << "TOPOLOGIE" << finl;
+                  s << nom_topologie << " " << nom_grille << finl;
+                  s << "MAILLE" << finl;
+                  s << (nbre_points1 - 1) * (nbre_points2 - 1) << finl;
+                  for (int j = 0; j < nbre_points2 - 1; j++)
+                    for (i = 0; i < nbre_points1 - 1; i++)
+                      {
+                        k = j * nbre_points1 + i + 1;
+                        kn = k + nbre_points;
+                        s << "VOXEL8 " << k << " " << k + 1 << " ";
+                        s << k + nbre_points1 << " " << k + nbre_points1 + 1;
+                        s << " " << kn << " " << kn + 1 << " " << kn + nbre_points1;
+                        s << " " << kn + nbre_points1 + 1 << finl;
+                      }
+                  s << "FACE" << finl;
+                  s << "0" << finl;
+                }
+              else if (dim == 3)
+                {
+                  const DoubleTab& pbis = les_positions_sondes();
+                  s << nom_grille << " 3 " << nbre_points << finl;
+                  int i;
+                  for (i = 0; i < nbre_points; i++)
+                    {
+                      s << pbis(i, 0) << " " << pbis(i, 1);
+                      s << " " << pbis(i, 2) << finl;
+                    }
+                  s << "TOPOLOGIE" << finl;
+                  s << nom_topologie << " " << nom_grille << finl;
+                  s << "MAILLE" << finl;
+                  s << (nbre_points1 - 1) * (nbre_points2 - 1) * (nbre_points3 - 1) << finl;
+                  for (int m = 0; m < nbre_points3 - 1; m++)
+                    for (int j = 0; j < nbre_points2 - 1; j++)
+                      for (i = 0; i < nbre_points1 - 1; i++)
+                        {
+                          k = m * nbre_points2 * nbre_points1 + j * nbre_points1 + i + 1;
+                          kn = k + nbre_points2 * nbre_points1;
+                          s << "VOXEL8 " << k << " " << k + 1 << " ";
+                          s << k + nbre_points1 << " " << k + nbre_points1 + 1;
+                          s << " " << kn << " " << kn + 1 << " " << kn + nbre_points1;
+                          s << " " << kn + nbre_points1 + 1 << finl;
+                        }
+                  s << "FACE" << finl;
+                  s << "0" << finl;
+                }
             }
         }
     }
@@ -1293,7 +1291,7 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
             }
         }
       nb_bip=nb;
-      reprise=1;
+      //reprise=1;
       postraiter();
     }
 }
