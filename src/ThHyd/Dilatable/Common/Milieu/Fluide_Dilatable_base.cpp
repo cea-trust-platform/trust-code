@@ -36,8 +36,7 @@ Sortie& Fluide_Dilatable_base::printOn(Sortie& os) const
 
 Entree& Fluide_Dilatable_base::readOn(Entree& is)
 {
-  Fluide_base::readOn(is);
-  return is;
+  return Fluide_base::readOn(is);
 }
 
 void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
@@ -105,7 +104,7 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
   Motcle motlu;
   if (mot=="loi_etat")
     {
-      is>>loi_etat_;
+      loi_etat_.typer_lire(is,"Loi_Etat_", "Lecture et typage de la loi d'etat ...");
       loi_etat_->associer_fluide(*this);
       return 1;
     }

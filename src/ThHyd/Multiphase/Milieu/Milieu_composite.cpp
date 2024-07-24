@@ -61,7 +61,7 @@ Entree& Milieu_composite::readOn(Entree& is)
           noms_phases_.add(mot);
           Cerr << "Milieu_composite: add phase " << mot << " ... " << finl;
           OWN_PTR(Fluide_base) fluide;
-          fluide.typer_lire_simple(is, std::string("Typing the fluid medium ..."));
+          fluide.typer_lire_simple(is, "Typing the fluid medium ...");
 
           if (fluide->get_porosites_champ().non_nul())
             {
@@ -93,13 +93,13 @@ Entree& Milieu_composite::readOn(Entree& is)
         {
           has_saturation_ = true;
           Cerr << "Milieu_composite: add saturation " << mot << " ... " << finl;
-          sat_lu_.typer_lire_simple(is, std::string("Typing the saturation ..."));
+          sat_lu_.typer_lire_simple(is, "Typing the saturation ...");
         }
       else // on ajout l'interface
         {
           has_interface_ = true;
           Cerr << "Milieu_composite: add interface " << mot << " ... " << finl;
-          inter_lu_.typer_lire_simple(is, std::string("Typing the interface ..."));
+          inter_lu_.typer_lire_simple(is, "Typing the interface ...");
         }
     }
 

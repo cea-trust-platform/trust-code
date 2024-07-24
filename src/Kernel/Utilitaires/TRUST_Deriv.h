@@ -157,13 +157,29 @@ public:
     return *type_info; /* type de base accepte par la ref */
   }
 
-  Entree& typer_lire_simple(Entree& is, const std::string msg = "??")
+  Entree& typer_lire_simple(Entree& is, const char* msg = "??")
   {
-    if (msg != "??") Cerr << msg << finl;
-    Nom type;
+    return typer_lire(is, "??", msg);
+  }
+
+  Entree& typer_lire(Entree& is, const char* b = "??", const char* msg = "??")
+  {
+    Nom type, base;
+
+    if (strcmp(msg, "??") != 0)
+      Cerr << msg << finl;
+
+    if (strcmp(b, "??") != 0)
+      base = b;
+
     is >> type;
+
+    if (base != "??")
+      type = base + type;
+
     typer(type); // on type :-)
     is >> valeur(); // et on lit :-)
+
     return is;
   }
 };

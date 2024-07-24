@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,12 @@
 #ifndef Fluide_Dilatable_base_included
 #define Fluide_Dilatable_base_included
 
+#include <Loi_Etat_base.h>
 #include <Fluide_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
 #include <EOS_Tools.h>
-#include <Loi_Etat.h>
 
 class Probleme_base;
 class Domaine_Cl_dis;
@@ -73,8 +74,8 @@ public :
 
   // Methodes inlines
   inline const Nom type_fluide() const { return loi_etat_->type_fluide(); }
-  inline const Loi_Etat& loi_etat() const { return loi_etat_; }
-  inline Loi_Etat&  loi_etat() { return loi_etat_; }
+  inline const OWN_PTR(Loi_Etat_base)& loi_etat() const { return loi_etat_; }
+  inline OWN_PTR(Loi_Etat_base)&  loi_etat() { return loi_etat_; }
   inline const Champ_Inc& inco_chaleur() const { return inco_chaleur_.valeur(); }
   inline Champ_Inc& inco_chaleur() { return inco_chaleur_.valeur(); }
   inline const Champ_Inc& vitesse() const { return vitesse_.valeur(); }
@@ -119,7 +120,7 @@ protected :
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   REF(Probleme_base) le_probleme_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
-  Loi_Etat loi_etat_;
+  OWN_PTR(Loi_Etat_base) loi_etat_;
   EOS_Tools eos_tools_;
 };
 

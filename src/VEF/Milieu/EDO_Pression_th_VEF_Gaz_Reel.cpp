@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,12 +15,11 @@
 
 #include <EDO_Pression_th_VEF_Gaz_Reel.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Domaine_VEF.h>
-#include <Domaine_Cl_VEF.h>
-#include <Schema_Temps_base.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
-
+#include <Schema_Temps_base.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(EDO_Pression_th_VEF_Gaz_Reel,"EDO_Pression_th_VEF_Gaz_Reel_non",EDO_Pression_th_VEF);
@@ -55,7 +54,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   const DoubleTab& tab_hnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
   const DoubleTab& tab_hn = le_fluide_->inco_chaleur().passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
-  const Loi_Etat& loi_ = le_fluide_->loi_etat();
+  const OWN_PTR(Loi_Etat_base)& loi_ = le_fluide_->loi_etat();
   //  const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 
   int elem, nb_elem=le_dom->nb_elem();
