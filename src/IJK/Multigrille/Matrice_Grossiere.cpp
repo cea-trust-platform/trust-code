@@ -175,7 +175,7 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
  */
 void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
                                      int i_voisin, int j_voisin, int k_voisin,
-                                     const double coeff, IJK_Splitting splitting, const double shear_perio)
+                                     const double coeff, const double shear_perio)
 {
   int indice=renum(i, j, k);
   int indice_voisin = renum(i_voisin, j_voisin, k_voisin);
@@ -263,7 +263,7 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
 
 void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
                                      int i_voisin, int j_voisin, int k_voisin,
-                                     const double coeff, IJK_Splitting splitting)
+                                     const double coeff)
 {
   int indice=renum(i, j, k);
   int indice_voisin = renum(i_voisin, j_voisin, k_voisin);

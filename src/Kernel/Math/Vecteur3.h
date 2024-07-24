@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,15 @@ public:
     v[0] = x;
     v[1] = y;
     v[2] = z;
+  }
+
+  void set(const DoubleTab& tab, int i)
+  {
+    assert(tab.line_size() == 3);
+    assert(i >= 0 && i < tab.dimension_tot(0));
+    const double *ptr = tab.addr() + i * 3;
+    for (int j = 0; j < 3; j++)
+      v[j] = ptr[j];
   }
   double length() const
   {
