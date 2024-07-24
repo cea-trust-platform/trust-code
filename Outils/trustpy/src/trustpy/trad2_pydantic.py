@@ -15,7 +15,6 @@ def init_logger():
     formatter = logging.Formatter(fmt="%(asctime)s %(levelname)-8s %(message)s", datefmt="%H:%M:%S")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
     return logger
 logger = init_logger()
 
@@ -89,7 +88,7 @@ def write_block(block, file, all_blocks):
         if attr_type in all_blocks:
             cls = all_blocks[attr_type]
             if isinstance(cls, TRAD2BlockList):
-                attr_type = f'typing.Annotated[typing.List["{cls.classtype}"], {cls.comma}]'
+                attr_type = f'Annotated[List["{cls.classtype}"], {cls.comma}]'
                 attr_desc = cls.desc
                 args = f'default=[]'
 
@@ -108,26 +107,26 @@ def write_block(block, file, all_blocks):
             args = f'default=""'
 
         elif attr_type in ["list", "listf"]:
-            attr_type = "typing.List[float]"
+            attr_type = "List[float]"
             args = "default_factory=list"
 
         elif attr_type in ["listentier", "listentierf"]:
-            attr_type = "typing.List[int]"
+            attr_type = "List[int]"
             args = "default_factory=list"
 
         elif attr_type in ["listchaine", "listchainef"]:
-            attr_type = "typing.List[str]"
+            attr_type = "List[str]"
             args = "default_factory=list"
 
         elif attr_type.startswith("chaine(into="):
             choices = attr_type[13:].split("]")[0]
-            attr_type= f'typing.Literal[{choices}]'
+            attr_type= f'Literal[{choices}]'
             args = f'default={choices.split(",")[0]}'
 
         elif attr_type.startswith("entier(into="):
             choices = attr_type[13:].split("]")[0]
             choices = [int(x.strip('"').strip("'")) for x in choices.split(",")]
-            attr_type= f'typing.Literal{choices}'
+            attr_type= f'Literal{choices}'
             args = f'default={choices[0]}'
 
         elif attr_type.startswith("entier(max="):
@@ -232,11 +231,9 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         # {datetime.datetime.now().strftime(r"%y-%m-%d at %H:%M:%S")}
         ################################################################
 
-        import sys
-        if sys.version_info >= (3, 8):
-            import typing
-        else:
-            import typing_extensions as typing
+        import sys        
+        from typing_extensions import Annotated, Literal
+        from typing import List
         from pydantic import BaseModel, Field
     '''
 
