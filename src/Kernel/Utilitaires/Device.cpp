@@ -416,7 +416,7 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
-      assert(isAllocatedOnDevice(ptr));
+      assert(isAllocatedOnDevice(ptr) || size==0);
       int bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyFromDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);

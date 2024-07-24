@@ -1,5 +1,6 @@
 # Hydraulique 2D sinusoidal #
 # PARALLEL OK #
+# OPENMP NOT #
 dimension 2
 
 Pb_Hydraulique pb
@@ -89,11 +90,8 @@ Lire pb
         champs_fichier                 dt_post   1.e-4 { fichier annex/fields }
         sondes_fichier                                 { fichier annex/probes }
         sondes_mobiles_fichier                         { fichier annex/mobile_probes }
-        # sondes_int_fichier                             { fichier annex/int_probes } # # no int probe available #
-        # tabeaux_int_fichier                            { fichier annex/int_arrays } # # no int array available #
         statistiques_fichier           dt_post   1.e-4 { fichier annex/stats }
-        statistiques_en_serie_fichier  dt_integr 1.    { fichier annex/serial_stats }
-        
+        statistiques_en_serie_fichier  dt_integr 1.    { fichier annex/serial_stats }        
     }
 }
 Solve pb
