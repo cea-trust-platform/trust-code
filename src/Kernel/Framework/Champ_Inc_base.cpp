@@ -28,6 +28,10 @@
 #include <Dirichlet.h>
 #include <Domaine.h>
 
+#include <pdi.h>
+#include <FichierHDF.h>
+#include <Sortie_Nulle.h>
+
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
 Sortie& Champ_Inc_base::printOn(Sortie& os) const { return Champ_base::printOn(os); }
@@ -347,6 +351,9 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   // en mode ecriture special seul le maitre ecrit l'entete
   int a_faire, special;
   EcritureLectureSpecial::is_ecriture_special(special, a_faire);
+  Sortie_Nulle* pdi = dynamic_cast<Sortie_Nulle*>(&fich);
+  a_faire = a_faire && !pdi;
+  special = special && !pdi;
 
   if (a_faire)
     {
@@ -361,6 +368,25 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
+  else if (pdi)
+    {
+      bytes = 8 * valeurs().size_array();
+      int nb_dim = valeurs().nb_dim();
+      ArrOfInt dimensions(nb_dim);
+      for(int i=0; i< nb_dim; i++)
+        dimensions[i] = valeurs().dimension(i);
+      int glob_dim_0;
+      PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
+      Nom dim_str = Nom("dim_") + nom_;
+      Nom glob_dim_str = Nom("glob_dim_") + nom_;
+      PDI_multi_expose("dimensions",
+                       dim_str.getChar(), dimensions.addr(), PDI_OUT,
+                       glob_dim_str.getChar(), &glob_dim_0, PDI_OUT,
+                       nullptr);
+
+      DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
+      PDI_expose(nom_.getChar(), unknwon.addr(), PDI_OUT);
+    }
   else
     {
       bytes = 8 * valeurs().size_array();

@@ -36,6 +36,9 @@
 // XD dt_calc_dt_fixe dt_start dt_fixe 0 The first time step is fixed by the user (recommended when resuming calculation with Crank Nicholson temporal scheme to ensure continuity).
 // XD   attr value floattant value 0 first time step.
 
+#include <pdi.h>
+#include <Sortie_Nulle.h>
+
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
 /* Attributes further down in the cpp: */
@@ -500,6 +503,7 @@ Schema_Temps_base::Schema_Temps_base()
   tinit_ = -DMAXFLOAT;
   dt_min_ = 1.e-16;
   dt_sauv_ = dt_impr_ = tmax_ = dt_max_ = tcpumax_ = 1.e30;
+  nb_sauv_= 0;
   periode_cpu_sans_sauvegarde_ = 23 * 3600; // Par defaut 23 heures
   limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
   temps_cpu_ecoule_ = 0;
@@ -721,7 +725,20 @@ void Schema_Temps_base::imprimer(Sortie& os, const Probleme_base& pb) const
  */
 int Schema_Temps_base::sauvegarder(Sortie& os) const
 {
-  return 1;
+  int bytes = 0;
+  Sortie_Nulle* pdi = dynamic_cast<Sortie_Nulle*>(&os);
+  if(pdi)
+    {
+      int i = nb_sauv_;
+      double t = temps_courant_;
+      PDI_multi_expose("time_checkpoint",
+                       "iter", &i, PDI_OUT,
+                       "temps", &t, PDI_OUT,
+                       nullptr);
+      bytes = 8; // one double written (nb_sauv_ is not written, just shared with PDI)
+    }
+  nb_sauv_++;
+  return bytes;
 }
 
 /*! @brief Reprise (lecture) du temps courant et du nombre de pas de temps effectues a partir d'un flot d'entree.

@@ -301,6 +301,7 @@ protected :
   int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
   Nom norm_residu_;
   double dt_sauv_;
+  mutable int nb_sauv_;                 // how many checkpoints have we performed so far?
   double limite_cpu_sans_sauvegarde_;
   double periode_cpu_sans_sauvegarde_;
   double temps_cpu_ecoule_;
