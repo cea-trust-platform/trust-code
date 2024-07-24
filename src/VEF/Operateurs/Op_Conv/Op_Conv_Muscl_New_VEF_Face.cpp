@@ -1117,7 +1117,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
           CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
           CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
           CDoubleTabView3 Kij = tab_Kij.view3_ro();
-          CDoubleTabView val_ext = la_sortie_libre.tab_ext().view_ro();
+          CDoubleTabView val_ext = la_sortie_libre.val_ext().view_ro();
           DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(0, num2), KOKKOS_LAMBDA(
@@ -1137,7 +1137,12 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
                 {
                   //On modifie car on a tenu compte dans l'operateur centre de psc*tansporteV[ligne]
                   int ligne=facei*nb_comp+dim;
-                  resuV[ligne]+=psc*(val_ext(facei,dim)-transporteV[ligne]);
+                  //PL: Wow, fix a bug, ind_face and not facei !
+                  //All use of val_ext() in the code has the same mistake !
+                  //But as the val_ext field is uniform in general and psc>=0, we have never seen the bug...
+                  //ToDo: fix all the val_ext(face - num1, k) -> val_ext(ind_face, k);
+                  //resuV[ligne]+=psc*(val_ext(facei,dim)-transporteV[ligne]);
+                  resuV[ligne]+=psc*(val_ext(ind_face,dim)-transporteV[ligne]);
                 }
 
           });//fin du for sur "face_i"

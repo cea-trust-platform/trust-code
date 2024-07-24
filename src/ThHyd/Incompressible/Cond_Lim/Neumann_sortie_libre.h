@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ public:
 
   double val_ext(int i) const override;
   double val_ext(int i, int j) const override;
+  const DoubleTab& val_ext() const;
   int initialiser(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base&) override;
   void verifie_ch_init_nb_comp() const override;
@@ -52,6 +53,7 @@ public:
 
 protected:
   Champ_front le_champ_ext;
+  mutable DoubleTab val_ext_; // Stocke toutes les valeurs de la CL sur toutes les faces de la frontiere (pas d'hypothese sur un champ uniforme). Utile pour le GPU.
 };
 
 #endif

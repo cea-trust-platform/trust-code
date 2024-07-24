@@ -62,12 +62,16 @@ const DoubleTab& Neumann::flux_impose() const
 {
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   int nb_faces_tot = le_bord.nb_faces_tot();
-  if (flux_impose_.dimension(0)!=nb_faces_tot) flux_impose_.resize(nb_faces_tot, le_champ_front.valeurs().dimension(1));
-  int size = flux_impose_.dimension(0);
-  int nb_comp = flux_impose_.dimension(1);
-  for (int i=0; i<size; i++)
-    for (int j=0; j<nb_comp; j++)
-      flux_impose_(i,j) = flux_impose(i,j);
+  if (nb_faces_tot>0)
+    {
+      if (flux_impose_.dimension(0) != nb_faces_tot)
+        flux_impose_.resize(nb_faces_tot, le_champ_front.valeurs().dimension(1));
+      int size = flux_impose_.dimension(0);
+      int nb_comp = flux_impose_.dimension(1);
+      for (int i = 0; i < size; i++)
+        for (int j = 0; j < nb_comp; j++)
+          flux_impose_(i, j) = flux_impose(i, j);
+    }
   return flux_impose_;
 }
 

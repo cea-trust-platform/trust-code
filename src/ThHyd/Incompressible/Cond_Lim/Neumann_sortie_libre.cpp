@@ -158,6 +158,23 @@ double Neumann_sortie_libre::val_ext(int i, int j) const
     return le_champ_ext(i, j);
 }
 
+const DoubleTab& Neumann_sortie_libre::val_ext() const
+{
+  const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
+  int nb_faces_tot = le_bord.nb_faces_tot();
+  if (nb_faces_tot>0)
+    {
+      if (val_ext_.dimension(0) != nb_faces_tot)
+        val_ext_.resize(nb_faces_tot, le_champ_ext.valeurs().dimension(1));
+      int size = val_ext_.dimension(0);
+      int nb_comp = val_ext_.dimension(1);
+      for (int i = 0; i < size; i++)
+        for (int j = 0; j < nb_comp; j++)
+          val_ext_(i, j) = val_ext(i, j);
+    }
+  return val_ext_;
+}
+
 const DoubleTab& Neumann_sortie_libre::tab_ext() const
 {
   return le_champ_ext.valeurs();
