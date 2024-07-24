@@ -213,17 +213,17 @@ static KOKKOS_INLINE_FUNCTION double limiteur(double r)
   return maximum(minimum(2,r),minimum(1,2*r));//SuperBee
 }
 
-double formule_Id_2D(int n)
+KOKKOS_INLINE_FUNCTION double formule_Id_2D(int n)
 {
   return 1./3;
 }
 
-double formule_Id_3D(int n)
+KOKKOS_INLINE_FUNCTION double formule_Id_3D(int n)
 {
   return 0.25;
 }
 
-double formule_2D(int n)
+KOKKOS_INLINE_FUNCTION double formule_2D(int n)
 {
   switch(n)
     {
@@ -234,13 +234,16 @@ double formule_2D(int n)
     case 2:
       return 1.;
     default:
-      Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D()" << finl;
-      Process::exit();
+#ifndef NO_HIP
+      Kokkos::abort("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D() ");
+#else
+      Process::exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D() ");
+#endif
     }
   return 0.;
 }
 
-double formule_3D(int n)
+KOKKOS_INLINE_FUNCTION double formule_3D(int n)
 {
   switch(n)
     {
@@ -253,8 +256,11 @@ double formule_3D(int n)
     case 3:
       return 1.;
     default:
-      Cerr << "Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D()" << finl;
-      Process::exit();
+#ifndef NO_HIP
+      Kokkos::abort("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D() ");
+#else
+      Process::exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D() ");
+#endif
     }
   return 0.;
 }
@@ -649,55 +655,73 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   DoubleTab tab_vitesse(vitesse_->valeurs());
-  for (int i=0; i<tab_vitesse.dimension(0); i++)
-    for (int j=0; j<tab_vitesse.dimension(1); j++)
-      tab_vitesse(i,j)*=porosite_face(i);
+  DoubleTabView tab_vitesse_v = tab_vitesse.view_rw();
+  CDoubleArrView porosite_face_v = porosite_face.view_ro();
 
+  const int vit_size0 = tab_vitesse.dimension(0);
+  const int vit_size1 = tab_vitesse.dimension(1);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, vit_size0}, {0, vit_size1}), KOKKOS_LAMBDA(
+                         const int i, const int j)
+  {
+    tab_vitesse_v(i,j)*=porosite_face_v(i);
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   const int nb_comp=transporte.line_size();
-  int elem=0,type_elem=0, facei=0,facei_loc=0, ligne=0, dim=0;
-  double coeff=0., signe=0., div=0.;
+  int nb_dim = dimension;
+  int vol_etendus = volumes_etendus_;
 
-  const DoubleVect& transporteV = transporte;
-  DoubleVect& resuV = resu;
+  // read only
+  CDoubleTabView face_normales_v = face_normales.view_ro();
+  CIntTabView face_voisins_v = face_voisins.view_ro();
+  CIntTabView elem_faces_v = elem_faces.view_ro();
+  CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
+  CIntArrView elem_nb_faces_dirichlet_v = elem_nb_faces_dirichlet_.view_ro();
+  CDoubleArrView porosite_elem_v = porosite_elem.view_ro();
+  // Write only
+  DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
 
-  double (*formule)(int);
-  if (!volumes_etendus_)
-    formule= (dimension==2) ? &formule_Id_2D : &formule_Id_3D;
-  else
-    formule= (dimension==2) ? &formule_2D : &formule_3D;
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
+                         const int elem)
+  {
+    //Type de l'element : le nombre de faces de Dirichlet
+    //qu'il contient
+    int type_elem=elem_nb_faces_dirichlet_v(elem);
+    double coeff;
+    if (!vol_etendus)
+      coeff = (nb_dim==2) ? formule_Id_2D(type_elem) : formule_Id_3D(type_elem);
+    else
+      coeff = (nb_dim==2) ? formule_2D(type_elem) : formule_3D(type_elem);
 
-  ToDo_Kokkos("critical");
-  for (elem=0; elem<nb_elem_tot; elem++)
-    {
-      //Type de l'element : le nombre de faces de Dirichlet
-      //qu'il contient
-      type_elem=elem_nb_faces_dirichlet_(elem);
-      coeff=formule(type_elem);
+    int facei, facei_loc, dim;
 
-      //Calcul de la divergence par element
-      div=0.;
-      for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-        {
-          facei=elem_faces(elem,facei_loc);
-          signe=(face_voisins(facei,0)==elem)? 1.:-1.;
+    //Calcul de la divergence par element
+    double div=0.;
+    for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
+      {
+        facei=elem_faces_v(elem,facei_loc);
+        double signe=(face_voisins_v(facei,0)==elem)? 1.:-1.;
 
-          for (dim=0; dim<dimension; dim++)
-            div+=signe*face_normales(facei,dim)*tab_vitesse(facei,dim);
-        }
-      div*=coeff;
-      if (!marq) div/=porosite_elem(elem);
+        for (dim=0; dim<nb_dim; dim++)
+          div+=signe*face_normales_v(facei,dim)*tab_vitesse_v(facei,dim);
+      }
+    div*=coeff;
+    if (!marq) div/=porosite_elem_v(elem);
 
-      //Calcul de la partie compressible
-      for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-        {
-          facei=elem_faces(elem,facei_loc);
-          for (dim=0; dim<nb_comp; dim++)
-            {
-              ligne=facei*nb_comp+dim;
-              resuV[ligne]-=div*transporteV[ligne];
-            }
-        }
-    }
+    //Calcul de la partie compressible
+    for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
+      {
+        facei=elem_faces_v(elem,facei_loc);
+        for (dim=0; dim<nb_comp; dim++)
+          {
+            int ligne=facei*nb_comp+dim;
+            double delta = div*transporteV[ligne];
+            Kokkos::atomic_sub(&resuV[ligne], delta);
+          }
+      }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   return resu;
 }
