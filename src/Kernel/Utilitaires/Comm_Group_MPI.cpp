@@ -129,7 +129,6 @@ Comm_Group_MPI::~Comm_Group_MPI()
 
   else // on detruit les groupes non prinicpaux
     {
-
       if (mpi_comm_!=MPI_COMM_NULL)
         {
           // on detruit le group puis le mpi_comm
@@ -142,7 +141,6 @@ Comm_Group_MPI::~Comm_Group_MPI()
           assert(mpi_group_==MPI_GROUP_NULL);
         }
     }
-
 #endif
 }
 
@@ -593,6 +591,19 @@ void Comm_Group_MPI::free()
     mpi_error(MPI_Group_free(& mpi_group_));
 }
 
+
+/*! @brief Free MPI communicator
+ *
+ * Only used for node communicator as there is no mpi_group associated, but we still need to free it before MPI_Finalize
+ *
+ */
+void Comm_Group_MPI::free_comm()
+{
+  if (mpi_comm_!=MPI_COMM_NULL)
+    mpi_error(MPI_Comm_free(&mpi_comm_));
+}
+
+
 // Wrapper to MPI_Alltoallv. data type is MPI_CHAR
 void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, int *send_data_offset,
                                  void *dest_buffer, int *recv_data_size, int *recv_data_offset) const
@@ -735,6 +746,34 @@ void Comm_Group_MPI::init_group(const ArrOfInt& pe_list)
   // MPI_Comm_create renvoie MPI_COMM_NULL si le processeur courant
   // n'est pas dans le groupe.
   mpi_error(MPI_Comm_create(current_mpi_comm, mpi_group_, & mpi_comm_));
+}
+
+
+
+/*! @brief Building MPI communicator based on numa node (ie one communicator for each node)
+ *
+ */
+void Comm_Group_MPI::init_comm_on_numa_node()
+{
+  must_finalize_ = 0;
+  // Le groupe "tous" doit exister
+  assert(mpi_status_);
+  assert(mpi_group_==MPI_GROUP_NULL);
+
+  groupe_pere_ = PE_Groups::current_group();
+
+  // Construction du communicator
+  const Comm_Group_MPI& cg = ref_cast(Comm_Group_MPI, PE_Groups::current_group());
+  const MPI_Comm& current_mpi_comm  = cg.mpi_comm_;
+  int current_rank = cg.rank();
+  mpi_error(MPI_Comm_split_type(current_mpi_comm, MPI_COMM_TYPE_SHARED, current_rank, MPI_INFO_NULL, &mpi_comm_));
+
+  True_int loc_rank;
+  True_int nbproc;
+  mpi_error(MPI_Comm_size(mpi_comm_, &nbproc));
+  mpi_error(MPI_Comm_rank(mpi_comm_, &loc_rank));
+  Comm_Group::init_group_node(nbproc, loc_rank, current_rank);
+
 }
 
 void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const Collective_Op *op, int nop, int level) const

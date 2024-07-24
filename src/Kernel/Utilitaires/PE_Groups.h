@@ -40,14 +40,17 @@ public:
   static const int& get_nb_groups();
   static int rank_translate(int rank, const Comm_Group& group, const Comm_Group& dest_group = current_group());
   static const Comm_Group& groupe_TRUST();
+  static const Comm_Group& get_node_group();
 
   static void initialize(const Comm_Group& groupe_trio_u);
+  static void initialize_node(const Comm_Group& ngrp);
   static void finalize();
 
 private:
   static int check_current_group();
   // This pointer always points to the last element of the "groups" vector in the .cpp file
   static const Comm_Group *current_group_;
+  static bool node_initialized_;
 };
 
 /*! @brief renvoie une reference au groupe de processeurs actif courant

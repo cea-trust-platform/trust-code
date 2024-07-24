@@ -25,6 +25,10 @@ static OBS_PTR(Comm_Group) groups[100];
 static int ngroups = 0;
 static int max_ngroups = 100;
 const Comm_Group * PE_Groups::current_group_ = 0;
+// node group is an isolated variable from all the other groups as it is only used for IO purposes
+// and might be used throughout the code together with other groups
+static REF(Comm_Group) node_group;
+bool PE_Groups::node_initialized_ = false;
 
 int PE_Groups::check_current_group()
 {
@@ -165,6 +169,15 @@ const Comm_Group& PE_Groups::groupe_TRUST()
   return groups[0].valeur();
 }
 
+/*! @brief Renvoie une reference au groupe sur les noeuds
+ *
+ */
+const Comm_Group& PE_Groups::get_node_group()
+{
+  assert(node_initialized_);
+  return node_group.valeur();
+}
+
 /*! @brief Methode a appeler au debut de l'execution (MAIN.
  *
  * cpp) Elle initialise current_group() avec groupe_trio_u
@@ -178,6 +191,16 @@ void PE_Groups::initialize(const Comm_Group& groupe_trio_u)
   current_group_ = &groupe_trio_u;
 }
 
+/*! @brief Methode a appeler apres l'initialisation de trio_u_world et l'initialisation des compteurs statistiques de TRUST
+ */
+void PE_Groups::initialize_node(const Comm_Group& ngrp)
+{
+  assert(!node_initialized_);
+  node_group = ngrp;
+  node_initialized_ = true;
+}
+
+
 /*! @brief Methode a appeler en fin d'execution, une fois qu'on est revenu dans le groupe_TRUST() et juste avant de detruire de Comm_Group
  *
  *   principal.
@@ -189,7 +212,10 @@ void PE_Groups::finalize()
   groups[0].reset();
   ngroups = 0;
   current_group_ = 0;
+  node_group.reset();
+  node_initialized_ = false;
 }
+
 const int& PE_Groups::get_nb_groups()
 {
   return ngroups ;

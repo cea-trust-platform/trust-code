@@ -34,6 +34,8 @@
 
 #include <kokkos++.h>
 
+#include <paraconf.h>
+#include <pdi.h>
 
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
@@ -136,6 +138,15 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 #endif
 }
 
+static void init_node_mpi(OWN_PTR(Comm_Group) & ngrp)
+{
+#ifdef MPI_
+  ngrp.typer("Comm_Group_MPI");
+  Comm_Group_MPI& mpi_on_node = ref_cast(Comm_Group_MPI, ngrp.valeur());
+  mpi_on_node.init_comm_on_numa_node();
+#endif
+}
+
 ///////////////////////////////////////////////////////////
 // Desormais Petsc/MPI_Initialize et Petsc/MPI_Finalize
 // sont dans un seul fichier: mon_main
@@ -194,6 +205,7 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
   else
     {
       groupe_trio_.typer("Comm_Group_NoParallel");
+      node_group_.typer("Comm_Group_NoParallel");
     }
 
   // Initialisation des groupes de communication.
@@ -221,6 +233,9 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 
 void mon_main::finalize()
 {
+  // finalize PDI
+  PDI_finalize();
+
   // Clear all things that were registered by Register_clearable() method (typically the Domaine_dis_cache instance
   // to make sure all Kokkos views are freed before doing Kokkos finalize):
   TClearable::Clear_all();
@@ -229,6 +244,10 @@ void mon_main::finalize()
   // MPI_Group_free before MPI_Finalize
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
     ref_cast(Comm_Group_MPI,groupe_trio_.valeur()).free();
+
+  if (sub_type(Comm_Group_MPI,node_group_.valeur()))
+    ref_cast(Comm_Group_MPI,node_group_.valeur()).free_comm();
+
 #endif
 #ifdef PETSCKSP_H
   // On PetscFinalize que si c'est necessaire
@@ -352,6 +371,10 @@ void mon_main::dowork(const Nom& nom_du_cas)
       Cerr<<"Fin chargement des modules "<<finl;
     }
 
+  if (Process::is_parallel())
+    init_node_mpi(node_group_);
+  PE_Groups::initialize_node(node_group_);
+
   Cout<< " " << finl;
   Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * *     " << finl;
   Cout<< " *  _________  _______             _______  _________  *     " << finl;
@@ -449,4 +472,6 @@ mon_main::~mon_main()
   // on peut arreter maintenant que l'on a arrete les journaux
   PE_Groups::finalize();
   groupe_trio_.detach();
+  node_group_.detach();
+
 }

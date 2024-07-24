@@ -114,6 +114,7 @@ protected:
   Comm_Group(const Comm_Group&);  // interdit !
   const Comm_Group& operator=(const Comm_Group&);   // interdit !
   virtual void       init_group(const ArrOfInt& pe_list);
+  void               init_group_node(int nproc, int loc_rank, int glob_rank);
   void               init_group_trio(int nproc, int rank);
   friend class PE_Groups;
 

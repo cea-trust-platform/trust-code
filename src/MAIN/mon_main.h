@@ -54,6 +54,7 @@ private:
   bool apply_verification_;
   bool disable_stop_;
   OWN_PTR(Comm_Group) groupe_trio_;
+  OWN_PTR(Comm_Group) node_group_;
   Interprete_bloc interprete_principal_;
 };
 extern bool error_handlers;
