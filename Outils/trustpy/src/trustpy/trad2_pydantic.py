@@ -147,7 +147,9 @@ def write_block(block, file, all_blocks):
             args = f'default=""'
 
         else:
-            logger.error(f"unresolved type : {str(attribute)}")
+            message = f"unresolved type : {attr_type}"
+            logger.error(message)
+            raise NotImplementedError(message)
             continue
 
         if str(attr_type) == str(attr_name):
