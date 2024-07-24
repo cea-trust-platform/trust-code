@@ -15,6 +15,7 @@
 
 #ifdef __NVCOMPILER
 #pragma diag_suppress 177
+#pragma diag_suppress 47 /* warning cuda */
 #endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
@@ -37,5 +38,6 @@
 #pragma GCC diagnostic pop
 #ifdef __NVCOMPILER
 #pragma diag_warning 177
+#pragma diag_warning 47
 #endif
 
