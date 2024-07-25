@@ -122,8 +122,8 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   CIntTabView face_voisins = tab_face_voisins.view_ro();
   CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
   CDoubleTabView variable = tab_variable.view_ro();
-  CDoubleTabView gradient_elem = tab_gradient_elem.view_rw();
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
+  DoubleTabView gradient_elem = tab_gradient_elem.view_rw();
 
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
@@ -131,7 +131,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   int dimension = Objet_U::dimension;
   auto range2D = [](int a, int b) { return Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {a,b}); };
 
-  Kokkos::parallel_for(nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 
@@ -173,13 +173,15 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
           }
       }
   });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   // Division par le volume de l'élément
   auto vol_div = KOKKOS_LAMBDA (int elem, int i)
   {
     gradient_elem(elem, i) *= inverse_volumes(elem);
   };
-  Kokkos::parallel_for("gradient_elem 2D volume div", range2D(nb_elem, dimension), vol_div);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range2D(nb_elem, dimension), vol_div);
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
@@ -202,7 +204,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   int dimension = Objet_U::dimension;
   const int nb_comp = tab_variable.line_size();
 
-  Kokkos::parallel_for(nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 
@@ -247,6 +249,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
             }
       }
   });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   auto range3D = [](int a, int b, int c) { return Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {a,b,c}); };
 
@@ -255,7 +258,8 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   {
     gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
   };
-  Kokkos::parallel_for("gradient_elem 2D volume div", range3D(nb_elem, nb_comp, dimension), vol_div);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range3D(nb_elem, nb_comp, dimension), vol_div);
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 void calculer_gradientP1NC(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
@@ -956,8 +960,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
   int dim = Objet_U::dimension;
   CDoubleTabView3 duidxj_v = duidxj.view3_ro();
   DoubleArrView SMA_barre_v = SMA_barre.view_wo();
-  start_gpu_timer();
-  Kokkos::parallel_for("Champ_P1NC::calcul_S_barre", nb_elem, KOKKOS_LAMBDA(
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
                          const int elem)
   {
     double temp = 0.;
@@ -969,7 +972,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
         }
     SMA_barre_v(elem) = 2. * temp;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1NC::calcul_S_barre");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   return SMA_barre;
 }
