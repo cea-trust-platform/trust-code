@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,6 @@
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 
-class Champ_Generique_base;
 class Champ_Fonc;
 
 /*! @brief Classe de base des champs generiques ayant comme source d'autres champs generiques L'utilisation des methodes de la classe repose sur un principe de recursivite

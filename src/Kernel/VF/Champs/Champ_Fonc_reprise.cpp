@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <EcritureLectureSpecial.h>
+#include <Champ_Generique_base.h>
 #include <Entree_Fichier_base.h>
 #include <Champ_Fonc_reprise.h>
 #include <LecFicDiffuseBin.h>
-#include <Champ_Generique.h>
 #include <Entree_complete.h>
 #include <Probleme_base.h>
 #include <FichierHDFPar.h>

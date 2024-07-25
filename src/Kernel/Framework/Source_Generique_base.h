@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 #ifndef Source_Generique_base_included
 #define Source_Generique_base_included
 
+#include <Champ_Generique_base.h>
 #include <Source_base.h>
-#include <Champ_Generique.h>
 
 
 /*! @brief classe Source_Generique_base Cette classe est la base de la hierarchie des sources portant

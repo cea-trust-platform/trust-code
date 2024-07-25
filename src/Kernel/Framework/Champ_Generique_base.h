@@ -16,6 +16,7 @@
 #ifndef Champ_Generique_base_included
 #define Champ_Generique_base_included
 
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <Champ.h>
@@ -123,7 +124,10 @@ public:
 
   //fixe l attribut identifiant_appel_ du champ pour indiquer si la requete
   //a ete lancee par le nom ou une composante du champ (cf Champ_Generique_Interpolation)
-  void fixer_identifiant_appel(const Nom& identifiant);
+  inline void fixer_identifiant_appel(const Nom& identifiant)
+  {
+    identifiant_appel_ = identifiant;
+  }
 
 protected:
   static void               assert_parallel(int);
@@ -133,11 +137,6 @@ protected:
   Nom nom_pb_;
   REF(Probleme_base) ref_pb_;
 };
-
-inline void Champ_Generique_base::fixer_identifiant_appel(const Nom& identifiant)
-{
-  identifiant_appel_ = identifiant;
-}
 
 inline int Champ_Generique_base::composante(const Nom& nom_test,const Nom& nom,const Noms& composantes, const Noms& syno)
 {
@@ -163,19 +162,25 @@ inline int Champ_Generique_base::composante(const Nom& nom_test,const Nom& nom,c
     }
   return ncomp;
 }
+
+using Champ_Generique = OWN_PTR(Champ_Generique_base);
+
+/*
+ * @brief class Champ_Generique_erreur
+ *
+ * Classe Champ_Generique_erreur
+ */
 class Champ_Generique_erreur
 {
-
 public:
   Nom mot1;
 
-  Champ_Generique_erreur(const Nom mot2)
+  Champ_Generique_erreur(const Nom& mot2)
   {
     mot1 = mot2;
     Cerr<<"Error of type : "<<mot1<<finl;
     Process::exit();
   }
-
 };
 
-#endif
+#endif /* Champ_Generique_base_included */
