@@ -254,11 +254,12 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   auto range3D = [](int a, int b, int c) { return Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {a,b,c}); };
 
   // Division par le volume de l'élément
-  auto vol_div = KOKKOS_LAMBDA (int elem, int icomp, int i)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       range3D(nb_elem, nb_comp, dimension),
+                       KOKKOS_LAMBDA (int elem, int icomp, int i)
   {
     gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
-  };
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range3D(nb_elem, nb_comp, dimension), vol_div);
+  });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
