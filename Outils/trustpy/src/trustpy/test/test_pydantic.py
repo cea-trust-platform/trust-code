@@ -55,15 +55,6 @@ class Test_TRAD_2_GENEPI_V17(TestBase):
         self.TRAD2_FILE = "TRAD_2_GENEPI_V17"
         super().setUp()
 
-class Test_TRAD_2_v1_5_cv(TestBase):
-    def setUp(self):
-        self.TRAD2_FILE = "TRAD_2_v1.5_cv"
-        super().setUp()
-
-class Test_TRAD_2_v192(TestBase):
-    def setUp(self):
-        self.TRAD2_FILE = "TRAD_2_v192"
-        super().setUp()
 
 
 if __name__ == "__main__":
