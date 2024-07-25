@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+25/07/24 (TRUST) Bug fix      : Performance regression fixed in IJK (seen in FT application in TrioCFD)
 18/07/24 (TRUST) Fix          : Possible to visualize surface fields issued from Champ_post_extraction with VisIt
 12/07/24 (TRUST) GPU          : Enable HIP support in PETSc to get Hypre multigrid available on AMD GPU with: petsc_gpu gcp|gmres { precond boomeramg { } ... }
 12/07/24 (TRUST) GPU          : New available features for VEF discretization: Quasi-compressible (partial), Wale and Smagorinski turbulence models, Semi-implicit scheme, Sources term (Boussinesq, Canal_perio)
