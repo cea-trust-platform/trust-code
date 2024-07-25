@@ -13,27 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Postraitement.h>
-#include <EFichier.h>
-#include <Domaine_VF.h>
-#include <Champ_Generique_Interpolation.h>
-#include <Champ_Generique_refChamp.h>
-#include <Champ_Generique_Correlation.h>
-#include <Champ_Generique_Statistiques.h>
-#include <Entree_complete.h>
-#include <EcritureLectureSpecial.h>
-#include <Equation_base.h>
-#include <Discretisation_base.h>
-#include <Operateur_base.h>
-#include <Operateur.h>
-#include <Param.h>
-#include <LecFicDiffuse_JDD.h>
+#include <Champ_Generique_Statistiques_base.h>
 #include <Create_domain_from_sub_domain.h>
-#include <Sous_Domaine.h>
-#include <EChaine.h>
-#include <Interprete_bloc.h>
-#include <communications.h>
+#include <Champ_Generique_Interpolation.h>
+#include <Champ_Generique_Correlation.h>
+#include <Champ_Generique_refChamp.h>
+#include <EcritureLectureSpecial.h>
 #include <communications_array.h>
+#include <Discretisation_base.h>
+#include <LecFicDiffuse_JDD.h>
+#include <Entree_complete.h>
+#include <Interprete_bloc.h>
+#include <Operateur_base.h>
+#include <communications.h>
+#include <Postraitement.h>
+#include <Equation_base.h>
+#include <Sous_Domaine.h>
+#include <Domaine_VF.h>
+#include <Operateur.h>
+#include <EFichier.h>
+#include <EChaine.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
 // XD corps_postraitement postraitement nul -1 not_set
@@ -122,7 +122,7 @@ Motcles Postraitement::formats_supportes=Motcles(0);
 LIST(Nom) Postraitement::noms_fichiers_sondes_=LIST(Nom)();
 
 
-inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statistiques& op, const Domaine& dom, Nom& nom_fichier)
+inline void nom_fichier(const Postraitement& post, const OWN_PTR(Champ_Generique_Statistiques_base)& op, const Domaine& dom, Nom& nom_fichier)
 {
   nom_fichier+=".";
   const Entity& loc = op->get_localisation();
