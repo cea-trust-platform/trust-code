@@ -42,6 +42,10 @@ def valid_variable_name(s):
     return s
 
 
+def change_class_name(s):
+    return s.capitalize()
+
+
 def write_block(block, file, all_blocks):
     """ Write a TRAD2Block as pydantic class. """
 
@@ -62,7 +66,7 @@ def write_block(block, file, all_blocks):
     lines = [
         f'#' * 64,
         f'',
-        f'class {block.nam}({block.name_base or "BaseModel"}):',
+        f'class {change_class_name(block.nam)}({change_class_name(block.name_base) or "BaseModel"}):',
         f'    __braces:int = {block.mode}',
         f'    __description: str = r"{block.desc}"',
         f'    __synonyms: str = {block.synos}',
@@ -83,14 +87,16 @@ def write_block(block, file, all_blocks):
 
         attr_name = valid_variable_name(attr_name)
 
-        args = f'default_factory=lambda: eval("{attr_type}()")'
+        args = f'default_factory=lambda: eval("{change_class_name(attr_type)}()")'
 
         if attr_type in all_blocks:
             cls = all_blocks[attr_type]
             if isinstance(cls, TRAD2BlockList):
-                attr_type = f'Annotated[List["{cls.classtype}"], {cls.comma}]'
+                attr_type = f'Annotated[List["{change_class_name(cls.classtype)}"], {cls.comma}]'
                 attr_desc = cls.desc
                 args = f'default=[]'
+            else:
+                attr_type = change_class_name(attr_type)
 
         elif attr_type == "entier":
             attr_type = "int"
@@ -149,11 +155,7 @@ def write_block(block, file, all_blocks):
         else:
             message = f"unresolved type : {attr_type}"
             logger.error(message)
-            raise NotImplementedError(message)
-            continue
-
-        if str(attr_type) == str(attr_name):
-            attr_name += '_'
+            raise NotImplementedError(message)            
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
@@ -192,7 +194,7 @@ def write_block(block, file, all_blocks):
         lines.append('')
         lines.append('# suppress fields from parent class')
         for param in block.suppress_params:
-            lines.append(f'{block.nam}.model_fields.pop("{param}")')
+            lines.append(f'{change_class_name(block.nam)}.model_fields.pop("{param}")')
 
     lines.append('\n')
 
