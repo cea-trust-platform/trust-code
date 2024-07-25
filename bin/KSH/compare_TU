@@ -16,13 +16,15 @@ check()
       exit -1
    else
       ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
+      echo "Performance is OK ($ecart) $new s ~ $ref s (reference) for $1 on $2"
    fi
    # Temps total
    tot_ref=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU.ref_$2`
    tot_new=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU`
    echo $tot_ref $tot_new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
-   tot_err=$?   
+   tot_err=$?
+   echo $tot_ref $tot_new | awk '// {if (($2-$1)/($1+$2)<-0.05) {exit -2}}' # On verifie qu'on ne depasse pas +5% de la performance
+   maj_ref=$?
    if [ $tot_err != 0 ]
    then
       sdiff $1.TU.ref_$2 $1.TU
@@ -32,7 +34,17 @@ check()
       exit -1
    else
       ecart=`echo $tot_ref $tot_new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) $tot_new s < $tot_ref s (reference) for $1 on $2"
+      echo "Performance is OK ($ecart) $tot_new s ~ $tot_ref s (reference) for $1 on $2"
+   fi
+   if [ $maj_ref != 0 ]
+   then
+      sdiff $1.TU.ref_$2 $1.TU
+      echo ""
+      echo "================================"
+      echo "Performance is enhanced for $1 on $2 !"
+      echo "Update $1.TU.ref_$2 in the test case folder please"
+      echo "================================"
+      exit -1
    fi
 }
 # ToDo: prevoir dans le script trust un lock avant le lancement

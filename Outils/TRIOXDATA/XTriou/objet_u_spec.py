@@ -121,6 +121,8 @@ def read_val_pb_ft(self,chaine2,niveau,listdata,mottest):
         pass
     # 1/0
     return Pb_base.read_val(self,chaine2,niveau,listdata,mottest)
+
+
 def print_lire_pb_ft(self,listdata=[]):
     toto=Pb_base.print_lire(self,listdata)
     ok=1
@@ -158,6 +160,7 @@ def print_lire_pb_ft(self,listdata=[]):
         titi=""
     pass
     return titi
+
 def get_list_ref_ft_disc_gen(self):
     """ pour assurer que les equations sont associes en premier """
     xatt=self.__class__.getAllInitXAttributes()
