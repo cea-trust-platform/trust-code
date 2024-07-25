@@ -146,7 +146,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             {
               shear_BC_helpler_.prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
               for (int k = 0; k < ksz; k++)
-                for (int j = 0; j < jsz; j++)
+                for (int j = 0; j < jsz; j++, buf++)
                   {
                     _TYPE_ interpIsigkappazmin= 0.;
                     _TYPE_ interpIsigkappazmax= 0.;
@@ -162,7 +162,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             {
               shear_BC_helpler_.prepare_interpolation_for_shear_periodicity((int) round((double) i + (double) is +  offset), ((double) i + (double) is +  offset), isz);
               for (int k = 0; k < ksz; k++)
-                for (int j = 0; j < jsz; j++)
+                for (int j = 0; j < jsz; j++, buf++)
                   {
                     _TYPE_ interpIsigkappazmin= 0.;
                     _TYPE_ interpIsigkappazmax= 0.;
@@ -221,7 +221,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
-              for (int j = 0; j < jsz; j++)
+              for (int j = 0; j < jsz; j++, buf++)
                 {
                   dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = *buf - (_TYPE_) shear_BC_helpler_.I_sig_kappa_zmax_(i+is , j+js , k+2);
                 }
@@ -231,7 +231,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
-              for (int j = 0; j < jsz; j++)
+              for (int j = 0; j < jsz; j++, buf++)
                 {
                   dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i + ir , j + jr , k + kr)] = *buf - (_TYPE_) shear_BC_helpler_.I_sig_kappa_zmin_(i+is , j+js , k+2-nb_ghost);
                 }

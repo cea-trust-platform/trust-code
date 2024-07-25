@@ -38,7 +38,7 @@ public:
   ArrOfDouble denum_;
   ArrOfDouble res_;
   int use_inv_rho_in_pressure_solver_ ;
-  double DU_ ;
+  double DU_ = 0. ;
   double Phi_ppty_v_ = -123., Phi_ppty_l_ = -123.;
 
   IJK_Field_local_template<double,ArrOfDouble> indicatrice_ghost_zmin_ ;
