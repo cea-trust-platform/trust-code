@@ -239,6 +239,8 @@ void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
   else
     typ += loi_etat_->type_fluide();
 
+  typ = Nom("EDO_Pression_th_") + typ;
+  Cerr << "Typage de l'EDO sur la pression : " << typ << finl;
   EDO_Pth_.typer(typ);
   EDO_Pth_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
   EDO_Pth_->associer_fluide(*this);

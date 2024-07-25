@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Fluide_Quasi_Compressible_included
 
 #include <Fluide_Dilatable_base.h>
-#include <EDO_Pression_th.h>
+#include <EDO_Pression_th_base.h>
 
 class Domaine_Cl_dis;
 
@@ -51,7 +51,7 @@ public :
 protected :
   int traitement_rho_gravite_; // 0 : gravite = rho*g, 1 : gravite =(rho-rho_moy)*g
   double temps_debut_prise_en_compte_drho_dt_,omega_drho_dt_;
-  EDO_Pression_th EDO_Pth_;
+  OWN_PTR(EDO_Pression_th_base) EDO_Pth_;
   Nom output_file_;
   mutable DoubleTab tab_W_old_;
 

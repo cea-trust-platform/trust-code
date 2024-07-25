@@ -481,14 +481,14 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   le_probleme_ = pb;
   inco_chaleur_ = pb.equation(1).inconnue();
   vitesse_ = pb.equation(0).inconnue();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
-  pression_ = eqn_hydr.pression();
+  pression_ = ref_cast(Navier_Stokes_std, pb.equation(0)).pression();
 
   Nom typ = pb.equation(0).discretisation().que_suis_je();
-  if (typ=="VEFPreP1B") typ = "VEF";
+  if (typ == "VEFPreP1B")
+    typ = "VEF";
 
-  eos_tools_.typer(typ);
-  eos_tools_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
+  eos_tools_.typer(Nom("EOS_Tools_") + typ);
+  eos_tools_->associer_domaines(pb.equation(0).domaine_dis(), pb.equation(0).domaine_Cl_dis());
   eos_tools_->associer_fluide(*this);
   loi_etat_->assoscier_probleme(pb);
   initialiser_inco_ch();

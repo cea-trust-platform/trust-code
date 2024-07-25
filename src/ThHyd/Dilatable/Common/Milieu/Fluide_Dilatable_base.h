@@ -16,12 +16,12 @@
 #ifndef Fluide_Dilatable_base_included
 #define Fluide_Dilatable_base_included
 
+#include <EOS_Tools_base.h>
 #include <Loi_Etat_base.h>
 #include <Fluide_base.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
-#include <EOS_Tools.h>
 
 class Probleme_base;
 class Domaine_Cl_dis;
@@ -121,7 +121,7 @@ protected :
   REF(Probleme_base) le_probleme_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   OWN_PTR(Loi_Etat_base) loi_etat_;
-  EOS_Tools eos_tools_;
+  OWN_PTR(EOS_Tools_base) eos_tools_;
 };
 
 inline void Fluide_Dilatable_base::calculer_coeff_T()
