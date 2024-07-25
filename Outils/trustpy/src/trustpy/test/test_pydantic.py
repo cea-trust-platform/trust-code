@@ -36,8 +36,6 @@ class TestBase(unittest.TestCase):
 
         for cls in all_classes[1:]:
             with self.subTest(cls, arg=cls):
-                if cls is pydantic_schema.Champ_fonc_fonction_txyz:
-                    self.assertFalse(True, "TODO Champ_fonc_fonction_txyz")
                 cls() # try to instantiate
 
 

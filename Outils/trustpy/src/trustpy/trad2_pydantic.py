@@ -72,9 +72,6 @@ def write_block(block, file, all_blocks):
         f'    __synonyms: str = {block.synos}',
     ]
 
-    if block.name_base in all_blocks:        
-        block.suppress_params += all_blocks[block.name_base].suppress_params
-
     for attribute in block.attrs:
 
         assert isinstance(attribute, TRAD2Attr)
@@ -113,14 +110,17 @@ def write_block(block, file, all_blocks):
             args = f'default=""'
 
         elif attr_type in ["list", "listf"]:
+            # TODO handle difference list vs listf ?
             attr_type = "List[float]"
             args = "default_factory=list"
 
         elif attr_type in ["listentier", "listentierf"]:
+            # TODO handle difference listentier vs listentierf ?
             attr_type = "List[int]"
             args = "default_factory=list"
 
         elif attr_type in ["listchaine", "listchainef"]:
+            # TODO handle difference listchaine vs listchainef ?
             attr_type = "List[str]"
             args = "default_factory=list"
 
@@ -145,8 +145,11 @@ def write_block(block, file, all_blocks):
             args = f'default=False'
 
         elif attr_type == "suppress_param":
-            block.suppress_params.append(attr_name)
-            continue
+            # NOTE tricky
+            # hide the inherited *instance* attribute by a *class* attribute with same name
+            attr_type = "ClassVar[str]"
+            attr_desc = "suppress_param"
+            args = 'default="suppress_param"'
 
         elif attr_type.startswith("ref_"):
             attr_type = "str"
@@ -158,43 +161,6 @@ def write_block(block, file, all_blocks):
             raise NotImplementedError(message)            
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
-
-    if block.suppress_params:        
-
-        # TODO pydantic does not handle correctly fields that were removed in parent class
-        # 
-        # example : 
-        # 
-        # from pydantic import BaseModel, Field
-        # class A(BaseModel):
-        #     a: str = "a"
-        # class B(A):
-        #     b: str = "b"
-        # B.model_fields.pop("a")
-        # class C(B):
-        #     a: None = None
-        #     c: str = "c"
-        # C.model_fields.pop("a")
-        # print(B.model_fields) # a is not in the fields
-        # print(C.model_fields) # a is not in the fields
-        # print(B()) # ok
-        # print(C()) # raise error because 'a' is required
-
-        # TODO handle case where param is marked as suppressed, but is redefined
-        # 
-        # example : attr inco below
-        # 
-        # champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a function of another field.
-        #     attr dim suppress_param dim 1 del
-        #     attr bloc suppress_param bloc 1 del
-        #     attr inco suppress_param inco 1 del
-        #     attr problem_name ref_pb_base problem_name 0 Name of problem.
-        #     attr inco chaine inco 0 Name of the field (for example: temperature).
-
-        lines.append('')
-        lines.append('# suppress fields from parent class')
-        for param in block.suppress_params:
-            lines.append(f'{change_class_name(block.nam)}.model_fields.pop("{param}")')
 
     lines.append('\n')
 
@@ -226,7 +192,6 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
     # add two properties used during writing of blocks
     for block in all_blocks.values():
         block.written = False
-        block.suppress_params = []
 
     header = f'''
         ################################################################
@@ -237,7 +202,7 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
 
         import sys        
         from typing_extensions import Annotated, Literal
-        from typing import List
+        from typing import ClassVar, List
         from pydantic import BaseModel, Field
     '''
 
