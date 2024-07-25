@@ -30,6 +30,7 @@
 #include <SChaine.h>
 #include <FichierHDFPar.h>
 #include <EChaineJDD.h>
+#include <DeviceMemory.h>
 
 // Chacun des fichiers Cerr, Cout et Journal(i)
 // peut etre redirige vers l'un des quatre fichiers suivants:
@@ -394,8 +395,8 @@ void Process::imprimer_ram_totale(int all_process)
         Cout << (int)(total_memoire/Mo) << " MBytes of RAM taken by the calculation (max on a rank: "<<(int)(max_memoire/Mo)<<" MB)." << finl;
 #ifdef _OPENMP
         int Go = 1024 * Mo;
-        double allocated = mp_max((double)allocatedBytesOnDevice());
-        size_t total = deviceMemGetInfo(1);
+        double allocated = mp_max((double)DeviceMemory::allocatedBytesOnDevice());
+        size_t total = DeviceMemory::deviceMemGetInfo(1);
         Cout << 0.1*(int)(10*allocated/Go) << " GBytes of maximal RAM allocated on a GPU (" <<  int(100 * allocated / total) << "%)" << finl;
 #endif
       }

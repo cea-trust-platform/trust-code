@@ -22,6 +22,7 @@
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
+#include <DeviceMemory.h>
 
 // Device_test: teste intensivement les methodes de l'interface Device.h:
 bool self_tested_ = false;
@@ -307,22 +308,17 @@ void self_test()
         mapToDevice(a, "a"); // copy
         assert(a.get_data_location() == DataLocation::HostDevice);
         assert(a.ref_count() == 1);
+        DeviceMemory::printMemoryMap();
       }
       /*
       // Second DoubleTrav
       {
-        // ToDo OpenMP:
-        DoubleTrav a(10*N);
-        assert(a.get_data_location() != HostOnly); // Should have aleady GPU allocated memory by the first DoubleTrav !
-      }
-       */
-      {
-        DoubleTrav b(N);
-        assert(b.get_data_location() == DataLocation::HostOnly); // ToDo: devrait etre en Host (recupere la zone memoire precedente)
-        b = 2;
-        assert(b.get_data_location() == DataLocation::HostOnly);
-        mapToDevice(b, "b"); // copy ToDo cela devrait etre un update
-      }
+        DeviceMemory::printMemoryMap();
+        DoubleTrav a(10*N); // a is initialized to 0 on the device cause previous DoubleTrav was HostDevice !
+        assert(a.get_data_location() == DataLocation::Device);
+        const ArrOfDouble& const_a = a;
+        assert(const_a[0] == 0);
+      } */
       // Constructeur par copie DoubleTab
       {
         DoubleTab a(N);

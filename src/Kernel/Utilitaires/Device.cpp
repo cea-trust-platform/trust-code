@@ -15,10 +15,12 @@
 
 #include <TRUSTTrav.h>
 #include <Device.h>
+#include <DeviceMemory.h>
 #include <ctime>
 #include <string>
 #include <sstream>
 #include <map>
+#include <tuple>
 
 #ifndef LATATOOLS
 #include <comm_incl.h>
@@ -29,30 +31,6 @@ bool init_openmp_ = false;
 bool clock_on = false;
 bool timer_on = true;
 double clock_start;
-
-// Memory:
-size_t deviceMemGetInfo(bool print_total) // free or total bytes of the device
-{
-  size_t free=0, total=0;
-#ifndef LATATOOLS
-#ifdef TRUST_USE_CUDA
-  cudaMemGetInfo(&free, &total);
-#endif
-#ifdef TRUST_USE_HIP
-  hipMemGetInfo(&free_bytes, &total_bytes);
-#endif
-#endif
-  return print_total ? total : free;
-}
-std::map<void*, int> memory_map; // Define a map to track memory allocations on device
-size_t initial_free = 0;
-// Activity on GPU may be asked with:
-size_t allocatedBytesOnDevice()
-{
-  size_t free = deviceMemGetInfo(0);
-  initial_free = (initial_free==0) ? free : initial_free;
-  return initial_free - free;
-}
 
 #ifndef NDEBUG
 static int copy_before_exit = -1;
@@ -272,15 +250,15 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
       clock_start = Statistiques::get_time_now();
       int bytes = sizeof(_TYPE_) * size;
-      size_t free_bytes  = deviceMemGetInfo(0);
-      size_t total_bytes = deviceMemGetInfo(1);
+      size_t free_bytes  = DeviceMemory::deviceMemGetInfo(0);
+      size_t total_bytes = DeviceMemory::deviceMemGetInfo(1);
       if (bytes>free_bytes)
         {
           Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
           Process::exit();
         }
       #pragma omp target enter data map(alloc:ptr[0:size])
-      memory_map[ptr] = size;
+      DeviceMemory::getMemoryMap()[ptr] = {size, DataLocation::Host};
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
       #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
@@ -290,7 +268,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
         {
           std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free) Currently allocated: %6ld\n", clock.c_str(), ms, arrayName.c_str(), ptrToString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024), long(allocatedBytesOnDevice()));
+          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free) Currently allocated: %6ld\n", clock.c_str(), ms, arrayName.c_str(), ptrToString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024), long(DeviceMemory::allocatedBytesOnDevice()));
         }
     }
 #endif
@@ -326,9 +304,9 @@ void deleteOnDevice(_TYPE_* ptr, int size)
         clock = "[clock]  ";
       int bytes = sizeof(_TYPE_) * size;
       if (clock_on)
-        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << memory_map.size()-1 << " memory blocks with a total of " << allocatedBytesOnDevice() << " bytes." << endl << flush;
+        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " memory blocks with a total of " << DeviceMemory::allocatedBytesOnDevice() << " bytes." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
-      if (PE_Groups::get_nb_groups()>0) memory_map.erase(ptr);
+      if (PE_Groups::get_nb_groups()>0) DeviceMemory::getMemoryMap().erase(ptr);
     }
 #endif
 }
