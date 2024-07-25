@@ -1,0 +1,29 @@
+#!/bin/bash
+flags=$@
+
+FORCE_HIP=1 # HIP prefere a OMPT les directives OMP ne sont pas utilisees...
+
+# Source file cpp:
+cpp=`echo $@ | awk '{print $(NF-1)}'`
+omp_file="`grep "#pragma omp target" $cpp`"
+hip_file="`grep "Kokkos::parallel"   $cpp`"
+[ "$omp_file" != "" ] && [ "$hip_file" != "" ] && echo "Error, can't mix HIP and OMPT inside $cpp" && [ "$FORCE_HIP" != 1 ] && exit -1
+# Choix des options selon code:
+if [ "$omp_file" != "" ] && [ "$hip_file" = "" ] && [ "$FORCE_HIP" != 1 ]
+then
+   # Source OpenMP
+   echo "OMPT for $cpp"
+   opt="-DNO_HIP"
+else
+   # Source HIP (from KOKKOS)
+   echo "HIP for $cpp"
+   # Remove OpenMP flags:
+   for flag in -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx90a -fopenmp
+   do
+      flags=`echo $flags | sed "1,$ s?$flag??g"`
+   done
+   # Use HIP flags: RISQUE du dernier FLAG -Wno-gpu-maybe-wrong-side !!!!
+   opt="-xhip --offload-arch=$ROCM_ARCH -Wno-hip-omp-target-directives -Wno-gpu-maybe-wrong-side"
+fi
+echo "Adding: $opt"
+$TRUST_ROOT/exec/ccache/bin/ccache /opt/cray/pe/cce/17.0.0/bin/crayCC $opt $flag
