@@ -318,15 +318,14 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 template <typename _TYPE_>
 inline bool TRUSTArray<_TYPE_>::detach_array()
 {
-  if (storage_type_ == STORAGE::TEMP_STORAGE && mem_ != nullptr && ref_count() == 1)
-    // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
-    TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
-  // Deletion on device if:
-  //  - not a pure CPU array (i.e. was allocated on the GPU)
-  //  - this is the last (shared) instance
-  //  - and this is not a Trav.
-  if (get_data_location() != DataLocation::HostOnly && ref_count() == 1 && storage_type_ != STORAGE::TEMP_STORAGE)
-    deleteOnDevice(*this);
+  if (mem_ != nullptr && ref_count() == 1)
+    {
+      if (storage_type_ == STORAGE::TEMP_STORAGE)
+        // Give it back to the pool of free blocks - this means a shared_ptr copy, memory will be preserved
+        TRUSTTravPool<_TYPE_>::ReleaseBlock(mem_);
+      else if (isAllocatedOnDevice(*this))
+        deleteOnDevice(*this); // Delete block memory on GPU
+    }
 
   mem_ = nullptr;
   span_ = Span_();

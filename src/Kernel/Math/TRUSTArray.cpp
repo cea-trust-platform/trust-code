@@ -157,24 +157,30 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
               mem_->resize(new_size);
               span_ = Span_(*mem_);
               // Possibly set to 0 extended part, since we have a custom Vector allocator not doing it by default (TVAlloc):
-              if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT && get_data_location() == DataLocation::HostOnly)
-                std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
-              if(get_data_location() != DataLocation::HostOnly && new_size > sz_arr)
-                if (prev_ad != span_.begin())
-                  // hiiiic, when sizing up and down an array we might end up not changing the block at all!
-                  // TODO find a nicer way to spot this ... TODO device allocation should be based on real underlying block
-                  // size, not size_array() as it is now ...
-                  {
-                    // Delete former block before allocating a new one !
-                    deleteOnDevice(prev_ad, sz_arr);
-                    set_data_location(DataLocation::HostOnly);
-                    // Allocate new (bigger) block on device:
-                    allocateOnDevice(*this);
-                    // Copy data (use a dummy TRUSTArray just because of inject_array API)
-                    TRUSTArray<_TYPE_> dummy_src;
-                    dummy_src.span_ = prev_span;
-                    inject_array(dummy_src, sz_arr);
-                  }
+              if (new_size > sz_arr)
+                {
+                  if (get_data_location() == DataLocation::HostOnly)
+                    {
+                      if (opt == RESIZE_OPTIONS::COPY_INIT)
+                        std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
+                    }
+                  else
+                    {
+                      if (prev_ad != span_.begin())
+                        {
+                          // Delete former block before allocating a new one !
+                          checkDataOnHost(); // Force copie sur le host
+                          deleteOnDevice(prev_ad, sz_arr);
+                          set_data_location(DataLocation::HostOnly);
+                          // Allocate new (bigger) block on device:
+                          allocateOnDevice(*this);
+                          // Copy data (use a dummy TRUSTArray just because of inject_array API)
+                          TRUSTArray<_TYPE_> dummy_src;
+                          dummy_src.span_ = prev_span;
+                          inject_array(dummy_src, sz_arr);
+                        }
+                    }
+                }
             }
         }
     }
