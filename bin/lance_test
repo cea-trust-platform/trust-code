@@ -1108,6 +1108,9 @@ then
           i=""
        fi
 
+       # balise a supprimer une fois XDATA remplace par trustpy dans triocfd
+       #BALISE_SKIP_XDATA_FT_DISC
+
        [ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
        if [ ${#i} = 0 ] && [ "$TRUST_USE_CTEST" = 1 ]
        then

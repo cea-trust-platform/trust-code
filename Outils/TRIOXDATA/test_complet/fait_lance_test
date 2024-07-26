@@ -2,4 +2,17 @@
 DIR=`dirname $0` 
 DIR=`(cd $DIR; pwd)`
 sed "s?#BALISE_MODULE?$DIR/modif \$NOM.data ; ?" $TRUST_ROOT/bin/lance_test  > $DIR/lance_test_modif
+# ND v1.9.5beta : skip xdata sur FT discontinu car syntaxe plus supportee.
+# syntaxe de FT discontinu est maintenant similaire a celle de TRUST/TrioCFD
+
+s='# Discard XDATA check for FT discontinu test cases since broken when syntax changed.
+       # trustpy works FT dicontinu test cases
+       if [ "`grep -i "probleme_ft_disc_gen" $REP/* 2>/dev/null`" != "" ]
+       then
+          echo "Test $i skipped (XDATA does not support FT discontinu syntax since V1.9.5b, use trustpy to check FTD syntax)"
+          liste_skipped=$liste_skipped" $i"
+          i=""
+       fi'
+$TRUST_Awk -v r="$s" '{gsub(/#BALISE_SKIP_XDATA_FT_DISC/,r)}1' $DIR/lance_test_modif > $DIR/lance_test_modif.tmp
+cat $DIR/lance_test_modif.tmp > $DIR/lance_test_modif ; rm $DIR/lance_test_modif.tmp
 chmod +x $DIR/lance_test_modif

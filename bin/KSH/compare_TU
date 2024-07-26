@@ -10,8 +10,9 @@ check()
    if [ $err != 0 ]
    then
       sdiff $1.TU.ref_$2 $1.TU
+      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
       echo "================================"
-      echo "Performance is KO for $1 on $2 !"
+      echo "Performance is KO ($ecart > 5%) $new s ~ $ref s (reference) for $1 on $2"
       echo "================================"
       exit -1
    else
@@ -28,8 +29,9 @@ check()
    if [ $tot_err != 0 ]
    then
       sdiff $1.TU.ref_$2 $1.TU
+      ecart=`echo $tot_ref $tot_new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
       echo "================================"
-      echo "Performance is KO for $1 on $2 !"
+      echo "Performance is KO ($ecart > 5%) $tot_new s ~ $tot_ref s (reference) for $1 on $2"
       echo "================================"
       exit -1
    else
