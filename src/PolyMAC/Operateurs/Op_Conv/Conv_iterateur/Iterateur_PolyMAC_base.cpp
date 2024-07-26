@@ -15,55 +15,39 @@
 
 #include <Iterateur_PolyMAC_base.h>
 
-Implemente_base(Iterateur_PolyMAC_base,"Iterateur_PolyMAC_base",Objet_U);
-Implemente_instanciable(Iterateur_PolyMAC,"Iterateur_PolyMAC",DERIV(Iterateur_PolyMAC_base));
+Implemente_base(Iterateur_PolyMAC_base, "Iterateur_PolyMAC_base", Objet_U);
 
-Sortie& Iterateur_PolyMAC::printOn(Sortie& s ) const
+Entree& Iterateur_PolyMAC_base::readOn(Entree& s)
 {
-  return s << que_suis_je() ;
+  return s;
 }
 
-Sortie& Iterateur_PolyMAC_base::printOn(Sortie& s ) const
+Sortie& Iterateur_PolyMAC_base::printOn(Sortie& s) const
 {
-  return s << que_suis_je() ;
+  return s << que_suis_je();
 }
 
 void Iterateur_PolyMAC_base::calculer_flux_bord(const DoubleTab& inco) const
 {
-  Cerr<<que_suis_je()<<" must implement alculer_flux_bord"<<finl;
-  assert(0);
+  Cerr << que_suis_je() << " must implement calculer_flux_bord" << finl;
   Process::exit();
 }
 
-Entree& Iterateur_PolyMAC_base::readOn(Entree& s )
+void Iterateur_PolyMAC_base::associer(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Operateur_base& op)
 {
-  return s ;
-}
-Entree& Iterateur_PolyMAC::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-void Iterateur_PolyMAC_base::associer(const Domaine_dis& z,
-                                      const Domaine_Cl_dis& zcl, const Operateur_base& op)
-{
-  const Domaine_PolyMAC& domaine_vdf=ref_cast(Domaine_PolyMAC, z.valeur());
-  const Domaine_Cl_PolyMAC& domaine_cl_vdf=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
-  associer(domaine_vdf, domaine_cl_vdf,op);
+  const Domaine_PolyMAC& domaine_vdf = ref_cast(Domaine_PolyMAC, z.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_vdf = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  associer(domaine_vdf, domaine_cl_vdf, op);
 }
 void Iterateur_PolyMAC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  const Domaine_Cl_PolyMAC& domaine_cl_vdf=ref_cast(Domaine_Cl_PolyMAC, zcl);
-  la_zcl=domaine_cl_vdf;
+  const Domaine_Cl_PolyMAC& domaine_cl_vdf = ref_cast(Domaine_Cl_PolyMAC, zcl);
+  la_zcl = domaine_cl_vdf;
 
 }
-void Iterateur_PolyMAC_base::associer(const Domaine_PolyMAC& domaine_vdf,
-                                      const Domaine_Cl_PolyMAC& domaine_cl_vdf, const Operateur_base& op)
+void Iterateur_PolyMAC_base::associer(const Domaine_PolyMAC& domaine_vdf, const Domaine_Cl_PolyMAC& domaine_cl_vdf, const Operateur_base& op)
 {
-  le_domaine=domaine_vdf;
-  la_zcl=domaine_cl_vdf;
-  op_base=op;
-  // completer_();
+  le_domaine = domaine_vdf;
+  la_zcl = domaine_cl_vdf;
+  op_base = op;
 }
-

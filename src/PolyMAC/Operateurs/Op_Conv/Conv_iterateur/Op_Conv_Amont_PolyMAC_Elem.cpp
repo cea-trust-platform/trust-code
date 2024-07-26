@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis& domaine_dis, const 
   const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
   const Champ_Elem_PolyMAC& inco = ref_cast(Champ_Elem_PolyMAC, ch_transporte.valeur());
 
-  iter->associer(zvdf, zclvdf, *this);
+  iter_->associer(zvdf, zclvdf, *this);
 
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter_->evaluateur();
   eval_conv.associer_domaines(zvdf, zclvdf);          // Evaluateur_PolyMAC::associer
   eval_conv.associer_inconnue(inco);        // Eval_PolyMAC_Elem::associer_inconnue
 }
@@ -49,19 +49,19 @@ void Op_Conv_Amont_PolyMAC_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vit);
 
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter_->evaluateur();
   eval_conv.associer(vit);                // Eval_Conv_PolyMAC::associer
 }
 
 const Champ_base& Op_Conv_Amont_PolyMAC_Elem::vitesse() const
 {
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter_->evaluateur();
   return eval_conv.vitesse();
 }
 
 Champ_base& Op_Conv_Amont_PolyMAC_Elem::vitesse()
 {
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter_->evaluateur();
   return eval_conv.vitesse();
 }
 

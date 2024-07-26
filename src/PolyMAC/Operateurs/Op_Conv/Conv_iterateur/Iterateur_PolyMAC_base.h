@@ -16,23 +16,24 @@
 #ifndef Iterateur_PolyMAC_base_included
 #define Iterateur_PolyMAC_base_included
 
-#include <Domaine_PolyMAC.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
-#include <Periodique.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_entree_fluide_leaves.h>
-#include <Neumann_paroi.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Neumann_paroi_adiabatique.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
 #include <Echange_externe_impose.h>
-#include <Neumann_sortie_libre.h>
+#include <Echange_global_impose.h>
 #include <Scalaire_impose_paroi.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Evaluateur_PolyMAC.h>
-#include <TRUST_Ref.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
+#include <Neumann_paroi.h>
 #include <TRUST_Deriv.h>
+#include <Periodique.h>
+#include <TRUST_Ref.h>
+#include <Symetrie.h>
+
 class Operateur_base;
 class Matrice_Morse;
 
@@ -56,7 +57,6 @@ class Iterateur_PolyMAC_base: public Objet_U
 {
   Declare_base(Iterateur_PolyMAC_base);
 public:
-
   void associer(const Domaine_PolyMAC&, const Domaine_Cl_PolyMAC&, const Operateur_base&);
   void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Operateur_base&);
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
@@ -69,8 +69,10 @@ public:
   virtual void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse&) const =0;
   virtual Evaluateur_PolyMAC& evaluateur() =0;
   virtual const Evaluateur_PolyMAC& evaluateur() const =0;
-  inline const Domaine_PolyMAC& domaine() const;
-  inline const Domaine_Cl_PolyMAC& domaine_Cl() const;
+
+  inline const Domaine_PolyMAC& domaine() const { return le_domaine.valeur(); }
+  inline const Domaine_Cl_PolyMAC& domaine_Cl() const { return la_zcl.valeur(); }
+
   virtual void completer_()=0;
   virtual int impr(Sortie& os) const =0;
 
@@ -79,24 +81,6 @@ protected:
   REF(Domaine_Cl_PolyMAC) la_zcl;
   REF(Operateur_base) op_base;
 };
-
-class Iterateur_PolyMAC: public DERIV(Iterateur_PolyMAC_base)
-{
-  Declare_instanciable(Iterateur_PolyMAC);
-public:
-  Iterateur_PolyMAC(const Iterateur_PolyMAC_base &Opb) : DERIV(Iterateur_PolyMAC_base)()
-  { DERIV(Iterateur_PolyMAC_base)::operator=(Opb); }
-};
-
-inline const Domaine_PolyMAC& Iterateur_PolyMAC_base::domaine() const
-{
-  return le_domaine.valeur();
-}
-
-inline const Domaine_Cl_PolyMAC& Iterateur_PolyMAC_base::domaine_Cl() const
-{
-  return la_zcl.valeur();
-}
 
 inline Type_Cl_PolyMAC Iterateur_PolyMAC_base::type_cl(const Cond_lim& la_cl) const
 {
@@ -126,4 +110,4 @@ inline Type_Cl_PolyMAC Iterateur_PolyMAC_base::type_cl(const Cond_lim& la_cl) co
   return retour;
 }
 
-#endif
+#endif /* Iterateur_PolyMAC_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,20 +18,19 @@
 
 #include <Iterateur_PolyMAC_base.h>
 #include <Operateur_Conv.h>
+#include <TRUST_Deriv.h>
 
 class Op_Conv_PolyMAC_iterateur_base: public Operateur_Conv_base
 {
-
   Declare_base(Op_Conv_PolyMAC_iterateur_base);
-
 public:
+  Op_Conv_PolyMAC_iterateur_base(const Iterateur_PolyMAC_base& iter_base) { iter_ = iter_base; }
 
-  inline Op_Conv_PolyMAC_iterateur_base(const Iterateur_PolyMAC_base&);
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const override;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  inline void contribuer_bloc_vitesse(const DoubleTab&, Matrice_Morse&) const override;
-  inline void contribuer_au_second_membre(DoubleTab&) const override;
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter_->ajouter(inco, resu); }
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const override { return iter_->calculer(inco, resu); }
+  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { iter_->ajouter_contribution(inco, matrice); }
+  inline void contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const override { iter_->ajouter_contribution_vitesse(inco, matrice); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter_->contribuer_au_second_membre(resu); }
   virtual const Champ_base& vitesse() const =0;
   virtual Champ_base& vitesse()=0;
   void completer() override;
@@ -40,61 +39,11 @@ public:
   Motcle get_localisation_pour_post(const Nom& option) const override;
   int impr(Sortie& os) const override;
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;
+
 protected:
-
-  Iterateur_PolyMAC iter;
-
+  OWN_PTR(Iterateur_PolyMAC_base) iter_;
 };
-
-/*! @brief constructeur
- *
- */
-inline Op_Conv_PolyMAC_iterateur_base::Op_Conv_PolyMAC_iterateur_base(const Iterateur_PolyMAC_base& iter_base) :
-  iter(iter_base)
-{
-}
-
-/*! @brief ajoute la contribution de la convection au second membre resu renvoie resu
- *
- */
-inline DoubleTab& Op_Conv_PolyMAC_iterateur_base::ajouter(const DoubleTab& inco, DoubleTab& resu) const
-{
-  return iter->ajouter(inco, resu);
-}
-
-/*! @brief on assemble la matrice.
- *
- */
-inline void Op_Conv_PolyMAC_iterateur_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  iter->ajouter_contribution(inco, matrice);
-}
-
-inline void Op_Conv_PolyMAC_iterateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  iter->ajouter_contribution_vitesse(inco, matrice);
-}
-
-/*! @brief on ajoute la contribution du second membre.
- *
- */
-inline void Op_Conv_PolyMAC_iterateur_base::contribuer_au_second_membre(DoubleTab& resu) const
-{
-  iter->contribuer_au_second_membre(resu);
-}
-
-/*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
- *
- */
-inline DoubleTab& Op_Conv_PolyMAC_iterateur_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
-{
-  return iter->calculer(inco, resu);
-}
-
-//
-// Fonction utile pour le calcul du pas de temps de stabilite
-//
 
 inline void eval_fluent(const double, const int, const int, DoubleVect&);
 
-#endif
+#endif /* Op_Conv_PolyMAC_iterateur_base_included */

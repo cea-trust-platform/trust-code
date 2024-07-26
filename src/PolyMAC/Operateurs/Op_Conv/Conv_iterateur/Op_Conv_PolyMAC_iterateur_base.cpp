@@ -14,11 +14,11 @@
 *****************************************************************************/
 
 #include <Op_Conv_PolyMAC_iterateur_base.h>
-#include <TRUSTTrav.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <TRUSTTrav.h>
 #include <Champ.h>
-#include <Modifier_pour_fluide_dilatable.h>
 
 Implemente_base(Op_Conv_PolyMAC_iterateur_base, "Op_Conv_PolyMAC_iterateur_base", Operateur_Conv_base);
 
@@ -40,16 +40,10 @@ inline void eval_fluent(const double psc, const int num1, const int num2, Double
     fluent[num1] -= psc;
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-//
-//    Implementation de fonctions de la classe Op_Conv_PolyMAC_iterateur_base
-//
-///////////////////////////////////////////////////////////////////////////////////
-
 double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = iter->domaine();
-  const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter->domaine_Cl();
+  const Domaine_PolyMAC& domaine_PolyMAC = iter_->domaine();
+  const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter_->domaine_Cl();
   const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
   const DoubleVect& volumes = domaine_PolyMAC.volumes();
   const DoubleVect& face_surfaces = domaine_PolyMAC.face_surfaces();
@@ -128,8 +122,8 @@ void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage, 
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      const Domaine_PolyMAC& domaine_PolyMAC = iter->domaine();
-      const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter->domaine_Cl();
+      const Domaine_PolyMAC& domaine_PolyMAC = iter_->domaine();
+      const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter_->domaine_Cl();
       const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
       const DoubleVect& volumes = domaine_PolyMAC.volumes();
       const DoubleVect& face_surfaces = domaine_PolyMAC.face_surfaces();
@@ -208,14 +202,14 @@ Motcle Op_Conv_PolyMAC_iterateur_base::get_localisation_pour_post(const Nom& opt
 void Op_Conv_PolyMAC_iterateur_base::completer()
 {
   Operateur_base::completer();
-  iter->completer_();
+  iter_->completer_();
 }
 void Op_Conv_PolyMAC_iterateur_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  iter->associer_domaine_cl_dis(zcl);
+  iter_->associer_domaine_cl_dis(zcl);
 }
 
 int Op_Conv_PolyMAC_iterateur_base::impr(Sortie& os) const
 {
-  return iter->impr(os);
+  return iter_->impr(os);
 }
