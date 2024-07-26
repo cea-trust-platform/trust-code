@@ -94,16 +94,22 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
       else
         mem_ = std::make_shared<Vector_>(Vector_(new_size));
 
-      if(opt == RESIZE_OPTIONS::COPY_INIT)
-        std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
-
-      // We should never have to worry about device allocation here: Why it may be interesting to reuse device allocated memory ?
-      // assert(get_data_location() == DataLocation::HostOnly);
       span_ = Span_(*mem_);
+
+      // We should never have to worry about device allocation here:
       if (isAllocatedOnDevice(mem_->data()))
-        data_location_ = std::make_shared<DataLocation>(DataLocation::Host);
+        {
+          if (opt == RESIZE_OPTIONS::COPY_INIT)
+            data_location_ = std::make_shared<DataLocation>(DataLocation::Device);
+          else
+            data_location_ = std::make_shared<DataLocation>(DataLocation::Host);
+        }
       else
         data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
+
+      if(opt == RESIZE_OPTIONS::COPY_INIT)
+        operator=((_TYPE_)0); // To initialize on device or host
+      //std::fill(mem_->begin(), mem_->end(), (_TYPE_) 0);
     }
   else
     {
@@ -127,18 +133,21 @@ void TRUSTArray<_TYPE_>::resize_array_(int new_size, RESIZE_OPTIONS opt)
                   span_ = Span_(span_.begin(), span_.begin()+new_size);
                   // Possibly set to 0 extended part:
                   if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT)
-                    std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
+                    {
+                      checkDataOnHost();
+                      std::fill(span_.begin() + sz_arr, span_.end(), (_TYPE_) 0);
+                    }
                 }
               else  // Real size increase of the underlying std::vector
                 {
-                  // No Trav resize (from non null size!) on GPU for now:
-                  assert(get_data_location() == DataLocation::HostOnly);
-
                   // ResizeBlock
                   mem_ = TRUSTTravPool<_TYPE_>::ResizeBlock(mem_, new_size);
                   span_ = Span_(*mem_);
                   if (opt == RESIZE_OPTIONS::COPY_INIT)
-                    std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
+                    {
+                      checkDataOnHost();
+                      std::fill(span_.begin() + sz_arr, span_.end(), (_TYPE_) 0);
+                    }
                 }
             }
           else  // Normal (non Trav) arrays
@@ -357,7 +366,7 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 {
   if (std::is_same<_TYPE_,int>::value) throw;
-  operator*=(1./dy);
+  operator*=(1/dy);
   return *this;
 }
 

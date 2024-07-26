@@ -310,7 +310,6 @@ void self_test()
         assert(a.ref_count() == 1);
         DeviceMemory::printMemoryMap();
       }
-      /*
       // Second DoubleTrav
       {
         DeviceMemory::printMemoryMap();
@@ -318,7 +317,7 @@ void self_test()
         assert(a.get_data_location() == DataLocation::Device);
         const ArrOfDouble& const_a = a;
         assert(const_a[0] == 0);
-      } */
+      }
       // Constructeur par copie DoubleTab
       {
         DoubleTab a(N);
