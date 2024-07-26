@@ -39,7 +39,7 @@ Entree& Source_Dirac_VDF_Elem::readOn(Entree& is)
 void Source_Dirac_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
   Terme_Puissance_Thermique_VDF_base::associer_domaines(domaine_dis,domaine_cl_dis);
-  Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter->evaluateur());
+  Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter_->evaluateur());
   eval_dirac.associer_domaines(domaine_dis.valeur(),domaine_cl_dis.valeur());
   const int nb_elem = domaine_dis->nb_elem();
   const Domaine& mon_dom = domaine_dis->domaine();
@@ -56,7 +56,7 @@ void Source_Dirac_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, co
 
 void Source_Dirac_VDF_Elem::associer_pb(const Probleme_base& pb)
 {
-  Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter->evaluateur());
+  Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter_->evaluateur());
   eval_dirac.associer_champs(la_puissance);
   eval_dirac.le_point.copy(point);
 }

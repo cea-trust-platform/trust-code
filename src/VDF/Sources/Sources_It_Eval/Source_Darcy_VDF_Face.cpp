@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Source_Darcy_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis, co
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf, zclvdf);
+  iter_->associer_domaines(zvdf, zclvdf);
   eval().associer_domaines(zvdf, zclvdf);
 }
 

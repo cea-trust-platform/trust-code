@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #ifndef Iterateur_Source_base_included
 #define Iterateur_Source_base_included
 
-#include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Equation_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 
 class Evaluateur_Source;

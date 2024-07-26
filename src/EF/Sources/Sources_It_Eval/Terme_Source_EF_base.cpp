@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,11 +23,11 @@ Entree& Terme_Source_EF_base::readOn(Entree& s) { return s; }
 void Terme_Source_EF_base::completer()
 {
   Source_base::completer();
-  iter->completer_();
+  iter_->completer_();
 }
 
 int Terme_Source_EF_base::impr(Sortie& os) const
 {
   if (je_suis_maitre()) os << que_suis_je();
-  return iter->impr(os);
+  return iter_->impr(os);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,9 +37,9 @@ void Puissance_Thermique_QC_EF::associer_domaines(const Domaine_dis& domaine_dis
   const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis.valeur());
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_cl_dis.valeur());
 
-  iter->associer_domaines(zEF, zclEF);
+  iter_->associer_domaines(zEF, zclEF);
 
-  Eval_Puiss_Th_QC_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_QC_EF&> (iter->evaluateur());
+  Eval_Puiss_Th_QC_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_QC_EF&> (iter_->evaluateur());
   eval_puis.associer_domaines(zEF, zclEF);
 }
 
@@ -48,7 +48,7 @@ void Puissance_Thermique_QC_EF::associer_pb(const Probleme_base& pb)
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(), "Puissance_volumique", "W/m3", la_puissance, pb);
 
-  Eval_Puiss_Th_QC_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_QC_EF&> (iter->evaluateur());
+  Eval_Puiss_Th_QC_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_QC_EF&> (iter_->evaluateur());
   eval_puis.associer_puissance(la_puissance);
 }
 

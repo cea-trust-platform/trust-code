@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <Eval_Forchheimer_VEF_Face.h>
 #include <Iterateur_Source_VEF_Face.h>
 #include <Terme_Source_VEF_base.h>
-#include <Iterateur_Source.h>
 
 /*! @brief class Source_Forchheimer_VEF_Face
  *
@@ -38,7 +37,7 @@ public:
   void associer_pb(const Probleme_base&) override;
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void mettre_a_jour(double temps) override { }
-  inline Eval_Forchheimer_VEF_Face& eval() { return static_cast<Eval_Forchheimer_VEF_Face&> (iter->evaluateur()); }
+  inline Eval_Forchheimer_VEF_Face& eval() { return static_cast<Eval_Forchheimer_VEF_Face&> (iter_->evaluateur()); }
 };
 
 #endif /* Source_Forchheimer_VEF_Face_included */

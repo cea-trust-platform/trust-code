@@ -38,8 +38,8 @@ void Puissance_Thermique_EF::associer_domaines(const Domaine_dis& domaine_dis, c
 {
   const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis.valeur());
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_cl_dis.valeur());
-  iter->associer_domaines(zEF, zclEF);
-  Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter->evaluateur());
+  iter_->associer_domaines(zEF, zclEF);
+  Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter_->evaluateur());
   eval_puis.associer_domaines(zEF, zclEF);
 }
 
@@ -47,6 +47,6 @@ void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(), la_puissance.le_nom(), "W/m3", la_puissance, pb);
-  Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter->evaluateur());
+  Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter_->evaluateur());
   eval_puis.associer_champs(la_puissance);
 }

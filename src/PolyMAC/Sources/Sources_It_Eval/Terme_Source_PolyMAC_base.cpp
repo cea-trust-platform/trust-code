@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,6 @@ Entree& Terme_Source_PolyMAC_base::readOn(Entree& s) { return s; }
 void Terme_Source_PolyMAC_base::completer()
 {
   Source_base::completer();
-  iter->associer(*this);
-  iter->completer_();
+  iter_->associer(*this);
+  iter_->completer_();
 }

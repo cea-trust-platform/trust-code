@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,24 +16,24 @@
 #ifndef Terme_Source_EF_base_included
 #define Terme_Source_EF_base_included
 
-#include <Iterateur_Source.h>
+#include <Iterateur_Source_base.h>
 
-class Probleme_base;
 class Domaine_Cl_dis;
+class Probleme_base;
 class Domaine_dis;
 
 class Terme_Source_EF_base: public Source_base
 {
   Declare_base(Terme_Source_EF_base);
 public:
-  Terme_Source_EF_base(const Iterateur_Source_base& iter_base) : iter(iter_base) { }
-  DoubleTab& ajouter(DoubleTab& resu) const override { return iter->ajouter(resu); }
-  DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
+  Terme_Source_EF_base(const Iterateur_Source_base& iter_base) { iter_ = iter_base; }
+  DoubleTab& ajouter(DoubleTab& resu) const override { return iter_->ajouter(resu); }
+  DoubleTab& calculer(DoubleTab& resu) const override { return iter_->calculer(resu); }
   void completer() override;
   int impr(Sortie& os) const override;
 
 protected:
-  Iterateur_Source iter;
+  OWN_PTR(Iterateur_Source_base) iter_;
 };
 
 #endif /* Terme_Source_EF_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,8 +39,8 @@ void Terme_Source_Constituant_PolyMAC_Elem::associer_domaines(const Domaine_dis&
 {
   const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf, zclvdf);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
+  iter_->associer_domaines(zvdf, zclvdf);
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter_->evaluateur());
   eval_puis.associer_domaines(zvdf, zclvdf);
 }
 
@@ -48,6 +48,6 @@ void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(), la_source_constituant.le_nom(), "", la_source_constituant, pb);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter_->evaluateur());
   eval_puis.associer_champs(la_source_constituant);
 }

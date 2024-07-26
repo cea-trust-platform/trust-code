@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,12 @@ Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme
 void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
   Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter_->evaluateur());
   eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter_->evaluateur());
   eval_puis.associer_champs(la_puissance);
 }

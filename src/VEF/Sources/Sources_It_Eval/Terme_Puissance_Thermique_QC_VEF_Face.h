@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <Terme_Puissance_Thermique_VEF_base.h>
 #include <Eval_Puiss_Th_QC_VEF_Face.h>
 #include <Iterateur_Source_VEF_Face.h>
-#include <Iterateur_Source.h>
 
 /*! @brief class Terme_Puissance_Thermique_QC_VEF_Face
  *

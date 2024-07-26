@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ public:
   void associer_pb(const Probleme_base&) override;
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void mettre_a_jour(double temps) override { }
-  inline Eval_Darcy_VEF_Face& eval() { return static_cast<Eval_Darcy_VEF_Face&> (iter->evaluateur()); }
+  inline Eval_Darcy_VEF_Face& eval() { return static_cast<Eval_Darcy_VEF_Face&> (iter_->evaluateur()); }
 };
 
 #endif /* Source_Darcy_VEF_Face_included */

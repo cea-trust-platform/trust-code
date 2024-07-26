@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ void Terme_Source_Constituant_VDF_Elem::associer_domaines(const Domaine_dis& dom
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf, zclvdf);
-  Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter->evaluateur());
+  iter_->associer_domaines(zvdf, zclvdf);
+  Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter_->evaluateur());
   eval_puis.associer_domaines(zvdf,zclvdf);
 }
 
@@ -53,6 +53,6 @@ void Terme_Source_Constituant_VDF_Elem::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
   eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter->evaluateur());
+  Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter_->evaluateur());
   eval_puis.associer_champs(la_source_constituant);
 }

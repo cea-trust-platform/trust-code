@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ void Terme_Puissance_Thermique_VEF_base::associer_domaines(const Domaine_dis& do
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
-  iter->associer_domaines(zvef, zclvef);
+  iter_->associer_domaines(zvef, zclvef);
 }
 
 int Terme_Puissance_Thermique_VEF_base::initialiser(double temps)

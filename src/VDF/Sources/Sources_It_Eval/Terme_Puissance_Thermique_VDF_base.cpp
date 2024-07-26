@@ -40,7 +40,7 @@ void Terme_Puissance_Thermique_VDF_base::associer_domaines(const Domaine_dis& do
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf,zclvdf);
+  iter_->associer_domaines(zvdf,zclvdf);
 }
 
 int Terme_Puissance_Thermique_VDF_base::initialiser(double temps)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,13 +24,13 @@ Entree& Terme_Source_VEF_base::readOn(Entree& s) { return s; }
 void Terme_Source_VEF_base::completer()
 {
   Source_base::completer();
-  iter->associer(*this);
-  iter->completer_();
+  iter_->associer(*this);
+  iter_->completer_();
 }
 
 int Terme_Source_VEF_base::initialiser(double temps)
 {
   Source_base::initialiser(temps);
-  iter->initialiser(temps);
+  iter_->initialiser(temps);
   return 1;
 }

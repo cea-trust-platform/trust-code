@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ void Source_Forchheimer_VEF_Face::associer_domaines(const Domaine_dis& domaine_d
 {
   const Domaine_VEF& zvdf = ref_cast(Domaine_VEF, domaine_dis.valeur());
   const Domaine_Cl_VEF& zclvdf = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf, zclvdf);
+  iter_->associer_domaines(zvdf, zclvdf);
   eval().associer_domaines(zvdf, zclvdf);
 }
 
