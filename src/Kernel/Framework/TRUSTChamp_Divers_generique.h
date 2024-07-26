@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,10 +79,27 @@ public:
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
     if (IS_UNIFORME)
       {
-        for (int i = 0; i < tab_valeurs.dimension_tot(0); i++) // GF dimension_tot pour que la ligne soit valide pour les champs P1B
-          for (int j = 0; j < tab_valeurs.line_size(); j++)
-            tab_valeurs(i, j) = valeurs_(0, j);
-
+        int size = tab_valeurs.dimension_tot(0); // GF dimension_tot pour que la ligne soit valide pour les champs P1B
+        int nb_comp = tab_valeurs.line_size();
+        start_gpu_timer(__KERNEL_NAME__);
+        bool kernelOnDevice = tab_valeurs.checkDataOnDevice();
+        if (kernelOnDevice)
+          {
+            CDoubleTabView valeurs = valeurs_.view_ro();
+            DoubleTabView tab_valeurs_v = tab_valeurs.view_rw();
+            Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {size, nb_comp }),
+                                 KOKKOS_LAMBDA(const int i, const int j)
+            {
+              tab_valeurs_v(i, j) = valeurs(0, j);
+            });
+          }
+        else
+          {
+            for (int i = 0; i < size; i++)
+              for (int j = 0; j < nb_comp; j++)
+                tab_valeurs(i, j) = valeurs_(0, j);
+          }
+        end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
         return tab_valeurs;
       }
     else
@@ -101,10 +118,27 @@ public:
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
     if (IS_UNIFORME)
       {
-        for (int i = 0; i < tab_valeurs.dimension(0); i++)
-          for (int j = 0; j < tab_valeurs.line_size(); j++)
-            tab_valeurs(i, j) = valeurs_(0, j);
-
+        int size = tab_valeurs.dimension(0);
+        int nb_comp = tab_valeurs.line_size();
+        start_gpu_timer(__KERNEL_NAME__);
+        bool kernelOnDevice = tab_valeurs.checkDataOnDevice();
+        if (kernelOnDevice)
+          {
+            CDoubleTabView valeurs = valeurs_.view_ro();
+            DoubleTabView tab_valeurs_v = tab_valeurs.view_rw();
+            Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {size, nb_comp}),
+                                 KOKKOS_LAMBDA(const int i, const int j)
+            {
+              tab_valeurs_v(i, j) = valeurs(0, j);
+            });
+          }
+        else
+          {
+            for (int i = 0; i < size; i++)
+              for (int j = 0; j < nb_comp; j++)
+                tab_valeurs(i, j) = valeurs_(0, j);
+          }
+        end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
         return tab_valeurs;
       }
 
