@@ -402,14 +402,16 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         Cerr << finl;
         Cerr << "DEBUG: Statistics for Trav arrays (double): " << finl;
         TRUSTTravPool<double>::PrintStats();
+        Cerr << finl;
+        Cerr << "DEBUG: Statistics for Trav arrays (float): " << finl;
+        TRUSTTravPool<float>::PrintStats();
 #endif
       }
 
-    // Delete allocated block memory on the device:
-    // Normally it is done with TRUSTArray destructors but not for TRUSTTrav
-    TRUSTTravPool<double>::DeleteOnDevice();
-    TRUSTTravPool<float>::DeleteOnDevice();
-    TRUSTTravPool<int>::DeleteOnDevice();
+    // Clear TravPool (host AND device):
+    TRUSTTravPool<int>::ClearPool();
+    TRUSTTravPool<double>::ClearPool();
+    TRUSTTravPool<float>::ClearPool();
   }
 
   //  pour detruire les derniers octets

@@ -212,23 +212,32 @@ void TRUSTTravPool<_TYPE_>::ReleaseBlock(typename TRUSTTravPool<_TYPE_>::block_p
 }
 
 /*!
- * Delete block on device
+ * Empty the TRUSTTrav pool explicitely.
  */
 template<typename _TYPE_>
-void TRUSTTravPool<_TYPE_>::DeleteOnDevice()
+void TRUSTTravPool<_TYPE_>::ClearPool()
 {
+  using lst_t = typename PoolImpl_<_TYPE_>::list_t;
+
   auto& ze_pool = PoolImpl_<_TYPE_>::Free_blocks_;
-  for (auto& it : ze_pool)
+
+  // Delete GPU allocated memory:
+  for(const auto & kv: ze_pool)
     {
-      size_t size = it.first;
-      for (auto& mem : it.second)
+      size_t size = kv.first;
+      const lst_t& lst = kv.second;
+      for (auto& mem : lst)
         {
           _TYPE_* ptr = mem->data();
-          //if (clock_on) Cerr << "DoubleTrav " << ptrToString(ptr) << " of size " << size << finl;
-          deleteOnDevice(ptr, (int)size); // Delete the block memory on the device
-          DeviceMemory::getMemoryMap().erase(ptr); // Remove in the memory map
+          if(isAllocatedOnDevice(ptr))
+            {
+              deleteOnDevice(ptr, (int)size); // Delete the block memory on the device
+              DeviceMemory::getMemoryMap().erase(ptr); // Remove in the memory map
+            }
         }
     }
+  // Clear the whole pool (shared_ptr will do the cleaning job):
+  ze_pool.clear();
 }
 
 /*!
@@ -256,6 +265,7 @@ void TRUSTTravPool<_TYPE_>::PrintStats()
 //    }
 #endif
 }
+
 
 //
 // Explicit instanciations of templates
