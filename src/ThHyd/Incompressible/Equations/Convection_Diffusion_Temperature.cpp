@@ -392,11 +392,11 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
         {
           // Store dI/dt(n) = M-1 secmem :
           derivee_en_temps().valeurs()=secmem;
-          solveur_masse.appliquer(derivee_en_temps().valeurs());
+          solveur_masse->appliquer(derivee_en_temps().valeurs());
           schema_temps().modifier_second_membre((*this),secmem); // Change secmem for some schemes (eg: Adams_Bashforth)
         }
 
-      solveur_masse.appliquer(secmem);
+      solveur_masse->appliquer(secmem);
       Equation_base::Gradient_conjugue_diff_impl(secmem, derivee);
 
       //  penalisation de la temperature

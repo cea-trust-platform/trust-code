@@ -75,7 +75,7 @@ void calculer_inv_volume(DoubleTab& inv_volumes_som, const Domaine_Cl_EF& domain
   DoubleTab marqueur;
   marqueur=(volumes_som);
   marqueur=1;
-  domaine_Cl_EF.equation().solv_masse().appliquer(marqueur);
+  domaine_Cl_EF.equation().solv_masse()->appliquer(marqueur);
   int taille=volumes_som.size_totale();
   inv_volumes_som.resize(taille,Objet_U::dimension);
   // marqueur

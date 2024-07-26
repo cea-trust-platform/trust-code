@@ -18,12 +18,13 @@
 
 #include <Ecrire_fichier_xyz_valeur.h>
 #include <Parametre_equation.h>
+#include <Solveur_Masse_base.h>
+#include <Matrice_Morse_Diag.h>
 #include <MD_Vector_tools.h>
 #include <Interface_blocs.h>
 #include <Value_Input_Int.h>
 #include <TRUSTTab_parts.h>
 #include <Domaine_Cl_dis.h>
-#include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
 #include <Champs_Fonc.h>
 #include <TRUST_Ref.h>
@@ -32,7 +33,6 @@
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
-#include <Matrice_Morse_Diag.h>
 
 class Discretisation_base;
 class Schema_Temps_base;

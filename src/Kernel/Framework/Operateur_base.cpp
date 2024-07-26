@@ -602,12 +602,12 @@ void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matri
   mat_contribuer.ajouter_multvect(inco, resu); // Calcule le flux avec la matrice et l'ajoute a resu (resu=Op(Inc(n))-A*Inc(n))
   resu*=-1;
   contribuer_au_second_membre(resu); // Ajoute flux impose
-  mon_equation->solv_masse().appliquer(resu); // M-1*(Op(Inc(n))-A*Inc(n))
+  mon_equation->solv_masse()->appliquer(resu); // M-1*(Op(Inc(n))-A*Inc(n))
   // On multiplie par le volume car les coefficients sont divises par le volume et on ne veut pas
   // qu'un calcul sur des petites mailles semblent disfonctionner;
   DoubleTab un(inco);
   un=1;
-  mon_equation->solv_masse().appliquer(un);
+  mon_equation->solv_masse()->appliquer(un);
   resu/=mp_max_vect(un);
   double err=mp_max_abs_vect(resu);
   Cerr<<"Test contribuer_a_avec on " << que_suis_je() <<" error: "<<err<<finl;

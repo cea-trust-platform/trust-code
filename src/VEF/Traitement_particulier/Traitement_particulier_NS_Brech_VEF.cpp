@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -455,7 +455,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
   //gradient.calculer(la_pression,gradP);
   // Cerr << "gradP " << gradP << finl;
   //on veut BM-1Bt(psi*Pression)
-  mon_equation->solv_masse().appliquer(gradP);
+  mon_equation->solv_masse()->appliquer(gradP);
 
   //DoubleTrav grad_temp(la_vitesse.valeurs());
   //DoubleTrav grad_temp(vitesse);

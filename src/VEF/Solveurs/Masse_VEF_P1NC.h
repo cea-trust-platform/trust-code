@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,24 +16,15 @@
 #ifndef Masse_VEF_P1NC_included
 #define Masse_VEF_P1NC_included
 
-
-#include <Solveur_Masse.h>
-class Domaine_VEF;
+#include <Solveur_Masse_base.h>
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_VEF;
-#include <TRUST_Ref.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_VEF_P1NC
-//
-//////////////////////////////////////////////////////////////////////////////
+class Domaine_VEF;
 
 class Masse_VEF_P1NC : public Solveur_Masse_base
 {
-
   Declare_instanciable(Masse_VEF_P1NC);
-
 public:
 
   void associer_domaine_dis_base(const Domaine_dis_base& ) override;
@@ -47,9 +38,8 @@ public:
   DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
 
 private:
-
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
-#endif
+#endif /* Masse_VEF_P1NC_included */

@@ -82,7 +82,7 @@ void Schema_Adams_Bashforth_base::modifier_second_membre(const Equation_base& eq
           dudt += tmp; //past time
         }
       // secmem+=Mdu/dt
-      eqn.solv_masse().ajouter_masse(1.,secmem,dudt,0);
+      eqn.solv_masse()->ajouter_masse(1.,secmem,dudt,0);
     }
 }
 

@@ -553,7 +553,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
     {
       // Store dI/dt(n) = M-1 secmem :
       derivee_en_temps().valeurs()=secmem;
-      solveur_masse.appliquer(derivee_en_temps().valeurs());
+      solveur_masse->appliquer(derivee_en_temps().valeurs());
       schema_temps().modifier_second_membre((*this),secmem); // Change secmem for some schemes (eg: Adams_Bashforth)
     }
 
@@ -561,7 +561,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
 
   if (implicite_==0)
     {
-      solveur_masse.appliquer(secmem); // M-1 * secmem
+      solveur_masse->appliquer(secmem); // M-1 * secmem
       if (schema_temps().diffusion_implicite() && !calcul_explicite)
         {
           // Solve: (1/dt + M-1*A)*dI = M-1 * secmem
@@ -603,7 +603,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
                 {
                   Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
                   op.contribuer_a_avec(inconnue().valeurs(), matrice);
-                  solv_masse().ajouter_masse(dt, op.set_matrice().valeur());
+                  solv_masse()->ajouter_masse(dt, op.set_matrice().valeur());
 
                   if(
                     (op.get_solveur()->que_suis_je()=="Solv_Cholesky")
@@ -627,13 +627,13 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
           Matrice_Base& matrice=op.set_matrice().valeur();
           // DoubleTrav secmem(derivee);
           secmem=derivee;
-          solv_masse().ajouter_masse(dt, secmem, inconnue().valeurs());
+          solv_masse()->ajouter_masse(dt, secmem, inconnue().valeurs());
           op.contribuer_au_second_membre(secmem );
           op.set_solveur().resoudre_systeme(matrice,
                                             secmem,
                                             derivee
                                            );
-          solv_masse().corriger_solution(derivee,inconnue().valeurs());
+          solv_masse()->corriger_solution(derivee,inconnue().valeurs());
 
           derivee-=inconnue().valeurs();
           derivee/=dt;
@@ -715,7 +715,7 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
   int nb_op = nombre_d_operateurs();
   for(int i=0; i<nb_op; i++)
     operateur(i).associer_eqn(*this);
-  solveur_masse.associer_eqn(*this);
+
 }
 
 /*! @brief Discretise l'equation.
@@ -731,7 +731,12 @@ void Equation_base::discretiser()
   le_dom_Cl_dis->associer_eqn(*this);
   le_dom_Cl_dis->associer_inconnue(inconnue());
 
-  solveur_masse.typer();
+  /*
+   * XXX : Elie Saikali : pour typer correctement le solveur_masse ...
+   */
+  Nom typ = discretisation().get_name_of_type_for("Solveur_Masse", "??" /* rien */, *this);
+  solveur_masse.typer(typ);
+  solveur_masse->associer_eqn(*this);
   solveur_masse->associer_domaine_dis_base(domaine_dis().valeur());
   solveur_masse->associer_domaine_cl_dis_base(le_dom_Cl_dis.valeur());
 
@@ -925,7 +930,7 @@ int Equation_base::preparer_calcul()
 /*! @brief Allocation et initialisation de l'inconnue et des CLs jusqu'a present+dt.
  *
  *   + autres initialisations pour les calculs sur le prochain
- *     pas de temps : operateurs, solveur_masse.
+ *     pas de temps : operateurs, solveur_masse->
  *
  * @return (0 en cas d'erreur, 1 sinon)
  */
@@ -965,7 +970,7 @@ bool Equation_base::initTimeStep(double dt)
 
   // Mise a jour du solveur masse au temps present
   if (solveur_masse.non_nul())
-    solveur_masse.mettre_a_jour(temps_present);
+    solveur_masse->mettre_a_jour(temps_present);
 
   return true;
 }
@@ -1360,7 +1365,7 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
           // Si ce n'est pas la derniere iteration:
           if (i+1 < nstep)
             {
-              solveur_masse.appliquer(derivee);
+              solveur_masse->appliquer(derivee);
               solution_loc.ajoute(dt_loc, derivee, VECT_REAL_ITEMS);
               solution_loc.echange_espace_virtuel();
             }
@@ -1421,7 +1426,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       DoubleTrav copie(secmem);
       copie = secmem;
       secmem = 0;
-      solveur_masse.ajouter_masse(1, secmem, copie);
+      solveur_masse->ajouter_masse(1, secmem, copie);
       // Build matrix A:
       Matrice_Morse& matrice = ref_cast(Parametre_diffusion_implicite, parametre_equation().valeur()).matrice();
       if (matrice.ordre()==0) dimensionner_matrice(matrice);
@@ -1461,7 +1466,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             if (marq[i])
               sources()(i).ajouter(toto);
           statistiques().begin_count(diffusion_implicite_counter_);
-          solv_masse().appliquer(toto);
+          solv_masse()->appliquer(toto);
           secmem.ajoute(-1., toto); // ,VECT_REAL_ITEMS);
         }
       int n = secmem.size_totale();
@@ -1555,7 +1560,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             });
             end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
           }
-          solveur_masse.appliquer(tab_tempo);
+          solveur_masse->appliquer(tab_tempo);
           tab_tempo.echange_espace_virtuel();
           {
             // On inverse... // Crank - Nicholson
@@ -1586,10 +1591,10 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, phiB);
         }
       statistiques().begin_count(diffusion_implicite_counter_);
-      solveur_masse.appliquer(phiB);
+      solveur_masse->appliquer(phiB);
       // phiB *= aCKN;  // Crank - Nicholson
       // fait maintenant avant l'appel
-      //solveur_masse.appliquer(secmem);
+      //solveur_masse->appliquer(secmem);
 
       DoubleTrav sol;
       if (size_terme_mul)
@@ -1616,7 +1621,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(solution, resu);
         }
       statistiques().begin_count(diffusion_implicite_counter_);
-      solveur_masse.appliquer(resu);
+      solveur_masse->appliquer(resu);
       resu.echange_espace_virtuel();
       resu *= -1.;
       resu.ajoute(1. / dt, sol, VECT_REAL_ITEMS);
@@ -1672,7 +1677,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
                     ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, resu);
               }
             statistiques().begin_count(diffusion_implicite_counter_);
-            solveur_masse.appliquer(resu);
+            solveur_masse->appliquer(resu);
             //resu *= aCKN ;  // Crank - Nicholson
             resu.echange_espace_virtuel();
 

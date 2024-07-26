@@ -246,7 +246,7 @@ DoubleTab& Operateur::ajouter(const Champ_Inc& ch, DoubleTab& resu) const
       calculer(inco, derivee);
       derivee.echange_espace_virtuel();
       resu.ajoute(dt_inv, derivee) ;
-      solveur_masse.appliquer(derivee);
+      solveur_masse->appliquer(derivee);
       inco.ajoute_sans_ech_esp_virt(dt, derivee, VECT_ALL_ITEMS) ;
     }
   return resu;

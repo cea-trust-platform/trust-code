@@ -360,7 +360,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
     }
   else
     semi_impl["vitesse"] = eq_qdm.inconnue().passe();
-  eqn.solv_masse().corriger_solution(current, current, 0); //pour PolyMAC_P0 : vf -> ve
+  eqn.solv_masse()->corriger_solution(current, current, 0); //pour PolyMAC_P0 : vf -> ve
 
   //premier passage : dimensionnement de mat_semi_impl et de mdv_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl_.nb_lignes())
@@ -504,7 +504,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
           v_incr -= v_inco; //retour en increments
         }
 
-      eqn.solv_masse().corriger_solution(*incr["vitesse"], *incr["vitesse"], 1); //pour PolyMAC_P0 : sert a corriger ve
+      eqn.solv_masse()->corriger_solution(*incr["vitesse"], *incr["vitesse"], 1); //pour PolyMAC_P0 : sert a corriger ve
 
       if (!Process::me())
         tp << it + 1;

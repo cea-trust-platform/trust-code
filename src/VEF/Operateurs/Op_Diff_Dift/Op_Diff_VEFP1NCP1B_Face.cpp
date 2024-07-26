@@ -3405,7 +3405,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
       resu=0.;
       calculer_divergence_som(resu);
       corriger_Cl_test(resu);
-      solveur_masse.appliquer(resu);
+      solveur_masse->appliquer(resu);
       div<<"Face interne : "<<face*size1+comp<<endl;
       div<<"(";
       for (i=0; i<dimension; i++)
@@ -3442,7 +3442,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
       //Version matricielle
       resuMat=0.;
       matrice.ajouter_multTab_(inco,resuMat);
-      solveur_masse.appliquer(resuMat);
+      solveur_masse->appliquer(resuMat);
       resuMat.echange_espace_virtuel();
       resMat<<"Face interne :"<<face*size1+comp<<endl;
       resMat<<"(";
@@ -3627,7 +3627,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
               resu=0.;
               calculer_divergence_som(resu);
               corriger_Cl_test(resu);
-              solveur_masse.appliquer(resu);
+              solveur_masse->appliquer(resu);
               div<<"Face perio : "<<face*size1+comp<<endl;
               div<<"(";
               for (i=0; i<dimension; i++)
@@ -3664,7 +3664,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
               //Version matricielle
               resuMat=0.;
               matrice.ajouter_multTab_(inco,resuMat);
-              solveur_masse.appliquer(resuMat);
+              solveur_masse->appliquer(resuMat);
               resuMat.echange_espace_virtuel();
               resMat<<"Face perio :"<<face*size1+comp<<endl;
               resMat<<"(";
@@ -3775,7 +3775,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
             resu=0.;
             calculer_divergence_som(resu);
             corriger_Cl_test(resu);
-            solveur_masse.appliquer(resu);
+            solveur_masse->appliquer(resu);
             div<<"Face CL : "<<face*size1+comp<<endl;
             div<<"(";
             for (i=0; i<dimension; i++)
@@ -3819,7 +3819,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
             //Version matricielle
             resuMat=0.;
             matrice.ajouter_multTab_(inco,resuMat);
-            solveur_masse.appliquer(resuMat);
+            solveur_masse->appliquer(resuMat);
             resuMat.echange_espace_virtuel();
             resMat<<"Face CL :"<<face*size1+comp<<endl;
             resMat<<"(";

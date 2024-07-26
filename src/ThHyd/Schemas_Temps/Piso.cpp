@@ -274,7 +274,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       //calcul de Un+1
       //Calcul de Bt(delta_t*delta_P)
       gradient->multvect(correction_en_pression,gradP);
-      eqn.solv_masse().appliquer(gradP);
+      eqn.solv_masse()->appliquer(gradP);
       if ((i_source_PDF != -1) && (eqnNS.get_correction_vitesse_modifie()==1))
         {
           Cerr<<"(IBM) Immersed Interface: modified velocity correction."<<finl;
@@ -286,7 +286,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de Un+1 = U* -delta_t*delta_P
       current -= gradP;
-      eqn.solv_masse().corriger_solution(current, current); //pour PolyMAC_P0 : sert a corriger ve
+      eqn.solv_masse()->corriger_solution(current, current); //pour PolyMAC_P0 : sert a corriger ve
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 

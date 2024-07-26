@@ -131,8 +131,8 @@ void Schema_Backward_Differentiation_base::add_multi_timestep_data(const Equatio
       dudt   += tmp; //past times and present time if i==nb_valeurs_passees()
     }
 
-  eqn.solv_masse().ajouter_masse(effective_time_step,secmem,dudt,pen);
-  eqn.solv_masse().ajouter_masse(effective_time_step,mat_morse,pen);
+  eqn.solv_masse()->ajouter_masse(effective_time_step,secmem,dudt,pen);
+  eqn.solv_masse()->ajouter_masse(effective_time_step,mat_morse,pen);
 }
 
 

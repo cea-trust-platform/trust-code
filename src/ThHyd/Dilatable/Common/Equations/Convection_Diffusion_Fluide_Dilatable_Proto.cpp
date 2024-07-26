@@ -170,7 +170,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
       const DoubleTab& Tfutur=eqn.inconnue().futur();
       DoubleTrav secmem(derivee);
       secmem=derivee;
-      eqn.solv_masse().appliquer(secmem);
+      eqn.solv_masse()->appliquer(secmem);
       derivee = Tfutur;
 
       is_thermal() ? eqn.solv_masse()->set_name_of_coefficient_temporel("rho_cp_comme_T") :
@@ -183,7 +183,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   // 100% explicite
   if (!sch.diffusion_implicite() && is_expl)
     {
-      eqn.solv_masse().appliquer(derivee);
+      eqn.solv_masse()->appliquer(derivee);
       derivee.echange_espace_virtuel();
     }
 
@@ -296,7 +296,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
           double rapport=1./(tab_rho(som)*Cp);
           diff(som)=resu(som)-conv(som)*inv_rho-diff(som)*rapport;
         }
-      eqn.solv_masse().appliquer(diff);
+      eqn.solv_masse()->appliquer(diff);
       double err=mp_max_abs_vect(diff);
       Cerr << eqn.que_suis_je() <<" : Erreur assemblage = " << err << finl;;
 

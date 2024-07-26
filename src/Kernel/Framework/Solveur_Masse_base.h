@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
+#include <TRUST_Deriv.h>
 #include <MorEqn.h>
 
 class Domaine_dis;
@@ -104,4 +105,6 @@ private:
   mutable double penalisation_;
 };
 
-#endif
+using Solveur_Masse = OWN_PTR(Solveur_Masse_base);
+
+#endif /* Solveur_Masse_base_included */

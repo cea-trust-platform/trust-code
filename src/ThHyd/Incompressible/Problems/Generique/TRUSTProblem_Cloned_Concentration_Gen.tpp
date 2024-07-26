@@ -111,7 +111,6 @@ void TRUSTProblem_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MED
           op_conv->associer_vitesse(ch_vitesse_transportante);
 
           // Pareil ici !!!
-          eqn.solv_masse().associer_eqn(eqn);
           eqn.solv_masse()->associer_eqn(eqn);
         }
     }

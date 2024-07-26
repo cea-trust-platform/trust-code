@@ -773,7 +773,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
       assembleur_pression_.modifier_solution(tab_pression);
 
       // M-1 Bt P(n+1)
-      solveur_masse.appliquer(gradP);
+      solveur_masse->appliquer(gradP);
       derivee += gradP; // M-1 F
     }
   else
@@ -796,7 +796,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
   // M-1Bt P(n+1) is calculated:
   DoubleTrav Mmoins1gradP(gradP);
   Mmoins1gradP = gradP;
-  solveur_masse.appliquer(Mmoins1gradP);
+  solveur_masse->appliquer(Mmoins1gradP);
 
   // dU/dt = M-1(F-Bt P(n+1))
   derivee -= Mmoins1gradP;
@@ -873,7 +873,7 @@ void Navier_Stokes_std::projeter()
 
       gradP.echange_espace_virtuel();
 
-      solveur_masse.appliquer(gradP);
+      solveur_masse->appliquer(gradP);
       gradP.echange_espace_virtuel();
 
       if (tab_vitesse.dimension_tot(0) == gradP.dimension_tot(0))
@@ -884,7 +884,7 @@ void Navier_Stokes_std::projeter()
           partv[0].ajoute(-dt,gradP);
         }
       tab_vitesse.echange_espace_virtuel();
-      solveur_masse.corriger_solution(tab_vitesse, tab_vitesse);
+      solveur_masse->corriger_solution(tab_vitesse, tab_vitesse);
 
       Debog::verifier("Navier_Stokes_std::projeter, vitesse", tab_vitesse);
 
@@ -998,7 +998,7 @@ int Navier_Stokes_std::preparer_calcul()
             le_schema_en_temps->set_dt()=0;
         }
 
-      solveur_masse.appliquer(vpoint);
+      solveur_masse->appliquer(vpoint);
       vpoint.echange_espace_virtuel();
       divergence.calculer(vpoint, secmem);
       secmem*=-1;
@@ -1069,7 +1069,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
       gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
       if (!postraiter_gradient_pression_sans_masse_)
         {
-          solveur_masse.appliquer(gradient_P.valeurs());
+          solveur_masse->appliquer(gradient_P.valeurs());
         }
       gradient_P.mettre_a_jour(temps);
     }
@@ -1646,7 +1646,7 @@ static void construire_matrice_implicite(Operateur_base& op,
       Matrice_Morse& matrice = ref_cast(Matrice_Morse, mat.valeur());
       op.dimensionner(matrice);
       op.contribuer_a_avec(valeurs_inconnue, matrice);
-      solv_masse.ajouter_masse(dt, matrice);
+      solv_masse->ajouter_masse(dt, matrice);
       matrice *= dt;
 
       // Si le solveur est cholesky ou gcp, on attend une matrice de type
@@ -1729,8 +1729,8 @@ DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
                   // Mise a jour simplifiee de la matrice
                   Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
                   matrice/=dt_old;
-                  solv_masse().ajouter_masse(-dt_old, op.set_matrice().valeur());
-                  solv_masse().ajouter_masse(dt, op.set_matrice().valeur());
+                  solv_masse()->ajouter_masse(-dt_old, op.set_matrice().valeur());
+                  solv_masse()->ajouter_masse(dt, op.set_matrice().valeur());
                   matrice*=dt;
                   ref_cast_non_const(SolveurSys_base,op.get_solveur().valeur()).reinit();
                 }
@@ -1789,7 +1789,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, So
   gradient->multvect(P, grad0);
   solveur.nommer("uzawa_solver");
   solveur.resoudre_systeme(A, secmem, U);
-  solv_masse().corriger_solution(U,Cu); // pour les C.L. de Dirichlet!
+  solv_masse()->corriger_solution(U,Cu); // pour les C.L. de Dirichlet!
 
   // residu=BCu
   divergence->multvect(U, resu);
@@ -1818,7 +1818,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, So
       grad-=grad0;
       grad*=-1;
       solveur.resoudre_systeme(A, grad, Cu);
-      solv_masse().corriger_solution(Cu,U); // pour les C.L. de Dirichlet!
+      solv_masse()->corriger_solution(Cu,U); // pour les C.L. de Dirichlet!
       divergence->multvect(Cu, resu);
       resu*=-1;
 

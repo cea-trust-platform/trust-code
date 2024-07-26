@@ -212,10 +212,10 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
 
   // ajout de l'inertie
   const double dt=eqn.schema_temps().pas_de_temps();
-  eqn.solv_masse().ajouter_masse(dt,mat_morse,0);
+  eqn.solv_masse()->ajouter_masse(dt,mat_morse,0);
 
   rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
-  eqn.solv_masse().ajouter_masse(dt,secmem,rhovitesse,0);
+  eqn.solv_masse()->ajouter_masse(dt,secmem,rhovitesse,0);
 
   // blocage_cl faux si dirichlet u!=0 !!!!!! manque multiplication par rho
   for (int op=0; op< eqn.nombre_d_operateurs(); op++) eqn.operateur(op).l_op_base().modifier_pour_Cl(mat_morse,secmem);
@@ -303,9 +303,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
 
   // ajout de l'inertie
   const double dt=eqn.schema_temps().pas_de_temps();
-  eqn.solv_masse().ajouter_masse(dt,*mat,0);
+  eqn.solv_masse()->ajouter_masse(dt,*mat,0);
   rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
-  eqn.solv_masse().ajouter_masse(dt,secmem,rhovitesse,0);
+  eqn.solv_masse()->ajouter_masse(dt,secmem,rhovitesse,0);
 
   // blocage_cl faux si dirichlet u!=0 !!!!!! manque multiplication par rho
   for (int op=0; op< eqn.nombre_d_operateurs(); op++) eqn.operateur(op).l_op_base().modifier_pour_Cl(*mat,secmem);
@@ -401,7 +401,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
        */
 
       eqn.solv_masse()->set_name_of_coefficient_temporel("rho_comme_v");
-      eqn.solv_masse().appliquer(secmemV);
+      eqn.solv_masse()->appliquer(secmemV);
       DoubleTrav dr(tab_rho_face_n);
 
       CDoubleTabView tab_rho_face_n_v = tab_rho_face_n.view_ro();
@@ -436,7 +436,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       vpoint /= dt;
       eqn.solv_masse()->set_name_of_coefficient_temporel("no_coeff");
     }
-  else eqn.solv_masse().appliquer(vpoint);
+  else eqn.solv_masse()->appliquer(vpoint);
 
   update_vpoint_on_boundaries(eqn,fluide_dil,vpoint);
 
@@ -572,7 +572,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::correct_and_compute_u_np1(Navier_Stok
   eqn.assembleur_pression().modifier_solution(press);
 
   // Correction de la vitesse en pression : M-1 Bt P
-  eqn.solv_masse().appliquer(gradP);
+  eqn.solv_masse()->appliquer(gradP);
   vpoint += gradP; // M-1 F
 
   press.echange_espace_virtuel();
@@ -580,7 +580,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::correct_and_compute_u_np1(Navier_Stok
 
   // On conserve Bt P pour la prochaine fois.
   Mmoins1grad = gradP;
-  eqn.solv_masse().appliquer(Mmoins1grad);
+  eqn.solv_masse()->appliquer(Mmoins1grad);
 
   // Correction en pression
   vpoint -= Mmoins1grad;
