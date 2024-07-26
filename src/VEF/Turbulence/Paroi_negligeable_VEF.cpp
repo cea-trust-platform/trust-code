@@ -235,7 +235,10 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
           l_unif = true;
         }
       else
-        l_unif = false;
+        {
+          visco = -1;
+          l_unif = false;
+        }
       if ((!l_unif) && (tab_visco.local_min_vect() < DMINFLOAT))
         {
           Cerr << " visco <=0 ?" << finl;
