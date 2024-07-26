@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Ecrire_Champ_MED.h>
+#include <Format_Post_base.h>
 #include <Champ_Don_base.h>
 #include <Probleme_base.h>
-#include <Format_Post.h>
 
 Implemente_instanciable(Ecrire_Champ_MED,"Ecrire_Champ_MED",Interprete);
 // XD ecrire_champ_med interprete ecrire_champ_med -1 Keyword to write a field to MED format into a file.
@@ -24,31 +24,15 @@ Implemente_instanciable(Ecrire_Champ_MED,"Ecrire_Champ_MED",Interprete);
 // XD attr nom_chp ref_field_base nom_chp 0 field name
 // XD attr file chaine file 0 file name
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- *     Imprime l'interprete sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Ecrire_Champ_MED::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- *     Ecrit l'interprete sur un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Ecrire_Champ_MED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
-
 
 /*! @brief Fonction principale de l'interprete Ecrire_Champ_MED: erreur si cela echoue.
  *
@@ -79,7 +63,7 @@ Entree& Ecrire_Champ_MED::interpreter(Entree& is)
   Objet_U& obj_dom=objet(nom_domaine);
   const Domaine& dom = ref_cast(Domaine,obj_dom);
   Format_Post post_typer;
-  post_typer.typer_direct("format_post_med");
+  post_typer.typer("format_post_med");
   Format_Post_base& post=ref_cast(Format_Post_base,post_typer.valeur());
   Nom nom_fic2(nom_fic);
   nom_fic2.prefix(".med");

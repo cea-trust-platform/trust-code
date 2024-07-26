@@ -22,7 +22,6 @@
 #include <communications.h>
 #include <vector>
 #include <set>
-#include <Format_Post.h>
 
 Implemente_instanciable(Decouper,"Decouper|Partition",Interprete);
 
@@ -195,7 +194,7 @@ static void postraiter_decoupage(const Nom& nom_fichier,
     {
       Cerr << "Postprocessing of the splitting at the MED format: " << nom_fichier << finl;
       Format_Post post;
-      post.typer_direct("Format_Post_Med");
+      post.typer("Format_Post_Med");
       Nom filename(nom_fichier.getPrefix(".med"));
       post->initialize(filename, 1, "SIMPLE");
       post->ecrire_entete(0.0, 0, IS_FIRST);

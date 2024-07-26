@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 #include <Corriger_frontiere_periodique.h>
-#include <Octree_Double.h>
-#include <Param.h>
-#include <Format_Post.h>
-#include <ArrOfBit.h>
 #include <Reordonner_faces_periodiques.h>
+#include <Format_Post_base.h>
+#include <Octree_Double.h>
 #include <Domaine_bord.h>
+#include <ArrOfBit.h>
+#include <Param.h>
 
 Implemente_instanciable(Corriger_frontiere_periodique,"Corriger_frontiere_periodique",Interprete_geometrique_base);
 
@@ -221,7 +221,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
     {
       //Domaine dom2;
       Cerr << "Writing node displacement into file: " << nom_fichier_post << finl;
-      DERIV(Format_Post_base) fichier_post;
+      Format_Post fichier_post;
       fichier_post.typer("FORMAT_POST_LATA");
       fichier_post->initialize(nom_fichier_post, 1 /* binaire */, "SIMPLE");
       Format_Post_base& post = fichier_post.valeur();

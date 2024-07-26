@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
+#include <Format_Post_base.h>
 #include <Lata_2_Other.h>
-#include <Format_Post.h>
 #include <EFichierBin.h>
 #include <LataFilter.h>
 #include <LmlReader.h>
@@ -213,7 +213,7 @@ Entree& Lata_2_Other::interpreter(Entree& is)
       Nom type("Format_Post_");
       type += format_post_;
       Format_Post post_typer;
-      post_typer.typer_direct(type);
+      post_typer.typer(type.getChar());
       Format_Post_base& post = ref_cast(Format_Post_base, post_typer.valeur());
       Nom nom_2(nom_pdb);
       Nom format_post_bis(format_post_);

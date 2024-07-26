@@ -17,6 +17,7 @@
 #define Format_Post_base_included
 
 #include <TRUSTTabs_forward.h>
+#include <TRUST_Deriv.h>
 #include <Champ_base.h>
 #include <TRUST_Ref.h>
 #include <Domaine.h>
@@ -142,4 +143,6 @@ public:
 
 };
 
-#endif
+using Format_Post = OWN_PTR(Format_Post_base);
+
+#endif /* Format_Post_base_included */

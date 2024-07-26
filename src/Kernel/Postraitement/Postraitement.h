@@ -21,8 +21,8 @@
 #include <Liste_Champ_Generique.h>
 #include <Postraitement_base.h>
 #include <Schema_Temps_base.h>
+#include <Format_Post_base.h>
 #include <Probleme_base.h>
-#include <Format_Post.h>
 #include <Champs_Fonc.h>
 #include <Sondes_Int.h>
 #include <TRUST_List.h>

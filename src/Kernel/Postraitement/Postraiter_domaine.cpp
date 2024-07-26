@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Postraiter_domaine.h>
+#include <Format_Post_base.h>
 #include <communications.h>
 #include <Sous_Domaine.h>
-#include <Format_Post.h>
 #include <Param.h>
 
 Implemente_instanciable(Postraiter_domaine, "Postraiter_domaine", Interprete_geometrique_base);
@@ -260,7 +260,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
   Nom type("Format_Post_");
   type += format_post_;
   Format_Post post_typer;
-  post_typer.typer_direct(type);
+  post_typer.typer(type.getChar());
   Format_Post_base& post = ref_cast(Format_Post_base, post_typer.valeur());
 
   post.set_postraiter_domain(); // XXX utile pour CGNS ... sinon ca fait rien
