@@ -44,7 +44,7 @@ public:
   static block_ptr_t ResizeBlock(block_ptr_t p, int new_sz) { return nullptr; }
   static void ReleaseBlock(block_ptr_t) { }
 #endif
-
+  static void DeleteOnDevice();
   static void PrintStats();
 };
 

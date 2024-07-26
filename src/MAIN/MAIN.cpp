@@ -31,7 +31,7 @@ static const char directory_separator = '\\';
 #else
 static const char directory_separator = '/';
 #endif
-
+#include <DeviceMemory.h>
 #include <TRUSTTravPool.h>
 
 extern void desalloue_pwd();
@@ -404,6 +404,12 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         TRUSTTravPool<double>::PrintStats();
 #endif
       }
+
+    // Delete allocated block memory on the device:
+    // Normally it is done with TRUSTArray destructors but not for TRUSTTrav
+    TRUSTTravPool<double>::DeleteOnDevice();
+    TRUSTTravPool<float>::DeleteOnDevice();
+    TRUSTTravPool<int>::DeleteOnDevice();
   }
 
   //  pour detruire les derniers octets

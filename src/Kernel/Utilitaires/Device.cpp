@@ -304,7 +304,7 @@ void deleteOnDevice(_TYPE_* ptr, int size)
         clock = "[clock]  ";
       int bytes = sizeof(_TYPE_) * size;
       if (clock_on)
-        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " memory blocks with a total of " << DeviceMemory::allocatedBytesOnDevice() << " bytes." << endl << flush;
+        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
       if (PE_Groups::get_nb_groups()>0) DeviceMemory::getMemoryMap().erase(ptr);
     }

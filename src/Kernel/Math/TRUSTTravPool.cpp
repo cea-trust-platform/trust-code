@@ -21,6 +21,8 @@
 #include <cassert>
 #include <Process.h>
 #include <EntreeSortie.h>
+#include <Device.h>
+#include <DeviceMemory.h>
 
 /*! The shared pools of memory - visibility: here only.
  *
@@ -206,6 +208,26 @@ void TRUSTTravPool<_TYPE_>::ReleaseBlock(typename TRUSTTravPool<_TYPE_>::block_p
 //          Process::exit();
 //        }
 #endif
+    }
+}
+
+/*!
+ * Delete block on device
+ */
+template<typename _TYPE_>
+void TRUSTTravPool<_TYPE_>::DeleteOnDevice()
+{
+  auto& ze_pool = PoolImpl_<_TYPE_>::Free_blocks_;
+  for (auto& it : ze_pool)
+    {
+      size_t size = it.first;
+      for (auto& mem : it.second)
+        {
+          _TYPE_* ptr = mem->data();
+          //if (clock_on) Cerr << "DoubleTrav " << ptrToString(ptr) << " of size " << size << finl;
+          deleteOnDevice(ptr, (int)size); // Delete the block memory on the device
+          DeviceMemory::getMemoryMap().erase(ptr); // Remove in the memory map
+        }
     }
 }
 
