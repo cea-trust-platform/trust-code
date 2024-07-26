@@ -751,12 +751,19 @@ then
    (cd ${project_directory}/build/tests/; symlinks -cr . 1>/dev/null 2>&1)
 fi
 
-
+# Split into two parts to avoir issue with $project_directory on clusters (module issue?)
 echo "Creation $env_file"
+if [ `uname -s` = "Linux" ]
+then
+   echo "#!/bin/bash
+. $TRUST_ROOT/env_TRUST.sh
+export project_directory=\$(cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd)" > $env_file
+else
+   echo " . $TRUST_ROOT/env_TRUST.sh
+export project_directory=\$(cd \"\$( dirname \"\${BASH_SOURCE[0]:-\${(%):-%x}}\" )\" && pwd)" > $env_file
+fi
 
-echo " . $TRUST_ROOT/env_TRUST.sh
-export project_directory=\$(cd \"\$( dirname \"\${BASH_SOURCE[0]:-\${(%):-%x}}\" )\" && pwd)
-# Initial install performed here:
+echo "# Initial install performed here:
 #export project_directory=${project_directory}
 export ${project_name}_project_directory=\${project_directory}
 export PATH=\${project_directory}/build/xdata:\$PATH
@@ -767,7 +774,7 @@ export exec=\${project_directory}/${project_executable_name}_opt
 export exec_semi_opt=\${project_directory}/${project_executable_name}_semi_opt
 export exec_pg=\${project_directory}/${project_executable_name}_opt_pg
 export exec_gcov=\${project_directory}/${project_executable_name}_opt_gcov
-export exec_debug=\${project_directory}/${project_executable_name}" > $env_file
+export exec_debug=\${project_directory}/${project_executable_name}" >> $env_file
 
 # Add dependencies project directory
 idx=0
