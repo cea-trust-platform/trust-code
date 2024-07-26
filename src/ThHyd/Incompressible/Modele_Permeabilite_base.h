@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,31 +16,22 @@
 #ifndef Modele_Permeabilite_base_included
 #define Modele_Permeabilite_base_included
 
-#include <Objet_U.h>
-
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Modele_Permeabilite_base Cette classe de base represente un modele de permeabilite
  *
- *     pour les equations des milieux poreux (termes sources de Darcy,
- *     Forchheinmer).
+ *     pour les equations des milieux poreux (termes sources de Darcy,vForchheinmer).
  *
  */
 class Modele_Permeabilite_base : public Objet_U
 {
-
   Declare_base(Modele_Permeabilite_base);
-
 public:
-
   /**
    * Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
    * @param porosite la porosite
    */
   virtual double getK(double porosite) const = 0;
-
 };
 
-
-#endif
-
-
+#endif /* Modele_Permeabilite_base_included */

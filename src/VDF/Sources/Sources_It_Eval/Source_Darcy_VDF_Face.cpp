@@ -45,8 +45,8 @@ int Source_Darcy_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& i
     {
       Motcle motlu;
       is >> motlu;
-      eval().modK.typer(motlu);
-      is >> eval().modK.valeur();
+      eval().modK_.typer(motlu);
+      is >> eval().modK_.valeur();
       return 1;
     }
   else if (mot=="porosite")

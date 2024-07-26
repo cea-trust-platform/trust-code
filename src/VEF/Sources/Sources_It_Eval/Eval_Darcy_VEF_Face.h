@@ -17,7 +17,7 @@
 #define Eval_Darcy_VEF_Face_included
 
 #include <Evaluateur_Source_VEF_Face.h>
-#include <Modele_Permeabilite.h>
+#include <Modele_Permeabilite_base.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_VEF.h>
 #include <Champ_Don.h>
@@ -29,8 +29,8 @@ class Champ_Inc;
 class Eval_Darcy_VEF_Face: public Evaluateur_Source_VEF_Face
 {
 public:
-  Eval_Darcy_VEF_Face() : porosite(1.) { }
-  Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval) : Evaluateur_Source_VEF_Face(eval), porosite(1.) { }
+  Eval_Darcy_VEF_Face() : porosite_(1.) { }
+  Eval_Darcy_VEF_Face(const Eval_Darcy_VEF_Face& eval) : Evaluateur_Source_VEF_Face(eval), porosite_(1.) { }
 
   inline void mettre_a_jour( ) override;
 
@@ -41,24 +41,25 @@ public:
   inline void calculer_terme_source_non_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face, source, volumes_entrelaces_Cl); }
 
   inline void associer(const Champ_Don&);
-  inline void associer(const Champ_Inc& v) { vitesse = v; }
-  Modele_Permeabilite modK;
-  inline double& getPorosite() { return porosite; }
+  inline void associer(const Champ_Inc& v) { vitesse_ = v; }
+  inline double& getPorosite() { return porosite_; }
+
+  OWN_PTR(Modele_Permeabilite_base) modK_;
 
 private:
   template <typename Type_Double>
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
-  REF(Champ_Inc) vitesse;
+  REF(Champ_Inc) vitesse_;
   REF(Champ_Don_base) diffusivite_;
-  DoubleTab db_diffusivite;
-  double porosite;
+  DoubleTab db_diffusivite_;
+  double porosite_;
 };
 
 void Eval_Darcy_VEF_Face::associer(const Champ_Don& diffu)
 {
   int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
-  db_diffusivite.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  db_diffusivite_.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
   diffusivite_ = diffu.valeur();
   mettre_a_jour();
 }
@@ -67,13 +68,13 @@ inline void Eval_Darcy_VEF_Face::mettre_a_jour()
 {
   int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   if (sub_type(Champ_Uniforme, diffusivite_.valeur()))
-    db_diffusivite = diffusivite_.valeur()(0, 0);
+    db_diffusivite_ = diffusivite_.valeur()(0, 0);
   else
     {
       const DoubleTab& val_diff = diffusivite_->valeurs();
       const IntTab& face_vois = le_dom->face_voisins();
       const DoubleVect& volumes = ref_cast(Domaine_VEF,le_dom.valeur()).volumes();
-      db_diffusivite = 0.;
+      db_diffusivite_ = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))
       // Viscosity at face is the volume weighted average of viscosity on elements
       for (int fac = 0; fac < nb_faces_tot; fac++)
@@ -83,15 +84,15 @@ inline void Eval_Darcy_VEF_Face::mettre_a_jour()
           double vol = 0;
           if (elem1 != -1)
             {
-              db_diffusivite(fac) += val_diff(elem1) * volumes(elem1);
+              db_diffusivite_(fac) += val_diff(elem1) * volumes(elem1);
               vol += volumes(elem1);
             }
           if (elem2 != -1)
             {
-              db_diffusivite(fac) += val_diff(elem2) * volumes(elem2);
+              db_diffusivite_(fac) += val_diff(elem2) * volumes(elem2);
               vol += volumes(elem2);
             }
-          db_diffusivite(fac) /= vol;
+          db_diffusivite_(fac) /= vol;
         }
     }
 }
@@ -102,7 +103,7 @@ inline void Eval_Darcy_VEF_Face::calculer_terme_source(int num_face, Type_Double
 {
   int size = source.size_array();
   for (int i = 0; i < size; i++)
-    source[i] = -db_diffusivite(num_face) / modK->getK(porosite) * volumes[num_face] * porosite_surf[num_face] * (vitesse->valeurs()(num_face, i));
+    source[i] = -db_diffusivite_(num_face) / modK_->getK(porosite_) * volumes[num_face] * porosite_surf[num_face] * (vitesse_->valeurs()(num_face, i));
 }
 
 #endif /* Eval_Darcy_VEF_Face_included */

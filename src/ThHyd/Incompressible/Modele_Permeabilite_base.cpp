@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,33 +14,8 @@
 *****************************************************************************/
 
 #include <Modele_Permeabilite_base.h>
-#include <Motcle.h>
 
-Implemente_base(Modele_Permeabilite_base,"Modele_Permeabilite_base",Objet_U);
+Implemente_base(Modele_Permeabilite_base, "Modele_Permeabilite_base", Objet_U);
 
-/*! @brief Imprime le type du modele sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Modele_Permeabilite_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << finl;
-}
-
-
-/*! @brief Lit les specifications d'un modele Permeabilite a partir d'un flot d'entree.
- *
- *     Controle dynamique du type du terme source.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Modele_Permeabilite_base::readOn(Entree& is )
-{
-
-  return is;
-}
-
-
-
+Sortie& Modele_Permeabilite_base::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Entree& Modele_Permeabilite_base::readOn(Entree& is) { return is; }

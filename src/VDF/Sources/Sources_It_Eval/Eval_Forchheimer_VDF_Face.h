@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Eval_Forchheimer_VDF_Face_included
 #define Eval_Forchheimer_VDF_Face_included
 
+#include <Modele_Permeabilite_base.h>
 #include <Evaluateur_Source_Face.h>
-#include <Modele_Permeabilite.h>
 #include <TRUST_Ref.h>
 
 class Champ_Inc;
@@ -25,20 +25,20 @@ class Champ_Inc;
 class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_Face
 {
 public:
-  Eval_Forchheimer_VDF_Face() : Cf(1.), porosite(1) { }
-  Eval_Forchheimer_VDF_Face(const Eval_Forchheimer_VDF_Face& eval) : Evaluateur_Source_Face(eval), Cf(1.), porosite(1) { }
+  Eval_Forchheimer_VDF_Face() : Cf_(1.), porosite_(1.) { }
+  Eval_Forchheimer_VDF_Face(const Eval_Forchheimer_VDF_Face& eval) : Evaluateur_Source_Face(eval), Cf_(1.), porosite_(1.) { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour() override { /* Do nothing */}
-  inline void setCf(double c) { Cf = c; }
-  inline void associer(const Champ_Inc& vit) { vitesse = vit;}
-  inline void setPorosite(double p) { porosite = p; }
+  inline void setCf(double c) { Cf_ = c; }
+  inline void associer(const Champ_Inc& vit) { vitesse_ = vit;}
+  inline void setPorosite(double p) { porosite_ = p; }
 
-  Modele_Permeabilite modK;
+  OWN_PTR(Modele_Permeabilite_base) modK_;
 
 protected:
-  REF(Champ_Inc) vitesse;
-  double Cf, porosite;
+  REF(Champ_Inc) vitesse_;
+  double Cf_, porosite_;
 };
 
 template <typename Type_Double>
@@ -47,8 +47,8 @@ void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, Type_D
   const int size = source.size_array();
   for (int i = 0; i < size; i++)
     {
-      const double U = (vitesse->valeurs())(num_face,i);
-      source[i] = -Cf/sqrt(modK->getK(porosite))*volumes_entrelaces(num_face)*porosite_surf(num_face)*std::fabs(U)*U;
+      const double U = (vitesse_->valeurs())(num_face,i);
+      source[i] = -Cf_/sqrt(modK_->getK(porosite_))*volumes_entrelaces(num_face)*porosite_surf(num_face)*std::fabs(U)*U;
     }
 }
 
