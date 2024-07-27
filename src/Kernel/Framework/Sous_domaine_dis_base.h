@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #ifndef Sous_domaine_dis_base_included
 #define Sous_domaine_dis_base_included
 
-#include <TRUST_Ref.h>
-#include <Objet_U.h>
 #include <Domaine_forward.h>
+#include <TRUST_Vector.h>
+#include <TRUST_Deriv.h>
+#include <TRUST_Ref.h>
 
 class Domaine_dis_base;
 
@@ -57,4 +58,7 @@ protected:
   REF(Domaine_dis_base) le_dom_dis;
 };
 
-#endif
+using Sous_domaine_dis = OWN_PTR(Sous_domaine_dis_base);
+using Sous_domaines_dis = TRUST_Vector<Sous_domaine_dis>;
+
+#endif /* Sous_domaine_dis_base_included */

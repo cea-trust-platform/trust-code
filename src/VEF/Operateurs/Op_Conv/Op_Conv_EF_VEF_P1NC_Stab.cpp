@@ -17,7 +17,7 @@
 #include <Champ_P1NC.h>
 #include <BilanQdmVEF.h>
 #include <Sous_Domaine.h>
-#include <Sous_domaine_dis.h>
+#include <Sous_domaine_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Debog.h>
 #include <Porosites_champ.h>

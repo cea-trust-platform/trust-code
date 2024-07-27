@@ -22,7 +22,7 @@
 #include <Champ_Uniforme.h>
 #include <Sous_Domaine.h>
 #include <Sous_domaine_VF.h>
-#include <Sous_domaine_dis.h>
+#include <Sous_domaine_dis_base.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
 #include <Champ_Don_Fonc_xyz.h>

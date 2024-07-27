@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,6 @@
 #include <Domaine.h>
 
 class Domaine_Cl_dis_base;
-class Sous_domaine_dis;
 
 /*! @brief classe Domaine_dis Classe generique de la hierarchie des domaines discretisees.
  *

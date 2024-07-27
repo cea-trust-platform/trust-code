@@ -13,14 +13,12 @@
 *
 *****************************************************************************/
 
-#include <Domaine_dis_base.h>
-#include <Frontiere_dis_base.h>
-#include <Domaine.h>
-#include <Sous_Domaine.h>
-#include <Sous_domaine_dis.h>
-#include <Sous_domaines_dis.h>
-#include <Probleme_base.h>
 #include <Discretisation_base.h>
+#include <Frontiere_dis_base.h>
+#include <Domaine_dis_base.h>
+#include <Probleme_base.h>
+#include <Sous_Domaine.h>
+#include <Domaine.h>
 
 Implemente_base(Domaine_dis_base,"Domaine_dis_base",Objet_U);
 

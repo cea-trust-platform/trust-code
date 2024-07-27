@@ -16,12 +16,11 @@
 #ifndef Domaine_dis_base_included
 #define Domaine_dis_base_included
 
-#include <Sous_domaines_dis.h>
-#include <TRUST_Ref.h>
-#include <Domaine.h>
-#include <Champ_Fonc.h>
 #include <Champs_compris_interface.h>
+#include <Sous_domaine_dis_base.h>
 #include <Champs_compris.h>
+#include <Champ_Fonc.h>
+#include <Domaine.h>
 
 class Domaine_Cl_dis_base;
 class Frontiere_dis_base;
