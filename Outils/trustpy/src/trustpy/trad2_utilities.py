@@ -14,14 +14,14 @@ Class TRAD2Content is the central piece.
 Authors: A Bruneton, C Van Wambeke
 """
 import os
-import trustpy.trust_utilities as TRUU
+import trustpy.misc_utilities as mutil
 
 _XD_TAG = " XD "
 _XD_PARAM_TAG = " XD_ADD_P "
 
 def genErr(fname, lineno, msg):
   """ Small handy function for error message generation """
-  return TRUU.RED + f"\n\nFile '{fname}',\n   -> line #{lineno+1}, {msg}" + TRUU.END
+  return mutil.RED + f"\n\nFile '{fname}',\n   -> line #{lineno+1}, {msg}" + mutil.END
 
 def convertTyp(typ):
   """ Types declared in XD tags of cpp files might differ from what is officially supported in TRAD_2, so convert:
@@ -173,14 +173,14 @@ class TRAD2Content:
       lines = f.readlines()
     if not trad2_nfo is None:
       if not os.path.exists(trad2_nfo):
-        TRUU.log_warning(f"Invalid INFO file '{trad2_nfo}' \n  -> File does not exist.")
+        mutil.log_warning(f"Invalid INFO file '{trad2_nfo}' \n  -> File does not exist.")
         trad2_nfo = None
       else:
         with open(trad2_nfo) as f:
           lines_nfo = f.readlines()
           if len(lines_nfo) != len(lines):
             raise Exception(f"Invalid INFO file {trad2_nfo} \n  -> not the same number of line as the TRAD2!")
-          TRUU.log_info(f"Loaded debug file for TRAD2 -> {trad2_nfo}")
+          mutil.log_info(f"Loaded debug file for TRAD2 -> {trad2_nfo}")
     curr_obj = None
     for lin_n, l in enumerate(lines):
       if l.strip() == "": continue
@@ -229,10 +229,10 @@ class TRAD2Content:
       tot_nfo.append(nfo)
     with open(f_nam_out, "w") as f:
       f.write(''.join(tot_s))
-    TRUU.log_info(f"==> Written file '{f_nam_out}'")
+    mutil.log_info(f"==> Written file '{f_nam_out}'")
     with open(f_nam_out + ".nfo", "w") as f:
       f.write(''.join(tot_nfo))
-    TRUU.log_info(f"==> Written file '{f_nam_out}.nfo'")
+    mutil.log_info(f"==> Written file '{f_nam_out}.nfo'")
 
   def toJSon(self):
     """ This is the future ... :-) """
@@ -376,7 +376,7 @@ class TRAD2Content:
     #
     # Frist part, scan the file to extract XD stuff
     #
-    TRUU.log_debug(f"File: {f_name}")
+    mutil.log_debug(f"File: {f_name}")
     with open(f_name, "r") as f:
       ll = f.readlines()
 
@@ -437,7 +437,7 @@ class TRAD2Content:
     for f_nam in g_all.values():
       res = self.scanOneCppFile(f_nam)
       for d in res:
-        TRUU.log_debug(d.toTRAD2()[0])
+        mutil.log_debug(d.toTRAD2()[0])
       self.data.extend(res)
 
   def assemble(self, trad2org):
@@ -451,7 +451,7 @@ class TRAD2Content:
       lkp[k] = k
       for vv in v:
         lkp[vv] = k
-    TRUU.log_debug("Synonyms are " + str(self.synos))
+    mutil.log_debug("Synonyms are " + str(self.synos))
 
     # Load TRAD2.org first ...
     torg = TRAD2Content.BuildContentFromTRAD2(trad2org, None)
@@ -475,7 +475,7 @@ class TRAD2Content:
 ###########################################################################
 if __name__ == "__main__":
   import sys
-  # TRUU._log_level = 4   # Turn this to 4 to debug!
+  # mutil._log_level = 4   # Turn this to 4 to debug!
   if len(sys.argv) > 1:
     outfile = sys.argv[1]
   else:

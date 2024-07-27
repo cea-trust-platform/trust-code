@@ -11,13 +11,7 @@ Authors: A Bruneton, C Van Wambeke, G Sutra
 
 import pprint as PP
 
-from xyzpy.baseXyz import *
-from xyzpy.intFloatListXyz import StrXyz, StrVerbatimXyz, StrNoBlankXyz, StrInListXyz, \
-                                  IntXyz, IntRangeXyz, IntInListXyz, \
-                                  FloatXyz, FloatRangeXyz, \
-                                  TodoXyz, BoolXyz
-import xyzpy.classFactoryXyz as CLFX
-import trustpy.trust_utilities as TRUU
+import trustpy.misc_utilities as mutil
 from trustpy.trust_parser import TRUSTTokens
 
 ########################################################
@@ -98,8 +92,8 @@ class Base_common(object):
       - the point in the source code (or in the TRAD2.org) where the concerned grammar element
       was defined.
     """
-    err = "\n" + TRUU.RED + msg + TRUU.END + "\n"
-    ctx = TRUU.YELLOW
+    err = "\n" + mut.RED + msg + mut.END + "\n"
+    ctx = mut.YELLOW
     ctx +=  "=> This error was triggered in the following context:\n"
     ctx += "   Dataset: line %d  in file  '%s'\n" % (stream.currentLine(), stream.fileName())
 
@@ -109,7 +103,7 @@ class Base_common(object):
     if not attr is None:
       fnam, lineno = cls._infoAttr[attr]
       s = f"   Model:   line {lineno}  in file  '{fnam}'\n"
-    ctx += s + TRUU.END
+    ctx += s + mut.END
     return err + ctx
 
   def _checkToken(self, key, expec, typ=str):
@@ -212,7 +206,7 @@ class Base_common(object):
   def _Dbg(cls, msg):
     """ Handy debug printing """
     # The 'inspect' module is very costly - so skip if not in highest logging level:
-    if TRUU._log_level <= 3:
+    if mut._log_level <= 3:
       return
     import inspect
     curframe = inspect.currentframe()
@@ -222,7 +216,7 @@ class Base_common(object):
       return s + " "*(max(55-len(s), 0))
     s = f"[{cls.__name__}.{cal_nam}] --"
     m = msg.replace("@FUNC@", s)
-    TRUU.log_debug(m)
+    mut.log_debug(m)
 
 ###########################
 class ConstrainBase(Base_common):
@@ -521,21 +515,17 @@ class ConstrainBase(Base_common):
         pass
     return s
 
-  def logHelp(self, value=None):
-    """print help() with logger info"""
-    res = self.helpToStr(value=value)
-    TRUU.log_info(res)
-
 ######################################################
 ## List-like types
 ######################################################
-class ListOfBase(ListOfBaseXyz, Base_common):
+# class ListOfBase(ListOfBaseXyz, Base_common):
+class ListOfBase(Base_common):
   _plainType = True
   _allowedClasses = []
   _comma = 1   #  1: with comma to separate items, 0: without, -1: like parent
 
   def __init__(self, values=[]):
-    ListOfBaseXyz.__init__(self)
+    # ListOfBaseXyz.__init__(self)
     Base_common.__init__(self)
     self._tokens = {}  # Expected keys: "nb_items"
     self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
@@ -562,7 +552,8 @@ class ListOfBase(ListOfBaseXyz, Base_common):
       newv = self._ze_cls(val)
     else:
       newv = val
-    ListOfBaseXyz.__setitem__(self, idx, newv)
+    1/0
+    # ListOfBaseXyz.__setitem__(self, idx, newv)
 
   @classmethod
   def MustReadSize(cls):
@@ -1045,14 +1036,15 @@ class AbstractChaine(Base_common):
       return ret
 
 ##############################################
-class chaine(StrVerbatimXyz, AbstractChaine):
+# class chaine(StrVerbatimXyz, AbstractChaine):
+class Chaine(AbstractChaine):
   """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
   See ReadFromTokens below ..
   """
   _defaultValue = "??"
 
   def __init__(self, value=None):
-    StrVerbatimXyz.__init__(self, value)
+    # StrVerbatimXyz.__init__(self, value)
     Base_common.__init__(self)
     self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self._braces!!
 
@@ -1104,20 +1096,22 @@ class chaine(StrVerbatimXyz, AbstractChaine):
     else:
       return AbstractChaine.toDatasetTokens(self)
 
-class BaseChaine(StrNoBlankXyz, AbstractChaine):
+# class BaseChaine(StrNoBlankXyz, AbstractChaine):
+class BaseChaine(AbstractChaine):
   """A string with no blank in it."""
   _defaultValue = "??"
 
   def __init__(self, value=None):
-    StrNoBlankXyz.__init__(self, value)
+    # StrNoBlankXyz.__init__(self, value)
     AbstractChaine.__init__(self)
 
-class BaseChaineInList(StrInListXyz, AbstractChaine):
+# class BaseChaineInList(StrInListXyz, AbstractChaine):
+class BaseChaineInList(AbstractChaine):
   """ Same as BaseChaine, but with constrained string values """
   _allowedList = ["??"]
 
   def __init__(self, value=None):
-    StrInListXyz.__init__(self, value)
+    # StrInListXyz.__init__(self, value)
     AbstractChaine.__init__(self)
 
   @classmethod
@@ -1171,17 +1165,19 @@ class AbstractEntier(Base_common):
       ret = [" " + self_as_str]
     return ret
 
-class BaseEntier(IntXyz, AbstractEntier):
+# class BaseEntier(IntXyz, AbstractEntier):
+class BaseEntier(AbstractEntier):
   def __init__(self, value=None):
-    IntXyz.__init__(self, value)
+    # IntXyz.__init__(self, value)
     AbstractEntier.__init__(self)
 
-class BaseEntierInList(IntInListXyz, AbstractEntier):
+# class BaseEntierInList(IntInListXyz, AbstractEntier):
+class BaseEntierInList(AbstractEntier):
   """ Integer in a constrained list """
   _allowedList = [0]
 
   def __init__(self, value=None):
-    IntInListXyz.__init__(self, value)
+    # IntInListXyz.__init__(self, value)
     AbstractEntier.__init__(self)
 
   @classmethod
@@ -1195,12 +1191,13 @@ class BaseEntierInList(IntInListXyz, AbstractEntier):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
       raise ValueError(err)
 
-class BaseEntierInRange(IntRangeXyz, AbstractEntier):
+# class BaseEntierInRange(IntRangeXyz, AbstractEntier):
+class BaseEntierInRange(AbstractEntier):
   """ integer in a constrained range """
   _allowedRange = [0, 0]
 
   def __init__(self, value=None):
-    IntRangeXyz.__init__(self, value)
+    # IntRangeXyz.__init__(self, value)
     AbstractEntier.__init__(self)
 
   @classmethod
@@ -1214,11 +1211,12 @@ class BaseEntierInRange(IntRangeXyz, AbstractEntier):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
       raise ValueError(err)
 
-class BaseFloattant(FloatXyz, Base_common):
+# class BaseFloattant(FloatXyz, Base_common):
+class BaseFloattant(Base_common):
   _plainType = True
 
   def __init__(self, value=None):
-    FloatXyz.__init__(self, value)
+    # FloatXyz.__init__(self, value)
     Base_common.__init__(self)
 
   @classmethod
@@ -1245,7 +1243,8 @@ class BaseFloattant(FloatXyz, Base_common):
       ret = [" " + self_as_str]
     return ret
 
-class Rien(BoolXyz, Base_common):
+# class Rien(BoolXyz, Base_common):
+class Rien(Base_common):
   """ Boolean flags are of type 'rien' in the TRAD_2 file."""
   _plainType = True
 
@@ -1258,6 +1257,6 @@ class Rien(BoolXyz, Base_common):
     """ Override. """
     return ['']
 
-class Todo(TodoXyz, Base_common):
+class Todo(Base_common):
   _defaultValue = "TODO (class not implemented yet from TRUST)"
   pass
