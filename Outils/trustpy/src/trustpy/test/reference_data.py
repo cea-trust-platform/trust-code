@@ -1,11 +1,5 @@
-# -*- coding: utf-8 -*-
-
-# %% LICENSE_SALOME_CEA_BEGIN
-# see trustpy/LICENCE file
-# %% LICENSE_END
-
 """
-Reference data for test
+Reference data for tests
 """
 
 def buildCurlyExpec(mod, bidon=True):

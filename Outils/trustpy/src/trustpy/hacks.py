@@ -8,7 +8,7 @@ classes do not fail when passing over this piece of code)
 
 # First hack which is **not** in this file: handling of the attributes named 'lambda'.
 # This is a reserved Python keyword. So it is changed everywhere in 'Lambda'.
-# This is done in trad2_code_gen.py (look for 'Lambda') and in baseTru._InvertSyno()
+# This is done in trad2_code_gen.py (look for 'Lambda') and in base._InvertSyno()
 # where we register 'lambda' as a synonym for 'Lambda'
 
 

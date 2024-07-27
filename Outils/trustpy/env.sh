@@ -1,10 +1,7 @@
 #!/bin/bash
-# Source environment for packagespy and trustpy
+# Source environment for trustpy
 
 root_dir=$TRUST_ROOT/Outils/trustpy/install
-
-export PACKAGESPY_ROOT_DIR=${root_dir}/packagespy
-export PYTHONPATH=${PYTHONPATH}:${PACKAGESPY_ROOT_DIR}/packagespy
 
 export TRUSTPY_ROOT_DIR=${root_dir}/trustpy
 export PYTHONPATH=${PYTHONPATH}:${TRUSTPY_ROOT_DIR}

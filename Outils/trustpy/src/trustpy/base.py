@@ -3,10 +3,10 @@
 
 """ Main module for the set of classes representing the TRUST data model.
 This module is a bit long, but its logic can be well understood by reading first
-  - class Base_common_Tru
-  - and then its most important child Dataset_Tru, representing a full TRUST dataset
+  - class Base_common
+  - and then its most important child Dataset, representing a full TRUST dataset
   
-Authors: A Bruneton, C Van Wambeke
+Authors: A Bruneton, C Van Wambeke, G Sutra
 """
 
 import pprint as PP
@@ -20,31 +20,9 @@ import xyzpy.classFactoryXyz as CLFX
 import trustpy.trust_utilities as TRUU
 from trustpy.trust_parser import TRUSTTokens
 
-_TRIOU_SUFFIX = "_Tru"
-_LEN_TRIOU_SUFFIX = len(_TRIOU_SUFFIX)
-
 ########################################################
 # Utilities TRUST methods
 ########################################################
-
-def getInheritedClasses(aModule, aClass):
-  res = {}
-  for k, v in aModule.__dict__.items():
-    try:
-      if issubclass(v, aClass):
-        res[k] = v
-    except:
-      pass
-  return res
-
-def get_TRU_XClasses():
-  import triou_cv as TRU
-  import xdata as XD
-  return getInheritedClasses(TRU, XD.XObject)
-
-# call setAllAttributesList in __init__ only if all prerequisites TRU classes are known
-_TRU_OK_setAllAttributesList = False
-
 
 def check_append_list(classname, list1, list2, suppressed):
   """
@@ -81,37 +59,13 @@ def check_append_dict(classname, dict1, dict2):
       pass
   return res
 
-def toCommentTrust(aStr):
-  res =" /* %s */ " % aStr
-  return res
-
-_indent = 5
-
-def indentTrustData(depth, aChar=" "):
-  return aChar*(_indent*depth)
-
-def prettifyTrustData(aStr):
-  """left tabulate comments and etc TODO"""
-  lines = aStr.split("\n")
-  res = ""
-  # tabulate comments right-in-line
-  for lig in lines:
-    ls = lig.split(' /* ')
-    if len(ls) == 2:
-      lg = len(ls[0])
-      res += "\n" + ls[0].ljust(80) + ' /* ' + ls[1]
-    else:
-      res += "\n" + lig
-  return res.lstrip("\n")  # remove leadings
-
-
-
 ########################################################
-# packagespy customized classes for trust
+# Customized classes that will sit at the top of the inheritance
+# tree for all the other generated classes.
 ########################################################
 
-class Base_common_Tru(object):
-  """ Abstract base class containing all the methods relevant to TRUST dat model
+class Base_common(object):
+  """ Abstract base class containing all the methods relevant to TRUST data model
   logic.
   By far the two most important methods are:
     ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
@@ -130,7 +84,7 @@ class Base_common_Tru(object):
 
   def __init__(self):
     self._tokens = {}     # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
-                          # in ConstrainBase_Tru for a more comprehensive explanation.
+                          # in ConstrainBase for a more comprehensive explanation.
 
   def toTrustData(self):
     """ Output current data (contained in self)"""
@@ -176,14 +130,11 @@ class Base_common_Tru(object):
   def _getClsTokens(self):
     """ Return output tokens for the class name (i.e. the TRUST keyword itself)
     """
-    def no_tru_low(s):
-      # Class name without the "_Tru"
-      return s[:-_LEN_TRIOU_SUFFIX].lower()
     if self._read_type:
       cls = self.__class__
       expec = [cls.__name__] + cls._synonyms
       for e in expec:
-        v = no_tru_low(e)
+        v = no_low(e)
         if self._checkToken("cls_nam", v):
           return self._tokens["cls_nam"].orig()
       return [" " + no_tru_low(cls.__name__)]
@@ -208,33 +159,6 @@ class Base_common_Tru(object):
     See also _checkToken() in the same class.
     """
     raise NotImplementedError
-
-  def logHelp(self):
-    """print logger info help(self)"""
-    res = self.getHelp()
-    TRUU.log_info(res)
-    return res
-
-  @classmethod
-  def GetTrustName(cls):
-    """ returns class name, without the _TRIOU_SUFFIX '_Tru' """
-    res = cls.__name__
-    if res.endswith(_TRIOU_SUFFIX):
-      res = res[0:-_LEN_TRIOU_SUFFIX]
-    return res
-
-  @classmethod
-  def GetAllTrustNames(cls):
-    """ returns all possible names (incl. synonyms) for a keyword as a nicely formatted string """
-    res = [cls.__name__]
-    res.extend(cls._synonyms)
-    res2 = []
-    for r in res:
-      if r.endswith(_TRIOU_SUFFIX):
-        res2.append(r[0:-_LEN_TRIOU_SUFFIX])
-      else:
-        res2.append(r)
-    return "|".join(res2)
 
   @classmethod
   def IsOptional(cls, attr_nam):
@@ -264,37 +188,6 @@ class Base_common_Tru(object):
     msg = "Internal error - ReadFromTokens() not implemented in class '%s'" % cls.__name__
     msg += "\n  (=> Inheritage of this class is " + str(inh) + ")"
     raise Exception(msg)
-
-  def getInheritage(self):
-    """
-    returns list of names of mother classes inheritage (as string)
-    example:
-    [
-    "TriouAll_Tru",
-    "baseTru.ConstrainBase_Tru",
-    "xyzpy.baseXyz._XyzConstrainBase",
-    "xyzpy.baseXyz.BaseFreeXyz",
-    "xyzpy.baseXyz._BaseCommonXyz",
-    "baseTru.Base_common_Tru",
-    "builtins.object"
-    ]
-    """
-    import helppy.helpPager as HP
-    res = HP.getInheritage(self)
-    return res
-
-  def getInheritageTru(self):
-    """
-    returns list of names of mother classes inheritage (as string endswith _TRIOU_SUFFIX '_Tru')
-    example:
-    [
-    "TriouAll_Tru",
-    "baseTru.ConstrainBase_Tru",
-    "baseTru.Base_common_Tru",
-    ]
-    """
-    res = self.getInheritage()
-    return [i for i in res if i.endswith(_TRIOU_SUFFIX)]
 
   @classmethod
   def WithBraces(cls):
@@ -332,24 +225,18 @@ class Base_common_Tru(object):
     TRUU.log_debug(m)
 
 ###########################
-class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
+class ConstrainBase(Base_common):
   """
-  Specific derivation of _XyzConstrainBase to fit TRUST key/values system.
+  Class representing any type/keyword for which the attribute types are to be checked.
   """
-  _typeTru = "dict"
   _rootNamesForSyno = {} # See method _ReadClassName and trust_hacks.py
 
   def __init__(self):
-    super(ConstrainBase_Tru, self).__init__()
-    self.setIsCast(True)
-    # avoid call attributes dependencies in triou_packagespy packagespy_classes
-    # if all prerequisites TRU classes are NOT known
-    if _TRU_OK_setAllAttributesList:
-      self._setAllAttributesList()
+    super(ConstrainBase, self).__init__()
     opbr  = TRUSTTokens(low=["{"], orig=[" {\n"])
     clobr = TRUSTTokens(low=["}"], orig=[" \n}\n"])
     clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__[:-_LEN_TRIOU_SUFFIX]])
-    self._tokens = {"{": opbr,           # For a ConstrainBase_Tru we might need opening and closing brace. By default those
+    self._tokens = {"{": opbr,           # For a ConstrainBase we might need opening and closing brace. By default those
                     "}": clobr,          # are simple '{' and '}' followed by a line return. If ReadFromTokens() was
                     "cls_nam": clsnam }  # invoked to build the object this will respect the initial input (with potentially more spaces)
     self._attrInOrder = []               # Just to save the order in which the attributes were read ...
@@ -369,64 +256,6 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
       return True  # hidden
     else:
       return False
-
-  # def __setattr__(self, name, value):
-  #   """ TODO doc - keeping former tokens when possible?"""
-  #   tok = None
-  #   if hasattr(self, name):
-  #     a = self.__getattribute__(name)
-  #     if hasattr(a, "_tokens"):
-  #       tok = a._tokens
-  #   _XyzConstrainBase.__setattr__(self, name, value)
-  #   a = self.__getattribute__(name)
-  #   if hasattr(a, "_tokens"):
-  #     a._tokens = tok
-
-  def getNameAsAttributeAsRoot(self):
-    """to get 'field_base' instead 'field_base_Tru' as GUI tree root name (for example)"""
-    res = self._defautNameAsRoot
-    if res.endswith(_TRIOU_SUFFIX):
-      res = res[0:-_LEN_TRIOU_SUFFIX]
-    return res
-
-  # def getActionsContextMenu(self):
-  #   """
-  #   method here for example
-  #   append action 'Action Adrien' to generic trust inherited _XyzConstrainBase actions
-  #   try to get save-restore xml actions (from generic action of controller), only for ConstrainBase
-  #   """
-  #   actions = []
-  #   try:  # try to get save-restore xml actions (from generic action of controller), only for ConstrainBase
-  #     controller = self.getController()
-  #     controllerActions = controller.getDefaultActions()
-  #     actionsLoadSave = [a for a in controllerActions if "Load data" in a.text() or "Save data" in a.text()]
-  #     # TRUU.log_info("actions are %s" % [a.text() for a in actionsLoadSave])
-  #     actions.extend(actionsLoadSave)
-  #   except:
-  #     pass
-  #   actions.extend(_XyzConstrainBase.getActionsContextMenu(self))
-  #   TRUU.log_info("create action in %s" % self.__class__.__name__)
-  #   aText = "Log help class"
-  #   aIcon = "toDo64x64"
-  #   tmp = self._createAction(aText, None, aText, self.logHelpClass, aIcon)
-  #   actions.append(tmp)
-  #   aText = "Log format trust_data"
-  #   aIcon = "warning"
-  #   tmp = self._createAction(aText, None, aText, self.logTrustData, aIcon)
-  #   actions.append(tmp)
-  #   return actions
-
-  def logTrustData(self):
-    """Log format trust_data"""
-    res = self.toTrustData()
-    res = prettifyTrustData(res)
-    TRUU.log_info("*** trust_data ***\n%s" % res)  # TODO avoid leading lf
-    return res
-
-  def logHelpClass(self):
-    """Log help class"""
-    res = self.logHelp()
-    return res
 
   @classmethod
   def _GetBaseClassName(cls, cls_nam):
@@ -581,7 +410,7 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
     Overriden in trust_hacks.py for convection/diffusion 'negligeable' for example. 
     """
     # Parse one token to identify real class being read:
-    kw = BaseChaine_Tru.ReadFromTokens(stream)
+    kw = BaseChaine.ReadFromTokens(stream)
     cls_nam = kw + _TRIOU_SUFFIX
     if not CLFX.isValidClassName(cls_nam):
       err = cls.GenErr(stream, f"Invalid TRUST keyword '{kw}'")
@@ -608,7 +437,7 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
 
   @classmethod
   def ReadFromTokens(cls, stream):
-    """ Override. See Base_common_Tru.  """
+    """ Override. See Base_common.  """
     if cls._read_type:
       cls_nam = cls._ReadClassName(stream)
       cls._Dbg(f"@FUNC@ parsed type: '{cls_nam}'")
@@ -672,7 +501,7 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
       if attr_nam in self._tokens:  tok = self._tokens[attr_nam].orig()
       else:                         tok = ["\n" + attr_nam + " "]
       # WARNING: special case - flags need to be completely removed if False (we don't even want the attribute name .. which is the flag)
-      if a.__class__.__name__ != "rien_Tru" or bool(a):
+      if a.__class__.__name__ != "rien" or bool(a):
         s.extend(tok)
         s.extend(a.toDatasetTokens())  # append attribute value itself
     # Closing brace
@@ -700,14 +529,14 @@ class ConstrainBase_Tru(_XyzConstrainBase, Base_common_Tru):
 ######################################################
 ## List-like types
 ######################################################
-class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
+class ListOfBase(ListOfBaseXyz, Base_common):
   _plainType = True
   _allowedClasses = []
   _comma = 1   #  1: with comma to separate items, 0: without, -1: like parent
 
   def __init__(self, values=[]):
     ListOfBaseXyz.__init__(self)
-    Base_common_Tru.__init__(self)
+    Base_common.__init__(self)
     self._tokens = {}  # Expected keys: "nb_items"
     self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
     cls = self.__class__
@@ -724,9 +553,9 @@ class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
 
   def __setitem__(self, idx, val):
     """ Override. Helps doing things like:
-        a_list = ListOfFloat_Tru()
+        a_list = ListOfFloat()
         ... append ... append ..
-        a_list[32] = 26.5  # avoids a_list[32] = BaseFloattant_Tru(26.5)
+        a_list[32] = 26.5  # avoids a_list[32] = BaseFloattant(26.5)
     """
     if not self._ze_cls is None:
       # Try auto-cast - this helps assigning values
@@ -771,7 +600,7 @@ class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
 
   @classmethod
   def _ReadListSize(cls, stream):
-    """ Return size of the list - overriden in ListOfFloatDim_Tru """
+    """ Return size of the list - overriden in ListOfFloatDim """
     t = stream.probeNextLow()
     try:
       n = int(t)
@@ -839,7 +668,7 @@ class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
 
   def _extendWithSize(self, ret):
     """ Append the size of the list to the list of output tokens. 
-    Overriden in ListOfXXXXDim_Tru classes where the size is fixed.
+    Overriden in ListOfXXXXDim classes where the size is fixed.
     """
     len_as_str = str(len(self))
     if self._checkToken("len", len_as_str):
@@ -868,8 +697,8 @@ class ListOfBase_Tru(ListOfBaseXyz, Base_common_Tru):
       ret.extend(br)
     return ret
 
-class AbstractSizeIsDim_Tru(object):
-  """ Shared methods for all ListOfXXXDim_Tru classes - implements the necessary stuff to force
+class AbstractSizeIsDim(object):
+  """ Shared methods for all ListOfXXXDim classes - implements the necessary stuff to force
   the size of the list to be the dimension read at the top of the dataset.
   """
   _DIMENSION = -1  # Set when the keyword 'dimension' is encountered
@@ -885,80 +714,80 @@ class AbstractSizeIsDim_Tru(object):
     """ Override. Do nothing. Here the size is the dimension and does not need to be output """
     pass
 
-class ListOfChaine_Tru(ListOfBase_Tru):
+class ListOfChaine(ListOfBase):
   """
   List of strings (with no blanks), in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseChaine_Tru"]
+  _allowedClasses = ["BaseChaine"]
   _braces = 0  # No braces for this simple list
   _comma = 0
 
   def __init__(self, values=[]):
-    ListOfBase_Tru.__init__(self, values)
+    ListOfBase.__init__(self, values)
 
-class ListOfChaineDim_Tru(ListOfChaine_Tru, AbstractSizeIsDim_Tru):
+class ListOfChaineDim(ListOfChaine, AbstractSizeIsDim):
   """
   List of strings, in the form 'val1 val2 ...'
   The number of expected strings is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfChaine_Tru.__init__(self, values)
+    ListOfChaine.__init__(self, values)
 
-  _ReadListSize = AbstractSizeIsDim_Tru._ReadListSize
-  _extendWithSize = AbstractSizeIsDim_Tru._extendWithSize
+  _ReadListSize = AbstractSizeIsDim._ReadListSize
+  _extendWithSize = AbstractSizeIsDim._extendWithSize
 
-class ListOfFloat_Tru(ListOfBase_Tru):
+class ListOfFloat(ListOfBase):
   """
   List of floats, in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseFloattant_Tru"]
+  _allowedClasses = ["BaseFloattant"]
   _braces = 0  # No braces for this simple list
   _comma = 0
 
   def __init__(self, values=[]):
-    ListOfBase_Tru.__init__(self, values)
+    ListOfBase.__init__(self, values)
 
-class ListOfFloatDim_Tru(ListOfFloat_Tru, AbstractSizeIsDim_Tru):
+class ListOfFloatDim(ListOfFloat, AbstractSizeIsDim):
   """
   List of floats, in the form 'val1 val2 ...'
   The number of expected floats is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfFloat_Tru.__init__(self, values)
+    ListOfFloat.__init__(self, values)
 
-  _ReadListSize = AbstractSizeIsDim_Tru._ReadListSize
-  _extendWithSize = AbstractSizeIsDim_Tru._extendWithSize
+  _ReadListSize = AbstractSizeIsDim._ReadListSize
+  _extendWithSize = AbstractSizeIsDim._extendWithSize
 
-class ListOfInt_Tru(ListOfBase_Tru):
+class ListOfInt(ListOfBase):
   """
   List of ints, in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseEntier_Tru"]
+  _allowedClasses = ["BaseEntier"]
   _braces = 0  # No braces for this simple list
   _comma = 0
 
   def __init__(self, values=[]):
-    ListOfBase_Tru.__init__(self, values)
+    ListOfBase.__init__(self, values)
 
-class ListOfIntDim_Tru(ListOfInt_Tru, AbstractSizeIsDim_Tru):
+class ListOfIntDim(ListOfInt, AbstractSizeIsDim):
   """
   List of ints, in the form 'N val1 val2 ...'
   The number of expected ints is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfInt_Tru.__init__(self, values)
+    ListOfInt.__init__(self, values)
 
-  _ReadListSize = AbstractSizeIsDim_Tru._ReadListSize
-  _extendWithSize = AbstractSizeIsDim_Tru._extendWithSize
+  _ReadListSize = AbstractSizeIsDim._ReadListSize
+  _extendWithSize = AbstractSizeIsDim._extendWithSize
 
 
 ######################################################
-# Class interprete_Tru
+# Class interprete
 ######################################################
-class interprete_Tru(ConstrainBase_Tru):
-  """ Class 'interprete_Tru' has nothing special in itself, except that it needs
-  to be known early, so that the Dataset_Tru class can test whether a given class
-  is a child of 'interprete_Tru'
+class interprete(ConstrainBase):
+  """ Class 'interprete' has nothing special in itself, except that it needs
+  to be known early, so that the Dataset class can test whether a given class
+  is a child of 'interprete'
   So force its definition here, and hence avoid its automatic generation from the
   TRAD2 file.
   """
@@ -968,19 +797,19 @@ class interprete_Tru(ConstrainBase_Tru):
 ######################################################
 # Main class representing the dataset and forward declarations
 ######################################################
-class Declaration_Tru(ConstrainBase_Tru):
+class Declaration(ConstrainBase):
   """ Class representing a simple forward declaration in the dataset like
   'Pb_conduction pb'.
   Note: this class does not need to override ReadFromTokens() - the parsing is so simple
-  (two strings) that everything is done directly in DataSet_Tru.ReadFromTokens()
+  (two strings) that everything is done directly in DataSet.ReadFromTokens()
   """
-  _attributesList = [ ('cls_nam',    'BaseChaine_Tru'),
-                      ('identifier', 'BaseChaine_Tru')
+  _attributesList = [ ('cls_nam',    'BaseChaine'),
+                      ('identifier', 'BaseChaine')
                     ]
   _read_type = True     # Always since the type ... is the main information here!
 
   def __init__(self, cls_nam="", identifier=""):
-    super(Declaration_Tru, self).__init__()
+    super(Declaration, self).__init__()
     self.cls_nam = cls_nam
     self.identifier = identifier
     self._cls_obj = None
@@ -989,7 +818,7 @@ class Declaration_Tru(ConstrainBase_Tru):
   @classmethod
   def ReadFromTokens(cls, stream):
     ret = cls()
-    kw = BaseChaine_Tru.ReadFromTokens(stream)
+    kw = BaseChaine.ReadFromTokens(stream)
     ret.cls_nam = kw + _TRIOU_SUFFIX
     # Check whether the class is valid:
     ze_cls = CLFX.getXyzClassFromName(ret.cls_nam)
@@ -998,7 +827,7 @@ class Declaration_Tru(ConstrainBase_Tru):
       raise ValueError(err)
     ret._cls_obj = ze_cls
     ret._tokens["cls_nam"] = stream.lastReadTokens()
-    ident = BaseChaine_Tru.ReadFromTokens(stream)
+    ident = BaseChaine.ReadFromTokens(stream)
     # Basic checks on the identifier:
     if ident.startswith("{") or ident.startswith("}") or ident[0].isnumeric():
       err = cls.GenErr(stream, f"Invalid identifier '{ident}' in forward declaration of type '{kw}'")
@@ -1008,7 +837,7 @@ class Declaration_Tru(ConstrainBase_Tru):
     return ret
 
   def toDatasetTokens(self):
-    """ Override - see Base_common_Tru """
+    """ Override - see Base_common """
     s = []
     if self._checkToken("cls_nam", self.cls_nam[:-_LEN_TRIOU_SUFFIX]):
       cn = self._tokens["cls_nam"].orig()
@@ -1023,16 +852,16 @@ class Declaration_Tru(ConstrainBase_Tru):
     return s
 
 ######################################################
-class DataSet_Tru(ListOfBase_Tru):
+class DataSet(ListOfBase):
   """ Class representing a complete TRUST dataset.
-  A TRUST dataset is a list of Base_common_Tru, with allowed classes
-    - Declaration_Tru, representing forward declarations like 'Pb_conduction pb'
-    - or any child of ConstrainBase_Tru, representing all TRUST interprets like 'lire_med { file ... }'
+  A TRUST dataset is a list of Base_common, with allowed classes
+    - Declaration, representing forward declarations like 'Pb_conduction pb'
+    - or any child of ConstrainBase, representing all TRUST interprets like 'lire_med { file ... }'
   """
-  _allowedClasses = ["<inherited>ConstrainBase_Tru"]
+  _allowedClasses = ["<inherited>ConstrainBase"]
 
   def __init__(self):
-    ListOfBase_Tru.__init__(self)
+    ListOfBase.__init__(self)
     self._declarations = {}   # Map of declarations like "Pb_conduction pb". Key is identifier ('pb')
                               # Value is the (class_name, idx) where idx is the position in the dataset (which is essentially a list, remember)
 
@@ -1060,7 +889,7 @@ class DataSet_Tru(ListOfBase_Tru):
       err = cls.GenErr(stream, f"Referencing object '{identif}' (with a 'read|lire' instruction) which was not declared before")
       raise ValueError(err)
     # Retrieve real underlying class from initial forward declaration and
-    # strip the '_Tru' that will be added again by ConstrainBase_Tru.ReadFromTokens:
+    # strip the '' that will be added again by ConstrainBase.ReadFromTokens:
     decl, _ = ret._declarations[identif]
     ze_cls = decl._cls_obj
     cls_nam = ze_cls.__name__[:-_LEN_TRIOU_SUFFIX]  # Use the native root class name
@@ -1090,7 +919,7 @@ class DataSet_Tru(ListOfBase_Tru):
   def _Handle_std_instanciation(cls, tok, stream, ze_cls, ret):
     """ Private. """
     # In a dataset the type must **always** be read - so it is just a matter to know if the keyword
-    # itself reads it, or if it is the Dataset_Tru that reads it:
+    # itself reads it, or if it is the Dataset that reads it:
     if ze_cls._read_type:
       cls._Dbg(f"@FUNC@ '{tok}' standard instanciation with type reading")
       inst = ze_cls.ReadFromTokens(stream)
@@ -1105,7 +934,7 @@ class DataSet_Tru(ListOfBase_Tru):
   @classmethod
   def _Handle_fwd_decl(cls, tok, stream, ze_cls, ret):
     """ Private. """
-    decl = Declaration_Tru.ReadFromTokens(stream)
+    decl = Declaration.ReadFromTokens(stream)
     identif = decl.identifier
     cls._Dbg(f"@FUNC@ fwd decl - '{identif}' with class '{decl.cls_nam}'")
     ret._declarations[identif] = [decl, -1]  # -1 because for now position of the real instanciation in the dataset is not known
@@ -1121,7 +950,7 @@ class DataSet_Tru(ListOfBase_Tru):
 
   @classmethod
   def ReadFromTokens(cls, stream):
-    """ Override. See Base_common_Tru. 
+    """ Override. See Base_common. 
     Read a complete TRUST dataset
     """
     ret = cls()
@@ -1147,11 +976,11 @@ class DataSet_Tru(ListOfBase_Tru):
 
       # 'interprete' are the highest level keywords in TRUST - they perform an action. They are only allowed at top level
       # in the dataset.
-      if issubclass(ze_cls, interprete_Tru):
+      if issubclass(ze_cls, interprete):
         # Standard keyword instanciation
         cls._Handle_std_instanciation(tok, stream, ze_cls, ret)
         # Should we stop here?
-        if ze_cls is fin_Tru:
+        if ze_cls is fin:
           break
       else:
         # Forward declaration
@@ -1171,12 +1000,12 @@ class DataSet_Tru(ListOfBase_Tru):
 ######################################################
 # Simple leaf types (string, int, floats, ...)
 ######################################################
-class AbstractChaine_Tru(Base_common_Tru):
+class AbstractChaine(Base_common):
   """ Base class for all (constrained or not) strings """
   _plainType = True
 
   def __init__(self):
-    Base_common_Tru.__init__(self)
+    Base_common.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, value, stream):
@@ -1185,7 +1014,7 @@ class AbstractChaine_Tru(Base_common_Tru):
 
   @classmethod
   def ReadFromTokens(cls, stream):
-    """ Override. See Base_common_Tru. 
+    """ Override. See Base_common. 
     In this override simply return the next token which is a valid (non blank) string. 
     """
     s = stream.nextLow()
@@ -1216,17 +1045,15 @@ class AbstractChaine_Tru(Base_common_Tru):
       return ret
 
 ##############################################
-class chaine_Tru(StrVerbatimXyz, AbstractChaine_Tru):
-  """A simple 'chaine' ... but this tricky
-  It might be made of several tokens if braces are found
+class chaine(StrVerbatimXyz, AbstractChaine):
+  """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
   See ReadFromTokens below ..
   """
-  _typeTru = "leaf"
   _defaultValue = "??"
 
   def __init__(self, value=None):
     StrVerbatimXyz.__init__(self, value)
-    Base_common_Tru.__init__(self)
+    Base_common.__init__(self)
     self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self._braces!!
 
   @classmethod
@@ -1275,25 +1102,23 @@ class chaine_Tru(StrVerbatimXyz, AbstractChaine_Tru):
     if self._withBraces:
       return [str(self)]
     else:
-      return AbstractChaine_Tru.toDatasetTokens(self)
+      return AbstractChaine.toDatasetTokens(self)
 
-class BaseChaine_Tru(StrNoBlankXyz, AbstractChaine_Tru):
+class BaseChaine(StrNoBlankXyz, AbstractChaine):
   """A string with no blank in it."""
-  _typeTru = "leaf"
   _defaultValue = "??"
 
   def __init__(self, value=None):
     StrNoBlankXyz.__init__(self, value)
-    AbstractChaine_Tru.__init__(self)
+    AbstractChaine.__init__(self)
 
-class BaseChaineInList_Tru(StrInListXyz, AbstractChaine_Tru):
+class BaseChaineInList(StrInListXyz, AbstractChaine):
   """ Same as BaseChaine, but with constrained string values """
-  _typeTru = "leaf"
   _allowedList = ["??"]
 
   def __init__(self, value=None):
     StrInListXyz.__init__(self, value)
-    AbstractChaine_Tru.__init__(self)
+    AbstractChaine.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, val, stream):
@@ -1301,21 +1126,20 @@ class BaseChaineInList_Tru(StrInListXyz, AbstractChaine_Tru):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
       raise ValueError(err)
 
-class fin_Tru(interprete_Tru):
+class fin(interprete):
   """ The 'end' keyword at the end of the dataset. It is an 'interprete'.
-  It has its own class because the main parsing loop in Dataset_Tru needs to spot it specifically :-)
+  It has its own class because the main parsing loop in DataSet needs to spot it specifically :-)
   """
-  _typeTru = "leaf"
   _braces = 0
   _read_type = False
-  _synonyms = ["end_Tru"]
+  _synonyms = ["end"]
 
-class AbstractEntier_Tru(Base_common_Tru):
+class AbstractEntier(Base_common):
   """ Base class for all (constrained or not) integers """
   _plainType = True
 
   def __init__(self):
-    Base_common_Tru.__init__(self)
+    Base_common.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, val, stream):
@@ -1337,7 +1161,7 @@ class AbstractEntier_Tru(Base_common_Tru):
 
   def toDatasetTokens(self):
     """ Override. 
-    See commented code in AbstractChaine_Tru if one day you want to perform a very fine replacement keeping comments
+    See commented code in AbstractChaine if one day you want to perform a very fine replacement keeping comments
     for example.
     """
     self_as_str = str(int(self))
@@ -1347,21 +1171,18 @@ class AbstractEntier_Tru(Base_common_Tru):
       ret = [" " + self_as_str]
     return ret
 
-class BaseEntier_Tru(IntXyz, AbstractEntier_Tru):
-  _typeTru = "leaf"
-
+class BaseEntier(IntXyz, AbstractEntier):
   def __init__(self, value=None):
     IntXyz.__init__(self, value)
-    AbstractEntier_Tru.__init__(self)
+    AbstractEntier.__init__(self)
 
-class BaseEntierInList_Tru(IntInListXyz, AbstractEntier_Tru):
+class BaseEntierInList(IntInListXyz, AbstractEntier):
   """ Integer in a constrained list """
-  _typeTru = "leaf"
   _allowedList = [0]
 
   def __init__(self, value=None):
     IntInListXyz.__init__(self, value)
-    AbstractEntier_Tru.__init__(self)
+    AbstractEntier.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, val, stream):
@@ -1374,14 +1195,13 @@ class BaseEntierInList_Tru(IntInListXyz, AbstractEntier_Tru):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
       raise ValueError(err)
 
-class BaseEntierInRange_Tru(IntRangeXyz, AbstractEntier_Tru):
+class BaseEntierInRange(IntRangeXyz, AbstractEntier):
   """ integer in a constrained range """
-  _typeTru = "leaf"
   _allowedRange = [0, 0]
 
   def __init__(self, value=None):
     IntRangeXyz.__init__(self, value)
-    AbstractEntier_Tru.__init__(self)
+    AbstractEntier.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, val, stream):
@@ -1394,13 +1214,12 @@ class BaseEntierInRange_Tru(IntRangeXyz, AbstractEntier_Tru):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
       raise ValueError(err)
 
-class BaseFloattant_Tru(FloatXyz, Base_common_Tru):
-  _typeTru = "leaf"
+class BaseFloattant(FloatXyz, Base_common):
   _plainType = True
 
   def __init__(self, value=None):
     FloatXyz.__init__(self, value)
-    Base_common_Tru.__init__(self)
+    Base_common.__init__(self)
 
   @classmethod
   def ReadFromTokens(cls, stream):
@@ -1416,7 +1235,7 @@ class BaseFloattant_Tru(FloatXyz, Base_common_Tru):
 
   def toDatasetTokens(self):
     """ Override. 
-    See commented code in AbstractChaine_Tru if one day you want to perform a very fine replacement keeping comments
+    See commented code in AbstractChaine if one day you want to perform a very fine replacement keeping comments
     for example.
     """
     self_as_str = str(float(self))
@@ -1426,9 +1245,8 @@ class BaseFloattant_Tru(FloatXyz, Base_common_Tru):
       ret = [" " + self_as_str]
     return ret
 
-class Rien_Tru(BoolXyz, Base_common_Tru):
+class Rien(BoolXyz, Base_common):
   """ Boolean flags are of type 'rien' in the TRAD_2 file."""
-  _typeTru = "leaf"
   _plainType = True
 
   @classmethod
@@ -1440,325 +1258,6 @@ class Rien_Tru(BoolXyz, Base_common_Tru):
     """ Override. """
     return ['']
 
-class Todo_Tru(TodoXyz, Base_common_Tru):
+class Todo(TodoXyz, Base_common):
   _defaultValue = "TODO (class not implemented yet from TRUST)"
-  _typeTru = "leaf"
   pass
-
-
-#######################################################################
-## Example of overriding the GUI for defbord_2 - should be put in a separate file.
-##
-#######################################################################
-class defbord_2_Tru(ConstrainBase_Tru):
-  """two edges as 'x = 0.0   0.0 <= y <= 1.0' for example"""
-  _verbose = True
-
-  _attributesList = [
-    ("edge_1", "StrEdge_1_Tru"),
-    ("edge_2", "StrEdge_2_Tru")
-  ]
-
-  _more = "\n  - exclusive [x|y|z] between edge_1 and edge_2\n   (if x on edge_1, only y or z on edge_2, etc.)"
-  _helpDict = {
-    "edge_1": ("expression as 'x = 0.0'" + _more, ''),
-    "edge_2": ("expression as '0.0 <= y <= 1.0'" + _more, '')
-  }
-
-  def __setattr__(self, name, value):
-    super(defbord_2_Tru, self).__setattr__(name, value)
-    self.on_attributesChange()
-
-  def __init__(self):
-    super(defbord_2_Tru, self).__init__()
-    self.setIsCast(True)
-    # self._setAllAttributesList()
-    # self.check_values()
-
-  @classmethod
-  def ReadFromTokens(cls, stream):
-    ret = cls()
-    # Read 8 tokens: 3 (first edge) then 5 (second edge)
-    tk_lst, tk_data = [], []
-    for i in range(3):
-      tk_lst.append(stream.nextLow())
-      tk_data.append(stream.lastReadTokens())
-    first_edge_str = ' '.join(tk_lst)
-    ret.edge_1 = first_edge_str
-    ret._tokens["edge_1"] = TRUSTTokens.Join(tk_data)
-
-    tk_lst, tk_data = [], []
-    for i in range(5):
-      tk_lst.append(stream.nextLow())
-      tk_data.append(stream.lastReadTokens())
-    snd_edge_str = ' '.join(tk_lst)
-    ret.edge_2 = snd_edge_str
-    ret._tokens["edge_2"] = TRUSTTokens.Join(tk_data)
-    return ret
-
-  def toDatasetTokens(self):
-    ### TODO : could be made clearer:
-    tk1 = self._tokens["edge_1"].orig()
-    s1 = ''.join(tk1)
-    s1_check = s1.replace(" ", "").strip().lower().replace("=", " = ")
-    if s1_check != self.edge_1:
-      s1 = " " + str(self.edge_1).upper()
-
-    tk2 = self._tokens["edge_2"].orig()
-    s2 = ''.join(tk2)
-    s2_check = s2.replace(" ", "").strip().lower().replace("<=", " <= ")
-    if s2_check != self.edge_2:
-      s2 = " " + str(self.edge_2).upper()
-    return s1 + s2
-
-  def getEdge_1(self):
-    return str(self.edge_1)
-
-  def getEdge_2(self):
-    return str(self.edge_2)
-
-  def getEdge_1_list(self):
-    return str(self.edge_1).split()
-
-  def getEdge_2_list(self):
-    return str(self.edge_2).split()
-
-  def checkValues(self, isRaiseException=False):
-    try:
-      var_1, _, _ = self.getEdge_1_list()
-      _, _, var_2, _, _ = self.getEdge_2_list()
-    except Exception as e:  #  may be attributes not set
-      return True
-
-    if var_1 == var_2:  # verboten
-      msg = "%s.check_values variable edge_1 '%s' and variable edge_2 '%s' have to be distinct" % (self._className, var_1, var_2)
-      if isRaiseException:
-        raise Exception(msg)
-      else:
-        return False
-    return True
-
-  def on_attributesChange(self, verbose=False):
-    res = self.checkValues(isRaiseException=False)
-    if not res:
-      super(defbord_2_Tru, self).__setattr__("_icon", "bug")
-    else:
-      super(defbord_2_Tru, self).__setattr__("_icon", None)
-    return res
-
-def get_tokens(aStr):
-  """"because '  a   b c   '.split() -> ['a', 'b', 'c']"""
-  tmp = str(aStr).lower()
-  return tmp.split()
-
-class StrEdge_1_Tru(StrXyz):
-  """string only as 'x = 0.0' for example"""
-  _defaultValue = "x = 0.0"
-
-  def __new__(cls, value=None):
-    if value == None:
-      tokens = get_tokens(cls._defaultValue)
-    else:
-      tokens = get_tokens(value.replace('=', ' = '))  # case 'x=0.0'
-
-    strValue = " ".join(tokens)
-
-    if len(tokens) != 3:
-      msg = "incorrect string '%s', expected 3 tokens as 'x = 0.0'" % strValue
-      raise Exception(msg)
-
-    if tokens[0] not in "x y z".split():
-      msg = "incorrect string '%s', expected tokens 1 as x or y or z'" % strValue
-      raise Exception(msg)
-
-    if tokens[1] != "=":
-      msg = "incorrect string '%s', expected tokens 2 as '='" % strValue
-      raise Exception(msg)
-
-    try:
-      tmp = float(tokens[2])
-    except:
-      msg = "incorrect string '%s', expected tokens 3 as a float number" % strValue
-      raise Exception(msg)
-
-    obj = str.__new__(cls, strValue)
-    return obj
-
-
-class StrEdge_2_Tru(StrXyz):
-  """string only as '0.0 <= y <= 1.0' for example"""
-  _defaultValue = "0.0 <= y <= 1.0"
-
-  def __new__(cls, value = None):
-    if value == None:
-      tokens = get_tokens(cls._defaultValue)
-    else:
-      tokens = get_tokens(value.replace('<=', ' <= '))  # case '0.0<=y<=1.0'
-
-    strValue = " ".join(tokens)
-
-    if len(tokens) != 5:
-      msg = "incorrect string '%s', expected 5 tokens as '0.0 <= y <= 1.0'" % strValue
-      raise Exception(msg)
-
-    try:
-      tmp1 = float(tokens[0])
-    except:
-      msg = "incorrect string '%s', expected tokens 1 as a float number" % strValue
-      raise Exception(msg)
-
-    if tokens[1] != "<=":
-      msg = "incorrect string '%s', expected tokens 2 as '<='" % strValue
-      raise Exception(msg)
-
-    if tokens[2] not in "x y z".split():
-      msg = "incorrect string '%s', expected tokens 3 as x or y or z'" % strValue
-      raise Exception(msg)
-
-    if tokens[3] != "<=":
-      msg = "incorrect string '%s', expected tokens 4 as '<='" % strValue
-      raise Exception(msg)
-
-    try:
-      tmp2 = float(tokens[4])
-    except:
-      msg = "incorrect string '%s', expected tokens 5 as a float number" % strValue
-      raise Exception(msg)
-
-    if tmp1 > tmp2:
-      msg = "incorrect string '%s', because expression implies %s <= %s" % (strValue, tmp1, tmp2)
-      raise Exception(msg)
-
-    obj = str.__new__(cls, strValue)
-    return obj
-
-####################################################################################
-## End overriding defbord_2_Tru
-####################################################################################
-
-## TODO move this code to classes with upper case starting letter:
-# class listf_Tru(ConstrainBase_Tru):
-#   """
-#   two or tree float (as coordinates 2D/3D).
-#   name_XDATA: Listfloat_f
-#   name_trio : /*
-#   """
-#   _braces = 0
-#   _typeTru = "dict"
-#   _dimension = 2  # TODO could be singleton global instance attribute, or function singleton self.get_trust_dimension() .
-#   _attributesList = [
-#     ('X', 'FloatXyz'),   #
-#     ('Y', 'FloatXyz'),   #
-#     ('Z', 'FloatXyz'),   #
-#   ]
-#   _helpDict = {
-#     'X': ('Coordinate X', ''),
-#     'Y': ('Coordinate Y', ''),
-#     'Z': ('Coordinate Z', ''),
-#   }
-#
-#   def isHidden(self, nameAttr):
-#     """to know if attribute is currently displayed in treeView and other dialog widget"""
-#     if nameAttr == "Z":
-#       if listf_Tru._dimension == 2:
-#         return True
-#     # useless
-#     # if nameAttr == "X": return False
-#     # if nameAttr == "Y": return False
-#     # if self._dimension == 3:
-#     return False
-#
-#   def getActionsContextMenu(self):
-#     actions = super(listf_Tru, self).getActionsContextMenu()
-#     actions.append( self._createAction('switch 2D/3D', None, "Switch mode 2D and 3d", self.swichDimension, "switchdimension") )
-#     return actions
-#
-#   def swichDimension(self):
-#     if listf_Tru._dimension == 2:
-#       listf_Tru._dimension = 3
-#     else:
-#       listf_Tru._dimension = 2
-#     self.controllerRefreshViewsSignalEmit()
-#     return
-#
-# class listentierf_Tru(listf_Tru):
-#   """
-#   two or tree float (as coordinates 2D/3D).
-#   name_XDATA: Listentier_f
-#   name_trio : /*
-#   """
-#   #_braces = 0
-#   _typeTru = "dict"
-#   #_dimension = 2  # TODO could be singleton global instance attribute, or function singleton self.get_trust_dimension() .
-#   _attributesList = [
-#     ('X', 'IntPosXyz'),   #
-#     ('Y', 'IntPosXyz'),   #
-#     ('Z', 'IntPosXyz'),   #
-#   ]
-#   _helpDict = {
-#     'X': ('Number of nodes X', ''),
-#     'Y': ('Number of nodes Y', ''),
-#     'Z': ('Number of nodes Z', ''),
-#   }
-#   pass
-#
-#
-# class listchainef_Tru(listf_Tru):
-#   """
-#   two or tree strings (as coordinates 2D/3D).
-#   name_XDATA: Listchaine_f
-#   name_trio : /*
-#   """
-#   #_braces = 0
-#   _typeTru = "dict"
-#   #_dimension = 2  # TODO could be singleton global instance attribute, or function singleton self.get_trust_dimension() .
-#   _attributesList = [
-#     ('X', 'BaseChaine_Tru'),   #
-#     ('Y', 'BaseChaine_Tru'),   #
-#     ('Z', 'BaseChaine_Tru'),   #
-#   ]
-#   _helpDict = {
-#     'X': ('Name for X', ''),
-#     'Y': ('Name for Y', ''),
-#     'Z': ('Name for Z', ''),
-#   }
-#   pass
-
-def initXyzClasses():
-  """case of CLFX.reset() done and redo append"""
-  if packagespy_classes[0] not in CLFX.getAllXyzClassesNames():
-    CLFX.appendAllXyzClasses(packagespy_classes)
-
-###################################################
-packagespy_classes = [
-  ConstrainBase_Tru,
-  ListOfBase_Tru,
-
-  chaine_Tru,
-  BaseChaine_Tru,
-  BaseChaineInList_Tru,
-  fin_Tru,
-  ListOfChaine_Tru,
-
-  BaseEntier_Tru,
-  BaseEntierInList_Tru,
-  BaseEntierInRange_Tru,
-
-  BaseFloattant_Tru,
-  ListOfFloat_Tru,
-
-  Rien_Tru,
-  Todo_Tru,
-
-  interprete_Tru,
-  Declaration_Tru,
-  DataSet_Tru,
-
-  defbord_2_Tru,
-  StrEdge_1_Tru,
-  StrEdge_2_Tru
-]
-
-# The initialisation is performed (not automatic) explicitely by the end user:
-### initXyzClasses()
-
