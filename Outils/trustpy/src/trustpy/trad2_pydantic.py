@@ -75,12 +75,12 @@ def write_block(block, file, all_blocks):
     for attribute in block.attrs:
 
         assert isinstance(attribute, TRAD2Attr)
-        
+
         attr_name = attribute.nam
         attr_type = attribute.typ
         attr_syno = attribute.synos
         attr_mode = attribute.is_opt
-        attr_desc = attribute.desc            
+        attr_desc = attribute.desc
 
         attr_name = valid_variable_name(attr_name)
 
@@ -158,7 +158,7 @@ def write_block(block, file, all_blocks):
         else:
             message = f"unresolved type : {attr_type}"
             logger.error(message)
-            raise NotImplementedError(message)            
+            raise NotImplementedError(message)
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
@@ -217,14 +217,14 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
 
     if testing:
         test_filename = output_filename.replace(".py", "_test.py")
-        with open(test_filename, "w", encoding="utf-8") as file:            
+        with open(test_filename, "w", encoding="utf-8") as file:
             file.write(f'import {trad2_filename.name}')
             file.write("\n" * 3)
             for cls in all_blocks.keys():
                 file.write(f'{trad2_filename.name}.{cls}()\n')
 
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
 
     trad2_filename = pathlib.Path("src/trustpy/test/TRAD_2_GENEPI_V17")
     output_filename = trad2_filename.name + ".py"
