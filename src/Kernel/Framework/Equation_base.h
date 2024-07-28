@@ -17,7 +17,7 @@
 #define Equation_base_included
 
 #include <Ecrire_fichier_xyz_valeur.h>
-#include <Parametre_equation.h>
+#include <Parametre_equation_base.h>
 #include <Solveur_Masse_base.h>
 #include <Matrice_Morse_Diag.h>
 #include <MD_Vector_tools.h>

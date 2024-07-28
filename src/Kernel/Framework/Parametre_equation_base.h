@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,24 +13,21 @@
 *
 *****************************************************************************/
 
-
 #ifndef Parametre_equation_base_included
 #define Parametre_equation_base_included
 
-
-
-#include <Objet_U.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Parametre_equation_base Un objet Parametre_equation_base est un objet regroupant les differentes
  *
  *      options specifiques pour unre equation voir Parametre_simpler
  *
- *
  */
 class Parametre_equation_base : public Objet_U
 {
   Declare_base(Parametre_equation_base);
-
-
 };
-#endif
+
+using Parametre_equation = OWN_PTR(Parametre_equation_base);
+
+#endif /* Parametre_equation_base_included */

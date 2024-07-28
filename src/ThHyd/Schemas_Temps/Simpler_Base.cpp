@@ -17,10 +17,10 @@
 #include <Assembleur_base.h>
 #include <Probleme_base.h>
 #include <Simpler_Base.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <SChaine.h>
 #include <EChaine.h>
-#include <Domaine_VF.h>
 
 Implemente_base_sans_constructeur(Simpler_Base,"Simpler_Base",Solveur_non_lineaire);
 
