@@ -21,7 +21,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Nom.h>
 
-class Solveur_Implicite_Base;
+class Solveur_Implicite_base;
 class Schema_Temps_base;
 class Equation_base;
 class Matrice_Morse;

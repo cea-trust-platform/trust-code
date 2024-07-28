@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,21 +13,12 @@
 *
 *****************************************************************************/
 
-
-/*! @brief class Schema_Implicite_base
- *
- */
-
 #include <Schema_Implicite_base.h>
 #include <Param.h>
 
 Implemente_base(Schema_Implicite_base,"Schema_Implicite_base",Schema_Temps_base);
 // XD schema_implicite_base schema_temps_base schema_implicite_base -1 Basic class for implicite time scheme.
 // XD attr max_iter_implicite entier max_iter_implicite 1 Maximum number of iterations allowed for the solver (by default 200).
-
-/*! @brief voir Solveur::printOn
- *
- */
 
 Sortie& Schema_Implicite_base::printOn(Sortie& os) const
 {

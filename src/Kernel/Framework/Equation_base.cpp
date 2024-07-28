@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Parametre_diffusion_implicite.h>
-#include <Solveur_Implicite_Base.h>
+#include <Solveur_Implicite_base.h>
 #include <Schema_Euler_explicite.h>
 #include <Schema_Implicite_base.h>
 #include <Source_dep_inco_base.h>

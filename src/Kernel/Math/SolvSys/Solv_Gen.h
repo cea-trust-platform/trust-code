@@ -16,11 +16,13 @@
 #ifndef Solv_Gen_included
 #define Solv_Gen_included
 
-#include <Precond.h>
-#include <SolvElem.h>
+#include <SolvElem_base.h>
 #include <solv_iteratif.h>
-class Param;
+#include <TRUST_Deriv.h>
+#include <Precond.h>
+
 class Matrice_Morse;
+class Param;
 #define _SEUIL_Gen_ 1e-12
 
 class Solv_Gen : public solv_iteratif
@@ -33,8 +35,8 @@ public :
   {
     return resoudre_systeme(M, A, B);
   }
-  inline SolvElem& le_solveur_elem() { return le_solveur_elem_; }
-  inline const SolvElem& le_solveur_elem() const { return le_solveur_elem_; }
+  inline OWN_PTR(SolvElem_base)& le_solveur_elem() { return le_solveur_elem_; }
+  inline const OWN_PTR(SolvElem_base)& le_solveur_elem() const { return le_solveur_elem_; }
   inline const Precond& get_precond() const { return le_precond_; }
   inline void set_precond(const Precond& pre ) { le_precond_ = pre; }
   void reinit() override;
@@ -45,7 +47,7 @@ protected :
   int solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, const DoubleVect& secmem, DoubleVect& solution);
 
   Precond le_precond_;
-  SolvElem le_solveur_elem_;
+  OWN_PTR(SolvElem_base) le_solveur_elem_;
   int nb_it_max_, nb_it_max_flag, force_;
 };
 

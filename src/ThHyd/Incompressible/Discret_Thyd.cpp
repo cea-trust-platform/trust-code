@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Solveur_Implicite_Base.h>
+#include <Solveur_Implicite_base.h>
 #include <Schema_Implicite_base.h>
 #include <Schema_Temps_base.h>
 #include <Discret_Thyd.h>

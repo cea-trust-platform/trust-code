@@ -31,7 +31,6 @@ Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 // XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the GEN solver.
 // XD attr force rien force 1 Keyword to set ipar[5]=-1 in the GEN solver. This is helpful if you notice that the solver does not perform more than 100 iterations. If this keyword is specified in the datafile, you should provide nb_it_max.
 
-
 Solv_Gen::Solv_Gen()
 {
   seuil_ = _SEUIL_Gen_;
@@ -169,7 +168,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
 
   // definition de w : vecteur de travail de taille 9*n
   ArrOfDouble w;
-  le_solveur_elem_.dimensionne_wks(ntot,w);
+  le_solveur_elem_->dimensionne_wks(ntot,w);
 
   // Initialisation
   ipar[0] = 0; //on def tjrs cela pour commencer le calcul
@@ -203,7 +202,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
   fpar[10] = 0; // initialisation du compteur
 
   //solution = 1.0;
-  le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+  le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
   solution.echange_espace_virtuel();
 
   DoubleTab W7, W8;
@@ -237,7 +236,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           // on doit calculer le produit A*u
           //          int ii;
           matrice.multvect(W7, W8);
-          le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+          le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
       else if(ret==2)
@@ -247,7 +246,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           //             matrice.multvectT(u, s);
           //int ii;
           matrice.multvectT(W7, W8);
-          le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+          le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
       else if((ret == 3) || (ret == 5))
@@ -259,7 +258,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           else
             le_precond_.preconditionner(mat_loc,secmem,solution);
           //             le_precond_.preconditionner(matrice,secmem,solution);
-          le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+          le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
       else if((ret == 4) || (ret == 6))
@@ -271,14 +270,14 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           else
             le_precond_.preconditionner(mat_loc,secmem,solution);
 
-          le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+          le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
       else if(ret == 10)
         {
           Cout<<"Case 10"<<finl;
           Cout<<"The predefined stop test is retained"<<finl;
-          le_solveur_elem_.iteration(ntot,secmem,solution,ipar,fpar,w);
+          le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
       else if(ret > 0)

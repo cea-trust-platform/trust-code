@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,26 +13,46 @@
 *
 *****************************************************************************/
 
+#ifndef Solveur_Implicite_base_included
+#define Solveur_Implicite_base_included
 
-#include <Solveur_Implicite_Base.h>
+#include <Parametre_implicite.h>
+#include <TRUSTTabs_forward.h>
+#include <TRUST_Deriv.h>
+#include <TRUST_List.h>
+#include <TRUST_Ref.h>
+#include <Objet_U.h>
+#include <Double.h>
 
-Implemente_base(Solveur_Implicite_Base,"Solveur_Implicite_Base",Objet_U);
-// XD solveur_implicite_base objet_u solveur_implicite_base -1 Class for solver in the situation where the time scheme is the implicit scheme. Solver allows equation diffusion and convection operators to be set as implicit terms.
+class Equation_base;
 
-
-Sortie& Solveur_Implicite_Base::printOn(Sortie& os ) const
+class Solveur_Implicite_base : public  Objet_U
 {
-  return os;
-}
+  Declare_base(Solveur_Implicite_base);
 
-Entree& Solveur_Implicite_Base::readOn(Entree& is )
-{
-  return is;
-}
+public :
+  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) =0;
+  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, int& ok);
+  virtual bool est_compatible_avec_th_mono() const /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
+  {
+    return 1; /* par defaut oui */
+  }
+  virtual int nb_valeurs_temporelles_pression() const /* nombre de valeurs temporelles des champs de pression dont le solveur a besoin */
+  {
+    return 1; /* par defaut 1 */
+  }
+  virtual double get_default_facsec_max() const /* facsec_max recommande pour ce schema */
+  {
+    return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
+  }
+  virtual double get_default_growth_factor() const /* taux de croissance du pas de temps */
+  {
+    return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
+  }
+  virtual Parametre_equation& get_and_set_parametre_equation(Equation_base& eqn) /* initialisation de parametre_equation() dans une equation */
+  {
+    return eqn.parametre_equation(); /* par defaut : ne fait rien */
+  }
+};
 
-bool Solveur_Implicite_Base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, int& ok)
-{
-  Cerr << "iterer_eqs non code" << finl;
-  Process::exit();
-  return false;
-}
+#endif /* Solveur_Implicite_base_included */

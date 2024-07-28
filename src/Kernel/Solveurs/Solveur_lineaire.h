@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,9 +23,9 @@
  * @sa Solveur_base
  */
 
-#include <Solveur_Implicite_Base.h>
+#include <Solveur_Implicite_base.h>
 
-class Solveur_lineaire : public Solveur_Implicite_Base
+class Solveur_lineaire : public Solveur_Implicite_base
 {
   Declare_base(Solveur_lineaire);
 

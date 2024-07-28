@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,47 +16,25 @@
 #ifndef Schema_Implicite_base_included
 #define Schema_Implicite_base_included
 
-
-
 /*! @brief class Schema_Implicite_base Classe de base pour tous les schemas en temps implicite
  *
  *   Il porte un objet de type Solveur ( ex le Simpler)
  *
  */
 
+#include <Solveur_Implicite_base.h>
 #include <Schema_Temps_base.h>
-#include <Solveur_Implicite.h>
-
 
 class Schema_Implicite_base : public Schema_Temps_base
 {
   Declare_base(Schema_Implicite_base);
 public:
-
-  inline Solveur_Implicite& solveur();
-  inline const  Solveur_Implicite& solveur() const;
+  inline OWN_PTR(Solveur_Implicite_base)& solveur() { return le_solveur; }
+  inline const OWN_PTR(Solveur_Implicite_base)& solveur() const { return le_solveur; }
   void set_param(Param& param) override;
 
 protected:
-  Solveur_Implicite le_solveur;
+  OWN_PTR(Solveur_Implicite_base) le_solveur;
 };
 
-
-/*! @brief
- *
- */
-inline Solveur_Implicite& Schema_Implicite_base::solveur()
-{
-  return le_solveur;
-}
-
-/*! @brief
- *
- */
-inline const Solveur_Implicite& Schema_Implicite_base::solveur() const
-{
-  return le_solveur;
-}
-
-#endif
-
+#endif /* Schema_Implicite_base_included */
