@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,13 @@
 #ifndef Navier_Stokes_std_included
 #define Navier_Stokes_std_included
 
-#include <Traitement_particulier_NS.h>
+#include <Traitement_particulier_NS_base.h>
 #include <Navier_Stokes_IBM_impl.h>
 #include <Operateur_Grad.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Operateur_Div.h>
+#include <TRUST_Deriv.h>
 #include <Assembleur.h>
 #include <Champ_Fonc.h>
 #include <Champ_Don.h>
@@ -177,7 +178,7 @@ protected:
   double dt_projection, seuil_projection, seuil_uzawa, max_div_U, seuil_divU, raison_seuil_divU;
   mutable double cumulative_;
 
-  Traitement_particulier_NS le_traitement_particulier;
+  OWN_PTR(Traitement_particulier_NS_base) le_traitement_particulier;
 
   void uzawa(const DoubleTab&, const Matrice_Base&, SolveurSys&, DoubleTab&, DoubleTab&);
   Nom chaine_champ_combi;

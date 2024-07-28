@@ -189,8 +189,8 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           type+=discr;
           Cerr << type << finl;
           le_traitement_particulier.typer(type);
-          le_traitement_particulier.associer_eqn(*this);
-          le_traitement_particulier.lire(is);
+          le_traitement_particulier->associer_eqn(*this);
+          le_traitement_particulier->lire(is);
         }
       else
         {
@@ -1029,7 +1029,7 @@ int Navier_Stokes_std::preparer_calcul()
   divergence_U.changer_temps(temps);
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier.preparer_calcul_particulier();
+    le_traitement_particulier->preparer_calcul_particulier();
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, vitesse", inconnue());
   Debog::verifier("Navier_Stokes_std::preparer_calcul, pression", la_pression);
@@ -1095,7 +1095,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
     projeter();
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier.post_traitement_particulier();
+    le_traitement_particulier->post_traitement_particulier();
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : pression", la_pression.valeurs());
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse.valeurs());
 
@@ -1262,7 +1262,7 @@ int Navier_Stokes_std::reprendre(Entree& is)
   la_pression.reprendre(is);
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier.reprendre_stat();
+    le_traitement_particulier->reprendre_stat();
 
   return 1;
 }
@@ -1871,7 +1871,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, So
 void Navier_Stokes_std::sauver() const
 {
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier.sauver_stat();
+    le_traitement_particulier->sauver_stat();
 }
 
 const Champ_Inc& Navier_Stokes_std::rho_la_vitesse() const

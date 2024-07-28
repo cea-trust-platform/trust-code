@@ -16,10 +16,11 @@
 #ifndef Conduction_included
 #define Conduction_included
 
-#include <Traitement_particulier_Solide.h>
+#include <Traitement_particulier_Solide_base.h>
 #include <Schema_Temps_base.h>
 #include <Operateur_Diff.h>
 #include <Equation_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 
 class Milieu_base;
@@ -76,7 +77,7 @@ private :
   Operateur_Diff terme_diffusif;
 
 protected :
-  Traitement_particulier_Solide le_traitement_particulier;
+  OWN_PTR(Traitement_particulier_Solide_base) le_traitement_particulier;
 };
 
 /*! @brief Renvoie le champ inconnue de l'equation, i.

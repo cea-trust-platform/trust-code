@@ -101,9 +101,9 @@ int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           type+=discr;
           Cerr << type << finl;
           le_traitement_particulier.typer(type);
-          le_traitement_particulier.associer_eqn(*this);
-          le_traitement_particulier.lire(is);
-          le_traitement_particulier.preparer_calcul_particulier();
+          le_traitement_particulier->associer_eqn(*this);
+          le_traitement_particulier->lire(is);
+          le_traitement_particulier->preparer_calcul_particulier();
           return 1;
         }
       else
@@ -357,7 +357,7 @@ void Conduction::mettre_a_jour(double temps)
   Equation_base::mettre_a_jour(temps);
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier.post_traitement_particulier();
+    le_traitement_particulier->post_traitement_particulier();
 }
 
 
