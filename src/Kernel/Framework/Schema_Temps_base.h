@@ -17,6 +17,7 @@
 #define Schema_Temps_base_included
 
 #include <Interface_blocs.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Parser_U.h>
@@ -65,7 +66,6 @@ class Param;
 class Schema_Temps_base : public Objet_U
 {
   Declare_base_sans_constructeur(Schema_Temps_base);
-
 public :
   virtual void initialize();
   virtual void terminate() ;
@@ -109,7 +109,7 @@ public :
   virtual void mettre_a_jour_dt(double toto)
   {
     abort();
-  };
+  }
   virtual void mettre_a_jour_dt_stab();
 
   inline double pas_de_temps() const;
@@ -144,35 +144,35 @@ public :
   {
     assert(stationnaire_atteint_!=-1);
     return stationnaire_atteint_;
-  };
+  }
   inline int stationnaire_atteint_safe() const { return stationnaire_atteint_; }
   int stop_lu() const;
   inline int diffusion_implicite() const;
   inline double seuil_diffusion_implicite() const
   {
     return seuil_diff_impl_;
-  };        // Seuil pour implicitation de la diffusion par GC
+  }        // Seuil pour implicitation de la diffusion par GC
   inline int impr_diffusion_implicite() const
   {
     return impr_diff_impl_;
-  };        // Impression ou non de GC implicitation
+  }        // Impression ou non de GC implicitation
   inline int impr_extremums() const
   {
     return impr_extremums_;
-  };
+  }
   inline int niter_max_diffusion_implicite() const
   {
     return niter_max_diff_impl_;
-  };// Iterations maximale pour GC implicitation
+  } // Iterations maximale pour GC implicitation
 
   inline int no_conv_subiteration_diffusion_implicite() const
   {
     return no_conv_subiteration_diff_impl_;
-  };
+  }
   inline int no_error_if_not_converged_diffusion_implicite() const
   {
     return no_error_if_not_converged_diff_impl_;
-  };
+  }
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
@@ -189,17 +189,17 @@ public :
   inline int precision_impr() const
   {
     return precision_impr_;
-  };
+  }
   inline int wcol() const
   {
     // largeur minimale des colonnes des fichiers .out
     // precision_impr_ + 9 car : -1.000e+150 on ajoute la longueur de "-1." et de "e+150" plus un espace
     return precision_impr_ + 9;
-  };
+  }
   inline int gnuplot_header() const
   {
     return gnuplot_header_;
-  };
+  }
   inline double seuil_statio() const ;
   inline int nb_pas_dt_max() const ;
   inline int nb_pas_dt() const ;
@@ -220,7 +220,7 @@ public :
   {
     dt_max_str_ = Nom(); //desactive la fonction dt_max = f(t)
     return dt_max_;
-  } ;
+  }
   inline double& set_dt_sauv() { return dt_sauv_; }
   inline double& set_dt_impr() { return dt_impr_; }
   inline int& set_precision_impr() { return precision_impr_; }
@@ -232,7 +232,7 @@ public :
     if (stationnaire_atteint_==-1)
       stationnaire_atteint_=1;
     return stationnaire_atteint_;
-  } ;
+  }
   inline void set_stationnaires_atteints(bool flag) { stationnaires_atteints_=flag; }
   inline int& set_diffusion_implicite() { return ind_diff_impl_; }
   inline double& set_seuil_diffusion_implicite() { return seuil_diff_impl_; }
@@ -265,14 +265,14 @@ public :
   inline int disable_progress() const
   {
     return disable_progress_ ;
-  };
+  }
   void write_dt_ev(bool init);
   void write_progress(bool init);
   // Flag to disable the writing of the .dt_ev file
   inline int disable_dt_ev() const
   {
     return disable_dt_ev_ ;
-  };
+  }
   void finir() const;
 
 protected :
@@ -334,7 +334,6 @@ private:
   int disable_dt_ev_; // Flag to disable the writing of the .dt_ev file
 };
 
-
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au shema en temps
  *
  * @param (Nom& name) le nom a donner au shema en temps
@@ -343,7 +342,6 @@ inline void Schema_Temps_base::nommer(const Nom& name)
 {
   nom_=name;
 }
-
 
 /*! @brief surcharge Objet_U::le_nom() Renvoie le nom du shema en temps
  *
@@ -354,7 +352,6 @@ inline const Nom& Schema_Temps_base::le_nom() const
   return nom_;
 }
 
-
 /*! @brief Renvoie une reference sur le nombre de pas maxi
  *
  * @return (double&)
@@ -363,7 +360,6 @@ inline int Schema_Temps_base::nb_pas_dt_max() const
 {
   return nb_pas_dt_max_;
 }
-
 
 /*! @brief Renvoie une reference sur le seuil stationnaire
  *
@@ -374,7 +370,6 @@ inline double Schema_Temps_base::seuil_statio() const
   return seuil_statio_;
 }
 
-
 /*! @brief Renvoie une reference sur le temps d'impression
  *
  * @return (double&)
@@ -383,7 +378,6 @@ inline double Schema_Temps_base::temps_impr() const
 {
   return dt_impr_;
 }
-
 
 /*! @brief Renvoie une reference sur le temps de sauvegarde
  *
@@ -394,7 +388,6 @@ inline double Schema_Temps_base::temps_sauv() const
   return dt_sauv_;
 }
 
-
 /*! @brief Renvoie une reference sur le temps maximum
  *
  * @return (double&)
@@ -403,7 +396,6 @@ inline double Schema_Temps_base::temps_max() const
 {
   return tmax_;
 }
-
 
 /*! @brief Renvoie le pas de temps (delta_t) courant.
  *
@@ -466,7 +458,6 @@ inline double Schema_Temps_base::temps_courant() const
   return temps_courant_;
 }
 
-
 /*! @brief Renvoie le temps courant.
  *
  * @return (double) le temps courant du schema en temps
@@ -496,7 +487,6 @@ inline double Schema_Temps_base::temps_init() const
   return tinit_;
 }
 
-
 /*! @brief Renvoie le nombre de pas de temps effectues.
  *
  * @return (int) le nombre de pas de temps effectues
@@ -514,8 +504,6 @@ inline int Schema_Temps_base::nb_impr() const
 {
   return nb_impr_;
 }
-
-
 
 /*! @brief Change le temps courant.
  *
@@ -590,5 +578,6 @@ inline int Schema_Temps_base::diffusion_implicite() const
   return ind_diff_impl_;
 }
 
-#endif
+using Schema_Temps = OWN_PTR(Schema_Temps_base);
 
+#endif /* Schema_Temps_base_included */

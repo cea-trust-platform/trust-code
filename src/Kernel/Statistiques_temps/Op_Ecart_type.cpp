@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,22 +13,16 @@
 *
 *****************************************************************************/
 
+#include <Schema_Temps_base.h>
 #include <Op_Ecart_type.h>
 #include <Probleme_base.h>
-#include <Schema_Temps.h>
 
 Implemente_instanciable(Op_Ecart_type,"Op_Ecart_type",Operateur_Statistique_tps_base);
-
-//// printOn
-//
 
 Sortie& Op_Ecart_type::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& Op_Ecart_type::readOn(Entree& s )
 {

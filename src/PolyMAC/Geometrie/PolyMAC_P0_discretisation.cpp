@@ -13,28 +13,26 @@
 *
 *****************************************************************************/
 
-#include <PolyMAC_P0_discretisation.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc_Elem_PolyMAC_P0_TC.h>
 #include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
 #include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
-#include <Milieu_base.h>
-#include <Equation_base.h>
-#include <Champ_Uniforme.h>
-#include <DescStructure.h>
-#include <Champ_Inc.h>
-#include <Schema_Temps.h>
-#include <Schema_Temps_base.h>
-#include <Motcle.h>
+#include <PolyMAC_P0_discretisation.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Champ_Fonc_Tabule.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Uniforme.h>
 #include <Domaine_Cl_dis.h>
+#include <Equation_base.h>
+#include <DescStructure.h>
+#include <Milieu_base.h>
+#include <Champ_Inc.h>
+#include <Motcle.h>
 
 Implemente_instanciable(PolyMAC_P0_discretisation, "PolyMAC_P0", PolyMAC_P0P1NC_discretisation);
 // XD polymac_p0 discretisation_base polymac_p0 -1 polymac_p0 discretization (previously covimac discretization compatible with pb_multi).
-
 
 Entree& PolyMAC_P0_discretisation::readOn(Entree& s) { return s; }
 

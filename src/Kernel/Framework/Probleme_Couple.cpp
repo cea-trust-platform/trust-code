@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ bool Probleme_Couple::solveTimeStep()
         // on propage un certain nombre de choses vers les clones
         for (int i=1; i<sch_clones.size(); i++)
           {
-            sch_clones[i].facteur_securite_pas()=schema_temps().facteur_securite_pas();
+            sch_clones[i]->facteur_securite_pas()=schema_temps().facteur_securite_pas();
             sch_clones[i]->set_stationnaire_atteint()=schema_temps().stationnaire_atteint();
             sch_clones[i]->residu()=schema_temps().residu();
           }
@@ -306,7 +306,7 @@ void Probleme_Couple::associer_sch_tps_base(Schema_Temps_base& sch)
     {
       sch_clones[i]=sch; // Clonage du schema
       Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
-      pb.associer_sch_tps_base(sch_clones[i]); // association
+      pb.associer_sch_tps_base(sch_clones[i].valeur()); // association
       //On attribue la valeur 1 a schema_impr_ pour le schema du probleme 0
       //et 0 pour les autres. Un seul schema doit imprimer.
       if (i!=0) pb.schema_temps().schema_impr()=0;

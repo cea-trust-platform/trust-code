@@ -13,19 +13,16 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_synt.h>
 #include <Frontiere_dis_base.h>
-#include <Frontiere.h>
+#include <Schema_Temps_base.h>
 #include <Navier_Stokes_std.h>
-#include <Domaine_VF.h>
-#include <Fluide_base.h>
+#include <Champ_front_synt.h>
 #include <Champ_Uniforme.h>
-#include <Schema_Temps.h>
-
+#include <Fluide_base.h>
+#include <Domaine_VF.h>
+#include <Frontiere.h>
 #include <random>
-
 #include <string>
-
 
 Implemente_instanciable(Champ_front_synt,"Champ_front_synt",Ch_front_var_instationnaire_dep);
 

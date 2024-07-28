@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Probleme_Couple_included
 
 #include <TRUSTTabs_forward.h>
-#include <Schema_Temps.h>
+#include <Schema_Temps_base.h>
 #include <Couplage_U.h>
 #include <TRUST_Ref.h>
 
@@ -103,6 +103,5 @@ inline void Probleme_Couple::mettre_a_jour_modele_rayo(double temps)
   Cerr<<"We should not pass through here"<<finl;
   exit();
 }
-
 
 #endif

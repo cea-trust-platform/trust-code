@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,9 +15,9 @@
 
 #include <Champ_Generique_Ecart_Type.h>
 #include <Champ_Generique_Moyenne.h>
-#include <Schema_Temps.h>
-#include <Postraitement.h>
 #include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <Postraitement.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Generique_Ecart_Type,"Champ_Post_Statistiques_Ecart_Type|Ecart_Type",Champ_Generique_Statistiques_base);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,12 +67,9 @@ private:
   //Champs_compris champs_compris_;
 };
 
-
-
 class Pbc_MED : public Probleme_Couple
 {
   Declare_instanciable(Pbc_MED);
-
 private:
   Schema_Temps sch_;
 };

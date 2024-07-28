@@ -13,23 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Op_Correlation.h>
-#include <Schema_Temps.h>
-#include <Discretisation_base.h>
 #include <Champ_Generique_refChamp.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <Op_Correlation.h>
 
 Implemente_instanciable(Op_Correlation,"Op_Correlation",Operateur_Statistique_tps_base);
-
-//// printOn
-//
 
 Sortie& Op_Correlation::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& Op_Correlation::readOn(Entree& s )
 {

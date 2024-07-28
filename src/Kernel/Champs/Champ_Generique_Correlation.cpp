@@ -15,14 +15,13 @@
 
 #include <Champ_Generique_Correlation.h>
 #include <Champ_Generique_Moyenne.h>
-#include <Schema_Temps.h>
-#include <Postraitement.h>
 #include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <Postraitement.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Generique_Correlation,"Champ_Post_Statistiques_Correlation|Correlation",Champ_Generique_Statistiques_base);
 // XD correlation champ_post_statistiques_base correlation -1 to calculate the correlation between the two fields.
-
 
 Sortie& Champ_Generique_Correlation::printOn(Sortie& s ) const
 {
@@ -31,8 +30,7 @@ Sortie& Champ_Generique_Correlation::printOn(Sortie& s ) const
 
 Entree& Champ_Generique_Correlation::readOn(Entree& s )
 {
-  Champ_Generique_Statistiques_base::readOn(s);
-  return s ;
+  return Champ_Generique_Statistiques_base::readOn(s);
 }
 
 void Champ_Generique_Correlation::completer(const Postraitement_base& post)
@@ -110,9 +108,7 @@ const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage)
 
 const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const
 {
-
   //Creation des composantes serait a faire de maniere dynamique (Correlation_...)
-
   Motcles motcles(2);
   motcles[0] = "unites";
   motcles[1] = "composantes";
@@ -205,4 +201,3 @@ const Motcle Champ_Generique_Correlation::get_directive_pour_discr() const
 
   return directive;
 }
-

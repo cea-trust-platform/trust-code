@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,22 +13,21 @@
 *
 *****************************************************************************/
 
+#include <Fluide_Dilatable_base.h>
+#include <Check_espace_virtuel.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Face_VDF.h>
+#include <communications.h>
+#include <Equation_base.h>
 #include <EOS_Tools_VDF.h>
 #include <Domaine_VDF.h>
 #include <Debog.h>
-#include <Champ_Face_VDF.h>
-#include <Fluide_Dilatable_base.h>
-#include <Equation_base.h>
-#include <Schema_Temps.h>
-#include <Check_espace_virtuel.h>
-#include <communications.h>
 
 Implemente_instanciable(EOS_Tools_VDF,"EOS_Tools_VDF",EOS_Tools_base);
 
 Sortie& EOS_Tools_VDF::printOn(Sortie& os) const
 {
-  os <<que_suis_je()<< finl;
-  return os;
+  return os <<que_suis_je()<< finl;
 }
 
 Entree& EOS_Tools_VDF::readOn(Entree& is)

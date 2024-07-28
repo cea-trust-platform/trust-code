@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,10 @@
 #ifndef Convection_Diffusion_std_included
 #define Convection_Diffusion_std_included
 
+#include <Schema_Temps_base.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Equation_base.h>
-#include <Schema_Temps.h>
 #include <TRUST_Ref.h>
 
 class Champ_Inc_base;

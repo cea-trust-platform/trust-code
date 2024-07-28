@@ -13,22 +13,16 @@
 *
 *****************************************************************************/
 
-#include <Op_Moyenne.h>
+#include <Schema_Temps_base.h>
 #include <Probleme_base.h>
-#include <Schema_Temps.h>
+#include <Op_Moyenne.h>
 
 Implemente_instanciable(Op_Moyenne,"Op_Moyenne",Operateur_Statistique_tps_base);
-
-//// printOn
-//
 
 Sortie& Op_Moyenne::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& Op_Moyenne::readOn(Entree& s )
 {

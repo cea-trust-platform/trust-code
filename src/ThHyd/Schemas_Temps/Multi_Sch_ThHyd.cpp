@@ -20,37 +20,15 @@
 
 Implemente_instanciable(Multi_Sch_ThHyd,"Multi_Schema_ThHyd",Schema_Temps_base);
 
-
-/*! @brief Simple appel a: Schema_Temps_base::printOn(Sortie& ) Ecrit le schema en temps sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Multi_Sch_ThHyd::printOn(Sortie& s) const
 {
   return  Schema_Temps_base::printOn(s);
 }
 
-
-/*! @brief Lit le schema en temps a partir d'un flot d'entree.
- *
- * Simple appel a: Schema_Temps_base::readOn(Entree& )
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Multi_Sch_ThHyd::readOn(Entree& s)
 {
   return Schema_Temps_base::readOn(s) ;
 }
-
-
-////////////////////////////////
-//                            //
-// Caracteristiques du schema //
-//                            //
-////////////////////////////////
-
 
 /*! @brief Renvoie le nombre de valeurs temporelles a conserver.
  *
@@ -59,9 +37,8 @@ Entree& Multi_Sch_ThHyd::readOn(Entree& s)
  */
 int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
 {
-  return std::max(sch_ns->nb_valeurs_temporelles(),sch_scalaires->nb_valeurs_temporelles());
+  return std::max(sch_ns_->nb_valeurs_temporelles(),sch_scalaires_->nb_valeurs_temporelles());
 }
-
 
 /*! @brief Renvoie le nombre de valeurs temporelles futures.
  *
@@ -70,8 +47,8 @@ int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
  */
 int Multi_Sch_ThHyd::nb_valeurs_futures() const
 {
-  int n=sch_ns->nb_valeurs_futures();
-  assert (n==sch_scalaires->nb_valeurs_futures());
+  int n=sch_ns_->nb_valeurs_futures();
+  assert (n==sch_scalaires_->nb_valeurs_futures());
   return n;
 }
 
@@ -82,8 +59,8 @@ int Multi_Sch_ThHyd::nb_valeurs_futures() const
  */
 double Multi_Sch_ThHyd::temps_futur(int i) const
 {
-  double t=sch_ns->temps_futur(i);
-  assert(t==sch_scalaires->temps_futur(i));
+  double t=sch_ns_->temps_futur(i);
+  assert(t==sch_scalaires_->temps_futur(i));
   return t;
 }
 
@@ -94,8 +71,8 @@ double Multi_Sch_ThHyd::temps_futur(int i) const
  */
 double Multi_Sch_ThHyd::temps_defaut() const
 {
-  double t=sch_ns->temps_defaut();
-  assert(t==sch_scalaires->temps_defaut());
+  double t=sch_ns_->temps_defaut();
+  assert(t==sch_scalaires_->temps_defaut());
   return t;
 }
 
@@ -118,7 +95,7 @@ void Multi_Sch_ThHyd::completer()
 
   // OC : je verrai plutot une methode  "completer" de ce genre :
 
-  Schema_Temps_base& le_sch_ns = sch_ns.valeur();
+  Schema_Temps_base& le_sch_ns = sch_ns_.valeur();
   le_sch_ns.set_temps_init()=temps_init();
   le_sch_ns.set_temps_max()=temps_max();
   le_sch_ns.set_temps_courant()=temps_courant();
@@ -140,7 +117,7 @@ void Multi_Sch_ThHyd::completer()
   le_sch_ns.set_indice_nb_pas_dt_max_atteint()=indice_nb_pas_dt_max_atteint();
   le_sch_ns.set_lu()=lu();
 
-  Schema_Temps_base& le_sch_scalaires = sch_scalaires.valeur();
+  Schema_Temps_base& le_sch_scalaires = sch_scalaires_.valeur();
   le_sch_scalaires.set_temps_init()=temps_init();
   le_sch_scalaires.set_temps_max()=temps_max();
   le_sch_scalaires.set_temps_courant()=temps_courant();
@@ -166,15 +143,15 @@ void Multi_Sch_ThHyd::completer()
 int Multi_Sch_ThHyd::mettre_a_jour()
 {
   Schema_Temps_base::mettre_a_jour();
-  sch_ns.mettre_a_jour();
-  sch_scalaires.mettre_a_jour();
+  sch_ns_->mettre_a_jour();
+  sch_scalaires_->mettre_a_jour();
   return 1;
 }
 void Multi_Sch_ThHyd::set_param(Param& param)
 {
-  param.ajouter("nb_ss_pas_dt",&nb_ss_pas_dt);
-  param.ajouter("Schema_Temps_NS",&sch_ns);
-  param.ajouter("Schema_Temps_scalaires",&sch_scalaires);
+  param.ajouter("nb_ss_pas_dt",&nb_ss_pas_dt_);
+  param.ajouter("Schema_Temps_NS",&sch_ns_);
+  param.ajouter("Schema_Temps_scalaires",&sch_scalaires_);
   Schema_Temps_base::set_param(param);
 }
 
@@ -189,17 +166,17 @@ int Multi_Sch_ThHyd::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   //  double dtok=dt_;
   if(sub_type(Navier_Stokes_std, eqn))
     {
-      sch_ns->set_dt()=pas_de_temps();
-      sch_ns.faire_un_pas_de_temps_eqn_base(eqn);
-      facteur_securite_pas()=sch_ns.facteur_securite_pas();
+      sch_ns_->set_dt()=pas_de_temps();
+      sch_ns_->faire_un_pas_de_temps_eqn_base(eqn);
+      facteur_securite_pas()=sch_ns_->facteur_securite_pas();
     }
   else
     {
       //sch_scalaires.preparer_pas_temps();
-      sch_scalaires->set_dt()=pas_de_temps();
-      sch_scalaires.faire_un_pas_de_temps_eqn_base(eqn);
+      sch_scalaires_->set_dt()=pas_de_temps();
+      sch_scalaires_->faire_un_pas_de_temps_eqn_base(eqn);
     }
-  set_stationnaire_atteint()=sch_ns->isStationary() && sch_scalaires->isStationary() ;
+  set_stationnaire_atteint()=sch_ns_->isStationary() && sch_scalaires_->isStationary() ;
   return 1;
 }
 
@@ -240,8 +217,8 @@ bool Multi_Sch_ThHyd::iterateTimeStep(bool& converged)
  */
 bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
 {
-  bool ok=sch_ns->corriger_dt_calcule(dt);
-  ok = ok && sch_scalaires->corriger_dt_calcule(dt);
+  bool ok=sch_ns_->corriger_dt_calcule(dt);
+  ok = ok && sch_scalaires_->corriger_dt_calcule(dt);
   ok = ok && Schema_Temps_base::corriger_dt_calcule(dt);
   return ok;
 }
@@ -253,8 +230,8 @@ bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
  */
 void Multi_Sch_ThHyd::changer_temps_courant(const double t)
 {
-  sch_ns->changer_temps_courant(t);
-  sch_scalaires->changer_temps_courant(t);
+  sch_ns_->changer_temps_courant(t);
+  sch_scalaires_->changer_temps_courant(t);
 
   Schema_Temps_base::changer_temps_courant(t);
 }
@@ -271,13 +248,11 @@ void Multi_Sch_ThHyd::changer_temps_courant(const double t)
  */
 int Multi_Sch_ThHyd::stop() const
 {
-  int ls2 = sch_ns->stop();
-  int ls3 = sch_scalaires->stop();
+  int ls2 = sch_ns_->stop();
+  int ls3 = sch_scalaires_->stop();
 
   return (ls2 | ls3 | Schema_Temps_base::stop());
 }
-
-
 
 /*! @brief Appel a l'objet sous-jacent Imprime le schema en temp sur un flot de sortie (si il y a lieu).
  *
@@ -285,10 +260,8 @@ int Multi_Sch_ThHyd::stop() const
  */
 void Multi_Sch_ThHyd::imprimer(Sortie& os) const
 {
-  sch_ns->imprimer(os);
-  sch_scalaires->imprimer(os);
+  sch_ns_->imprimer(os);
+  sch_scalaires_->imprimer(os);
 
   Schema_Temps_base::imprimer(os);
 }
-
-

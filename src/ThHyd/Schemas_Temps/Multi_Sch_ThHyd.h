@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #ifndef Multi_Sch_ThHyd_included
 #define Multi_Sch_ThHyd_included
 
-#include <Schema_Temps.h>
+#include <Schema_Temps_base.h>
 
 /*! @brief classe Multi_Sch_ThHyd
  *
@@ -61,9 +61,9 @@ public :
 
 
 private :
-  int nb_ss_pas_dt=0;
-  Schema_Temps sch_ns;
-  Schema_Temps sch_scalaires;
+  int nb_ss_pas_dt_=0;
+  Schema_Temps sch_ns_;
+  Schema_Temps sch_scalaires_;
 };
 
 

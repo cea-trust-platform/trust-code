@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,9 @@
 #ifndef Discretiser_included
 #define Discretiser_included
 
-
-
-
+#include <Schema_Temps_base.h>
 #include <Interprete.h>
 #include <Domaine.h>
-#include <Schema_Temps.h>
 
 /*! @brief classe Discretiser Discretise un probleme:
  *

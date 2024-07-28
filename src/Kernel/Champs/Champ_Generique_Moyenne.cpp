@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,16 +14,15 @@
 *****************************************************************************/
 
 #include <Champ_Generique_Moyenne.h>
-#include <Schema_Temps.h>
-#include <Postraitement.h>
 #include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
 #include <Champs_compris.h>
 #include <Synonyme_info.h>
+#include <Postraitement.h>
 #include <Param.h>
 
 Implemente_instanciable(Champ_Generique_Moyenne,"Champ_Post_Statistiques_Moyenne|Moyenne",Champ_Generique_Statistiques_base);
 // XD moyenne champ_post_statistiques_base moyenne -1 to calculate the average of the field over time
-
 
 Sortie& Champ_Generique_Moyenne::printOn(Sortie& s ) const
 {
@@ -32,9 +31,7 @@ Sortie& Champ_Generique_Moyenne::printOn(Sortie& s ) const
 
 Entree& Champ_Generique_Moyenne::readOn(Entree& s )
 {
-  Champ_Generique_Statistiques_base::readOn(s);
-
-  return s ;
+  return Champ_Generique_Statistiques_base::readOn(s);
 }
 
 //condition_initiale : pour fixer la valeur de l integrale

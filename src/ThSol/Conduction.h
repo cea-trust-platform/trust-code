@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 #define Conduction_included
 
 #include <Traitement_particulier_Solide.h>
+#include <Schema_Temps_base.h>
 #include <Operateur_Diff.h>
 #include <Equation_base.h>
-#include <Schema_Temps.h>
 #include <TRUST_Ref.h>
 
 class Milieu_base;
@@ -38,11 +38,8 @@ class Solide;
  */
 class Conduction : public Equation_base
 {
-
   Declare_instanciable_sans_constructeur(Conduction);
-
 public:
-
   Conduction();
   void set_param(Param&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -74,17 +71,12 @@ public:
   /////////////////////////////////////////////////////
 
 private :
-
   REF(Solide) le_solide;
   Champ_Inc la_temperature;
   Operateur_Diff terme_diffusif;
 
 protected :
-
   Traitement_particulier_Solide le_traitement_particulier;
-//  Champ_Fonc temperature_paroi;
-
-
 };
 
 /*! @brief Renvoie le champ inconnue de l'equation, i.
@@ -98,7 +90,6 @@ inline Champ_Inc& Conduction::inconnue()
   return la_temperature;
 }
 
-
 /*! @brief Renvoie le champ inconnue de l'equation, i.
  *
  * e. la temperature.
@@ -111,8 +102,4 @@ inline const Champ_Inc& Conduction::inconnue() const
   return la_temperature;
 }
 
-
-
 #endif
-
-

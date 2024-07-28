@@ -13,30 +13,30 @@
 *
 *****************************************************************************/
 
+#include <Transport_Interfaces_base.h>
+#include <MD_Vector_composite.h>
+#include <Matrice_Morse_Sym.h>
 #include <Navier_Stokes_std.h>
+#include <Frontiere_dis_base.h>
+#include <Schema_Temps_base.h>
+#include <MD_Vector_tools.h>
+#include <Assembleur_base.h>
+#include <TRUSTTab_parts.h>
+#include <communications.h>
+#include <Champ_Uniforme.h>
+#include <MD_Vector_std.h>
+#include <solv_iteratif.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
-#include <Fluide_base.h>
 #include <Discret_Thyd.h>
+#include <Fluide_base.h>
+#include <Op_Conv_ALE.h>
+#include <Domaine_VF.h>
+#include <TRUSTTrav.h>
+#include <SFichier.h>
+#include <Domaine.h>
+#include <Param.h>
 #include <Avanc.h>
 #include <Debog.h>
-#include <Matrice_Morse_Sym.h>
-#include <Champ_Uniforme.h>
-#include <Op_Conv_ALE.h>
-#include <Frontiere_dis_base.h>
-#include <solv_iteratif.h>
-#include <Schema_Temps.h>
-#include <TRUSTTrav.h>
-#include <Assembleur_base.h>
-#include <communications.h>
-#include <Transport_Interfaces_base.h>
-#include <SFichier.h>
-#include <Param.h>
-#include <MD_Vector_std.h>
-#include <MD_Vector_composite.h>
-#include <MD_Vector_tools.h>
-#include <TRUSTTab_parts.h>
-#include <Domaine_VF.h>
 
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 // XD navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equations.

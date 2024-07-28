@@ -21,7 +21,6 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Schema_Temps.h>
 #include <Discret_Thyd.h>
 #include <Domaine.h>
 #include <Avanc.h>
