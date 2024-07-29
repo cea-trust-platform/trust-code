@@ -44,6 +44,7 @@ public :
   using DoubleVect_t = DVect_T<_SIZE_>;
   using DoubleTab_t = DTab_T<_SIZE_>;
   using DoubleTabs_t = DoubleTabs_T<_SIZE_>;
+
   using Domaine_t = Domaine_32_64<_SIZE_>;
 
   int lire_motcle_non_standard(const Motcle&, Entree&) override { return 0; }

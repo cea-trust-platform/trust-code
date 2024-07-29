@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,34 +17,22 @@
 #include <Interprete_bloc.h>
 #include <Scatter.h>
 
-Implemente_instanciable_sans_constructeur(TroisDto2D,"Extract_2D_from_3D",Interprete_geometrique_base);
+Implemente_instanciable_32_64(TroisDto2D_32_64, "Extract_2D_from_3D", Interprete_geometrique_base_32_64<_T_>);
 // XD extract_2d_from_3d interprete extract_2d_from_3d -1 Keyword to extract a 2D mesh by selecting a boundary of the 3D mesh. To generate a 2D axisymmetric mesh prefer Extract_2Daxi_from_3D keyword.
 // XD  attr dom3D ref_domaine dom3D 0 Domain name of the 3D mesh
 // XD  attr bord chaine bord 0 Boundary name. This boundary becomes the new 2D mesh and all the boundaries, in 3D, attached to the selected boundary, give their name to the new boundaries, in 2D.
 // XD  attr dom2D chaine dom2D 0 Domain name of the new 2D mesh
 
-TroisDto2D::TroisDto2D()
-{
-  coupe_=1; // Algorithme de coupe utilise par Xprepro
-}
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& TroisDto2D::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& TroisDto2D_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
 
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& TroisDto2D::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& TroisDto2D_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
@@ -57,26 +45,27 @@ Entree& TroisDto2D::readOn(Entree& is)
  * @return (Entree&) le flot d'entree
  * @throws l'objet a mailler n'est pas du type Domaine
  */
-Entree& TroisDto2D::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& TroisDto2D_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   if(Objet_U::dimension==2)
     {
       Cerr << finl;
-      Cerr << "You can not use " << que_suis_je() << " on a case already 2D" << finl;
-      exit();
+      Cerr << "You can not use " << this->que_suis_je() << " on a case already 2D" << finl;
+      Process::exit();
     }
-  dimension=3;
+  Objet_U::dimension=3; // waooo!! violent :-)
   int test_axi=0;
-  if (que_suis_je()=="Extract_2Daxi_from_3D")
+  if (this->que_suis_je()=="Extract_2Daxi_from_3D")
     {
       test_axi=1;
       Cerr<<"We generate a 2D axi domain"<<finl;
     }
   Nom nom_bord, nom_dom2D;
-  associer_domaine(is);
+  this->associer_domaine(is);
   is >> nom_bord >> nom_dom2D;
   Cerr << "Extraction of boundary " << nom_bord
-       << " of domain " << domaine().le_nom()
+       << " of domain " << this->domaine().le_nom()
        << " --> " << nom_dom2D << finl;
   {
     // Si l'objet nom_dom2D n'existe pas encore, on
@@ -84,7 +73,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
     Interprete_bloc& interp = Interprete_bloc::interprete_courant();
     if (interp.objet_global_existant(nom_dom2D))
       {
-        if (sub_type(Domaine, interp.objet_global(nom_dom2D)))
+        if (sub_type(Domaine_t, interp.objet_global(nom_dom2D)))
           {
             Cerr << "Domain " << nom_dom2D
                  << " already exists, writing to this object." << finl;
@@ -93,7 +82,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
           {
             Cerr << "Error : object " << nom_dom2D
                  << " already exists and is not a domain." << finl;
-            exit();
+            Process::exit();
           }
       }
     else
@@ -104,9 +93,9 @@ Entree& TroisDto2D::interpreter_(Entree& is)
         interp.ajouter(nom_dom2D, ob);
       }
   }
-  Domaine& dom2D = ref_cast(Domaine, objet(nom_dom2D));
-  const Domaine& dom3D = domaine();
-  const Bord& bord3D=dom3D.bord(nom_bord);
+  Domaine_t& dom2D = ref_cast(Domaine_t, this->objet(nom_dom2D));
+  const Domaine_t& dom3D = this->domaine();
+  const Bord_t& bord3D=dom3D.bord(nom_bord);
   Scatter::uninit_sequential_domain(dom2D);
   extraire_2D(dom3D, dom2D, bord3D,nom_bord, test_axi);
   Scatter::init_sequential_domain(dom2D);
@@ -114,39 +103,40 @@ Entree& TroisDto2D::interpreter_(Entree& is)
 
 }
 
-void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& bord3D, const Nom& nom_bord, int test_axi)
+template <typename _SIZE_>
+void TroisDto2D_32_64<_SIZE_>::extraire_2D(const Domaine_t& dom3D, Domaine_t& dom2D, const Bord_t& bord3D, const Nom& nom_bord, int test_axi)
 {
-  const DoubleTab& coord_sommets3D=dom3D.coord_sommets();
-  DoubleTab& coord_sommets2D=dom2D.les_sommets();
-  const Faces& faces3D=bord3D.faces();
-  const IntTab& les_faces3D=faces3D.les_sommets();
-  int nb_som3D=coord_sommets3D.dimension(0);
+  const DoubleTab_t& coord_sommets3D=dom3D.coord_sommets();
+  DoubleTab_t& coord_sommets2D=dom2D.les_sommets();
+  const Faces_t& faces3D=bord3D.faces();
+  const IntTab_t& les_faces3D=faces3D.les_sommets();
+  int_t nb_som3D=coord_sommets3D.dimension(0);
   Cerr << "number of 3D nodes :" << nb_som3D << finl;
-  int nb_faces3D=les_faces3D.dimension(0);
+  int_t nb_faces3D=les_faces3D.dimension(0);
   Cerr << "number of 3D faces of " << nom_bord << " :" << nb_faces3D << finl;
-  int nb_som_fac3D=les_faces3D.dimension(1);
+  int nb_som_fac3D=(int)les_faces3D.dimension(1);
   Cerr << "number of nodes per faces in 3D :" << nb_som_fac3D << finl;
 
   // Construction de renum_som3D2D
-  ArrOfInt renum_som3D2D(nb_som3D);
-  for (int i=0; i<nb_som3D ; i++)
+  ArrOfInt_t renum_som3D2D(nb_som3D);
+  for (int_t i=0; i<nb_som3D ; i++)
     renum_som3D2D[i]=-1;
-  int compteur=0;
+  int_t compteur=0;
   for (int i=0; i<nb_faces3D; i++)
     for (int j=0; j<nb_som_fac3D; j++)
       {
-        int& tmp=renum_som3D2D[les_faces3D(i,j)];
+        int_t& tmp=renum_som3D2D[les_faces3D(i,j)];
         if(tmp==-1)
           tmp=compteur++;
       }
 
-  int nb_som2D=compteur;
+  int_t nb_som2D=compteur;
   // Construction de renum_som2D3D
-  ArrOfInt renum_som2D3D(nb_som2D);
+  ArrOfInt_t renum_som2D3D(nb_som2D);
 
-  for (int i=0; i<nb_som3D ; i++)
+  for (int_t i=0; i<nb_som3D ; i++)
     {
-      int j;
+      int_t j;
       if((j=renum_som3D2D[i])!=-1)
         renum_som2D3D[j]=i;
     }
@@ -238,7 +228,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
 
       // on calcule les coordonnees des points du bord dans le nouveau repere 2D (A;I;J)
       // pour cela changement de repere du repere 3D vers le repere (A;I;J)
-      for(int i=0; i<nb_som2D; i++)
+      for(int_t i=0; i<nb_som2D; i++)
         {
           double x = coord_sommets3D(renum_som2D3D[i],0);
           double y = coord_sommets3D(renum_som2D3D[i],1);
@@ -282,11 +272,11 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
         }
       if (test==-1)
         {
-          Cerr << "Error into TroisDto2D.cpp..." << finl;
+          Cerr << "Error into TroisDto2D_32_64.cpp..." << finl;
           Cerr << "May be the " << dom2D.le_nom() << " boundary domain is not plane enough" << finl;
           Cerr << "Try to use: PrecisionGeom " << 100*precision << " in your data file" << finl;
           Cerr << "Or contact TRUST support." << finl;
-          exit();
+          Process::exit();
         }
       IntVect dir(2);
       int kk=0;
@@ -296,27 +286,27 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
             dir[kk]=jj;
             kk++;
           }
-      for(int i=0; i<nb_som2D; i++)
+      for(int_t i=0; i<nb_som2D; i++)
         for(int j=0; j<2; j++)
           coord_sommets2D(i,j)=coord_sommets3D(renum_som2D3D[i],dir[j]);
     }
 
-  IntTab& les_elems2D=dom2D.les_elems();
+  IntTab_t& les_elems2D=dom2D.les_elems();
   les_elems2D=les_faces3D;
-  for (int i=0; i< nb_faces3D; i++)
+  for (int_t i=0; i< nb_faces3D; i++)
     for (int j=0; j< nb_som_fac3D; j++)
       les_elems2D(i,j)=renum_som3D2D[les_elems2D(i,j)];
 
-  dimension=2;
+  Objet_U::dimension=2;
   // On recupere les bords :
   for (const auto& itr: dom3D.faces_bord())
     {
-      const Frontiere& front = itr;
-      const Faces& faces3D_front=front.faces();
+      const Frontiere_t& front = itr;
+      const Faces_t& faces3D_front=front.faces();
       if ( (front.le_nom()!=nom_bord))
         {
-          Bord tmp;
-          Bord& bord2D=dom2D.faces_bord().add(tmp);
+          Bord_t tmp;
+          Bord_t& bord2D=dom2D.faces_bord().add(tmp);
           bord2D.nommer(front.le_nom());
           bord2D.associer_domaine(dom2D);
           if (test_axi)
@@ -324,19 +314,19 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           else
             bord2D.typer_faces("segment_2D");
           // creer les faces de bord 2D ici!
-          int compteur2=0;
-          const IntTab& faces_sommets=faces3D_front.les_sommets();
-          int nb_faces=faces_sommets.dimension(0);
-          IntTab& aretes=bord2D.les_sommets_des_faces();
-          IntTab& faces_voisins=bord2D.faces().voisins();
+          int_t compteur2=0;
+          const IntTab_t& faces_sommets=faces3D_front.les_sommets();
+          int_t nb_faces=faces_sommets.dimension(0);
+          IntTab_t& aretes=bord2D.les_sommets_des_faces();
+          IntTab_t& faces_voisins=bord2D.faces().voisins();
 
           aretes.resize(nb_faces, 2);
           // Boucle sur les faces du domaine 2D
-          int doublons=0;
-          for(int face=0; face < nb_faces; face++)
+          bool doublons=false;
+          for(int_t face=0; face < nb_faces; face++)
             {
               int ok=0;
-              int tmpbis;
+              int_t tmpbis;
               for(int i=0; i<nb_som_fac3D; i++)
                 {
                   tmpbis=renum_som3D2D[faces_sommets(face,i)];
@@ -355,7 +345,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
                           // Si 3 sommets de la face appartienne a la frontiere
                           // il y'a un probleme, on ajoute les 3 aretes et on cherchera
                           // les doublons qu'il faudra eliminer...
-                          doublons=1;
+                          doublons=true;
                           aretes(compteur2,0)=aretes(compteur2-1,1);
                           aretes(compteur2,1)=tmpbis;
                           compteur2++;
@@ -369,14 +359,14 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           if (doublons)
             {
               // Recherche des doublons (algo en n^2)
-              for (int i=0; i<compteur2; i++)
+              for (int_t i=0; i<compteur2; i++)
                 {
-                  int& S10=aretes(i,0);
-                  int& S11=aretes(i,1);
-                  for (int j=i+1; j<compteur2; j++)
+                  int_t& S10=aretes(i,0);
+                  int_t& S11=aretes(i,1);
+                  for (int_t j=i+1; j<compteur2; j++)
                     {
-                      int& S20=aretes(j,0);
-                      int& S21=aretes(j,1);
+                      int_t& S20=aretes(j,0);
+                      int_t& S21=aretes(j,1);
                       if ( (S10==S20 && S11==S21) || (S10==S21 && S11==S20) )
                         {
                           S10=-1;
@@ -387,10 +377,10 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
                     }
                 }
               // On supprime les doublons
-              for (int i=0; i<compteur2; i++)
+              for (int_t i=0; i<compteur2; i++)
                 if (aretes(i,0)==-1)
                   {
-                    for (int j=i; j<compteur2-1; j++)
+                    for (int_t j=i; j<compteur2-1; j++)
                       {
                         aretes(j,0)=aretes(j+1,0);
                         aretes(j,1)=aretes(j+1,1);
@@ -416,12 +406,12 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   // On recupere les raccords :
   for (const auto& itr: dom3D.faces_raccord())
     {
-      const Frontiere& front = itr;
-      const Faces& faces3Dfront=front.faces();
+      const Frontiere_t& front = itr;
+      const Faces_t& faces3Dfront=front.faces();
       if ( (front.le_nom()!=nom_bord))
         {
-          Raccord tmpbis;
-          Raccord& bord2D=dom2D.faces_raccord().add(tmpbis);
+          Raccord_t tmpbis;
+          Raccord_t& bord2D=dom2D.faces_raccord().add(tmpbis);
           bord2D.typer(itr->le_type());
           bord2D->nommer(front.le_nom());
           bord2D->associer_domaine(dom2D);
@@ -430,17 +420,17 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           else
             bord2D->typer_faces("segment_2D");
           // creer les faces de bord 2D ici!
-          int compteur2=0;
-          const IntTab& faces_sommets=faces3Dfront.les_sommets();
-          int nb_faces=faces_sommets.dimension(0);
-          IntTab& aretes=bord2D->les_sommets_des_faces();
-          IntTab& faces_voisins=bord2D->faces().voisins();
+          int_t compteur2=0;
+          const IntTab_t& faces_sommets=faces3Dfront.les_sommets();
+          int_t nb_faces=faces_sommets.dimension(0);
+          IntTab_t& aretes=bord2D->les_sommets_des_faces();
+          IntTab_t& faces_voisins=bord2D->faces().voisins();
 
           aretes.resize(nb_faces, 2);
-          for(int face=0; face < nb_faces; face++)
+          for(int_t face=0; face < nb_faces; face++)
             {
               int ok=0;
-              int tmp;
+              int_t tmp;
               for(int i=0; i<nb_som_fac3D; i++)
                 {
                   tmp=renum_som3D2D[faces_sommets(face,i)];
@@ -474,6 +464,13 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   if(dom3D.type_elem()->que_suis_je()!="Hexaedre_VEF")
     if (coupe_!=2)
       dom2D.reordonner();
-  dimension=3;
+  Objet_U::dimension=3;
 }
+
+
+template class TroisDto2D_32_64<int>;
+#if INT_is_64_ == 2
+template class TroisDto2D_32_64<trustIdType>;
+#endif
+
 

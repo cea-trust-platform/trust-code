@@ -65,10 +65,15 @@ public:
 
   static void trier_les_joints(Joints& joints);
   static void construire_md_vector(const Domaine&, int nb_items_reels, const Joint::Type_Item, MD_Vector&);
-  static void init_sequential_domain(Domaine&);
-  static void uninit_sequential_domain(Domaine&);
 
   static void check_consistancy_remote_items( Domaine& dom, const ArrOfInt& mergedDomaines );
+
+  // Although Scatter is never meant to be used in 64b, those two methods are needed by both configurations:
+  template <typename _SIZE_>
+  static void init_sequential_domain(Domaine_32_64<_SIZE_>& dom);
+  template <typename _SIZE_>
+  static void uninit_sequential_domain(Domaine_32_64<_SIZE_>& dom);
+
 
 protected:
   REF(Domaine) le_domaine;

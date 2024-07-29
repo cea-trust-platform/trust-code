@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,48 +16,50 @@
 #include <Reorienter_triangles.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Reorienter_triangles,"Reorienter_triangles",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Reorienter_triangles_32_64,"Reorienter_triangles",Interprete_geometrique_base_32_64<_T_>);
 // XD reorienter_triangles interprete reorienter_triangles -1 not_set
 // XD attr domain_name ref_domaine domain_name 0 Name of domain.
 
-
-Sortie& Reorienter_triangles::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Reorienter_triangles_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Reorienter_triangles::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Reorienter_triangles_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& Reorienter_triangles::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Reorienter_triangles_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   Cerr << "Reorientation of triangles for either direct..." << finl;
-  if (dimension != 2)
+  if (Objet_U::dimension != 2)
     {
-      Cerr << "we can not reorientate (Reorienter) triangles in dimension " << dimension <<finl;
-      exit();
+      Cerr << "we can not reorientate (Reorienter) triangles in dimension " << Objet_U::dimension <<finl;
+      Process::exit();
     }
-  associer_domaine(is);
-  Domaine& dom=domaine();
+  this->associer_domaine(is);
+  Domaine_t& dom=this->domaine();
   Scatter::uninit_sequential_domain(dom);
-  reorienter(dom);
+  this->reorienter(dom);
   Scatter::init_sequential_domain(dom);
   Cerr << "Reorientation of triangles... OK" << finl;
   return is;
 }
 
-
-Reorienter_triangles::Sens Reorienter_triangles::test_orientation_triangle(IntTab& les_elems, int num_element, const DoubleTab& coord_sommets) const
+template <typename _SIZE_>
+Sens_Orient Reorienter_triangles_32_64<_SIZE_>::test_orientation_triangle(IntTab_t& les_elems, int_t ielem, const DoubleTab_t& coord_sommets) const
 {
   static const int SOM_Z = 0;
   static const int SOM_A = 1;
   static const int SOM_B = 2;
 
-  const int som_Z = les_elems(num_element,SOM_Z);
-  const int som_A = les_elems(num_element,SOM_A);
-  const int som_B = les_elems(num_element,SOM_B);
+  const int_t som_Z = les_elems(ielem,SOM_Z);
+  const int_t som_A = les_elems(ielem,SOM_A);
+  const int_t som_B = les_elems(ielem,SOM_B);
 
   double ZA0 = coord_sommets(som_A,0) - coord_sommets(som_Z,0);
   double ZB0 = coord_sommets(som_B,0) - coord_sommets(som_Z,0);
@@ -75,7 +77,7 @@ Reorienter_triangles::Sens Reorienter_triangles::test_orientation_triangle(IntTa
         Process::Journal<<"  element "<<num_element<<"  indirect"<<finl;
       }
 #endif
-      return INDIRECT;
+      return Sens_Orient::INDIRECT;
     }
 #ifdef _AFFDEBUG
   {
@@ -83,38 +85,41 @@ Reorienter_triangles::Sens Reorienter_triangles::test_orientation_triangle(IntTa
   }
 #endif
 
-  return DIRECT;
+  return Sens_Orient::DIRECT;
 }
 
-Reorienter_triangles::Sens Reorienter_triangles::reorienter_triangle(IntTab& les_elems, int num_element) const
+template <typename _SIZE_>
+Sens_Orient Reorienter_triangles_32_64<_SIZE_>::reorienter_triangle(IntTab_t& les_elems, int_t num_element) const
 {
   static const int SOM_A = 1;
   static const int SOM_B = 2;
 
   //pour reorienter le triangle, on va permuter les sommets 1 et 2
-  int tmp;
+  int_t tmp;
   tmp = les_elems(num_element,SOM_A);
   les_elems(num_element,SOM_A) = les_elems(num_element,SOM_B);
   les_elems(num_element,SOM_B) = tmp;
-  return DIRECT;
+  return Sens_Orient::DIRECT;
 }
 
-//Cette methode permet de reorienter les triangles dans le sens direct
-void Reorienter_triangles::reorienter(Domaine& dom) const
+/*!
+ * Cette methode permet de reorienter les triangles dans le sens direct
+ */
+template <typename _SIZE_>
+void Reorienter_triangles_32_64<_SIZE_>::reorienter(Domaine_t& dom) const
 {
-  const DoubleTab& coord_sommets = dom.coord_sommets();
+  const DoubleTab_t& coord_sommets = dom.coord_sommets();
 
   if (dom.type_elem()->que_suis_je() == "Triangle" )
     {
       //domaine de triangles
-      IntTab& les_elems = dom.les_elems();
-      int nb_elems = les_elems.dimension(0);
-      int ielem;
+      IntTab_t& les_elems = dom.les_elems();
+      int_t nb_elems = les_elems.dimension(0);
 
       //balaye les triangles
-      for (ielem=0 ; ielem<nb_elems ; ielem++)
+      for (int_t ielem=0 ; ielem<nb_elems ; ielem++)
         {
-          if (test_orientation_triangle(les_elems, ielem, coord_sommets)==INDIRECT)
+          if (test_orientation_triangle(les_elems, ielem, coord_sommets)==Sens_Orient::INDIRECT)
             {
               //triangle oriente en sens indirect -> a reorienter
               reorienter_triangle(les_elems, ielem);
@@ -137,3 +142,11 @@ void Reorienter_triangles::reorienter(Domaine& dom) const
         }
     }
 }
+
+
+template class Reorienter_triangles_32_64<int>;
+#if INT_is_64_ == 2
+template class Reorienter_triangles_32_64<trustIdType>;
+#endif
+
+

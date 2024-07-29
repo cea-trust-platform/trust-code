@@ -42,16 +42,18 @@ static int faces_sommets_poly[6][4] =
   { 0, 4, 5, 1 }
 };
 
-Implemente_instanciable(Polyedriser,"Polyedriser",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Polyedriser_32_64,"Polyedriser",Interprete_geometrique_base_32_64<_T_>);
 // XD polyedriser interprete polyedriser -1 cast hexahedra into polyhedra so that the indexing of the mesh vertices is compatible with PolyMAC_P0P1NC discretization. Must be used in PolyMAC_P0P1NC discretization if a hexahedral mesh has been produced with TRUST's internal mesh generator.
 // XD attr domain_name ref_domaine domain_name 0 Name of domain.
 
-Sortie& Polyedriser::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Polyedriser_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Polyedriser::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Polyedriser_32_64<_SIZE_>::readOn(Entree& is)
 {
   return is;
 }
@@ -88,11 +90,13 @@ static double computeAngleBetweenCoplanarVectors(std::vector<double> u, std::vec
 
 // reordering vertices inside the faces in trigonometric order
 // (or anti-trigonometric, depending on the orientation of the normal)
-static void reorder_vertices(Faces& faces, const DoubleTab& coords)
+template <typename _SIZE_>
+static void reorder_vertices(Faces_32_64<_SIZE_>& faces, const DTab_T<_SIZE_>& coords)
 {
-  int nb_sommets = faces.les_sommets().dimension(1);
-  int nb_faces = faces.nb_faces();
-  for(int face = 0; face < nb_faces; face++)
+  using int_t = _SIZE_;
+  int nb_sommets = (int)faces.les_sommets().dimension(1);
+  int_t nb_faces = faces.nb_faces();
+  for(int_t face = 0; face < nb_faces; face++)
     {
       // computing the center of gravity of the face
       std::vector<double> center(3,0.0);
@@ -103,9 +107,9 @@ static void reorder_vertices(Faces& faces, const DoubleTab& coords)
         center[dir] /= nb_sommets;
 
       // computing the normal to the face
-      int s0 = faces.sommet(face, 0);
-      int s1 = faces.sommet(face, 1);
-      int s2 = faces.sommet(face, 2);
+      int_t s0 = faces.sommet(face, 0),
+            s1 = faces.sommet(face, 1),
+            s2 = faces.sommet(face, 2);
       std::vector<double> u =
       {
         coords(s1,0) - coords(s0,0),
@@ -152,7 +156,7 @@ static void reorder_vertices(Faces& faces, const DoubleTab& coords)
 
               if (angle1 > angle2)
                 {
-                  int tmp = faces.sommet(face,j);
+                  int_t tmp = faces.sommet(face,j);
                   faces.sommet(face, j) = faces.sommet(face,j+1);
                   faces.sommet(face, j+1) = tmp;
                 }
@@ -162,23 +166,24 @@ static void reorder_vertices(Faces& faces, const DoubleTab& coords)
   return;
 }
 
-void Polyedriser::polyedriser(Domaine& domaine) const
+template <typename _SIZE_>
+void Polyedriser_32_64<_SIZE_>::polyedriser(Domaine_t& domaine) const
 {
   if(domaine.type_elem()->que_suis_je() == "Hexaedre")
     {
       domaine.typer("Polyedre");
-      Polyedre& p = ref_cast(Polyedre, domaine.type_elem().valeur());
+      Polyedre_32_64<_SIZE_>& p = ref_cast(Polyedre_32_64<_SIZE_>, domaine.type_elem().valeur());
 
-      ArrOfInt Pi, Fi, N;
-      const IntTab& elements = domaine.les_elems();
-      int nb_elems = elements.dimension(0);
+      ArrOfInt_t Pi, Fi, N;
+      const IntTab_t& elements = domaine.les_elems();
+      int_t nb_elems = elements.dimension(0);
       Pi.resize_array(nb_elems+1);
       Fi.resize_array(nb_elems*6+1);
       N.resize_array(nb_elems*24);
 
-      int face = 0;
-      int node = 0;
-      for (int e = 0; e < nb_elems; e++)
+      int_t face = 0;
+      int_t node = 0;
+      for (int_t e = 0; e < nb_elems; e++)
         {
           Pi[e] = face; // Index des polyedres
 
@@ -200,62 +205,71 @@ void Polyedriser::polyedriser(Domaine& domaine) const
     }
   else
     {
-      Cerr << "We do not yet know how to Polyedriser the "
+      Cerr << "We do not yet know how to Polyedriser_32_64 the "
            << domaine.type_elem()->que_suis_je() <<"s"<<finl;
       Cerr << "Try to use convertAllToPoly option of Lire_MED|Read_MED keyword if you read a MED file for your mesh." << finl;
-      exit();
+      Process::exit();
     }
 
-  const DoubleTab& coords = domaine.coord_sommets();
+  const DoubleTab_t& coords = domaine.coord_sommets();
 
   for (auto &itr : domaine.faces_bord())
     {
-      Faces& les_faces = itr.faces();
+      Faces_t& les_faces = itr.faces();
       les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.faces_raccord())
     {
-      Faces& les_faces = itr->faces();
+      Faces_t& les_faces = itr->faces();
       les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.bords_int())
     {
-      Faces& les_faces = itr.faces();
+      Faces_t& les_faces = itr.faces();
       les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
   for (auto &itr : domaine.groupes_faces())
     {
-      Faces& les_faces = itr.faces();
+      Faces_t& les_faces = itr.faces();
       les_faces.typer(Type_Face::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
   return;
 }
 
-Entree& Polyedriser::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Polyedriser_32_64<_SIZE_>::interpreter_(Entree& is)
 {
-  if(dimension !=dimension_application())
+  if(Objet_U::dimension !=dimension_application())
     {
-      Cerr << "Interpreter "<<que_suis_je()<<" cannot be applied for dimension " << dimension <<finl;
-      exit();
+      Cerr << "Interpreter "<<this->que_suis_je()<<" cannot be applied for dimension " << Objet_U::dimension <<finl;
+      Process::exit();
     }
   if (Process::is_parallel())
     {
-      Cerr << "Interpreter "<<que_suis_je()<<" cannot be applied during a parallel calculation !" << finl;
+      Cerr << "Interpreter "<<this->que_suis_je()<<" cannot be applied during a parallel calculation !" << finl;
       Cerr << "The mesh can't be changed after it has been partitioned." << finl;
       Process::exit();
     }
 
-  associer_domaine(is);
-  Scatter::uninit_sequential_domain(domaine());
-  polyedriser(domaine());
-  Scatter::init_sequential_domain(domaine());
+  this->associer_domaine(is);
+  Scatter::uninit_sequential_domain(this->domaine());
+  polyedriser(this->domaine());
+  Scatter::init_sequential_domain(this->domaine());
   return is;
 }
+
+
+
+template class Polyedriser_32_64<int>;
+#if INT_is_64_ == 2
+template class Polyedriser_32_64<trustIdType>;
+#endif
+
 

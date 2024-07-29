@@ -16,24 +16,38 @@
 #ifndef NettoieNoeuds_included
 #define NettoieNoeuds_included
 
-
-
+#include <Interprete_geometrique_base.h>
+#include <Domaine_forward.h>
 
 /*! @brief Classe NettoieNoeuds x->alpha x
  *
  * @sa Interprete Pave
  */
-#include <Interprete_geometrique_base.h>
-#include <Domaine_forward.h>
-class NettoieNoeuds : public Interprete_geometrique_base
+template <typename _SIZE_>
+class NettoieNoeuds_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(NettoieNoeuds);
+
+  Declare_instanciable_32_64(NettoieNoeuds_32_64);
+
 public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+
+  using Faces_t = Faces_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree&) override;
-  static void nettoie(Domaine&);
-  static void verifie_noeuds(const Domaine&);
+  static void nettoie(Domaine_t&);
+  static void verifie_noeuds(const Domaine_t&);
   static int NettoiePasNoeuds;
 };
+
+using NettoieNoeuds = NettoieNoeuds_32_64<int>;
+using NettoieNoeuds_64 = NettoieNoeuds_32_64<trustIdType>;
+
 
 #endif
 

@@ -18,22 +18,23 @@
 
 #include <Interprete_geometrique_base.h>
 
-/*! @brief Classe Reordonner Cette classe est un interprete qui sert a lire la directive Reordonner
- *
- *     qui reordonne les noeuds d'un domaine.
- *       Reordonner dom
+/*! @brief Classe Reordonner Cette classe est un interprete qui sert a reordonner les noeuds d'un domaine.
  *
  */
-class Reordonner : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Reordonner_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
 
-  Declare_instanciable(Reordonner);
+  Declare_instanciable_32_64(Reordonner_32_64);
 
 public :
 
   Entree& interpreter_(Entree&) override;
 
 };
+
+using Reordonner = Reordonner_32_64<int>;
+using Reordonner_64 = Reordonner_32_64<trustIdType>;
 
 
 #endif

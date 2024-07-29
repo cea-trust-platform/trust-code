@@ -344,20 +344,22 @@ True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
  *   Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
  *
  */
-int tri_lexicographique_tableau_indirect(const IntTab& tab, ArrOfInt& index)
+template <typename _SIZE_>
+int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZE_>& index)
 {
+  using int_t = _SIZE_;
   // On verifie que le tableau n'est pas un tableau distribue:
   assert(!tab.get_md_vector().non_nul());
 
-  const int dimtab = tab.dimension_tot(0);
+  const int_t dimtab = tab.dimension_tot(0);
   if (index.size_array() == 0 && dimtab > 0)
     {
       index.resize_array(dimtab, RESIZE_OPTIONS::NOCOPY_NOINIT);
-      for (int i = 0; i < dimtab; i++)
+      for (int_t i = 0; i < dimtab; i++)
         index[i] = i;
     }
 
-  const int nb_lignes = index.size_array();
+  const int_t nb_lignes = index.size_array();
   const int nb_colonnes = tab.line_size();
 
   if (nb_lignes != 0)

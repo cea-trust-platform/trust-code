@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,31 +17,44 @@
 #define DecoupeBord_included
 
 
+#include <Interprete_geometrique_base.h>
+#include <Domaine.h>
+#include <Domaine_forward.h>
 
 /*! @brief class DecoupeBord Realise un maillage en decoupant chaque pave en 40 tetraedres
  *
  *  Le maillage obtenu n'a pas de directions preferentielles
  *
- *
  * @sa Interprete
  */
-
-#include <Interprete_geometrique_base.h>
-#include <Domaine.h>
-
-#include <Domaine_forward.h>
-
-class DecoupeBord : public Interprete_geometrique_base
+template <typename _SIZE_>
+class DecoupeBord_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(DecoupeBord);
+  Declare_instanciable_32_64(DecoupeBord_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using IntVect_t = IVect_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrsOfInt_t = ArrsOfInt_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Faces_t = Faces_32_64<_SIZE_>;
+  using Bord_t = Bord_32_64<_SIZE_>;
+  using Bords_t = Bords_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Raccord_t = Raccord_32_64<_SIZE_>;
+  using Raccords_t = Raccords_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
-  void Decouper(Domaine& dom, const Nom& nom_file);
-
+  void decouper(Domaine_t& dom, const Nom& nom_file);
 
 };
+
+using DecoupeBord = DecoupeBord_32_64<int>;
+using DecoupeBord_64 = DecoupeBord_32_64<trustIdType>;
 
 #endif
 

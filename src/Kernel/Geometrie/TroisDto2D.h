@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,14 +22,27 @@
 
 /*! @brief Classe TroisDto2D x->alpha x
  *
- * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domain est l'objet Pave
+ * @sa Interprete Pave, Actuellement le seul type d'objet reconnu par TRUST pour mailler un domaine est le Pave.
  */
-class TroisDto2D : public Interprete_geometrique_base
+template <typename _SIZE_>
+class TroisDto2D_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(TroisDto2D);
+  Declare_instanciable_32_64(TroisDto2D_32_64);
+
 public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Bord_t = Bord_32_64<_SIZE_>;
+  using Faces_t = Faces_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Raccord_t = Raccord_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree&) override;
-  void extraire_2D(const Domaine&, Domaine&, const Bord&,const Nom& , int);
+  void extraire_2D(const Domaine_t&, Domaine_t&, const Bord_t&,const Nom& , int);
 
   // OC, 28/10/2004, Modif pour pouvoir extraire un bord d'orientation quelconque.
   // Renvoi la composante X  de l'origine A du repere local au bord, calcule par la classe.
@@ -69,6 +82,10 @@ private :
   double Jx = -100., Jy = -100., Jz = -100.;
   double Kx = -100., Ky = -100., Kz = -100.;
 };
+
+using TroisDto2D = TroisDto2D_32_64<int>;
+using TroisDto2D_64 = TroisDto2D_32_64<trustIdType>;
+
 
 #endif
 

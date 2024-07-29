@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,23 +20,61 @@
 #include <SFichier.h>
 #include <Parser_U.h>
 
-Implemente_instanciable(DecoupeBord,"DecoupeBord_pour_rayonnement|DecoupeBord",Interprete_geometrique_base);
+Implemente_instanciable_32_64(DecoupeBord_32_64,"DecoupeBord",Interprete_geometrique_base_32_64<_T_>);
 // XD decoupebord_pour_rayonnement interprete decoupebord 1 To subdivide the external boundary of a domain into several parts (may be useful for better accuracy when using radiation model in transparent medium). To specify the boundaries of the fine_domain_name domain to be splitted. These boundaries will be cut according the coarse mesh defined by either the keyword domaine_grossier (each boundary face of the coarse mesh coarse_domain_name will be used to group boundary faces of the fine mesh to define a new boundary), either by the keyword nb_parts_naif (each boundary of the fine mesh is splitted into a partition with nx*ny*nz elements), either by a geometric condition given by a formulae with the keyword condition_geometrique. If used, the coarse_domain_name domain should have the same boundaries name of the fine_domain_name domain. NL2 A mesh file (ASCII format, except if binaire option is specified) named by default newgeom (or specified by the nom_fichier_sortie keyword) will be created and will contain the fine_domain_name domain with the splitted boundaries named boundary_name%I (where I is between from 0 and n-1). Furthermore, several files named boundary_name%I and boundary_name_xv will be created, containing the definition of the subdived boundaries. newgeom will be used to calculate view factors with geom2ansys script whereas only the boundary_name_xv files will be necessary for the radiation calculation. The file listb will contain the list of the boundaries boundary_name%I.
 
-Sortie& DecoupeBord::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& DecoupeBord_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& DecoupeBord::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& DecoupeBord_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const Noms& nomdec)
+
+//// Helper implementation class - only visible here
+template <typename _SIZE_>
+class Impl_32_64
 {
-  const DoubleTab& xs1=dom1.coord_sommets();
-  const DoubleTab& xs2=dom2.coord_sommets();
+public:
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using IntVect_t = IVect_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrsOfInt_t = ArrsOfInt_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+
+  static void create_listb_from_domaine2(const Domaine_t& dom1, const Domaine_t& dom_oth,const Noms& nomdec);
+  static void create_listb_from_xyz(const Domaine_t& dom, const Noms& nomdec,const Noms& expr);
+  static void create_listb_naif(const Domaine_t& dom, const Noms& nomdec,const ArrOfInt& nbdec);
+  static void create_listb_geom(const Domaine_t& dom, const Noms& nomdec,const ArrOfInt& nbdec);
+
+  static inline int check_front_sz(const Frontiere_t& fr)
+  {
+    int_t tmp=fr.nb_faces();
+    if (tmp >= std::numeric_limits<int>::max())
+      {
+        Cerr << "Too many faces in frontiere '" << fr.le_nom() << "' (exceed 32b limit) - the support for this is not yet implemented." << endl;
+        Cerr << "Please contact TRUST support!" << endl;
+        Process::exit(-1);
+      }
+    return (int)tmp;
+  }
+};
+
+
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::create_listb_from_domaine2(const Domaine_t& dom1, const Domaine_t& dom_oth,const Noms& nomdec)
+{
+  const DoubleTab_t& xs1=dom1.coord_sommets();
+  const DoubleTab_t& xs2=dom_oth.coord_sommets();
 
   int nbfr=dom1.nb_front_Cl();
 
@@ -44,60 +82,59 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr1=dom1.frontiere(l);
+      const Frontiere_t& fr1=dom1.frontiere(l);
       const Nom& nomfr1=fr1.le_nom();
-      int l2=dom2.rang_frontiere(nomfr1);
+      int l2=dom_oth.rang_frontiere(nomfr1);
 
       if(l2<0)
         {
-          Cerr << " The domains " << dom1.le_nom() << " and " << dom2.le_nom() << " do not have the same names of boundaries " << finl;
+          Cerr << " The domains " << dom1.le_nom() << " and " << dom_oth.le_nom() << " do not have the same names of boundaries " << finl;
           Cerr<<nomfr1<<" not found in "<<dom1.le_nom() <<finl;
           Cerr << " Make sure they were generated in a similar way (almost to the mesh size) " << finl;
           Process::exit();
         }
-      const Frontiere& fr2=dom2.frontiere(l2);
+      const Frontiere_t& fr2=dom_oth.frontiere(l2);
 
       if (nomdec.search(nomfr1)!=-1)
         {
-          int nbfaces1=fr1.nb_faces();
-          const IntTab& sommets_face1 = (ref_cast(Frontiere,fr1)).les_sommets_des_faces();
+          int_t nbfaces1=fr1.nb_faces();
+          const IntTab_t& sommets_face1 = (ref_cast(Frontiere_t,fr1)).les_sommets_des_faces();
 
-          int nbfaces2=fr2.nb_faces();
-          const IntTab& sommets_face2 = (ref_cast(Frontiere,fr2)).les_sommets_des_faces();
+          int nbfaces2 = check_front_sz(fr2);
+          const IntTab_t& sommets_face2 = (ref_cast(Frontiere_t,fr2)).les_sommets_des_faces();
 
-          ArrsOfInt faces_associees(nbfaces2);
+          ArrsOfInt_t faces_associees(nbfaces2);
 
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
           ArrOfDouble xg2(Objet_U::dimension); // centre de gravite face de fr2
 
-          int face1,face2,i,j;
-          int nb_som_face=sommets_face1.dimension(1);
+          int nb_som_face=(int)sommets_face1.dimension(1);
 
-
-          for (face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
+          for (int_t face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
             {
               xg1=0.;
 
-              for (i=0; i<nb_som_face; i++)
-                for (j=0; j<Objet_U::dimension; j++)
+              for (int i=0; i<nb_som_face; i++)
+                for (int j=0; j<Objet_U::dimension; j++)
                   xg1[j]+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
 
               // recherche de la face de dom2 correspondante
 
               double dist_min=1.e6;
-              int           face_min=-1;
+              int face_min=-1;
 
-              for (face2=0; face2<nbfaces2; face2++)
+              for (int face2=0; face2<nbfaces2; face2++)
                 {
                   xg2=0.;
 
-                  for (i=0; i<nb_som_face; i++)
-                    for (j=0; j<Objet_U::dimension; j++)
+                  for (int i=0; i<nb_som_face; i++)
+                    for (int j=0; j<Objet_U::dimension; j++)
                       xg2[j]+=xs2(sommets_face2(face2,i),j);  //centre de gravite de la face2 (non divise par nb_som_face)
 
                   double dist=0.;
 
-                  for (j=0; j<Objet_U::dimension; j++) dist+=(xg2[j]-xg1[j])*(xg2[j]-xg1[j]);
+                  for (int j=0; j<Objet_U::dimension; j++)
+                    dist+=(xg2[j]-xg1[j])*(xg2[j]-xg1[j]);
 
                   if(dist<dist_min)
                     {
@@ -106,11 +143,10 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
                     }
                 }
 
-
               faces_associees[face_min].append_array(face1);
             }
 
-          for (face2=0; face2<nbfaces2; face2++) // Ecriture des fichiers de sortie
+          for (int face2=0; face2<nbfaces2; face2++) // Ecriture des fichiers de sortie
             {
               Nom nomfic(nomfr1);
               nomfic+="%";
@@ -129,7 +165,8 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
   listb.close();
 }
 
-void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& expr)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::create_listb_from_xyz(const Domaine_t& dom, const Noms& nomdec,const Noms& expr)
 {
   int n1=nomdec.size();
   int n2=expr.size();
@@ -139,7 +176,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
       Process::exit();
     }
 
-  const DoubleTab& xs1=dom1.coord_sommets();
+  const DoubleTab_t& xs1=dom.coord_sommets();
   Parser_U parser;
   parser.setNbVar(Objet_U::dimension);
   parser.addVar("x");
@@ -147,14 +184,13 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
   if (Objet_U::dimension==3)
     parser.addVar("z");
 
+  int nbfr=dom.nb_front_Cl();
 
-  int nbfr=dom1.nb_front_Cl();
-
-  SFichier listb(dom1.le_nom()+".boundary_list");
+  SFichier listb(dom.le_nom()+".boundary_list");
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr1=dom1.frontiere(l);
+      const Frontiere_t& fr1=dom.frontiere(l);
       const Nom& nomfr1=fr1.le_nom();
 
       int inc=nomdec.search(nomfr1);
@@ -164,26 +200,23 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
           parser.setString(expr2);
           parser.parseString();
 
-          int nbfaces1=fr1.nb_faces();
-          const IntTab& sommets_face1 = (ref_cast(Frontiere,fr1)).les_sommets_des_faces();
+          int nbfaces1 = check_front_sz(fr1);
 
+          const IntTab_t& sommets_face1 = (ref_cast(Frontiere_t,fr1)).les_sommets_des_faces();
 
-
-          ArrsOfInt faces_associees(1000); // dimensionnement en dur qui devrait suffire
+          ArrsOfInt_t faces_associees(1000); // dimensionnement en dur qui devrait suffire
 
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
 
-          int face1,i,j;
-          int nb_som_face=sommets_face1.dimension(1);
+          int nb_som_face=(int)sommets_face1.dimension(1);
           int nb=0;
 
-
-          for (face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
+          for (int face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
             {
               xg1=0.;
 
-              for (i=0; i<nb_som_face; i++)
-                for (j=0; j<Objet_U::dimension; j++)
+              for (int i=0; i<nb_som_face; i++)
+                for (int j=0; j<Objet_U::dimension; j++)
                   xg1[j]+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
               xg1/=nb_som_face;
               parser.setVar("x",xg1[0]);
@@ -192,7 +225,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
               if (Objet_U::dimension==3)
                 parser.setVar("z",xg1[2]);
               double res=parser.eval();
-              int face_min=(int)(res+0.5);
+              int face_min=static_cast<int>(res+0.5);
               nb=std::max(nb,face_min);
               //faces_associees.dimensionner_force(nb+1);
 
@@ -218,7 +251,8 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
   listb.close();
 }
 
-void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::create_listb_naif(const Domaine_t& dom, const Noms& nomdec,const ArrOfInt& nbdec)
 {
   int n1=nomdec.size();
   int n2=nbdec.size_array();
@@ -228,12 +262,13 @@ void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
       Process::exit();
     }
 
-  SFichier listb(dom1.le_nom()+".boundary_list");
-  int nbfr=dom1.nb_front_Cl();
+  SFichier listb(dom.le_nom()+".boundary_list");
+  int nbfr=dom.nb_front_Cl();
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr=dom1.frontiere(l);
-      int nbfaces=fr.nb_faces();
+      const Frontiere_t& fr=dom.frontiere(l);
+      int nbfaces = check_front_sz(fr);
+
       int compt=0;
       const Nom& nomfr=fr.le_nom();
       int inc=nomdec.search(nomfr);
@@ -272,7 +307,8 @@ void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
   listb.close();
 }
 
-void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nbdec)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::create_listb_geom(const Domaine_t& dom, const Noms& nomdec,const ArrOfInt& nbdec)
 {
   if((Objet_U::dimension)!=3)
     {
@@ -288,8 +324,8 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
       Process::exit();
     }
 
-  const DoubleTab& xs=dom1.coord_sommets();
-  int nbfr=dom1.nb_front_Cl();
+  const DoubleTab_t& xs=dom.coord_sommets();
+  int nbfr=dom.nb_front_Cl();
 
   Parser_U parser;
   parser.setNbVar(3);
@@ -300,8 +336,8 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr=dom1.frontiere(l);
-      int nbfaces=fr.nb_faces();
+      const Frontiere_t& fr=dom.frontiere(l);
+      int_t nbfaces=fr.nb_faces();
       const Nom& nomfr=fr.le_nom();
       int inc=nomdec.search(nomfr);
       if (inc!=-1)
@@ -311,17 +347,15 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
 
           if (nbfaces!=0)
             {
-
-              //int nbfaces=fr.nb_faces();
-              const IntTab& sommets_face = (ref_cast(Frontiere,fr)).les_sommets_des_faces();
-              int nb_som_face=dom1.les_sommets().dimension(1);
+              const IntTab_t& sommets_face = (ref_cast(Frontiere_t,fr)).les_sommets_des_faces();
+              int nb_som_face = (int)dom.les_sommets().dimension(1);
 
               ArrOfDouble coord_min(3);
               coord_min=1e6;
               ArrOfDouble coord_max(3);
               coord_max=-1e6;
 
-              for (int face=0; face<nbfaces; face++)
+              for (int_t face=0; face<nbfaces; face++)
                 {
                   for (int i=0; i<nb_som_face; i++)
                     for (int j=0; j<3; j++)
@@ -416,18 +450,21 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
     }//for (int l=0;l<nbfr;l++)
 
   Cerr <<"create_listb_from_xyz ....  "<<finl;
-  create_listb_from_xyz(dom1,nomdec,expr_tot);
+  create_listb_from_xyz(dom, nomdec,expr_tot);
   Cerr <<" ... ok "<<finl;
 }
 
-Entree& DecoupeBord::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& DecoupeBord_32_64<_SIZE_>::interpreter_(Entree& is)
 {
+  using Impl_ = Impl_32_64<_SIZE_>;
+
   Nom nom_dom1,nom_dom2;
   Nom nom_fichier_sortie("");
   //LIST(Nom) list_nom_dec;
   Noms nomdec;
   ArrOfInt nb_parts,nb_parts_geom;
-  Param param(que_suis_je());
+  Param param(this->que_suis_je());
   int binaire=0;
   Noms expr;
   param.ajouter("domaine",&nom_dom1,Param::REQUIRED); // XD_ADD_P ref_domaine not_set
@@ -440,49 +477,43 @@ Entree& DecoupeBord::interpreter_(Entree& is)
   param.ajouter("binaire",&binaire); // XD_ADD_P entier not_set
   param.lire_avec_accolades_depuis(is);
   // on fait une copie de dom1 pour le modifier
-  associer_domaine(nom_dom1);
-  const Domaine& dom_1=domaine();
+  this->associer_domaine(nom_dom1);
+  const Domaine_t& dom_1=this->domaine();
   if (nom_fichier_sortie=="")
     {
       nom_fichier_sortie=dom_1.le_nom()+".newgeom";
     }
-  Domaine dom1;
+  Domaine_t dom1;
   dom1=dom_1;
   if (nom_dom2!=Nom())
     {
-      if (!sub_type(Domaine, objet(nom_dom2)))
+      if (!sub_type(Domaine_t, this->objet(nom_dom2)))
         {
           Cerr << nom_dom2 << " is not an object of type Domaine " << finl;
           Cerr << " Please correct your data set" << finl;
-          exit();
+          Process::exit();
         }
 
-      const Domaine& dom_2=ref_cast(Domaine, objet(nom_dom2));
-      create_listb_from_domaine2(dom1,dom_2,nomdec);
+      const Domaine_t& dom_2=ref_cast(Domaine_t, this->objet(nom_dom2));
+      Impl_::create_listb_from_domaine2(dom1,dom_2,nomdec);
     }
   else
     {
       if (expr.size()!=0)
-        {
-          create_listb_from_xyz(dom1,nomdec,expr);
-        }
+        Impl_::create_listb_from_xyz(dom1,nomdec,expr);
       else if (nb_parts.size_array()!=0)
-        {
-          create_listb_naif(dom1,nomdec,nb_parts);
-        }
+        Impl_::create_listb_naif(dom1,nomdec,nb_parts);
       else if (nb_parts_geom.size_array()!=0)
-        {
-          create_listb_geom(dom1,nomdec,nb_parts_geom);
-        }
+        Impl_::create_listb_geom(dom1,nomdec,nb_parts_geom);
       else
         {
-          Cerr<<"in DecoupeBord_pour_rayonnement : You must specify domaine_grossier or nb_parts_naif or nb_part_geom or condition_geometrique"<<finl;
-          exit();
+          Cerr<<"in DecoupeBord_32_64_pour_rayonnement : You must specify domaine_grossier or nb_parts_naif or nb_part_geom or condition_geometrique"<<finl;
+          Process::exit();
         }
 
     }
-  Nom nom_file(dom1.le_nom()+".boundary_list");
-  Decouper(dom1,nom_file);
+  Nom nom_file(this->le_nom()+".boundary_list");
+  decouper(dom1,nom_file);
 
   Cout <<"Writing of the new geometry in the file " << nom_fichier_sortie <<finl;
   SFichier fic;
@@ -493,18 +524,17 @@ Entree& DecoupeBord::interpreter_(Entree& is)
   return is;
 }
 
-
-void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
+template <typename _SIZE_>
+void DecoupeBord_32_64<_SIZE_>::decouper(Domaine_t& dom, const Nom& nom_file)
 {
   Cerr << "Splitting to the radiation of the boundaries of the domain " << dom.le_nom() << finl;
-  int nb_faces_bord_sa=dom. nb_faces_bord();
-  int nb_faces_raccord_sa=dom. nb_faces_raccord();
-  if (nproc()!=1)
+  int_t nb_faces_bord_sa=dom. nb_faces_bord();
+  int_t nb_faces_raccord_sa=dom. nb_faces_raccord();
+  if (this->nproc()!=1)
     {
-      Cerr << " The splitting DecoupeBord can be done only in sequential " << finl;
-      exit();
+      Cerr << " The splitting DecoupeBord_32_64 can be done only in sequential " << finl;
+      Process::exit();
     }
-
 
   // on ecrit la nvelle geom en sequentiel
   int nbtot=0;
@@ -525,17 +555,17 @@ void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
   for (int nf=0; nf<nbtot; nf++) listb2>>nomborddec[nf];
 
   int nbfr=dom.nb_front_Cl();
-  Bords& listbord=dom.faces_bord();
-  Raccords& listrac=dom.faces_raccord();
-  Bords listbord2;
-  Raccords listrac2;
+  Bords_t& listbord=dom.faces_bord();
+  Raccords_t& listrac=dom.faces_raccord();
+  Bords_t listbord2;
+  Raccords_t listrac2;
   int nbbord=dom.nb_bords();
-  IntVect decoup(nbfr);
+  IntVect decoup(nbfr);  // BoolVect in fact ...
   Noms nomsdesbordsorg(nbfr);
   // on parcourt toutes les frontieres
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=dom.frontiere(b);
+      Frontiere_t& org=dom.frontiere(b);
       const Nom& nombord=org.le_nom();
       nomsdesbordsorg[b]=nombord;
       decoup(b)=0;
@@ -552,34 +582,32 @@ void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
               // on regarde dans les bords decoupes si ils correspondent a la frontiere courante
               if (nombord==nombord_dec)
                 {
-
-                  // exit();
                   decoup(b)=1;
-                  Bord toto_bord;
-                  Raccord toto_rac;
+                  Bord_t toto_bord;
+                  Raccord_t toto_rac;
                   if (b>=nbbord) toto_rac.typer(org.le_type());
-                  Frontiere& toto=(b<nbbord?ref_cast(Frontiere,toto_bord):ref_cast(Frontiere,toto_rac.valeur()));
+                  Frontiere_t& toto=(b<nbbord?ref_cast(Frontiere_t,toto_bord):ref_cast(Frontiere_t,toto_rac.valeur()));
                   Nom nombord_dec_bis=nomborddec[nf];
                   toto.nommer(nombord_dec_bis);
-                  IntVect listfaces;
+                  IntVect_t listfaces;
                   // on recupere la liste des faces
                   EFichier lis(nombord_dec_bis);
                   lis>>listfaces;
                   // on genere les faces associes a ce nouveau bord
-                  Faces& Facesorg=org.faces();
-                  Faces& newfaces=toto.faces();
+                  Faces_t& Facesorg=org.faces();
+                  Faces_t& newfaces=toto.faces();
                   newfaces.typer(Facesorg.type_face());
-                  int newnbfaces=listfaces.size();
+                  int_t newnbfaces=listfaces.size();
                   int nbsom=Facesorg.nb_som_faces();
                   newfaces.dimensionner(newnbfaces);
-                  const IntTab& sommetsorg=Facesorg.les_sommets();
-                  IntTab& newsommet=newfaces.les_sommets();
-                  for (int i=0; i<newnbfaces; i++)
+                  const IntTab_t& sommetsorg=Facesorg.les_sommets();
+                  IntTab_t& newsommet=newfaces.les_sommets();
+                  for (int_t i=0; i<newnbfaces; i++)
                     for (int j=0; j<nbsom; j++)
                       newsommet(i,j)=sommetsorg(listfaces[i],j);
-                  DoubleTab position;
+                  DoubleTab_t position;
 
-                  Faces::Calculer_centres_gravite(position,newfaces.type_face(),dom.coord_sommets(),newsommet);
+                  Faces_t::Calculer_centres_gravite(position,newfaces.type_face(),dom.coord_sommets(),newsommet);
 
                   bord_xv<<nombord_dec_bis<<finl;
                   bord_xv<<position<<finl;
@@ -602,21 +630,25 @@ void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
   listbord.add(listbord2);
   listrac.add(listrac2);
 
-  int nb_faces_bord=dom.nb_faces_bord();
+  int_t nb_faces_bord=dom.nb_faces_bord();
   if (nb_faces_bord!=nb_faces_bord_sa)
     {
       Cerr<<"the new number of boundary faces is false :"<<nb_faces_bord;
       Cerr<<" instead of "<<nb_faces_bord_sa<<finl;
-      exit();
+      Process::exit();
     }
-  int nb_faces_raccord=dom.nb_faces_raccord();
+  int_t nb_faces_raccord=dom.nb_faces_raccord();
   if (nb_faces_raccord!=nb_faces_raccord_sa)
     {
       Cerr<<"the new number of connection faces is false :"<<nb_faces_raccord;
       Cerr<<" instead of "<<nb_faces_raccord_sa<<finl;
-      exit();
+      Process::exit();
     }
-
-
 }
+
+
+template class DecoupeBord_32_64<int>;
+#if INT_is_64_ == 2
+template class DecoupeBord_32_64<trustIdType>;
+#endif
 

@@ -325,23 +325,16 @@ int Faces_builder::ajouter_une_face(const ArrOfInt& une_face,
   return num_new_face;
 }
 
-int Faces_builder::chercher_face_element(const IntTab&    elem_som,
-                                         const IntTab&    faces_element_ref,
-                                         const ArrOfInt& une_face,
-                                         const int     elem)
+template <typename _SIZE_>
+int Faces_builder::chercher_face_element(const ITab_T<_SIZE_>&    elem_som,
+                                         const IntTab& faces_element_ref,
+                                         const SmallAOTID_T<_SIZE_>& une_face,
+                                         const _SIZE_     elem)
 {
-#ifdef old
-#ifndef NDEBUG
-  ArrOfInt sommets_element(8);
-#else
-  int sommets_element[8];
-#endif
-#endif
+  const int nb_faces_element = faces_element_ref.dimension(0);
+  const int nb_sommets_par_face = faces_element_ref.dimension(1);
 
-  const int nb_faces_element          = faces_element_ref.dimension(0);
-  const int nb_sommets_par_face       = faces_element_ref.dimension(1);
-
-  int i_face, i_som, i_som2;
+  int i_face, i_som2, i_som;
   for (i_face = 0; i_face < nb_faces_element; i_face++)
     {
       for (i_som = 0; i_som < nb_sommets_par_face; i_som++)
@@ -366,6 +359,7 @@ int Faces_builder::chercher_face_element(const IntTab&    elem_som,
   else
     return i_face;
 }
+
 const IntTab& Faces_builder::faces_element_reference(int elem) const
 {
   if (is_polyedre_==1 && les_elements_ptr_->dimension(0))

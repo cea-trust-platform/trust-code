@@ -46,7 +46,8 @@ int tri_lexicographique_tableau(IntTab& tab);
 /*! @brief Tri indirect (on trie le tableau index qui contient des numeros de lignes dans tab)
  *
  */
-int tri_lexicographique_tableau_indirect(const IntTab& tab, ArrOfInt& index);
+template <typename _SIZE_>
+int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZE_>& index);
 
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *

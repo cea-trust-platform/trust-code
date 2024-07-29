@@ -17,42 +17,60 @@
 #include <Domaine.h>
 #include <Motcle.h>
 
-Implemente_instanciable(Verifier_Simplexes,"Verifier_Simplexes",Interprete_geometrique_base) ;
+Implemente_instanciable_32_64(Verifier_Simplexes_32_64,"Verifier_Simplexes",Interprete_geometrique_base_32_64<_T_>) ;
 // XD verifier_simplexes interprete verifier_simplexes -1 Keyword to raffine a simplexes
 // XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
-Sortie& Verifier_Simplexes::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Verifier_Simplexes_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  Interprete_geometrique_base::printOn(os);
+  Interprete_geometrique_base_32_64<_SIZE_>::printOn(os);
   return os;
 }
 
-Entree& Verifier_Simplexes::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Verifier_Simplexes_32_64<_SIZE_>::readOn(Entree& is)
 {
-  Interprete_geometrique_base::readOn(is);
+  Interprete_geometrique_base_32_64<_SIZE_>::readOn(is);
   return is;
 }
 
-static void check_internal_diagonal_for_triangle(Domaine& domain)
+// Helper implementation class that will only live in this file:
+template <typename _SIZE_>
+class Impl_32_64
 {
-  // nothing to do
-}
+public:
+  using int_t = _SIZE_;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
 
-static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  static void check_internal_diagonal_for_triangle(Domaine_t& domain) { }
+  static void check_internal_diagonal_for_tetrahedron(Domaine_t& domain);
+  static void check_internal_diagonal(Domaine_t& domain);
+  static void check_positive_volumes_for_triangle(Domaine_t& domain);
+  static void check_positive_volumes_for_tetrahedron(Domaine_t& domain);
+  static void check_positive_volumes(Domaine_t& domain);
+};
+
+
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::check_internal_diagonal_for_tetrahedron(Domaine_t& domain)
 {
-  const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.les_elems();
+  const DoubleTab_t& nodes = domain.les_sommets();
+  IntTab_t& cells = domain.les_elems();
 
   ArrOfDouble lengths(3);
 
-  const int nb_cells = cells.dimension(0);
-  int err_count = 0;
-  for (int cell=0; cell<nb_cells; ++cell)
+  const int_t nb_cells = cells.dimension(0);
+  int_t err_count = 0;
+  for (int_t cell=0; cell<nb_cells; ++cell)
     {
-      const int s0 = cells(cell,0);
-      const int s1 = cells(cell,1);
-      const int s2 = cells(cell,2);
-      const int s3 = cells(cell,3);
+      const int_t s0 = cells(cell,0),
+                  s1 = cells(cell,1),
+                  s2 = cells(cell,2),
+                  s3 = cells(cell,3);
 
       const double x0 = nodes(s0,0);
       const double x1 = nodes(s1,0);
@@ -94,7 +112,7 @@ static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
       lengths[1] = (x13-x02)*(x13-x02) + (y13-y02)*(y13-y02) + (z13-z02)*(z13-z02);
       lengths[2] = (x12-x03)*(x12-x03) + (y12-y03)*(y12-y03) + (z12-z03)*(z12-z03);
 
-      const int id = imin_array(lengths);
+      const int_t id = imin_array(lengths);
 
       if (id == 0)
         {
@@ -102,7 +120,7 @@ static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
             {
               if (err_count == 0)
                 {
-                  Cerr << "Error in Verifier_Simplexes.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
+                  Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
                   Cerr << " The following cells have a bad internal diagonal :" << finl;
                 }
               Cerr << cell << finl;
@@ -119,7 +137,7 @@ static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
             {
               if (err_count == 0)
                 {
-                  Cerr << "Error in Verifier_Simplexes.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
+                  Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
                   Cerr << " The following cells have a bad internal diagonal :" << finl;
                 }
               Cerr << cell << finl;
@@ -130,7 +148,7 @@ static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
         {
           if (err_count == 0)
             {
-              Cerr << "Error in Verifier_Simplexes.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
+              Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_internal_diagonal_for_tetrahedron()'" << finl;
               Cerr << " The following cells have a bad internal diagonal :" << finl;
             }
           Cerr << cell << finl;
@@ -139,12 +157,11 @@ static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
     }
 
   if (err_count>0)
-    {
-      Process::exit();
-    }
+    Process::exit();
 }
 
-static void check_internal_diagonal(Domaine& domain)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::check_internal_diagonal(Domaine_t& domain)
 {
   const Nom& cell_type = domain.type_elem()->que_suis_je();
 
@@ -162,25 +179,26 @@ static void check_internal_diagonal(Domaine& domain)
       check_internal_diagonal_for_tetrahedron(domain);
       break;
     default :
-      Cerr << "Error in Verifier_Simplexes.cpp 'check_internal_diagonal()'" << finl;
+      Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_internal_diagonal()'" << finl;
       Cerr << "  Unknown cell type : " << cell_type << finl;
-      Cerr << "  Verifier_Simplexes can only check Triangles and Tetrahedrons" << finl;
+      Cerr << "  Verifier_Simplexes_32_64 can only check Triangles and Tetrahedrons" << finl;
       Process::exit();
     }
 }
 
-static void check_positive_volumes_for_triangle(Domaine& domain)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::check_positive_volumes_for_triangle(Domaine_t& domain)
 {
-  const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.les_elems();
+  const DoubleTab_t& nodes = domain.les_sommets();
+  IntTab_t& cells = domain.les_elems();
 
-  const int nb_cells = cells.dimension(0);
-  int err_count = 0;
-  for (int cell=0; cell<nb_cells; ++cell)
+  const int_t nb_cells = cells.dimension(0);
+  int_t err_count = 0;
+  for (int_t cell=0; cell<nb_cells; ++cell)
     {
-      const int s0 = cells(cell,0);
-      const int s1 = cells(cell,1);
-      const int s2 = cells(cell,2);
+      const int_t s0 = cells(cell,0),
+                  s1 = cells(cell,1),
+                  s2 = cells(cell,2);
 
       const double x0 = nodes(s0,0);
       const double x1 = nodes(s1,0);
@@ -195,7 +213,7 @@ static void check_positive_volumes_for_triangle(Domaine& domain)
         {
           if (err_count == 0)
             {
-              Cerr << "Error in Verifier_Simplexes.cpp 'check_positive_volumes_for_triangle()'" << finl;
+              Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_positive_volumes_for_triangle()'" << finl;
               Cerr << " The following cells have a negative orientation :" << finl;
             }
           Cerr << cell << finl;
@@ -203,24 +221,23 @@ static void check_positive_volumes_for_triangle(Domaine& domain)
         }
     }
   if (err_count>0)
-    {
-      Process::exit();
-    }
+    Process::exit();
 }
 
-static void check_positive_volumes_for_tetrahedron(Domaine& domain)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::check_positive_volumes_for_tetrahedron(Domaine_t& domain)
 {
-  const DoubleTab& nodes = domain.les_sommets();
-  IntTab&           cells = domain.les_elems();
+  const DoubleTab_t& nodes = domain.les_sommets();
+  IntTab_t& cells = domain.les_elems();
 
-  const int nb_cells = cells.dimension(0);
-  int err_count = 0;
-  for (int cell=0; cell<nb_cells; ++cell)
+  const int_t nb_cells = cells.dimension(0);
+  int_t err_count = 0;
+  for (int_t cell=0; cell<nb_cells; ++cell)
     {
-      const int s0 = cells(cell,0);
-      const int s1 = cells(cell,1);
-      const int s2 = cells(cell,2);
-      const int s3 = cells(cell,3);
+      const int_t s0 = cells(cell,0),
+                  s1 = cells(cell,1),
+                  s2 = cells(cell,2),
+                  s3 = cells(cell,3);
 
       const double x0 = nodes(s0,0);
       const double x1 = nodes(s1,0);
@@ -248,7 +265,7 @@ static void check_positive_volumes_for_tetrahedron(Domaine& domain)
         {
           if (err_count == 0)
             {
-              Cerr << "Error in Verifier_Simplexes.cpp 'check_positive_volumes_for_tetrahedron()'" << finl;
+              Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_positive_volumes_for_tetrahedron()'" << finl;
               Cerr << " The following cells have a negative orientation :" << finl;
             }
           Cerr << cell << finl;
@@ -256,13 +273,11 @@ static void check_positive_volumes_for_tetrahedron(Domaine& domain)
         }
     }
   if (err_count>0)
-    {
-      Process::exit();
-    }
+    Process::exit();
 }
 
-
-static void check_positive_volumes(Domaine& domain)
+template <typename _SIZE_>
+void Impl_32_64<_SIZE_>::check_positive_volumes(Domaine_t& domain)
 {
   const Nom& cell_type = domain.type_elem()->que_suis_je();
 
@@ -280,26 +295,36 @@ static void check_positive_volumes(Domaine& domain)
       check_positive_volumes_for_tetrahedron(domain);
       break;
     default :
-      Cerr << "Error in Verifier_Simplexes.cpp 'check_positive_volumes()'" << finl;
+      Cerr << "Error in Verifier_Simplexes_32_64.cpp 'check_positive_volumes()'" << finl;
       Cerr << "  Unknown cell type : " << cell_type << finl;
-      Cerr << "  Verifier_Simplexes can only check Triangles and Tetrahedrons" << finl;
+      Cerr << "  Verifier_Simplexes_32_64 can only check Triangles and Tetrahedrons" << finl;
       Process::exit();
     }
 }
 
-void Verifier_Simplexes::check_domain(Domaine& domain)
+template <typename _SIZE_>
+void Verifier_Simplexes_32_64<_SIZE_>::check_domain(Domaine_t& domain)
 {
-  check_internal_diagonal(domain);
-  check_positive_volumes(domain);
+  using Impl_ = Impl_32_64<_SIZE_>;
+
+  Impl_::check_internal_diagonal(domain);
+  Impl_::check_positive_volumes(domain);
 }
 
-Entree& Verifier_Simplexes::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Verifier_Simplexes_32_64<_SIZE_>::interpreter_(Entree& is)
 {
-  associer_domaine(is);
+  this->associer_domaine(is);
 
-  Domaine& domain = domaine();
+  Domaine_t& domain = this->domaine();
   check_domain(domain);
 
   return is;
 }
+
+
+template class Verifier_Simplexes_32_64<int>;
+#if INT_is_64_ == 2
+template class Verifier_Simplexes_32_64<trustIdType>;
+#endif
 

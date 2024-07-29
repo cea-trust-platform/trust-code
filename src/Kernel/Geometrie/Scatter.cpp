@@ -2842,7 +2842,8 @@ void Scatter::calculer_nb_items_virtuels(Joints& joints,
 /*! @brief cree des descripteurs sequentiels pour les tableaux sommets et elements du domaine (necessaire car Scatter n'est
  *  pas appele pour les domaines en sequentiel)
  */
-void Scatter::init_sequential_domain(Domaine& dom)
+template <typename _SIZE_>
+void Scatter::init_sequential_domain(Domaine_32_64<_SIZE_>& dom)
 {
   MD_Vector_std mdstd;
   MD_Vector md;
@@ -2860,7 +2861,8 @@ void Scatter::init_sequential_domain(Domaine& dom)
 /*! @brief methode utilisee par les interpretes qui modifient le domaine (sequentiel), detruit les descripteurs
  *  des sommets et elements pour permettre la modification de ces tableaux.
  */
-void Scatter::uninit_sequential_domain(Domaine& dom)
+template <typename _SIZE_>
+void Scatter::uninit_sequential_domain(Domaine_32_64<_SIZE_>& dom)
 {
   MD_Vector md; // descripteur nul
   dom.les_sommets().set_md_vector(md);

@@ -16,31 +16,35 @@
 #ifndef SupprimeBord_included
 #define SupprimeBord_included
 
+#include <Interprete_geometrique_base.h>
+#include <Domaine.h>
+#include <Domaine_forward.h>
 
 
 /*! @brief class SupprimeBord Supprimebord dom  { bord1 , bord2 }
  *
- *  supprime les frontieres bord1 et bord2
- *
+ *  Supprime les frontieres bord1 et bord2
  *
  * @sa Interprete
  */
-
-#include <Interprete_geometrique_base.h>
-#include <Domaine.h>
-
-#include <Domaine_forward.h>
-
-class SupprimeBord : public Interprete_geometrique_base
+template <typename _SIZE_>
+class SupprimeBord_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(SupprimeBord);
+  Declare_instanciable_32_64(SupprimeBord_32_64);
 
 public :
 
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Bords_t = Bords_32_64<_SIZE_>;
+  using Raccords_t = Raccords_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree&) override;
 
-
 };
+
+using SupprimeBord = SupprimeBord_32_64<int>;
+using SupprimeBord_64 = SupprimeBord_32_64<trustIdType>;
+
 
 #endif
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,21 +16,16 @@
 #ifndef Distanceparoi_included
 #define Distanceparoi_included
 
+#include <Interprete_geometrique_base.h>
+#include <Domaine.h>
+#include <Domaine_forward.h>
 
 
 /*! @brief class Distanceparoi Realise une boite de recirculation (maillage hexa) extrudee d'un bord
  *
- *
- *
  * @sa Interprete
  */
-
-#include <Interprete_geometrique_base.h>
-#include <Domaine.h>
-
-#include <Domaine_forward.h>
-
-class Distanceparoi : public Interprete_geometrique_base
+class Distanceparoi: public Interprete_geometrique_base
 {
   Declare_instanciable(Distanceparoi);
 
@@ -39,6 +34,7 @@ public :
   Entree& interpreter_(Entree&) override;
 
 };
+
 
 #endif
 

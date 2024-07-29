@@ -20,23 +20,27 @@
 
 /*! @brief : class Verifier_Simplexes
  *
- *  <Description of class Verifier_Simplexes>
- *
- *
- *
  */
-
-class Verifier_Simplexes : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Verifier_Simplexes_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
 
-  Declare_instanciable(Verifier_Simplexes) ;
+  Declare_instanciable_32_64(Verifier_Simplexes_32_64) ;
 
 public :
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree& is) override;
 
-public :
-  static void check_domain(Domaine& domain);
+  static void check_domain(Domaine_t& domain);
+
+private:
+
 
 };
+
+using Verifier_Simplexes = Verifier_Simplexes_32_64<int>;
+using Verifier_Simplexes_64 = Verifier_Simplexes_32_64<trustIdType>;
+
 
 #endif /* Verifier_Simplexes_inclus */

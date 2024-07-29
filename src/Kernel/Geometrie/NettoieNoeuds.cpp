@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,42 +17,49 @@
 #include <Domaine.h>
 #include <Scatter.h>
 
-Implemente_instanciable(NettoieNoeuds, "NettoiePasNoeuds", Interprete_geometrique_base);
+Implemente_instanciable_32_64(NettoieNoeuds_32_64, "NettoiePasNoeuds", Interprete_geometrique_base_32_64<_T_>);
 // XD nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
 // XD  attr domain_name ref_domaine domain_name 0 Name of domain.
 
-Sortie& NettoieNoeuds::printOn(Sortie& os) const { return Interprete::printOn(os); }
+template <typename _SIZE_>
+Sortie& NettoieNoeuds_32_64<_SIZE_>::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-Entree& NettoieNoeuds::readOn(Entree& is) { return Interprete::readOn(is); }
+template <typename _SIZE_>
+Entree& NettoieNoeuds_32_64<_SIZE_>::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete NettoieNoeuds Structure du jeu de donnee (en dimension 2) :
+template<> int NettoieNoeuds_32_64<int>::NettoiePasNoeuds=0;
+#if INT_is_64_ == 2
+template<> int NettoieNoeuds_32_64<trustIdType>::NettoiePasNoeuds=0;
+#endif
+
+/*! @brief Fonction principale de l'interprete NettoieNoeuds_32_64 Structure du jeu de donnee (en dimension 2) :
  *
- *     NettoieNoeuds dom alpha
+ *     NettoieNoeuds_32_64 dom alpha
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
  * @throws l'objet a mailler n'est pas du type Domaine
  */
-int NettoieNoeuds::NettoiePasNoeuds=0;
-Entree& NettoieNoeuds::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& NettoieNoeuds_32_64<_SIZE_>::interpreter_(Entree& is)
 {
+  this->associer_domaine(is);
 
-  associer_domaine(is);
-
-  if (domaine().les_sommets().size()!=0)
+  if (this->domaine().les_sommets().size()!=0)
     {
       Cerr << "The keyword NettoiePasNoeuds must be placed before the ";
       Cerr << "reading of the domain to avoid the cleaning of the double";
       Cerr << "nodes of the domain." << finl;
-      exit();
+      Process::exit();
     }
   NettoiePasNoeuds=1;
-  Cerr << "NettoiePasNoeuds=" << NettoiePasNoeuds << " for the domain " << domaine().le_nom() << finl;
+  Cerr << "NettoiePasNoeuds=" << NettoiePasNoeuds << " for the domain " << this->domaine().le_nom() << finl;
 
   return is;
 }
 
-void NettoieNoeuds::nettoie(Domaine& dom)
+template <typename _SIZE_>
+void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
 {
   if (NettoiePasNoeuds==1)
     return;
@@ -60,26 +67,26 @@ void NettoieNoeuds::nettoie(Domaine& dom)
   // Autorise la modification de structure des tableaux sommets et elements:
   Scatter::uninit_sequential_domain(dom);
 
-  DoubleTab& coord_sommets=dom.les_sommets();
-  IntTab& les_elems=dom.les_elems();
-  int nb_som_init=coord_sommets.dimension(0);
-  int nb_elem=les_elems.dimension(0);
-  int nb_som_elem=les_elems.dimension(1);
-  ArrOfInt renum_som_old2new(nb_som_init);
+  DoubleTab_t& coord_sommets=dom.les_sommets();
+  IntTab_t& les_elems=dom.les_elems();
+  int_t nb_som_init=coord_sommets.dimension(0);
+  int_t nb_elem=les_elems.dimension(0);
+  int nb_som_elem=(int)les_elems.dimension(1);
+  ArrOfInt_t renum_som_old2new(nb_som_init);
 
-  int compteur=0;
+  int_t compteur=0;
 
   {
-    //int i;
-    for (int i=0; i<nb_som_init ; i++)
+    //int_t i;
+    for (int_t i=0; i<nb_som_init ; i++)
       renum_som_old2new[i]=-1;
 
-    for (int i=0; i<nb_elem ; i++)
+    for (int_t i=0; i<nb_elem ; i++)
       for (int j=0; j< nb_som_elem; j++)
         {
           // GF dans le cas ou on a des polyedres
           if (les_elems(i,j)==-1) break;
-          int& tmp=renum_som_old2new[les_elems(i,j)];
+          int_t& tmp=renum_som_old2new[les_elems(i,j)];
           assert (tmp < compteur);
           if(tmp==-1)
             tmp=compteur++;
@@ -88,40 +95,41 @@ void NettoieNoeuds::nettoie(Domaine& dom)
     int nb_bords=dom.nb_front_Cl();
     for (int ii=0; ii<nb_bords; ii++)
       {
-        const Frontiere& front= dom.frontiere(ii);
-        const Faces& faces=front.faces();
-        const IntTab& faces_sommets=faces.les_sommets();
-        int nb_faces=faces_sommets.dimension(0);
-        int nb_som_face=faces_sommets.dimension(1);
-        for(int i=0; i<nb_faces; i++)
+        const Frontiere_t& front= dom.frontiere(ii);
+        const Faces_t& faces=front.faces();
+        const IntTab_t& faces_sommets=faces.les_sommets();
+        int_t nb_faces=faces_sommets.dimension(0);
+        int nb_som_face=(int)faces_sommets.dimension(1);
+        for(int_t i=0; i<nb_faces; i++)
           for(int j=0; j<nb_som_face; j++)
             {
               // dans le cas ou l'on a des polygones
               if (faces_sommets(i,j)==-1) break;
-              int& tmp=renum_som_old2new[faces_sommets(i,j)];
+              int_t& tmp=renum_som_old2new[faces_sommets(i,j)];
               assert (tmp < compteur);
               if(tmp==-1)
                 tmp=compteur++;
             }
       }
   }
-  int nb_som_new=compteur;
+  int_t nb_som_new=compteur;
   Cerr << "Elimination of " << nb_som_init - nb_som_new << " unnecessary nodes in the domain " << dom.le_nom() << finl;
   if(nb_som_new!=nb_som_init)
     {
-      ArrOfInt renum_som_new2old(nb_som_new);
+      ArrOfInt_t renum_som_new2old(nb_som_new);
       {
-        int j;
-        for (int i=0; i<nb_som_init ; i++)
+        int_t j;
+        for (int_t i=0; i<nb_som_init ; i++)
           if((j=renum_som_old2new[i])!=-1)
             renum_som_new2old[j]=i;
       }
       {
-        int i, j;
-        DoubleTab new_coord(nb_som_new, dimension);
+        int_t i;
+        int j;
+        DoubleTab_t new_coord(nb_som_new, Objet_U::dimension);
 
         for (i=0; i<nb_som_new ; i++)
-          for (j=0; j<dimension ; j++)
+          for (j=0; j<Objet_U::dimension ; j++)
             {
               new_coord(i,j)=coord_sommets(renum_som_new2old[i],j);
             }
@@ -130,7 +138,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
         for (i=0; i<nb_elem ; i++)
           for (j=0; j<nb_som_elem ; j++)
             {
-              int num_som=les_elems(i,j);
+              int_t num_som=les_elems(i,j);
               if (num_som!=-1)
                 les_elems(i,j)=renum_som_old2new[num_som];
               else
@@ -141,61 +149,46 @@ void NettoieNoeuds::nettoie(Domaine& dom)
       // On recupere les bords :
       for (auto &itr : dom.faces_bord())
         {
-          Frontiere& front = itr;
-          Faces& faces = front.faces();
-          IntTab& faces_sommets = faces.les_sommets();
-          IntTab old_faces_sommets(faces.les_sommets());
-          int nb_faces = faces_sommets.dimension(0);
-          int nb_som_face = faces_sommets.dimension(1);
-          for (int i = 0; i < nb_faces; i++)
+          Frontiere_t& front = itr;
+          Faces_t& faces = front.faces();
+          IntTab_t& faces_sommets = faces.les_sommets();
+          IntTab_t old_faces_sommets(faces.les_sommets());
+          int_t nb_faces = faces_sommets.dimension(0);
+          int nb_som_face = (int)faces_sommets.dimension(1);
+          for (int_t i = 0; i < nb_faces; i++)
             for (int j = 0; j < nb_som_face; j++)
               {
-                int som = old_faces_sommets(i, j);
+                int_t som = old_faces_sommets(i, j);
                 if (som != -1)
                   faces_sommets(i, j) = renum_som_old2new[som];
                 else
                   faces_sommets(i, j) = som;
               }
         }
+
+      // Handy renum lambda:
+      auto renum_lamb = [&](auto& itr)
+      {
+        Frontiere_t& front = itr;
+        Faces_t& faces = front.faces();
+        IntTab_t& faces_sommets = faces.les_sommets();
+        IntTab_t old_faces_sommets(faces.les_sommets());
+        int_t nb_faces = faces_sommets.dimension(0);
+        int nb_som_face = (int)faces_sommets.dimension(1);
+        for (int_t i = 0; i < nb_faces; i++)
+          for (int j = 0; j < nb_som_face; j++)
+            faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
+      };
+
       // Les Bords Internes :
       for (auto &itr : dom.bords_int())
-        {
-          Frontiere& front = itr;
-          Faces& faces = front.faces();
-          IntTab& faces_sommets = faces.les_sommets();
-          IntTab old_faces_sommets(faces.les_sommets());
-          int nb_faces = faces_sommets.dimension(0);
-          int nb_som_face = faces_sommets.dimension(1);
-          for (int i = 0; i < nb_faces; i++)
-            for (int j = 0; j < nb_som_face; j++)
-              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
-        }
+        renum_lamb(itr);
       // Les Raccords
       for (auto &itr : dom.faces_raccord())
-        {
-          Frontiere& front = itr.valeur();
-          Faces& faces = front.faces();
-          IntTab& faces_sommets = faces.les_sommets();
-          IntTab old_faces_sommets(faces.les_sommets());
-          int nb_faces = faces_sommets.dimension(0);
-          int nb_som_face = faces_sommets.dimension(1);
-          for (int i = 0; i < nb_faces; i++)
-            for (int j = 0; j < nb_som_face; j++)
-              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
-        }
-      // Les Groupes de Faces :
+        renum_lamb(itr);
+      // Les Groupes de Faces_t :
       for (auto &itr : dom.groupes_faces())
-        {
-          Frontiere& front = itr;
-          Faces& faces = front.faces();
-          IntTab& faces_sommets = faces.les_sommets();
-          IntTab old_faces_sommets(faces.les_sommets());
-          int nb_faces = faces_sommets.dimension(0);
-          int nb_som_face = faces_sommets.dimension(1);
-          for (int i = 0; i < nb_faces; i++)
-            for (int j = 0; j < nb_som_face; j++)
-              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
-        }
+        renum_lamb(itr);
     }
   Scatter::init_sequential_domain(dom);
 }
@@ -203,13 +196,14 @@ void NettoieNoeuds::nettoie(Domaine& dom)
 /*! @brief regarde si on n'a pas des noeuds doubles
  *
  */
-void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
+template <typename _SIZE_>
+void NettoieNoeuds_32_64<_SIZE_>::verifie_noeuds(const Domaine_t& dom)
 {
   Cerr<<finl<<"Beginning of the search of identical nodes (can be long, algorithm in n^2)..."<<finl;
-  const DoubleTab& coord_sommets=dom.les_sommets();
-  int ns=coord_sommets.dimension(0);
+  const DoubleTab_t& coord_sommets=dom.les_sommets();
+  int_t ns=coord_sommets.dimension(0);
   //  int nbsomelem=coord_sommets.dimension(1);
-  //  const IntTab& les_elems= dom.les_elems();
+  //  const IntTab_t& les_elems= dom.les_elems();
   int err=0;
   // la version avec chercher element plus rapide a priori
   // n log(n) a des chances de rater des sommets doubles
@@ -227,7 +221,7 @@ void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
       if (elem2==-1)
       {
       Cerr<<"unable to find node "<<finl;
-      exit();
+      Process::exit();
       }
       int som;
       for ( som=0;som<nbsomelem;som++)
@@ -247,8 +241,8 @@ void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
       }
       }
   */
-  int tmp,pourcent=0;
-  for (int sommet=0; sommet<ns; sommet++)
+  int_t tmp,pourcent=0;
+  for (int_t sommet=0; sommet<ns; sommet++)
     {
       tmp =(sommet*100)/ns;
       if(tmp>=pourcent)
@@ -256,7 +250,7 @@ void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
           pourcent = tmp;
           Cerr << pourcent << "% of nodes have been verified\r " << flush;
         }
-      for ( int sommet2=sommet+1; sommet2<ns; sommet2++)
+      for (int_t sommet2=sommet+1; sommet2<ns; sommet2++)
         {
           int ok=1;
           for (int dir=0; dir<Objet_U::dimension; dir++)
@@ -273,5 +267,13 @@ void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
     }
   Cerr<<"End of the search of identical nodes."<<finl;
   if (err)
-    exit();
+    Process::exit();
 }
+
+
+template class NettoieNoeuds_32_64<int>;
+#if INT_is_64_ == 2
+template class NettoieNoeuds_32_64<trustIdType>;
+#endif
+
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,27 +17,31 @@
 #define Raffiner_Simplexes_included
 
 #include <Interprete_geometrique_base.h>
+#include <Static_Int_Lists.h>
 
 /*! @brief : class Raffiner_Simplexes
  *
- *  <Description of class Raffiner_Simplexes>
- *
- *
- *
  */
-
-class Raffiner_Simplexes : public Interprete_geometrique_base
+template<typename _SIZE_>
+class Raffiner_Simplexes_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
 
-  Declare_instanciable(Raffiner_Simplexes) ;
+  Declare_instanciable_32_64(Raffiner_Simplexes_32_64) ;
 
 public :
+  using int_t = _SIZE_;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree& is) override;
 
-public :
-  static void refine_domain(const Domaine& src,
-                            Domaine&        dest);
+protected:
+  void refine_domain(const Domaine_t& src, Domaine_t& dest);
 
 };
+
+using Raffiner_Simplexes = Raffiner_Simplexes_32_64<int>;
+using Raffiner_Simplexes_64 = Raffiner_Simplexes_32_64<trustIdType>;
+
 
 #endif /* Raffiner_Simplexes_inclus */

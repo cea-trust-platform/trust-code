@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,20 +17,23 @@
 #define Extraire_domaine_included
 
 #include <Interprete_geometrique_base.h>
+#include <Domaine_forward.h>
 
 class Nom;
-#include <Domaine_forward.h>
 
 /*! @brief Classe Extraire_domaine Lecture d'un fichier
  *
  * @sa Interprete
  */
-
 class Extraire_domaine : public Interprete_geometrique_base
 {
   Declare_instanciable(Extraire_domaine);
+
 public :
+
   Entree& interpreter_(Entree&) override;
 };
+
+
 
 #endif /* Extraire_domaine_included */

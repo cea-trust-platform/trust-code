@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,31 +16,33 @@
 #include <Reorienter_tetraedres.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Reorienter_tetraedres,"Reorienter_tetraedres",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Reorienter_tetraedres_32_64,"Reorienter_tetraedres",Interprete_geometrique_base_32_64<_T_>);
 // XD reorienter_tetraedres interprete reorienter_tetraedres -1 This keyword is mandatory for front-tracking computations with the VEF discretization. For each tetrahedral element of the domain, it checks if it has a positive volume. If the volume (determinant of the three vectors) is negative, it swaps two nodes to reverse the orientation of this tetrahedron.
 // XD attr domain_name ref_domaine domain_name 0 Name of domain.
 
-
-Sortie& Reorienter_tetraedres::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Reorienter_tetraedres_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Reorienter_tetraedres::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Reorienter_tetraedres_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& Reorienter_tetraedres::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Reorienter_tetraedres_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   Cerr << "Reorientation of tetrahedra for either direct..." << finl;
-  if (dimension != 3)
+  if (Objet_U::dimension != 3)
     {
-      Cerr << "we can not reorientate (Reorienter) in dimension " << dimension <<finl;
-      exit();
+      Cerr << "we can not reorientate (Reorienter) in dimension " << Objet_U::dimension <<finl;
+      Process::exit();
     }
-  associer_domaine(is);
-  Domaine& dom=domaine();
+  this->associer_domaine(is);
+  Domaine_t& dom=this->domaine();
   Scatter::uninit_sequential_domain(dom);
   reorienter(dom);
   Scatter::init_sequential_domain(dom);
@@ -48,22 +50,22 @@ Entree& Reorienter_tetraedres::interpreter_(Entree& is)
   return is;
 }
 
-
-Reorienter_tetraedres::Sens Reorienter_tetraedres::test_orientation_tetra(IntTab& les_elems, int num_element, const DoubleTab& coord_sommets) const
+template <typename _SIZE_>
+Sens_Orient Reorienter_tetraedres_32_64<_SIZE_>::test_orientation_tetra(IntTab_t& les_elems, int_t ielem, const DoubleTab_t& coord_sommets) const
 {
   static const int SOM_Z = 0;
   static const int SOM_A = 1;
   static const int SOM_B = 2;
   static const int SOM_C = 3;
 
-  const int som_Z = les_elems(num_element,SOM_Z);
-  const int som_A = les_elems(num_element,SOM_A);
-  const int som_B = les_elems(num_element,SOM_B);
-  const int som_C = les_elems(num_element,SOM_C);
+  const int_t som_Z = les_elems(ielem,SOM_Z);
+  const int_t som_A = les_elems(ielem,SOM_A);
+  const int_t som_B = les_elems(ielem,SOM_B);
+  const int_t som_C = les_elems(ielem,SOM_C);
 
   double ZA[3], ZB[3], ZC[3], pdtvect[3], pdtscal;
   int k;
-  for (k=0 ; k<dimension ; k++)
+  for (k=0 ; k < Objet_U::dimension ; k++)
     {
       ZA[k] = coord_sommets(som_A,k) - coord_sommets(som_Z,k);
       ZB[k] = coord_sommets(som_B,k) - coord_sommets(som_Z,k);
@@ -77,7 +79,7 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::test_orientation_tetra(IntTab
 
   //calcul du pdtscal pdtvect.ZC
   pdtscal = 0.;
-  for (k=0 ; k<dimension ; k++)
+  for (k=0 ; k < Objet_U::dimension ; k++)
     {
       pdtscal += pdtvect[k] * ZC[k];
     }
@@ -90,7 +92,7 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::test_orientation_tetra(IntTab
         Process::Journal<<"  element "<<num_element<<"  indirect"<<finl;
       }
 #endif
-      return INDIRECT;
+      return Sens_Orient::INDIRECT;
     }
 #ifdef _AFFDEBUG
   {
@@ -98,40 +100,38 @@ Reorienter_tetraedres::Sens Reorienter_tetraedres::test_orientation_tetra(IntTab
   }
 #endif
 
-  return DIRECT;
+  return Sens_Orient::DIRECT;
 }
 
-Reorienter_tetraedres::Sens Reorienter_tetraedres::reorienter_tetra(IntTab& les_elems, int num_element) const
+template <typename _SIZE_>
+Sens_Orient Reorienter_tetraedres_32_64<_SIZE_>::reorienter_tetra(IntTab_t& les_elems, int_t num_element) const
 {
   static const int SOM_A = 1;
   static const int SOM_B = 2;
 
   //pour reorienter le tetraedre, on va permuter les sommets 1 et 2
-  int tmp;
+  int_t tmp;
   tmp = les_elems(num_element,SOM_A);
   les_elems(num_element,SOM_A) = les_elems(num_element,SOM_B);
   les_elems(num_element,SOM_B) = tmp;
-  return DIRECT;
+  return Sens_Orient::DIRECT;
 }
 
-//
-//
-//
-void Reorienter_tetraedres::reorienter(Domaine& dom) const
+template <typename _SIZE_>
+void Reorienter_tetraedres_32_64<_SIZE_>::reorienter(Domaine_t& dom) const
 {
-  const DoubleTab& coord_sommets = dom.coord_sommets();
+  const DoubleTab_t& coord_sommets = dom.coord_sommets();
 
   if (dom.type_elem()->que_suis_je() == "Tetraedre" )
     {
       //domaine de tetraedres
-      IntTab& les_elems = dom.les_elems();
-      int nb_elems = les_elems.dimension(0);
-      int ielem;
+      IntTab_t& les_elems = dom.les_elems();
+      int_t nb_elems = les_elems.dimension(0);
 
       //balaye les tetraedres
-      for (ielem=0 ; ielem<nb_elems ; ielem++)
+      for (int_t ielem=0 ; ielem<nb_elems ; ielem++)
         {
-          if (test_orientation_tetra(les_elems, ielem, coord_sommets)==INDIRECT)
+          if (test_orientation_tetra(les_elems, ielem, coord_sommets) == Sens_Orient::INDIRECT)
             {
               //tetraedre oriente en sens indirect -> a reorienter
               reorienter_tetra(les_elems, ielem);
@@ -163,3 +163,11 @@ void Reorienter_tetraedres::reorienter(Domaine& dom) const
         }
     }
 }
+
+
+template class Reorienter_tetraedres_32_64<int>;
+#if INT_is_64_ == 2
+template class Reorienter_tetraedres_32_64<trustIdType>;
+#endif
+
+

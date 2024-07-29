@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,25 +20,31 @@
 
 /*! @brief Polyedriser Classe destinee a convertir un hexaedre en polyedre
  *
- *
- *
- *
  */
-class Polyedriser : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Polyedriser_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Polyedriser);
-public :
+  Declare_instanciable_32_64(Polyedriser_32_64);
 
-  void polyedriser(Domaine&) const;
-  inline int dimension_application() const
-  {
-    return 3;
-  }
+public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntVect_t = IVect_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Faces_t = Faces_32_64<_SIZE_>;
+
+  void polyedriser(Domaine_t&) const;
+  inline int dimension_application() const { return 3; }
   Entree& interpreter_(Entree&) override;
 
-protected :
-
 };
+
+using Polyedriser = Polyedriser_32_64<int>;
+using Polyedriser_64 = Polyedriser_32_64<trustIdType>;
+
 
 #endif
 

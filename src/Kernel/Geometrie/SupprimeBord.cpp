@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,32 +15,35 @@
 
 #include <SupprimeBord.h>
 #include <EFichier.h>
-Implemente_instanciable(SupprimeBord,"Supprime_Bord",Interprete_geometrique_base);
+Implemente_instanciable_32_64(SupprimeBord_32_64,"Supprime_Bord",Interprete_geometrique_base_32_64<_T_>);
 // XD supprime_bord interprete supprime_bord -1 Keyword to remove boundaries (named Boundary_name1 Boundary_name2 ) of the domain named domain_name.
 // XD   attr domaine ref_domaine domain 0 Name of domain
 // XD   attr bords list_nom bords 0 { Boundary_name1 Boundaray_name2 }
 
-Sortie& SupprimeBord::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& SupprimeBord_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& SupprimeBord::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& SupprimeBord_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& SupprimeBord::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& SupprimeBord_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   //Nom nom_dom;
   LIST(Nom) nlistbord;
-  associer_domaine(is);
+  this->associer_domaine(is);
   Nom mot;
   is >>mot;
   if (mot!="{")
     {
       Cerr<< "we expected { and not "<<mot<<finl;
-      exit();
+      Process::exit();
     }
   is >>mot;
   while (mot!="}")
@@ -48,7 +51,7 @@ Entree& SupprimeBord::interpreter_(Entree& is)
       nlistbord.add(mot);
       is>>mot;
     }
-  Domaine& dom=domaine();
+  Domaine_t& dom=this->domaine();
   Cout<<"HERE  "<<nlistbord<<finl;
 
   for (int b=0; b<nlistbord.size(); b++)
@@ -57,8 +60,8 @@ Entree& SupprimeBord::interpreter_(Entree& is)
       {
         // la recup des bords et des raccords est dans la boucle
         // pour pouvoir supprimer ...
-        Bords& listbord=dom.faces_bord();
-        Raccords& listrac=dom.faces_raccord();
+        Bords_t& listbord=dom.faces_bord();
+        Raccords_t& listrac=dom.faces_raccord();
         const Nom& nombord=nlistbord[b];
         int num_b=dom.rang_frontiere(nombord);
         if (num_b<listbord.size())
@@ -69,3 +72,11 @@ Entree& SupprimeBord::interpreter_(Entree& is)
     }
   return is;
 }
+
+
+template class SupprimeBord_32_64<int>;
+#if INT_is_64_ == 2
+template class SupprimeBord_32_64<trustIdType>;
+#endif
+
+

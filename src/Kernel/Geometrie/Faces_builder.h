@@ -32,7 +32,10 @@ public:
   void reset();
   void creer_faces_reeles(Domaine& domaine, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces);
 
-  static int chercher_face_element(const IntTab& les_elements, const IntTab& faces_element_reference, const ArrOfInt& une_face, const int elem);
+  // This static method is also used by 64b objects like Raffiner_Simplexes:
+  template <typename _SIZE_>
+  static int chercher_face_element(const ITab_T<_SIZE_>& elem_som, const IntTab& faces_element_ref,
+                                   const SmallAOTID_T<_SIZE_>& une_face, const _SIZE_ elem);
 
 private:
   static int ajouter_une_face(const ArrOfInt& une_face, const int elem0, const int elem1, IntTab& faces_sommets, IntTab& faces_voisins);

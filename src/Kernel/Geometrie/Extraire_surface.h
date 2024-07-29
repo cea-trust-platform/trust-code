@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 #define Extraire_surface_included
 
 #include <Interprete_geometrique_base.h>
+#include <Domaine_forward.h>
 
 class Nom;
-#include <Domaine_forward.h>
 class Domaine_VF;
 
 /*! @brief Classe Extraire_surface Lecture d'un fichier
@@ -29,11 +29,19 @@ class Domaine_VF;
 class Extraire_surface : public Interprete_geometrique_base
 {
   Declare_instanciable(Extraire_surface);
+
 public :
+
   Entree& interpreter_(Entree&) override;
-  static void extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords) ;
-  static void extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords);
+  static void extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique,
+                               const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces,
+                               int avec_les_bords, const Noms& noms_des_bords) ;
+  static void extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique,
+                                                const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces,
+                                                int avec_les_bords, const Noms& noms_des_bords);
 
 };
+
+
 
 #endif /* Extraire_surface_included */

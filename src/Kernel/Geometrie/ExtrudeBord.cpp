@@ -27,11 +27,6 @@
 
 Implemente_instanciable_sans_constructeur(ExtrudeBord,"ExtrudeBord",Interprete_geometrique_base);
 // XD extrudebord interprete extrudebord 1 Class to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. NL2 Warning: If the initial domain is a tetrahedral mesh, the boundary will be moved in the XY plane then extrusion will be applied (you should maybe use the Transformer keyword on the final domain to have the domain you really want). You can use the keyword Postraiter_domaine to generate a lata|med|... file to visualize your initial and final meshes. NL2 This keyword can be used for example to create a periodic box extracted from a boundary of a tetrahedral or a hexaedral mesh. This periodic box may be used then to engender turbulent inlet flow condition for the main domain.NL2 Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
-ExtrudeBord::ExtrudeBord()
-{
-  hexa_old=0;
-  Trois_Tetra=0;
-}
 
 Sortie& ExtrudeBord::printOn(Sortie& os) const
 {

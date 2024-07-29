@@ -16,35 +16,41 @@
 #ifndef Reorienter_triangles_included
 #define Reorienter_triangles_included
 
+#include <Interprete_geometrique_base.h>
+#include <Domaine.h>
+#include <Domaine_forward.h>
 
+enum class Sens_Orient {DIRECT , INDIRECT};
 
 /*! @brief class Reorienter_triangle Balaye les triangles du maillage pour qu'ils soient directs.
  *
- *
- *
  * @sa Interprete
  */
-
-#include <Interprete_geometrique_base.h>
-#include <Domaine.h>
-
-#include <Domaine_forward.h>
-
-class Reorienter_triangles : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Reorienter_triangles_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Reorienter_triangles);
+  Declare_instanciable_32_64(Reorienter_triangles_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using IntTab_t = ITab_T<_SIZE_>;
+  using DoubleTab_t = DTab_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
-  void reorienter(Domaine&) const;
+  void reorienter(Domaine_t&) const;
 
 protected :
-  enum Sens {DIRECT , INDIRECT};
 
-  Reorienter_triangles::Sens test_orientation_triangle(IntTab& les_elems, int ielem, const DoubleTab& coord_sommets) const;
-  Reorienter_triangles::Sens reorienter_triangle(IntTab& les_elems, int ielem) const;
+  Sens_Orient test_orientation_triangle(IntTab_t& les_elems, int_t ielem, const DoubleTab_t& coord_sommets) const;
+  Sens_Orient reorienter_triangle(IntTab_t& les_elems, int_t ielem) const;
+
+
 };
+
+using Reorienter_triangles = Reorienter_triangles_32_64<int>;
+using Reorienter_triangles_64 = Reorienter_triangles_32_64<trustIdType>;
 
 #endif
 
