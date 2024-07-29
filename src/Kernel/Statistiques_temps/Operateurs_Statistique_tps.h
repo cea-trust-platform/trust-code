@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #ifndef Operateurs_Statistique_tps_included
 #define Operateurs_Statistique_tps_included
 
-#include <Operateur_Statistique_tps.h>
+#include <Operateur_Statistique_tps_base.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 
@@ -27,9 +27,9 @@ class Motcle;
  *
  *      Les objets Postraitement portent un objet de ce type.
  *
- * @sa Operateur_Statistique_tps Postraitement
+ * @sa Postraitement
  */
-class Operateurs_Statistique_tps : public LIST(Operateur_Statistique_tps)
+class Operateurs_Statistique_tps : public LIST(DERIV(Operateur_Statistique_tps_base))
 {
   Declare_instanciable(Operateurs_Statistique_tps);
 

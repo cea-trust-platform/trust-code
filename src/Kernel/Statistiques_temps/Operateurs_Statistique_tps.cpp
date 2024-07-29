@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,12 +19,12 @@
 #include <Postraitement.h>
 
 
-Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
+Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(DERIV(Operateur_Statistique_tps_base)));
 
 Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Operateurs_Statistique_tps::readOn(Entree& s) { return s; }
 
-inline const Operateur_Statistique_tps& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
+inline const DERIV(Operateur_Statistique_tps_base)& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
 {
   for (auto &itr : op)
     {
@@ -131,11 +131,11 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
           for (auto &itr : *this)
             {
               is >> bidon2 >> bidon2; // On saute l'identificateur et le type des champs
-              itr.reprendre(is);
+              itr->reprendre(is);
             }
           // On modifie l'attribut tstat_deb_ des champs pour tenir compte de la reprise
           for (auto &itr : *this)
-            itr.fixer_tstat_deb(tstat_deb_sauv,temps_derniere_mise_a_jour_stats);
+            itr->fixer_tstat_deb(tstat_deb_sauv,temps_derniere_mise_a_jour_stats);
         }
     }
   else  // lecture pour sauter le bloc

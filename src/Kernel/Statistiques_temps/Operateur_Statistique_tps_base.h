@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,11 @@
 #define Operateur_Statistique_tps_base_included
 
 #include <Integrale_tps_Champ.h>
-class Probleme_base;
-class Domaine_dis_base;
 #include <Domaine_forward.h>
-class Nom;
+#include <TRUST_Deriv.h>
 
+class Domaine_dis_base;
+class Probleme_base;
 
 /*! @brief classe Operateur_Statistique_tps_base Represente des operations statistiques sur les champs.
  *
@@ -31,29 +31,22 @@ class Nom;
  */
 class Operateur_Statistique_tps_base : public Objet_U
 {
-
   Declare_base(Operateur_Statistique_tps_base);
-
 public:
 
-  inline const Nom& localisation_post() const
-  {
-    return localisation_post_;
-  };
-  inline void associer(const Nom& loc_post)
-  {
-    localisation_post_=loc_post;
-  };
-  inline virtual void associer_op_stat(const Operateur_Statistique_tps_base&)                 {};
-  virtual void associer(const Domaine_dis_base& ,const Champ_Generique_base& ,double ,double) =0;
-  virtual void fixer_tstat_deb(double, double ) =0;
-  virtual void fixer_tstat_fin(double ) =0;
+  inline const Nom& localisation_post() const { return localisation_post_; }
+  inline void associer(const Nom& loc_post) { localisation_post_=loc_post; }
+
+  inline virtual void associer_op_stat(const Operateur_Statistique_tps_base&) { }
+  virtual void associer(const Domaine_dis_base&, const Champ_Generique_base&, double, double) =0;
+  virtual void fixer_tstat_deb(double, double) =0;
+  virtual void fixer_tstat_fin(double) =0;
   virtual void mettre_a_jour(double temps) =0;
   const Nom& le_nom() const override =0;
   virtual double temps() const =0;
   virtual const Integrale_tps_Champ& integrale() const =0;
   virtual void initialiser(double val) =0;
-  virtual void completer(const Probleme_base& ) =0;
+  virtual void completer(const Probleme_base&) =0;
   virtual DoubleTab calculer_valeurs() const =0;
   virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
   inline double tstat_deb() const { return tstat_deb_; }
@@ -67,4 +60,4 @@ protected:
   double tstat_fin_=-123.;         // valeur choisie par l'utilisateur
 };
 
-#endif
+#endif /* Operateur_Statistique_tps_base_included */

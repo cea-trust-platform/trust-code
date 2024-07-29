@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,55 +16,31 @@
 #ifndef Op_Moyenne_included
 #define Op_Moyenne_included
 
-#include <Operateur_Statistique_tps.h>
+#include <Operateur_Statistique_tps_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Champ_Don.h>
 
-class Op_Moyenne : public Operateur_Statistique_tps_base
+class Op_Moyenne: public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Moyenne);
-
 public:
+  inline const Nom& le_nom() const override { return integrale_champ.le_nom(); }
+  inline double temps() const override { return integrale_champ.temps(); }
+  inline Champ_Don& moyenne_convergee() { return ch_moyenne_convergee_; }
+  inline const Integrale_tps_Champ& integrale() const override { return integrale_champ; }
+  inline const DoubleTab& valeurs() const { return integrale_champ.valeurs(); }
+  inline DoubleTab& valeurs() { return integrale_champ.valeurs(); }
+  inline double dt_integration() const { return integrale_champ.dt_integration(); }
 
-  inline const Nom& le_nom() const override
-  {
-    return integrale_champ.le_nom();
-  };
-  inline double temps() const override
-  {
-    return integrale_champ.temps();
-  };
-  inline Champ_Don& moyenne_convergee()
-  {
-    return ch_moyenne_convergee_;
-  };
-  inline const Integrale_tps_Champ& integrale() const override
-  {
-    return integrale_champ;
-  };
-  inline const DoubleTab& valeurs() const
-  {
-    return integrale_champ.valeurs();
-  };
-  inline DoubleTab& valeurs()
-  {
-    return integrale_champ.valeurs();
-  };
-
-  inline double dt_integration() const
-  {
-    return integrale_champ.dt_integration();
-  };
   inline void mettre_a_jour(double temps) override;
   inline void initialiser(double val) override;
-  inline void associer(const Domaine_dis_base& une_zdis,const Champ_Generique_base& le_champ, double t1,double t2) override;
-  inline void fixer_tstat_deb(double , double) override;
+  inline void associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2) override;
+  inline void fixer_tstat_deb(double, double) override;
   inline void fixer_tstat_fin(double tps) override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
-  void completer(const Probleme_base& ) override;
+  void completer(const Probleme_base&) override;
   DoubleTab calculer_valeurs() const override;
-
 protected:
 
   Integrale_tps_Champ integrale_champ;
@@ -134,4 +110,4 @@ inline void Op_Moyenne::fixer_tstat_fin(double tps)
   integrale_champ.fixer_t_fin(tps);
 }
 
-#endif
+#endif /* Op_Moyenne_included */
