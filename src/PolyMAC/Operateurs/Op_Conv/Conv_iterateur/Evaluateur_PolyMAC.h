@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ public:
   virtual void associer_porosite(const DoubleVect&);
 
 protected:
-  REF(Domaine_PolyMAC) la_domaine;
+  REF(Domaine_PolyMAC) le_domaine;
   REF(Domaine_Cl_PolyMAC) la_zcl;
   int dimension = -3;
   int premiere_face_bord = -100;

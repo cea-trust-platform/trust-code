@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -532,7 +532,7 @@ inline void Eval_centre_PolyMAC_Elem::coeffs_faces_interne(int face, DoubleVect&
 
 inline int Eval_centre_PolyMAC_Elem::amont_amont(int face, int i) const
 {
-  return 0;   //la_domaine->amont_amont(face, i);
+  return 0;   //le_domaine->amont_amont(face, i);
 }
 
 inline double Eval_centre_PolyMAC_Elem::qcentre(const double psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte) const

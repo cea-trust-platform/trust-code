@@ -75,7 +75,7 @@ public:
   virtual int impr(Sortie& os) const =0;
 
 protected:
-  REF(Domaine_PolyMAC) la_domaine;
+  REF(Domaine_PolyMAC) le_domaine;
   REF(Domaine_Cl_PolyMAC) la_zcl;
   REF(Operateur_base) op_base;
 };
@@ -90,7 +90,7 @@ public:
 
 inline const Domaine_PolyMAC& Iterateur_PolyMAC_base::domaine() const
 {
-  return la_domaine.valeur();
+  return le_domaine.valeur();
 }
 
 inline const Domaine_Cl_PolyMAC& Iterateur_PolyMAC_base::domaine_Cl() const

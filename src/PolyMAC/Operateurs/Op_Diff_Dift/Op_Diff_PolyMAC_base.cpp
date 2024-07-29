@@ -39,10 +39,10 @@ Entree& Op_Diff_PolyMAC_base::readOn(Entree& s) { return s; }
 double Op_Diff_PolyMAC_base::calculer_dt_stab() const
 {
   update_nu();
-  const Domaine& ma_domaine = le_dom_poly_->domaine();
+  const Domaine& mon_dom = le_dom_poly_->domaine();
   double dt_stab = DMAXFLOAT;
 
-  const int nb_elem = ma_domaine.nb_elem();
+  const int nb_elem = mon_dom.nb_elem();
 
   if (!has_champ_masse_volumique())
     {
@@ -109,7 +109,7 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
 
       assert(sub_type(Champ_Elem_PolyMAC, champ_rho));
       assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
-      // assert(valeurs_rho.size_array()== ma_domaine.les_elems().dimension_tot(0));
+      // assert(valeurs_rho.size_array()== mon_dom.les_elems().dimension_tot(0));
       // Champ_Elem_PolyMAC : champ aux elems et aux faces
       // Champ de masse volumique variable.
       const IntTab& e_f = le_dom_poly_->elem_faces();
@@ -160,10 +160,10 @@ void Op_Diff_PolyMAC_base::completer()
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
 {
-  const Domaine& ma_domaine = le_dom_poly_->domaine();
-  const int impr_mom = ma_domaine.moments_a_imprimer();
-  const int impr_sum = (ma_domaine.bords_a_imprimer_sum().est_vide() ? 0 : 1);
-  const int impr_bord = (ma_domaine.bords_a_imprimer().est_vide() ? 0 : 1);
+  const Domaine& mon_dom = le_dom_poly_->domaine();
+  const int impr_mom = mon_dom.moments_a_imprimer();
+  const int impr_sum = (mon_dom.bords_a_imprimer_sum().est_vide() ? 0 : 1);
+  const int impr_bord = (mon_dom.bords_a_imprimer().est_vide() ? 0 : 1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords = flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
@@ -174,7 +174,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
   if (impr_mom)
     {
       const DoubleTab& xgrav = le_dom_poly_->xv();
-      const ArrOfDouble& c_grav = ma_domaine.cg_moments();
+      const ArrOfDouble& c_grav = mon_dom.cg_moments();
       for (int num_face = 0; num_face < nb_faces; num_face++)
         for (int i = 0; i < dimension; i++)
           xgr(num_face, i) = xgrav(num_face, i) - c_grav[i];
@@ -194,7 +194,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
           for (k = 0; k < nb_comp; k++)
             {
               flux_bords2(0, num_cl, k) += tab_flux_bords(face, k);
-              if (ma_domaine.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+              if (mon_dom.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
                 flux_bords2(3, num_cl, k) += tab_flux_bords(face, k);
             } /* fin for k */
           if (impr_mom)
@@ -271,7 +271,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
           const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
-          if (ma_domaine.bords_a_imprimer().contient(la_fr.le_nom()))
+          if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               if (je_suis_maitre())
                 {

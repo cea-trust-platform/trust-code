@@ -94,7 +94,7 @@ template <class _TYPE_> inline const Evaluateur_PolyMAC& Iterateur_PolyMAC_Elem<
 
 template <class _TYPE_> inline void Iterateur_PolyMAC_Elem<_TYPE_>::completer_()
 {
-  elem.ref(la_domaine->face_voisins());
+  elem.ref(le_domaine->face_voisins());
 }
 
 template <class _TYPE_>
@@ -110,12 +110,12 @@ DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(donne.nb_dim() < 3);
   assert(la_zcl.non_nul());
-  assert(la_domaine.non_nul());
+  assert(le_domaine.non_nul());
   int ncomp=1;
   if (donne.nb_dim() == 2)
     ncomp=donne.dimension(1);
   DoubleTab& flux_bords=op_base->flux_bords();
-  flux_bords.resize(la_domaine->nb_faces_bord(),ncomp);
+  flux_bords.resize(le_domaine->nb_faces_bord(),ncomp);
   flux_bords=0;
   /* modif b.m.: on va faire += sur des items virtuels, initialiser les cases */
   /* sinon risque que les cases soient invalides ou non initialisees */
@@ -146,7 +146,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
   int face;
   int num_cl=0;
   double flux;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -158,7 +158,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(le_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -313,12 +313,12 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -404,12 +404,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(donnee.nb_dim() < 3);
   assert(la_zcl.non_nul());
-  assert(la_domaine.non_nul());
+  assert(le_domaine.non_nul());
   int ncomp=1;
   if (donnee.nb_dim() == 2)
     ncomp=donnee.dimension(1);
   DoubleTab& flux_bords=op_base->flux_bords();
-  flux_bords.resize(la_domaine->nb_faces_bord(),ncomp);
+  flux_bords.resize(le_domaine->nb_faces_bord(),ncomp);
   flux_bords=0;
 
   if( ncomp != 1) Process ::exit();/* cas scalaire */
@@ -419,7 +419,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
   int face;
   int num_cl=0;
   double flux;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       /* pour chaque Condition Limite on regarde son type */
@@ -430,7 +430,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(le_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -568,12 +568,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
                   if ( (elem(face,0)) > -1)
                     {
@@ -657,7 +657,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
   int face,k;
   DoubleVect flux(ncomp);
   int num_cl=0;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -668,7 +668,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie,la_cl.valeur()))
         {
-          if (nfin>ndeb && est_egal(la_domaine->face_surfaces()[ndeb],0))
+          if (nfin>ndeb && est_egal(le_domaine->face_surfaces()[ndeb],0))
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
@@ -841,12 +841,12 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
                   if ( (elem1=elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
@@ -937,7 +937,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee,
                                                                                     DoubleTab& resu) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   double flux;
   int face;
   int ndeb = domaine_PolyMAC.premiere_face_int();
@@ -953,7 +953,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_inte
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee,
                                                                                     DoubleTab& resu,int ncomp) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   DoubleVect flux(ncomp);
   int face,k;
   int elem0,elem1;
@@ -983,10 +983,10 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
     {
       DoubleTab& flux_bords=op_base->flux_bords();
-      const Domaine_PolyMAC& la_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis().valeur());
+      const Domaine_PolyMAC& le_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis().valeur());
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
-      const IntTab& face_voisins=la_domaine_vdf.face_voisins();
+      const IntTab& face_voisins=le_domaine_vdf.face_voisins();
       int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
       int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
       int is_rho_u=op_base->equation().probleme().is_dilatable();
@@ -999,7 +999,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
               is_rho_u=1;
         }
       double Cp_=0,rho_=0;
-      const int nb_faces_bords=la_domaine_vdf.nb_faces_bord();
+      const int nb_faces_bords=le_domaine_vdf.nb_faces_bord();
       for (int face=0; face<nb_faces_bords; face++)
         {
           int num_elem=face_voisins(face,0);
@@ -1020,7 +1020,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
 
 template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) const
 {
-  const Domaine& madomaine=la_domaine->domaine();
+  const Domaine& madomaine=le_domaine->domaine();
   const Domaine_PolyMAC& zpoly=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis().valeur());
   const int impr_bord=(madomaine.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
@@ -1033,7 +1033,7 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
   flux_bords.resize(zpoly.premiere_face_int(),ncomp);
   DoubleVect bilan(flux_bords.dimension(1));
   int k,face;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   DoubleTrav flux_bords2( 3, nb_front_Cl , flux_bords.dimension(1)) ;
   flux_bords2=0;
   /*flux_bord(k)          ->   flux_bords2(0,num_cl,k) */
@@ -1085,7 +1085,7 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
         Flux.add_col(bilan(k));
       Flux << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_domaine->domaine().bords_a_imprimer();
+  const LIST(Nom)& Liste_Bords_a_imprimer = le_domaine->domaine().bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -1103,9 +1103,9 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
               for (face=ndeb; face<nfin; face++)
                 {
                   if (dimension == 2)
-                    Flux_face << "# Face a x= " << la_domaine->xv(face,0) << " y= " << la_domaine->xv(face,1) << " : ";
+                    Flux_face << "# Face a x= " << le_domaine->xv(face,0) << " y= " << le_domaine->xv(face,1) << " : ";
                   else if (dimension == 3)
-                    Flux_face << "# Face a x= " << la_domaine->xv(face,0) << " y= " << la_domaine->xv(face,1) << " z= " << la_domaine->xv(face,2) << " : ";
+                    Flux_face << "# Face a x= " << le_domaine->xv(face,0) << " y= " << le_domaine->xv(face,1) << " z= " << le_domaine->xv(face,2) << " : ";
                   for(k=0; k<flux_bords.dimension(1); k++)
                     Flux_face << flux_bords(face, k) << " ";
                   Flux_face << finl;
@@ -1122,11 +1122,11 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(resu.nb_dim() < 3);
   assert(la_zcl.non_nul());
-  assert(la_domaine.non_nul());
+  assert(le_domaine.non_nul());
   int ncomp=1;
   if (resu.nb_dim() == 2)
     ncomp=resu.dimension(1);
-  assert(op_base->flux_bords().dimension(0)==la_domaine->nb_faces_bord()); /* resize deja fait */
+  assert(op_base->flux_bords().dimension(0)==le_domaine->nb_faces_bord()); /* resize deja fait */
   if( ncomp == 1) /* cas scalaire */
     {
       contribuer_au_second_membre_bords(resu) ;
@@ -1145,7 +1145,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
   int face;
   int num_cl=0;
   double flux;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -1302,12 +1302,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux = flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -1385,7 +1385,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
   int face,k;
   DoubleVect flux(ncomp);
   int num_cl=0;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -1555,12 +1555,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
                   if ( (elem1=elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
@@ -1647,7 +1647,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
 
 template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_second_membre_interne(DoubleTab& resu) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   double flux;
   int face;
   int ndeb=domaine_PolyMAC.premiere_face_int();
@@ -1661,7 +1661,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
 }
 template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_second_membre_interne( DoubleTab& resu,int ncomp) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   DoubleVect flux(ncomp);
   int face,k;
   int elem0,elem1;
@@ -1685,12 +1685,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(inco.nb_dim() < 3);
   assert(la_zcl.non_nul());
-  assert(la_domaine.non_nul());
+  assert(le_domaine.non_nul());
   int ncomp=1;
   if (inco.nb_dim() == 2)
     ncomp=inco.dimension(1);
   DoubleTab& flux_bords=op_base->flux_bords();
-  flux_bords.resize(la_domaine->nb_faces_bord(),ncomp);
+  flux_bords.resize(le_domaine->nb_faces_bord(),ncomp);
   flux_bords=0;
   if( ncomp == 1) /* cas scalaire */
     {
@@ -1710,7 +1710,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   int ndeb, nfin;
   int face;
   int num_cl=0;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       /* pour chaque Condition Limite on regarde son type */
@@ -1852,12 +1852,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
                   if ( (elem1=elem(face,0)) > -1)
                     {
@@ -1923,7 +1923,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   int ndeb, nfin;
   int face,i;
   int num_cl=0;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -2126,12 +2126,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (face=ndeb; face<nfin; face++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(face);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(face);
                   flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
                   elem1 = elem(face,0);
                   elem2 = elem(face,1);
@@ -2216,7 +2216,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
 
 template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contribution_interne(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   int face;
   double aii=0, ajj=0;
   int elem1,elem2;
@@ -2235,7 +2235,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
 }
 template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contribution_interne(const DoubleTab& inco, Matrice_Morse& matrice ,int ncomp) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   int face,i;
   DoubleVect aii(ncomp), ajj(ncomp);
   int elem1,elem2;
@@ -2262,12 +2262,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(inco.nb_dim() < 3);
   assert(la_zcl.non_nul());
-  assert(la_domaine.non_nul());
+  assert(le_domaine.non_nul());
   int ncomp=1;
   if (inco.nb_dim() == 2)
     ncomp=inco.dimension(1);
   // DoubleTab& flux_bords=op_base->flux_bords();
-  // flux_bords.resize(la_domaine->nb_faces_bord(),ncomp);
+  // flux_bords.resize(le_domaine->nb_faces_bord(),ncomp);
   // flux_bords=0;
   if( ncomp == 1) /* cas scalaire */
     {
@@ -2284,7 +2284,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
 
 template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
+  const Domaine_PolyMAC& domaine_PolyMAC = le_domaine.valeur();
   double aef = 0;
   const int ndeb = domaine_PolyMAC.premiere_face_int();
   const int nfin = domaine_PolyMAC.nb_faces();
@@ -2303,7 +2303,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   int e1, e2;
   double aef=0;
   int ndeb, nfin;
-  int nb_front_Cl=la_domaine->nb_front_Cl();
+  int nb_front_Cl=le_domaine->nb_front_Cl();
   for (int num_cl = 0; num_cl<nb_front_Cl; num_cl++)
     {
       /* pour chaque Condition Limite on regarde son type */
@@ -2402,12 +2402,12 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
               int boundary_index=-1;
-              if (la_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+              if (le_domaine->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
                 boundary_index=num_cl;
 
               for (int f = ndeb; f < nfin; f++)
                 {
-                  int local_face=la_domaine->front_VF(boundary_index).num_local_face(f);
+                  int local_face=le_domaine->front_VF(boundary_index).num_local_face(f);
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
                   if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
                   if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) -= aef;

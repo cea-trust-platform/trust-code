@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 
 Evaluateur_PolyMAC::Evaluateur_PolyMAC(const Evaluateur_PolyMAC& eval)
   :
-  la_domaine(eval.la_domaine),la_zcl(eval.la_zcl),dimension(eval.dimension),premiere_face_bord(eval.premiere_face_bord)
+  le_domaine(eval.le_domaine),la_zcl(eval.la_zcl),dimension(eval.dimension),premiere_face_bord(eval.premiere_face_bord)
 {
   surface.ref(eval.surface);
   elem_.ref(eval.elem_);
@@ -34,7 +34,7 @@ Evaluateur_PolyMAC::Evaluateur_PolyMAC(const Evaluateur_PolyMAC& eval)
 void Evaluateur_PolyMAC::associer_domaines(const Domaine_PolyMAC& domaine_vdf,
                                            const Domaine_Cl_PolyMAC& domaine_cl_vdf)
 {
-  la_domaine = domaine_vdf;
+  le_domaine = domaine_vdf;
   la_zcl = domaine_cl_vdf;
   dimension = Objet_U::dimension;
   premiere_face_bord = domaine_vdf.premiere_face_bord();

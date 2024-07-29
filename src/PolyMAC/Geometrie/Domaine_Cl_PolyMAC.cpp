@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
   else if (sub_type(Champ_Face_PolyMAC_P0P1NC, ch_base) || sub_type(Champ_Face_PolyMAC, ch_base))
     {
       Champ_Face_base& ch_face = ref_cast(Champ_Face_base, ch_base);
-      const Domaine_VF& ma_domaine_VF = ch_face.domaine_vf();
+      const Domaine_VF& mon_dom_VF = ch_face.domaine_vf();
       int ndeb, nfin, num_face;
 
       for (int i = 0; i < nb_cond_lim(); i++)
@@ -111,8 +111,8 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
                     // vn
                     double vn = 0;
                     for (int d = 0; d < dimension; d++)
-                      vn += ma_domaine_VF.face_normales(num_face, d) * la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
-                    vn /= ma_domaine_VF.face_surfaces(num_face);
+                      vn += mon_dom_VF.face_normales(num_face, d) * la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
+                    vn /= mon_dom_VF.face_surfaces(num_face);
                     ch_tab(num_face, n) = vn;
                   }
             }
