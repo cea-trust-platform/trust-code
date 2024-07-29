@@ -56,7 +56,8 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,le_dom_Cl_VEF.valeur());
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  const DoubleVect& tab_volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+
   int nfa = domaine_VEF.nb_faces();
   int num_std = domaine_VEF.premiere_face_std();
   int num_int = domaine_VEF.premiere_face_int();
@@ -69,17 +70,20 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
            << " taille du second membre : " << tab_sm.dimension(0) << finl;
       exit();
     }
+
   // On traite les faces standard qui ne portent pas de conditions aux limites
-  bool kernelOnDevice = tab_sm.checkDataOnDevice();
-  const double * porosite_face_addr = mapToDevice(equation().milieu().porosite_face(), "", kernelOnDevice);
-  const double * volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
-  double * sm_addr = computeOnTheDevice(tab_sm, "", kernelOnDevice);
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
-  for (int face=num_std; face<nfa; face++)
-    for (int comp=0; comp<nbcomp; comp++)
-      sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
-  end_gpu_timer(kernelOnDevice, "Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
+  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+  CDoubleArrView volumes_entrelaces = tab_volumes_entrelaces.view_ro();
+  DoubleTabView sm = tab_sm.view_rw();
+
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::MDRangePolicy<Kokkos::Rank<2>>({num_std,0}, {nfa,nbcomp}),
+                       KOKKOS_LAMBDA(int face, int comp)
+  {
+    sm(face, comp) /= (volumes_entrelaces(face) * porosite_face(face));
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
   // les faces internes non standard ne portent pas de C.L
@@ -88,19 +92,18 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView normales = domaine_VEF.face_normales().view_ro();
   CDoubleArrView volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl().view_ro();
-  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
-  DoubleTabView sm = tab_sm.view_rw();
-  start_gpu_timer();
-  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
+
+  start_gpu_timer(__KERNEL_NAME__);
+  for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
-      if ( (sub_type(Dirichlet,la_cl.valeur()))
-           ||
-           (sub_type(Dirichlet_homogene,la_cl.valeur()))
-         )
+
+      if ((sub_type(Dirichlet,la_cl.valeur())) ||
+          (sub_type(Dirichlet_homogene,la_cl.valeur())))
         // Pour les faces de Dirichlet on met sm a 0
         Kokkos::parallel_for(__KERNEL_NAME__,
                              Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
@@ -109,24 +112,24 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
           for (int comp = 0; comp < nbcomp; comp++)
             sm(face, comp) = 0;
         });
-      else if ((sub_type(Symetrie,la_cl.valeur()))&&(domaine_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
+      else if ((sub_type(Symetrie,la_cl.valeur())) && (domaine_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
         {
           Kokkos::parallel_for(__KERNEL_NAME__,
                                Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                                  const int face)
           {
-            double psc=0;
-            double surf=0;
-            for (int comp=0; comp<nbcomp; comp++)
+            double psc = 0;
+            double surf = 0;
+            for (int comp = 0; comp < nbcomp; comp++)
               {
-                psc+=sm(face,comp)*normales(face,comp);
-                surf+=normales(face,comp)*normales(face,comp);
+                psc += sm(face,comp) * normales(face,comp);
+                surf += normales(face,comp) * normales(face,comp);
               }
-            psc/=surf;
-            for(int comp=0; comp<nbcomp; comp++)
+            psc /= surf;
+            for(int comp = 0; comp < nbcomp; comp++)
               {
-                sm(face,comp)-=psc*normales(face,comp);
-                sm(face,comp) /= (volumes_entrelaces_Cl(face)*
+                sm(face,comp) -= psc * normales(face,comp);
+                sm(face,comp) /= (volumes_entrelaces_Cl(face) *
                                   porosite_face(face));
               }
           });
@@ -138,20 +141,20 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
         {
           int elem = face_voisins(face,0);
           if (elem == -1) elem = face_voisins(face,1);
-          for (int comp=0; comp<nbcomp; comp++)
-            sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
+          for (int comp = 0; comp < nbcomp; comp++)
+            sm(face,comp) /= (volumes_entrelaces_Cl(face) * porosite_face(face));
         });
     }
-  end_gpu_timer(Objet_U::computeOnDevice, "Masse_VEF_P1NC::appliquer_impl BC");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  kernelOnDevice = tab_sm.checkDataOnDevice();
-  const double * volumes_entrelaces_Cl_addr = mapToDevice(domaine_Cl_VEF.volumes_entrelaces_Cl(), "", kernelOnDevice);
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
-  for (int face=num_int; face<num_std; face++)
-    for (int comp=0; comp<nbcomp; comp++)
-      sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
-  end_gpu_timer(kernelOnDevice, "Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       Kokkos::MDRangePolicy<Kokkos::Rank<2>>({num_int,0}, {num_std,nbcomp}),
+                       KOKKOS_LAMBDA(int face, int comp)
+  {
+    sm(face,comp) /= (volumes_entrelaces_Cl(face) * porosite_face(face));
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+
   //tab_sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, tab_sm=",tab_sm);
   return tab_sm;
