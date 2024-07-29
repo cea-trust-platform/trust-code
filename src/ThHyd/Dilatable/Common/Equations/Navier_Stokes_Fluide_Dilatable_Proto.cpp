@@ -548,7 +548,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::solve_pressure_increment(Navier_Stoke
 
   // On ne fait appel qu une seule fois a assembler dans preparer calcul (au lieu de assembler_QC)
   // Correction du second membre d'apres les conditions aux limites :
-  eqn.assembleur_pression().modifier_secmem(secmem);
+  eqn.assembleur_pression()->modifier_secmem(secmem);
   eqn.solveur_pression().resoudre_systeme(eqn.matrice_pression().valeur(),secmem,inc_pre);
 
 } /* END  solve_pressure_increment */
@@ -569,7 +569,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::correct_and_compute_u_np1(Navier_Stok
   // On suppose que pression et inc_pre ont leur espace virtuel a jour
   // On fait pression += inc_pre:
   operator_add(press, inc_pre, VECT_ALL_ITEMS);
-  eqn.assembleur_pression().modifier_solution(press);
+  eqn.assembleur_pression()->modifier_solution(press);
 
   // Correction de la vitesse en pression : M-1 Bt P
   eqn.solv_masse()->appliquer(gradP);

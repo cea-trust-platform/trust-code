@@ -338,8 +338,8 @@ void Navier_Stokes_std::completer()
   la_pression_en_pa->associer_domaine_cl_dis(le_dom_Cl_dis);
   divergence.completer();
   gradient.completer();
-  assembleur_pression_.associer_domaine_cl_dis_base(domaine_Cl_dis().valeur());
-  assembleur_pression_.completer(*this);
+  assembleur_pression_->associer_domaine_cl_dis_base(domaine_Cl_dis().valeur());
+  assembleur_pression_->completer(*this);
 
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
@@ -424,7 +424,7 @@ void Navier_Stokes_std::discretiser_assembleur_pression()
   type += discretisation().que_suis_je();
   Cerr << "Navier_Stokes_std::discretiser_assembleur_pression : type="<< type << finl;
   assembleur_pression_.typer(type);
-  assembleur_pression_.associer_domaine_dis_base(domaine_dis().valeur());
+  assembleur_pression_->associer_domaine_dis_base(domaine_dis().valeur());
 }
 
 /*! @brief Renvoie le nombre d'operateurs de l'equation: Pour Navier Stokes Standard c'est 2.
@@ -749,7 +749,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
     {
       secmemP *= -1; // car div =-B
       // Correction du second membre d'apres les conditions aux limites :
-      assembleur_pression_.modifier_secmem(secmemP);
+      assembleur_pression_->modifier_secmem(secmemP);
     }
 
   // Set print of the linear system solve according to dt_impr:
@@ -770,7 +770,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
 
       // P(n+1) = P(n) + Cp
       tab_pression += Cp;
-      assembleur_pression_.modifier_solution(tab_pression);
+      assembleur_pression_->modifier_solution(tab_pression);
 
       // M-1 Bt P(n+1)
       solveur_masse->appliquer(gradP);
@@ -780,7 +780,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
     {
       // Solve B M-1 Bt P(n+1) = B M-1 F
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, tab_pression);
-      assembleur_pression_.modifier_solution(tab_pression);
+      assembleur_pression_->modifier_solution(tab_pression);
       // It is not done anymore cause:
       // Iterative solvers are less accurate
       // Time converges in O(sqrt(dt)) and not O(dt)
@@ -863,7 +863,7 @@ void Navier_Stokes_std::projeter()
 
       // Correction du second membre d'apres les conditions aux limites :
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem,lagrange);
-      assembleur_pression_.modifier_solution(lagrange);
+      assembleur_pression_->modifier_solution(lagrange);
       lagrange.echange_espace_virtuel();
 
       // M-1 Bt l
@@ -947,12 +947,12 @@ int Navier_Stokes_std::preparer_calcul()
     {
       if (!is_QC)
         {
-          assembleur_pression_.assembler(matrice_pression_);
+          assembleur_pression_->assembler(matrice_pression_);
         }
       else
         {
           Cerr<<"Assembling for quasi-compressible"<<finl;
-          assembleur_pression_.assembler_QC(fluide().masse_volumique().valeurs(),matrice_pression_);
+          assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(),matrice_pression_);
         }
     }
 

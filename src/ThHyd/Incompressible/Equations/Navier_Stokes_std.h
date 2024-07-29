@@ -18,12 +18,12 @@
 
 #include <Traitement_particulier_NS_base.h>
 #include <Navier_Stokes_IBM_impl.h>
+#include <Assembleur_base.h>
 #include <Operateur_Grad.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Operateur_Div.h>
 #include <TRUST_Deriv.h>
-#include <Assembleur.h>
 #include <Champ_Fonc.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
@@ -118,7 +118,7 @@ public :
   int preparer_calcul() override;
 
   inline Matrice& matrice_pression() { return matrice_pression_; }
-  inline Assembleur& assembleur_pression() { return assembleur_pression_; }
+  inline OWN_PTR(Assembleur_base)& assembleur_pression() { return assembleur_pression_; }
   inline Champ_Inc& pression() { return la_pression; }
   inline Champ_Inc& grad_P() { return gradient_P; }
   inline const Champ_Inc& grad_P() const { return gradient_P; }
@@ -171,7 +171,7 @@ protected:
   Operateur_Div divergence;
   Operateur_Grad gradient;
   Matrice matrice_pression_;
-  Assembleur assembleur_pression_;
+  OWN_PTR(Assembleur_base) assembleur_pression_;
   SolveurSys solveur_pression_;
 
   int projection_initiale;

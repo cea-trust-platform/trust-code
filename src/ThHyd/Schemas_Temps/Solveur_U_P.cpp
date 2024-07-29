@@ -147,7 +147,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
       //current.echange_espace_virtuel();
       Debog::verifier("Solveur_U_P::iterer_NS current",current);
       eqn.solv_masse()->corriger_solution(current, current);    //CoviMAC : mise en coherence de ve avec vf
-      eqnNS.assembleur_pression().modifier_solution(pression);
+      eqnNS.assembleur_pression()->modifier_solution(pression);
 
       if (1)
         {
@@ -196,7 +196,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
       //current.echange_espace_virtuel();
       Debog::verifier("Solveur_U_P::iterer_NS current",current);
       eqn.solv_masse()->corriger_solution(current, current);    //CoviMAC : mise en coherence de ve avec vf
-      eqnNS.assembleur_pression().modifier_solution(pression);
+      eqnNS.assembleur_pression()->modifier_solution(pression);
 
       if (1)
         {
