@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,25 +32,32 @@
  * @sa Classe abstraite dont les interpretes geometriques qui modifient un ou plusieurs domaines doivent deriver., Une reference est faite a chaque domaine. L'invalidation de l'octree apres modification
  * du domaine, (par interpreter_(is)) est factorisee dans la methode interpreter(), Methodes abstraites:, int nombre_d_operateurs() const
  */
-class Interprete_geometrique_base : public Interprete
+template <typename _SIZE_>
+class Interprete_geometrique_base_32_64 : public Interprete
 {
-  Declare_base(Interprete_geometrique_base);
+  Declare_base_32_64(Interprete_geometrique_base_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter(Entree& is) override;
   void associer_domaine(Nom& nom_dom);
   void associer_domaine(Entree& is);
-  void associer_domaine(Domaine& dom);
-  inline Domaine& domaine(int i=0) { return domains_(i).valeur(); }
-  inline const Domaine& domaine(int i=0) const { return domains_(i).valeur(); }
-  inline LIST(REF(Domaine))& domaines() { return domains_; }
-  void mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const;
+  void associer_domaine(Domaine_t& dom);
+  inline Domaine_t& domaine(int i=0) { return domains_(i).valeur(); }
+  inline const Domaine_t& domaine(int i=0) const { return domains_(i).valeur(); }
+  inline LIST(REF(Domaine_t))& domaines() { return domains_; }
+  void mettre_a_jour_sous_domaine(Domaine_t& domaine, int_t& elem, int_t num_premier_elem, int_t nb_elem) const;
 
 protected :
   virtual Entree& interpreter_(Entree& is)=0;
 
-  LIST(REF(Domaine)) domains_; // List of reference to domains
+  LIST(REF(Domaine_t)) domains_; // List of reference to domains
 };
+
+using Interprete_geometrique_base = Interprete_geometrique_base_32_64<int>;
+using Interprete_geometrique_base_64 = Interprete_geometrique_base_32_64<trustIdType>;
 
 #endif
 

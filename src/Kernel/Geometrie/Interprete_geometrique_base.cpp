@@ -18,40 +18,46 @@
 #include <Domaine.h>
 #include <EChaine.h>
 
-Implemente_base(Interprete_geometrique_base, "Interprete_geometrique_base", Interprete);
+Implemente_base_32_64(Interprete_geometrique_base_32_64, "Interprete_geometrique_base", Interprete);
 // XD interprete_geometrique_base interprete interprete_geometrique_base -1 Class for interpreting a data file
 
-Sortie& Interprete_geometrique_base::printOn(Sortie& os) const { return os; }
+template <typename _SIZE_>
+Sortie& Interprete_geometrique_base_32_64<_SIZE_>::printOn(Sortie& os) const { return os; }
 
-Entree& Interprete_geometrique_base::readOn(Entree& is) { return is; }
+template <typename _SIZE_>
+Entree& Interprete_geometrique_base_32_64<_SIZE_>::readOn(Entree& is) { return is; }
 
-void Interprete_geometrique_base::associer_domaine(Nom& nom_dom)
+template <typename _SIZE_>
+void Interprete_geometrique_base_32_64<_SIZE_>::associer_domaine(Nom& nom_dom)
 {
   EChaine is(nom_dom);
   associer_domaine(is);
 }
 
-void Interprete_geometrique_base::associer_domaine(Entree& is)
+template <typename _SIZE_>
+void Interprete_geometrique_base_32_64<_SIZE_>::associer_domaine(Entree& is)
 {
   Cerr << "Association of the domain on which the interpreter applies " << que_suis_je() << finl;
   Nom nom_dom;
   is >> nom_dom;
-  if(!sub_type(Domaine, objet(nom_dom)))
+  if(!sub_type(Domaine_t, objet(nom_dom)))
     {
       Cerr << nom_dom << " is of type " << objet(nom_dom).que_suis_je() << finl;
       Cerr << "we know to treat only one domain with the interpreter " << que_suis_je() << finl;
       exit();
     }
-  domains_.add(ref_cast(Domaine, objet(nom_dom)));
+  domains_.add(ref_cast(Domaine_t, objet(nom_dom)));
 }
 
-void Interprete_geometrique_base::associer_domaine(Domaine& dom)
+template <typename _SIZE_>
+void Interprete_geometrique_base_32_64<_SIZE_>::associer_domaine(Domaine_t& dom)
 {
   Cerr << "Association of the domain object on which the interpreter applies " << que_suis_je() << finl;
   domains_.add(dom);
 }
 
-Entree& Interprete_geometrique_base::interpreter(Entree& is)
+template <typename _SIZE_>
+Entree& Interprete_geometrique_base_32_64<_SIZE_>::interpreter(Entree& is)
 {
   Cerr << "Execution of the interpreter " << que_suis_je() << finl;
   Process::imprimer_ram_totale();
@@ -62,10 +68,13 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
   // suite a la modification des domaines
   for (int j=0; j<domains_.size(); j++)
     {
-      Domaine& dom = domaine(j);
+      Domaine_t& dom = domaine(j);
       dom.invalide_octree();
       dom.faces_bord().associer_domaine(dom);
+// TODO IG
+#if !defined(INT_is_64_) || INT_is_64_ == 1
       dom.faces_joint().associer_domaine(dom);
+#endif
       dom.faces_raccord().associer_domaine(dom);
       dom.bords_int().associer_domaine(dom);
       dom.groupes_faces().associer_domaine(dom);
@@ -77,13 +86,16 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
   return is;
 }
 
-// Je rajoute dans les sous-domaines les nouveaux elements
-void Interprete_geometrique_base::mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const
+/*! Ajoute dans les sous-domaines les nouveaux elements
+ *
+ */
+template <typename _SIZE_>
+void Interprete_geometrique_base_32_64<_SIZE_>::mettre_a_jour_sous_domaine(Domaine_t& domaine, int_t& elem, int_t num_premier_elem, int_t nb_elem) const
 {
-  Domaine& dom=domaine;
+  Domaine_t& dom=domaine;
   for (int ssz=0; ssz<dom.nb_ss_domaines(); ssz++)
     {
-      Sous_Domaine& sous_domaine=dom.ss_domaine(ssz);
+      Sous_Domaine_32_64<_SIZE_>& sous_domaine=dom.ss_domaine(ssz);
       if ((que_suis_je()=="Raffiner_anisotrope")
           || (que_suis_je()=="Raffiner_isotrope")
           || (que_suis_je()=="Remove_elem")
@@ -97,15 +109,15 @@ void Interprete_geometrique_base::mettre_a_jour_sous_domaine(Domaine& domaine, i
           || (que_suis_je()=="Trianguler_H")
           || (que_suis_je()=="VerifierCoin"))
         {
-          const int nb_poly=sous_domaine.nb_elem_tot();
-          for (int nb_p=0; nb_p<nb_poly; nb_p++)
+          const int_t nb_poly=sous_domaine.nb_elem_tot();
+          for (int_t nb_p=0; nb_p<nb_poly; nb_p++)
             {
               if (elem==sous_domaine[nb_p])
                 {
                   Cerr << "   The element " << elem << " which will be modified, is included to the subarea \"" << sous_domaine.le_nom() << "\". So the element";
                   if (nb_elem>1) Cerr << "s";
                   Cerr << " generated [";
-                  for(int num_elem=num_premier_elem; num_elem<num_premier_elem+nb_elem; num_elem++)
+                  for(int_t num_elem=num_premier_elem; num_elem<num_premier_elem+nb_elem; num_elem++)
                     {
                       sous_domaine.add_elem(num_elem);
                       if (num_elem!=num_premier_elem) Cerr << " ";
@@ -124,4 +136,11 @@ void Interprete_geometrique_base::mettre_a_jour_sous_domaine(Domaine& domaine, i
         }
     }
 }
+
+
+
+template class Interprete_geometrique_base_32_64<int>;
+#if INT_is_64_ == 2
+template class Interprete_geometrique_base_32_64<trustIdType>;
+#endif
 
