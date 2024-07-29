@@ -46,6 +46,7 @@
 
 #include <avtDatabaseMetaData.h>
 #include <avtGhostData.h>
+
 #include <DebugStream.h>
 #include <Expression.h>
 #include <InvalidVariableException.h>
@@ -87,7 +88,7 @@ avtlataFileFormat::avtlataFileFormat(const char *filename)
         opt.dual_mesh = true;
         opt.faces_mesh = true;
         opt.regularize = 2;
-        opt.regularize_tolerance = 1e-7;
+        opt.regularize_tolerance = 1e-7f;
         opt.user_fields_=true;
         read_any_format_options(filename, opt);
         debug1 << "avtlataFileFormat: initializing filter" << endl;
@@ -430,7 +431,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
             for (i = 0; i < nnodes; i++) {
                 pts[jl]   = pos(i,0);
                 pts[jl+1] = pos(i,1);
-                pts[jl+2] = dim3 ? pos(i,2) : 0.;
+                pts[jl+2] = dim3 ? pos(i,2) : 0.f;
                 jl+=3;
             }
             ugrid->SetPoints(points);
@@ -509,15 +510,16 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                         verts[7]=conn(i,6);
                     } else if (type_cell==VTK_POLYHEDRON) {
                         //polyhedra, face by face
-                        int j, nfaces = 0, npts = 0, k, i_f, s, f;
+                        int k;
+                        trustIdType nfaces = 0, npts = 0, i_f, s, f;
                         poly_p.resize(0), poly_f.resize(0);
-                        for (j = 0; j < (int)conn.dimension(1); j++)
+                        for (int j = 0; j < (int)conn.dimension(1); j++)
                           if ((s = conn(i, j)) >= 0)
                             {
                               poly_p.push_back(s);
                               npts++;
                             }
-                        for (j = 0; j < (int)elem_faces.dimension(1); j++)
+                        for (int j = 0; j < (int)elem_faces.dimension(1); j++)
                           if ((f = elem_faces(i, j)) >= 0)
                             for (k = 0, nfaces++, i_f = poly_f.size(), poly_f.push_back(0); k < (int)faces.dimension(1) ; k++)
                               if ((s = faces(f, k)) >= 0)
@@ -869,7 +871,7 @@ avtlataFileFormat::GetVectorVar(int timestate, int block, const char *varname)
             float* data= rv->WritePointer(0,3*ntuples);
             for (trustIdType i = 0; i < ntuples; i++)
                 for (int j = 0; j < 3; j++)
-                    data[i*3+j] = (j<dim) ? values(i, j) : 0.;
+                    data[i*3+j] = (j<dim) ? values(i, j) : 0.f;
             return_value = rv;
         } else if (int_field_ptr) {
             vtkIntArray *rv = vtkIntArray::New();

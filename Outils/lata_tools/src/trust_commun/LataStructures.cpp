@@ -91,7 +91,7 @@ void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, trustIdTy
 template<class TabType>
 void DomainUnstructured::compute_cell_center_coordinates(TabType& coord, trustIdType index_begin) const
 {
-  using TYPE = typename TabType::Value_type_;
+  using TYPE = typename TabType::Value_type_;    // type stored in TabType
   const int dim = (int)nodes_.dimension(1);
   const trustIdType nb_elem = elements_.dimension(0);
   const int nb_som_elem = (int)elements_.dimension(1);

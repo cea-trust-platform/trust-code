@@ -88,7 +88,6 @@ void split_path_filename(const char *s, Nom& path, Nom& filename)
   filename = s+i+1;
 }
 
-// [ABN] The below is so uuuuuglyy ! TODO: std::sort() please ...
 static const BigArrOfTID * array_to_sort_ptr = 0;
 int compare_indirect(const void *ptr1, const void *ptr2)
 {

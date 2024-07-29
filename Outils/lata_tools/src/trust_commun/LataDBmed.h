@@ -344,7 +344,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
               som.nb_comp_=1;
               // pour recupere nb_comp !!!
 
-              som.nb_comp_=MEDCoupling::GetComponentsNamesOfField(filename,fields[i].c_str()).size();
+              som.nb_comp_ = (int)MEDCoupling::GetComponentsNamesOfField(filename,fields[i].c_str()).size();
 
               if (spacedim==som.nb_comp_)
                 som.nature_ = LataDBField::VECTOR;
@@ -415,21 +415,28 @@ void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // cons
                              BigEntier debut, BigEntier n) const
 {
   using namespace MEDCoupling;
+  using value_t = typename C_Tab::Value_type_;    // type stored in TAB
   assert(debut==0);
 
   if (fld.name_=="SOMMETS")
     {
+      // Type checking:
+      assert((std::is_same<value_t, double>::value));
+
       //    cerr<<"load sommets "<<endl;
       MCAuto<MEDCouplingUMesh> mesh = ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
       const DataArrayDouble* coords=mesh->getCoords();
       data->resize(fld.size_,fld.nb_comp_);
       for (trustIdType i=0; i<fld.size_; i++)
         for (int j=0; j<fld.nb_comp_; j++)
-          (*data)(i,j)=coords->getIJ(i,j);
+          (*data)(i,j)=(value_t)coords->getIJ(i,j); // see type checking above
 
     }
   else if (fld.name_=="ELEMENTS")
     {
+      // Type checking:
+      assert((std::is_same<value_t, mcIdType>::value));
+
       // cerr<<"load elements "<<endl;
       Nom type_elem=get_geometry(fld.timestep_,fld.geometry_).elem_type_;
       LataDB::Element type =LataDB::element_type_from_string(type_elem);
@@ -439,19 +446,23 @@ void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // cons
       const mcIdType *ptr_elems=elems->getConstPointer(), *ptr_idx = idx->getConstPointer();
       data->resize(fld.size_,fld.nb_comp_);
       trustIdType compt=0;
+      bool void_fild = (filter.size_array()<=0);
       for (trustIdType i=0; i<fld.size_; i++)
         {
           compt++;
           for (int j=0; j<fld.nb_comp_; j++)
             {
               bool reel = (trustIdType)j + ptr_idx[i] + 1 < ptr_idx[i + 1];
-              (*data)(i,filter.size_array()>0 ? filter[j] : j) = reel ? ptr_elems[compt] + 1 : 0;
+              (*data)(i, void_fild ? j : filter[j]) = reel ? (value_t)ptr_elems[compt] + 1 : 0; // see type checking above
               if (reel) compt++;
             }
         }
     }
   else if (fld.name_.debute_par("SOMMETS_IJK_"))
     {
+      // Type checking:
+      assert((std::is_same<value_t, double>::value));
+
       MEDCouplingMesh * mesh = ReadMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
       data->resize(fld.size_,fld.nb_comp_);
       MCAuto<MEDCouplingCMesh> cmesh = dynamic_cast<MEDCouplingCMesh*>(mesh);
@@ -472,11 +483,14 @@ void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // cons
       const DataArrayDouble* coords=cmesh->getCoordsAt(dir);
       for (trustIdType i=0; i<fld.size_; i++)
         for (int j=0; j<fld.nb_comp_; j++)
-          (*data)(i,j)=coords->getIJ(i,j);
+          (*data)(i,j)=(value_t)coords->getIJ(i,j); // see type checking above
     }
 
   else
     {
+      // Type checking:
+      assert((std::is_same<value_t, double>::value));
+
       data->resize(fld.size_,fld.nb_comp_);
 
       //  if (fld.timestep_==1) iter.first=1;
@@ -533,7 +547,7 @@ void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // cons
           const double* ptr=values->getConstPointer();
           for (trustIdType i=0; i<fld.size_; i++)
             for (int j=0; j<fld.nb_comp_; j++)
-              (*data)(i,j)=ptr[i*fld.nb_comp_+j];
+              (*data)(i,j)=(value_t)ptr[i*fld.nb_comp_+j]; // see type checking above
         }
     }
 }

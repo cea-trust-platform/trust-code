@@ -207,13 +207,7 @@ void convert_to(const char *s, float& ob)
 {
   errno = 0;
   char * errorptr = 0;
-#ifndef _COMPILE_AVEC_GCC_ /* NO_PROCESS */
-  // PL: strtof n'existe pas semble t'il qu'avec gcc. pour le reste on utiliser strtod
-  // BM: le risque, c'est qu'on ait un overflow qu'on ne detectera pas avec stdtod
-  ob = strtod(s, &errorptr);
-#else /* NO_PROCESS */
   ob = strtof(s, &errorptr);
-#endif /* NO_PROCESS */
   if (errno || *errorptr != 0)  error_convert(s,"float");
 }
 

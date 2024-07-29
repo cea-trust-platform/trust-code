@@ -41,7 +41,7 @@ LataLoader::LataLoader(const char *file)
       opt.dual_mesh = true;
       opt.faces_mesh = true;
       opt.regularize = 2;
-      opt.regularize_tolerance = 1e-7;
+      opt.regularize_tolerance = 1e-7f;
       opt.user_fields_ = true;
       read_any_format_options(filename, opt);
       cerr << "LataLoader: initializing filter" << endl;
@@ -253,6 +253,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
 
           const BigFloatTab& pos = geom.nodes_;
           const trustIdType nnodes = pos.dimension(0);
+          assert(nnodes < std::numeric_limits<trustIdType>::max());
           //   const int dim3 = pos.dimension(1) == 3;
           const int dim = (int)pos.dimension(1);
           //ugrid->setMeshDimension(dim);
@@ -265,7 +266,8 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           points->decrRef();
 
           const BigTIDTab& conn = geom.elements_;
-          const trustIdType ncells = conn.dimension(0);
+          assert(conn.dimension(0) < std::numeric_limits<trustIdType>::max());
+          const mcIdType ncells = (mcIdType)conn.dimension(0);
           int nverts = (int)conn.dimension(1);
 
           INTERP_KERNEL::NormalizedCellType type_cell;
@@ -314,14 +316,15 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
           else
             {
               ugrid->allocateCells(ncells);
-              for (trustIdType i = 0; i < ncells; i++)
+              for (mcIdType i = 0; i < ncells; i++)
                 {
                   if ((1) && (type_cell == INTERP_KERNEL::NORM_TETRA4))
                     {
-                      const trustIdType som_Z = conn(i, 0),
-                                        som_A = conn(i, 1),
-                                        som_B = conn(i, 2),
-                                        som_C = conn(i, 3);
+                      // Overflow was checked above:
+                      const mcIdType som_Z = (mcIdType)conn(i, 0),
+                                    som_A = (mcIdType)conn(i, 1),
+                                    som_B = (mcIdType)conn(i, 2),
+                                    som_C = (mcIdType)conn(i, 3);
                       int test = 1;
                       if (1)
                         {
@@ -366,29 +369,29 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                   else if (type_cell == INTERP_KERNEL::NORM_QUAD4)
                     {
                       // Nodes order is different in visit than in trio_u
-                      verts[0] = conn(i, 0);
-                      verts[1] = conn(i, 1);
-                      verts[2] = conn(i, 3);
-                      verts[3] = conn(i, 2);
+                      verts[0] = (mcIdType)conn(i, 0);
+                      verts[1] = (mcIdType)conn(i, 1);
+                      verts[2] = (mcIdType)conn(i, 3);
+                      verts[3] = (mcIdType)conn(i, 2);
                     }
                   else if (type_cell == INTERP_KERNEL::NORM_HEXA8)
                     {
                       // Nodes order is different in visit than in trio_u
-                      verts[0] = conn(i, 0);
-                      verts[1] = conn(i, 1);
-                      verts[2] = conn(i, 3);
-                      verts[3] = conn(i, 2);
-                      verts[4] = conn(i, 4);
-                      verts[5] = conn(i, 5);
-                      verts[6] = conn(i, 7);
-                      verts[7] = conn(i, 6);
+                      verts[0] = (mcIdType)conn(i, 0);
+                      verts[1] = (mcIdType)conn(i, 1);
+                      verts[2] = (mcIdType)conn(i, 3);
+                      verts[3] = (mcIdType)conn(i, 2);
+                      verts[4] = (mcIdType)conn(i, 4);
+                      verts[5] = (mcIdType)conn(i, 5);
+                      verts[6] = (mcIdType)conn(i, 7);
+                      verts[7] = (mcIdType)conn(i, 6);
                     }
                   else if (type_cell == INTERP_KERNEL::NORM_POLYHED)
                     {
                       int nverts_loc = nverts;
                       for (int j = 0; j < nverts; j++)
                         {
-                          verts[j] = conn(i, j);
+                          verts[j] = (mcIdType)conn(i, j);
 
                           if (verts[j] <= -1)
                             {
@@ -411,14 +414,14 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                       else if ((nb_som_max_to_regularize >= 8) && (nverts_loc == 8))
                         {
                           // Nodes order is different in visit than in trio_u
-                          verts[0] = conn(i, 0);
-                          verts[1] = conn(i, 1);
-                          verts[2] = conn(i, 3);
-                          verts[3] = conn(i, 2);
-                          verts[4] = conn(i, 4);
-                          verts[5] = conn(i, 5);
-                          verts[6] = conn(i, 7);
-                          verts[7] = conn(i, 6);
+                          verts[0] = (mcIdType)conn(i, 0);
+                          verts[1] = (mcIdType)conn(i, 1);
+                          verts[2] = (mcIdType)conn(i, 3);
+                          verts[3] = (mcIdType)conn(i, 2);
+                          verts[4] = (mcIdType)conn(i, 4);
+                          verts[5] = (mcIdType)conn(i, 5);
+                          verts[6] = (mcIdType)conn(i, 7);
+                          verts[7] = (mcIdType)conn(i, 6);
                           ugrid->insertNextCell(INTERP_KERNEL::NORM_HEXA8, nverts_loc, verts);
 
                         }
@@ -430,8 +433,8 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                     }
                   else
                     {
-                      for (trustIdType j = 0; j < nverts; j++)
-                        verts[j] = conn(i, j);
+                      for (int j = 0; j < nverts; j++)
+                        verts[j] = (mcIdType)conn(i, j);
                     }
                   if (type_cell != INTERP_KERNEL::NORM_POLYHED)
                     ugrid->insertNextCell(type_cell, nverts, verts);

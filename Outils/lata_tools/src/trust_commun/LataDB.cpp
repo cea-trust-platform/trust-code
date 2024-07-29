@@ -1727,7 +1727,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
                         }
                       else if (motlu.debute_par("composantes="))
                         {
-                          LataDBInt32 nc; // TODO this workaround to remove once in new int 64
+                          LataDBInt32 nc;
                           read_int_param(is, motlu, nc, "bad composantes parameter");
                           field.nb_comp_ = (int)nc;
                         }

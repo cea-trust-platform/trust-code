@@ -739,7 +739,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                           BigArrOfFloat& fld_data = fld.data_;
 
                           for (k = 0; k < sz; k++)
-                            fld_data[k] = data_array[k];
+                            fld_data[k] = (float)data_array[k];  // downcast to float ... one lata will be double ...  no KIDDING, IT WILL DIE FIRST!!!!
 
                           lata_writer.write_component(fld);
 
@@ -755,7 +755,7 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
                                     fluct = 0.; // just in case...
                                   fluct = sqrt(fluct);
                                   // cast to float
-                                  fld_data[k] = fluct;
+                                  fld_data[k] = (float)fluct;
                                 }
                               // change name:
                               Nom new_name = "rms_fluct_";
@@ -788,6 +788,8 @@ static void write_lata_all(LataFilter& filter, const LataAnalyzerOptions& opt)
 template <class TAB>
 static void merge_tab(const LataVector<LataDB>& lata_db, LataDB& dest_db, const LataDBField& dest_fld)
 {
+  using value_t = typename TAB::Value_type_;  // type stored in TAB
+
   TAB tmp, tab;
   const int n = lata_db.size();
   trustIdType offset = 0;
@@ -795,8 +797,10 @@ static void merge_tab(const LataVector<LataDB>& lata_db, LataDB& dest_db, const 
     {
       const LataDBField& fld = lata_db[i].get_field(dest_fld.timestep_, dest_fld.uname_);
       lata_db[i].read_data(fld, tmp);
+      // Check offset is OK if 32b data:
+      assert(offset < std::numeric_limits<value_t>::max());
       if (offset)
-        tmp += offset;
+        tmp += (value_t)offset;
       const trustIdType sz = tab.dimension(0);
       if (i > 0 && tmp.dimension(1) != tab.dimension(1))
         {
@@ -804,12 +808,13 @@ static void merge_tab(const LataVector<LataDB>& lata_db, LataDB& dest_db, const 
           exit(-1);
         }
       const trustIdType old_sz = tab.size_array();
-      tab.resize(sz + tmp.dimension(0), tmp.dimension(1));
+      tab.resize(sz + tmp.dimension(0), (int)tmp.dimension(1));
       tab.inject_array(tmp, tmp.size_array(), old_sz, 0);
       if (dest_fld.name_ == "ELEMENTS" || dest_fld.name_ == "FACES")
         offset += lata_db[i].get_field(dest_fld.timestep_, dest_fld.geometry_, "SOMMETS", "*", LataDB::FIRST_AND_CURRENT).size_;
       else if (dest_fld.name_ == "ELEM_FACES")
         offset += lata_db[i].get_field(dest_fld.timestep_, dest_fld.geometry_, "FACES", "*", LataDB::FIRST_AND_CURRENT).size_;
+
     }
   LataDBField newfield(dest_fld);
   newfield.size_ = tab.dimension(0);

@@ -73,7 +73,7 @@ void open(Nom& filename, LataFilter& filter, LataOptions& opt, LataDB& lata_db)
       opt.faces_mesh = false;
       // on ne veut jamais creer le domaine IJK
       opt.regularize = 2;
-      opt.regularize_tolerance = 1e-7;
+      opt.regularize_tolerance = 1e-7f;
       read_any_format_options(filename, opt);
       // Read the source file to the lata database
       read_any_format(filename, opt.path_prefix, lata_db);
@@ -130,15 +130,15 @@ DomainUnstructured convertIJKtoUnstructured(const DomainIJK& ijk)
 
   som.resize(nx * ny * nz, dim);
 
-  for (trustIdType i = 0; i < nx; i++)
+  for (trustIdType i = 0; i < nx; i++)    // should be int, but writing nn below will be a pain with all the casts ...
     for (trustIdType j = 0; j < ny; j++)
       for (trustIdType k = 0; k < nz; k++)
         {
           trustIdType nn = i * ny * nz + j * nz + k;
-          som(nn, 0) = ijk.coord_[0][i];
-          som(nn, 1) = ijk.coord_[1][j];
+          som(nn, 0) = ijk.coord_[0][(int)i]; // ... hence the cast here too.
+          som(nn, 1) = ijk.coord_[1][(int)j];
           if (dim > 2)
-            som(nn, 2) = ijk.coord_[2][k];
+            som(nn, 2) = ijk.coord_[2][(int)k];
         }
 
   BigTIDTab& elems = dom.elements_;
@@ -511,7 +511,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
 struct Ecarts
 {
   BigArrOfFloat min, max, min2, max2, delta, val, val2;
-  BigArrOfInt loc, loc2;
+  BigArrOfTID loc, loc2;
   double t;
   void dimensionne(trustIdType n)
   {
@@ -551,11 +551,11 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
   ecarts.dimensionne(nc);
   for (int c = 0; c < nc; c++)
     {
-      float max = -1e30;
-      float min = 1e30;
+      float max = -1e30f;
+      float min = 1e30f;
       for (trustIdType i = 0; i < nv; i++)
         {
-          const double& val = tab(i, c);
+          const float& val = tab(i, c);
           if (val > max)
             max = val;
           if (val < min)
@@ -567,9 +567,9 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
 
   for (int c = 0; c < nc; c++)
     {
-      float max = -1e30;
-      float min = 1e30;
-      float delta = 0;
+      float max = -1e30f;
+      float min = 1e30f;
+      float delta = 0.f;
       for (trustIdType i = 0; i < nv2; i++)
         {
           trustIdType iseq = renum[i];
@@ -842,7 +842,7 @@ int main(int argc, char **argv)
 
       Nom nom_champ = get_long_field_name(un_ecart.name_);
       if (un_ecart.les_ecarts_.size() < 2) continue;
-      int nbc = un_ecart.les_ecarts_[1].min.size_array();
+      trustIdType nbc = un_ecart.les_ecarts_[1].min.size_array();
       if (nbc == 1)
         {
           int nbv = 1;
@@ -859,12 +859,12 @@ int main(int argc, char **argv)
                 // on reprend le max sur les nbv composantes pour tous les temps
                 for (int t = 1; t < un_ecart.les_ecarts_.size(); t++)
                   {
-                    double min = 1e30, max = -1e30;
+                    float min = 1e30f, max = -1e30f;
                     for (int i = 0; i < nbv; i++)
                       {
                         const Ecarts& ecarts = les_ecarts[j - 1 + i].les_ecarts_[t];
                         // cerr<<t<<" la "<<ecarts.min[0]<<" "<<ecarts.max[0]<<endl;
-                        double p = (ecarts.min[0]);
+                        float p = (ecarts.min[0]);
                         if (p < min)
                           min = p;
                         p = fabs(ecarts.max[0]);
@@ -898,16 +898,16 @@ int main(int argc, char **argv)
             const EcartField& un_ecart = les_ecarts[j];
 
             // cerr<<un_ecart.name_<<endl;
-            int nbc = un_ecart.les_ecarts_[1].min.size_array();
+            trustIdType nbc = un_ecart.les_ecarts_[1].min.size_array();
             float& max = max_field[j];
             {
               const Ecarts& ecarts = un_ecart.les_ecarts_[t];
 
-              for (int c = 0; c < nbc; c++)
+              for (trustIdType c = 0; c < nbc; c++)
                 {
                   if (max_delta == 0)
                     {
-                      double p = fabs(ecarts.min[c]);
+                      float p = fabs(ecarts.min[c]);
                       if (p > max)
                         max = p;
                       p = fabs(ecarts.max[c]);
@@ -916,13 +916,13 @@ int main(int argc, char **argv)
                     }
                   else
                     {
-                      double p = (ecarts.max[c] - ecarts.min[c] + 1e-2);
+                      float p = (ecarts.max[c] - ecarts.min[c] + 1e-2f);
                       if (p > max)
                         max = p;
                     }
                 }
-              int c0 = -1;
-              for (int c = 0; c < nbc; c++)
+              trustIdType c0 = -1;
+              for (trustIdType c = 0; c < nbc; c++)
                 {
                   // cerr<<t<<" " <<ecarts.t<<" "<<max[c]<<" "<<ecarts.delta[c]<<endl;
                   if (Ecart(ecarts.val[c], ecarts.val2[c], max, gepsilon_champs))
@@ -935,7 +935,7 @@ int main(int argc, char **argv)
                 }
               if (em > 0.)
                 {
-                  int c = c0;
+                  trustIdType c = c0;
                   Nom type_case(un_ecart.name_.get_localisation());
 
                   printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %ld=%15.8e %s par %ld=%15.8e  gmax %15.8e composante %ld\n", (const char*) get_long_field_name(un_ecart.name_),
