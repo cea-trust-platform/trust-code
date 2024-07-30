@@ -91,7 +91,7 @@ add_definitions("$ENV{TRUST_DEFINES}")
 if(("$ENV{TRUST_INT64}" STREQUAL "0") OR ("$ENV{TRUST_INT64_NEW}" STREQUAL "1"))
   # TRUST was compiled in 32b, or in 64b new mode, force new 64b mode, and check for conversion error
   add_definitions("-DINT_is_64_=2")
-  add_definitions("-Wconversion -Werror")
+  add_definitions("-Wconversion -Wno-sign-conversion  -Werror")
 else()
   # TRUST is compiled in 64b, but with the old method:
   #   we can not do Wconversion (too painful to check) and we avoid instanciating twice some templates:

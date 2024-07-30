@@ -761,16 +761,13 @@ void Faces_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& xv) const
   // Le tableau xv est dimensionne dans ::calculer_centres_gravite
   const Domaine_t& dom=domaine();
   const DoubleTab_t& coord=dom.coord_sommets();
-  ::calculer_centres_gravite(xv, type_face_, coord, sommets);
+  Faces_32_64::Calculer_centres_gravite(xv, type_face_, coord, sommets);
 }
 
 
 template <typename _SIZE_>
-void calculer_centres_gravite(DTab_T<_SIZE_>& xv, Type_Face type_face_,
-                              const DTab_T<_SIZE_>& coord,  const ITab_T<_SIZE_>& sommet)
+void Faces_32_64<_SIZE_>::Calculer_centres_gravite(DoubleTab_t& xv, Type_Face type_face_, const DoubleTab_t& coord,  const IntTab_t& sommet)
 {
-  using int_t = _SIZE_;
-
   int_t nb_faces_tot = sommet.dimension_tot(0);
   int dim = (int)coord.dimension(1);
   xv.resize(nb_faces_tot, dim);

@@ -579,7 +579,7 @@ void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
                       newsommet(i,j)=sommetsorg(listfaces[i],j);
                   DoubleTab position;
 
-                  calculer_centres_gravite(position,newfaces.type_face(),dom.coord_sommets(),newsommet);
+                  Faces::Calculer_centres_gravite(position,newfaces.type_face(),dom.coord_sommets(),newsommet);
 
                   bord_xv<<nombord_dec_bis<<finl;
                   bord_xv<<position<<finl;

@@ -1838,7 +1838,7 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
 	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp " #  -Wno-infinite-recursion"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp -Wno-undefined-var-template " #  -Wno-infinite-recursion"
 	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
 	# sur clang v > 10 ou 11, ajouter -ffp-model=strict -ffp-exception-behavior=strict pour eviter fausses FPE
 	clangFlags="-Wsuggest-override -ffp-exception-behavior=strict -Wno-unsupported-floating-point-opt" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""

@@ -104,6 +104,9 @@ public:
   Entree& lit(Entree&);
   Sortie& ecrit(Sortie&) const ;
 
+  // Static because used by others (like DecoupeBord):
+  static void Calculer_centres_gravite(DoubleTab_t& xv, Type_Face type_face_, const DoubleTab_t& coord,  const IntTab_t& sommet);
+
 private :
   // Useful tool methods:
   int_t ppsf(int_t face, int nb_som) const;
@@ -116,9 +119,6 @@ private :
   REF(Domaine_t) mon_dom;
 };
 
-template <typename _SIZE_>
-extern void calculer_centres_gravite(DTab_T<_SIZE_>& xv, Type_Face type_face_,
-                                     const DTab_T<_SIZE_>& coord,  const ITab_T<_SIZE_>& sommet);
 
 /*! @brief Renvoie le numero du j-ieme sommet de la i-ieme face
  *

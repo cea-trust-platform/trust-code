@@ -182,7 +182,7 @@ Entree& Entree::operator_template(_TYPE_& ob)
               True_int pr;
               char * ptr = (char*) &pr;
               istream_->read(ptr, sizeof(True_int));
-              ob=pr;
+              ob=(_TYPE_)pr;
             }
 #else              // Case 2
           long pr;
