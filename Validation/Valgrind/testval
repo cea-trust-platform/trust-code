@@ -55,7 +55,7 @@ lan_ici()
       [ "$gdb" = "" ] && cat tmp_log* > $DEST/$cas.val && analyse
    elif [ "$CALCUL" = "PAR" ]
    then
-      # Arrêt si MPICH 3.x car en // c'est a valider (erreurs bizarres annoncees pas vues avec OpenMPI 1.6 et OpenMPI 1.2.9)
+      # Arrï¿½t si MPICH 3.x car en // c'est a valider (erreurs bizarres annoncees pas vues avec OpenMPI 1.6 et OpenMPI 1.2.9)
       #[ "`$Mpirun --version 2>&1 | grep mpich-3`" != "" ] && echo "MPICH 3.x and valgrind 3.9.0 works in parallel?" && exit -1
       # Lancement en parallele
       # See http://valgrind.org/docs/manual/mc-manual.html#mc-manual.mpiwrap
@@ -116,7 +116,7 @@ then
    cp -f $source_file_from .
    chmod +w $source_file
    echo "Calcul $cas mene sur 2 pas de temps."   
-   echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?entier toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
+   echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?trustIdType toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
    echo $ECHO_OPTS "1,$ s?seuil_statio_ =?nb_pas_dt_max_ = 2;seuil_statio_ =?g\nw" | ed $source_file 2>/dev/null
    Makeatelier.sccs -2
 fi
