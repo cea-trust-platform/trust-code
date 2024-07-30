@@ -176,7 +176,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_bords = les_cl.size();
   copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-  start_gpu_timer();
+  start_gpu_timer(__KERNEL_NAME__);
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -232,10 +232,11 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
           }
       }
     }
-  end_gpu_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl\n");
+  end_gpu_timer(0, __KERNEL_NAME__);
   copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
   return grad;
 }
+
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
@@ -254,7 +255,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       int nb_bords = les_cl.size();
       copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-      start_gpu_timer();
+      start_gpu_timer(__KERNEL_NAME__);
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -273,7 +274,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_gpu_timer(0, "Boundary condition on grad in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      end_gpu_timer(0, __KERNEL_NAME__);
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
   if (getenv("TRUST_DISABLE_KOKKOS") != nullptr)
@@ -284,7 +285,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       const int *elem_faces_addr = mapToDevice(elem_faces);
       const double *pre_addr = mapToDevice(pre, "pre");
       double *grad_addr = computeOnTheDevice(grad, "grad");
-      start_gpu_timer();
+      start_gpu_timer(__KERNEL_NAME__);
       #pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int elem = 0; elem < nb_elem_tot; elem++)
         {
@@ -303,7 +304,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {
@@ -332,28 +333,29 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
           }
       };
 
-      start_gpu_timer();
-      Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
-      end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kern_elem);
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   return grad;
 }
-DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& grad) const
+
+DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab& tab_grad) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom = domaine;
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const IntTab& som_elem = domaine.les_elems();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+
+  const DoubleTab& tab_face_normales = domaine_VEF.face_normales();
+  const DoubleVect& tab_porosite_face = equation().milieu().porosite_face();
+  const IntTab& tab_som_elem = domaine.les_elems();
+  const IntTab& tab_elem_faces = domaine_VEF.elem_faces();
+  const IntTab& tab_face_voisins = domaine_VEF.face_voisins();
+
   int nfe = domaine.nb_faces_elem();
   int nps = domaine_VEF.numero_premier_sommet();
   int nb_elem_tot = domaine.nb_elem_tot();
-  int premiere_face_int = domaine_VEF.premiere_face_int();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   if (som_.size_array() == 0)
     {
@@ -364,45 +366,45 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
         {
           coeff_som_(el) = calculer_coef_som(el, domaine_Cl_VEF, domaine_VEF);
           for (int indice = 0; indice < nfe; indice++)
-            som_(el, indice) = nps + dom.get_renum_som_perio(som_elem(el, indice));
+            som_(el, indice) = nps + dom.get_renum_som_perio(tab_som_elem(el, indice));
         }
     }
 
-  const int *elem_faces_addr = mapToDevice(elem_faces);
-  const int *face_voisins_addr = mapToDevice(face_voisins);
-  const double *face_normales_addr = mapToDevice(face_normales);
-  const double *porosite_face_addr = mapToDevice(porosite_face);
-  const double *coeff_som_addr = mapToDevice(coeff_som_);
-  const int *som_addr = mapToDevice(som_);
-  const double *pre_addr = mapToDevice(pre, "pre");
-  double *grad_addr = computeOnTheDevice(grad, "grad");
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int elem = 0; elem < nb_elem_tot; elem++)
-    {
-      double sigma[3];
-      for (int indice = 0; indice < nfe; indice++)
-        {
-          int face = elem_faces_addr[nfe * elem + indice];
-          double signe = 1;
-          if (elem != face_voisins_addr[face * 2])
-            signe = -1;
+  CIntTabView elem_faces = tab_elem_faces.view_ro();
+  CIntTabView face_voisins = tab_face_voisins.view_ro();
+  CDoubleTabView face_normales = tab_face_normales.view_ro();
+  CDoubleArrView porosite_face = tab_porosite_face.view_ro();
+  CDoubleArrView coeff_som = coeff_som_.view_ro();
+  CIntTabView som_v = som_.view_ro();
+  CDoubleTabView pre = tab_pre.view_ro();
+  DoubleTabView grad = tab_grad.view_rw();
+  int dimension = Objet_U::dimension;
 
-          for (int comp = 0; comp < dimension; comp++)
-            sigma[comp] = face_normales_addr[face * dimension + comp] * signe;
+  Kokkos::parallel_for(
+    start_gpu_timer(__KERNEL_NAME__),
+    Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {nb_elem_tot, nfe}),
+    KOKKOS_LAMBDA (int elem, int indice)
+  {
+    int face = elem_faces(elem,indice);
 
-          for (int indice2 = 0; indice2 < nfe; indice2++)
-            {
-              int face2 = elem_faces_addr[elem * nfe + indice2];
-              for (int comp = 0; comp < dimension; comp++)
-                {
-                  #pragma omp atomic
-                  grad_addr[face2 * dimension + comp] -= coeff_som_addr[elem] * pre_addr[som_addr[elem * nfe + indice]] * sigma[comp] * porosite_face_addr[face2];
-                }
-            }
-        }
-    }
-  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
+    double signe = 1;
+    if (elem != face_voisins(face,0))
+      signe = -1;
+
+    double sigma[3];
+    for (int comp = 0; comp < dimension; comp++)
+      sigma[comp] = face_normales(face,comp) * signe;
+
+    for (int indice2 = 0; indice2 < nfe; indice2++)
+      {
+        int face2 = elem_faces(elem,indice2);
+        for (int comp = 0; comp < dimension; comp++)
+          {
+            Kokkos::atomic_add(&grad(face2,comp), -(coeff_som(elem) * pre(som_v(elem,indice),0) * sigma[comp] * porosite_face(face2)));
+          }
+      }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   bool has_sortie_libre = false;
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -412,10 +414,12 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur())) has_sortie_libre = true;
     }
+
   if (has_sortie_libre)
     {
-      copyPartialFromDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
-      copyPartialFromDevice(pre, nps, nps + dom.nb_som_tot(), "pressure on som");
+      int premiere_face_int = domaine_VEF.premiere_face_int();
+      copyPartialFromDevice(tab_grad, 0, premiere_face_int * dimension, "grad on boundary");
+      copyPartialFromDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
       const IntTab& face_sommets = domaine_VEF.face_sommets();
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
         {
@@ -433,17 +437,19 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
                     {
                       int som = nps + dom.get_renum_som_perio(face_sommets(face, indice));
                       for (int comp = 0; comp < dimension; comp++)
-                        grad(face, comp) -= 1. / dimension * face_normales(face, comp) * (pre(som) - P_imp) *
-                                            porosite_face(face);
+                        tab_grad(face, comp) -= 1. / dimension * tab_face_normales(face, comp) * (tab_pre(som) - P_imp) *
+                                                tab_porosite_face(face);
                     }
                 } //fin du if sur "Neumann_sortie_libre"
             }
         }
-      copyPartialToDevice(pre, nps, nps + dom.nb_som_tot(), "pressure on som");
-      copyPartialToDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
+      copyPartialToDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
+      copyPartialToDevice(tab_grad, 0, premiere_face_int * dimension, "grad on boundary");
     }
-  return grad;
+
+  return tab_grad;
 }
+
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_aretes(const DoubleTab& pre, DoubleTab& grad) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
@@ -695,7 +701,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
       const double *face_normales_addr = mapToDevice(face_normales);
       const double *pression_P1B_addr = mapToDevice(pression_P1B, "pression_P1B_addr");
       double *flux_bords_addr = computeOnTheDevice(flux_bords_, "flux_bords_");
-      start_gpu_timer();
+      start_gpu_timer(__KERNEL_NAME__);
       #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
       for (int face = 0; face < nb_faces_bord; face++)
         {
@@ -716,8 +722,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
           for (int i = 0; i < dimension; i++)
             flux_bords_addr[face * dimension + i] = pres_tot * face_normales_addr[face * dimension + i];
         }
-      end_gpu_timer(Objet_U::computeOnDevice,
-                    "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {
@@ -748,10 +753,8 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
           flux_bords_v(face, i) = pres_tot * face_normales_v(face, i);
       };
 
-      start_gpu_timer();
-      Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
-      end_gpu_timer(Objet_U::computeOnDevice,
-                    "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bord, kern_flux_bords);
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
     }
 }
