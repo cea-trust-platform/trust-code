@@ -240,9 +240,17 @@ class TRAD2Content:
 
   def _parseMacro(self, tag, l):
     """ Generic method for parsing a 'implemente_instanciable' or 'add_synonym()' """
+
+    def rchop(s, suffix):
+      """ Handy method to remove trailing string """
+      if suffix and s.endswith(suffix):
+          return s[:-len(suffix)]
+      return s
+
     if tag in l:
       t = l.split(",")
       cls_nam = t[0].split("(")[1].strip()
+      cls_nam = rchop(cls_nam, "_32_64")
       v = t[1].split(")")[0].strip()
       s = v.replace('"', '')
       return cls_nam, s
