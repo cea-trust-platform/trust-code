@@ -82,9 +82,10 @@ then
    [ "`grep 'Debian GNU/Linux 12' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_3
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8 && version=3_1_1
    [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8 && version=3_1_1
-   [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27 && version=3_1_1
-   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27 && version=3_1_1
-   [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora31 && version=3_2_1
+   [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
+   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
+   [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora31 && version=3_2_1
+   [ "`grep 'Fedora release 40' /etc/fedora-release 2>/dev/null`" != "" ]       && os=fedora31 && version=3_4_1
    [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
 
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
