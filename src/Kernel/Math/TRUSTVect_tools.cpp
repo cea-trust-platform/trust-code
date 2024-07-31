@@ -389,18 +389,14 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
           if (IS_MULT) p_resu *= x;
           if (IS_EGAL) p_resu = x;
           if (IS_NEGATE) p_resu = -p_resu;
-#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
-          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs((long long)p_resu) : std::fabs(p_resu));
-#else
-          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs(p_resu) : std::fabs(p_resu));
-#endif
+          if (IS_ABS) p_resu = (_TYPE_) std::abs(p_resu);  // the proper specialisation of std::abs should be selected (int, long, float, double)
           if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
           if (IS_CARRE) p_resu *= p_resu;
 
           if (IS_DIV)
             {
 #ifndef _OPENMP
-              if (x == 0.) error_divide(__func__);
+              if (x == (_TYPE_)0) error_divide(__func__);
 #endif
               p_resu /= x;
             }
@@ -408,9 +404,9 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
           if (IS_INV)
             {
 #ifndef _OPENMP
-              if (p_resu == 0.) error_divide(__func__);
+              if (p_resu == (_TYPE_)0) error_divide(__func__);
 #endif
-              p_resu = (_TYPE_) (1. / p_resu); // same as sqrt above
+              p_resu = (_TYPE_) ((_TYPE_)1 / p_resu); // same as sqrt above
             }
         }
     }
@@ -513,13 +509,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
               #pragma omp target teams distribute parallel for reduction(max:min_max_val)
               for (_SIZE_ count = 0; count < size_bloc; count++)
                 {
-#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
-                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs((long long)
-                                                                                                                x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-#else
-                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
-                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-#endif
+                  const _TYPE_ x = IS_MAX ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
                   if (x > min_max_val) min_max_val = x;
                 }
             }
@@ -540,13 +530,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
               #pragma omp target teams distribute parallel for reduction(min:min_max_val)
               for (_SIZE_ count = 0; count < size_bloc; count++)
                 {
-#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
-                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs((long long)
-                                                                                                                x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-#else
-                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
-                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-#endif
+                  const _TYPE_ x = IS_MIN ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
                   if (x < min_max_val) min_max_val = x;
                 }
             }
@@ -554,8 +538,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
             {
               for (_SIZE_ count = 0; count < size_bloc; count++)
                 {
-                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
-                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+                  const _TYPE_ x = IS_MIN ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
                   if (x < min_max_val) min_max_val = x;
                 }
             }
