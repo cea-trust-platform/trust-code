@@ -19,6 +19,7 @@ define_modules_config()
       then
          module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
          module="slurm                                 gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
+         CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
       else
          echo "Not supported anymore" && exit -1
       fi
@@ -53,6 +54,7 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
+   [ "$CUDA_VERSION" != "" ] && echo "export CUDA_VERSION=$CUDA_VERSION" >> $env # Prendre desormais le CUDA de NVHPC
    echo $source >> $env
    . $env
    # Creation wrapper qstat -> squeue
@@ -78,7 +80,7 @@ define_soumission_batch()
 
    # On se base sur la frontale pour selectionner la queue par defaut: 
    queue=amdq_naples && [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
-   [ "$gpu" = 1 ] && queue=gpuq_a100
+   [ "$gpu" = 1 ] && queue=gpuq_a100 && noeuds=`echo "1+(1-$NB_PROCS)/2" | bc` # 2GPUs/node
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
