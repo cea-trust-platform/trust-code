@@ -193,7 +193,7 @@ then
   echo "-> Binary and version used:"
   echo " code : $exec
  version : $TRUST_VERSION" > version_utilisee
-  egrep "code|version : " version_utilisee | awk '{print("-> "$NF)}' | head -2
+  grep -E "code|version : " version_utilisee | awk '{print("-> "$NF)}' | head -2
 
   echo "================================================"
   echo "-> Running commands in the ./build/cmds file ..."

@@ -5,6 +5,31 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ######
+###### tous les cas sur ubuntu 24 is246427
+######
+{
+   <upwind sur Ubuntu 24>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:hwloc_opencl_discover
+   fun:hwloc_topology_load
+}
+
+
+######
 ###### Tous les cas avec Kokkos 3.x ou 4.x
 ###### * ajoutees dans le cas ou TRUST est compile en int64
 ######
@@ -64,7 +89,7 @@
 
 ######
 ###### 17/07/2024 : Erreurs venant d'EOS lorsque linke a TRUST
-######
+###### par ex: upwind sur FED32
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak

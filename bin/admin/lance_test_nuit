@@ -381,6 +381,7 @@ check_components()
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.4
                            [ "$Composant" == "module3D" ] && trustversion=1.9.4
+                           [ "$Composant" == "triomc" ] && trustversion=1.9.4
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
                               WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -544,12 +545,12 @@ VOBS="TRUST Composants"
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
 # MPCube est un Baltik qui peut etre teste sur TRUST et sur le kernel.
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
-ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK sides scorpio sympy_to_TRUST pemfc module3D"
-export ComposantsBeta="flica5 module3D"
+ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK sides scorpio sympy_to_TRUST pemfc module3D triomc"
+export ComposantsBeta="flica5 module3D triomc"
 #ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 #ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 # ND : I comment the 2 prev lines to check triocfd first
-ComposantsGit="triocfd flica5 genepi3 mpcube TRUST_NK module3D sides scorpio sympy_to_TRUST pemfc"
+ComposantsGit="triocfd flica5 genepi3 mpcube TRUST_NK module3D sides scorpio sympy_to_TRUST pemfc triomc"
 export Composants=$ComposantsLns" "$ComposantsGit
 
 # Initialize environment TRUST:
@@ -859,7 +860,7 @@ echo " "
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" && "$Composant" != "triomc" ]]
       then
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
@@ -945,6 +946,34 @@ echo " "
             cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master KO \" $TRUST_MAIL
          else
             [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
+         fi
+         cat tmp.log
+         rm tmp.log 1>/dev/null 2>&1
+         cd -
+      elif [[ "$Composant" == "triomc" ]]
+      then
+         git remote update
+         git checkout .
+         git reset --hard origin/next
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next KO \" $TRUST_MAIL
+         else
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next OK \" $TRUST_MAIL
+         fi
+         cat tmp.log
+         rm tmp.log 1>/dev/null 2>&1
+         cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
+         git remote update
+         git checkout .
+         git reset --hard origin/next
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull next KO \" $TRUST_MAIL
+         else
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull next OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
