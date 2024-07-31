@@ -8,7 +8,7 @@
  Analyse_Angle Analyse_Angle Analyse_Angle.h
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
- ArrOfBit ArrOfBit ArrOfBit.h
+ ArrOfBit ArrOfBit_32_64 ArrOfBit.h
  Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h
@@ -26,10 +26,10 @@
  Axi Axi Axi.h
  BiCGStab SolvElem_BiCGStab SolvElem_BiCGStab.h
  Bidim_Axi Bidim_Axi Bidim_Axi.h
- Bord Bord Bord.h
- Bords Bords Bords.h
- Bords_Internes Bords_Internes Bords_Internes.h
- Bord_Interne Bord_Interne Bord_Interne.h
+ Bord Bord_32_64 Bord.h
+ Bords Bords_32_64 Bords.h
+ Bords_Internes Bords_Internes_32_64 Bords_Internes.h
+ Bord_Interne Bord_Interne_32_64 Bord_Interne.h
  Boundary_Conditions Boundary_Conditions Boundary_Conditions.h
  Boundary_Conditions_Thermique Boundary_Conditions_Thermique Boundary_Conditions_Thermique.h
  Boundary_field_inward Boundary_field_inward Boundary_field_inward.h
@@ -292,9 +292,10 @@
  Dispersion_bulles_VDF_Face Dispersion_bulles_VDF Dispersion_bulles_VDF.h
  Distance_paroi Distanceparoi Distanceparoi.h
  Divergence Champ_Generique_Divergence Champ_Generique_Divergence.h
- Domaine Domaine Domaine.h
- DomaineAxi1d DomaineAxi1d DomaineAxi1d.h
+ Domaine Domaine_32_64 Domaine.h
+ DomaineAxi1d DomaineAxi1d_32_64 DomaineAxi1d.h
  DomaineCutter DomaineCutter DomaineCutter.h
+ Domaine_base Domaine_base Domaine_base.h
  Domaine_bord Domaine_bord Domaine_bord.h
  Domaine_Cl_dis Domaine_Cl_dis Domaine_Cl_dis.h
  Domaine_Cl_dis_base Domaine_Cl_dis_base Domaine_Cl_dis_base.h
@@ -345,8 +346,8 @@
  EF_axi EF_axi_discretisation EF_axi_discretisation.h
  Elem_EF Elem_EF Elem_EF.h
  Elem_EF_base Elem_EF_base Elem_EF_base.h
- Elem_geom Elem_geom Elem_geom.h
- Elem_geom_base Elem_geom_base Elem_geom_base.h
+ Elem_geom Elem_geom_32_64 Elem_geom.h
+ Elem_geom_base Elem_geom_base_32_64 Elem_geom_base.h
  Elem_poly Elem_poly Elem_poly.h
  Elem_poly_base Elem_poly_base Elem_poly_base.h
  Elem_VEF Elem_VEF Elem_VEF.h
@@ -382,7 +383,7 @@
  Extruder Extruder Extruder.h
  Extruder_en20 Extruder_en20 Extruder_en20.h
  Extruder_en3 Extruder_en3 Extruder_en3.h
- Faces Faces Faces.h
+ Faces Faces_32_64 Faces.h
  Faces_VDF Faces_VDF Faces_VDF.h
  Field_base Field_base Field_base.h
  Fluide Fluide Fluide.h
@@ -425,7 +426,7 @@
  Format_Post_Med Format_Post_Med Format_Post_Med.h
  Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
  Format_Post_XYZ Format_Post_XYZ Format_Post_XYZ.h
- Frontiere Frontiere Frontiere.h
+ Frontiere Frontiere_32_64 Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
  Frontiere_ouverte Neumann_sortie_libre Neumann_sortie_libre.h
  Frontiere_ouverte_alpha_impose Entree_fluide_alpha_impose Dirichlet_entree_fluide_leaves.h
@@ -475,11 +476,11 @@
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_Multiphase Gravite_Multiphase Gravite_Multiphase.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
- Groupes_Faces Groupes_Faces Groupes_Faces.h
- Groupe_Faces Groupe_Faces Groupe_Faces.h
- Hexaedre Hexaedre Hexaedre.h
- Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
- Hexaedre_VEF Hexaedre_VEF Hexaedre_VEF.h
+ Groupes_Faces Groupes_Faces_32_64 Groupes_Faces.h
+ Groupe_Faces Groupe_Faces_32_64 Groupe_Faces.h
+ Hexaedre Hexaedre_32_64 Hexaedre.h
+ Hexaedre_axi Hexaedre_axi_32_64 Hexaedre_axi.h
+ Hexaedre_VEF Hexaedre_VEF_32_64 Hexaedre_VEF.h
  Hexa_EF Hexa_EF Hexa_EF.h
  Hexa_poly Hexa_poly Hexa_poly.h
  Hexa_VEF Hexa_VEF Hexa_VEF.h
@@ -680,7 +681,7 @@
  Objet_a_lire Objet_a_lire Objet_a_lire.h
  objet_interne_ptrPram ptrParam ptrParam.h
  Objet_U_ptr Objet_U_ptr Objet_U_ptr.h
- OctreeRoot OctreeRoot Octree.h
+ OctreeRoot OctreeRoot_32_64 Octree.h
  Operateurs_Statistique_tps Operateurs_Statistique_tps Operateurs_Statistique_tps.h
  Operateur_base Operateur_base Operateur_base.h
  Operateur_Conv Operateur_Conv Operateur_Conv.h
@@ -980,18 +981,18 @@
  Pilote_ICoCo Pilote_ICoCo Pilote_ICoCo.h
  Piso Piso Piso.h
  Plaque_Thermique_VDF PlaqThVDF PlaqThVDF.h
- Point Point Point.h
+ Point Point_32_64 Point.h
  Point_EF Point_EF Point_EF.h
- Polyedre Polyedre Polyedre.h
+ Polyedre Polyedre_32_64 Polyedre.h
  Polyedre_poly Polyedre_poly Polyedre_poly.h
  Polyedriser Polyedriser Polyedriser.h
- Polygone Polygone Polygone.h
+ Polygone Polygone_32_64 Polygone.h
  Polygone_poly Polygone_poly Polygone_poly.h
  PolyMAC PolyMAC_discretisation PolyMAC_discretisation.h
  PolyMAC_P0 PolyMAC_P0_discretisation PolyMAC_P0_discretisation.h
  PolyMAC_P0P1NC PolyMAC_P0P1NC_discretisation PolyMAC_P0P1NC_discretisation.h
  Polynome Polynome Polynome.h
- Poly_geom_base Poly_geom_base Poly_geom_base.h
+ Poly_geom_base Poly_geom_base_32_64 Poly_geom_base.h
  Porosites Porosites Porosites_champ.h
  Porosites_champ Porosites_champ Porosites_champ.h
  Portance_interfaciale_base Portance_interfaciale_base Portance_interfaciale_base.h
@@ -1010,7 +1011,7 @@
  Precond_base Precond_base Precond_base.h
  Precond_local Precond_local Precond_local.h
  Predefini Champ_Generique_Predefini Champ_Generique_Predefini.h
- Prisme Prisme Prisme.h
+ Prisme Prisme_32_64 Prisme.h
  Probleme_base Probleme_base Probleme_base.h
  Probleme_Couple Probleme_Couple Probleme_Couple.h
  Probleme_U Probleme_U Probleme_U.h
@@ -1022,26 +1023,26 @@
  Puissance_Thermique_VDF_P0_VDF Terme_Puissance_Thermique_VDF_Elem Terme_Puissance_Thermique_VDF_Elem.h
  Puissance_Thermique_VEF_P1NC Terme_Puissance_Thermique_VEF_Face Terme_Puissance_Thermique_VEF_Face.h
  QDM_Multiphase QDM_Multiphase QDM_Multiphase.h
- Quadrangle Quadrangle_VEF Quadrangle_VEF.h
+ Quadrangle Quadrangle_VEF_32_64 Quadrangle_VEF.h
  Quadri_EF Quadri_EF Quadri_EF.h
  Quadri_poly Quadri_poly Quadri_poly.h
  Quadri_VEF Quadri_VEF Quadri_VEF.h
- Raccord Raccord Raccord.h
- Raccords Raccords Raccords.h
- Raccord_base Raccord_base Raccord_base.h
- Raccord_distant Raccord_distant Raccord_base.h
- Raccord_distant_homogene Raccord_distant_homogene Raccord_distant_homogene.h
- Raccord_local Raccord_local Raccord_base.h
- Raccord_local_homogene Raccord_local_homogene Raccord_base.h
+ Raccord Raccord_32_64 Raccord.h
+ Raccords Raccords_32_64 Raccords.h
+ Raccord_base Raccord_base_32_64 Raccord_base.h
+ Raccord_distant Raccord_distant_32_64 Raccord_base.h
+ Raccord_distant_homogene Raccord_distant_homogene_32_64 Raccord_distant_homogene.h
+ Raccord_local Raccord_local_32_64 Raccord_base.h
+ Raccord_local_homogene Raccord_local_homogene_32_64 Raccord_base.h
  Raffiner_anisotrope Raffiner_anisotrope Raffiner_anisotrope.h
  Raffiner_isotrope_parallele Raffiner_isotrope_parallele Raffiner_isotrope_parallele.h
  Raffiner_Simplexes Raffiner_Simplexes Raffiner_Simplexes.h
  Reaction Reaction Reaction.h
  Read_MED_For_Testing_No_Verify_Option Read_MED_For_Testing_No_Verify_Option Read_MED_For_Testing_No_Verify_Option.h
  Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM.h
- Rectangle Rectangle Rectangle.h
- Rectangle_2D_axi Rectangle_2D_axi Rectangle_2D_axi.h
- Rectangle_axi Rectangle_axi Rectangle_axi.h
+ Rectangle Rectangle_32_64 Rectangle.h
+ Rectangle_2D_axi Rectangle_2D_axi_32_64 Rectangle_2D_axi.h
+ Rectangle_axi Rectangle_axi_32_64 Rectangle_axi.h
  Rectify_Mesh Rectify_Mesh Rectify_Mesh.h
  Redresser_hexaedres_vdf Redresser_hexaedres_vdf Redresser_hexaedres_vdf.h
  Reduction_0D Champ_Generique_Reduction_0D Champ_Generique_Reduction_0D.h
@@ -1101,8 +1102,8 @@
  Schema_Temps_Inutile Schema_Temps_Inutile Schema_Temps_Inutile.h
  Sch_CN_EX_iteratif Sch_CN_EX_iteratif Sch_CN_EX_iteratif.h
  Sch_CN_iteratif Sch_CN_iteratif Sch_CN_iteratif.h
- Segment Segment Segment.h
- Segment_axi Segment_axi Segment_axi.h
+ Segment Segment_32_64 Segment.h
+ Segment_axi Segment_axi_32_64 Segment_axi.h
  Segment_EF Segment_EF Segment_EF.h
  Segment_EF_axi Segment_EF_axi Segment_EF_axi.h
  Segment_poly Segment_poly Segment_poly.h
@@ -1202,7 +1203,7 @@
  Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF.h
  Source_WC_Gravite_VDF Source_WC_Gravite_VDF Source_WC_Gravite_VDF.h
  Source_WC_Gravite_VEF Source_WC_Gravite_VEF Source_WC_Gravite_VEF.h
- Sous_Domaine Sous_Domaine Sous_Domaine.h
+ Sous_Domaine Sous_Domaine_32_64 Sous_Domaine.h
  Sous_domaine_dis Sous_domaine_dis Sous_domaine_dis.h
  Sous_domaine_dis_base Sous_domaine_dis_base Sous_domaine_dis_base.h
  Sous_domaine_VF Sous_domaine_VF Sous_domaine_VF.h
@@ -1243,7 +1244,7 @@
  Testeur_MEDCoupling Testeur_MEDCoupling Testeur_MEDCoupling.h
  Test_solveur Test_solveur Solv_Optimal.h
  Test_SSE_Kernels Test_SSE_Kernels Test_SSE_Kernels.h
- Tetraedre Tetraedre Tetraedre.h
+ Tetraedre Tetraedre_32_64 Tetraedre.h
  Tetraedriser Tetraedriser Tetraedriser.h
  Tetraedriser_homogene Tetraedriser_homogene Tetraedriser_homogene.h
  Tetraedriser_homogene_compact Tetraedriser_homogene_compact Tetraedriser_homogene_compact.h
@@ -1288,7 +1289,7 @@
  Transport_turbulent_SGDH|Transport_turbulent_isotrope Transport_turbulent_SGDH Transport_turbulent_SGDH.h
  Travail_pression_Elem_PolyMAC_P0P1NC|Travail_pression_Elem_PolyMAC_P0 Travail_pression_PolyMAC_P0P1NC Travail_pression_PolyMAC_P0P1NC.h
  travail_pression_VDF_P0_VDF Travail_pression_VDF Travail_pression_VDF.h
- Triangle Triangle Triangle.h
+ Triangle Triangle_32_64 Triangle.h
  Triangulation_base Triangulation_base Triangulation_base.h
  Trianguler Trianguler Trianguler.h
  Trianguler_fin Trianguler_fin Trianguler_fin.h
