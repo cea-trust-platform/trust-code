@@ -195,8 +195,8 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   CIntTabView face_voisins = tab_face_voisins.view_ro();
   CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
   CDoubleTabView variable = tab_variable.view_ro();
-  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_rw();
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
+  DoubleTabView3 gradient_elem = tab_gradient_elem.view3_rw();
 
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();

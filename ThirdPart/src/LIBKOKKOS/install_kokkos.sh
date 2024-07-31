@@ -37,7 +37,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-	if [ "$TRUST_CC_BASE_EXTP" != "" ]
+	if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "$TRUST_USE_CUDA" = 1 ]
 	then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
 	else
@@ -48,6 +48,10 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
 	CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
+           # Kokkos use CUDA_ROOT pour trouver nvcc !!!!
+           # Or le configure de TRUST fixe aussi CUDA_ROOT parfois a la racine $NVHPC et specifie parfois NVHPC_CUDA_HOME
+           # C'est un peu le bazar tout cela...
+           [ "$NVHPC_CUDA_HOME" != "" ] && export CUDA_ROOT=$NVHPC_CUDA_HOME
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA=ON -DKokkos_ENABLE_CUDA_LAMBDA=ON"
            # KOKKOS ARCH (Cuda Compute Capability):
            if [ "$TRUST_CUDA_CC" = 70 ]

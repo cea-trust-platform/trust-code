@@ -4,10 +4,19 @@ flags=$@
 FORCE_HIP=1 # HIP prefere a OMPT les directives OMP ne sont pas utilisees...
 
 # Source file cpp:
-cpp=`echo $@ | awk '{print $(NF-1)}'`
-omp_file="`grep "#pragma omp target" $cpp`"
-hip_file="`grep "Kokkos::parallel"   $cpp`"
-[ "$omp_file" != "" ] && [ "$hip_file" != "" ] && echo "Error, can't mix HIP and OMPT inside $cpp" && [ "$FORCE_HIP" != 1 ] && exit -1
+cpp=`echo $@ | awk '{print $(NF-1)}' | grep \.cpp`
+if [ "$cpp" != "" ]
+then
+  omp_file="`grep "#pragma omp target" $cpp`"
+  hip_file="`grep "Kokkos::parallel"   $cpp`"
+  [ "$omp_file" != "" ] && [ "$hip_file" != "" ] && echo "Error, can't mix HIP and OMPT inside $cpp" && [ "$FORCE_HIP" != 1 ] && exit -1
+else
+  # On linke sans HIP:   
+  cpp="linking"
+  FORCE_HIP=0
+  hip_file=""
+  omp_file="linking"
+fi
 # Choix des options selon code:
 if [ "$omp_file" != "" ] && [ "$hip_file" = "" ] && [ "$FORCE_HIP" != 1 ]
 then
@@ -25,5 +34,7 @@ else
    # Use HIP flags: RISQUE du dernier FLAG -Wno-gpu-maybe-wrong-side !!!!
    opt="-xhip --offload-arch=$ROCM_ARCH -Wno-hip-omp-target-directives -Wno-gpu-maybe-wrong-side"
 fi
-echo "Adding: $opt"
-$TRUST_ROOT/exec/ccache/bin/ccache /opt/cray/pe/cce/17.0.0/bin/crayCC $opt $flag
+cmd="$TRUST_ROOT/exec/ccache/bin/ccache /opt/cray/pe/cce/17.0.0/bin/crayCC $opt $flags"
+#echo $cmd
+eval $cmd
+

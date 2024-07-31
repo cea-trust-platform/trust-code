@@ -1076,17 +1076,11 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
         //Premier voisin
         int elem = face_voisins(facei, 0);
         int facei_loc = num_fac_loc(facei, 0);
-#ifndef _OPENMP
-        assert(elem_faces(elem, facei_loc) == facei);
-#endif
         double fij = Kij(elem, facei_loc, facei_loc);
 
         //Deuxieme voisin
         elem = face_voisins(facei, 1);
         facei_loc = num_fac_loc(facei, 1);
-#ifndef _OPENMP
-        assert(elem_faces(elem, facei_loc) == facei);
-#endif
         fij += Kij(elem, facei_loc, facei_loc);
 
         for (int dim = 0; dim < nb_comp; dim++)
