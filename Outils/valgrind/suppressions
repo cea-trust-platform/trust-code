@@ -102,6 +102,32 @@
    fun:(below main)
 }
 
+######
+###### 31/07/2024 : Cas Thermique3D F5 en // sur FED32
+######
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Bcast
+   fun:MPI_BCAST
+   fun:__dmumps_parallel_analysis_MOD_dmumps_parmetis_ord.constprop.0
+   fun:__dmumps_parallel_analysis_MOD_dmumps_ana_f_par
+   fun:dmumps_ana_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatLUFactorSymbolic_AIJMUMPS
+   fun:MatLUFactorSymbolic
+   fun:PCSetUp_LU
+   fun:PCSetUp
+   fun:KSPSetUp
+   fun:KSPSolve_Private
+}
+
 
 ######
 ###### Cas Bilans_VEF_QC_Turb_Null en decoupage utilisant PETSc 3.20 sur altair

@@ -955,28 +955,10 @@ echo " "
          git remote update
          git checkout .
          git reset --hard origin/next
-         git pull 1>tmp.log 2>&1
-         if [ $? != 0 ]
-         then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next KO \" $TRUST_MAIL
-         else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next OK \" $TRUST_MAIL
-         fi
-         cat tmp.log
-         rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
          git checkout .
-         git reset --hard origin/next
-         git pull 1>tmp.log 2>&1
-         if [ $? != 0 ]
-         then
-            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull next KO \" $TRUST_MAIL
-         else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull next OK \" $TRUST_MAIL
-         fi
-         cat tmp.log
-         rm tmp.log 1>/dev/null 2>&1
+         git reset --hard origin/master
          cd -
       else
          git remote update
