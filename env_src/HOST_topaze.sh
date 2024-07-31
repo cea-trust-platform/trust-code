@@ -37,9 +37,9 @@ define_modules_config()
 	 # nvlink fatal   : Input file '/ccc/scratch/cont002/den/ledacp/trust/amgx_openmp_int64/lib/TRUST_mpi_opt.a:Discretisation_tools.cpp.o' newer than toolkit (122 vs 118)
          # module="gnu/8.3.0 flavor/cuda/nvhpc-237 cuda/11.8 nvhpc/23.7 mpi/openmpi/4.1.4" # Passage a 23.7
 	 #echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
+	 module="gnu/8.3.0 nvhpc/23.7 mpi/openmpi/4.1.4" # Passage a Cuda 11.8 et NVHPC 23.7 OK
       else
-         #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"      
+         echo "Not supported anymore" && exit -1
       fi
       echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
    else
