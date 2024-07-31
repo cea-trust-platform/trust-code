@@ -83,7 +83,7 @@ then
             [ "$LINK_CUDA" = _static ] && PETSC_L=$PETSC_L" cublasLt_static culibos rt"
          elif [ "$TRUST_USE_ROCM" = 1 ]
          then
-            PETSC_P=$PETSC_P" \$ENV{ROCM_PATH}/lib"
+            SYSLIBS_P=$SYSLIBS_P" \$ENV{ROCM_PATH}/lib"
             PETSC_L=$PETSC_L" hipsparse hipblas hipsolver rocsparse rocsolver rocblas rocrand amdhip64"           
          fi
          # PETSc with X11:
