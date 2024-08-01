@@ -17,6 +17,7 @@
 #include <MD_Vector_composite.h>
 #include <Echange_EV_Options.h>
 #include <MD_Vector_tools.h>
+#include <MD_Vector_seq.h>
 #include <communications.h>
 #include <stat_counters.h>
 #include <Schema_Comm.h>
@@ -88,6 +89,48 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTION
   v.set_md_vector(md);
 }
 
+template <typename _TYPE_, typename _SIZE_>
+static void creer_tableau_seq_(const MD_Vector& md, TRUSTVect<_TYPE_,_SIZE_>& v, RESIZE_OPTIONS opt)
+{
+  using TAB = TRUSTTab<_TYPE_, _SIZE_>;
+
+  const MD_Vector_seq * md_seq = dynamic_cast<const MD_Vector_seq *>(&md.valeur());
+  assert(md_seq != nullptr); // sequential, cast should always be OK
+
+  trustIdType nb64 = md_seq->get_nb_items();
+  assert(nb64 < std::numeric_limits<int>::max());
+  int sz = (int)nb64;
+
+  // TODO IG FIXME factorize with above:
+  bool err = false;
+  // Should we use resize() or resize_dim0 ...:
+  TAB* vv = dynamic_cast<TAB*>(&v);
+  if (vv)
+    {
+      TAB& t = *vv;
+      const _SIZE_ n = t.dimension_tot(0);
+      if (n == 0) t.resize_dim0(sz, opt);
+      else if (n == sz) { /* ok no resize */  }
+      else {  err = true; }
+    }
+  else
+    {
+      const _SIZE_ n = v.size_totale();
+      if (n == 0) v.resize(sz, opt);
+      else if (n == sz) { /* ok no resize */ }
+      else { err = true; }
+    }
+  if (err)
+    {
+      Cerr << "Internal error in MD_Vector_tools::creer_tableau_seq_:\n"
+           << " Input vector has wrong size or dimension(0)" << finl;
+      Process::exit();
+    }
+  // Important - keep the same MD_Vector object:
+  v.set_md_vector(md);
+}
+
+
 /*! @brief transforme v en un tableau parallele ayant la structure md.
  *
  * md doit est non nul !
@@ -97,9 +140,7 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTION
  *   La dimension initiale du vecteur doit etre soit 0, soit md.get_nb_items_reels(),
  *    soit md.get_nb_items_tot(). Si besoin, la taille du tableau est modifiee et on
  *    initialise le tableau selon opt.
- *  ATTENTION, echange_espace_virtuel() n'est PAS appele.
- *   Les cases virtuelles ne sont pas initialisees...
- *
+ *  ATTENTION, echange_espace_virtuel() n'est PAS appele. Les cases virtuelles ne sont pas initialisees...
  */
 void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v, RESIZE_OPTIONS opt)
 {
@@ -113,17 +154,36 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
   DoubleVect* doubleV = dynamic_cast<DoubleVect*>(&v);
   FloatVect* floatV = dynamic_cast<FloatVect*>(&v);
 
-  if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
-  else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
-  else if (floatV) creer_tableau_distribue_<FloatVect, FloatTab>(md, *floatV, opt);
-  else
+  if(sub_type(MD_Vector_seq, md.valeur()))
     {
-      Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):\n"
-           << " Invalid array type " << v.que_suis_je()
-           << "\n Array must be a subtype of IntVect or DoubleVect" << finl;
-      Process::exit();
+      assert(Process::is_sequential());
+
+      if (intV) creer_tableau_seq_<int, int>(md, *intV, opt);
+      else if (doubleV) creer_tableau_seq_<double, int>(md, *doubleV, opt);
+      else if (floatV) creer_tableau_seq_<float, int>(md, *floatV, opt);
+      else
+        {
+          Cerr << "Internal error in MD_Vector_tools::creer_tableau_seq():\n"
+               << " Invalid array type " << v.que_suis_je()
+               << "\n Array must be a subtype of IntVect or DoubleVect or FloatVect" << finl;
+          Process::exit();
+        }
+    }
+  else  // parallel computation **or** composite descriptor (MD_Vector_composite)
+    {
+      if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
+      else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
+      else if (floatV) creer_tableau_distribue_<FloatVect, FloatTab>(md, *floatV, opt);
+      else
+        {
+          Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):\n"
+               << " Invalid array type " << v.que_suis_je()
+               << "\n Array must be a subtype of IntVect or DoubleVect or FloatVect" << finl;
+          Process::exit();
+        }
     }
 }
+
 
 template <typename _TYPE_>
 void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
@@ -180,7 +240,7 @@ void echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vect
 template<typename _TYPE_>
 inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
 {
-  if (v.get_md_vector().non_nul())
+  if (v.get_md_vector().non_nul() && Process::is_parallel())
     {
       statistiques().begin_count(echange_vect_counter_);
       echange_espace_virtuel1_(v.get_md_vector(), v, opt);
@@ -192,71 +252,6 @@ inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::O
 void MD_Vector_tools::echange_espace_virtuel(IntVect& v, Operations_echange opt) { call_echange_espace_virtuel<int>(v,opt); }
 void MD_Vector_tools::echange_espace_virtuel(DoubleVect& v, Operations_echange opt) { call_echange_espace_virtuel<double>(v,opt); }
 void MD_Vector_tools::echange_espace_virtuel(FloatVect& v, Operations_echange opt) { call_echange_espace_virtuel<float>(v,opt); }
-
-inline void setflag(ArrOfInt& flags, int i) { flags[i] = 1; }
-inline void clearflag(ArrOfInt& flags, int i) { flags[i] = 0; }
-inline void clearflag(ArrOfBit& flags, int i) { flags.clearbit(i); }
-
-inline void setflag(ArrOfBit& flags, int i)
-{
-  // On a initialise le tableau a 1 par defaut dans get_sequential_items_flags()
-  assert(flags[i] == 1);
-}
-
-template <class FlagsType>
-static int get_seq_flags(const MD_Vector_base& mdv, FlagsType& flags, int startidx, int line_size)
-{
-  int count = 0;
-  if (sub_type(MD_Vector_base2, mdv))
-    {
-      const MD_Vector_base2& ms = ref_cast(MD_Vector_base2, mdv);
-      const int nblocs = ms.blocs_items_to_sum_.size_array() >> 1;
-      const int *ptr = ms.blocs_items_to_sum_.addr();
-      int j = startidx;
-      for (int i = nblocs; i; i--)
-        {
-          // On pourrait optimiser pour les ArrOfBit en ajoutant a cette classe
-          //  une methode setflag/clearflag(range_begin, range_end);
-          int jmax = startidx + (*(ptr++)) * line_size; // debut du prochain bloc d'items sequentiels
-          for (; j < jmax; j++)
-            clearflag(flags, j);
-          jmax = startidx + (*(ptr++)) * line_size; // fin du bloc d'items sequentiels
-          assert(jmax > j);
-          count += jmax - j;
-          for (; j < jmax; j++)
-            setflag(flags, j);
-        }
-      // Fin du remplissage
-      int sz = mdv.get_nb_items_tot() * line_size;
-      for (; j < sz; j++)
-        clearflag(flags, j);
-    }
-  else
-    {
-      Cerr << "Error in MD_Vector_tools::get_sequential_items_flags: unsupported MD_Vector type " << mdv.que_suis_je() << finl;
-      Process::exit();
-    }
-  return count;
-}
-
-int MD_Vector_tools::get_sequential_items_flags(const MD_Vector& md, ArrOfBit& flags, int line_size)
-{
-  const MD_Vector_base& mdv = md.valeur();
-  const int sz = mdv.get_nb_items_tot() * line_size;
-  // setbit et clearbit font |= et &=, donc valgrind ne voit pas qu'on initialise tout
-  // le tableau. On initialise tout explicitement:
-  flags.resize_array(sz);
-  flags = 1; // valeur par defaut la plus courante (0 est le cas particulier), voir setflag(ArrOfBit)
-  return get_seq_flags(mdv, flags, 0, line_size);
-}
-
-int MD_Vector_tools::get_sequential_items_flags(const MD_Vector& md, ArrOfInt& flags, int line_size)
-{
-  const MD_Vector_base& mdv = md.valeur();
-  const int sz = mdv.get_nb_items_tot() * line_size;
-  flags.resize_array(sz, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  return get_seq_flags(mdv, flags, 0, line_size);
-}
 
 void MD_Vector_tools::compute_sequential_items_index(const MD_Vector&, MD_Vector_renumber&, int line_size)
 {
@@ -584,6 +579,20 @@ void MD_Vector_tools::creer_md_vect_renum(const IntVect& renum, MD_Vector& md_ve
       const MD_Vector_std& src = ref_cast(MD_Vector_std, src_md_val);
       MD_Vector_std dest;
       ::creer_md_vect_renum(renum, src, dest);
+      md_vect.copy(dest);
+    }
+  else if (sub_type(MD_Vector_seq, src_md_val))
+    {
+      const MD_Vector_seq& src = ref_cast(MD_Vector_seq, src_md_val);
+      // Count non -1 entries to have proper number of items in the dest descriptor:
+      trustIdType nb64 = src.get_nb_items();
+      assert(nb64 < std::numeric_limits<int>::max());
+      const int src_size = (int)nb64;
+      int cnt=0;
+      for (int i = 0; i < src_size; i++)
+        if (renum[i] >= 0)
+          cnt++;
+      MD_Vector_seq dest(cnt);
       md_vect.copy(dest);
     }
   else if (sub_type(MD_Vector_composite, src_md_val))

@@ -35,8 +35,9 @@
 #include <Schema_Comm.h>
 #include <Interprete_bloc.h>
 #include <Extraire_surface.h>
-#include <MD_Vector_std.h>
 #include <Domaine_VF.h>
+#include <MD_Vector_std.h>
+#include <MD_Vector_seq.h>
 
 Implemente_instanciable_sans_constructeur_32_64( Domaine_32_64, "Domaine", Domaine_base );
 // XD domaine objet_u domaine -1 Keyword to create a domain.
@@ -1714,6 +1715,33 @@ int Domaine_32_64<_SIZE_>::identifie_item_unique(IntList& item_possible, DoubleT
 template <>
 void Domaine_32_64<int>::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_front)
 {
+  if (Process::is_sequential()) // Much simpler in this case:
+    {
+      ind_faces_virt_bord_.resize_array(0);
+      MD_Vector_seq mdseq(nb_faces_frontiere());
+      md_vect_faces_front.copy(mdseq);
+
+      // Constructrion des MD_Vector_seq de chaque frontiere:
+      const int nb_frontieres = nb_front_Cl();
+      for (int i_frontiere = 0; i_frontiere < nb_frontieres; i_frontiere++)
+        {
+          Frontiere& front = frontiere(i_frontiere);
+          IntTab& faces_sommets_frontiere = front.les_sommets_des_faces();
+          // Certains problemes ont plusieurs objets Domaine_VF attaches a la meme Domaine (rayonnement)
+          // Si on est deja passe par ici, ne pas refaire le travail:
+          if (faces_sommets_frontiere.get_md_vector().non_nul())
+            continue;
+          const int nb_faces_front = front.nb_faces();
+          // Construction d'un descripteur contenant le sous-ensemble des faces de cette frontiere
+          MD_Vector md_frontiere;
+          MD_Vector_seq mdseq_front(nb_faces_front);
+          md_frontiere.copy(mdseq_front);
+          faces_sommets_frontiere.set_md_vector(md_frontiere);
+        }
+
+      return;
+    }
+
   // ***************************************
   // 1) Construction des structures de tableaux pour toutes les faces de bord
   //   (faces de 0 a nb_faces_frontiere())
@@ -1760,9 +1788,7 @@ void Domaine_32_64<int>::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD
       // Certains problemes ont plusieurs objets Domaine_VF attaches a la meme Domaine (rayonnement)
       // Si on est deja passe par ici, ne pas refaire le travail:
       if (faces_sommets_frontiere.get_md_vector().non_nul())
-        {
-          continue;
-        }
+        continue;
       //les tableaux faces_sommets_frontiere doivent faire la meme largeur sur tous les procs avant echange
       int nb_som_faces = Process::mp_max(faces_sommets_frontiere.dimension(1));
       if (faces_sommets_frontiere.dimension(1) < nb_som_faces)
@@ -1996,7 +2022,7 @@ void Domaine_32_64<int>::creer_aretes()
           }
         const int indice_distant = indice_aretes_owner[i];
         aretes_to_send[indice_pe].append_array(indice_distant); // indice sur le pe voisin
-        MD_Vector_base2::append_item_to_blocs(blocs_aretes_virt[indice_pe], i);
+        MD_Vector_base::append_item_to_blocs(blocs_aretes_virt[indice_pe], i);
       }
     {
       Schema_Comm schema;

@@ -28,29 +28,36 @@
  *   See also class DoubleTab_Parts and class ConstDoubleTab_Parts
  *
  */
-class MD_Vector_composite : public MD_Vector_base2
+class MD_Vector_composite : public MD_Vector_base
 {
   Declare_instanciable(MD_Vector_composite);
 public:
   void add_part(const MD_Vector& part, int shape = 0, Nom name = "");
 
-  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const override;
-  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const override;
-  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const override;
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, DoubleVect& v) const override   { global_md_.initialize_comm(opt, c, v); }
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, DoubleVect& v) const override { global_md_.prepare_send_data(opt, c, v); }
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, DoubleVect& v) const override { global_md_.process_recv_data(opt, c, v); }
 
-  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
-  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
-  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, FloatVect&) const override;
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, FloatVect& v) const override   { global_md_.initialize_comm(opt, c, v); }
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, FloatVect& v) const override { global_md_.prepare_send_data(opt, c, v); }
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, FloatVect& v) const override { global_md_.process_recv_data(opt, c, v); }
 
-  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override;
-  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override;
-  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override;
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, IntVect& v) const override   { global_md_.initialize_comm(opt, c, v); }
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, IntVect& v) const override { global_md_.prepare_send_data(opt, c, v); }
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, IntVect& v) const override { global_md_.process_recv_data(opt, c, v); }
+
+#if INT_is_64_ == 2
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, TIDVect& v) const override    { global_md_.initialize_comm(opt, c, v); }
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, TIDVect& v) const override  { global_md_.prepare_send_data(opt, c, v); }
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, TIDVect& v) const override  { global_md_.process_recv_data(opt, c, v); }
+#endif
 
   inline int nb_parts() const { return data_.size(); }
   inline int get_shape(int i) const { return shapes_[i]; }
   inline const MD_Vector& get_desc_part(int i) const { return data_[i]; }
   inline Nom get_name(int i) const { return names_[i]; }
 
+  // Same as in MD_Vector_std - those members should be public, but a lot of tools/etc to fix ...:
   VECT(MD_Vector) data_;
   // Descriptor for the entire vector:
   MD_Vector_std global_md_;
@@ -61,6 +68,9 @@ public:
   ArrOfInt shapes_;
   // Name of each part
   Noms names_;
+
+protected:
+  int get_seq_flags_(ArrOfBit& flags, int line_size) const override;
 };
 
 #endif /* MD_Vector_composite_included */

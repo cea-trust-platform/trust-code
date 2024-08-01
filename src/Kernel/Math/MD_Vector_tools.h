@@ -39,6 +39,7 @@ public:
   // EV_MIN_COLONNE1: pour chaque ligne partagee du tableau, prend le processeur qui a la plus petite valeur
   //   dans la colonne1, envoie toute la ligne au processeur qui possede la ligne.
   enum Operations_echange { ECHANGE_EV, EV_SOMME, EV_SOMME_ECHANGE, EV_MAX, EV_MINCOL1 };
+
   static void creer_tableau_distribue(const MD_Vector&, Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
 
   static void echange_espace_virtuel(IntVect&, Operations_echange opt = ECHANGE_EV);
@@ -46,8 +47,6 @@ public:
   static void echange_espace_virtuel(FloatVect&, Operations_echange opt = ECHANGE_EV);
 
   // valeur de retour: nombre d'items sequentiels sur ce proc (nombre de flags a un dans le tableau)
-  static int get_sequential_items_flags(const MD_Vector&, ArrOfBit& flags, int line_size = 1);
-  static int get_sequential_items_flags(const MD_Vector&, ArrOfInt& flags, int line_size = 1);
   static void compute_sequential_items_index(const MD_Vector&, MD_Vector_renumber&, int line_size = 1);
   static void creer_md_vect_renum(const IntVect& renum, MD_Vector& md_vect);
   static void creer_md_vect_renum_auto(IntVect& flags_renum, MD_Vector& md_vect);

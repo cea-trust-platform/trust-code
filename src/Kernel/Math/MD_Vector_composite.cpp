@@ -14,10 +14,11 @@
 *****************************************************************************/
 
 #include <MD_Vector_composite.h>
+#include <MD_Vector_seq.h>
 #include <Array_tools.h>
 #include <Param.h>
 
-Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base2);
+Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base);
 
 /*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
  *
@@ -26,7 +27,7 @@ Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base
  */
 Sortie& MD_Vector_composite::printOn(Sortie& os) const
 {
-  MD_Vector_base2::printOn(os);
+  MD_Vector_base::printOn(os);
   int np=data_.size();
   os << np<<finl;
   for (int p=0; p<np; p++)
@@ -52,7 +53,7 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
  */
 Entree& MD_Vector_composite::readOn(Entree& is)
 {
-  MD_Vector_base2::readOn(is);
+  MD_Vector_base::readOn(is);
 
   int np;
   is >> np ;
@@ -123,18 +124,7 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
   // Data of these lists:
   ArrOfInt x_data, y_data, z_data;
   ArrOfInt new_blocs_items_count, new_nb_items_to_items;
-
-
-
-
-
-
-
-
-
   ArrOfInt tmp;
-
-
   ArrOfInt pe_list(dest.pe_voisins_);
 
   append_blocs(pe_list, src.pe_voisins_);
@@ -321,6 +311,11 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
 
   if (sub_type(MD_Vector_std, part.valeur()))
     append_global_md(global_md_, ref_cast(MD_Vector_std, part.valeur()), offset, multiplier);
+  else if (sub_type(MD_Vector_seq, part.valeur()))
+    {
+      assert(Process::is_sequential());
+      /* Nothing to be done - the global_md_ attribute is meaningless here, and does not need update */
+    }
   else if (sub_type(MD_Vector_composite, part.valeur()))
     append_global_md(global_md_, ref_cast(MD_Vector_composite, part.valeur()).global_md_, offset, multiplier);
   else
@@ -330,47 +325,26 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
     }
 }
 
-void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, DoubleVect& v) const
+/*! Needs override to handle composite vector of MD_Vect_seq ...
+ */
+int MD_Vector_composite::get_seq_flags_(ArrOfBit& flags, int line_size) const
 {
-  global_md_.initialize_comm(opt, comm, v);
+  const MD_Vector& p0 = data_[0];
+  if (sub_type(MD_Vector_seq, p0.valeur()))
+    {
+      trustIdType tot_sz1 = 0;
+      for (const auto& mdv: data_)
+        {
+          const MD_Vector_seq& mdvseq = ref_cast(MD_Vector_seq, mdv.valeur());
+          tot_sz1 += mdvseq.get_nb_items();
+        }
+      assert(tot_sz1 < std::numeric_limits<int>::max());
+      int tot_sz2 = static_cast<int>(tot_sz1);
+      flags.resize_array(tot_sz2);
+      flags = 1;
+      return tot_sz2;
+    }
+  else
+    return MD_Vector_base::get_seq_flags_(flags, line_size);
 }
 
-void MD_Vector_composite::prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, DoubleVect& v) const
-{
-  global_md_.prepare_send_data(opt, comm, v);
-}
-
-void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, DoubleVect& v) const
-{
-  global_md_.process_recv_data(opt, comm, v);
-}
-
-void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
-{
-  global_md_.initialize_comm(opt, comm, v);
-}
-
-void MD_Vector_composite::prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
-{
-  global_md_.prepare_send_data(opt, comm, v);
-}
-
-void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, FloatVect& v) const
-{
-  global_md_.process_recv_data(opt, comm, v);
-}
-
-void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, IntVect& v) const
-{
-  global_md_.initialize_comm(opt, comm, v);
-}
-
-void MD_Vector_composite::prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, IntVect& v) const
-{
-  global_md_.prepare_send_data(opt, comm, v);
-}
-
-void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, IntVect& v) const
-{
-  global_md_.process_recv_data(opt, comm, v);
-}

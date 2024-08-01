@@ -18,6 +18,9 @@
 
 #include <arch.h>
 
+template <typename _SIZE_> class ArrOfBit_32_64;
+using ArrOfBit = ArrOfBit_32_64<int>;
+
 template <typename _TYPE_, typename _SIZE_=int> class TRUSTArray;
 using ArrOfDouble = TRUSTArray<double, int>;
 using ArrOfFloat = TRUSTArray<float, int>;
@@ -77,6 +80,7 @@ template <typename _TYPE_> using SmallArrOfTID_T = TRUSTArray<_TYPE_, int>;    /
 template <typename _SIZE_> using ArrOfDouble_T= TRUSTArray<double, _SIZE_>;
 template <typename _SIZE_> using DoubleVect_T = TRUSTVect<double, _SIZE_>;
 template <typename _SIZE_> using DoubleTab_T = TRUSTTab<double, _SIZE_>;         // either an DoubleTab (32 bits) or a BigDoubleTab (64b)
+template <typename _SIZE_> using FloatVect_T = TRUSTVect<float, _SIZE_>;
 
 template <typename _SIZE_> using ArrsOfInt_T = TRUST_Vector<TRUSTArray<_SIZE_, _SIZE_>>;
 template <typename _SIZE_> using DoubleTabs_T = TRUST_Vector<TRUSTTab<double, _SIZE_>>;

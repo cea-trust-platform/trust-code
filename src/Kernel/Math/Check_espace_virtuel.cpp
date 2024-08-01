@@ -76,7 +76,7 @@ void assert_invalide_items_non_calcules(DoubleVect& v, double valeur)
 template <typename _TYPE_>
 void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
 {
-  if (v.get_md_vector().non_nul())
+  if (v.get_md_vector().non_nul() && Process::is_parallel()) // Checking virtual items in sequential is meaningless
     {
       const ArrOfInt& blocs = v.get_md_vector()->get_items_to_compute();
       const int sz = blocs.size_array() / 2, line_size = v.line_size();

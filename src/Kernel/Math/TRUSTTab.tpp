@@ -561,7 +561,8 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::set_md_vector(const MD_Vector& md_vector)
 {
 #ifndef LATATOOLS
   _SIZE_ dim0 = dimension_tot_0_;
-  if (md_vector.non_nul())
+  // md_vector is filled and we are not sequential (MD_Vector is not a MD_Vector_seq in which get_nb_items_reels() is non sensical):
+  if (md_vector.non_nul() && Process::is_parallel())
     {
       // renvoie -1 si l'appel est invalide ou si le MD_Vector est mix (cf doc MD_Vector_base2):
       dim0 = md_vector->get_nb_items_reels();

@@ -519,7 +519,7 @@ void Domaine_VEF::construire_ok_arete()
   // pour les sommets communs recus d'un autre processeur
   {
     ArrOfBit flags;
-    MD_Vector_tools::get_sequential_items_flags(dom.les_sommets().get_md_vector(), flags);
+    dom.les_sommets().get_md_vector()->get_sequential_items_flags(flags);
     for (int i = 0; i < nb_som_reel; i++)
       {
         if (!flags[i])
@@ -629,7 +629,7 @@ void Domaine_VEF::construire_ok_arete()
 
   ArrOfBit marqueurs_aretes;
   const MD_Vector& md_aretes = md_vector_aretes();
-  MD_Vector_tools::get_sequential_items_flags(md_aretes, marqueurs_aretes);
+  md_aretes->get_sequential_items_flags(marqueurs_aretes);
   const int nb_aretes_seq = md_aretes->nb_items_seq_tot();
 
   if (Process::je_suis_maitre())

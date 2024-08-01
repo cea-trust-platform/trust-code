@@ -37,7 +37,7 @@ Entree& Solv_Externe::readOn(Entree& is)
 void Solv_Externe::construit_renum(const DoubleVect& b)
 {
   // Initialisation du tableau items_to_keep_ si ce n'est pas deja fait
-  nb_items_to_keep_ = MD_Vector_tools::get_sequential_items_flags(b.get_md_vector(), items_to_keep_, b.line_size());
+  nb_items_to_keep_ = b.get_md_vector()->get_sequential_items_flags(items_to_keep_, b.line_size());
 
   // Compute important value:
   secmem_sz_ = b.size_totale();

@@ -715,6 +715,8 @@ template <typename _TYPE_, typename _SIZE_>
 void invalidate_data(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt)
 {
 #ifndef LATATOOLS
+  if (Process::is_sequential()) return; // no invalid values in sequential
+
   _TYPE_ invalid = (_TYPE_)-987654321;
 
   const MD_Vector& md = resu.get_md_vector();

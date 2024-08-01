@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <Schema_Comm_Vecteurs.h>
 #include <Echange_EV_Options.h>
 #include <Static_Int_Lists.h>
-#include <MD_Vector_base2.h>
 #include <communications.h>
 #include <TRUSTArrays.h>
 #include <TRUSTVect.h>
@@ -35,11 +34,11 @@
  *   par exemple)
  *
  */
-class MD_Vector_std : public MD_Vector_base2
+class MD_Vector_std : public MD_Vector_base
 {
-  Declare_instanciable_sans_constructeur(MD_Vector_std);
+  Declare_instanciable(MD_Vector_std);
+
 public:
-  MD_Vector_std();
   MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfInt& pe_voisins,
                 const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv);
 

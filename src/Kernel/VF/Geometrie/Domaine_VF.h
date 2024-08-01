@@ -141,13 +141,13 @@ public :
   void construire_face_virt_pe_num();
   const IntTab& face_virt_pe_num() const;
 
-  virtual void creer_tableau_faces(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
-  virtual void creer_tableau_aretes(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
-  virtual void creer_tableau_faces_bord(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
-  virtual const MD_Vector& md_vector_faces_bord() const { return md_vector_faces_front_; }
-  virtual const MD_Vector& md_vector_faces() const { return md_vector_faces_; }
+  void creer_tableau_faces(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
+  void creer_tableau_aretes(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
+  void creer_tableau_faces_bord(Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT) const;
+  const MD_Vector& md_vector_faces_bord() const { return md_vector_faces_front_; }
+  const MD_Vector& md_vector_faces() const { return md_vector_faces_; }
   // Attention, si les aretes ne sont pas remplies, le md_vector_ est nul
-  virtual const MD_Vector& md_vector_aretes() const { return md_vector_aretes_; }
+  const MD_Vector& md_vector_aretes() const { return md_vector_aretes_; }
 
   virtual const DoubleTab& xv_bord() const;
   DoubleTab calculer_xgr() const;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,49 +16,19 @@
 #include <MD_Vector.h>
 #include <Memoire.h>
 
-Implemente_base_sans_constructeur_ni_destructeur(MD_Vector_base,"MD_Vector_base",Objet_U);
+//Implemente_base_sans_constructeur_ni_destructeur(MD_Vector_base,"MD_Vector_base",Objet_U);
 
 /*! @brief construction d'un objet MD_Vector par copie d'un objet existant.
  *
- * C'est la methode recommandee pour creer un objet MD_Vector
- *   (autrement que par copie d'un autre MD_Vector)
- *
+ * C'est la methode recommandee pour creer un objet MD_Vector (autrement que
+ * par copie d'un autre MD_Vector)
  */
 void MD_Vector::copy(const MD_Vector_base& src)
 {
-  detach();
   int num_obj = src.duplique();
-  ptr_ = (MD_Vector_base *) Memoire::Instance().objet_u_ptr(num_obj);
-  assert(ptr_->ref_count_ == 0);
-  ptr_->ref_count_ = 1;
-}
-
-/*! @brief methode non inline pour detacher l'objet pointe.
- *
- */
-void MD_Vector::detach_()
-{
-  assert(ptr_);
-  int& count = ptr_->ref_count_;
-  assert(count > 0);
-  count--;
-  if (count == 0)
-    {
-      // Detruit l'objet pointe:
-      delete ptr_;
-    }
-  ptr_ = 0;
-}
-
-/*! @brief methode non inline pour attacher l'objet en parametre.
- *
- */
-void MD_Vector::attach_(const MD_Vector& src)
-{
-  assert(ptr_ == 0);
-  assert(src.non_nul());
-  ptr_ = src.ptr_;
-  (ptr_->ref_count_)++;
+  MD_Vector_base * p = dynamic_cast<MD_Vector_base *>(Memoire::Instance().objet_u_ptr(num_obj));
+  assert(p!= nullptr);
+  ptr_.reset(p);
 }
 
 /*! @brief renvoie 1 si les structures sont identiques, 0 sinon
@@ -75,11 +45,9 @@ int MD_Vector::operator==(const MD_Vector& md) const
   return ptr_ == md.ptr_;
 }
 
-/*! @brief reponse inverse de ==
- *
+/*! @brief reponse inverse de == ...
  */
 int MD_Vector::operator!=(const MD_Vector& md) const
 {
-  // B.M.: je code exactement ce qui est dit au dessus (des fois que == change un jour...)
   return !operator==(md);
 }

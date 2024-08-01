@@ -16,15 +16,8 @@
 #include <MD_Vector_std.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(MD_Vector_std,"MD_Vector_std",MD_Vector_base2);
+Implemente_instanciable(MD_Vector_std,"MD_Vector_std",MD_Vector_base);
 
-MD_Vector_std::MD_Vector_std()
-{
-  nb_items_seq_tot_ = -1;
-  nb_items_seq_local_ = -1;
-  nb_items_tot_ = -1;
-  nb_items_reels_ = -1;
-}
 
 /*! @brief Constructeur.
  *
@@ -190,7 +183,7 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
  */
 Entree& MD_Vector_std::readOn(Entree& is)
 {
-  MD_Vector_base2::readOn(is);
+  MD_Vector_base::readOn(is);
   Param p(que_suis_je());
   ArrOfInt items_send_index, items_send_data, items_index, items_data, blocs_index, blocs_data;
   p.ajouter("pe_voisins", &pe_voisins_);
@@ -219,7 +212,7 @@ Entree& MD_Vector_std::readOn(Entree& is)
  */
 Sortie& MD_Vector_std::printOn(Sortie& os) const
 {
-  MD_Vector_base2::printOn(os);
+  MD_Vector_base::printOn(os);
   os << "{" << finl;
   os << "pe_voisins" << tspace << pe_voisins_ << finl;
   os << "items_to_send_index" << tspace << items_to_send_.get_index() << finl;

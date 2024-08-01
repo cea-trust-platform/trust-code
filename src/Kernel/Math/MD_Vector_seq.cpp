@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,51 +13,49 @@
 *
 *****************************************************************************/
 
-#include <MD_Vector_base2.h>
-#include <Param.h>
+#include <MD_Vector_seq.h>
+#include <TRUSTTabs.h>
+#include <ArrOfBit.h>
 
-Implemente_base_sans_constructeur(MD_Vector_base2,"MD_Vector_base2",MD_Vector_base);
+Implemente_instanciable_sans_constructeur(MD_Vector_seq,"MD_Vector_seq",MD_Vector_base);
 
-MD_Vector_base2::MD_Vector_base2()
+Entree& MD_Vector_seq::readOn(Entree& is) { return is; }
+
+Sortie& MD_Vector_seq::printOn(Sortie& os) const { return os; }
+
+
+int MD_Vector_seq::get_nb_items_reels() const
 {
-  nb_items_tot_ = -1;
-  nb_items_reels_ = -1;
-  nb_items_seq_tot_ = -1;
-  nb_items_seq_local_ = -1;
+  assert(nb_items_ < std::numeric_limits<int>::max());
+  return (int)nb_items_;
 }
 
-/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
- *
- * See MD_Vector_tools::restore_vector_with_md()
- *
- */
-Entree& MD_Vector_base2::readOn(Entree& is)
+int MD_Vector_seq::get_nb_items_tot() const
 {
-  Param p("MD_Vector_base2");
-  p.ajouter("nb_items_tot", &nb_items_tot_);
-  p.ajouter("nb_items_reels", &nb_items_reels_);
-  p.ajouter("nb_items_seq_tot", &nb_items_seq_tot_);
-  p.ajouter("nb_items_seq_local", &nb_items_seq_local_);
-  p.ajouter("blocs_items_to_sum", &blocs_items_to_sum_);
-  p.ajouter("blocs_items_to_compute", &blocs_items_to_compute_);
-  p.lire_avec_accolades(is);
-  return is;
+  assert(nb_items_ < std::numeric_limits<int>::max());
+  return (int)nb_items_;
 }
 
-/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
- *
- * See MD_Vector_tools::dump_vector_with_md()
- *
- */
-Sortie& MD_Vector_base2::printOn(Sortie& os) const
+int MD_Vector_seq::nb_items_seq_tot() const
 {
-  os << "{" << finl;
-  os << "nb_items_tot" << tspace << nb_items_tot_ << finl;
-  os << "nb_items_reels" << tspace << nb_items_reels_ << finl;
-  os << "nb_items_seq_tot" << tspace << nb_items_seq_tot_ << finl;
-  os << "nb_items_seq_local" << tspace << nb_items_seq_local_ << finl;
-  os << "blocs_items_to_sum" << tspace << blocs_items_to_sum_;
-  os << "blocs_items_to_compute" << tspace << blocs_items_to_compute_;
-  os << "}" << finl;
-  return os;
+  assert(nb_items_ < std::numeric_limits<int>::max());
+  return (int)nb_items_;
 }
+
+int MD_Vector_seq::nb_items_seq_local() const
+{
+  assert(nb_items_ < std::numeric_limits<int>::max());
+  return (int)nb_items_;
+}
+
+
+int MD_Vector_seq::get_seq_flags_(ArrOfBit& flags, int line_size) const
+{
+  assert(nb_items_ < std::numeric_limits<int>::max());
+
+  const int sz = (int)nb_items_;
+  flags.resize_array(sz);
+  flags = 1;  // everything is present and must be included in sequential
+  return sz;
+}
+

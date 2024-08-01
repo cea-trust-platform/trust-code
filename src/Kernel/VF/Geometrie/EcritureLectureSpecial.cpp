@@ -21,6 +21,7 @@
 #include <MD_Vector_tools.h>
 #include <Octree_Double.h>
 #include <MD_Vector_composite.h>
+#include <MD_Vector_seq.h>
 #include <TRUSTTab_parts.h>
 
 int EcritureLectureSpecial::mode_ecr=-1;
@@ -224,10 +225,10 @@ static int ecriture_special_part2(const Domaine_VF& zvf, Sortie& fich, const Dou
       for (int i = 0; i < n; i++)
         bytes += ecriture_special_part2(zvf, fich, parts[i]);
     }
-  else if (sub_type(MD_Vector_std, md.valeur()))
+  else if (sub_type(MD_Vector_std, md.valeur()) || sub_type(MD_Vector_seq, md.valeur()))
     {
       ArrOfBit items_to_write;
-      MD_Vector_tools::get_sequential_items_flags(md, items_to_write);
+      md->get_sequential_items_flags(items_to_write);
       const DoubleTab& coords = get_ref_coordinates_items(zvf, md);
       bytes += ecrit(fich, items_to_write, coords, val);
       fich.syncfile();
@@ -320,7 +321,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
   // Dans un premier temps, 1 si l'item est a lire, 0 s'il est lu par un autre processeur.
   // Une fois que l'item est lu, on met le flag a 2.
   ArrOfInt items_to_read;
-  const int n_to_read = MD_Vector_tools::get_sequential_items_flags(md_vect, items_to_read);
+  const int n_to_read = md_vect->get_sequential_items_flags(items_to_read);
   Octree_Double octree;
   // Build an octree with "thick" nodes (epsilon size)
   octree.build_nodes(coords, 0 /* do not include virtual elements */, epsilon);

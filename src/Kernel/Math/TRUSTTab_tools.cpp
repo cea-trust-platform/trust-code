@@ -15,25 +15,40 @@
 
 #include <TRUSTTab.h>
 #include <TRUSTTab_tools.tpp>
+#include <MD_Vector_seq.h>
 #include <limits>
 
 // ToDo OpenMP: porter boucle mais mp_norme_tab semble pas utilise
-template <typename _TYPE_, typename _SIZE_>
-void local_carre_norme_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& norme_colonne)
+template <typename _TYPE_>
+void local_carre_norme_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& norme_colonne)
 {
   norme_colonne = 0.;
-  const TRUSTArray<int,_SIZE_>& blocs = tableau.get_md_vector()->get_items_to_sum();
-  const _SIZE_ nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<_TYPE_,_SIZE_>& vect = tableau;
-  const _SIZE_ lsize = vect.line_size();
-  assert(lsize == norme_colonne.size_array());
-  for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
+  const TRUSTArray<int,int>* blocs_p;
+  TRUSTArray<int, int> seq_arr;
+  if (!sub_type(MD_Vector_seq, tableau.get_md_vector().valeur()))
+    blocs_p = &(tableau.get_md_vector()->get_items_to_sum());
+  else
     {
-      const _SIZE_ begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-      for (_SIZE_ i = begin_bloc; i < end_bloc; i++)
+      const MD_Vector_seq& md_seq = ref_cast(MD_Vector_seq, tableau.get_md_vector().valeur());
+      seq_arr.resize_array(2);
+      assert(md_seq.get_nb_items() < std::numeric_limits<int>::max());
+      seq_arr[0] = 0;
+      seq_arr[1] = static_cast<int>(md_seq.get_nb_items());
+      blocs_p = &seq_arr;
+    }
+  const TRUSTArray<int,int>& blocs = *blocs_p;
+  const int nblocs = blocs.size_array() >> 1;
+  const TRUSTVect<_TYPE_,int>& vect = tableau;
+  const int lsize = vect.line_size();
+
+  assert(lsize == norme_colonne.size_array());
+  for (int ibloc = 0; ibloc < nblocs; ibloc++)
+    {
+      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
+      for (int i = begin_bloc; i < end_bloc; i++)
         {
-          _SIZE_ k = i * lsize;
-          for (_SIZE_ j = 0; j < lsize; j++)
+          int k = i * lsize;
+          for (int j = 0; j < lsize; j++)
             {
               const _TYPE_ x = vect[k++];
               norme_colonne[j] += x*x;
@@ -44,17 +59,17 @@ void local_carre_norme_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_T
 
 namespace
 {
-template <typename ExecSpace, typename _TYPE_, typename _SIZE_>
-void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& max_colonne,
-                              const TRUSTArray<int,_SIZE_>& blocs, int lsize, bool kernelOnDevice)
+template <typename ExecSpace, typename _TYPE_>
+void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne,
+                              const TRUSTArray<int>& blocs, int lsize, bool kernelOnDevice)
 {
   auto tableau_view= tableau.template view_ro<ExecSpace>();
   auto max_colonne_view= max_colonne.template view_rw<ExecSpace>();
 
-  const _SIZE_ nblocs = blocs.size_array() >> 1;
-  for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
+  const int nblocs = blocs.size_array() >> 1;
+  for (int ibloc = 0; ibloc < nblocs; ibloc++)
     {
-      const _SIZE_ begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
+      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
       // Define a Kokkos range policy based on the execution space
       Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
       // Parallel loop for any value of lsize, using atomic_max for thread safety
@@ -71,28 +86,23 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray
 }
 }
 
-template <typename _TYPE_, typename _SIZE_>
-void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& max_colonne)
+template <typename _TYPE_>
+void local_max_abs_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne)
 {
   max_colonne = std::numeric_limits<_TYPE_>::min();
-  const TRUSTArray<int,_SIZE_>& blocs = tableau.get_md_vector()->get_items_to_compute();
-  const _SIZE_ lsize = tableau.line_size();
-  for (_SIZE_ j = 0; j < lsize; j++) max_colonne[j] = 0;
+  const TRUSTArray<int>& blocs = tableau.get_md_vector()->get_items_to_compute();
+  const int lsize = tableau.line_size();
+  for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
 
   bool kernelOnDevice = tableau.isDataOnDevice();
 
   if (kernelOnDevice)
-    {
-      local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
-    }
+    local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
   else
-    {
-      local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
-
-    }
+    local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
 }
-template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
-template void local_carre_norme_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
-template void local_max_abs_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& max_colonne);
-template void local_max_abs_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& max_colonne);
+template void local_carre_norme_tab<double>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
+template void local_carre_norme_tab<float>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
+template void local_max_abs_tab<double>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& max_colonne);
+template void local_max_abs_tab<float>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& max_colonne);

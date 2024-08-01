@@ -27,6 +27,7 @@
 #include <communications.h>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_std.h>
+#include <MD_Vector_seq.h>
 #include <unistd.h> // PGI
 #include <Poly_geom_base.h>
 #include <Entree_Brute.h>
@@ -1157,6 +1158,9 @@ static void calculer_espace_distant_item(Domaine& le_dom,
                                          const int nb_items_reels,
                                          const ArrOfInt& items_lies)
 {
+  if(Process::is_sequential())
+    return;
+
   const Joints& joints                 = le_dom.faces_joint();
   const int   nb_joints              = joints.size();
   const int   nproc                  = Process::nproc();
@@ -1349,6 +1353,13 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
  */
 void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const JOINT_ITEM type_item, MD_Vector& md_vector)
 {
+  if(Process::is_sequential())
+    {
+      MD_Vector_seq mdseq(nb_items_reels);
+      md_vector.copy(mdseq);
+      return;
+    }
+
   const Joints& joints  = dom.faces_joint();
   const int nb_joints = joints.size();
 
@@ -1707,6 +1718,16 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
                                                    IntTab& tableau,
                                                    const int error_is_fatal)
 {
+  if(Process::is_sequential())
+    {
+      // MD_Vector is a MD_Vector_seq:
+      assert( dynamic_cast<const MD_Vector_seq *>(&md_indice.valeur()) != nullptr);
+      // The array should still get its (dummy sequential) MD_Vector, otherwise it will remain null.
+      if (!(tableau.get_md_vector() == md_indice))
+        tableau.set_md_vector(md_indice);
+      return;
+    }
+
   if (tableau.dimension_tot(0) != md_indice->get_nb_items_reels()
       && (tableau.dimension_tot(0) != md_indice->get_nb_items_tot()))
     {
@@ -2784,20 +2805,6 @@ void Scatter::construire_correspondance_aretes_par_coordonnees(Domaine_VF& zvf)
   construire_correspondance_items_par_coordonnees(zvf.domaine().faces_joint(), JOINT_ITEM::ARETE, zvf.xa());
 }
 
-static void init_simple_md_vector(MD_Vector_std& md, const int n)
-{
-  md.nb_items_tot_ = n;
-  md.nb_items_reels_ = n;
-  md.nb_items_seq_tot_ = n;
-  md.nb_items_seq_local_ = n;
-  md.blocs_items_to_sum_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  md.blocs_items_to_sum_[0] = 0;
-  md.blocs_items_to_sum_[1] = n;
-  md.blocs_items_to_compute_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  md.blocs_items_to_compute_[0] = 0;
-  md.blocs_items_to_compute_[1] = n;
-}
-
 /*! @brief Pour un item geometrique "type_item", remplit le champ nb_items_virtuels_ des joints en fonction du nombre d'items distants :
  *
  *   Le nombre d'items virtuels sur un joint i du processeur j est le
@@ -2840,22 +2847,22 @@ void Scatter::calculer_nb_items_virtuels(Joints& joints,
   schema_comm.end_comm();
 }
 
-/*! @brief cree des descripteurs sequentiels pour les tableaux sommets et elements du domaine (necessaire car Scatter n'est
- *  pas appele pour les domaines en sequentiel)
+/*! @brief Create parallel descriptors for the vertex and element arrays of the domain (necessary because Scatter is
+ *  never invoked in sequential).
+ *
+ *  In 64bit the corresponding number of items might be big. This is here the main justification for the need of the class
+ *  MD_Vector_seq which unique useful argument is the total number of items (with type trustIdType).
+ *  Alternative would have been to make all members of MD_Vector_std compatible with trustIdType ...
  */
 template <typename _SIZE_>
 void Scatter::init_sequential_domain(Domaine_32_64<_SIZE_>& dom)
 {
-  MD_Vector_std mdstd;
+  MD_Vector_seq mdseq_som(dom.les_sommets().dimension(0));
   MD_Vector md;
-  const int nbsom = dom.nb_som();
-  init_simple_md_vector(mdstd, nbsom);
-  md.copy(mdstd);
+  md.copy(mdseq_som);
   dom.les_sommets().set_md_vector(md);
-
-  const int nb_elem = dom.nb_elem();
-  init_simple_md_vector(mdstd, nb_elem);
-  md.copy(mdstd);
+  MD_Vector_seq mdseq_elem(dom.les_elems().dimension(0));
+  md.copy(mdseq_elem);
   dom.les_elems().set_md_vector(md);
 }
 

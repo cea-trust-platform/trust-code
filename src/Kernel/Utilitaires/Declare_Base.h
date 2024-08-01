@@ -43,6 +43,12 @@
   ~_TYPE_();                                                    \
   Declare_base_sans_constructeur_ni_destructeur(_TYPE_)
 
+#define Declare_base(_TYPE_)                                \
+  public:                                                \
+  _TYPE_();                                                \
+  ~_TYPE_();                                                \
+  Declare_base_sans_constructeur_ni_destructeur(_TYPE_)
+
 #define Implemente_base_sans_constructeur_ni_destructeur(_TYPE_,_NOM_,_BASE_)
 
 #else

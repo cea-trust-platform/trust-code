@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,46 +18,52 @@
 
 #include <limits>
 
-template <typename _SIZE_>
-inline void local_carre_norme_tab(const TRUSTTab<int,_SIZE_>& , TRUSTArray<int,_SIZE_>& ) = delete;
+// NB: all those methods are never used on big (64b) arrays, so the size type is always 'int'.
 
-template <typename _T_, typename _SIZE_>
-extern void local_carre_norme_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& norme_colonne);
+template <typename _T_>
+void local_carre_norme_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>& norme_colonne);
 
-template <typename _SIZE_>
-inline void mp_carre_norme_tab(const TRUSTTab<int,_SIZE_>& , TRUSTArray<int,_SIZE_>& ) = delete;
+template <>
+inline void local_carre_norme_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;
 
-template <typename _T_, typename _SIZE_>
-inline void mp_carre_norme_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& norme_colonne)
+
+template <typename _T_>
+inline void mp_carre_norme_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>& norme_colonne)
 {
   local_carre_norme_tab(tableau, norme_colonne);
   mp_sum_for_each_item(norme_colonne);
 }
 
-template <typename _SIZE_>
-inline void mp_norme_tab(const TRUSTTab<int,_SIZE_>& , TRUSTArray<int,_SIZE_>& ) = delete;
+template <>
+inline void mp_carre_norme_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;
 
-template <typename _T_, typename _SIZE_>
-inline void mp_norme_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& norme_colonne)
+
+template <typename _T_>
+inline void mp_norme_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>& norme_colonne)
 {
   mp_carre_norme_tab(tableau,norme_colonne);
-  for (_SIZE_ c=0; c<norme_colonne.size_array(); c++) norme_colonne[c] = sqrt(norme_colonne[c]);
+  for (int c=0; c<norme_colonne.size_array(); c++) norme_colonne[c] = sqrt(norme_colonne[c]);
 }
 
-template <typename _SIZE_>
-inline void local_max_abs_tab(const TRUSTTab<int,_SIZE_>& , TRUSTArray<int,_SIZE_>& ) = delete;
+template <>
+inline void mp_norme_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;
 
-template <typename _T_, typename _SIZE_>
-extern void local_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& max_colonne);
 
-template <typename _SIZE_>
-inline void mp_max_abs_tab(const TRUSTTab<int,_SIZE_>& , TRUSTArray<int,_SIZE_>& ) = delete;
+template <typename _T_>
+void local_max_abs_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>& max_colonne);
 
-template <typename _T_, typename _SIZE_>
-inline void mp_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE_>& max_colonne)
+template <>
+inline void local_max_abs_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;
+
+
+template <typename _T_>
+inline void mp_max_abs_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>& max_colonne)
 {
   local_max_abs_tab(tableau, max_colonne);
   mp_max_for_each_item(max_colonne);
 }
+
+template <>
+inline void mp_max_abs_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;
 
 #endif /* TRUSTTab_tools_TPP_included */

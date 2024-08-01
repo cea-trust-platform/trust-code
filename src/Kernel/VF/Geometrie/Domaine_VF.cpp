@@ -316,6 +316,10 @@ void Domaine_VF::discretiser()
 
     ledomaine.init_faces_virt_bord(md_vector_faces_, md_vector_faces_front_);
 
+    // Assignation de face_voisins et face_sommets
+    face_voisins().ref(les_faces.voisins());
+    face_sommets().ref(les_faces.les_sommets());
+
     // Calcul des surfaces:
     les_faces.calculer_surfaces(face_surfaces_);
     // Calcul de la surface des faces virtuelles
@@ -326,9 +330,6 @@ void Domaine_VF::discretiser()
 
     // Changement a la v1.5.7 beta: xv_ a maintenant un descripteur parallele: dimension(0)=nb_faces
     les_faces.calculer_centres_gravite(xv_);
-
-    face_voisins().ref(les_faces.voisins());
-    face_sommets().ref(les_faces.les_sommets());
 
     // Calcul des volumes
     ledomaine.calculer_volumes(volumes_, inverse_volumes_);

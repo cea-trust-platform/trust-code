@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,7 +160,7 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Domaine& domaine)
 
   // Sert a calculer le nombre de sommet commun en parallele
   ArrOfBit unused;
-  int nb_som = MD_Vector_tools::get_sequential_items_flags(domaine.les_sommets().get_md_vector(), unused);
+  int nb_som = domaine.les_sommets().get_md_vector()->get_sequential_items_flags(unused);
   // Somme sur tous les processeurs
   nb_som = mp_sum(nb_som);
 
