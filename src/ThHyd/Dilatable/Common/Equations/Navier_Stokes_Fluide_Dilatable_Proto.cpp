@@ -40,15 +40,14 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTa
   const int n = vit.dimension(0), ncomp = vit.line_size();
   CDoubleTabView tab_rho_v = tab_rho.view_ro();
   CDoubleTabView vit_v = vit.view_ro();
-  DoubleTabView rhovitesse_v = rhovitesse.view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl", n, KOKKOS_LAMBDA(
+  DoubleTabView rhovitesse_v = rhovitesse.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(
                          const int i)
   {
     for (int j=0 ; j<ncomp ; j++)
       rhovitesse_v(i, j) = tab_rho_v(i, 0) * vit_v(i, j);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   rhovitesse.echange_espace_virtuel();
   Debog::verifier("Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse : ", rhovitesse);
@@ -59,11 +58,10 @@ int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn
 {
   const Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.fluide());
   const DoubleTab& vit = eqn.vitesse().valeurs(), rho = fluide_dil.rho_face_np1();
-  DoubleTab mass_flux(vit);
+  DoubleTrav mass_flux(vit);
   rho_vitesse_impl(rho,vit,mass_flux);
 
-  DoubleTab array;
-  array.copy(eqn.div().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT); // init structure uniquement
+  DoubleTrav array(eqn.div().valeurs());
   if (tab_W.get_md_vector().non_nul())
     {
       operator_egal(array, tab_W ); //, VECT_REAL_ITEMS); // initialise
@@ -122,8 +120,9 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
 {
   const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());
   DoubleTab& press = eqn.pression().valeurs(), vit = eqn.vitesse().valeurs();
-  DoubleTab secmem(press);
+  DoubleTrav secmem(press);
   DoubleTrav inc_pre(press);
+  DoubleTrav rhoU(vit);
 
   if (!tab_W.get_md_vector().non_nul())
     {
@@ -131,9 +130,6 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
       // initialisation sinon plantage assert lors du remplissage dans EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B
       tab_W = 0.;
     }
-
-  DoubleTab rhoU;
-  rhoU.copy(vit, RESIZE_OPTIONS::NOCOPY_NOINIT); // copie la structure
 
   // Get champ gradP
   REF(Champ_base) gradient_pression;
@@ -409,20 +405,20 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       CDoubleTabView tab_rho_face_n_v = tab_rho_face_n.view_ro();
       CDoubleTabView tab_rho_face_np1_v = tab_rho_face_np1.view_ro();
       DoubleTabView dr_v = dr.view_rw();
-      start_gpu_timer();
-      Kokkos::parallel_for("Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star", dr.size_totale(),
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), dr.size_totale(),
                            KOKKOS_LAMBDA(
                              const int i)
       {
         dr_v(i, 0) = (tab_rho_face_n_v(i, 0) / tab_rho_face_np1_v(i, 0) - 1.) / dt;
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
       // on sert de vpoint pour calculer
       rho_vitesse_impl(dr,vit,vpoint);
       secmemV += vpoint;
 
-      DoubleTab delta_u(eqn.inconnue().futur());
+      DoubleTrav delta_u(eqn.inconnue().futur());
+      delta_u = eqn.inconnue().futur();
       eqn.Gradient_conjugue_diff_impl(secmemV, delta_u ) ;
 
       /*
@@ -514,8 +510,8 @@ void Navier_Stokes_Fluide_Dilatable_Proto::solve_pressure_increment(Navier_Stoke
 
   // Add source term to vpoint if interfaces
   Probleme_base& prob=eqn.probleme();
-  DoubleTrav vpoint0(vpoint) ;
-  vpoint0 = vpoint ;
+  DoubleTrav vpoint0(vpoint);
+  vpoint0 = vpoint;
   for (int i=0; i<prob.nombre_d_equations(); i++)
     if (sub_type(Transport_Interfaces_base,prob.equation(i)))
       {
