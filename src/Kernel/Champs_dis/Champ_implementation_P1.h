@@ -76,7 +76,7 @@ KOKKOS_INLINE_FUNCTION double coord_barycentrique_P1_triangle(CIntTabView polys,
         som0 = -1;
         som1 = -1;
         som2 = -1;
-#ifndef NO_HIP
+#ifdef KOKKOS
         Kokkos::abort("A triangle does not have correct nodes in Champ_P1::coord_barycentrique.");
 #else
         Process::exit("A triangle does not have correct nodes in Champ_P1::coord_barycentrique.");
@@ -133,7 +133,7 @@ KOKKOS_INLINE_FUNCTION double coord_barycentrique_P1_tetraedre(CIntTabView polys
         som1 = -1;
         som2 = -1;
         som3 = -1;
-#ifndef NO_HIP
+#ifdef KOKKOS
         Kokkos::abort("Error in Champ_P1::coord_barycentrique : A tetrahedron does not have correct nodes ");
 #else
         Process::exit("Error in Champ_P1::coord_barycentrique : A tetrahedron does not have correct nodes ");
