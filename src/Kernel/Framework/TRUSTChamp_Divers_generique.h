@@ -85,6 +85,7 @@ public:
         bool kernelOnDevice = tab_valeurs.checkDataOnDevice();
         if (kernelOnDevice)
           {
+#ifdef KOKKOS
             CDoubleTabView valeurs = valeurs_.view_ro();
             DoubleTabView tab_valeurs_v = tab_valeurs.view_rw();
             Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {size, nb_comp }),
@@ -92,6 +93,7 @@ public:
             {
               tab_valeurs_v(i, j) = valeurs(0, j);
             });
+#endif
           }
         else
           {
@@ -124,6 +126,7 @@ public:
         bool kernelOnDevice = tab_valeurs.checkDataOnDevice();
         if (kernelOnDevice)
           {
+#ifdef KOKKOS
             CDoubleTabView valeurs = valeurs_.view_ro();
             DoubleTabView tab_valeurs_v = tab_valeurs.view_rw();
             Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {size, nb_comp}),
@@ -131,6 +134,7 @@ public:
             {
               tab_valeurs_v(i, j) = valeurs(0, j);
             });
+#endif
           }
         else
           {

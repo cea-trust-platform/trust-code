@@ -702,7 +702,7 @@ case $arch in
 	if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
 	then
 	   TRUST_CC_BASE="crayCC   amdclang++ "$TRUST_CC_BASE
-	   TRUST_F77_BASE="crayftn amdflang   "$TRUST_F77_BASE
+	   TRUST_F77_BASE="crayftn flang   "$TRUST_F77_BASE
 	   TRUST_cc_BASE="craycc   amdclang   "$TRUST_cc_BASE
 	fi
 
@@ -1351,14 +1351,14 @@ then
       if [ "$TRUST_USE_CUDA" = 1 ]
       then
          export TRUST_FORCE_PROVIDED_OPENMPI=1 # OpenMPI Cuda-Aware by default on PC
-      else   
+      else
          if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
          then
             export TRUST_FORCE_LATEST_MPICH=1
          else
             export TRUST_FORCE_PROVIDED_MPICH=1
          fi
-      fi   
+      fi
    fi
 fi
 COMLIBS=""
@@ -1923,6 +1923,7 @@ case $TRUST_ARCH_CC in
         F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
+        [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS="-lgfortran"
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
