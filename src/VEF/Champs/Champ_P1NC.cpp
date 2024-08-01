@@ -76,38 +76,36 @@ DoubleTab& Champ_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double 
   return Champ_P1NC_implementation::trace(fr, valeurs(tps), x, distant);
 }
 
-void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
+void Champ_P1NC::cal_rot_ordre1(DoubleTab& tab_vorticite) const
 {
   const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
-  DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
-
-  gradient_elem = 0.;
-  vorticite = 0;
-  gradient(gradient_elem);
-  int num_elem;
-  ToDo_Kokkos("critical");
+  DoubleTrav tab_gradient_elem(nb_elem_tot, dimension, dimension);
+  gradient(tab_gradient_elem);
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
   switch(dimension)
     {
     case 2:
       {
-        for (num_elem = 0; num_elem < nb_elem; num_elem++)
-          {
-            vorticite(num_elem) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
-          }
+        DoubleArrView vorticite = static_cast<DoubleVect&>(tab_vorticite).view_wo();
+        Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int num_elem)
+        {
+          vorticite(num_elem) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
+        });
       }
       break;
     case 3:
       {
-        for (num_elem = 0; num_elem < nb_elem; num_elem++)
-          {
-            vorticite(num_elem, 0) = gradient_elem(num_elem, 2, 1) - gradient_elem(num_elem, 1, 2);
-            vorticite(num_elem, 1) = gradient_elem(num_elem, 0, 2) - gradient_elem(num_elem, 2, 0);
-            vorticite(num_elem, 2) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
-          }
+        DoubleTabView vorticite = tab_vorticite.view_wo();
+        Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int num_elem)
+        {
+          vorticite(num_elem, 0) = gradient_elem(num_elem, 2, 1) - gradient_elem(num_elem, 1, 2);
+          vorticite(num_elem, 1) = gradient_elem(num_elem, 0, 2) - gradient_elem(num_elem, 2, 0);
+          vorticite(num_elem, 2) = gradient_elem(num_elem, 1, 0) - gradient_elem(num_elem, 0, 1);
+        });
       }
     }
-
-  vorticite.echange_espace_virtuel();
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  tab_vorticite.echange_espace_virtuel();
   return;
 }
 
