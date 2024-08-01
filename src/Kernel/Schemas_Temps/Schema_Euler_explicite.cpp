@@ -35,7 +35,12 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
-  // On tourne la roue pour que les operateurs utilisent les champs au temps futur
+  // At this point, the inconnue() is in the following state:
+  //   present(): holds the current value, but updates for the BC have already been done (line just above)
+  //   future(): holds the present value, unmodified yet (this was initialized by initTimeStep() which set all the 'future' slots
+  //             of the unknown to the 'present' value).
+  // So we turn the wheel to get an unmodified version of 'present' for the derivee_en_temps_inco() computation (full explicit scheme):
+  // (commenting those lines will trigger failure for cases with variable BC)
   eqn.inconnue().avancer();
   eqn.derivee_en_temps_inco(dudt);
   eqn.inconnue().reculer();
