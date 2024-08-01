@@ -539,7 +539,7 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
     {
       const Joint& joint = joints[i_joint];
       const int PEvoisin = joint.PEvoisin();
-      const Joint_Items& joint_item = joint.joint_item(Joint::SOMMET);
+      const Joint_Items& joint_item = joint.joint_item(JOINT_ITEM::SOMMET);
       const ArrOfInt& sommets_communs = joint_item.items_communs();
 
       // Tableaux temporaires

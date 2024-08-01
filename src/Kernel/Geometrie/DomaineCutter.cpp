@@ -485,7 +485,7 @@ static void ajouter_joints(Domaine& domaine, const ArrOfInt& voisins, const int 
           joint.affecte_PEvoisin(pe);
           // Ces joints n'auront pas de sommets communs. Met le flag
           // d'initialisation a 1.
-          joint.set_joint_item(Joint::SOMMET).set_items_communs();
+          joint.set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
         }
     }
 }
@@ -575,7 +575,7 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
 
 /*! @brief calcul et remplissage de domaine_partie.
  *
- * joint(i).set_joint_item(Joint::ELEMENT).set_items_distants()
+ * joint(i).set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants()
  *    (liste des elements distants).
  *    Eventuellement, de nouveaux joints sont crees.
  *  Historique: methode codee en janvier 2006 par B.Mathieu. Je croyais que c'etait
@@ -608,7 +608,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
     const int nb_joints = domaine_partie.nb_joints();
     for (int i_joint = 0; i_joint < nb_joints; i_joint++)
       {
-        const ArrOfInt& sommets = domaine_partie.joint(i_joint).joint_item(Joint::SOMMET).items_communs();
+        const ArrOfInt& sommets = domaine_partie.joint(i_joint).joint_item(JOINT_ITEM::SOMMET).items_communs();
         const int n = sommets.size_array();
         for (int i = 0; i < n; i++)
           {
@@ -695,7 +695,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
       elements_distants.ordonne_array();
       // Stocker la liste des elements distants dans le joint
       Joint&     joint = domaine_partie.joint_of_pe(partie_voisine);
-      joint.set_joint_item(Joint::ELEMENT).set_items_distants() = elements_distants;
+      joint.set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants() = elements_distants;
     }
 }
 
@@ -782,7 +782,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
           joint.affecte_epaisseur(epaisseur_joint_);
           joint.associer_domaine(domaine_partie);
           joint.affecte_PEvoisin(PEvoisin);
-          ArrOfInt& sommets_locaux = joint.set_joint_item(Joint::SOMMET).set_items_communs();
+          ArrOfInt& sommets_locaux = joint.set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
           sommets_locaux.resize_array(nb_sommets2);
           // Remplissage du tableau (transformation en indice local de sommet)
           for (int i = 0; i < nb_sommets2; i++)
@@ -832,7 +832,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     for (i_joint = 0; i_joint < nb_joints; i_joint++)
       {
         const Joint& joint = joints_partie[i_joint];
-        const ArrOfInt& sommets_du_joint = joint.joint_item(Joint::SOMMET).items_communs();
+        const ArrOfInt& sommets_du_joint = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
         const int n = sommets_du_joint.size_array();
         int i;
         for (i = 0; i < n; i++)
@@ -1237,7 +1237,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
       for (int ij = 0; ij < sous_domain.nb_joints(); ij++)
         {
           Joint& joint = sous_domain.joint(ij);
-          joint.set_joint_item(Joint::ELEMENT).set_items_distants();
+          joint.set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
         }
     }
   Scatter::trier_les_joints(sous_domain.faces_joint());
@@ -1516,11 +1516,11 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                 const Joint& joint = joints[i];
                 const int pe = joint.PEvoisin();
                 Neighbours[i_part][i] = pe;
-                const int nbsom = joint.joint_item(Joint::SOMMET).items_communs().size_array();
+                const int nbsom = joint.joint_item(JOINT_ITEM::SOMMET).items_communs().size_array();
                 nbsom_total+=nbsom;
                 const int nbfaces = joint.nb_faces();
                 nbfaces_total+=nbfaces;
-                const int nbelemdist = joint.joint_item(Joint::ELEMENT).items_distants().size_array();
+                const int nbelemdist = joint.joint_item(JOINT_ITEM::ELEMENT).items_distants().size_array();
                 nbelemdist_total+=nbelemdist;
                 // Beurk: snprintf pas beau et dangereux, mais c'est plus simple...
                 assert(sizeof(int)==sizeof(int));

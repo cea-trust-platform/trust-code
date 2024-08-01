@@ -455,7 +455,7 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
             joint.affecte_epaisseur(epaisseur_joint);
             joint.affecte_PEvoisin(pe);
             joint.faces().typer(domaine.type_elem()->type_face());
-            ArrOfInt& sommets_joint = joint.set_joint_item(Joint::SOMMET).set_items_communs();
+            ArrOfInt& sommets_joint = joint.set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
             sommets_joint.resize_array(n, RESIZE_OPTIONS::NOCOPY_NOINIT);
             for (i = 0; i < n; i++)
               sommets_joint[i] = boundary_nodes_index[list[i]];
@@ -837,7 +837,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       statistiques().begin_count(stats);
 
       Scatter::construire_correspondance_sommets_par_coordonnees(domaine);
-      Scatter::calculer_renum_items_communs(domaine.faces_joint(), Joint::SOMMET);
+      Scatter::calculer_renum_items_communs(domaine.faces_joint(), JOINT_ITEM::SOMMET);
 
       statistiques().end_count(stats);
       maxtime = mp_max(statistiques().last_time(stats));

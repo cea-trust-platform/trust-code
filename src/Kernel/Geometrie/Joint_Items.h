@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,8 @@
 #include <TRUSTTab.h>
 
 /*! @brief Joint_Items contient les informations de distribution parallele d'un item geometrique particulier avec un domaine
- *
  *     voisin particulier (item = sommet, element, face, etc..)
+ *
  *     Ces structures sont initialisees dans Scatter.
  *     Elles sont ensuite utilisees par exemple pour creer
  *     un tableau distribue indexe par les indices des items
@@ -28,27 +28,32 @@
  *
  * @sa class Joint
  */
-
-class Joint_Items
+template <typename _SIZE_>
+class Joint_Items_32_64
 {
 public:
-  Joint_Items();
+
+  using int_t = _SIZE_;
+  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using IntTab_t = ITab_T<_SIZE_>;
+
+  Joint_Items_32_64();
   void reset();
 
   // Pour utiliser ces accesseurs, il faut avoir initialise
   // les structures au prealable avec set_xxx.
   int nb_items_reels() const;
-  const ArrOfInt& items_communs() const;
-  const ArrOfInt& items_distants() const;
+  const ArrOfInt_t& items_communs() const {  return items_communs_; }
+  const ArrOfInt_t& items_distants() const;
   int nb_items_virtuels() const;
-  const IntTab& renum_items_communs() const;
+  const IntTab_t& renum_items_communs() const;
 
   // Methodes d'initialisation des structures
   void set_nb_items_reels(int n);
-  ArrOfInt& set_items_communs();
-  ArrOfInt& set_items_distants();
+  ArrOfInt_t& set_items_communs();
+  ArrOfInt_t& set_items_distants();
   void set_nb_items_virtuels(int n);
-  IntTab& set_renum_items_communs();
+  IntTab_t& set_renum_items_communs();
 
 private:
   // Nombre d'items reels (permet de construire un tableau distribue)
@@ -59,12 +64,12 @@ private:
   // classee dans le meme ordre sur le domaine locale et sur le domaine
   // voisine => items_communs[i] sur joint_j de domaine_k represente la meme
   // entite geometrique que items_communs[i] sur joint_k de domaine_j)
-  ArrOfInt items_communs_;
+  ArrOfInt_t items_communs_;
 
   // Liste des items distants a envoyer au domaine voisine
   // (l'ordre des items dans cette liste determine l'ordre d'apparition
   // de ces items dans l'espace virtuel du voisin)
-  ArrOfInt items_distants_;
+  ArrOfInt_t items_distants_;
 
   // Nombre d'items virtuels recus du domaine voisine.
   //  on a "nb_items_virtuels_ sur joint_j de domaine_k"
@@ -77,9 +82,13 @@ private:
   // colonne 1 = indice sur le domaine locale
   // dimension(0) est egal a items_communs.size_array()
   // L'ordre des items dans le tableau n'est pas specifie
-  IntTab renum_items_communs_;
+  IntTab_t renum_items_communs_;
 
   // Qu'est ce qui a ete initialise ?
   int flags_init_;
 };
+
+using Joint_Items = Joint_Items_32_64<int>;
+using Joint_Items_64 = Joint_Items_32_64<trustIdType>;
+
 #endif

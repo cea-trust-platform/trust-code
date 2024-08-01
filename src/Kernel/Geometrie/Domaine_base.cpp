@@ -78,47 +78,4 @@ Entree& Domaine_base::lire_bords_a_imprimer_sum(Entree& is)
 }
 
 
-/*! @brief Concatene les joints de meme nom
- *
- */
-int Domaine_base::comprimer_joints()
-{
-  auto& list = mes_faces_joint_.get_stl_list();
-  for (auto it = list.begin(); it != list.end(); ++it)
-    {
-      Frontiere& front = *it;
-      for (auto it2 = std::next(it); it2 != list.end();)
-        {
-          Frontiere& front2 = *it2;
-          if (front.le_nom() == front2.le_nom())
-            {
-              front.add(front2);
-              it2 = list.erase(it2);
-            }
-          else
-            ++it2;
-        }
-    }
-  return 1;
-}
-
-/*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints
- *
- * Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
- * numero e devient l'element de numero e+elem_offset
- *
- * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
- */
-void Domaine_base::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset)
-{
-  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
-    {
-      ArrOfInt& sommets_communs = mes_faces_joint_[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
-      for (int index = 0; index < sommets_communs.size_array(); index++)
-        sommets_communs[index] = Les_Nums[sommets_communs[index]];
-
-      ArrOfInt& elements_distants = mes_faces_joint_[i_joint].set_joint_item(Joint::ELEMENT).set_items_distants();
-      elements_distants += elem_offset;
-    }
-}
 

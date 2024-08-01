@@ -85,10 +85,10 @@ public:
   using Groupe_Faces_t = Groupe_Faces_32_64<_SIZE_>;
   using Groupes_Faces_t = Groupes_Faces_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
-//  using Joint_t = Joint_32_64<_SIZE_>;
-//  using Joints_t = Joints_32_64<_SIZE_>;
   using Raccord_t = Raccord_32_64<_SIZE_>;
   using Raccords_t = Raccords_32_64<_SIZE_>;
+  using Joint_t = Joint_32_64<_SIZE_>;
+  using Joints_t = Joints_32_64<_SIZE_>;
 
   //
   // General
@@ -246,6 +246,24 @@ public:
   inline Raccords_t& faces_raccord() { return mes_faces_raccord_; }
   inline const Raccords_t& faces_raccord() const { return mes_faces_raccord_; }
 
+  ///
+  /// Joints
+  ///
+  inline int nb_joints() const { return mes_faces_joint_.nb_joints(); }
+
+  inline Joint_t& joint(int i) {   return mes_faces_joint_(i); }
+  inline const Joint_t& joint(int i) const { return mes_faces_joint_(i); }
+  inline Joint_t& joint(const Nom& nom) {  return mes_faces_joint_(nom); }
+  inline const Joint_t& joint(const Nom& nom) const {   return mes_faces_joint_(nom); }
+  inline Joints_t& faces_joint() { return mes_faces_joint_; }
+  inline const Joints_t& faces_joint() const {  return mes_faces_joint_; }
+
+  inline Joint_t& joint_of_pe(int);
+  inline const Joint_t& joint_of_pe(int) const;
+  int comprimer_joints();
+
+  void renum_joint_common_items(const IntVect_t& nums, const int_t elem_offset);
+
 
   ///
   /// Periodicity
@@ -392,6 +410,9 @@ protected:
   Bords_Internes_t mes_bords_int_;
   // Groupes_Faces representent les groupes de faces lues dans les fichiers d'entrees
   Groupes_Faces_t mes_groupes_faces_;
+  // Les faces de joint sont les faces communes avec les autres processeurs (bords
+  //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
+  Joints_t mes_faces_joint_;
 
   LIST(REF(Domaine_32_64)) domaines_frontieres_;
 
@@ -554,6 +575,26 @@ inline typename Domaine_32_64<_SIZE_>::Frontiere_t& Domaine_32_64<_SIZE_>::front
   assert(0);
   Process::exit();
   return frontiere(i);
+}
+
+template<typename _SIZE_>
+inline const typename Domaine_32_64<_SIZE_>::Joint_t& Domaine_32_64<_SIZE_>::joint_of_pe(int pe) const
+{
+  int i;
+  for(i=0; i<nb_joints(); i++)
+    if(mes_faces_joint_(i).PEvoisin()==pe)
+      break;
+  return mes_faces_joint_(i);
+}
+
+template<typename _SIZE_>
+inline typename Domaine_32_64<_SIZE_>::Joint_t& Domaine_32_64<_SIZE_>::joint_of_pe(int pe)
+{
+  int i;
+  for(i=0; i<nb_joints(); i++)
+    if(mes_faces_joint_(i).PEvoisin()==pe)
+      break;
+  return mes_faces_joint_(i);
 }
 
 

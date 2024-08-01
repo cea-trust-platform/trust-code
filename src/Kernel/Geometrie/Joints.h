@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,18 +23,28 @@
  *
  * @sa Joint
  */
-
-class Joints : public LIST(Joint)
+template <typename _SIZE_>
+class Joints_32_64 : public LIST(Joint_32_64<_SIZE_>)
 {
-  Declare_instanciable(Joints);
+  Declare_instanciable_32_64(Joints_32_64);
 
 public :
-  void associer_domaine(const Domaine&);
-  int nb_faces() const;
-  int nb_faces(Type_Face type) const;
-  int nb_joints() const;
+
+  using int_t = _SIZE_;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Joint_t = Joint_32_64<_SIZE_>;
+
+  void associer_domaine(const Domaine_t&);
+  int_t nb_faces() const;
+  int_t nb_faces(Type_Face type) const;
+  int nb_joints() const { return this->size(); }
   void comprimer();
-  Joint& joint_PE(int pe);
+  Joint_t& joint_PE(int pe);
 };
+
+
+using Joints = Joints_32_64<int>;
+using Joints_64 = Joints_32_64<trustIdType>;
+
 
 #endif /* Joints_included */

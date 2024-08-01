@@ -94,7 +94,7 @@ void dump_lata(const Domaine& dom)
   DoubleTab data(dom.nb_elem());
   for(int ij = 0; ij < nb_joints; ij++)
     {
-      const ArrOfInt& t1 = dom.joint(ij).joint_item(Joint::ELEMENT).items_distants();
+      const ArrOfInt& t1 = dom.joint(ij).joint_item(JOINT_ITEM::ELEMENT).items_distants();
       data = 0.;
       const int nt1 = t1.size_array();
       for (int i = 0; i < nt1; i++) data[t1[i]] += 1;
@@ -219,7 +219,7 @@ Entree& Scatter::interpreter(Entree& is)
 
   barrier();
   Cerr << "Calculation of renum_items_communs for the nodes" << finl;
-  calculer_renum_items_communs(dom.faces_joint(), Joint::SOMMET);
+  calculer_renum_items_communs(dom.faces_joint(), JOINT_ITEM::SOMMET);
 
   // Pas encore code: on verifie que les sommets communs ont des coordonnees identiques
   // sur tous les processeurs.
@@ -309,7 +309,7 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
       const Joint& joint     = joints[i_joint];
-      const ArrOfInt& items_communs = joint.joint_item(Joint::SOMMET).items_communs();
+      const ArrOfInt& items_communs = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
       const int nb_items_communs = items_communs.size_array();
 
       DoubleTab&   coord   = coord_items_locaux[i_joint];
@@ -363,8 +363,8 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
           const int neighbourDomaineWasMerged = mergedDomaines[pe_voisin];
           if(neighbourDomaineWasMerged && pe_voisin>moi)
             continue;
-          ArrOfInt& items_communs = dom.faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
-          const ArrOfInt old_items_communs = joints[i_joint].joint_item(Joint::SOMMET).items_communs();
+          ArrOfInt& items_communs = dom.faces_joint()[i_joint].set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
+          const ArrOfInt old_items_communs = joints[i_joint].joint_item(JOINT_ITEM::SOMMET).items_communs();
           const int     nb_items      = items_communs.size_array();
           const DoubleTab& coord_voisin = coord_items_distants[i_joint];
           const DoubleTab& my_coord = coord_items_locaux[i_joint];
@@ -446,15 +446,15 @@ void Scatter::read_domain_no_comm(Entree& fic)
           while(joint_to_add.PEvoisin() != dom.faces_joint()[my_joint_index].PEvoisin())
             my_joint_index++;
 
-          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(Joint::SOMMET).items_communs();
-          ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(Joint::SOMMET).set_items_communs();
+          const ArrOfInt& sommets_to_add = joint_to_add.joint_item(JOINT_ITEM::SOMMET).items_communs();
+          ArrOfInt& items_communs = dom.faces_joint()[my_joint_index].set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
 
           for(int index=0; index<sommets_to_add.size_array(); index++)
             items_communs.append_array(sommets_to_add[index]); // sommets_to_add is already renumbered with 'nums' - see call to renum_joint_common_items above
           items_communs.array_trier_retirer_doublons();
 
-          const ArrOfInt& elements_to_add = joint_to_add.joint_item(Joint::ELEMENT).items_distants();
-          ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(Joint::ELEMENT).set_items_distants();
+          const ArrOfInt& elements_to_add = joint_to_add.joint_item(JOINT_ITEM::ELEMENT).items_distants();
+          ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
 
           for(int index=0; index<elements_to_add.size_array(); index++)
             items_distants.append_array(elements_to_add[index]); // idem
@@ -681,7 +681,7 @@ void Scatter::construire_structures_paralleles(Domaine& dom, const Noms& liste_b
   if (liste_bords_periodiques.size() > 0)
     corriger_espace_distant_elements_perio(dom, liste_bords_periodiques);
 
-  calculer_nb_items_virtuels(dom.faces_joint(), Joint::ELEMENT);
+  calculer_nb_items_virtuels(dom.faces_joint(), JOINT_ITEM::ELEMENT);
 
   // Determination des sommets distants en fonction des elements distants
   calculer_espace_distant_sommets(dom, liste_bords_periodiques);
@@ -691,8 +691,8 @@ void Scatter::construire_structures_paralleles(Domaine& dom, const Noms& liste_b
   DoubleTab& sommets = dom.les_sommets();
   IntTab& elements = dom.les_elems();
   MD_Vector md_sommets, md_elements;
-  construire_md_vector(dom, sommets.dimension(0), Joint::SOMMET, md_sommets);
-  construire_md_vector(dom, elements.dimension(0), Joint::ELEMENT, md_elements);
+  construire_md_vector(dom, sommets.dimension(0), JOINT_ITEM::SOMMET, md_sommets);
+  construire_md_vector(dom, elements.dimension(0), JOINT_ITEM::ELEMENT, md_elements);
   MD_Vector_tools::creer_tableau_distribue(md_sommets, sommets);
   sommets.echange_espace_virtuel();
   construire_espace_virtuel_traduction(md_elements /* type index */,
@@ -729,11 +729,11 @@ void Scatter::trier_les_joints(Joints& joints)
     }
 }
 
-
+namespace {
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
- *
+ * TODO SHOULD MERGE WITH Array_tools.cpp
  */
-static void array_trier_retirer_doublons(ArrOfInt& array)
+void array_trier_retirer_doublons(ArrOfInt& array)
 {
   const int size_ = array.size_array();
   if (size_ == 0)
@@ -763,7 +763,7 @@ static void array_trier_retirer_doublons(ArrOfInt& array)
  *    En sortie sorted_array=[1,4,12]
  *
  */
-static void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list)
+void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list)
 {
   int i_read;      // Index dans sorted_array (en lecture)
   int i_write = 0; // Index dans sorted_array (la ou on ecrit)
@@ -801,7 +801,7 @@ static void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorte
   sorted_array.resize_array(i_write);
 }
 
-
+} // End anonymous NS
 
 // Si un joint avec le "pe" existe, renvoie son indice,
 // sion cree un nouveau joint et renvoie son indice.
@@ -830,29 +830,29 @@ static int ajouter_joint(Domaine& domaine, int pe)
   {
     for (int t = 0; t < 5; t++)
       {
-        Joint::Type_Item type;
+        JOINT_ITEM type;
         switch(t)
           {
           case 0:
-            type = Joint::SOMMET;
+            type = JOINT_ITEM::SOMMET;
             break;
           case 1:
-            type = Joint::ELEMENT;
+            type = JOINT_ITEM::ELEMENT;
             break;
           case 2:
-            type = Joint::FACE;
+            type = JOINT_ITEM::FACE;
             break;
           case 3:
-            type = Joint::ARETE;
+            type = JOINT_ITEM::ARETE;
             break;
           case 4:
-            type = Joint::FACE_FRONT;
+            type = JOINT_ITEM::FACE_FRONT;
             break;
           default:
             Cerr << "Error in Scatter.cpp : ajouter_joint" << finl;
             // Pour eviter le warning suivant sur gcc 3.4:
             // Scatter.cpp:416: warning: 'type' might be used uninitialized in this function
-            type = Joint::SOMMET;
+            type = JOINT_ITEM::SOMMET;
             Process::exit();
           }
         Joint_Items& data = joint.set_joint_item(type);
@@ -890,7 +890,7 @@ static int ajouter_joint(Domaine& domaine, int pe)
 void Scatter::calculer_espace_distant(Domaine&                  domaine,
                                       const int           nb_items_reels,
                                       const ArrsOfInt& items_to_send,
-                                      const Joint::Type_Item type_item)
+                                      const JOINT_ITEM type_item)
 {
   assert(items_to_send.size() == Process::nproc());
 
@@ -1029,7 +1029,7 @@ void Scatter::calculer_espace_distant(Domaine&                  domaine,
       {
         ArrOfInt& items = items_distants[pe];
         // Retirer les doublons:
-        array_trier_retirer_doublons(items);
+        ::array_trier_retirer_doublons(items);
         // Retirer les items deja connus:
         const int i_joint = joint_of_pe[pe];
         if (i_joint >= 0)
@@ -1112,7 +1112,7 @@ void Scatter::ajouter_joints(Domaine& domaine,
     // On concatene les deux listes.
     for (int i = 0; i < n; i++)
       pe_voisins.append_array(liste_pe[i]);
-    array_trier_retirer_doublons(pe_voisins);
+    ::array_trier_retirer_doublons(pe_voisins);
     liste_pe.resize_array(0);
   }
   // On retire de pe_voisins les pe pour lesquels un joint existe deja
@@ -1151,7 +1151,7 @@ void Scatter::ajouter_joints(Domaine& domaine,
  * @param (items_lies) si le tableau est non vide, il doit etre de taille nb_items_reels. Dans ce cas, il permet de forcer la propriete suivante : "si l'item i est distant, alors l'item items_lies[i] est distant aussi". Ce tableau est utilise pour inclure les sommets periodiques virtuels associes. (voir calculer_espace_distant_sommets).
  */
 static void calculer_espace_distant_item(Domaine& le_dom,
-                                         const Joint::Type_Item type_item,
+                                         const JOINT_ITEM type_item,
                                          const IntTab& connectivite_elem_item,
                                          const int nb_items_reels,
                                          const ArrOfInt& items_lies)
@@ -1175,7 +1175,7 @@ static void calculer_espace_distant_item(Domaine& le_dom,
     {
       const Joint&     joint          = joints[i_joint];
       const int     pe_voisin      = joint.PEvoisin();
-      const ArrOfInt& esp_dist_elems = joint.joint_item(Joint::ELEMENT).items_distants();
+      const ArrOfInt& esp_dist_elems = joint.joint_item(JOINT_ITEM::ELEMENT).items_distants();
       const int     nb_elems_dist  = esp_dist_elems.size_array();
       liste_items.resize_array(0);
       // On met dans liste_items tous les items de tous les elements
@@ -1203,7 +1203,7 @@ static void calculer_espace_distant_item(Domaine& le_dom,
                 }
             }
         }
-      array_trier_retirer_doublons(liste_items);
+      ::array_trier_retirer_doublons(liste_items);
       // Ces items doivent etre envoyes au processeur voisin:
       items_to_send[pe_voisin] = liste_items;
     }
@@ -1219,7 +1219,7 @@ static void calculer_espace_distant_item(Domaine& le_dom,
  *   (plus petit pe qui le possede) qui le met dans son espace distant.
  *   Attention, on cree de nouveaux joints.
  *   On remplit les tableaux
- *    dom.faces_joint(i).joint_item(Joint::SOMMET).items_distants();
+ *    dom.faces_joint(i).joint_item(JOINT_ITEM::SOMMET).items_distants();
  *
  */
 void Scatter::calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bords_perio)
@@ -1238,7 +1238,7 @@ void Scatter::calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bo
                                                 0 /* ne pas calculer pour les sommets virtuels */);
 
   calculer_espace_distant_item(dom,
-                               Joint::SOMMET,
+                               JOINT_ITEM::SOMMET,
                                connectivite_elem_som,
                                nb_sommets_reels,
                                renum_som_perio);
@@ -1257,7 +1257,7 @@ void Scatter::calculer_espace_distant_faces(Domaine& domaine,
   ArrOfInt tableau_vide;
 
   calculer_espace_distant_item(domaine,
-                               Joint::FACE,
+                               JOINT_ITEM::FACE,
                                elem_faces,
                                nb_faces_reelles,
                                tableau_vide);
@@ -1274,7 +1274,7 @@ void Scatter::calculer_espace_distant_aretes(Domaine& domaine,
     Cerr << "Scatter::calculer_espace_distant_aretes : start" << finl;
   ArrOfInt tableau_vide;
   calculer_espace_distant_item(domaine,
-                               Joint::ARETE,
+                               JOINT_ITEM::ARETE,
                                elem_aretes,
                                nb_aretes_reelles,
                                tableau_vide);
@@ -1290,7 +1290,7 @@ void Scatter::calculer_espace_distant_aretes(Domaine& domaine,
  *
  */
 void Scatter::calculer_renum_items_communs(Joints& joints,
-                                           const Joint::Type_Item type_item)
+                                           const JOINT_ITEM type_item)
 {
   // Il suffit d'envoyer au voisin le tableau _faces dans l'ordre
   // pour qu'il ait les indices des faces sur l'autre pe.
@@ -1346,7 +1346,7 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
 /*! @brief construction d'un MD_Vector_std a partir des informations de joint du domaine pour le type d'item demande.
  *
  */
-void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const Joint::Type_Item type_item, MD_Vector& md_vector)
+void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const JOINT_ITEM type_item, MD_Vector& md_vector)
 {
   const Joints& joints  = dom.faces_joint();
   const int nb_joints = joints.size();
@@ -1842,7 +1842,7 @@ void Scatter::reordonner_faces_de_joint(Domaine& dom)
  */
 static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& liste_sommets)
 {
-  liste_sommets = joint.joint_item(Joint::SOMMET).items_communs();
+  liste_sommets = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
 #if 0
 
   // On prend tous les sommets des faces de joint:
@@ -1854,7 +1854,7 @@ static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& 
   for (int i = 0; i < n; i++)
     liste_sommets.append_array(som_isoles[i]);
   // Retirer les doublons de la liste
-  array_trier_retirer_doublons(liste_sommets);
+  ::array_trier_retirer_doublons(liste_sommets);
 #endif
 }
 
@@ -1921,7 +1921,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
   // Met tous les sommets dans som_isoles (isoles+issus des faces de joint):
   calculer_liste_complete_sommets_joint(joint, som_isoles);
   // On trie som_faces et on supprime les doublons
-  array_trier_retirer_doublons(som_faces);
+  ::array_trier_retirer_doublons(som_faces);
   // Supprime tous les sommets de som_isoles contenus dans som_faces
   array_retirer_elements(som_isoles, som_faces);
   // Supprime les sommets des faces de joint
@@ -1950,17 +1950,17 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
       }
   Process::Journal() << "common edges found isolated on joint with " << joint.PEvoisin() << " :" << compteur << finl;
   // Retirer les doublons de la liste
-  array_trier_retirer_doublons(liste_aretes);
+  ::array_trier_retirer_doublons(liste_aretes);
 }
 
-static void calculer_liste_complete_items_joint(const Joint& joint, const Joint::Type_Item type_item, ArrOfInt& liste_items)
+static void calculer_liste_complete_items_joint(const Joint& joint, const JOINT_ITEM type_item, ArrOfInt& liste_items)
 {
   switch(type_item)
     {
-    case Joint::SOMMET:
+    case JOINT_ITEM::SOMMET:
       calculer_liste_complete_sommets_joint(joint, liste_items);
       break;
-    case Joint::ARETE:
+    case JOINT_ITEM::ARETE:
       calculer_liste_complete_aretes_joint(joint, liste_items);
       break;
     default:
@@ -2067,7 +2067,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
           // dans les elements jumeaux, ajouter l'autre jumeau dans les elements distants
           for (int i_joint = 0; i_joint < nb_joints; i_joint++)
             {
-              ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
+              ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
               int n = elements_distants.size_array();
               // Marquer les elements distants existants:
               int i;
@@ -2102,7 +2102,7 @@ void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
   // Dernier tri des elements distants dans l'ordre croissant
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
-      ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
+      ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
 
       elements_distants.ordonne_array();
     }
@@ -2188,7 +2188,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
         const Joint& joint = dom.joint(i_joint);
         const int pe = joint.PEvoisin();
         liste_pe_voisins[i_joint] = pe;
-        const ArrOfInt& sommets_joint = joint.joint_item(Joint::SOMMET).items_communs();
+        const ArrOfInt& sommets_joint = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
         liste_sommets[pe] = sommets_joint;
       }
   }
@@ -2213,7 +2213,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
       for (int ijoint = 0; ijoint < nbjoints; ijoint++)
         {
           const Joint& joint = dom.joint(ijoint);
-          const ArrOfInt& sommets_joint = joint.joint_item(Joint::SOMMET).items_communs();
+          const ArrOfInt& sommets_joint = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
           const int n = sommets_joint.size_array();
           for (int i = 0; i < n; i++)
             {
@@ -2228,7 +2228,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
         {
           const Joint& joint = dom.joint(ijoint);
           const int pe = joint.PEvoisin();
-          const IntTab& renum_sommets = joint.joint_item(Joint::SOMMET).renum_items_communs();
+          const IntTab& renum_sommets = joint.joint_item(JOINT_ITEM::SOMMET).renum_items_communs();
           const int n = renum_sommets.dimension(0);
           for (int i = 0; i < n; i++)
             {
@@ -2272,7 +2272,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
                   elems_dist.append_array(elem);
                 }
             }
-          array_trier_retirer_doublons(elems_dist);
+          ::array_trier_retirer_doublons(elems_dist);
         }
 
       // La suite est la mise a jour de liste_sommets pour l'iteration suivante.
@@ -2296,7 +2296,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
                   sommets.append_array(som);
                 }
             }
-          array_trier_retirer_doublons(sommets);
+          ::array_trier_retirer_doublons(sommets);
         }
       // Parcourir les listes de sommets. Pour chaque sommet, s'il est de joint,
       // envoyer aux processeurs possedant ce sommet une requete "le processeur i
@@ -2349,7 +2349,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
       for (pe = 0; pe < nproc; pe++)
         {
           ArrOfInt& sommets = liste_sommets[pe];
-          array_trier_retirer_doublons(sommets);
+          ::array_trier_retirer_doublons(sommets);
         }
     }
 
@@ -2375,11 +2375,11 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
       {
         Joint& joint = dom.joint(i);
         const int pe = joint.PEvoisin();
-        if (!(joint.joint_item(Joint::ELEMENT).items_distants() == elements_distants[pe]))
+        if (!(joint.joint_item(JOINT_ITEM::ELEMENT).items_distants() == elements_distants[pe]))
           {
             Cerr << "Error in Scatter, PE " << Process::me() << finl;
             Process::Journal() << "Error scatter, remote elements pe " << pe << finl
-                               << " Splitting algorithm: " << joint.joint_item(Joint::ELEMENT).items_distants()
+                               << " Splitting algorithm: " << joint.joint_item(JOINT_ITEM::ELEMENT).items_distants()
                                << " Scatter algorithm  : " << elements_distants[pe] << finl;
 
             erreur = 1;
@@ -2394,7 +2394,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
       {
         Joint& joint = dom.joint(i);
         const int pe = joint.PEvoisin();
-        joint.set_joint_item(Joint::ELEMENT).set_items_distants() = elements_distants[pe];
+        joint.set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants() = elements_distants[pe];
       }
 #endif
   }
@@ -2585,14 +2585,14 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
  *
  */
 
-void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, const Joint::Type_Item type_item, const DoubleTab& coord_items)
+void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, const JOINT_ITEM type_item, const DoubleTab& coord_items)
 {
   switch(type_item)
     {
-    case Joint::SOMMET:
+    case JOINT_ITEM::SOMMET:
       ;
       break;
-    case Joint::ARETE:
+    case JOINT_ITEM::ARETE:
       ;
       break;
     default:
@@ -2712,7 +2712,7 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
                 for (int k2 = 0; k2 < dim; k2++)
                   Cerr << coord_locaux(i, k2) << " ";
                 Cerr << finl << "was not found in the joint with the PE " << PEvoisin << finl;
-                if (type_item==3)
+                if (type_item==JOINT_ITEM::ARETE)
                   {
                     Cerr << "The searching algorithm of the isolated edges on a joint" << finl;
                     Cerr << "does not work yet in some cases. Two isolated nodes of a joint (example below" << finl;
@@ -2761,7 +2761,7 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
   }
 }
 
-/*! @brief Construction des tableaux joint_item(Joint::SOMMET).
+/*! @brief Construction des tableaux joint_item(JOINT_ITEM::SOMMET).
  *
  * items_communs de tous les joints du domaine(0) du domaine dom
  *
@@ -2769,10 +2769,10 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
 
 void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {
-  construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
+  construire_correspondance_items_par_coordonnees(dom.faces_joint(), JOINT_ITEM::SOMMET, dom.coord_sommets());
 }
 
-/*! @brief Construction des tableaux joint_item(Joint::ARETE).
+/*! @brief Construction des tableaux joint_item(JOINT_ITEM::ARETE).
  *
  * items_communs de tous les joints du domaine
  *
@@ -2780,7 +2780,7 @@ void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 
 void Scatter::construire_correspondance_aretes_par_coordonnees(Domaine_VF& zvf)
 {
-  construire_correspondance_items_par_coordonnees(zvf.domaine().faces_joint(), Joint::ARETE, zvf.xa());
+  construire_correspondance_items_par_coordonnees(zvf.domaine().faces_joint(), JOINT_ITEM::ARETE, zvf.xa());
 }
 
 static void init_simple_md_vector(MD_Vector_std& md, const int n)
@@ -2804,7 +2804,7 @@ static void init_simple_md_vector(MD_Vector_std& md, const int n)
  *
  */
 void Scatter::calculer_nb_items_virtuels(Joints& joints,
-                                         const Joint::Type_Item type_item)
+                                         const JOINT_ITEM type_item)
 {
   Schema_Comm schema_comm;
   const int nb_joints = joints.size();

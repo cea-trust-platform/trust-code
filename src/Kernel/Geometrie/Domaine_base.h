@@ -51,24 +51,6 @@ public:
   inline void nommer(const Nom& nom) override {  nom_ = nom; }
   inline double epsilon() const { return epsilon_; }
 
-  ///
-  /// Joints
-  ///
-  inline int nb_joints() const { return mes_faces_joint_.nb_joints(); }
-
-  inline Joint& joint(int i) {   return mes_faces_joint_(i); }
-  inline const Joint& joint(int i) const { return mes_faces_joint_(i); }
-  inline Joint& joint(const Nom& nom) {  return mes_faces_joint_(nom); }
-  inline const Joint& joint(const Nom& nom) const {   return mes_faces_joint_(nom); }
-  inline Joints& faces_joint() { return mes_faces_joint_; }
-  inline const Joints& faces_joint() const {  return mes_faces_joint_; }
-
-  inline Joint& joint_of_pe(int);
-  inline const Joint& joint_of_pe(int) const;
-  int comprimer_joints();
-
-  void renum_joint_common_items(const IntVect& nums, const int elem_offset);
-
   //
   // Time-dependency
   //
@@ -104,10 +86,6 @@ protected:
   /// Domaine name
   Nom nom_;
 
-  // Les faces de joint sont les faces communes avec les autres processeurs (bords
-  //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
-  Joints mes_faces_joint_;
-
   int moments_a_imprimer_;
   LIST(Nom) bords_a_imprimer_;
   LIST(Nom) bords_a_imprimer_sum_;
@@ -122,25 +100,6 @@ protected:
   /// Volume total du domaine (somme sur tous les processeurs)
   double volume_total_;
 };
-
-
-inline const Joint& Domaine_base::joint_of_pe(int pe) const
-{
-  int i;
-  for(i=0; i<nb_joints(); i++)
-    if(mes_faces_joint_(i).PEvoisin()==pe)
-      break;
-  return mes_faces_joint_(i);
-}
-
-inline Joint& Domaine_base::joint_of_pe(int pe)
-{
-  int i;
-  for(i=0; i<nb_joints(); i++)
-    if(mes_faces_joint_(i).PEvoisin()==pe)
-      break;
-  return mes_faces_joint_(i);
-}
 
 
 #endif

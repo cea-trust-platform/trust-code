@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,14 @@
 #include <Joint_Items.h>
 
 // **********************************************************
-//  Implementation de la classe Joint_Items
+//  Implementation de la classe Joint_Items_32_64
 // **********************************************************
 
 /*! @brief constructeur par defaut
  *
  */
-Joint_Items::Joint_Items()
+template <typename _SIZE_>
+Joint_Items_32_64<_SIZE_>::Joint_Items_32_64()
 {
   nb_items_virtuels_ = -1;
   nb_items_reels_ = -1;
@@ -32,7 +33,8 @@ Joint_Items::Joint_Items()
 /*! @brief remise dans l'etat initial obtenu apres constructeur par defaut
  *
  */
-void Joint_Items::reset()
+template <typename _SIZE_>
+void Joint_Items_32_64<_SIZE_>::reset()
 {
   nb_items_virtuels_ = -1;
   nb_items_reels_ = -1;
@@ -42,20 +44,14 @@ void Joint_Items::reset()
   renum_items_communs_.reset();
 }
 
-/*! @brief Voir items_communs_
- *
- */
-const ArrOfInt& Joint_Items::items_communs() const
-{
-  return items_communs_;
-}
 
 /*! @brief Renvoie le tableau items_communs_ pour le remplir.
  *
  * (BM: ce tableau n'est pas encore rempli)
  *
  */
-ArrOfInt& Joint_Items::set_items_communs()
+template <typename _SIZE_>
+typename Joint_Items_32_64<_SIZE_>::ArrOfInt_t& Joint_Items_32_64<_SIZE_>::set_items_communs()
 {
   flags_init_ |= 1;
   return items_communs_;
@@ -64,7 +60,8 @@ ArrOfInt& Joint_Items::set_items_communs()
 /*! @brief Voir items_distants_
  *
  */
-const ArrOfInt& Joint_Items::items_distants() const
+template <typename _SIZE_>
+const typename Joint_Items_32_64<_SIZE_>::ArrOfInt_t& Joint_Items_32_64<_SIZE_>::items_distants() const
 {
   assert(flags_init_ & 2);
   return items_distants_;
@@ -76,7 +73,8 @@ const ArrOfInt& Joint_Items::items_distants() const
  *       Scatter::calculer_espace_distant_elements
  *
  */
-ArrOfInt& Joint_Items::set_items_distants()
+template <typename _SIZE_>
+typename Joint_Items_32_64<_SIZE_>::ArrOfInt_t& Joint_Items_32_64<_SIZE_>::set_items_distants()
 {
   flags_init_ |= 2;
   return items_distants_;
@@ -85,7 +83,8 @@ ArrOfInt& Joint_Items::set_items_distants()
 /*! @brief Voir nb_items_virtuels_ Voir Scatter::calculer_nb_items_virtuels
  *
  */
-void Joint_Items::set_nb_items_virtuels(int n)
+template <typename _SIZE_>
+void Joint_Items_32_64<_SIZE_>::set_nb_items_virtuels(int n)
 {
   flags_init_ |= 4;
   nb_items_virtuels_ = n;
@@ -94,7 +93,8 @@ void Joint_Items::set_nb_items_virtuels(int n)
 /*! @brief Voir nb_items_virtuels_
  *
  */
-int Joint_Items::nb_items_virtuels() const
+template <typename _SIZE_>
+int Joint_Items_32_64<_SIZE_>::nb_items_virtuels() const
 {
   assert(flags_init_ & 4);
   return nb_items_virtuels_;
@@ -105,7 +105,8 @@ int Joint_Items::nb_items_virtuels() const
  *       Scatter::construire_correspondance_sommets_par_coordonnees
  *
  */
-IntTab& Joint_Items::set_renum_items_communs()
+template <typename _SIZE_>
+typename Joint_Items_32_64<_SIZE_>::IntTab_t& Joint_Items_32_64<_SIZE_>::set_renum_items_communs()
 {
   flags_init_ |= 8;
   return renum_items_communs_;
@@ -114,7 +115,8 @@ IntTab& Joint_Items::set_renum_items_communs()
 /*! @brief Voir renum_items_communs_
  *
  */
-const IntTab& Joint_Items::renum_items_communs() const
+template <typename _SIZE_>
+const typename Joint_Items_32_64<_SIZE_>::IntTab_t& Joint_Items_32_64<_SIZE_>::renum_items_communs() const
 {
   assert(flags_init_ & 8);
   return renum_items_communs_;
@@ -123,7 +125,8 @@ const IntTab& Joint_Items::renum_items_communs() const
 /*! @brief Pas encore utilise
  *
  */
-void Joint_Items::set_nb_items_reels(int n)
+template <typename _SIZE_>
+void Joint_Items_32_64<_SIZE_>::set_nb_items_reels(int n)
 {
   assert(n >= 0);
   flags_init_ |= 16;
@@ -136,8 +139,17 @@ void Joint_Items::set_nb_items_reels(int n)
  *   a aucun processeur voisin).
  *
  */
-int Joint_Items::nb_items_reels() const
+template <typename _SIZE_>
+int Joint_Items_32_64<_SIZE_>::nb_items_reels() const
 {
   assert(flags_init_ & 16);
   return nb_items_reels_;
 }
+
+
+template class Joint_Items_32_64<int>;
+#if INT_is_64_ == 2
+template class Joint_Items_32_64<trustIdType>;
+#endif
+
+

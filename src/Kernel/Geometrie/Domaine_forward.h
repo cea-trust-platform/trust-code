@@ -54,6 +54,12 @@ template <typename _SIZE_> class Raccord_32_64;
 using Raccord = Raccord_32_64<int>;
 using Raccord_64 = Raccord_32_64<trustIdType>;
 
+template <typename _SIZE_> class Joint_32_64;
+using Joint = Joint_32_64<int>;
+using Joint_64 = Joint_32_64<trustIdType>;
+
+////////////////////////////////
+
 template <typename _SIZE_> class Groupe_Faces_32_64;
 using Groupe_Faces = Groupe_Faces_32_64<int>;
 using Groupe_Faces_64 = Groupe_Faces_32_64<trustIdType>;
@@ -73,6 +79,12 @@ using Faces_64 = Faces_32_64<trustIdType>;
 template <typename _SIZE_> class Raccords_32_64;
 using Raccords = Raccords_32_64<int>;
 using Raccords_64 = Raccords_32_64<trustIdType>;
+
+template <typename _SIZE_> class Joints_32_64;
+using Joints = Joints_32_64<int>;
+using Joints_64 = Joints_32_64<trustIdType>;
+
+/////////////////////////////////
 
 template <typename _SIZE_> class Elem_geom_base_32_64;
 using Elem_geom_base = Elem_geom_base_32_64<int>;

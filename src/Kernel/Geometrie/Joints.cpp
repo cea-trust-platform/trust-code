@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,11 +15,13 @@
 
 #include <Joints.h>
 
-Implemente_instanciable(Joints, "Joints", LIST(Joint));
+Implemente_instanciable_32_64(Joints_32_64, "Joints", LIST(Joint_32_64<_T_>));
 
-Sortie& Joints::printOn(Sortie& os) const { return LIST(Joint)::printOn(os); }
+template <typename _SIZE_>
+Sortie& Joints_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Joint_32_64<_SIZE_>)::printOn(os); }
 
-Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
+template <typename _SIZE_>
+Entree& Joints_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Joint_32_64<_SIZE_>)::readOn(is); }
 
 /*! @brief Associe un domaine a tous les joints de la liste.
  *
@@ -27,21 +29,23 @@ Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
  *
  * @param (Domaine& un_domaine) le domaine a associer aux joints
  */
-void Joints::associer_domaine(const Domaine& un_domaine)
+template <typename _SIZE_>
+void Joints_32_64<_SIZE_>::associer_domaine(const Domaine_t& un_domaine)
 {
   for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
 
-/*! @brief Renvoie le nombre de face total des Joints de la liste.
+/*! @brief Renvoie le nombre de face total des Joints_32_64 de la liste.
  *
  * (la somme des faces de tous les
  *     joints de la liste).
  *
- * @return (int) le nombre de face total des Joints de la liste
+ * @return (int) le nombre de face total des Joints_32_64 de la liste
  */
-int Joints::nb_faces() const
+template <typename _SIZE_>
+_SIZE_ Joints_32_64<_SIZE_>::nb_faces() const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this) nombre += itr.nb_faces();
 
   return nombre;
@@ -55,9 +59,10 @@ int Joints::nb_faces() const
  * @param (Type_Face type) le type des faces a compter
  * @return (int) le nombre de faces du type specifie contenues dans la liste de joints
  */
-int Joints::nb_faces(Type_Face type) const
+template <typename _SIZE_>
+_SIZE_ Joints_32_64<_SIZE_>::nb_faces(Type_Face type) const
 {
-  int nombre = 0;
+  int_t nombre = 0;
   for (const auto &itr : *this)
     if (type == itr.faces().type_face())
       nombre += itr.nb_faces();
@@ -68,26 +73,27 @@ int Joints::nb_faces(Type_Face type) const
 /*! @brief Comprime la liste de joints.
  *
  */
-void Joints::comprimer()
+template <typename _SIZE_>
+void Joints_32_64<_SIZE_>::comprimer()
 {
-  Cerr << "Joints::comprimer() - Start" << finl;
-  IntVect fait(size());
+  Cerr << "Joints_32_64<_SIZE_>::comprimer() - Start" << finl;
+  IntVect fait(this->size());
   int rang1 = 0, rang2 = 0;
 
-  auto& list = get_stl_list();
+  auto& list = this->get_stl_list();
   for (auto &itr : list)
     {
       if (!fait(rang1))
         {
           fait(rang1) = 1;
-          Joint& joint1 = itr;
+          Joint_t& joint1 = itr;
           rang2 = rang1;
 
           for (auto &itr2 : list)
             {
               if (!fait(rang2))
                 {
-                  Joint& joint2 = itr2;
+                  Joint_t& joint2 = itr2;
                   if (joint1.PEvoisin() == joint2.PEvoisin())
                     {
                       Cerr << "agglomeration of joints " << joint1.le_nom() << " and " << joint2.le_nom() << finl;
@@ -112,22 +118,13 @@ void Joints::comprimer()
 
   for (auto itr = list.begin(); itr != list.end(); )
     {
-      Joint& joint1 = *itr;
+      Joint_t& joint1 = *itr;
       if (joint1.nb_faces() == 0)
         itr = list.erase(itr);
       else
         ++itr;
     }
-  Cerr << "Joints::comprimer() - End" << finl;
-}
-
-/*! @brief Renvoie le nombre de Joint de la liste
- *
- * @return (int) le nombre de Joint de la liste
- */
-int Joints::nb_joints() const
-{
-  return size();
+  Cerr << "Joints_32_64<_SIZE_>::comprimer() - End" << finl;
 }
 
 /*! @brief Renvoie une reference sur le joint qui a pour voisin le PE specifie.
@@ -136,16 +133,24 @@ int Joints::nb_joints() const
  * @return (Joint&) le joint qui a pour voisin le PE specifie
  * @throws PE voisin specifie non trouve dans la liste des joints.
  */
-Joint& Joints::joint_PE(int pe)
+template <typename _SIZE_>
+typename Joints_32_64<_SIZE_>::Joint_t& Joints_32_64<_SIZE_>::joint_PE(int pe)
 {
   for (auto &itr : *this)
     {
-      Joint& joint = itr;
+      Joint_t& joint = itr;
       int pe_joint = joint.PEvoisin();
       if (pe == pe_joint) return joint;
     }
-  Cerr << "Error in Joints::joint_PE : joint not found" << finl;
+  Cerr << "Error in Joints_32_64<_SIZE_>::joint_PE : joint not found" << finl;
   Process::exit();
   throw;
 }
+
+
+template class Joints_32_64<int>;
+#if INT_is_64_ == 2
+template class Joints_32_64<trustIdType>;
+#endif
+
 

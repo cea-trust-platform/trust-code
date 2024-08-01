@@ -63,7 +63,7 @@ public:
   using Groupe_Faces_t = Groupe_Faces_32_64<_SIZE_>;
   using Bord_Interne_t = Bord_Interne_32_64<_SIZE_>;
 
-  static void build_edges(const IntTab_t& nodes_of_cells, const IntTab_t& edges_pattern,
+  static void build_edges(const IntTab_t& nodes_of_cells, const IntTab& edges_pattern,
                           IntTab_t& edges_of_cells, IntTab_t& nodes_of_edges);
   static void build_nodes(const DoubleTab_t& nodes_src, const IntTab_t& nodes_of_edges_src, DoubleTab_t& nodes_dest);
   static int_t find_refined_node_index(const IntTab_t& nodes_of_cells_src, const IntTab_t& edges_of_cells_src,
@@ -547,13 +547,13 @@ void build_faces_pattern(IntTab& pattern, const Nom& cell_type)
 ///////////////////////////////////////////////////////////////
 
 template <typename _SIZE_>
-void Impl_32_64<_SIZE_>::build_edges(const IntTab_t& nodes_of_cells, const IntTab_t& edges_pattern,
+void Impl_32_64<_SIZE_>::build_edges(const IntTab_t& nodes_of_cells, const IntTab& edges_pattern,
                                      IntTab_t& edges_of_cells, IntTab_t& nodes_of_edges)
 {
   const int_t nb_cells          = nodes_of_cells.dimension(0);
-  const int_t nb_edges_per_cell = edges_pattern.dimension(0);
+  const int nb_edges_per_cell = edges_pattern.dimension(0);
   //  const int nb_nodes_per_edge = 2;
-  const int nb_nodes_per_edge_max=(int)edges_pattern.dimension(1);
+  const int nb_nodes_per_edge_max = edges_pattern.dimension(1);
   IntTab_t duplicated_edges(nb_cells * nb_edges_per_cell, nb_nodes_per_edge_max);
   int_t nb_duplicated_edges = 0;
   for (int_t cell=0; cell<nb_cells; ++cell)
@@ -823,7 +823,7 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
   using DoubleTab_t = DTab_T<_SIZE_>;
   using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
 
-  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Sous_Domaine_t = Interprete_geometrique_base_32_64<_SIZE_>::Sous_Domaine_t;
   using Bords_t = Bords_32_64<_SIZE_>;
   using Bord_t = Bord_32_64<_SIZE_>;
   using Groupes_Faces_t = Groupes_Faces_32_64<_SIZE_>;
@@ -960,14 +960,14 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
         joint_dest.affecte_epaisseur(boundaries_src[boundary].epaisseur());
 
         // creation des SOMMETS communs
-        ArrOfInt_t& liste_sommets = joint_dest.set_joint_item(Joint_t::SOMMET).set_items_communs();
+        ArrOfInt_t& liste_sommets = joint_dest.set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
 
         // On prend tous les sommets des faces de joint:
         const IntTab_t& som_faces = joint_dest.faces().les_sommets();
         liste_sommets = som_faces;
         // on ajoute les sommets du joint d'origine pour
         // les sommets isoles
-        const ArrOfInt_t& som_isoles = boundaries_src[boundary].joint_item(Joint_t::SOMMET).items_communs();
+        const ArrOfInt_t& som_isoles = boundaries_src[boundary].joint_item(JOINT_ITEM::SOMMET).items_communs();
         const int_t n = som_isoles.size_array();
         array_trier_retirer_doublons(liste_sommets);
         ArrOfInt_t liste_sommets_old(liste_sommets);

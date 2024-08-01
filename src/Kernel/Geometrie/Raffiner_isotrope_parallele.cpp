@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,14 +43,14 @@ Entree& Raffiner_isotrope_parallele::readOn( Entree& is )
 }
 
 
-void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const Joint::Type_Item type_item, const DoubleTab& coord_items)
+void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const JOINT_ITEM type_item, const DoubleTab& coord_items)
 {
   switch(type_item)
     {
-    case Joint::SOMMET:
+    case JOINT_ITEM::SOMMET:
       ;
       break;
-    case Joint::ARETE:
+    case JOINT_ITEM::ARETE:
       ;
       break;
     default:
@@ -81,7 +81,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
         // Remarque: **LISTE_TRI** les indices_items_locaux sont
         //  tries dans l'ordre croissant:
         //Scatter::calculer_liste_complete_items_joint(joint, type_item, items);
-        items = joint.joint_item(Joint::SOMMET).items_communs();
+        items = joint.joint_item(JOINT_ITEM::SOMMET).items_communs();
         const int n       = items.size_array();
         DoubleTab&   coord   = coord_items_locaux[i_joint];
         int i, j;
@@ -176,7 +176,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 }
 
 
-/*! @brief Construction des tableaux joint_item(Joint::SOMMET).
+/*! @brief Construction des tableaux joint_item(JOINT_ITEM::SOMMET).
  *
  * items_communs de tous les joints du domaine(0) du domaine dom
  *
@@ -184,7 +184,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 
 void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {
-  mon_construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
+  mon_construire_correspondance_items_par_coordonnees(dom.faces_joint(), JOINT_ITEM::SOMMET, dom.coord_sommets());
 }
 
 
@@ -287,7 +287,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       {
 
         Scatter::construire_correspondance_sommets_par_coordonnees(dom_new);
-        Scatter::calculer_renum_items_communs(dom_new.faces_joint(), Joint::SOMMET);
+        Scatter::calculer_renum_items_communs(dom_new.faces_joint(), JOINT_ITEM::SOMMET);
 
         statistiques().end_count(stats);
         double maxtime = mp_max(statistiques().last_time(stats));

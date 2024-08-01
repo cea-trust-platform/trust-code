@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,10 @@
 #include <Joint.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Joint,"Joint",Frontiere);
+Implemente_instanciable_32_64(Joint_32_64,"Joint_32_64",Frontiere);
 
 // ***************************************************************
-//  Implementation de la classe Joint
+//  Implementation de la classe Joint_32_64
 // ***************************************************************
 
 /*! @brief Ecrit le joint sur un flot de sortie.
@@ -31,23 +31,25 @@ Implemente_instanciable(Joint,"Joint",Frontiere);
  *       - les sommets
  *
  */
-Sortie& Joint::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Joint_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  Frontiere::printOn(s) ;
+  Frontiere_t::printOn(s) ;
   s << "format_joint_250507" << finl;
   s << PEvoisin_ << finl;
   s << epaisseur_ << finl;
-  s << joint_item(Joint::SOMMET).items_communs() << finl;
-  s << joint_item(Joint::ELEMENT).items_distants() << finl;
+  s << joint_item(JOINT_ITEM::SOMMET).items_communs() << finl;
+  s << joint_item(JOINT_ITEM::ELEMENT).items_distants() << finl;
   return s ;
 }
 
 /*! @brief Lit un joint a partir d'un flot d'entree.
  *
  */
-Entree& Joint::readOn(Entree& s)
+template <typename _SIZE_>
+Entree& Joint_32_64<_SIZE_>::readOn(Entree& s)
 {
-  Frontiere::readOn(s) ;
+  Frontiere_t::readOn(s) ;
   Nom format;
   s >> format;
   if (format!="format_joint_250507")
@@ -58,56 +60,24 @@ Entree& Joint::readOn(Entree& s)
           Cerr << "Split your mesh with an executable which is more recent" << finl;
           Cerr << "than the version 1.5.2 build 240507." << finl;
         }
-      exit();
+      Process::exit();
     }
   s >> PEvoisin_;
   s >> epaisseur_;
-  s >> set_joint_item(Joint::SOMMET).set_items_communs();
-  s >> set_joint_item(Joint::ELEMENT).set_items_distants();
+  s >> set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
+  s >> set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
   return s ;
 }
 
 /*! @brief
  *
  */
-void Joint::dimensionner(int i)
+template <typename _SIZE_>
+void Joint_32_64<_SIZE_>::dimensionner(int i)
 {
-  faces().dimensionner(i);
-  faces().voisins() = -1;
-  faces().les_sommets() = -1;
-}
-
-
-/*! @brief Fixe le numero du PE voisin.
- *
- */
-void Joint::affecte_PEvoisin(int num)
-{
-  PEvoisin_ = num;
-}
-
-/*! @brief Fixe l'epaisseur du joint
- *
- */
-void Joint::affecte_epaisseur(int ep)
-{
-  epaisseur_ = ep;
-}
-
-/*! @brief Renvoie PEvoisin (numero du domaine voisine)
- *
- */
-int Joint::PEvoisin() const
-{
-  return PEvoisin_;
-}
-
-/*! @brief Renvoie l'epaisseur du joint.
- *
- */
-int Joint::epaisseur() const
-{
-  return epaisseur_;
+  this->faces().dimensionner(i);
+  this->faces().voisins() = -1;
+  this->faces().les_sommets() = -1;
 }
 
 
@@ -115,32 +85,12 @@ int Joint::epaisseur() const
  *
  * @param (IntTab& sommets) tableau contenant les numeros des sommets des face a ajouter
  */
-void Joint::ajouter_faces(const IntTab& sommets)
+template <typename _SIZE_>
+void Joint_32_64<_SIZE_>::ajouter_faces(const IntTab_t& sommets)
 {
-  faces().ajouter(sommets);
-  faces().voisins() = -1;
+  this->faces().ajouter(sommets);
+  this->faces().voisins() = -1;
 }
-
-const IntTab& Joint::renum_virt_loc() const
-{
-  return joint_item(SOMMET).renum_items_communs();;
-}
-
-const ArrOfInt& Joint::esp_dist_elems() const
-{
-  return joint_item(ELEMENT).items_distants();
-}
-
-const ArrOfInt& Joint::esp_dist_sommets() const
-{
-  return joint_item(SOMMET).items_distants();
-}
-
-const ArrOfInt&  Joint::esp_dist_faces() const
-{
-  return joint_item(FACE).items_distants();
-}
-
 
 /*! @brief Renvoie les informations de joint pour un type d'item geometrique donne, pour remplissage des structures.
  *
@@ -149,23 +99,24 @@ const ArrOfInt&  Joint::esp_dist_faces() const
  *   Domaine_VDF et Domaine_VF pour la renumerotation des faces.
  *
  */
-Joint_Items& Joint::set_joint_item(Type_Item item)
+template <typename _SIZE_>
+typename Joint_32_64<_SIZE_>::Joint_Items_t& Joint_32_64<_SIZE_>::set_joint_item(JOINT_ITEM item)
 {
   switch(item)
     {
-    case SOMMET:
+    case JOINT_ITEM::SOMMET:
       return joint_sommets_;
-    case ELEMENT:
+    case JOINT_ITEM::ELEMENT:
       return joint_elements_;
-    case FACE:
+    case JOINT_ITEM::FACE:
       return joint_faces_;
-    case ARETE:
+    case JOINT_ITEM::ARETE:
       return joint_aretes_;
-    case FACE_FRONT:
+    case JOINT_ITEM::FACE_FRONT:
       return joint_faces_front_;
     default:
-      Cerr << "Error in Joint::set_joint_item, invalid item number : " << (int)item << finl;
-      exit();
+      Cerr << "Error in Joint_32_64<_SIZE_>::set_joint_item, invalid item number : " << (int)item << finl;
+      Process::exit();
     }
   return joint_sommets_; // never arrive here
 }
@@ -173,24 +124,32 @@ Joint_Items& Joint::set_joint_item(Type_Item item)
 /*! @brief Renvoie les informations de joint pour le type demande.
  *
  */
-const Joint_Items& Joint::joint_item(Type_Item item) const
+template <typename _SIZE_>
+const typename Joint_32_64<_SIZE_>::Joint_Items_t& Joint_32_64<_SIZE_>::joint_item(JOINT_ITEM item) const
 {
   switch(item)
     {
-    case SOMMET:
+    case JOINT_ITEM::SOMMET:
       return joint_sommets_;
-    case ELEMENT:
+    case JOINT_ITEM::ELEMENT:
       return joint_elements_;
-    case FACE:
+    case JOINT_ITEM::FACE:
       return joint_faces_;
-    case ARETE:
+    case JOINT_ITEM::ARETE:
       return joint_aretes_;
-    case FACE_FRONT:
+    case JOINT_ITEM::FACE_FRONT:
       return joint_faces_front_;
     default:
-      Cerr << "Error in Joint::set_joint_item, invalid item number : " << (int)item << finl;
-      exit();
+      Cerr << "Error in Joint_32_64<_SIZE_>::set_joint_item, invalid item number : " << (int)item << finl;
+      Process::exit();
     }
   return joint_sommets_; // never arrive here
 }
+
+
+template class Joint_32_64<int>;
+#if INT_is_64_ == 2
+template class Joint_32_64<trustIdType>;
+#endif
+
 

@@ -288,7 +288,7 @@ void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_
 //  for (int j=0; j < dom_->nb_joints(); j++)
 //    {
 //      const Joint& jnt = dom_->joint(j);
-//      const ArrOfInt& ric = jnt.joint_item(Joint::FACE).items_communs();
+//      const ArrOfInt& ric = jnt.joint_item(JOINT_ITEM::FACE).items_communs();
 //      assert(ric.size_array() == jnt.nb_faces());
 //      MCAuto<DataArrayIdType> g(DataArrayIdType::New());
 //      g->alloc(ric.size_array());

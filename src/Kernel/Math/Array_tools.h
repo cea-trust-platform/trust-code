@@ -21,7 +21,8 @@
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *
  */
-void array_trier_retirer_doublons(ArrOfInt& array);
+template <typename _SIZE_>
+void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array);
 
 /*! @brief Methode outil pour calculer l'intersection entre deux listes d'entiers.
  *

@@ -160,7 +160,7 @@ void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfac
       int pe_voisin=joint_temp.PEvoisin();
       if (pe_voisin<me())
         {
-          const IntTab& indices_faces_joint = joint_temp.joint_item(Joint::FACE).renum_items_communs();
+          const IntTab& indices_faces_joint = joint_temp.joint_item(JOINT_ITEM::FACE).renum_items_communs();
           const int nbfaces = indices_faces_joint.dimension(0);
           for (int j = 0; j < nbfaces; j++)
             {

@@ -15,6 +15,8 @@
 
 #include <Array_tools.h>
 
+namespace {
+
 /*! @brief retire les doublons du tableau array (suppose que le tableau est trie dans l'ordre croissant)
  *
  *   On deplace les elements conserves pour qu'ils soient contigus
@@ -26,15 +28,16 @@
  *  Valeur de retour : nombre d'elements conserves dans le tableau
  *
  */
-int array_retirer_doublons(ArrOfInt& array)
+template <typename _SIZE_>
+_SIZE_ array_retirer_doublons(AOInt_T<_SIZE_>& array)
 {
-  const int size = array.size_array();
+  const _SIZE_ size = array.size_array();
   if (size == 0)
     return 0;
   // Retire les doublons
-  int new_size = 1;
-  int last_value = array[0];
-  for (int i = 1; i < size; i++)
+  _SIZE_ new_size = 1;
+  _SIZE_ last_value = array[0];
+  for (_SIZE_ i = 1; i < size; i++)
     {
       // Le tableau doit etre trie !
       assert(array[i] >= last_value);
@@ -47,21 +50,24 @@ int array_retirer_doublons(ArrOfInt& array)
   return new_size;
 }
 
+}
+
 /*! @brief Trie le tableau array dans l'ordre croissant et retire les doublons.
  *
  */
-void array_trier_retirer_doublons(ArrOfInt& array)
+template <typename _SIZE_>
+void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array& array)
 {
   // IntVect n'est pas traite correctement car on ne
   //  fait pas un resize() mais un resize_array().
-  assert(typeid(array) != typeid(IntVect));
-  const int size = array.size_array();
+  assert(typeid(array) != typeid(IVect_T<_SIZE_>));
+  const _SIZE_ size = array.size_array();
   if (size == 0)
     return;
   // Tri dans l'ordre croissant
   array.ordonne_array();
   // Retire les doublons
-  const int sz = array_retirer_doublons(array);
+  const _SIZE_ sz = ::array_retirer_doublons(array);
   array.resize_array(sz);
 }
 

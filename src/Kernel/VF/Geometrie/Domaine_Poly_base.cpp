@@ -137,7 +137,7 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
     const int nb_faces_front = domaine().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
     //    rang_elem_non_std_.resize(nb_elements);
-    //    Scatter::creer_tableau_distribue(dom, Joint::ELEMENT, rang_elem_non_std_);
+    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::ELEMENT, rang_elem_non_std_);
     rang_elem_non_std_ = -1;
     int nb_elems_non_std = 0;
     // D'abord on marque les elements non standards avec rang_elem_non_std_[i] = 0
@@ -281,7 +281,7 @@ void Domaine_Poly_base::discretiser()
     const int n = nb_faces();
     face_normales_.resize(n, dimension);
     // const Domaine & dom = domaine();
-    //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
+    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::FACE, face_normales_);
     creer_tableau_faces(face_normales_);
     const IntTab& face_som = face_sommets();
     IntTab& face_vois = face_voisins();

@@ -214,7 +214,7 @@ void Domaine_VF::renumeroter(Faces& les_faces)
     for (int i_joint = 0; i_joint < nbjoints; i_joint++)
       {
         Joint&     un_joint         = joints[i_joint];
-        ArrOfInt& indices_faces = un_joint.set_joint_item(Joint::FACE).set_items_communs();
+        ArrOfInt& indices_faces = un_joint.set_joint_item(JOINT_ITEM::FACE).set_items_communs();
         const int nbfaces2    = indices_faces.size_array();
         assert(nbfaces2 == un_joint.nb_faces()); // renum_items_communs rempli ?
         for (int i = 0; i < nbfaces2; i++)
@@ -275,7 +275,7 @@ void Domaine_VF::discretiser()
 
     // Les faces sont dans l'ordre definitif, on peut remplir
     // renum_items_communs des faces:
-    Scatter::calculer_renum_items_communs(ledomaine.faces_joint(), Joint::FACE);
+    Scatter::calculer_renum_items_communs(ledomaine.faces_joint(), JOINT_ITEM::FACE);
 
     // Remplissage de face_voisins des frontieres:
     // a factoriser avec DomaineCut.cpp
@@ -299,7 +299,7 @@ void Domaine_VF::discretiser()
 
     Scatter::calculer_espace_distant_faces(domaine(), les_faces.nb_faces(), elem_faces_);
     // Apres la methode suivante, on aura le droit d'utiliser creer_tableau_faces() :
-    Scatter::construire_md_vector(domaine(), les_faces.nb_faces(), Joint::FACE, md_vector_faces_);
+    Scatter::construire_md_vector(domaine(), les_faces.nb_faces(), JOINT_ITEM::FACE, md_vector_faces_);
 
 
     const MD_Vector& md_vect_sommets = domaine().les_sommets().get_md_vector();
@@ -663,7 +663,7 @@ void Domaine_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
   for(int njoint=0; njoint<nbjoints; njoint++)
     {
       const Joint& joint_temp = joint(njoint);
-      const IntTab& indices_faces_joint = joint_temp.joint_item(Joint::FACE).renum_items_communs();
+      const IntTab& indices_faces_joint = joint_temp.joint_item(JOINT_ITEM::FACE).renum_items_communs();
       const int nbfaces = indices_faces_joint.dimension(0);
       for (int j = 0; j < nbfaces; j++)
         {

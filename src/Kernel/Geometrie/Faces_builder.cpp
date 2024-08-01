@@ -198,7 +198,7 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
         // Les faces de joint sont dans le meme ordre en local et sur le voisin.
         Joint& joint = joints[i];
         ArrOfInt& indices_faces =
-          joint.set_joint_item(Joint::FACE).set_items_communs();
+          joint.set_joint_item(JOINT_ITEM::FACE).set_items_communs();
         const int nb_faces  = joint.nb_faces();
         indices_faces.resize_array(nb_faces);
         const int num_premiere_face = joint.num_premiere_face();

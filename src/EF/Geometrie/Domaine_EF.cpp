@@ -108,7 +108,7 @@ void Domaine_EF::calculer_IPhi(const Domaine_Cl_dis_base& zcl)
   int nb_som_elem=domaine().nb_som_elem();
   IPhi_.resize(nbelem,nb_som_elem);
   domaine().creer_tableau_elements(IPhi_);
-  //  Scatter::creer_tableau_distribue(domaine().domaine(), Joint::ELEMENT, IPhi_);
+  //  Scatter::creer_tableau_distribue(domaine().domaine(), JOINT_ITEM::ELEMENT, IPhi_);
   IPhi_thilde_=IPhi_;
   double rap=1./domaine().nb_som_elem();
 
@@ -129,7 +129,7 @@ void Domaine_EF::calculer_IPhi(const Domaine_Cl_dis_base& zcl)
 void Domaine_EF::calculer_volumes_sommets(const Domaine_Cl_dis_base& zcl)
 {
   //  volumes_sommets_thilde_.resize(nb_som());
-  //Scatter::creer_tableau_distribue(domaine().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
+  //Scatter::creer_tableau_distribue(domaine().domaine(), JOINT_ITEM::SOMMET, volumes_sommets_thilde_);
 //  domaine().creer_tableau_sommets(volumes_sommets_thilde_);
 
   calculer_IPhi(zcl);
@@ -247,7 +247,7 @@ void Domaine_EF::reordonner(Faces& les_faces)
     const int nb_faces_front = domaine().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
     //    rang_elem_non_std_.resize(nb_elements);
-    //    Scatter::creer_tableau_distribue(dom, Joint::ELEMENT, rang_elem_non_std_);
+    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::ELEMENT, rang_elem_non_std_);
     rang_elem_non_std_ = -1;
     int nb_elems_non_std = 0;
     // D'abord on marque les elements non standards avec rang_elem_non_std_[i] = 0
@@ -408,7 +408,7 @@ void Domaine_EF::discretiser()
     const int n = nb_faces();
     face_normales_.resize(n, dimension);
     // const Domaine & dom = domaine();
-    //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
+    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::FACE, face_normales_);
     creer_tableau_faces(face_normales_);
     const IntTab& face_som = face_sommets();
     const IntTab& face_vois = face_voisins();

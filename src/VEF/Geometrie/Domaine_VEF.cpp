@@ -809,9 +809,9 @@ void Domaine_VEF::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_d
               // Si l'arete superflue est commune on en tient compte
               for (int j=0; j<dom.faces_joint().size(); j++)
                 {
-                  int nb_aretes_sur_le_joint = dom.faces_joint()(j).joint_item(Joint::ARETE).items_communs().size_array();
+                  int nb_aretes_sur_le_joint = dom.faces_joint()(j).joint_item(JOINT_ITEM::ARETE).items_communs().size_array();
                   for (int k=0; k<nb_aretes_sur_le_joint; k++)
-                    if (dom.faces_joint()(j).joint_item(Joint::ARETE).items_communs()[k]==i) aretes_superflues_communes++;
+                    if (dom.faces_joint()(j).joint_item(JOINT_ITEM::ARETE).items_communs()[k]==i) aretes_superflues_communes++;
                 }
               // On compte les aretes reelles superflues
               if (i<nb_aretes_reelles)
@@ -836,8 +836,8 @@ void Domaine_VEF::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_d
         int sommets_communs=1;
         // On tient compte des sommets communs
         for (int j=0; j<dom.faces_joint().size(); j++)
-          for (int k=0; k<dom.faces_joint()(j).joint_item(Joint::SOMMET).items_communs().size_array(); k++)
-            if (dom.faces_joint()(j).joint_item(Joint::SOMMET).items_communs()[k]==i) sommets_communs++;
+          for (int k=0; k<dom.faces_joint()(j).joint_item(JOINT_ITEM::SOMMET).items_communs().size_array(); k++)
+            if (dom.faces_joint()(j).joint_item(JOINT_ITEM::SOMMET).items_communs()[k]==i) sommets_communs++;
         nb_sommets_non_periodiques+=1./sommets_communs;
       }
   double total_nombre_aretes_superflues=mp_sum(nombre_aretes_reelles_superflues);

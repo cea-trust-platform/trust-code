@@ -2206,6 +2206,53 @@ void Domaine_32_64<_SIZE_>::fill_from_list(std::list<Domaine_32_64*>& lst)
 }
 
 
+/*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints
+ *
+ * Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
+ * numero e devient l'element de numero e+elem_offset
+ *
+ * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+ */
+template <typename _SIZE_>
+void Domaine_32_64<_SIZE_>::renum_joint_common_items(const IntVect_t& Les_Nums, const int_t elem_offset)
+{
+  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
+    {
+      ArrOfInt_t& sommets_communs = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
+      for (int_t index = 0; index < sommets_communs.size_array(); index++)
+        sommets_communs[index] = Les_Nums[sommets_communs[index]];
+
+      ArrOfInt_t& elements_distants = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
+      elements_distants += elem_offset;
+    }
+}
+
+/*! @brief Concatene les joints de meme nom
+ *
+ */
+template <typename _SIZE_>
+int Domaine_32_64<_SIZE_>::comprimer_joints()
+{
+  auto& list = mes_faces_joint_.get_stl_list();
+  for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      Frontiere_t& front = *it;
+      for (auto it2 = std::next(it); it2 != list.end();)
+        {
+          Frontiere_t& front2 = *it2;
+          if (front.le_nom() == front2.le_nom())
+            {
+              front.add(front2);
+              it2 = list.erase(it2);
+            }
+          else
+            ++it2;
+        }
+    }
+  return 1;
+}
+
+
 /////////////////////////////////////////////////
 //// Template instanciations
 /////////////////////////////////////////////////

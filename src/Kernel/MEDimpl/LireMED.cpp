@@ -775,7 +775,7 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
               ArrOfInt& sommets_joint=sommets_joints[numero_joint];
               jointprov.affecte_PEvoisin(PE_voisin);
               jointprov.affecte_epaisseur(epaisseur);
-              ArrOfInt& sommets_du_joint=jointprov.set_joint_item(Joint::SOMMET).set_items_communs();
+              ArrOfInt& sommets_du_joint=jointprov.set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
               sommets_du_joint=sommets_joint;
               faces_joint.add(jointprov);
             }

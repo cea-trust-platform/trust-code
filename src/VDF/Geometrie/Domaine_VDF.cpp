@@ -176,7 +176,7 @@ void Domaine_VDF::reordonner(Faces& les_faces)
     for (int i_joint = 0; i_joint < nb_joints; i_joint++)
       {
         Joint&     joint         = joints[i_joint];
-        ArrOfInt& indices_faces = joint.set_joint_item(Joint::FACE).set_items_communs();
+        ArrOfInt& indices_faces = joint.set_joint_item(JOINT_ITEM::FACE).set_items_communs();
         const int nb_faces_bis    = indices_faces.size_array();
         assert(nb_faces_bis == joint.nb_faces()); // items_communs rempli ?
         for (i = 0; i < nb_faces_bis; i++)
