@@ -448,7 +448,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
 int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 {
   const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis().valeur());
-  DoubleTab& flux_bords_ = op.flux_bords();
+  const DoubleTab& flux_bords_ = op.flux_bords();
   if (flux_bords_.nb_dim() != 2)
     {
       Cout << "L'impression des flux n'est pas codee pour l'operateur " << op.que_suis_je() << finl;

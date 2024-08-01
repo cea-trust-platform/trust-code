@@ -387,7 +387,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
 int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 {
   const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis().valeur());
-  DoubleTab& flux_bords_=op.flux_bords();
+  const DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {
       Cout << "L'impression des flux n'est pas codee pour l'operateur " << op.que_suis_je() << finl;

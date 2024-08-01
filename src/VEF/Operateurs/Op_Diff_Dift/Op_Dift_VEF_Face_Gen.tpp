@@ -248,6 +248,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
   int size = domaine_VEF.premiere_face_int() * nb_comp;
   copyPartialFromDevice(resu, 0, size, "resu on boundary");
   copyPartialFromDevice(inconnue, 0, size, "inconnue on boundary");
+  copyPartialFromDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
   start_gpu_timer();
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
@@ -303,6 +304,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
             tab_flux_bords(face, nc) = 0.;
     }
   end_gpu_timer(0, "Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen\n");
+  copyPartialToDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
   copyPartialToDevice(resu, 0, size, "resu on boundary");
   copyPartialToDevice(inconnue, 0, size, "inconnue on boundary");
 }
