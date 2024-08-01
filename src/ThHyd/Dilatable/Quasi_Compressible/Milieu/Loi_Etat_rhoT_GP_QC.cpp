@@ -152,11 +152,27 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
-  ToDo_Kokkos("critical");
-  for (int i=0 ; i<n ; i++)
+  if (is_exp_)
     {
-      tab_rho_np1(i) = calculer_masse_volumique(Pth,tab_ICh(i,0),i);
-      tab_rho(i,0) = 0.5 * (tab_rho_n(i) + tab_rho_np1(i));
+      ToDo_Kokkos("critical but not easy to port (virtual function)");
+      for (int i = 0; i < n; i++)
+        {
+          tab_rho_np1(i) = calculer_masse_volumique(Pth, tab_ICh(i, 0), i);
+          tab_rho(i, 0) = 0.5 * (tab_rho_n(i) + tab_rho_np1(i));
+        }
+    }
+  else
+    {
+      CDoubleTabView rho = rho_.view_ro();
+      CDoubleArrView rho_n = static_cast<const DoubleVect&>(tab_rho_n).view_ro();
+      DoubleArrView rho_np1 = static_cast<DoubleVect&>(tab_rho_np1).view_wo();
+      DoubleTabView masse_volumique = tab_rho.view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
+      {
+        rho_np1(i) = rho(i,0);
+        masse_volumique(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();
