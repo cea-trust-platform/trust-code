@@ -32,6 +32,8 @@
 #include <Equation_base.h>
 #include <Statistiques.h>
 #include <Milieu_base.h>
+#include <TRUST_2_PDI.h>
+#include <Domaine_VF.h>
 #include <SolveurSys.h>
 #include <Domaine_VF.h>
 #include <Operateur.h>
@@ -39,8 +41,6 @@
 #include <Avanc.h>
 #include <Debog.h>
 #include <Param.h>
-
-#include <TRUST_2_PDI.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;

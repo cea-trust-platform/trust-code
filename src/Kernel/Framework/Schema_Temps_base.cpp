@@ -22,6 +22,7 @@
 #include <LecFicDiffuse.h>
 #include <stat_counters.h>
 #include <Equation_base.h>
+#include <TRUST_2_PDI.h>
 #include <sys/stat.h>
 #include <SFichier.h>
 #include <Param.h>
@@ -36,8 +37,6 @@
 // XD dt_calc_dt_fixe dt_start dt_fixe 0 The first time step is fixed by the user (recommended when resuming calculation with Crank Nicholson temporal scheme to ensure continuity).
 // XD   attr value floattant value 0 first time step.
 
-#include <pdi.h>
-#include <Sortie_Nulle.h>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
@@ -726,15 +725,16 @@ void Schema_Temps_base::imprimer(Sortie& os, const Probleme_base& pb) const
 int Schema_Temps_base::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
-  Sortie_Nulle* pdi = dynamic_cast<Sortie_Nulle*>(&os);
-  if(pdi)
+  if(TRUST_2_PDI::PDI_checkpoint_)
     {
       int i = nb_sauv_;
       double t = temps_courant_;
-      PDI_multi_expose("time_checkpoint",
-                       "iter", &i, PDI_OUT,
-                       "temps", &t, PDI_OUT,
-                       nullptr);
+
+      TRUST_2_PDI pdi_interface;
+      std::map<std::string,void*> time_infos;
+      time_infos["iter"] = &i;
+      time_infos["temps"] = &t;
+      pdi_interface.multiple_writes("time_checkpoint", time_infos);
       bytes = 8; // one double written (nb_sauv_ is not written, just shared with PDI)
     }
   nb_sauv_++;

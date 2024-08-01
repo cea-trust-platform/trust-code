@@ -24,13 +24,10 @@
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <TRUST_2_PDI.h>
 #include <Domaine_VF.h>
 #include <Dirichlet.h>
 #include <Domaine.h>
-
-#include <Sortie_Nulle.h>
-
-#include <TRUST_2_PDI.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
@@ -351,9 +348,9 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   // en mode ecriture special seul le maitre ecrit l'entete
   int a_faire, special;
   EcritureLectureSpecial::is_ecriture_special(special, a_faire);
-  Sortie_Nulle* pdi = dynamic_cast<Sortie_Nulle*>(&fich);
-  a_faire = a_faire && !pdi;
-  special = special && !pdi;
+  int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
+  a_faire = a_faire && !pdi_format;
+  special = special && !pdi_format;
 
   if (a_faire)
     {
@@ -368,7 +365,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
-  else if (pdi)
+  else if (pdi_format)
     {
       bytes = 8 * valeurs().size_array();
       int nb_dim = valeurs().nb_dim();
@@ -379,13 +376,15 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
       Nom dim_str = Nom("dim_") + nom_;
       Nom glob_dim_str = Nom("glob_dim_") + nom_;
-      PDI_multi_expose("dimensions",
-                       dim_str.getChar(), dimensions.addr(), PDI_OUT,
-                       glob_dim_str.getChar(), &glob_dim_0, PDI_OUT,
-                       nullptr);
+
+      TRUST_2_PDI pdi_interface;
+      std::map<std::string,void*> data_dims;
+      data_dims[dim_str.getString()] = dimensions.addr();
+      data_dims[glob_dim_str.getString()] = &glob_dim_0;
+      pdi_interface.multiple_writes("dimensions", data_dims);
 
       DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
-      PDI_expose(nom_.getChar(), unknwon.addr(), PDI_OUT);
+      pdi_interface.write(nom_.getString(), unknwon.addr());
     }
   else
     {
