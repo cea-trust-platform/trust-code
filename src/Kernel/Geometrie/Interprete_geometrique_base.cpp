@@ -71,10 +71,7 @@ Entree& Interprete_geometrique_base_32_64<_SIZE_>::interpreter(Entree& is)
       Domaine_t& dom = domaine(j);
       dom.invalide_octree();
       dom.faces_bord().associer_domaine(dom);
-// TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
       dom.faces_joint().associer_domaine(dom);
-#endif
       dom.faces_raccord().associer_domaine(dom);
       dom.bords_int().associer_domaine(dom);
       dom.groupes_faces().associer_domaine(dom);

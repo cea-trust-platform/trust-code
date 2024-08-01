@@ -31,7 +31,6 @@ class Raffiner_Simplexes_32_64 : public Interprete_geometrique_base_32_64<_SIZE_
 public :
   using int_t = _SIZE_;
   using Domaine_t = Domaine_32_64<_SIZE_>;
-  using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree& is) override;
 

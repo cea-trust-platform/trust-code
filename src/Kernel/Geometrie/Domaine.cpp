@@ -217,23 +217,16 @@ Entree& Domaine_32_64<_SZ_>::readOn(Entree& s)
   read_former_domaine(s);
   check_domaine();
 
-  // TODO IG
-  if (Process::is_sequential() && (NettoieNoeuds::NettoiePasNoeuds==0) )
+  if (Process::is_sequential() && (NettoieNoeuds_32_64<_SZ_>::NettoiePasNoeuds==0) )
     {
-      // TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-      NettoieNoeuds::nettoie(*this);
-#endif
-      // TODO MP_SUM
+      NettoieNoeuds_32_64<_SZ_>::nettoie(*this);
+      // TODO IG MP_SUM
       nbsom = mp_sum((int)sommets_.dimension(0));
       Cerr << " Number of nodes after node-cleanup: " << nbsom << finl;
     }
 
   // On initialise les descripteurs "sequentiels" (attention, cela bloque le resize des tableaux sommets et elements !)
-  // TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   Scatter::init_sequential_domain(*this);
-#endif
   check_domaine();
   return s;
 }
@@ -309,17 +302,14 @@ void Domaine_32_64<_SZ_>::check_domaine()
     Cerr << "Warning, the reread domaine " << nom_ << " has no defined boundaries (none boundary or connector)." << finl;
 
   mes_faces_bord_.associer_domaine(*this);
-//TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   mes_faces_joint_.associer_domaine(*this);
-#endif
   mes_faces_raccord_.associer_domaine(*this);
   mes_bords_int_.associer_domaine(*this);
   mes_groupes_faces_.associer_domaine(*this);
   elem_->associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
-  // TODO MP_SUM
+  // TODO IG MP_SUM
   const int_t nbelem = (int)mp_sum((int)mes_elems_.dimension(0));
   Cerr << "  Number of elements: " << nbelem << finl;
 
@@ -902,12 +892,8 @@ void Domaine_32_64<_SZ_>::ajouter(const DoubleTab_t& soms, IntVect_t& nums)
   if(oldsz!=0)
     {
       assert(dim==sommets_.dimension(1));
-      // TODO IG
-      Octree_Double octree;
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-      // Not functionnal yet with new 64b process:
+      Octree_Double_32_64<_SZ_> octree;
       octree.build_nodes(les_sommets(), 0 /* ne pas inclure les sommets virtuels */);
-#endif
 
       int compteur=0;
       ArrOfDouble tab_coord(dim);
@@ -1227,11 +1213,8 @@ void Domaine_32_64<_SZ_>::merge_wo_vertices_with(Domaine_32_64<_SZ_>& dom2)
   faces_bord().add(dom2.faces_bord());
 
   // Take care of the joints only in 32 bits instance when this is called by Scatter
-  // TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   dom2.faces_joint().associer_domaine(*this);
   faces_joint().add(dom2.faces_joint());
-#endif
 
   dom2.faces_raccord().associer_domaine(*this);
   faces_raccord().add(dom2.faces_raccord());
@@ -1322,11 +1305,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
 
   // Connectivite TRUST -> MED
   IntTab_t les_elems2(mes_elems_);
-
-  //TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   conn_trust_to_med(les_elems2, type_ele, true);
-#endif
 
   mc_mesh_->allocateCells(ncells);
   if (cell_type == INTERP_KERNEL::NORM_POLYHED)

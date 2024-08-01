@@ -340,7 +340,7 @@ int Faces_builder::chercher_face_element(const ITab_T<_SIZE_>&    elem_som,
       for (i_som = 0; i_som < nb_sommets_par_face; i_som++)
         {
           const int sommet_elem_ref = faces_element_ref(i_face, i_som);
-          int sommet_domaine ;
+          _SIZE_ sommet_domaine ;
           if (sommet_elem_ref==-1)
             sommet_domaine=-1;
           else
@@ -359,6 +359,12 @@ int Faces_builder::chercher_face_element(const ITab_T<_SIZE_>&    elem_som,
   else
     return i_face;
 }
+
+// Explicit instanciation
+template int Faces_builder::chercher_face_element(const ITab_T<int>& elem_som, const IntTab& faces_element_ref, const SmallAOTID_T<int>& une_face, const int elem);
+#if INT_is_64_ == 2
+template int Faces_builder::chercher_face_element(const ITab_T<trustIdType>& elem_som, const IntTab& faces_element_ref, const SmallAOTID_T<trustIdType>& une_face, const trustIdType elem);
+#endif
 
 const IntTab& Faces_builder::faces_element_reference(int elem) const
 {

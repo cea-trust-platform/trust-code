@@ -2869,3 +2869,11 @@ void Scatter::uninit_sequential_domain(Domaine_32_64<_SIZE_>& dom)
   dom.les_elems().set_md_vector(md);
 }
 
+
+// Explicit instanciation
+template void Scatter::init_sequential_domain(Domaine_32_64<int>& dom);
+template void Scatter::uninit_sequential_domain(Domaine_32_64<int>& dom);
+#if INT_is_64_ == 2
+template void Scatter::init_sequential_domain(Domaine_32_64<trustIdType>& dom);
+template void Scatter::uninit_sequential_domain(Domaine_32_64<trustIdType>& dom);
+#endif

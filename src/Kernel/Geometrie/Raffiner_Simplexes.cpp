@@ -823,7 +823,7 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
   using DoubleTab_t = DTab_T<_SIZE_>;
   using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
 
-  using Sous_Domaine_t = Interprete_geometrique_base_32_64<_SIZE_>::Sous_Domaine_t;
+  using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
   using Bords_t = Bords_32_64<_SIZE_>;
   using Bord_t = Bord_32_64<_SIZE_>;
   using Groupes_Faces_t = Groupes_Faces_32_64<_SIZE_>;

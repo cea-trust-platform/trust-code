@@ -15,7 +15,8 @@
 
 #include <Array_tools.h>
 
-namespace {
+namespace
+{
 
 /*! @brief retire les doublons du tableau array (suppose que le tableau est trie dans l'ordre croissant)
  *
@@ -56,7 +57,7 @@ _SIZE_ array_retirer_doublons(AOInt_T<_SIZE_>& array)
  *
  */
 template <typename _SIZE_>
-void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array& array)
+void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array)
 {
   // IntVect n'est pas traite correctement car on ne
   //  fait pas un resize() mais un resize_array().
@@ -70,6 +71,12 @@ void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array& array)
   const _SIZE_ sz = ::array_retirer_doublons(array);
   array.resize_array(sz);
 }
+
+// Explicit instanciation
+template void array_trier_retirer_doublons(AOInt_T<int>& array);
+#if INT_is_64_ == 2
+template void array_trier_retirer_doublons(AOInt_T<trustIdType>& array);
+#endif
 
 /*! @brief calcule l'intersection entre les deux listes d'entiers liste1 et liste2.
  *
@@ -184,7 +191,12 @@ int array_bsearch(const ArrOfInt& tab, int valeur)
   return -1;
 }
 
-static int fct_qsort_nbcolonnes;
+static trustIdType fct_qsort_nbcolonnes;
+
+template <typename T> True_int my_sign(T val)
+{
+  return (T(0) < val) - (val < T(0));
+}
 
 True_int fct_qsort_tableau_2(const void *ptr1, const void *ptr2)
 {
@@ -192,48 +204,24 @@ True_int fct_qsort_tableau_2(const void *ptr1, const void *ptr2)
   const int *t2 = (const int *) ptr2;
   int delta = t1[0] - t2[0];
   int delta2 = t1[1] - t2[1];
-#ifdef INT_is_64_
-  delta= delta ? delta : delta2;
-  if (delta==0)
-    return 0;
-  if (delta<0)
-    return -1;
-  return 1;
-#else
-  return delta ? delta : delta2;
-#endif
+  True_int s1 = my_sign(delta);
+  return s1 ? s1 : my_sign(delta2);
 }
 
 True_int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
 {
   const int *t1 = (const int *) ptr1;
   const int *t2 = (const int *) ptr2;
-  const int n = fct_qsort_nbcolonnes - 1;
+  const int n = (int)fct_qsort_nbcolonnes - 1;
   int i;
   for (i = 0; i < n; i++)
     {
       int delta = t1[i] - t2[i];
       if (delta)
-        {
-#ifdef INT_is_64_
-          if (delta<0)
-            return -1;
-          return 1;
-#else
-          return delta;
-#endif
-        }
+        return my_sign(delta);
     }
-#ifdef INT_is_64_
   int delta= t1[i] - t2[i];
-  if (delta==0)
-    return 0;
-  if (delta<0)
-    return -1;
-  return 1;
-#else
-  return t1[i] - t2[i];
-#endif
+  return my_sign(delta);
 }
 
 /*! @brief tri lexicographique du tableau tab (par ordre croissant de la premiere colonne, si premiere colonne identique, ordre croissant
@@ -268,78 +256,47 @@ int tri_lexicographique_tableau(IntTab& tab)
   return nb_colonnes;
 }
 
-static const IntVect *fct_qsort_tab_ptr = 0;
+template <typename _SIZE_>
+static const IVect_T<_SIZE_> *fct_qsort_tab_ptr = 0;
 
+template <typename _SIZE_>
 True_int fct_qsort_tableau_1_indirect(const void *ptr1, const void *ptr2)
 {
-  const int t1 = *((const int *) ptr1);
-  const int t2 = *((const int *) ptr2);
-  const IntVect& tab = *fct_qsort_tab_ptr;
-  int delta = tab[t1] - tab[t2];
-#ifdef INT_is_64_
-  if (delta==0)
-    return 0;
-  if (delta<0)
-    return -1;
-  return 1;
-#else
-  return delta;
-#endif
+  const _SIZE_ t1 = *((const _SIZE_ *) ptr1);
+  const _SIZE_ t2 = *((const _SIZE_ *) ptr2);
+  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  _SIZE_ delta = tab[t1] - tab[t2];
+  return my_sign(delta);
 }
 
+template <typename _SIZE_>
 True_int fct_qsort_tableau_2_indirect(const void *ptr1, const void *ptr2)
 {
-  const int t1 = *((const int *) ptr1) * 2;
-  const int t2 = *((const int *) ptr2) * 2;
-  const IntVect& tab = *fct_qsort_tab_ptr;
-  int delta = tab[t1] - tab[t2];
-  int delta2 = tab[t1+1] - tab[t2+1];
-#ifdef INT_is_64_
-  delta= delta ? delta : delta2;
-  if (delta==0)
-    return 0;
-  if (delta<0)
-    return -1;
-  return 1;
-#else
-  return delta ? delta : delta2;
-#endif
-
+  const _SIZE_ t1 = *((const _SIZE_ *) ptr1) * 2;
+  const _SIZE_ t2 = *((const _SIZE_ *) ptr2) * 2;
+  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  _SIZE_ delta = tab[t1] - tab[t2];
+  _SIZE_ delta2 = tab[t1+1] - tab[t2+1];
+  True_int s1 = my_sign(delta);
+  return s1 ? s1 : my_sign(delta2);
 }
 
+template <typename _SIZE_>
 True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
 {
-  const int nc = fct_qsort_nbcolonnes;
-  int t1 = *((const int *) ptr1) * nc;
-  int t2 = *((const int *) ptr2) * nc;
-  const IntVect& tab = *fct_qsort_tab_ptr;
-  const int n = nc - 1;
-  int i;
-  for (i = 0; i < n; i++)
+  const _SIZE_ nc = (_SIZE_)fct_qsort_nbcolonnes;
+  _SIZE_ t1 = *((const _SIZE_ *) ptr1) * nc;
+  _SIZE_ t2 = *((const _SIZE_ *) ptr2) * nc;
+  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  const _SIZE_ n = nc - 1;
+  for (_SIZE_ i = 0; i < n; i++)
     {
-      int delta = tab[t1++] - tab[t2++];
+      _SIZE_ delta = tab[t1++] - tab[t2++];
       if (delta)
-        {
-#ifdef INT_is_64_
-          if (delta<0)
-            return -1;
-          return 1;
-#else
-          return delta;
-#endif
-        }
+        return my_sign(delta);
     }
-#ifdef INT_is_64_
-  int delta=tab[t1] - tab[t2];
-  if (delta==0)
-    return 0;
-  if (delta<0)
-    return -1;
-  return 1;
-#else
-  return tab[t1] - tab[t2];
-#endif
-
+  _SIZE_ delta = tab[t1] - tab[t2];
+  return my_sign(delta);
 }
 
 /*! @brief Idem que tri_lexicographique_tableau mais on trie le tableau index qui contient les indices de lignes du tableau tab tel que tab(index[i], *) soit
@@ -370,27 +327,36 @@ int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZ
 
   if (nb_lignes != 0)
     {
-      if (fct_qsort_tab_ptr)
+      if (fct_qsort_tab_ptr<_SIZE_>)
         {
           Cerr << "Internal error in tri_lexicographique_tableau_indirect !" << finl;
           Process::exit();
           // Aie ! on essaye de faire du multithread ??? acces concurrent au pointeur
         }
-      fct_qsort_tab_ptr = &tab;
+      fct_qsort_tab_ptr<_SIZE_> = &tab;
       if (nb_colonnes == 1)
-        qsort(index.addr(), index.size_array(), sizeof(int), fct_qsort_tableau_1_indirect);
+        qsort(index.addr(), index.size_array(), sizeof(_SIZE_), fct_qsort_tableau_1_indirect<_SIZE_>);
       else if (nb_colonnes == 2)
-        qsort(index.addr(), index.size_array(), sizeof(int), fct_qsort_tableau_2_indirect);
+        qsort(index.addr(), index.size_array(), sizeof(_SIZE_), fct_qsort_tableau_2_indirect<_SIZE_>);
       else
         {
           fct_qsort_nbcolonnes = nb_colonnes;
-          qsort(index.addr(), index.size_array(), sizeof(int), fct_qsort_tableau_n_indirect);
+          qsort(index.addr(), index.size_array(), sizeof(_SIZE_), fct_qsort_tableau_n_indirect<_SIZE_>);
         }
-      fct_qsort_tab_ptr = 0;
+      fct_qsort_tab_ptr<_SIZE_> = 0;
     }
 
   return nb_colonnes;
 }
+
+// Explicit instanciation
+template const IVect_T<int> *fct_qsort_tab_ptr<int>;
+template int tri_lexicographique_tableau_indirect(const ITab_T<int>& tab, AOInt_T<int>& index);
+
+#if INT_is_64_ == 2
+template static const IVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
+template int tri_lexicographique_tableau_indirect(const ITab_T<trustIdType>& tab, AOInt_T<trustIdType>& index);
+#endif
 
 void resize_tab_lines(IntTab& tab, const int n)
 {
