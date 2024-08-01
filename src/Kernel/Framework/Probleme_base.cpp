@@ -22,7 +22,6 @@
 #include <Postraitement.h>
 #include <stat_counters.h>
 #include <Debog.h>
-#include <pdi.h>
 
 Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 

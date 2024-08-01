@@ -28,9 +28,9 @@
 #include <Dirichlet.h>
 #include <Domaine.h>
 
-#include <pdi.h>
-#include <FichierHDF.h>
 #include <Sortie_Nulle.h>
+
+#include <TRUST_2_PDI.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
@@ -419,25 +419,52 @@ int Champ_Inc_base::reprendre(Entree& fich)
   int special = EcritureLectureSpecial::is_lecture_special();
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
-      fich >> un_temps;
-      int nb_val_nodales_old = nb_valeurs_nodales();
       Cerr << "Resume of the field " << nom_;
-
-      if (special)
-        EcritureLectureSpecial::lecture_special(*this, fich);
-      else
-        valeurs().lit(fich);
-      if (nb_val_nodales_old != nb_valeurs_nodales())
+      if(TRUST_2_PDI::PDI_restart_)
         {
-          Cerr << finl << "Problem in the resumption " << finl;
-          Cerr << "The field wich is read, does not have same number of nodal values" << finl;
-          Cerr << "that the field created by the discretization " << finl;
-          Process::exit();
+          int nb_dim = valeurs().nb_dim();
+          ArrOfInt dimensions(nb_dim);
+          for(int i=0; i< nb_dim; i++)
+            dimensions[i] = valeurs().dimension(i);
+          int glob_dim_0;
+          PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
+          Nom dim_str = Nom("dim_") + nom_;
+          Nom glob_dim_str = Nom("glob_dim_") + nom_;
+
+          TRUST_2_PDI pdi_interface;
+          std::map<std::string,void*> data_dims;
+          data_dims[dim_str.getString()] = dimensions.addr();
+          data_dims[glob_dim_str.getString()] = &glob_dim_0;
+          pdi_interface.multiple_reads("dimensions", data_dims);
+          pdi_interface.read(nom_.getChar(), valeurs().addr());
+        }
+      else
+        {
+          int nb_val_nodales_old = nb_valeurs_nodales();
+          fich >> un_temps;
+          if (special)
+            EcritureLectureSpecial::lecture_special(*this, fich);
+          else
+            valeurs().lit(fich);
+
+          if (nb_val_nodales_old != nb_valeurs_nodales())
+            {
+              Cerr << finl << "Problem in the resumption " << finl;
+              Cerr << "The field wich is read, does not have same number of nodal values" << finl;
+              Cerr << "that the field created by the discretization " << finl;
+              Process::exit();
+            }
         }
       Cerr << " performed." << finl;
     }
   else // lecture pour sauter le bloc
     {
+      if(TRUST_2_PDI::PDI_restart_)
+        {
+          Cerr << finl << "Problem in the resumption " << finl;
+          Cerr << "PDI format does not require to navigate through file..." << finl;
+          Process::exit();
+        }
       DoubleTab tempo;
       fich >> un_temps;
       tempo.jump(fich);

@@ -40,6 +40,8 @@
 #include <Debog.h>
 #include <Param.h>
 
+#include <TRUST_2_PDI.h>
+
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
 extern Stat_Counter_Id source_counter_;
@@ -444,12 +446,15 @@ int Equation_base::sauvegarder(Sortie& os) const
  */
 int Equation_base::reprendre(Entree& fich)
 {
-  double temps = schema_temps().temps_courant();
-  Nom field_tag(inconnue().le_nom());
-  field_tag += inconnue().que_suis_je();
-  field_tag += probleme().domaine().le_nom();
-  field_tag += Nom(temps,probleme().reprise_format_temps());
-  avancer_fichier(fich, field_tag);
+  if(!TRUST_2_PDI::PDI_restart_)
+    {
+      double temps = schema_temps().temps_courant();
+      Nom field_tag(inconnue().le_nom());
+      field_tag += inconnue().que_suis_je();
+      field_tag += probleme().domaine().le_nom();
+      field_tag += Nom(temps,probleme().reprise_format_temps());
+      avancer_fichier(fich, field_tag);
+    }
   inconnue().reprendre(fich);
   return 1;
 }

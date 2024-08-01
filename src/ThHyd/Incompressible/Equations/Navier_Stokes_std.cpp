@@ -38,6 +38,8 @@
 #include <Avanc.h>
 #include <Debog.h>
 
+#include <TRUST_2_PDI.h>
+
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 // XD navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equations.
 
@@ -1217,12 +1219,15 @@ int Navier_Stokes_std::sauvegarder(Sortie& os) const
 int Navier_Stokes_std::reprendre(Entree& is)
 {
   Equation_base::reprendre(is);
-  double temps = schema_temps().temps_courant();
-  Nom ident_pression(la_pression.le_nom());
-  ident_pression += la_pression->que_suis_je();
-  ident_pression += probleme().domaine().le_nom();
-  ident_pression += Nom(temps,probleme().reprise_format_temps());
-  avancer_fichier(is, ident_pression);
+  if(!TRUST_2_PDI::PDI_restart_)
+    {
+      double temps = schema_temps().temps_courant();
+      Nom ident_pression(la_pression.le_nom());
+      ident_pression += la_pression->que_suis_je();
+      ident_pression += probleme().domaine().le_nom();
+      ident_pression += Nom(temps,probleme().reprise_format_temps());
+      avancer_fichier(is, ident_pression);
+    }
   la_pression->reprendre(is);
 
   if (le_traitement_particulier.non_nul())
