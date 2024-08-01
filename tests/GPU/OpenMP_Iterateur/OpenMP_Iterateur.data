@@ -1,5 +1,5 @@
 # PARALLEL OK #
-# copyFromDevice 4 #
+# copyToDevice 1 #
 dimension 3
 MultipleFiles 1
 Pb_Hydraulique pb

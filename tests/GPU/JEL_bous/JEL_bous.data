@@ -1,6 +1,6 @@
 # PARALLEL OK #
 # Quasi compressible test case on GPU with still a lot of D2H copies: #
-# copyFromDevice 25 #
+# copyToDevice 11 #
 dimension 3
 Pb_thermohydraulique_Turbulent pb1
 Domaine dom
@@ -46,7 +46,8 @@ Lire sch
 {
 nb_pas_dt_max 10
     tinit 0.
- tcpumax 47.00
+    tcpumax 47.00
+    dt_impr 0.0000001
     dt_start dt_calc
     tmax 2.
     dt_min 1.e-10

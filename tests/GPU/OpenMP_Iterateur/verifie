@@ -4,8 +4,9 @@ if [ "$TRUST_USE_OPENMP" = 1 ] && [ ${exec%mpi_opt} != $exec ]
 then
    NP=1 && [ ${1#PAR} != $1 ] && NP=2
    TRUST_CLOCK_ON=1 trust $1 $NP 1>$1.out_err 2>&1 
-   limit=`awk '/copyFromDevice/ {print $3}' $1.data`
-   awk -v NP=$NP -v limit=$limit '/Copy from device/ && /detected/ && ($(NF-4)>1000) {n+=1} END {copy=n/10/NP;print copy"<"limit" copyFromDevice per time step.";exit (copy<limit)}' $1.out_err
+   limit=`awk '/copyToDevice/ {print $3}' $1.data`
+   # On compte uniquement les copies de tableaux (pas le buffer_base en // lors des echange espaces virtuels) entre les pas de temps 2 et 3...
+   awk -v NP=$NP -v limit=$limit '/time step number 2/ {n=0} /Copy to device array/ && /Bytes/ && ($(NF-3)>80) {n+=1} /time step number 3/ {copy=n/NP;print copy"<="limit" copyToDevice per time step.";exit (copy<=limit)}' $1.out_err
    OK=$?
    [ $OK = 0 ] && echo "See `pwd`/$1.out_err" && exit -1
 fi
