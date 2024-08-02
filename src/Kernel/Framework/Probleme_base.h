@@ -72,6 +72,7 @@ public:
   Equation_base& equation(const Nom&);
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override;
+  inline int is_sauvegarde_simple() const { return simple_restart_; }
 
   virtual const Equation_base& get_equation_by_name(const Nom&) const;
   virtual Equation_base& getset_equation_by_name(const Nom&);
@@ -217,8 +218,8 @@ protected :
   OBS_PTR(Discretisation_base) la_discretisation_;
   OBS_PTR(Probleme_Couple) pbc_;
   mutable LIST(OBS_PTR(SFichier)) out_files_; // Liste des SFichier a fermer (.out)
-
   std::map<std::string, OWN_PTR(Correlation_base)> correlations_;
+
   LIST(OBS_PTR(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
   LIST(OBS_PTR(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
   LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)

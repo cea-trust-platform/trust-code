@@ -60,6 +60,8 @@ public:
   void mettre_a_jour(double temps) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
+  void share_dimensions_with_PDI(int write) const;
+
   Champ_base& affecter_compo(const Champ_base&, int compo) override;
   void resetTime(double time) override;
 

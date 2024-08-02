@@ -68,15 +68,10 @@ public:
     PDI_event(event.c_str());
   }
 
-  void stop_sharing(int n)
+  void stop_sharing_last_variable()
   {
-    assert(n>=0 && n<=(int)shared_data_.size());
-    // stop sharing last n variables in reverse order
-    for(int i=0; i<n; i++)
-      {
-        PDI_reclaim(shared_data_.back().c_str());
-        shared_data_.pop_back();
-      }
+    PDI_reclaim(shared_data_.back().c_str());
+    shared_data_.pop_back();
   }
 
   void stop_sharing()
@@ -93,7 +88,7 @@ private:
 
   void multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write=0);
 
-  std::vector<std::string> shared_data_;
+  static std::vector<std::string> shared_data_;
 
 };
 

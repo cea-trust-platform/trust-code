@@ -727,15 +727,17 @@ int Schema_Temps_base::sauvegarder(Sortie& os) const
   int bytes = 0;
   if(TRUST_2_PDI::PDI_checkpoint_)
     {
-      int i = nb_sauv_;
+      int simple_checkpoint = ref_cast_non_const(Probleme_base, mon_probleme.valeur()).is_sauvegarde_simple();
+      int i = simple_checkpoint ? 0 : nb_sauv_;
       double t = temps_courant_;
 
-      TRUST_2_PDI pdi_interface;
       std::map<std::string,void*> time_infos;
-      time_infos["iter"] = &i;
+      time_infos["iter"] =  &i;
       time_infos["temps"] = &t;
-      pdi_interface.multiple_writes("time_checkpoint", time_infos);
-      bytes = 8; // one double written (nb_sauv_ is not written, just shared with PDI)
+      TRUST_2_PDI pdi_interface;
+      pdi_interface.multiple_writes("time_scheme", time_infos);
+
+      bytes = 8+4; // one double and one int
     }
   nb_sauv_++;
   return bytes;

@@ -19,19 +19,23 @@
 
 int TRUST_2_PDI::PDI_checkpoint_=0;
 int TRUST_2_PDI::PDI_restart_=0;
+std::vector<std::string> TRUST_2_PDI::shared_data_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
 {
   for(auto& d: data)
     {
       if(write)
-        TRUST_start_sharing(d.first, d.second);
+        PDI_share(d.first.c_str(), d.second, PDI_OUT);
       else
-        PDI_start_sharing(d.first, d.second);
+        PDI_share(d.first.c_str(), d.second, PDI_INOUT);
     }
+
   trigger(event);
-  int n = (int)data.size();
-  stop_sharing(n);
+
+  // stop sharing data, starting from the last shared object
+  for (auto it = data.rbegin(); it != data.rend(); ++it)
+    PDI_reclaim(it->first.c_str());
 }
 
 void TRUST_2_PDI::share_node_parallelism()
@@ -43,12 +47,12 @@ void TRUST_2_PDI::share_node_parallelism()
     {
       MPI_Comm comm = nodeComm->get_mpi_comm();
       int nodeSz = nodeComm->nproc();
-      int rank_in_node = nodeComm->rank();
+      int nodeRk = nodeComm->rank();
 
       PDI_multi_expose("Parallelism",
                        "nodeComm",&comm, PDI_OUT,
                        "nodeSize",&nodeSz, PDI_OUT,
-                       "proc",    &rank_in_node, PDI_OUT,
+                       "nodeRk",    &nodeRk, PDI_OUT,
                        nullptr);
     }
 #endif
