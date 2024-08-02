@@ -393,102 +393,109 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
             // GF on retire le test sur nb_comp car sinon en scalaire on fait tjs du volume etendu
             if ( volumes_etendus_ )
               {
+                CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
+                CIntTabView elem_faces_dirichlet_v = elem_faces_dirichlet_.view_ro();
+                CIntArrView elem_nb_faces_dirichlet_v = elem_nb_faces_dirichlet_.view_ro();
+                CIntArrView elem_faces_frontiere_v = elem_faces_frontiere[n_bord].view_ro();
+                const int elem_faces_frontiere_size = elem_faces_frontiere[n_bord].size_array();
                 //
                 //Modification des coefficients de la matrice
                 //
-                ToDo_Kokkos("critical warning, race condition not easy to fix");
-                for (int i=0; i < elem_faces_frontiere[n_bord].size_array(); i++)
+                Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                     Kokkos::RangePolicy<>(0,elem_faces_frontiere_size), KOKKOS_LAMBDA(
+                                       const int elem_ind)
+                {
+                  const int elem=elem_faces_frontiere_v(elem_ind);
+                  assert(elem!=-1);
+                  const int nb_faces_bord = elem_nb_faces_dirichlet_v(elem);
+
+                  //
+                  //Calcul du coefficient ponderateur
+                  //
+
+                  const double coeff = (dim==2) ?
+                                       nb_faces_bord/2. : nb_faces_bord*nb_faces_bord/6.-nb_faces_bord/3.+1./2;
+
+                  //
+                  //Fin du calcul du coefficient ponderateur
+                  //
+
+                  for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
+                    {
+                      const int face_i = elem_faces(elem,face_loc_i);
+
+                      /* On determine si "face_i" est une face de Dirichlet */
+                      bool is_not_on_boundary = true;
+                      for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
+                        is_not_on_boundary&=(face_i!=elem_faces_dirichlet_v(elem,f_loc));
+
+                      if (is_not_on_boundary) /* si "face_i" n'est pas de Dirichlet */
+                        {
+                          for (int face_loc_j=0; face_loc_j<nb_faces_elem; face_loc_j++)
+                            {
+                              /* Modification des coefficients de la matrice */
+                              /* selon les fonctions de formes etendues */
+                              for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
+                                {
+                                  const int face_bord = elem_faces_dirichlet_v(elem,f_loc);
+                                  const int face_loc_k = num_fac_loc(face_bord,0);
+                                  assert(face_loc_k>=0);
+                                  assert(face_loc_k<nb_faces_elem);
+
+                                  const double kkj = Kij(elem,face_loc_k,face_loc_j);
+                                  Kij(elem,face_loc_i,face_loc_j) += coeff*kkj;
+                                }//fin du for sur "f_loc"
+
+                            }//fin du for sur "face_loc_k"
+
+                        }//fin du if
+
+                    }//fin du for sur "face_loc_i"
+
+
+                  //
+                  //Remise a zero des coefficients associes aux noeuds
+                  //qui se situent sur la frontiere de Dirichlet
+                  //
                   {
-                    const int elem=elem_faces_frontiere[n_bord](i);
-                    assert(elem!=-1);
-                    const int nb_faces_bord = elem_nb_faces_dirichlet_(elem);
+                    for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
+                      {
+                        const int face_bord = elem_faces_dirichlet_v(elem,f_loc);
+                        const int face_loc_j = num_fac_loc(face_bord,0);
+                        assert(face_loc_j>=0);
+                        assert(face_loc_j<nb_faces_elem);
 
-                    //
-                    //Calcul du coefficient ponderateur
-                    //
+                        for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
+                          Kij(elem,face_loc_j,face_loc_i)=0;
+                      }//fin du for sur "f_loc"
+                  }
+                  //
+                  //Fin de la remise a zero
+                  //
 
-                    const double coeff = (Objet_U::dimension==2) ?
-                                         nb_faces_bord/2. : nb_faces_bord*nb_faces_bord/6.-nb_faces_bord/3.+1./2;
-
-                    //
-                    //Fin du calcul du coefficient ponderateur
-                    //
-
+                  //
+                  //Pour retrouver le schema LED
+                  //
+                  {
                     for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
                       {
-                        const int face_i = domaine_VEF.elem_faces(elem,face_loc_i);
-
-                        /* On determine si "face_i" est une face de Dirichlet */
-                        bool is_not_on_boundary = true;
-                        for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
-                          is_not_on_boundary&=(face_i!=elem_faces_dirichlet_(elem,f_loc));
-
-                        if (is_not_on_boundary) /* si "face_i" n'est pas de Dirichlet */
+                        double sum=0.;
+                        for (int face_loc_k=0; face_loc_k<nb_faces_elem; face_loc_k++)
                           {
-                            for (int face_loc_j=0; face_loc_j<nb_faces_elem; face_loc_j++)
-                              {
-                                /* Modification des coefficients de la matrice */
-                                /* selon les fonctions de formes etendues */
-                                for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
-                                  {
-                                    const int face_bord = elem_faces_dirichlet_(elem,f_loc);
-                                    const int face_loc_k = domaine_VEF.get_num_fac_loc(face_bord,0);
-                                    assert(face_loc_k>=0);
-                                    assert(face_loc_k<nb_faces_elem);
+                            sum+=Kij(elem,face_loc_i,face_loc_k);
+                          }
+                        //Cerr << "somme apres : " << sum << finl;
+                        Kij(elem,face_loc_i,face_loc_i) -= sum;//car div(u)=0!
+                      }
+                  }
+                  //
+                  //Fin du schema LED
+                  //
 
-                                    double& kij = tab_Kij(elem,face_loc_i,face_loc_j);
-                                    const double kkj = tab_Kij(elem,face_loc_k,face_loc_j);
-                                    kij+=coeff*kkj;
+                });// for face
 
-                                  }//fin du for sur "f_loc"
+                end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-                              }//fin du for sur "face_loc_k"
-
-                          }//fin du if
-
-                      }//fin du for sur "face_loc_i"
-
-
-                    //
-                    //Remise a zero des coefficients associes aux noeuds
-                    //qui se situent sur la frontiere de Dirichlet
-                    //
-                    {
-                      for (int f_loc=0; f_loc<nb_faces_bord; f_loc++)
-                        {
-                          const int face_bord = elem_faces_dirichlet_(elem,f_loc);
-                          const int face_loc_j = domaine_VEF.get_num_fac_loc(face_bord,0);
-                          assert(face_loc_j>=0);
-                          assert(face_loc_j<nb_faces_elem);
-
-                          for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
-                            tab_Kij(elem,face_loc_j,face_loc_i)=0;
-                        }//fin du for sur "f_loc"
-                    }
-                    //
-                    //Fin de la remise a zero
-                    //
-
-                    //
-                    //Pour retrouver le schema LED
-                    //
-                    {
-                      for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
-                        {
-                          double sum=0.;
-                          for (int face_loc_k=0; face_loc_k<nb_faces_elem; face_loc_k++)
-                            {
-                              sum+=tab_Kij(elem,face_loc_i,face_loc_k);
-                            }
-                          //Cerr << "somme apres : " << sum << finl;
-                          tab_Kij(elem,face_loc_i,face_loc_i)-=sum;//car div(u)=0!
-                        }
-                    }
-                    //
-                    //Fin du schema LED
-                    //
-
-                  }// for face
                 //
                 //Fin de la modification des coefficients de la matrice
                 //
