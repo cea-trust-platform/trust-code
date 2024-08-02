@@ -96,6 +96,7 @@ private :
   //Attributs de la classe
   ArrOfInt elem_nb_faces_dirichlet_;
   IntTab elem_faces_dirichlet_;
+  ArrsOfInt elem_faces_frontiere;
 
   ArrOfDouble alpha_tab_;
   ArrOfDouble beta_; // vaut zero pour les faces ou l'on souhaite degenerer en Amont.

@@ -385,8 +385,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
     for (int n_bord=0; n_bord<nb_bord; n_bord++)
       {
         const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-        int nb_faces_tot=le_bord.nb_faces_tot();
 
         if ( (sub_type(Dirichlet,la_cl.valeur()))
              || (sub_type(Dirichlet_homogene,la_cl.valeur()))
@@ -399,12 +397,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
                 //Modification des coefficients de la matrice
                 //
                 ToDo_Kokkos("critical warning, race condition not easy to fix");
-                for (int ind_face=0; ind_face<nb_faces_tot; ind_face++)
+                for (int i=0; i < elem_faces_frontiere[n_bord].size_array(); i++)
                   {
-                    int face = le_bord.num_face(ind_face);
-                    const int elem=domaine_VEF.face_voisins(face,0);
+                    const int elem=elem_faces_frontiere[n_bord](i);
                     assert(elem!=-1);
-
                     const int nb_faces_bord = elem_nb_faces_dirichlet_(elem);
 
                     //
@@ -2122,7 +2118,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
   elem_faces_dirichlet_.resize(nb_elem_tot,Objet_U::dimension);
   elem_nb_faces_dirichlet_=0;
   elem_faces_dirichlet_=-1;
-
+  elem_faces_frontiere.dimensionner(nb_bord);
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -2142,6 +2138,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
               face = le_bord.num_face(ind_face);
               const int elem=face_voisins(face,0);
               assert(elem!=-1);
+              elem_faces_frontiere[n_bord].append_array(elem);
 
               elem_nb_faces_dirichlet_(elem)+=1;
               assert(elem_nb_faces_dirichlet_(elem)<=Objet_U::dimension);
@@ -2158,13 +2155,12 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
                   Process::exit();
                 }
             }//fin du for sur "face"
-
           //
           //Fin du remplissage des tableaux
           //
 
         }//fin du if sur "Dirichlet"
-
+      elem_faces_frontiere[n_bord].array_trier_retirer_doublons();
     }//fin du for sur "n_bord"
 }
 
