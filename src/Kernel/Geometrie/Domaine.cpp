@@ -903,10 +903,8 @@ void Domaine_32_64<_SZ_>::ajouter(const DoubleTab_t& soms, IntVect_t& nums)
         {
           for (int j = 0; j < dim; j++)
             tab_coord[j] = soms(i,j);
-#if !defined(INT_is_64_) || INT_is_64_ == 1
           octree.search_elements_box(tab_coord, epsilon_, liste_sommets);
           octree.search_nodes_close_to(tab_coord, les_sommets(), liste_sommets, epsilon_);
-#endif
           const int_t nb_sommets_proches = liste_sommets.size_array();
           if (nb_sommets_proches == 0)
             {
@@ -1361,7 +1359,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
               ArrOfTID cell_def(nverts);
               int j = 0;
               for (; j<nverts && les_elems2(i, j) >= 0; j++)
-                cell_def[j] = (trustIdType)les_elems2[i*nverts + j];
+                cell_def[j] = (trustIdType)les_elems2(i, j);
               mc_mesh_->insertNextCell(cell_type, j, cell_def.addr());  // j is the final numb of vertices
             }
         }
@@ -1437,6 +1435,94 @@ MEDCoupling::OverlapDEC* Domaine_32_64<_SIZE_>::get_dec(const Domaine_32_64& oth
 #endif
 
 #endif
+
+
+/*! @brief Fills the Domaine from a list of Domaine objects by aggregating them.
+ *
+ * See Mailler for example
+ */
+template <typename _SIZE_>
+void Domaine_32_64<_SIZE_>::fill_from_list(std::list<Domaine_32_64*>& lst)
+{
+  Cerr << "Filling domain from list of domains in progress... " << finl;
+  if (Process::is_parallel())
+    Process::exit("Error in Domaine_32_64<_SIZE_>::fill_from_list() : compression prohibited in parallel mode");
+  if (lst.size() == 0)
+    Process::exit("Error in Domaine_32_64<_SIZE_>::fill_from_list() : compression prohibited in parallel mode");
+
+  for(auto& elem: lst)
+    elem->comprimer();
+
+#ifndef NDEBUG
+  Domaine_32_64& fst_dom = *lst.front();
+  Nom typ_elem = fst_dom.type_elem()->que_suis_je();
+#endif
+  for(auto& it: lst)
+    {
+      Domaine_32_64& dom2 = *it;
+      Cerr << "   Concatenating Domains "<< nom_ << " and " << dom2.nom_ << finl;;
+      // Check single geometrical type:
+      assert(typ_elem == dom2.type_elem()->que_suis_je());
+      // Handle nodes:
+      IntVect_t les_nums;
+      // Copy sommets to this
+      ajouter(dom2.sommets_, les_nums);  // les_nums: out parameter
+      // Renumber current Domaine to prepare addition of elements
+      dom2.renum(les_nums);
+      // Merge elem info:
+      merge_wo_vertices_with(dom2);
+    }
+
+  Cerr << "Filling from list - End!" << finl;
+}
+
+
+/*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints
+ *
+ * Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
+ * numero e devient l'element de numero e+elem_offset
+ *
+ * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+ */
+template <typename _SIZE_>
+void Domaine_32_64<_SIZE_>::renum_joint_common_items(const IntVect_t& Les_Nums, const int_t elem_offset)
+{
+  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
+    {
+      ArrOfInt_t& sommets_communs = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
+      for (int_t index = 0; index < sommets_communs.size_array(); index++)
+        sommets_communs[index] = Les_Nums[sommets_communs[index]];
+
+      ArrOfInt_t& elements_distants = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
+      elements_distants += elem_offset;
+    }
+}
+
+/*! @brief Concatene les joints de meme nom
+ *
+ */
+template <typename _SIZE_>
+int Domaine_32_64<_SIZE_>::comprimer_joints()
+{
+  auto& list = mes_faces_joint_.get_stl_list();
+  for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      Frontiere_t& front = *it;
+      for (auto it2 = std::next(it); it2 != list.end();)
+        {
+          Frontiere_t& front2 = *it2;
+          if (front.le_nom() == front2.le_nom())
+            {
+              front.add(front2);
+              it2 = list.erase(it2);
+            }
+          else
+            ++it2;
+        }
+    }
+  return 1;
+}
+
 
 /////////////////////////////////////////////////
 //// Methods only used in the 32 bits version
@@ -1926,12 +2012,20 @@ void Domaine_32_64<int>::creer_aretes()
       schema.end_comm();
     }
 
-    // Construit l'objet descripteur
-    MD_Vector_std md_aretes(n_aretes_tot, nb_aretes_reelles, pe_voisins, aretes_to_send, aretes_communes_to_recv, blocs_aretes_virt);
-    Cerr << "Total number of edges = " << md_aretes.nb_items_seq_tot_ << finl;
-    // Range l'objet dans un MD_Vector (devient const)
     MD_Vector md;
-    md.copy(md_aretes);
+    // Construit l'objet descripteur
+    if (Process::is_parallel())
+      {
+        MD_Vector_std md_aretes(n_aretes_tot, nb_aretes_reelles, pe_voisins, aretes_to_send, aretes_communes_to_recv, blocs_aretes_virt);
+        md.copy(md_aretes);
+      }
+    else
+      {
+        MD_Vector_seq md_aretes(n_aretes_tot);
+        md.copy(md_aretes);
+      }
+    Cerr << "Total number of edges = " << md->get_nb_items_tot() << finl;
+
     // Attache le descripteur au tableau
     aretes_som_.set_md_vector(md);
   }
@@ -2132,104 +2226,6 @@ void Domaine_32_64<_SZ_>::build_mc_face_mesh(const Domaine_dis_base& domaine_dis
 {
   assert(false);
   throw;
-}
-
-
-/////////////////////////////////////////////////
-//// Methods only used in the 64 bits version
-/////////////////////////////////////////////////
-
-/*! @brief Fills the Domaine from a list of Domaine objects by aggregating them.
- *
- * See Mailler for example
- */
-template <>
-void Domaine_32_64<trustIdType>::fill_from_list(std::list<Domaine_64*>& lst)
-{
-  Cerr << "Filling domain from list of domains in progress... " << finl;
-  if (Process::is_parallel())
-    Process::exit("Error in Domaine_32_64<_SIZE_>::fill_from_list() : compression prohibited in parallel mode");
-  if (lst.size() == 0)
-    Process::exit("Error in Domaine_32_64<_SIZE_>::fill_from_list() : compression prohibited in parallel mode");
-
-  for(auto& elem: lst)
-    elem->comprimer();
-
-#ifndef NDEBUG
-  Domaine_32_64& fst_dom = *lst.front();
-  Nom typ_elem = fst_dom.type_elem()->que_suis_je();
-#endif
-  for(auto& it: lst)
-    {
-      Domaine_32_64& dom2 = *it;
-      Cerr << "   Concatenating Domains "<< nom_ << " and " << dom2.nom_ << finl;;
-      // Check single geometrical type:
-      assert(typ_elem == dom2.type_elem()->que_suis_je());
-      // Handle nodes:
-      IntVect_t les_nums;
-      // Copy sommets to this
-      ajouter(dom2.sommets_, les_nums);  // les_nums: out parameter
-      // Renumber current Domaine to prepare addition of elements
-      dom2.renum(les_nums);
-      // Merge elem info:
-      merge_wo_vertices_with(dom2);
-    }
-
-  Cerr << "Filling from list - End!" << finl;
-}
-
-template <typename _SIZE_>
-void Domaine_32_64<_SIZE_>::fill_from_list(std::list<Domaine_32_64*>& lst)
-{
-  assert(!(std::is_same<_SIZE_, trustIdType>::value));
-  throw;
-}
-
-
-/*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints
- *
- * Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
- * numero e devient l'element de numero e+elem_offset
- *
- * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
- */
-template <typename _SIZE_>
-void Domaine_32_64<_SIZE_>::renum_joint_common_items(const IntVect_t& Les_Nums, const int_t elem_offset)
-{
-  for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
-    {
-      ArrOfInt_t& sommets_communs = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::SOMMET).set_items_communs();
-      for (int_t index = 0; index < sommets_communs.size_array(); index++)
-        sommets_communs[index] = Les_Nums[sommets_communs[index]];
-
-      ArrOfInt_t& elements_distants = mes_faces_joint_[i_joint].set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
-      elements_distants += elem_offset;
-    }
-}
-
-/*! @brief Concatene les joints de meme nom
- *
- */
-template <typename _SIZE_>
-int Domaine_32_64<_SIZE_>::comprimer_joints()
-{
-  auto& list = mes_faces_joint_.get_stl_list();
-  for (auto it = list.begin(); it != list.end(); ++it)
-    {
-      Frontiere_t& front = *it;
-      for (auto it2 = std::next(it); it2 != list.end();)
-        {
-          Frontiere_t& front2 = *it2;
-          if (front.le_nom() == front2.le_nom())
-            {
-              front.add(front2);
-              it2 = list.erase(it2);
-            }
-          else
-            ++it2;
-        }
-    }
-  return 1;
 }
 
 

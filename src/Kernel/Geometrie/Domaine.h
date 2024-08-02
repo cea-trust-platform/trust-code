@@ -328,6 +328,7 @@ public:
   int comprimer();
   void read_former_domaine(Entree& s);  // used in Scatter
   void merge_wo_vertices_with(Domaine_32_64& z);
+  void fill_from_list(std::list<Domaine_32_64*>& lst);
 
   ///
   /// MEDCoupling:
@@ -361,18 +362,15 @@ public:
   virtual void creer_tableau_sommets(Array_base&, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) const;
   virtual const MD_Vector& md_vector_sommets() const { return sommets_.get_md_vector(); }
 
+
   ///
-  /// Methods only used in 32 bits
+  /// Methods only used in 32 bits (i.e. after Scatter)
   ///
   static int identifie_item_unique(IntList& item_possible, DoubleTab& coord_possible, const DoubleVect& coord_ref);
   void init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md_vect_faces_bord);
   void creer_aretes();
   void creer_mes_domaines_frontieres(const Domaine_VF& domaine_vf);
 
-  ///
-  /// Methods only used in 64 bits
-  ///
-  void fill_from_list(std::list<Domaine_32_64*>& lst);
 
 protected:
   // Geometric element type of this domain
