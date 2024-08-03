@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,10 +38,10 @@ int SolveurPP1B::resoudre_systeme(const Matrice_Base& A,
 {
   // Stop the solv_sys_counter_ counter to not count the changing base
   statistiques().end_count(solv_sys_counter_,0,-1);
-  DoubleVect b(second_membre);
-  assembleur_pression_.changer_base_second_membre(b);
+  b_ = second_membre;
+  assembleur_pression_.changer_base_second_membre(b_);
   assembleur_pression_.changer_base_pression(x);
-  int nb_iter=solveur_pression_.resoudre_systeme(A,b,x);
+  int nb_iter=solveur_pression_.resoudre_systeme(A,b_,x);
   assembleur_pression_.changer_base_pression_inverse(x);
   statistiques().begin_count(solv_sys_counter_);
   return nb_iter;

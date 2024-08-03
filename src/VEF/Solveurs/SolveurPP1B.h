@@ -41,6 +41,7 @@ public :
 protected :
   SolveurSys solveur_pression_;
   Assembleur_P_VEFPreP1B assembleur_pression_;
+  DoubleVect b_;
 };
 
 #endif
