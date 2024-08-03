@@ -93,6 +93,7 @@ double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
  */
 void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab& DivVelocityFaces)
 {
+  ToDo_Kokkos("critical");
   assert_espace_virtuel_vect(DivVelocityElements);
   //Corrections pour moyenner div(u) sur les faces
   const DoubleVect& volumes = le_dom->volumes();
@@ -156,15 +157,14 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const Navier_Stokes_std& eqns = ref_cast(Navier_Stokes_std, eq);
   const DoubleVect& pression = eqns.pression().valeurs();
 
-  // ToDo OpenMP: exemple ou DoubleTrav est important pour le GPU:
-  DoubleVect tab_dZ = pression;
-  DoubleVect tab_rhon_som(nb_som_tot);
-  DoubleVect volume_int_som(nb_som_tot);
-  DoubleVect tab_rhonp1_som(nb_som_tot);
+  DoubleTrav tab_dZ = pression;
+  DoubleTrav tab_rhon_som(nb_som_tot);
+  DoubleTrav volume_int_som(nb_som_tot);
+  DoubleTrav tab_rhonp1_som(nb_som_tot);
 
   const DoubleTab& tab_rhon = le_fluide().loi_etat()->rho_n();
   const DoubleTab& tab_rhonp1 = le_fluide().loi_etat()->rho_np1();
-  DoubleTab tab_rhonP1_, tab_rhonp1P1_;
+  DoubleTrav tab_rhonP1_, tab_rhonp1P1_;
   const DoubleVect& porosite_face = le_fluide().porosite_face();
   const DoubleTab& tab_rhonP1 = modif_par_porosite_si_flag(tab_rhon, tab_rhonP1_, 1, porosite_face);
   const DoubleTab& tab_rhonp1P1 = modif_par_porosite_si_flag(tab_rhonp1, tab_rhonp1P1_, 1, porosite_face);
@@ -178,11 +178,10 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   // calcul de la somme des volumes entrelacees autour d'un sommet
   volume_int_som = 0.;
   CIntTabView face_sommets_v = face_sommets.view_ro();
-  CDoubleArrView volumes_entrelaces_v = volumes_entrelaces.view_ro();
+  CDoubleArrView volumes_entrelaces_v = static_cast<const DoubleVect&>(volumes_entrelaces).view_ro();
   CIntArrView renum_som_perio_v = dom.get_renum_som_perio().view_ro();
-  DoubleArrView volume_int_som_v = volume_int_som.view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 1", nb_faces_tot, KOKKOS_LAMBDA(
+  DoubleArrView volume_int_som_v = static_cast<DoubleVect&>(volume_int_som).view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA(
                          const int face)
   {
     for (int som = 0; som < nsf; som++)
@@ -191,7 +190,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&volume_int_som_v(som_glob), volumes_entrelaces_v(face));
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   //discretisation de rho sur les sommets
   tab_rhon_som = 0;
@@ -199,11 +198,10 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   CDoubleTabView tab_rhonP1_v = tab_rhonP1.view_ro();
   CDoubleTabView tab_rhonp1P1_v = tab_rhonp1P1.view_ro();
-  DoubleArrView tab_rhon_som_v = tab_rhon_som.view_rw();
-  DoubleArrView tab_rhonp1_som_v = tab_rhonp1_som.view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 2", nb_faces_tot, KOKKOS_LAMBDA(
-                         const int face)
+  DoubleArrView tab_rhon_som_v = static_cast<DoubleVect&>(tab_rhon_som).view_rw();
+  DoubleArrView tab_rhonp1_som_v = static_cast<DoubleVect&>(tab_rhonp1_som).view_rw();
+  Kokkos::parallel_for(  start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA(
+                           const int face)
   {
     for (int som = 0; som < nsf; som++)
       {
@@ -214,7 +212,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&tab_rhonp1_som_v(som_glob), tab_rhonp1P1_v(face, 0) * pond);
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z face loop");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
 //Corrections pour test de la moyenne de la derivee de la masse volumique
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
@@ -229,12 +227,11 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   // ToDo_Kokkos, try to merge all theses kernels for efficiency:
   int decal=0;
-  DoubleArrView tab_dZ_v = tab_dZ.view_rw();
+  DoubleArrView tab_dZ_v = static_cast<DoubleVect&>(tab_dZ).view_rw();
   if (p_has_elem)
     {
       CIntTabView elem_faces_v = le_dom->elem_faces().view_ro();
-      start_gpu_timer();
-      Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 3", nb_elem_tot, KOKKOS_LAMBDA(
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(
                              const int elem)
       {
         double rn = 0;
@@ -246,19 +243,18 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
           }
         tab_dZ_v(elem) = (rnp1 - rn) / (nfe * dt);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal += nb_elem_tot;
     }
 
   if (p_has_som)
     {
-      start_gpu_timer();
-      Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 4", nb_som_tot, KOKKOS_LAMBDA(
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_som_tot, KOKKOS_LAMBDA(
                              const int som)
       {
         tab_dZ_v(decal + som) = ((tab_rhonp1_som_v(som)) - (tab_rhon_som_v(som))) / dt;
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal += nb_som_tot;
     }
 
@@ -276,26 +272,24 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
     {
       double coefdivelem=1;
       CDoubleArrView volumes_v = le_dom->volumes().view_ro();
-      start_gpu_timer();
-      Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 5", nb_elem_tot, KOKKOS_LAMBDA(
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(
                              const int elem)
       {
         tab_W_v(elem, 0) = -coefdivelem * tab_dZ_v(elem) * volumes_v(elem);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z elem loop");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal+=nb_elem_tot;
     }
   if (p_has_som)
     {
       double coefdivsom=1;
       CDoubleArrView volumes_controle_v = zp1b.volume_aux_sommets().view_ro();
-      start_gpu_timer();
-      Kokkos::parallel_for("EOS_Tools_VEF::secmembre_divU_Z 6", nb_som_tot, KOKKOS_LAMBDA(
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_som_tot, KOKKOS_LAMBDA(
                              const int som)
       {
         tab_W_v(decal + som, 0) = -coefdivsom * tab_dZ_v(decal + som) * volumes_controle_v(som);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]EOS_Tools_VEF::secmembre_divU_Z som loop");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal+=nb_som_tot;
     }
   if (p_has_arrete)
