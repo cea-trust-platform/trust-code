@@ -445,156 +445,16 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
   ajoute_carre(resu,alpha,vx,opt);
 }
 
-// ToDo OpenMP offload in .cpp (mais semble pas utilise...)
 template <typename _TYPE_>
-inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
-{
-#ifndef LATATOOLS
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
-  vy.checkDataOnHost();
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = resu;
-  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  assert(vx.line_size() == line_size && vy.line_size() == line_size);
-  assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
-
-  _TYPE_ *resu_base = resu.addr();
-  const _TYPE_ *x_base = vx.addr();
-  const _TYPE_ *y_base = vy.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      const _TYPE_ *y_ptr = y_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-          const _TYPE_ y = *(y_ptr++);
-          _TYPE_& p_resu = *(resu_ptr++);
-          p_resu += alpha * x * y;
-          x_ptr++;
-        }
-    }
-  // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG
-  invalidate_data(resu, opt);
-#endif
-  return;
-#endif // LATATOOLS
-}
+extern void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS);
 
 enum class TYPE_OPERATION_VECT_SPEC_GENERIC { MUL_ , DIV_ };
 
+template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
+extern void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt);
+
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ >
 inline void operation_speciale_tres_generic(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden !!
-
-// ToDo OpenMP offload in .cpp
-template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
-inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
-{
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
-  static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_);
-
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = resu;
-  const int line_size = master_vect.line_size(), line_size_vx = vx.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  // Le line_size du vecteur resu doit etre un multiple du line_size du vecteur vx
-  assert(line_size > 0 && line_size_vx > 0 && line_size % line_size_vx == 0);
-  const int delta_line_size = line_size / line_size_vx;
-  assert(vx.size_totale() * delta_line_size == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-#ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else
-#endif  // LATATOOLS
-    if (vect_size_tot > 0)
-      {
-        // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-        // Compute all data, in the vector (including virtual data), build a big bloc:
-        nblocs_left = 1;
-        bloc_ptr = one_bloc;
-        one_bloc[0] = 0;
-        one_bloc[1] = vect_size_tot / line_size;
-      }
-    else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-      return;
-
-  _TYPE_ *resu_base = resu.addr();
-  const _TYPE_ *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size_vx, end_bloc = (*(bloc_ptr++)) * line_size_vx;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc * delta_line_size;
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-          // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
-          for (int count2 = delta_line_size; count2; count2--)
-            {
-              _TYPE_& p_resu = *(resu_ptr++);
-
-              if (IS_MUL) p_resu *= x;
-
-              if (IS_DIV)
-                {
-                  if (x == 0) error_divide(__func__);
-                  p_resu *= (1. / x);
-                }
-            }
-          x_ptr++;
-        }
-    }
-  // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG
-  invalidate_data(resu, opt);
-#endif
-  return;
-}
 
 inline void tab_multiply_any_shape_(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden
 
@@ -621,7 +481,6 @@ inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYP
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
-      ToDo_Kokkos("critical");
       const _TYPE_ x = vx[0];
       operator_multiply(resu, x, opt);
     }
@@ -639,7 +498,6 @@ inline void tab_divide_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_
 {
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // division par une constante
     {
-      ToDo_Kokkos("critical");
       if (vx[0] == 0) error_divide(__func__);
       const _TYPE_ x = 1. / vx[0];
       operator_multiply(resu, x, opt);
