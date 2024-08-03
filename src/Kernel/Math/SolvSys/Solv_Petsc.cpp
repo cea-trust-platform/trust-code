@@ -1884,7 +1884,12 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Calcul et verification du vrai residu sur matrice:
   bool check_residual = controle_residu_;
 #ifndef NDEBUG
-  if (amgx_ || gpu_) check_residual = true; // En debug uniquement car verification faite sur CPU ce qui est dommage en prod...
+  if (amgx_ || gpu_)
+    if (getenv("TRUST_CLOCK_ON")==nullptr)
+      {
+        Cerr << "Warning checking residual. D2H and H2D copies are possible..." << finl;
+        check_residual = true; // En debug uniquement car verification faite sur CPU ce qui est dommage en prod...
+      }
 #endif
   if (check_residual)
     {
