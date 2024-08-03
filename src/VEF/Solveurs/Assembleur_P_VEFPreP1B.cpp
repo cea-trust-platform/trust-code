@@ -411,6 +411,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       int npa=le_dom.numero_premiere_arete();
       // b n'a pas forcement son espace virtuel a jour
       int nb_aretes=le_dom.domaine().nb_aretes();
+      ToDo_Kokkos("critical");
       for(int i=0; i<nb_aretes; i++)
         if(!ok_arete[i] && b(npa+i)!=0.) // Les aretes superflues ont une valeur nulle
           {
@@ -431,23 +432,25 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       const Domaine& dom=le_dom.domaine();
       int nps=le_dom.numero_premier_sommet();
       int ns=le_dom.domaine().nb_som();
-      for(int i=0; i<ns; i++)
-        {
-          int k=dom.get_renum_som_perio(i);
-          if((k!=i)&& b(nps+i)!=0.)
-            {
-              Cerr << "Pb div Som, la pression sur le sommet " << i << " (qui est periodique) n'est pas nulle." << finl;
-              Cerr << "En terme clair, le second membre n'est pas nul sur un sommet periodique." << finl;
-              if (b(nps+i)!=b(nps+k))
-                {
-                  Cerr << "En outre, le second membre n'a pas la meme valeur sur les 2 sommets periodiques." << finl;
-                  Cerr << "b(nps+i)=" << b(nps+i) << " <> b(nps+k)=" << b(nps+k) << finl;
-                }
-              Cerr << "Il y'a probabilite que le modele utilise soit mal implemente pour" << finl;
-              Cerr << "une condition de periodicite. Contacter le support TRUST." << finl;
-              Process::exit();
-            }
-        }
+      CIntArrView renum_som_perio = dom.get_renum_som_perio().view_ro();
+      CDoubleArrView b_v = static_cast<const DoubleVect&>(b).view_ro();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), ns, KOKKOS_LAMBDA(
+                             const int i)
+      {
+        int k=renum_som_perio(i);
+        if((k!=i)&& b_v(nps+i)!=0.)
+          {
+            printf("Pb div Som, la pression sur le sommet %d (qui est periodique) n'est pas nulle.\n",i);
+            printf("En terme clair, le second membre n'est pas nul sur un sommet periodique.\n");
+            if (b_v(nps+i)!=b_v(nps+k))
+              {
+                printf("En outre, le second membre n'a pas la meme valeur sur les 2 sommets periodiques.\n");
+                printf("b(nps+i)=%d <> b(nps+k)=%d\n",b_v(nps+i),b_v(nps+k));
+              }
+            Kokkos::abort("Il y'a probabilite que le modele utilise soit mal implemente pour\nune condition de periodicite. Contacter le support TRUST.");
+          }
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
 
   if (get_resoudre_en_u())
@@ -481,7 +484,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
               Gpoint_nul = 0;
               const DoubleTab& gpoint = champ_front.derivee_en_temps();
               bool ch_unif = (gpoint.nb_dim()==1);
-
+              ToDo_Kokkos("To avoid copy");
               for (int num_face=ndeb; num_face<nfin; num_face++)
                 for (int dim=0; dim<Objet_U::dimension; dim++)
                   Gpoint(num_face,dim)=porosite_face(num_face) * (ch_unif ? gpoint(dim) : gpoint(num_face-ndeb,dim));
