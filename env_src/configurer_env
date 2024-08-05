@@ -1219,15 +1219,15 @@ then
       TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv | tail -1 | awk '{gsub("\\.","",$1);print $1}'`
       # nvidia-smi trop anciens ne supporte pas query-gpu=compute_cap:
       [ "$TRUST_CUDA_CC" = "" ] && [ "`nvidia-smi 2>&1 | grep -e A[3456]000`" != "" ] && TRUST_CUDA_CC=86 # Cartes A3000-A6000
-      if [ "$TRUST_CUDA_CC" != "" ] 
-      then
-         m="# Cuda Compute Capability:";e="TRUST_CUDA_CC=\"$TRUST_CUDA_CC\" && export TRUST_CUDA_CC";
-         ecrit $m"|"$e"|"$env;eval $e
-      else
-         echo "Cuda Compute Capability not detected ! TRUST_CUDA_CC should be set."
-	 exit -1
-      fi	 
    fi
+   if [ "$TRUST_CUDA_CC" != "" ] 
+   then
+      m="# Cuda Compute Capability:";e="TRUST_CUDA_CC=\"$TRUST_CUDA_CC\" && export TRUST_CUDA_CC";
+      ecrit $m"|"$e"|"$env;eval $e
+   else
+      echo "Cuda Compute Capability not detected ! TRUST_CUDA_CC should be set."
+      exit -1
+   fi	 
    #########################
    # Detection CUDA run time
    #########################

@@ -23,9 +23,9 @@ define_modules_config()
       else
          echo "Not supported anymore" && exit -1
       fi
-      echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
-      # Pour beneficier aussi des V100 d'orcus:
-      # echo "export TRUST_CUDA_CC=70 # V100" >> $env
+      [ "$TRUST_CUDA_CC" = "" ] && echo TRUST_CUDA_CC=80 # A100
+      # TRUST_CUDA_CC=90 # H100
+      # TRUST_CUDA_CC=70 # V100
       # Embetant Kokkos configure impose l'un ou l'autre pas les 2. Si on met V100, cela ne tourne pas sur A100 et vice-versa (mismatch arch lors du Kokkos::initialize())
    elif [ $gnu = 1 ]
    then

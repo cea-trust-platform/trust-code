@@ -290,7 +290,7 @@ echo "   -force_latest_openmpi             Download and use the OpenMPI `awk -F=
 echo "   -force_system_mpi                 Use the system-provided MPI library."
 echo " "
 echo "   -rocalution=0|path to rocALUTION  Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library."
-echo "   -cuda=path/to/nvcc | =download    Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
+echo "   -cuda=path/nvcc|=download|=ccXY   Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
 echo "   -rocm                             Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
 echo "   -openmp                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
 echo "   -kokkos_simd                      Enable SIMD Kokkos support"
@@ -421,6 +421,7 @@ export TRUST_DOWNLOAD_VISIT=0
 export TRUST_WITHOUT_HOST=0
 export TRUST_ENABLE_DOC_DOXYGEN=0
 unset CUDA_NVCC
+unset TRUST_CUDA_CC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
@@ -551,7 +552,13 @@ do
    elif [ "${1#-cuda}" != "$1" ]
    then
       export TRUST_USE_CUDA=1
-      [ "${1#-cuda=}" != "$1" ] && CUDA_NVCC=${1#-cuda=}
+      if [ "${1#-cuda=cc}" != "$1" ]
+      then 
+         export TRUST_CUDA_CC=${1#-cuda=cc}
+      elif [ "${1#-cuda=}" != "$1" ]
+      then
+         CUDA_NVCC=${1#-cuda=}
+      fi   
 
    elif [ "${1#-rocm}" != "$1" ]
    then

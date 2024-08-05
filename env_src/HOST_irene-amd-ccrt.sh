@@ -37,7 +37,7 @@ define_modules_config()
       else
          echo "Not supported anymore" && exit -1
       fi
-      echo "export TRUST_CUDA_CC=70 # V100, Cuda Compute Capability" >> $env
+      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70 # V100
    else
       # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
       # module="intel/19.0.5.281 mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # openmpi/io/collective_buffering recommendation CCRT pour IO paralleles

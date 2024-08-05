@@ -41,7 +41,7 @@ define_modules_config()
       else
          echo "Not supported anymore" && exit -1
       fi
-      echo "export TRUST_CUDA_CC=80 # A100, Cuda Compute Capability" >> $env
+      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=80 # A100
    else
       #module="intel/20.0.4 mpi/openmpi/4.0.5"
       # passage a gnu pour v1.9.2

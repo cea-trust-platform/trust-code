@@ -18,18 +18,16 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
-         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # OK car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
-         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.5 openmpi/4.1.5" # Passage a 23.5 pour etre plus pres du PC de dev
-         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.1 openmpi/4.1.5" # 23.5 a disparu...
-         module="gcc/8.3.1 nvidia-compilers/23.1 openmpi/4.1.5" # On utilise desormais le CUDA du NVHPC
-         CUDA_VERSION=11.0 # Magma ne compile pas
-         CUDA_VERSION=11.8
+         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
+         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # OK car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
+         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.5 openmpi/4.1.5" # Passage a 23.5 pour etre plus pres du PC de dev
+         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.1 openmpi/4.1.5" # 23.5 a disparu...
+         module="nvidia-compilers/23.1 openmpi/4.1.5" # On utilise desormais le CUDA du NVHPC
+         CUDA_VERSION=12.0
       else
-         module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
-         #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
+         echo "Not supported any more." && exit -1
       fi
-      echo "export TRUST_CUDA_CC=70 # V100, Cuda Compute Capability" >> $env
+      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70 # V100
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"

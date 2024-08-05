@@ -60,6 +60,9 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            elif [ "$TRUST_CUDA_CC" = 80 ] || [ "$TRUST_CUDA_CC" = 86 ]
            then
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE$TRUST_CUDA_CC=ON"
+           elif [ "$TRUST_CUDA_CC" = 90 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_HOPPER$TRUST_CUDA_CC=ON"  
            else
               echo "KOKKOS_ARCH not set!" && exit -1
            fi
