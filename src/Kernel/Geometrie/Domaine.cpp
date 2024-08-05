@@ -136,6 +136,9 @@ void Domaine_32_64<_SZ_>::clear()
   rmps.clear();
 #endif
 
+  original_domain_ = "";
+  original_subdomain_ = "";
+
   volume_total_ = -1;
 }
 
@@ -157,6 +160,8 @@ Sortie& Domaine_32_64<_SZ_>::printOn(Sortie& s) const
   s.precision(20);
 #endif
   s << nom_ << finl;
+  s << original_domain_;
+  s << original_subdomain_;
   s << sommets_;
 
   // Now write what was formerly the domaines (before TRUST 1.9.2):
@@ -206,6 +211,8 @@ Entree& Domaine_32_64<_SZ_>::readOn(Entree& s)
   // Si le domaine n'est pas nomme, on prend celui lu
   if (nom_=="??") nom_=tmp;
   Cerr << "Reading domain " << le_nom() << finl;
+  s >> original_domain_;
+  s >> original_subdomain_;
   s >> sommets_;
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
   trustIdType nbsom = mp_sum(sommets_.dimension(0));
@@ -966,6 +973,8 @@ void Domaine_32_64<_SZ_>::read_vertices(Entree& s)
   // Si le domaine n'est pas nomme, on prend celui lu
   if (nom_=="??") nom_=tmp;
   Cerr << "Reading vertices for domain " << le_nom() << finl;
+  s >> original_domain_;
+  s >> original_subdomain_;
   s >> sommets_;
 }
 
