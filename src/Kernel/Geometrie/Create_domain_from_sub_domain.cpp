@@ -100,6 +100,8 @@ Entree& Create_domain_from_sub_domain::interpreter_(Entree& is)
     {
       Domaine& dom = ref_cast(Domaine, objet(noms_doms[i]));
       cutter.construire_sous_domaine(i + 1, dom);
+      dom.set_original_domain(nom_dom_org);
+      dom.set_original_subdomain(noms_sous_domaines[i]);
       Bords& bords=dom.faces_bord();
 
       if (cutter.bords_internes().size()>0)
