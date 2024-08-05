@@ -454,15 +454,8 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
 {
   //nom_post=le_nom();
   Nom nom_dom=dom.le_nom();
-  Nom nom_dom_inc= dom.le_nom();
-  if(sub_type(Champ_Inc_base, *this) )
-    {
-      nom_dom_inc=ref_cast(Champ_Inc_base, *this).domaine().le_nom();
-    }
-  else if(sub_type(Champ_Fonc_base, *this) )
-    {
-      nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
-    }
+  const Domaine& dom_inc = sub_type(Champ_Inc_base,  *this) ? ref_cast(Champ_Inc_base,  *this).domaine() : ref_cast(Champ_Fonc_base, *this).domaine();
+  Nom nom_dom_inc= dom_inc.le_nom();
 
 
   bool isChamp_basis_function_DG = (que_suis_je() == ("Champ_Elem_DG") || que_suis_je() == ("Champ_Fonc_P1_DG"));
@@ -471,9 +464,25 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
   else
     les_valeurs.resize(nb_elem, nb_compo_);
 
-  if(nom_dom==nom_dom_inc)
+  if(nom_dom_inc == nom_dom || nom_dom_inc == dom.get_original_domain()) /* acceleration si domaine ou sous-domaine du champ original */
     {
-      valeur_aux_centres_de_gravite(dom, les_valeurs);
+      const Sous_Domaine* ssz = nom_dom_inc == nom_dom ? nullptr : &dom_inc.ss_domaine(dom.get_original_subdomain());
+      if(sub_type(Champ_Inc_base, *this) && ssz)
+        {
+          DoubleTrav centres_de_gravites(nb_elem, dimension);
+          const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).domaine_dis_base());
+          // Pour eviter un resize par nb_elem_tot par appel a xp()
+          CDoubleTabView xp = zvf.xp().view_ro();
+          DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem,dimension}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            centres_de_gravites_v(i,j) = xp((*ssz)(i), j);
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+          valeur_aux_elems(centres_de_gravites, ssz->les_elems(), les_valeurs);
+        }
+      else
+        valeur_aux_centres_de_gravite(dom, les_valeurs);
     }
   else
     {
