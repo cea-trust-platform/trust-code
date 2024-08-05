@@ -36,12 +36,12 @@ public:
   void mettre_a_jour(double) override;
   int initialiser(const double t) override;
   double changer_temps(const double t) override;
+  const Domaine& domaine() const override { return dom.valeur(); }
 
   const Nom& fixer_unite(const Nom& unit) override;
   const Nom& fixer_unite(int i, const Nom& unit) override;
 
   void associer_domaine_dis_base(const Domaine_dis_base& zdb) override;
-  const Domaine_dis_base& domaine_dis_base() const override;
 
 private:
   //sub_field[subdomain] = { the field }

@@ -115,11 +115,7 @@ const Nom& Champ_Morceaux::fixer_unite(int i, const Nom& unit)
 
 void Champ_Morceaux::associer_domaine_dis_base(const Domaine_dis_base& zdb)
 {
+  Champ_Fonc_P0_base::associer_domaine_dis_base(zdb);
   for (auto &&kv : field)
     kv.second->associer_domaine_dis_base(zdb);
-}
-
-const Domaine_dis_base& Champ_Morceaux::domaine_dis_base() const
-{
-  return field.begin()->second->domaine_dis_base();
 }
