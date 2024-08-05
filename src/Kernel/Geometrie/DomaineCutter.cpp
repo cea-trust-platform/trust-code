@@ -1498,6 +1498,9 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
 
           Domaine sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
+          // propagate original_domain/subdomain information
+          sous_domaine.set_original_domain(domaine.get_original_domain());
+          sous_domaine.set_original_subdomain(domaine.get_original_subdomain());
           // On affiche quelques informations...
           {
             const Joints& joints = sous_domaine.faces_joint();

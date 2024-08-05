@@ -374,10 +374,18 @@ public:
   ///
   void fill_from_list(std::list<Domaine_32_64*>& lst);
 
+  void set_original_domain(const Nom& dom)    { original_domain_    = dom; }
+  void set_original_subdomain(const Nom& dom) { original_subdomain_ = dom; }
+  Nom get_original_domain() const { return original_domain_; }
+  Nom get_original_subdomain() const { return original_subdomain_; }
+
 protected:
   // Geometric element type of this domain
   OWN_PTR(Elem_geom_base_32_64<_SIZE_>) elem_;
 
+  // Original domain and subdomain name if this domain was created with Create_domain_from_subdomain
+  Nom original_domain_; //domain
+  Nom original_subdomain_; //subdomain
   // Array of vertices
   DoubleTab_t sommets_;
   // Renumbering array for periodicity

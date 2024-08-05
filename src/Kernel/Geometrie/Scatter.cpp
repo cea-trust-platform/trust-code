@@ -432,7 +432,8 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
   // Merge domaine_read into current domain, w/o taking care of the joints.
   dom.merge_wo_vertices_with(domaine_read);
-
+  dom.set_original_domain(dom_tmp_for_vertices.get_original_domain());
+  dom.set_original_subdomain(dom_tmp_for_vertices.get_original_subdomain());
   if(nb_elems > 0)  // Current domain already had something, so joints will need update
     // Otherwise, joints were already read by "domaine_read.read_former_domaine(fic);" above and joints are OK.
     {
