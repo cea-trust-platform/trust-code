@@ -538,7 +538,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
         {
           // Construction de la liste des faces a traiter (reelles + virtuelles)
           const int nb_faces_bord_tot = front_VF.nb_faces_tot();
-
+          ToDo_Kokkos("critical");
           for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
             {
               const int num_face =  front_VF.num_face(ind_face);
@@ -586,7 +586,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
         {
           // Construction de la liste des faces a traiter (reelles + virtuelles)
           const int nb_faces_bord_tot = front_VF.nb_faces_tot();
-
+          ToDo_Kokkos("critical");
           for (int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
             {
               const int num_face =  front_VF.num_face(ind_face);
@@ -680,6 +680,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
       const Domaine& dom=le_dom.domaine();
       int nps=le_dom.numero_premier_sommet();
       int ns=le_dom.domaine().nb_som();
+      ToDo_Kokkos("critical");
       for(int i=0; i<ns; i++)
         {
           int k=dom.get_renum_som_perio(i);
