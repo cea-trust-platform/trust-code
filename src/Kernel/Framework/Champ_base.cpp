@@ -405,54 +405,32 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
 {
   //nom_post=le_nom();
   Nom nom_dom=dom.le_nom();
-  Nom nom_dom_inc= dom.le_nom();
-  if(sub_type(Champ_Inc_base, *this) )
-    {
-      nom_dom_inc=ref_cast(Champ_Inc_base, *this).domaine().le_nom();
-    }
-  else if(sub_type(Champ_Fonc_base, *this) )
-    {
-      nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
-    }
+  const Domaine& dom_inc = sub_type(Champ_Inc_base,  *this) ? ref_cast(Champ_Inc_base,  *this).domaine() : ref_cast(Champ_Fonc_base, *this).domaine();
+  Nom nom_dom_inc= dom_inc.le_nom();
 
   DoubleTrav centres_de_gravites(nb_elem, dimension);
 
   les_valeurs.resize(nb_elem, nb_compo_);
 
-  if(nom_dom==nom_dom_inc)
+  if(nom_dom_inc == nom_dom || nom_dom_inc == dom.get_original_domain()) /* acceleration si domaine ou sous-domaine du champ original */
     {
+      const Sous_Domaine* ssz = nom_dom_inc == nom_dom ? nullptr : &dom_inc.ss_domaine(dom.get_original_subdomain());
       if(sub_type(Champ_Inc_base, *this) )
         {
           const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).domaine_dis_base());
-          // PL: ToDo Kokkos kernel host gardes car bug difficile a trouver (cas decroissance_ktau_jdd1 avec TrioCFD):
-          // stencil.append_line() alloue de la memoire via un resize() sur une memoire HOST deja allouee sur le DEVICE !
-          // Probablement, une memoire DEVICE non correctement desallouee dans un mecanisme PolyMAC non utilise en VEF...
-          if (zvf.xp().isDataOnDevice())
-            {
-              // Pour eviter un resize par nb_elem_tot par appel a xp()
-              CDoubleTabView xp = zvf.xp().view_ro();
-              DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
-              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-              Kokkos::MDRangePolicy < Kokkos::Rank < 2 >> ({ 0, 0 },
-              {nb_elem, dimension}), KOKKOS_LAMBDA(
-                const int i,
-                const int j)
-              {
-                centres_de_gravites_v(i, j) = xp(i, j);
-              });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-            }
-          else
-            {
-              for (int i=0; i<nb_elem; i++)
-                for (int k=0; k<dimension ; k++)
-                  centres_de_gravites(i,k) = zvf.xp(i,k);
-            }
+          // Pour eviter un resize par nb_elem_tot par appel a xp()
+          CDoubleTabView xp = zvf.xp().view_ro();
+          DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem,dimension}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            centres_de_gravites_v(i,j) = xp(ssz ? (*ssz)(i) : i, j);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         dom.calculer_centres_gravite(centres_de_gravites);
 
-      valeur_aux_centres_de_gravite(centres_de_gravites,les_valeurs);
+      ssz ? valeur_aux_elems(centres_de_gravites, ssz->les_elems(), les_valeurs) : valeur_aux_centres_de_gravite(centres_de_gravites,les_valeurs);
     }
   else
     {

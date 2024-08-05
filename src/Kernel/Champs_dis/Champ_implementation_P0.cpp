@@ -62,7 +62,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions,
   const Champ_base& ch_base = le_champ();
   int nb_components = ch_base.nb_comp();
   const DoubleTab& values = ch_base.valeurs();
-  int nb_polys = polys.size();
+  int nb_polys = std::min(polys.size(), result.dimension(0));
 
   if (nb_polys == 0)
     return result;
