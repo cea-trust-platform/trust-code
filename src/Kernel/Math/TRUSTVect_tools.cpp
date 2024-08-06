@@ -96,9 +96,6 @@ template void ajoute_produit_scalaire<float>(TRUSTVect<float>& resu, float alpha
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
 void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
-  ToDo_Kokkos("critical");
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
   static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_);
 
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
@@ -136,8 +133,10 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_T
     else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
       return;
 
-  _TYPE_ *resu_base = resu.addr();
-  const _TYPE_ *x_base = vx.addr();
+  bool kernelOnDevice = resu.checkDataOnDevice(vx);
+  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
+  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
+  start_gpu_timer(__KERNEL_NAME__);
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -145,27 +144,27 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_T
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc * delta_line_size;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
+      for (int count=0; count < end_bloc - begin_bloc; count++)
         {
-          const _TYPE_ x = *x_ptr;
+          const _TYPE_ x = x_ptr[count];
           // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
-          for (int count2 = delta_line_size; count2; count2--)
+          for (int count2 = 0; count2 < delta_line_size; count2++)
             {
-              _TYPE_& p_resu = *(resu_ptr++);
-
+              _TYPE_& p_resu = resu_ptr[count * delta_line_size + count2];
               if (IS_MUL) p_resu *= x;
-
               if (IS_DIV)
                 {
+#ifndef _OPENMP
                   if (x == 0) error_divide(__func__);
+#endif
                   p_resu *= (1. / x);
                 }
             }
-          x_ptr++;
         }
     }
-  // In debug mode, put invalid values where data has not been computed
+  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+// In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
 #endif
