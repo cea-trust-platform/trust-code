@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,6 @@ Entree& Source::readOn(Entree& is)
  */
 void Source::typer_direct(const Nom& typ)
 {
-  // Cerr << "Source::typer_direct()" << finl;
   DERIV(Source_base)::typer(typ);
 }
 
@@ -62,35 +61,6 @@ void Source::typer(const Nom& typ, const Equation_base& eqn)
   Cerr << type << finl;
   //Cout << "Dans source.cpp type source = " << type << finl;
   DERIV(Source_base)::typer(type);
-}
-
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Met a jour les references aux objets lies a l'objet Source.
- *
- */
-void Source::completer()
-{
-  valeur().completer();
-}
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Met a jour les references aux objets lies a l'objet Source.
- *
- */
-int Source::impr(Sortie& os) const
-{
-  return valeur().impr(os);
-}
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- */
-int Source::initialiser(double temps)
-{
-  return valeur().initialiser(temps);
 }
 
 /*! @brief Appel a l'objet sous-jacent.

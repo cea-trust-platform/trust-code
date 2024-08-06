@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,29 +35,8 @@ class Source : public DERIV(Source_base)
 public :
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
-  inline void mettre_a_jour(double temps);
-  inline void resetTime(double temps);
 
-  void completer();
-  int impr(Sortie&) const;
   void typer_direct(const Nom& );
   void typer(const Nom&, const Equation_base&);
-  int initialiser(double temps);
 };
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Mise a jour (en temps) de la source.
- *
- * @param (double temps) le pas de temps de mise a jour
- */
-inline void Source::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-inline void Source::resetTime(double temps)
-{
-  valeur().resetTime(temps);
-}
 #endif

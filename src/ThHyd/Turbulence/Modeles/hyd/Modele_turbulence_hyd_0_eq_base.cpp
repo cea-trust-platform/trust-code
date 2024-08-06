@@ -148,7 +148,7 @@ void Modele_turbulence_hyd_0_eq_base::mettre_a_jour(double)
   statistiques().begin_count(nut_counter_);
   calculer_viscosite_turbulente();
   calculer_energie_cinetique_turb();
-  loipar_.calculer_hyd(la_viscosite_turbulente_, energie_cinetique_turbulente());
+  loipar_->calculer_hyd(la_viscosite_turbulente_, energie_cinetique_turbulente());
   limiter_viscosite_turbulente();
   if (mon_equation_->probleme().is_dilatable())
     correction_nut_et_cisaillement_paroi_si_qc(*this);

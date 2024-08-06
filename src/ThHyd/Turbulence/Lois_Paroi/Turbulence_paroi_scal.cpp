@@ -94,4 +94,3 @@ void Turbulence_paroi_scal::associer_modele(const Modele_turbulence_scal_base& m
 {
   mon_modele_turb_scal = mod;
 }
-

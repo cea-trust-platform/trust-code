@@ -136,7 +136,7 @@ bool Modele_turbulence_scal_base::initTimeStep(double dt)
 int Modele_turbulence_scal_base::preparer_calcul()
 {
   if (loipar_.non_nul())
-    loipar_.init_lois_paroi();
+    loipar_->init_lois_paroi();
   mettre_a_jour(0.);
   return 1;
 }
@@ -268,5 +268,5 @@ void Modele_turbulence_scal_base::imprimer(Sortie& os) const
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
   if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt))
-    loipar_.imprimer_nusselt(os);
+    loipar_->imprimer_nusselt(os);
 }

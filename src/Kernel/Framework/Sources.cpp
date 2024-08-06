@@ -108,7 +108,7 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
  */
 void Sources::mettre_a_jour(double temps)
 {
-  for (auto& itr : *this) itr.mettre_a_jour(temps);
+  for (auto& itr : *this) itr->mettre_a_jour(temps);
 }
 
 /*! @brief Rest all sources to a given time
@@ -116,7 +116,7 @@ void Sources::mettre_a_jour(double temps)
  */
 void Sources::resetTime(double temps)
 {
-  for (auto& itr : *this) itr.resetTime(temps);
+  for (auto& itr : *this) itr->resetTime(temps);
 }
 
 /*! @brief Appelle Source::completer() sur toutes les sources de la liste.
@@ -126,7 +126,7 @@ void Sources::resetTime(double temps)
  */
 void Sources::completer()
 {
-  for (auto& itr : *this) itr.completer();
+  for (auto& itr : *this) itr->completer();
 }
 
 /*! @brief Pour chaque source de la liste, appel a associer_champ_rho de la source.
@@ -175,7 +175,7 @@ int Sources::a_pour_Champ_Fonc(const Motcle& mot,
  */
 int Sources::impr(Sortie& os) const
 {
-  for (const auto& itr : *this) itr.impr(os);
+  for (const auto& itr : *this) itr->impr(os);
   return 1;
 }
 
@@ -227,7 +227,7 @@ int Sources::initialiser(double temps)
 {
   int ok=1;
   for (auto& itr : *this)
-    ok = ok && itr.initialiser(temps);
+    ok = ok && itr->initialiser(temps);
   return ok;
 }
 

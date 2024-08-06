@@ -198,7 +198,7 @@ int Navier_Stokes_Turbulent::preparer_calcul()
 
   Turbulence_paroi& loipar = le_modele_turbulence->loi_paroi();
   if (loipar.non_nul())
-    loipar.init_lois_paroi();
+    loipar->init_lois_paroi();
 
   Navier_Stokes_std::preparer_calcul();
   le_modele_turbulence.preparer_calcul();

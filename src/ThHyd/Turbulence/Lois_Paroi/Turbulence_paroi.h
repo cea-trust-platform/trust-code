@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,75 +34,12 @@ class Probleme_base;
  */
 class Turbulence_paroi: public DERIV(Turbulence_paroi_base)
 {
-
   Declare_instanciable(Turbulence_paroi);
-
 public:
-
-  //Turbulence_paroi(const Turbulence_paroi_base& x):DERIV(Turbulence_paroi_base)(x) {}
-  // inline Turbulence_paroi& operator=(const Turbulence_paroi_base& paroi_base);
   void associer_modele(const Modele_turbulence_hyd_base&);
-  inline int init_lois_paroi();
-  inline int calculer_hyd(Champ_Inc&);
-  inline int calculer_hyd_BiK(Champ_Inc&, Champ_Inc&);
-  inline int calculer_hyd(Champ_Fonc&, Champ_Fonc&);
-  inline int calculer_hyd(Champ_Inc_base&);
-  inline int calculer_hyd(Champ_Fonc_base&, Champ_Fonc_base&);
-  inline void imprimer_ustar(Sortie&) const;
-  inline void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const;
-  inline void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const;
-  // rajout pour prendre en compte Cisaillement_paroi dans la classe
-  // generique
-  inline const DoubleTab& Cisaillement_paroi() const;
 
 protected:
-
   REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
 };
-
-inline int Turbulence_paroi::init_lois_paroi()
-{
-  return valeur().init_lois_paroi();
-}
-
-inline void Turbulence_paroi::imprimer_ustar(Sortie& os) const
-{
-  valeur().imprimer_ustar(os);
-}
-
-inline void Turbulence_paroi::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  valeur().imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
-}
-
-inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
-}
-
-inline int Turbulence_paroi::calculer_hyd(Champ_Inc& ch)
-{
-  return valeur().calculer_hyd(ch);
-}
-
-inline int Turbulence_paroi::calculer_hyd_BiK(Champ_Inc& ch1, Champ_Inc& ch2)
-{
-  return valeur().calculer_hyd_BiK(ch1->valeurs(), ch2->valeurs());
-}
-
-inline int Turbulence_paroi::calculer_hyd(Champ_Fonc& ch1, Champ_Fonc& ch2)
-{
-  return valeur().calculer_hyd(ch1, ch2);
-}
-
-inline int Turbulence_paroi::calculer_hyd(Champ_Inc_base& ch)
-{
-  return valeur().calculer_hyd(ch.valeurs());
-}
-
-inline int Turbulence_paroi::calculer_hyd(Champ_Fonc_base& ch1, Champ_Fonc_base& ch2)
-{
-  return valeur().calculer_hyd(ch1.valeurs(), ch2.valeurs());
-}
 
 #endif

@@ -277,7 +277,7 @@ int Modele_turbulence_hyd_base::preparer_calcul()
 {
   int res = 1;
   if (loipar_.non_nul())
-    res = loipar_.init_lois_paroi();
+    res = loipar_->init_lois_paroi();
 
   bool contient_distance_paroi = false;
 
@@ -298,7 +298,7 @@ int Modele_turbulence_hyd_base::preparer_calcul()
                 }
             }
         }
-  loipar_.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list_, nom_fichier_);
+  loipar_->imprimer_premiere_ligne_ustar(boundaries_, boundaries_list_, nom_fichier_);
   return res;
 }
 
@@ -358,9 +358,9 @@ void Modele_turbulence_hyd_base::imprimer(Sortie& os) const
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
   if (loipar_.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_))
-    loipar_.imprimer_ustar(os);
+    loipar_->imprimer_ustar(os);
   if (loipar_.non_nul() && limpr_ustar(temps_courant, sch.temps_precedent(), dt, dt_impr_ustar_mean_only_))
-    loipar_.imprimer_ustar_mean_only(os, boundaries_, boundaries_list_, nom_fichier_);
+    loipar_->imprimer_ustar_mean_only(os, boundaries_, boundaries_list_, nom_fichier_);
 }
 
 int Modele_turbulence_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt, double dt_ustar) const
