@@ -642,7 +642,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_aretes(const DoubleTab& Gpoint, Doub
   return 1;
 }
 
-int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
+int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& tab_pression)
 {
 
   //  if (!has_P_ref) exit();
@@ -659,16 +659,16 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
       int npa=le_dom.numero_premiere_arete();
       for(int i=0; i<nb_aretes; i++)
         {
-          if(!ok_arete(i) && pression(npa+i)!=0.)
+          if(!ok_arete(i) && tab_pression(npa+i)!=0.)
             {
-              Cerr << "Pb pression arete superflue, P(" << npa+i << ")=" << pression(npa+i) << finl;
-              pression(npa+i)=0;
+              Cerr << "Pb pression arete superflue, P(" << npa+i << ")=" << tab_pression(npa+i) << finl;
+              tab_pression(npa+i)=0;
               Process::exit();
             }
-          else if ( (renum_arete_perio[i]!=i) && pression(npa+i)!=0.)
+          else if ( (renum_arete_perio[i]!=i) && tab_pression(npa+i)!=0.)
             {
-              Cerr << "Pb pression arete superflue periodique, P(" << npa+i << ")=" << pression(npa+i) << finl;
-              pression(npa+i)=0;
+              Cerr << "Pb pression arete superflue periodique, P(" << npa+i << ")=" << tab_pression(npa+i) << finl;
+              tab_pression(npa+i)=0;
               Process::exit();
             }
         }
@@ -680,17 +680,21 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
       const Domaine& dom=le_dom.domaine();
       int nps=le_dom.numero_premier_sommet();
       int ns=le_dom.domaine().nb_som();
-      ToDo_Kokkos("critical");
-      for(int i=0; i<ns; i++)
-        {
-          int k=dom.get_renum_som_perio(i);
-          if (k!=i) pression(nps+i)=pression(nps+k);
-        }
+      CIntArrView renum_som_perio = dom.get_renum_som_perio().view_ro();
+      DoubleArrView pression = static_cast<DoubleVect&>(tab_pression).view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                           Kokkos::RangePolicy<>(0, ns), KOKKOS_LAMBDA(
+                             const int i)
+      {
+        int k=renum_som_perio(i);
+        if (k!=i) pression(nps+i)=pression(nps+k);
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   // pression.echange_espace_virtuel();
   // pour retirer le min de la pression si pas de Pref et si que PO sinon on filtre plus tard
   if (le_dom.get_alphaE() && (le_dom.get_alphaS()==0) && (le_dom.get_alphaA()==0) )
-    Assembleur_P_VEF::modifier_solution( pression);
+    Assembleur_P_VEF::modifier_solution(tab_pression);
   // Verification possible par variable d'environnement:
   char* theValue = getenv("TRUST_VERIFIE_DIRICHLET");
   if(theValue != nullptr) verifier_dirichlet();

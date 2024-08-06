@@ -354,7 +354,11 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
           copyToDevice(tab_addr, memory_size, "array "+arrayName);
         }
       else if (currentLocation==DataLocation::Host)
-        copyToDevice(tab_addr, memory_size, "array "+arrayName);
+        {
+          copyToDevice(tab_addr, memory_size, "array " + arrayName);
+          if (memory_size>8e6) // Warning for large array only:
+            ToDo_Kokkos("H2D update of large array! Add a breakpoint to find the reason.");
+        }
       else if (currentLocation==DataLocation::PartialHostDevice)
         Process::exit("Error, can't map on device an array with PartialHostDevice status!");
     }
@@ -377,8 +381,6 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
       std::stringstream message;
       message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
       end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
-      if (size>1e6)
-        ToDo_Kokkos("H2D copy of large array! Add a breakpoint into Device::copyToDevice() to find the cause.");
     }
 #endif
 }
@@ -426,8 +428,6 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
       end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
       if (clock_on) printf("\n");
-      //  if (size>1e6)
-      //    ToDo_Kokkos("D2H copy of large array! If not I/O, add a breakpoint into Device::copyFromDevice() to find the cause.");
     }
 #endif
 }
