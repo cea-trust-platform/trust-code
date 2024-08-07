@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Operateur_base_included
 
 #include <Equation_base.h>
+#include <Domaine_dis.h>
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
 #include <Matrice.h>
@@ -25,7 +26,6 @@ class Frontiere_dis_base;
 class Domaine_Cl_dis;
 class Matrice_Morse;
 class EcrFicPartage;
-class Domaine_dis;
 class Champ_Inc;
 class Conds_lim;
 class SFichier;

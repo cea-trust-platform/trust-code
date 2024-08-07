@@ -21,12 +21,11 @@
 #include <TRUST_Deriv.h>
 #include <MorEqn.h>
 
-class Domaine_dis;
+class Domaine_Cl_dis_base;
 class Domaine_dis_base;
 class Domaine_Cl_dis;
-class Domaine_Cl_dis_base;
-class Matrice_Base;
 class Matrice_Morse;
+class Matrice_Base;
 
 /*! @brief classe Solveur_Masse_base Represente la matrice de masse d'une equation.
  *

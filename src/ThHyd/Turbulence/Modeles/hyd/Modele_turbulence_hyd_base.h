@@ -18,11 +18,11 @@
 
 #include <Support_Champ_Masse_Volumique.h>
 #include <Turbulence_paroi.h>
+#include <Domaine_dis.h>
 
 class Schema_Temps_base;
 class Domaine_Cl_dis;
 class Equation_base;
-class Domaine_dis;
 class Motcle;
 class Param;
 

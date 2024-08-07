@@ -1408,10 +1408,10 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     le_traitement_particulier->creer_champ(motlu);
 }
 
-void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
+void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
 {
   DoubleTab& val= pression_hydro.valeurs();
-  const DoubleTab& coords = domaine_dis().domaine().les_sommets();
+  const DoubleTab& coords = domaine_dis()->domaine().les_sommets();
   if (!milieu().a_gravite())
     {
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;

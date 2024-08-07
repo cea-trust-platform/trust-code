@@ -21,20 +21,19 @@
 #include <Interface_blocs.h>
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
-#include <MorEqn.h>
-#include <SFichier.h>
+#include <Domaine_dis.h>
 #include <Champ_Don.h>
+#include <SFichier.h>
+#include <MorEqn.h>
 
-class Probleme_base;
-class Domaine_dis;
 class Domaine_Cl_dis;
+class Probleme_base;
 class Matrice_Morse;
 
 /*! @brief classe Source_base Un objet Source_base est un terme apparaissant au second membre d'une
  *
  *      equation. Cette classe est la base de la hierarchie des Sources, une
  *      source est un morceau d'equation donc Source_base herite de MorEqn.
- *
  *
  */
 

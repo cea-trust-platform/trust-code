@@ -455,7 +455,7 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
       op_diff.calculer_borne_locale(borne_visco_turb_, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
     }
   // On borne la viscosite turbulente
-  int nb_elem = equation().domaine_dis().domaine().nb_elem();
+  int nb_elem = equation().domaine_dis()->domaine().nb_elem();
   assert(nb_elem == size);
   int compt = 0;
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());

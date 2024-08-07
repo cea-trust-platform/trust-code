@@ -13,28 +13,29 @@
 *
 *****************************************************************************/
 
-#include <Aire_interfaciale.h>
-#include <Pb_Multiphase.h>
-#include <Discret_Thyd.h>
-#include <Domaine_VF.h>
-#include <Domaine.h>
-#include <Avanc.h>
-#include <Debog.h>
-#include <Frontiere_dis_base.h>
 #include <EcritureLectureSpecial.h>
-#include <Champ_Uniforme.h>
-#include <Matrice_Morse.h>
-#include <Navier_Stokes_std.h>
-#include <TRUSTTrav.h>
-#include <Neumann_sortie_libre.h>
-#include <Op_Conv_negligeable.h>
-#include <Param.h>
 #include <Schema_Implicite_base.h>
-#include <SETS.h>
-#include <EChaine.h>
-#include <Neumann_paroi.h>
 #include <Scalaire_impose_paroi.h>
 #include <Echange_global_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <Op_Conv_negligeable.h>
+#include <Frontiere_dis_base.h>
+#include <Aire_interfaciale.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Uniforme.h>
+#include <Matrice_Morse.h>
+#include <Pb_Multiphase.h>
+#include <Neumann_paroi.h>
+#include <Discret_Thyd.h>
+#include <Domaine_dis.h>
+#include <Domaine_VF.h>
+#include <TRUSTTrav.h>
+#include <EChaine.h>
+#include <Domaine.h>
+#include <Param.h>
+#include <Avanc.h>
+#include <Debog.h>
+#include <SETS.h>
 
 Implemente_instanciable(Aire_interfaciale,"Aire_interfaciale|Interfacial_area",Convection_Diffusion_std);
 
@@ -90,7 +91,7 @@ void Aire_interfaciale::discretiser()
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Domaine_dis& z = ref_cast(Domaine_dis, probleme().domaine_dis());
+  const Domaine_dis& z = probleme().domaine_dis();
   dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles_);
 
   champs_compris_.ajoute_champ(diametre_bulles_);

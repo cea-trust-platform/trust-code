@@ -118,7 +118,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
           delete sa;
         }
       les_conditions_limites(rang)->
-      associer_fr_dis_base(domaine_dis().frontiere_dis(rang));
+      associer_fr_dis_base(domaine_dis()->frontiere_dis(rang));
 
       //Test pour empecher l utilisation de 'Raccord_distant_homogene' en calcul sequentiel
       const Frontiere& frontiere=ledomaine.frontiere(rang);
@@ -460,11 +460,11 @@ int  Domaine_Cl_dis_base::nb_faces_Cl() const
 
 Domaine& Domaine_Cl_dis_base::domaine()
 {
-  return domaine_dis().domaine();
+  return domaine_dis()->domaine();
 }
 const Domaine& Domaine_Cl_dis_base::domaine() const
 {
-  return domaine_dis().domaine();
+  return domaine_dis()->domaine();
 }
 
 /*! @brief A partir d'un indice de face de bord dans le Domaine_VF, renvoie la condition aux limites a laquelle cette face

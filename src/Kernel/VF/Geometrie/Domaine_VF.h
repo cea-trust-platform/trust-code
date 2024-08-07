@@ -16,10 +16,11 @@
 #ifndef Domaine_VF_included
 #define Domaine_VF_included
 
-#include <TRUSTArrays.h>
-#include <Front_VF.h>
-#include <Domaine_dis.h>
+#include <Domaine_dis_base.h>
 #include <Domaine_forward.h>
+#include <TRUSTArrays.h>
+#include <Domaine_dis.h>
+#include <Front_VF.h>
 
 class Domaine_Cl_dis_base;
 

@@ -357,7 +357,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
           const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
-          if (type!="sum" || eqn.domaine_dis().domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
+          if (type!="sum" || eqn.domaine_dis()->domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
               Nom ch = la_fr.le_nom();
               if (type=="moment")

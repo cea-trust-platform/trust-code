@@ -17,10 +17,11 @@
 #define Champ_Inc_base_included
 
 #include <Interface_blocs.h>
+#include <Domaine_forward.h>
+#include <Domaine_VF.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
 #include <TRUST_Ref.h>
-#include <Domaine_VF.h>
 #include <MorEqn.h>
 #include <Roue.h>
 
@@ -28,8 +29,6 @@ class Frontiere_dis_base;
 class Domaine_dis_base;
 class Domaine_Cl_dis;
 class MD_Vector;
-class Domaine_dis;
-#include <Domaine_forward.h>
 
 /*! @brief Classe Champ_Inc_base
  *

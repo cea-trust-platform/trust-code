@@ -17,11 +17,11 @@
 #define Modele_turbulence_hyd_0_eq_base_included
 
 #include <Modele_turbulence_hyd_base.h>
+#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_dis_base;
 class Domaine_Cl_dis;
-class Domaine_dis;
 class Domaine_VF;
 
 /*! @brief Classe Modele_turbulence_hyd_0_eq_base Classe de base des modeles a 0 equation

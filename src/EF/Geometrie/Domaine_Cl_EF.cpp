@@ -331,7 +331,7 @@ void Domaine_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym)
   // return;
 
   assert(values.dimension(1)==dimension);
-  const Domaine& z = domaine_dis().domaine();
+  const Domaine& z = domaine_dis()->domaine();
   int nb_som_tot=z.nb_som_tot();
   assert(values.dimension_tot(0)==nb_som_tot);
 
@@ -456,7 +456,7 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
 {
   // return;
   assert(secmem.dimension(1)==dimension);
-  const Domaine& z = domaine_dis().domaine();
+  const Domaine& z = domaine_dis()->domaine();
   int nb_som=z.nb_som();
   assert(secmem.dimension(0)==nb_som);
   int nb_comp=secmem.dimension(1);

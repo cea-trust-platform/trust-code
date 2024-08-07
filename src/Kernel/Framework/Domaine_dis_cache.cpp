@@ -14,10 +14,9 @@
 *****************************************************************************/
 
 #include <Domaine_dis_cache.h>
-#include <Domaine_dis.h>
-#include <Domaine.h>
+#include <Domaine_dis_base.h>
 #include <Interprete_bloc.h>
-#include <TClearable.h>
+#include <Domaine.h>
 #include <sstream>
 
 /*! @brief Get the unique instance of the cache.

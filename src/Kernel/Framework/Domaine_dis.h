@@ -16,92 +16,10 @@
 #ifndef Domaine_dis_included
 #define Domaine_dis_included
 
-#include <Domaine_dis_base.h>
 #include <TRUST_Deriv.h>
-#include <Domaine.h>
 
-class Domaine_Cl_dis_base;
+class Domaine_dis_base;
 
-/*! @brief classe Domaine_dis Classe generique de la hierarchie des domaines discretisees.
- *
- * Un objet
- *      de type Domaine_dis peut referencer n'importe quel objet derivant de
- *      Domaine_dis_base.
- *      La plupart des methodes appellent les methodes de l'objet Domaine
- *      sous-jacent via la methode valeur() declaree grace a la macro
- *
- * @sa Domaine_dis_base
- */
-class Domaine_dis : public DERIV(Domaine_dis_base)
-{
-  Declare_instanciable(Domaine_dis);
+using Domaine_dis = OWN_PTR(Domaine_dis_base);
 
-public :
-  inline void associer_domaine(const Domaine&);
-
-  int nombre_de_sous_domaines_dis() const { return valeur().nombre_de_sous_domaines_dis(); }
-
-  const Sous_domaine_dis& sous_domaine_dis(int i) const;
-  Sous_domaine_dis& sous_domaine_dis(int i);
-
-  void typer(const Nom& nom);
-
-  inline const Domaine& domaine() const;
-  inline Domaine& domaine();
-  inline void creer_elements_fictifs(const Domaine_Cl_dis_base&);
-  inline const Frontiere_dis_base& frontiere_dis(int ) const;
-};
-
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Associe un domaine (non discretise) a l'objet.
- *
- * @param (Domaine& un_domaine)
- */
-inline void Domaine_dis::associer_domaine(const Domaine& un_domaine)
-{
-  valeur().associer_domaine(un_domaine);
-}
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Renvoie le domaine associe.
- *     (version const)
- *
- * @return (Domaine&) le domaine associe
- */
-inline const Domaine& Domaine_dis::domaine() const
-{
-  return valeur().domaine();
-}
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Renvoie le domaine associe.
- *
- * @return (Domaine&) le domaine associe
- */
-inline Domaine& Domaine_dis::domaine()
-{
-  return valeur().domaine();
-}
-
-inline void Domaine_dis::creer_elements_fictifs(const Domaine_Cl_dis_base& zcl)
-{
-  valeur().creer_elements_fictifs( zcl);
-}
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Renvoie la ieme frontiere
- *
- * @param (int i) l'index de la frontiere a renvoyer
- * @return (Frontiere_dis_base&) la i-eme frontiere du domaine discretisee
- */
-inline const Frontiere_dis_base& Domaine_dis::frontiere_dis(int i) const
-{
-  return valeur().frontiere_dis(i);
-}
-
-
-#endif
+#endif /* Domaine_dis_included */

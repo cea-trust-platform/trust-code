@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,13 +17,13 @@
 #define Source_Fluide_Dilatable_VDF_Proto_included
 
 #include <TRUSTTabs_forward.h>
+#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
-class Equation_base;
 class Domaine_Cl_dis;
 class Domaine_Cl_VDF;
+class Equation_base;
 class Domaine_VDF;
-class Domaine_dis;
 
 class Source_Fluide_Dilatable_VDF_Proto
 {

@@ -26,6 +26,7 @@
 #include <TRUSTTab_parts.h>
 #include <Domaine_Cl_dis.h>
 #include <Matrice_Morse.h>
+#include <Domaine_dis.h>
 #include <Champs_Fonc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
@@ -36,7 +37,6 @@
 
 class Discretisation_base;
 class Schema_Temps_base;
-class Domaine_dis;
 class Milieu_base;
 class Operateur;
 class Champ_Inc;

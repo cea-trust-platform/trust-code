@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,13 +19,12 @@
 #include <Neumann_sortie_libre.h>
 #include <Operateur_Diff_base.h>
 #include <Domaine_Cl_EF.h>
+#include <Domaine_dis.h>
 #include <Op_EF_base.h>
 #include <Domaine_EF.h>
 #include <TRUST_Ref.h>
 
 class Champ_Inc_base;
-class Domaine_Cl_dis;
-class Domaine_dis;
 class Sortie;
 
 enum class AJOUTE_SCAL { GEN , D3_8 , D2_4 };

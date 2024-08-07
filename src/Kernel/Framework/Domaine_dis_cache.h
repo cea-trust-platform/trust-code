@@ -16,13 +16,12 @@
 #ifndef Domaine_dis_cache_included
 #define Domaine_dis_cache_included
 
-#include <Nom.h>
+#include <Domaine_forward.h>
+#include <Domaine_dis.h>
 #include <TClearable.h>
 #include <memory>
+#include <Nom.h>
 #include <map>
-
-#include <Domaine_forward.h>
-class Domaine_dis;
 
 /*! @brief Cache of discretized domains. Avoid repeating the discretize operation when not
  * necessary.

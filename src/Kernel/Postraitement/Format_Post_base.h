@@ -23,7 +23,6 @@
 #include <Domaine.h>
 
 class Domaine_dis_base;
-class Domaine_dis;
 class Motcle;
 class Param;
 

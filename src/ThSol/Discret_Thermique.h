@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,11 @@
 #define Discret_Thermique_included
 
 #include <Discretisation_base.h>
+#include <Domaine_dis.h>
 
-class Champ_Inc;
 class Schema_Temps_base;
-class Domaine_dis;
 class Milieu_base;
+class Champ_Inc;
 
 /*! @brief Class Discret_Thermique Cette classe est la classe de base representant une discretisation
  *

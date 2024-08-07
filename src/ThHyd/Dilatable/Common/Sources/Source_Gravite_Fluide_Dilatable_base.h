@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,11 +18,11 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Source_base.h>
+#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
 class Domaine_Cl_dis;
-class Domaine_dis;
 
 /*! @brief class Source_Gravite_Fluide_Dilatable_base
  *

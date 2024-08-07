@@ -16,7 +16,10 @@
 #ifndef Domaine_base_included
 #define Domaine_base_included
 
+#include <Bords_Internes.h>
+#include <Groupes_Faces.h>
 #include <Sous_Domaine.h>
+#include <Domaine_dis.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
 #include <TRUSTList.h>
@@ -28,10 +31,6 @@
 #include <Bords.h>
 #include <Noms.h>
 
-#include <Bords_Internes.h>
-#include <Groupes_Faces.h>
-
-class Domaine_dis;
 class Probleme_base;
 
 /*! @brief Base class for domains description.

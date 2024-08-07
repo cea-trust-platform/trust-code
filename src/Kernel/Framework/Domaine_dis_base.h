@@ -24,9 +24,8 @@
 
 class Domaine_Cl_dis_base;
 class Frontiere_dis_base;
-class Domaine_dis;
-class Conds_lim;
 class Probleme_base;
+class Conds_lim;
 
 /*! @brief classe Domaine_dis_base Cette classe est la base de la hierarchie des domaines discretisees.
  *

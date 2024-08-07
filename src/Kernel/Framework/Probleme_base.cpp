@@ -19,6 +19,7 @@
 #include <Loi_Fermeture_base.h>
 #include <EcrFicCollecteBin.h>
 #include <LecFicDiffuseBin.h>
+#include <Domaine_dis_base.h>
 #include <communications.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
@@ -392,7 +393,7 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   une_discretisation.associer_domaine(le_domaine_.valeur());
   une_discretisation.discretiser(le_domaine_dis_);
   // Can not do this before, since the Domaine_dis is not typed yet:
-  le_domaine_dis_->associer_domaine(le_domaine_);
+  le_domaine_dis_->valeur().associer_domaine(le_domaine_);
 
   if (milieu_via_associer_)
     {
@@ -1261,7 +1262,7 @@ int Probleme_base::postraiter(int force)
   if(!restart_in_progress_)  //no projection during the iteration of resumption of computation
     {
       double temps = le_schema_en_temps_->temps_courant();
-      le_domaine_dis_->domaine().update_after_post(temps);
+      le_domaine_dis_->valeur().domaine().update_after_post(temps);
     }
   restart_in_progress_=0; //reset to false in order to make the following projections
   // end specific postraitements for mobile domain (like ALE)

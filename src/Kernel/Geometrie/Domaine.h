@@ -17,6 +17,7 @@
 #define Domaine_32_64_included
 
 #include <Domaine_base.h>
+#include <Domaine_dis.h>
 #include <TRUST_Deriv.h>
 #include <Octree.h>
 #include <Elem_geom.h>

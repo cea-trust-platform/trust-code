@@ -273,7 +273,7 @@ const Domaine& Champ_Generique_base::get_ref_domain() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Domaine& dom = pb.domaine_dis().domaine();
+  const Domaine& dom = pb.domaine_dis()->domaine();
   return dom;
 }
 

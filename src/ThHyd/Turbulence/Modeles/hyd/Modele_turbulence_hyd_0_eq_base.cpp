@@ -122,7 +122,7 @@ void Modele_turbulence_hyd_0_eq_base::completer()
   if (fichier_K_eps_sortie_ != Nom())
     {
       // 1) on cree le fichier med et on postraite le domaine
-      const Domaine& dom = mon_equation_->domaine_dis().domaine();
+      const Domaine& dom = mon_equation_->domaine_dis()->domaine();
       Ecrire_MED ecr_med(fichier_K_eps_sortie_.nom_me(me()), dom);
       ecr_med.ecrire_domaine(false);
       //2 on discretise le champ K_eps_pour_la_sortie
@@ -202,7 +202,7 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
           }
 
         // enfin ecriture du champ aux elems (il y est deja)
-        const Domaine& dom = mon_equation_->domaine_dis().domaine();
+        const Domaine& dom = mon_equation_->domaine_dis()->domaine();
         Nom fic = fichier_K_eps_sortie_.nom_me(me());
 
         const Nom& nom_post = K_eps_sortie_.le_nom();

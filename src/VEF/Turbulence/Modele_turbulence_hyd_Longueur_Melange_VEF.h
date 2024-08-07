@@ -21,7 +21,6 @@
 class Domaine_Cl_dis;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
-class Domaine_dis;
 
 /*! @brief classe Turbulence_hyd_Longueur_Melange_VEF Cette classe correspond a la mise en oeuvre du modele
  *  de longueur de melange en VEF

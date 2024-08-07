@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ Entree& Gravite_Multiphase::readOn(Entree& is)
   noms[0] = "gravite";
   unites[0] = "m/s^2";
   Motcle typeChamp = "champ_elem" ;
-  const Domaine_dis& z = ref_cast(Domaine_dis, pb.domaine_dis());
+  const Domaine_dis& z = pb.domaine_dis();
   dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, D, 0, gravite_);
 
   champs_compris_.ajoute_champ(gravite_);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
+#include <Domaine_dis.h>
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
 #include <Champ_Inc.h>
@@ -28,7 +29,6 @@ class Probleme_base;
 class EcrFicPartage;
 class Domaine_Cl_dis;
 class Champ_Don;
-class Domaine_dis;
 class Domaine_VF;
 
 /*! @brief Classe Turbulence_paroi_scal_base Classe de base pour la hierarchie des classes representant les modeles

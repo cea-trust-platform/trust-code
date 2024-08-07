@@ -20,7 +20,6 @@
 
 class Domaine_Cl_dis;
 class Probleme_base;
-class Domaine_dis;
 
 class Terme_Source_EF_base: public Source_base
 {
