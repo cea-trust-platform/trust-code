@@ -50,6 +50,11 @@ void  EOS_Tools_VEF::associer_domaines(const Domaine_dis& domaine, const Domaine
 {
   le_dom = ref_cast(Domaine_VEF,domaine.valeur());
   le_dom_Cl = domaine_cl;
+  if (!un_.get_md_vector().non_nul())
+    {
+      le_dom->creer_tableau_faces(un_, RESIZE_OPTIONS::NOCOPY_NOINIT);
+      un_ = 1.;
+    }
 }
 
 /*! @brief Renvoie rho avec la meme discretisation que la vitesse : une valeur par face en VEF
@@ -81,10 +86,7 @@ double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
   double x = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), tab, FAUX_EN_PERIO);
   // La facon simple de faire serait celle-ci, mais c'est faux a cause de FAUX_EN_PERIO
   //  qui compte deux fois les volumes entrelaces des faces periodiques:
-  DoubleVect un;
-  le_dom->creer_tableau_faces(un, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  un = 1.;
-  double y = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), un, FAUX_EN_PERIO);
+  double y = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), un_, FAUX_EN_PERIO);
   return x / y;
 }
 

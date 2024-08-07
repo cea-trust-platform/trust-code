@@ -180,6 +180,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
   const IntVect& tab1 = mat_morse.get_tab1(), tab2 = mat_morse.get_tab2();
 
   DoubleVect& coeff = mat_morse.get_set_coeff();
+  ToDo_Kokkos("critical for implicit");
   for (int i=0; i<mat_morse.nb_lignes(); i++)
     for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)
       {
@@ -266,6 +267,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   const IntVect& tab1 = mat->get_tab1(), tab2 = mat->get_tab2();
 
   DoubleVect& coeff = mat->get_set_coeff();
+  ToDo_Kokkos("critical for implicit");
   for (int i=0; i<mat->nb_lignes(); i++)
     for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)
       {
@@ -447,16 +449,15 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   // on ajoute durho/dt au bord Dirichlet car les solveur masse a mis a zero
   // NOTE : en incompressible le terme est rajoute par modifier_secmem
   const double dt_ = eqn.schema_temps().pas_de_temps();
-  const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), tab_rho_face_np1=fluide_dil.rho_face_np1();
+  const DoubleTab& tab_rho_face_n = fluide_dil.rho_face_n(), tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& vit = eqn.vitesse().valeurs();
-  const Conds_lim& lescl=eqn.domaine_Cl_dis().les_conditions_limites();
+  const Conds_lim& lescl = eqn.domaine_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.domaine_dis()->face_voisins();
   const int taille = vpoint.line_size();
 
   if (taille==1)
     if (orientation_VDF_.size() == 0)
       orientation_VDF_.ref(ref_cast(Domaine_VF,eqn.domaine_dis().valeur()).orientation());
-
   for (auto& itr : lescl)
     {
       const Cond_lim_base& la_cl_base = itr.valeur();
@@ -468,6 +469,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
 
           if (taille==1) // VDF //
             {
+              ToDo_Kokkos("critical");
               for (int num_face=ndeb; num_face<nfin; num_face++)
                 {
                   int n0 = face_voisins(num_face, 0);
@@ -480,13 +482,23 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
             }
           else // VEF //
             {
+              int dim = Objet_U::dimension;
+              int premiere_face_int = ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).premiere_face_int();
+              copyPartialFromDevice(tab_rho_face_np1, 0, premiere_face_int, "tab_rho_face_np1 on boundary");
+              copyPartialFromDevice(tab_rho_face_n, 0, premiere_face_int, "tab_rho_face_n on boundary");
+              copyPartialFromDevice(vit, 0, premiere_face_int * dim, "vit on boundary");
+              copyPartialFromDevice(vpoint, 0, premiere_face_int * dim, "vpoint on boundary");
               for (int num_face=ndeb; num_face<nfin; num_face++)
-                for (int jj=0; jj<Objet_U::dimension; jj++)
+                for (int jj=0; jj<dim; jj++)
                   {
-                    // GF en cas de diffsion implicite vpoint!=0 on ignrore l'ancienne valeur
+                    // GF en cas de diffusion implicite vpoint!=0 on ignrore l'ancienne valeur
                     vpoint(num_face,jj)=(tab_rho_face_np1(num_face)*diri.val_imp(num_face-ndeb,jj)
                                          -tab_rho_face_n(num_face)*vit(num_face,jj))/dt_;
                   }
+              copyPartialToDevice(tab_rho_face_np1, 0, premiere_face_int, "tab_rho_face_np1 on boundary");
+              copyPartialToDevice(tab_rho_face_n, 0, premiere_face_int, "tab_rho_face_n on boundary");
+              copyPartialToDevice(vit, 0, premiere_face_int * dim, "vit on boundary");
+              copyPartialToDevice(vpoint, 0, premiere_face_int * dim, "vpoint on boundary");
             }
         }
     }

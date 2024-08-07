@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <EOS_Tools_base.h>
 #include <TRUST_Ref.h>
+#include <TRUSTVect.h>
 
 class Fluide_Dilatable_base;
 class Domaine_Cl_dis;
@@ -45,6 +46,7 @@ public :
 protected :
   REF(Domaine_VEF) le_dom;
   REF(Domaine_Cl_dis) le_dom_Cl;
+  DoubleVect un_;
 };
 
 #endif /* EOS_Tools_VEF_included */

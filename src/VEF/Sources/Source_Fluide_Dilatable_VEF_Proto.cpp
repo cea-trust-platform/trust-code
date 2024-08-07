@@ -51,7 +51,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
 
   if (eqn.discretisation().que_suis_je()=="VEF")
     {
-      ToDo_Kokkos("critical");
+      ToDo_Kokkos("critical in VEF P0");
       // Boucle faces bord
       for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
@@ -101,6 +101,11 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
     }
   else if (eqn.discretisation().que_suis_je()=="VEFPreP1B")
     {
+      CDoubleArrView g_v = g.view_ro();
+      CDoubleArrView porosite_face_v = porosite_face.view_ro();
+      CDoubleArrView volumes_entrelaces_v = volumes_entrelaces.view_ro();
+      CDoubleArrView tab_rho_v = static_cast<const DoubleVect&>(tab_rho).view_ro();
+      DoubleTabView resu_v = resu.view_rw();
       // Boucle faces bord
       for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
@@ -109,24 +114,19 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
           int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur())||sub_type(Symetrie,la_cl.valeur())||sub_type(Periodique,la_cl.valeur()))
             {
-              for (int face=ndeb ; face<nfin ; face++)
-                for (int comp=0 ; comp<dimension ; comp++)
-                  resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({ndeb,0}, {nfin,dimension}), KOKKOS_LAMBDA(
+                                     const int face, const int comp)
+              {
+                resu_v(face, comp) += (tab_rho_v(face) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
+              });
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
         }
       // Boucle faces internes
-      CDoubleArrView g_v = g.view_ro();
-      CDoubleArrView porosite_face_v = porosite_face.view_ro();
-      CDoubleArrView volumes_entrelaces_v = volumes_entrelaces.view_ro();
-      CDoubleTabView tab_rho_v = tab_rho.view_ro();
-      DoubleTabView resu_v = resu.view_rw();
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                           Kokkos::RangePolicy<>(premiere_face_interne, nb_faces), KOKKOS_LAMBDA(
-                             const int face)
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({premiere_face_interne,0}, {nb_faces,dimension}), KOKKOS_LAMBDA(
+                             const int face, const int comp)
       {
-        for (int comp=0 ; comp<dimension ; comp++)
-          resu_v(face, comp) +=
-            (tab_rho_v(face, 0) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
+        resu_v(face, comp) += (tab_rho_v(face) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
