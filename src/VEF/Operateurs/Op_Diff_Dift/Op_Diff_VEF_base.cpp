@@ -250,36 +250,38 @@ Motcle Op_Diff_VEF_base::get_localisation_pour_post(const Nom& option) const
   return loc;
 }
 
-void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
+void Op_Diff_VEF_base::remplir_nu(DoubleTab& tab_nu) const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   // On dimensionne nu
-  const DoubleTab& diffu=diffusivite().valeurs();
-  if (!nu.get_md_vector().non_nul())
+  const DoubleTab& tab_diffu = diffusivite().valeurs();
+  if (!tab_nu.get_md_vector().non_nul())
     {
-      nu.resize(0, diffu.line_size());
-      domaine_VEF.domaine().creer_tableau_elements(nu, RESIZE_OPTIONS::NOCOPY_NOINIT);
+      tab_nu.resize(0, tab_diffu.line_size());
+      domaine_VEF.domaine().creer_tableau_elements(tab_nu, RESIZE_OPTIONS::NOCOPY_NOINIT);
     }
-  if (!diffu.get_md_vector().non_nul())
+  if (!tab_diffu.get_md_vector().non_nul())
     {
-      // diffusvite uniforme
-      const int n = nu.dimension_tot(0);
-      const int nb_comp = nu.line_size();
-      // Tableaux vus comme uni-dimenionnels:
-      const double* arr_diffu = mapToDevice(diffu);
-      double* arr_nu = computeOnTheDevice(nu);
-      #pragma omp target teams distribute parallel for if (computeOnDevice)
-      for (int i = 0; i < n; i++)
-        for (int j = 0; j < nb_comp; j++)
-          arr_nu[i*nb_comp + j] = arr_diffu[j];
+      // diffusivite uniforme
+      const int n = tab_nu.dimension_tot(0);
+      const int nb_comp = tab_nu.line_size();
+      CDoubleArrView diffu = static_cast<const DoubleVect&>(tab_diffu).view_ro();
+      DoubleTabView nu = tab_nu.view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+        Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {n, nb_comp}),
+        KOKKOS_LAMBDA(const int i, const int j)
+      {
+        nu(i, j) = diffu(j);
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {
-      assert(nu.get_md_vector() == diffu.get_md_vector());
-      assert_espace_virtuel_vect(diffu);
+      assert(tab_nu.get_md_vector() == tab_diffu.get_md_vector());
+      assert_espace_virtuel_vect(tab_diffu);
       // Sync arrays on the device before copy:
-      mapToDevice(diffu);
-      computeOnTheDevice(nu);
-      nu.inject_array(diffu);
+      mapToDevice(tab_diffu);
+      computeOnTheDevice(tab_nu);
+      tab_nu.inject_array(tab_diffu);
     }
 }
