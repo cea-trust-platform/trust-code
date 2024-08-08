@@ -167,59 +167,37 @@ void Loi_Etat_base::calculer_lambda()
  */
 void Loi_Etat_base::calculer_nu()
 {
-  const Champ_Don& mu = le_fluide->viscosite_dynamique();
+  const Champ_Don& viscosite_dynamique = le_fluide->viscosite_dynamique();
+  bool uniforme = sub_type(Champ_Uniforme,viscosite_dynamique.valeur());
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  const DoubleTab& tab_mu = mu.valeurs();
-  Champ_Don& nu= le_fluide->viscosite_cinematique ();
-  DoubleTab& tab_nu = nu.valeurs();
+  const DoubleTab& tab_mu = viscosite_dynamique.valeurs();
+  Champ_Don& viscosite_cinematique = le_fluide->viscosite_cinematique();
+  DoubleTab& tab_nu = viscosite_cinematique.valeurs();
+  int n = tab_nu.size();
 
-  int n = tab_nu.size(), isVDF=0;
-  if (nu->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
-
-  if (isVDF)
+  if (viscosite_cinematique->que_suis_je()=="Champ_Fonc_P0_VDF")
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
-        {
-          double mu0 = tab_mu(0,0);
-          for (int i=0 ; i<n ; i++) tab_nu(i,0) = mu0 / tab_rho(i,0);
-        }
-      else
-        {
-          for (int i=0 ; i<n ; i++) tab_nu(i,0) = tab_mu(i,0) / tab_rho(i,0);
-        }
+      // VDF
+      for (int i=0 ; i<n ; i++)
+        tab_nu(i,0) = tab_mu(uniforme ? 0 : i,0) / tab_rho(i,0);
     }
   else // VEF
     {
-      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
-      int nfe = elem_faces.line_size();
-      if (sub_type(Champ_Uniforme,mu.valeur()))
-        {
-          double mu0 = tab_mu(0,0);
-          CIntTabView elem_faces_v = elem_faces.view_ro();
-          CDoubleTabView tab_rho_v = tab_rho.view_ro();
-          DoubleTabView tab_nu_v = tab_nu.view_rw();
-          start_gpu_timer();
-          Kokkos::parallel_for("Loi_Etat_base::calculer_nu", n, KOKKOS_LAMBDA(
-                                 const int i)
-          {
-            double rhoelem = 0;
-            for (int face = 0; face < nfe; face++)
-              rhoelem += tab_rho_v(elem_faces_v(i, face), 0);
-            rhoelem /= nfe;
-            tab_nu_v(i, 0) = mu0 / rhoelem;
-          });
-          end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Loi_Etat_base::calculer_nu");
-        }
-      else
-        {
-          for (int i=0 ; i<n ; i++)
-            {
-              double rhoelem = 0;
-              for (int face = 0; face < nfe; face++) rhoelem += tab_rho(elem_faces(i, face), 0);
-              rhoelem /= nfe;
-              tab_nu(i,0) = tab_mu(i,0) / rhoelem;
-            }
-        }
+      const IntTab& ef = ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
+      int nfe = ef.line_size();
+      CIntTabView elem_faces = ef.view_ro();
+      CDoubleArrView rho = static_cast<const DoubleVect&>(tab_rho).view_ro();
+      CDoubleArrView mu = static_cast<const DoubleVect&>(tab_mu).view_ro();
+      DoubleArrView nu = static_cast<DoubleVect&>(tab_nu).view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
+      {
+        double rhoelem = 0;
+        for (int face = 0; face < nfe; face++)
+          rhoelem += rho(elem_faces(i, face));
+        rhoelem /= nfe;
+        nu(i) = mu(uniforme ? 0 : i) / rhoelem;
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   tab_nu.echange_espace_virtuel();
   Debog::verifier("Loi_Etat_base::calculer_nu tab_nu",tab_nu);

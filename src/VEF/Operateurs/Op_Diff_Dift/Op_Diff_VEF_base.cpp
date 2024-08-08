@@ -277,6 +277,9 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
     {
       assert(nu.get_md_vector() == diffu.get_md_vector());
       assert_espace_virtuel_vect(diffu);
+      // Sync arrays on the device before copy:
+      mapToDevice(diffu);
+      computeOnTheDevice(nu);
       nu.inject_array(diffu);
     }
 }

@@ -258,7 +258,14 @@ void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
     }
 }
 
-void Fluide_Quasi_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
+void Fluide_Quasi_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& tab_PHydro, DoubleTab& tab_PTot)
 {
-  for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
+  double Pth = Pth_;
+  CDoubleTabView PHydro = tab_PHydro.view_ro();
+  DoubleTabView PTot = tab_PTot.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
+  {
+    PTot(i,0) = PHydro(i,0) + Pth;
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }

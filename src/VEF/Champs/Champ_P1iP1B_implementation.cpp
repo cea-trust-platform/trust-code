@@ -468,13 +468,13 @@ DoubleTab& Champ_P1iP1B_implementation::filtrage(const Domaine_VEF& zvef, const 
   if (zvef.get_alphaE() && zvef.get_alphaS())
     {
       // Pas de filtrage si deja fait sur ce champ:
-      if (un_champ.valeurs().addr()==adresse_champ_filtre_ && un_champ.temps()==temps_filtrage_)
+      if (un_champ.valeurs().data()==adresse_champ_filtre_ && un_champ.temps()==temps_filtrage_)
         return champ_filtre_;
 
       // On copie le champ a filtrer dans le tableau qui contiendra le champ filtre
       champ_filtre_=un_champ.valeurs();
       temps_filtrage_=un_champ.temps();
-      adresse_champ_filtre_=un_champ.valeurs().addr();
+      adresse_champ_filtre_=un_champ.valeurs().data();
       //Cout << "Filtrage du champ " << un_champ.le_nom() << " au temps " << un_champ.temps() << finl;
 
       // Correction du champ

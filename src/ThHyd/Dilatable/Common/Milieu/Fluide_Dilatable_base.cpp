@@ -402,7 +402,7 @@ void Fluide_Dilatable_base::calculer_pression_tot()
 {
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
   const int n = tab_Ptot.dimension_tot(0);
-  DoubleTab tab_PHyd(n, 1);
+  DoubleTrav tab_PHyd(n, 1);
   if( n != pression_->valeurs().dimension_tot(0) )
     {
       // Interpolation de pression_ aux elements (ex: P1P0)

@@ -35,7 +35,7 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
   remplir_nu(nu_); // On remplit le tableau nu car ajouter peut se faire avant le premier pas de temps
 
   const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
-  DoubleTab nu, nu_turb_m, tab_inconnue;
+  DoubleTrav nu, nu_turb_m, tab_inconnue;
   const int nb_comp = resu.line_size();
 
   // On dimensionne et initialise le tableau des bilans de flux:

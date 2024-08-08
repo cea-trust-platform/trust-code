@@ -569,6 +569,8 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
 #ifndef NDEBUG
   // On s'assure que la periodicite est respectee sur vitesse_face_absolue (Voir FA814)
   int nb_comp = vitesse_face_absolue.dimension(1);
+  int premiere_face_int = domaine_VEF.premiere_face_int();
+  copyPartialFromDevice(vitesse_face_absolue, 0, premiere_face_int * nb_comp, "vitesse_face_absolue on boundary");
   for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -593,9 +595,11 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
                     Cerr << "Contact TRUST support." << finl;
                     exit();
                   }
+
             }  // for face
         }  // sub_type Perio
     }
+  copyPartialToDevice(vitesse_face_absolue, 0, premiere_face_int * nb_comp, "vitesse_face_absolue on boundary");
 #endif
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   DoubleTab phi_vitesse_face_;

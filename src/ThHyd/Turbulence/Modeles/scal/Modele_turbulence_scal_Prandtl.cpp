@@ -79,13 +79,20 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
   const Probleme_base& mon_pb = mon_equation_->probleme();
   DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
   lambda_t = diffusivite_turbulente_.valeurs();
-  const bool Ccp = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
+  const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
   const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique().valeurs();
   const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique().valeurs();
   if (sub_type(Pb_Thermohydraulique_Turbulent_QC, mon_pb))
     {
-      for (int i = 0; i < lambda_t.size(); i++)
-        lambda_t(i) *= tab_Cp(Ccp ? 0 : i);
+      CDoubleArrView Cp = static_cast<const DoubleVect&>(tab_Cp).view_ro();
+      DoubleArrView lambda = static_cast<DoubleVect&>(lambda_t).view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), lambda_t.size(),
+                           KOKKOS_LAMBDA(
+                             const int i)
+      {
+        lambda(i) *= Cp(uniforme ? 0 : i);
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       if (equation().probleme().is_dilatable())
         multiplier_par_rho_si_dilatable(lambda_t, mil);
     }
