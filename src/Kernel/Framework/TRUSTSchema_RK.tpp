@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,9 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
   DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
-  DoubleTab present(xi), qi(xi);
+  DoubleTrav present(xi), qi(xi);
+  present = xi;
+  qi = xi;
 
   for (int i = 0; i < NB_PTS; i++)
     {
@@ -65,28 +67,31 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
 
   DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
-  DoubleTabs ki(NB_PTS); // just for initializing the array structure ...
-
-  for (int i = 0; i < NB_PTS; i++) ki[i] = present;
+  if (ki_.size()!=NB_PTS)
+    {
+      ki_.resize(NB_PTS);
+      // just for initializing the array structure ...
+      for (int i = 0; i < NB_PTS; i++) ki_[i] = present;
+    }
 
   DoubleTrav sauv(present);
   sauv = present; // sauv = y0
 
   // Step 1
-  eqn.derivee_en_temps_inco(ki[0]); // ki[0] = f(y0)
-  ki[0] *= dt_; // ki[0] = h * f(y0)
+  eqn.derivee_en_temps_inco(ki_[0]); // ki[0] = f(y0)
+  ki_[0] *= dt_; // ki[0] = h * f(y0)
 
   for (int step = 1; step < NB_PTS; step++ ) // ATTENTION : ne touche pas !
     {
       present = sauv; // back to y0
-      for (int i = 0; i < step; i++) present.ajoute(get_butcher_coeff<_ORDRE_,NB_PTS-1>().at(step-1).at(i), ki[i]); // Et ouiiiiiiii :-)
+      for (int i = 0; i < step; i++) present.ajoute(get_butcher_coeff<_ORDRE_,NB_PTS-1>().at(step-1).at(i), ki_[i]); // Et ouiiiiiiii :-)
 
-      eqn.derivee_en_temps_inco(ki[step]);
-      ki[step] *= dt_;
+      eqn.derivee_en_temps_inco(ki_[step]);
+      ki_[step] *= dt_;
     }
 
   futur = sauv; // futur = y1 = y0
-  for (int i = 0; i < NB_PTS; i++) futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki[i]);
+  for (int i = 0; i < NB_PTS; i++) futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki_[i]);
 
   update_critere_statio(futur, eqn);
 
