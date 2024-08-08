@@ -404,28 +404,17 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
           cached_positions_.reset();
         }
       else
-        // Recherche dans le cache:
-        for (int i = 0; i < cached_positions_.size(); i++)
-          if (sameDoubleTab(positions, cached_positions_[i]))
-            {
-              elements.resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
-              elements = cached_elements_[i];
-              /*
-               //Cerr << "Reuse " << i << "th array cached in memory for Domaine::chercher_elements(...): " << finl;
-               if (i!=0)
-               {
-               // Permute pour avoir le tableau en premier
-               cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
-               cached_elements_[i] = cached_elements_[0];
-               cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
-               cached_elements_[0] = elements;
-               DoubleTab tmp(cached_positions_[i]);
-               cached_positions_[i] = cached_positions_[0];
-               cached_positions_[0] = tmp;
-               }
-               */
-              return elements;
-            }
+        {
+          // Recherche dans le cache:
+          for (int i = 0; i < cached_positions_.size(); i++)
+            if (sameDoubleTab(positions, cached_positions_[i]))
+              {
+                elements.resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
+                elements = cached_elements_[i];
+                // elements.ref_array(cached_elements_[i]); // Non Provoque un assert (ex Sondes.data) et en parallele aussi, normal elements est modifie dans les sondes....
+                return elements;
+              }
+        }
     }
   const OctreeRoot& octree = construit_octree(reel);
   int sz = positions.dimension(0);
