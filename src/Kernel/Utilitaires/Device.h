@@ -35,8 +35,6 @@ extern bool init_openmp_, clock_on, timer_on;
 extern double clock_start;
 
 void self_test();
-void exit_on_copy_condition(int size);
-void set_exit_on_copy_condition(int size);
 void init_openmp();
 void init_cuda();
 std::string ptrToString(const void* adr);

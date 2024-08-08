@@ -25,10 +25,7 @@ inline void TRUSTArray<_TYPE_>::checkDataOnHost() const
 {
 #if defined(_OPENMP) && !defined(TRUST_USE_UVM)
   if (get_data_location()==DataLocation::Device)
-    {
-      copyFromDevice(*this, "const detected with checkDataOnHost()");
-      exit_on_copy_condition(size_array());
-    }
+    copyFromDevice(*this, "const detected with checkDataOnHost()");
 #endif
 }
 
@@ -39,10 +36,7 @@ inline void TRUSTArray<_TYPE_>::checkDataOnHost()
   const DataLocation& loc = get_data_location();
   if (loc==DataLocation::Host || loc==DataLocation::HostOnly || loc==DataLocation::PartialHostDevice) return;
   else if (loc==DataLocation::Device)
-    {
-      copyFromDevice(*this, "non-const detected with checkDataOnHost()");
-      exit_on_copy_condition(size_array());
-    }
+    copyFromDevice(*this, "non-const detected with checkDataOnHost()");
   // On va modifier le tableau (non const) sur le host:
   set_data_location(DataLocation::Host);
 #endif

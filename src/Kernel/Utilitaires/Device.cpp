@@ -32,54 +32,12 @@ bool clock_on = false;
 bool timer_on = true;
 double clock_start;
 
-#ifndef NDEBUG
-static int copy_before_exit = -1;
-#endif
-
-static int size_copy_before_exit = std::numeric_limits<int>::max();
-
 std::string ptrToString(const void* adr)
 {
   std::stringstream ss;
   ss << adr;
   return ss.str();
 }
-
-// ToDo OpenMP inliner dans Device.h:
-void exit_on_copy_condition(int size)
-{
-#ifdef _OPENMP
-#ifndef NDEBUG
-  // Le code quittera des que le nombre de copie au dela d'une certaine taille est atteint lors d'appels a checkDataOnHost
-  // Tres utile pour trouver les algorithmes TRUST a porter avec OpenMP
-  // Exemple: Une copie autorise puis on quitte:
-  // TRUST_COPY_BEFORE_EXIT=1 $exec_debug
-  if (size_copy_before_exit>0 && size>=size_copy_before_exit && statistiques().last_time(timestep_counter_)>0)
-    {
-      if (copy_before_exit == 0)
-        {
-          Cerr << "[OpenMP] An array of " << size << " items (>= " << size_copy_before_exit << " threshold) is copy from/to device." << finl;
-          Cerr << "[OpenMP] Probably from an expensive loop yet not offloaded..." << finl;
-          Process::exit();
-        }
-      copy_before_exit--;
-    }
-#endif
-#endif
-}
-
-
-void set_exit_on_copy_condition(int size)
-{
-  if (getenv("TRUST_COPY_BEFORE_EXIT")!=nullptr)
-    {
-#ifndef NDEBUG
-      copy_before_exit = atoi(getenv("TRUST_COPY_BEFORE_EXIT"));
-#endif
-      if (size < size_copy_before_exit) size_copy_before_exit = size;
-    }
-}
-
 
 // Voir AmgXWrapper (src/init.cpp)
 int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
@@ -356,7 +314,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       else if (currentLocation==DataLocation::Host)
         {
           copyToDevice(tab_addr, memory_size, "array " + arrayName);
-          if (memory_size>8e6) // Warning for large array only:
+          if (memory_size>=DeviceMemory::internal_items_size_) // Warning for large array only:
             ToDo_Kokkos("H2D update of large array! Add a breakpoint to find the reason.");
         }
       else if (currentLocation==DataLocation::PartialHostDevice)
@@ -428,6 +386,8 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
       end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
       if (clock_on) printf("\n");
+      if (size>=DeviceMemory::internal_items_size_) // Warning for large array only:
+        ToDo_Kokkos("D2H update of large array! Add a breakpoint to find the reason if not IO.");
     }
 #endif
 }

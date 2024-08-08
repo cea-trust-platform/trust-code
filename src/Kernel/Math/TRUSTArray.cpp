@@ -15,6 +15,7 @@
 
 #include <TRUSTArray.h>
 #include <string.h>
+#include <DeviceMemory.h>
 
 // Ajout d'un flag par appel a end_gpu_timer peut etre couteux (creation d'une string)
 #ifdef _OPENMP
@@ -210,7 +211,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
   if (nb_elements > 0)
     {
       bool kernelOnDevice = checkDataOnDevice(source);
-      start_gpu_timer();
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
       if (kernelOnDevice)
         {
 #ifndef LATATOOLS
@@ -225,6 +226,10 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
           const _TYPE_ * addr_source = source.span_.data() + first_element_source;
           _TYPE_ * addr_dest = span_.data() + first_element_dest;
           memcpy(addr_dest, addr_source, nb_elements * sizeof(_TYPE_));
+#ifdef _OPENMP
+          if (nb_elements>=DeviceMemory::internal_items_size_ && Process::je_suis_maitre())
+            Cerr << "[Host] Filling a large TRUSTArray (" << nb_elements << " items) which is slow during a GPU run! Set a breakpoint to fix." << finl;
+#endif
         }
       if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
@@ -238,7 +243,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(_TYPE_ x)
 {
   const int size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
-  start_gpu_timer(size>100 ? __KERNEL_NAME__ : "");
+  if (timer) start_gpu_timer(size>100 ? __KERNEL_NAME__ : "");
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
@@ -263,7 +268,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
   assert(size_array()==y.size_array());
   int size = size_array();
   bool kernelOnDevice = checkDataOnDevice(y);
-  start_gpu_timer();
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
@@ -289,7 +294,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 {
   int size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
-  start_gpu_timer();
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
@@ -314,7 +319,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
   assert(size_array() == y.size_array());
   int size = size_array();
   bool kernelOnDevice = checkDataOnDevice(y);
-  start_gpu_timer();
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
@@ -349,7 +354,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 {
   int size = size_array();
   bool kernelOnDevice = checkDataOnDevice();
-  start_gpu_timer();
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS

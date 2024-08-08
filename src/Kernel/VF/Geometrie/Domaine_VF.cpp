@@ -37,7 +37,7 @@ using namespace MEDCoupling;
 #include <Navier.h>
 #include <Symetrie.h>
 #include <Dirichlet_loi_paroi.h>
-
+#include <DeviceMemory.h>
 #include <set>
 
 Implemente_base(Domaine_VF,"Domaine_VF",Domaine_dis_base);
@@ -741,7 +741,7 @@ void Domaine_VF::info_elem_som()
   Cerr<<"=============================================="<<finl;
   int internal_item = std::min(nbelem, nbfaces);
   internal_item = std::min(internal_item, nbsom);
-  set_exit_on_copy_condition(internal_item);
+  DeviceMemory::internal_items_size_ = internal_item;
 }
 
 void Domaine_VF::creer_tableau_faces(Array_base& t, RESIZE_OPTIONS opt) const
