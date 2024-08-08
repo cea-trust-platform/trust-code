@@ -1331,8 +1331,8 @@ then
    # Ecriture
    m="# TRUST will use ROCM ?";e="TRUST_USE_ROCM=\"$TRUST_USE_ROCM\" && export TRUST_USE_ROCM";ecrit $m"|"$e"|"$env
    m="# PATH to ROCM";e="ROCM_PATH=\"$ROCM_PATH\" && export ROCM_PATH";ecrit $m"|"$e"|"$env;eval $e
-   echo "ADD_PATH \$ROCM_PATH/bin" >> $env
-   echo "ADD_LD_LIBRARY_PATH \$ROCM_PATH/lib" >> $env
+   echo "ADD_PATH_AFTER \$ROCM_PATH/bin" >> $env
+   echo "ADD_LD_LIBRARY_PATH_AFTER \$ROCM_PATH/lib" >> $env
    # Detection de l'architecture de la carte AMD:
    ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
    [ "$HOST" = adastra ] && ROCM_ARCH=gfx90a # Adastra
