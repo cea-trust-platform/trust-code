@@ -115,7 +115,14 @@ configure_compilateur_ccache()
       echo $ECHO_OPTS "#!/bin/bash" > $script
       # Trick to boost nvc/nvcc/nvc++ build by using RAM for temporary files:
       [ ! -d /ccc ] && [ -d /dev/shm ] && [ "`basename $chemin | grep nvc`" != "" ] && echo "TMPDIR=/dev/shm" >> $script
-      echo $ECHO_OPTS "\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \"\$@\"" >> $script
+      # Trick to use mix HIP/OMPT compilers according source:
+      if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_KOKKOS_HIP" = 1 ]
+      then
+         echo $ECHO_OPTS ". \$TRUST_ROOT/env_src/gpu/share/crayCC \"\$@\"" >> $script
+         echo $ECHO_OPTS "\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \$flags" >> $script
+      else
+         echo $ECHO_OPTS "\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \"\$@\"" >> $script
+      fi
       chmod +x $script
       e=$variable=\""\$TRUST_ROOT/exec/ccache/$compilateur\" && export $variable"
    fi

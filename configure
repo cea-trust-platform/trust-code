@@ -294,6 +294,7 @@ echo "   -cuda=path/nvcc|=download|=ccXY   Activate the CUDA support into severa
 echo "   -rocm                             Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
 echo "   -openmp                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
 echo "   -kokkos_simd                      Enable SIMD Kokkos support"
+echo "   -kokkos_hip                       Enable HIP backend on AMD (OpenMP target is the default)"
 echo " "
 echo -e "\033[1m\033[4mLinking with external Thermo-Physical Properties libraries\033[0m"
 echo " "
@@ -410,6 +411,7 @@ export TRUST_USE_OPENBLAS=1
 export TRUST_USE_OPENMP=0
 export TRUST_USE_KOKKOS=1
 export TRUST_USE_KOKKOS_SIMD=0
+export TRUST_USE_KOKKOS_HIP=0
 export TRUST_USE_AVX=1
 export TRUST_DISABLE_MPI4PY=0
 export TRUST_DISABLE_JUPYTER=0
@@ -621,6 +623,10 @@ do
    then
       export TRUST_USE_KOKKOS_SIMD=1
 
+   elif [ "${1#-kokkos_hip}" != "$1" ]
+   then
+      export TRUST_USE_KOKKOS_HIP=1
+
    elif [ "${1#-without-doc}" != "$1" ]
    then
       export TRUST_WITHOUT_DOC=1
@@ -818,6 +824,7 @@ echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 
 echo "TRUST_WITHOUT_CONDA=$TRUST_WITHOUT_CONDA && export TRUST_WITHOUT_CONDA    	# `[ $TRUST_WITHOUT_CONDA = 1 ] && echo 'Installing without conda - The auto-detected Python will be used and is sym-linked in exec/python/bin' || echo 'conda enabled by default'`" >> $var
 echo "TRUST_USE_KOKKOS=$TRUST_USE_KOKKOS && export TRUST_USE_KOKKOS    	# TRUST built with Kokkos" >> $var
 echo "TRUST_USE_KOKKOS_SIMD=$TRUST_USE_KOKKOS_SIMD && export TRUST_USE_KOKKOS_SIMD    	# TRUST built with Kokkos SIMD" >> $var
+echo "TRUST_USE_KOKKOS_HIP=$TRUST_USE_KOKKOS_HIP && export TRUST_USE_KOKKOS_HIP    	# TRUST built with Kokkos HIP" >> $var
 
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then
