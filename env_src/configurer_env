@@ -1986,6 +1986,9 @@ case $TRUST_ARCH_CC in
            CppFlags=$CppFlags" -O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
         fi
         CppFlags=$CppFlags" -std=$TRUST_STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+	# Suppress warning for recent nvc++ version (>=24.11?):
+	touch dumb.cpp && nvc++ --diag_suppress3560 -c dumb.cpp 1>/dev/null 2>&1 && CppFlags=$CppFlags" --diag_suppress3560"
+	rm -f dumb.cpp
         CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
 	      # On passe en -O1 au lieu de -O3 car plantage dans routine_fft.f dans TrioCFD

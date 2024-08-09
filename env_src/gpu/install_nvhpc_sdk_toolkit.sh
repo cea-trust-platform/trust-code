@@ -1,18 +1,15 @@
 #!/bin/bash
-# NVIDIA HPC SDK
-SDK_VERSION=22.9 && CUDA_VERSION=11.7 && installer=nvhpc_2022_229_Linux_x86_64_cuda_$CUDA_VERSION  # 11.7 uniquement
-SDK_VERSION=22.2 && CUDA_VERSION=11.6 && installer=nvhpc_2022_222_Linux_x86_64_cuda_multi # 11.6, 11.2, 11.0, 10.2 
-# Fedora 34:
-SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_cuda_multi # 11.5, 11.0, 10.2 (nvcc 11.5 OK pour gcc 11.0 de Fedora 34)
-# Fedora 36 car 22.1 ne trouve pas seekg (voir reproducer): Attention, il faut aussi installer un gcc 10. ou 11. avec spack sur F36:
-[ -f /usr/lib64/libstdc++.so.6.0.30 ] && SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi # 12.1, 11.8, 11.0
-
-# On passe a 23.5 pour tout le monde (permet de mieux suivre la correction des bugs du compilateur)
-SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi && installer_md5sum=4748dd45561d22cac5dfe5238e7eaf16 # 12.1, 11.8, 11.0
-SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_$CUDA_VERSION && installer_md5sum=eff38d63c4d08ca5c2962dad049a6833 # 12.1
-# ! 23.9 : nvc++ -std=c++17 crashe sur TRUSTArray.cpp (omp target dans template ?) ToDo: signaler a NVidia
-#SDK_VERSION=23.9 && CUDA_VERSION=12.1 && installer=nvhpc_2023_239_Linux_x86_64_cuda_multi # 12.2, 11.8, 11.0
-#SDK_VERSION=24.1 && CUDA_VERSION=12.3 && installer=nvhpc_2024_221_Linux_x86_64_cuda_multi # 12.3, 11.8
+# NVIDIA HPC SDK: select version according to driver
+NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {v=$(NF-1);gsub("\\\.","",v);print v}'`
+if [ "$NVIDIA_VERSION" = "" ] || [ $NVIDIA_VERSION -le 121 ]
+then
+   SDK_VERSION=23.5  && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_$CUDA_VERSION  && installer_md5sum=eff38d63c4d08ca5c2962dad049a6833
+elif [ $NVIDIA_VERSION -le 125 ]
+then
+   SDK_VERSION=24.7  && CUDA_VERSION=12.5 && installer=nvhpc_2024_247_Linux_x86_64_cuda_$CUDA_VERSION  && installer_md5sum=c7fd37d1a1605f60b2c54890ee0c805e
+else
+   SDK_VERSION=24.11 && CUDA_VERSION=12.6 && installer=nvhpc_2024_2411_Linux_x86_64_cuda_$CUDA_VERSION && installer_md5sum=77e0a195e6830ce9749ba6a85bf48fc5
+fi
 
 INSTALL=$TRUST_ROOT/env/gpu/install
 NVHPC=$INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
@@ -34,6 +31,7 @@ then
       rm -f $TRUST_TMP/$installer.tar.gz
       exit -1
    fi
+   rm -rf $INSTALL
    mkdir -p $INSTALL && cd $INSTALL
    echo "It may take some minutes to install NVidia HPC SDK..."
    tar xpzf $TRUST_TMP/$installer.tar.gz && rm -f $installer.tar.gz
