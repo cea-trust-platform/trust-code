@@ -701,9 +701,10 @@ case $arch in
 	# Support compilateur cray et AOMP de AMD: https://github.com/ROCm-Developer-Tools/aomp/blob/aomp-dev/docs/UBUNTUINSTALL.md
 	if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
 	then
-	   TRUST_CC_BASE="crayCC   amdclang++ "$TRUST_CC_BASE
-	   TRUST_F77_BASE="crayftn flang   "$TRUST_F77_BASE
-	   TRUST_cc_BASE="craycc   amdclang   "$TRUST_cc_BASE
+           PATH=$PATH:/opt/rocm/bin # Pour trouver les compilateurs si necessaire
+           TRUST_CC_BASE="crayCC   amdclang++ "$TRUST_CC_BASE
+           TRUST_F77_BASE="crayftn flang amdflang "$TRUST_F77_BASE
+           TRUST_cc_BASE="craycc   amdclang   "$TRUST_cc_BASE
 	fi
 
 	# On rajoute les autres compilateurs
@@ -1942,7 +1943,7 @@ case $TRUST_ARCH_CC in
         F77Flags=$F77Flags_32b
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
-        [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS="-lgfortran"
+        [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS="-lgfortran" && rep=/usr/lib/gcc/x86_64-linux-gnu/11 && [ -d $rep ] && SYSLIBS="-L$rep "$SYSLIBS # is247793.intra.cea.fr !
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
