@@ -290,7 +290,7 @@ then
    echo "CUDA support for PETSc with: "$with_gpu
 elif [ "$TRUST_USE_ROCM" = 1 ]
 then
-   with_gpu="--with-hip --with-hip-arch=$ROCM_ARCH"
+   with_gpu="--with-hip --with-hip-arch=$ROCM_ARCH --HIPFLAGS=-fPIC --with-hip-dir=$ROCM_PATH"
    echo "ROCM support for PETSc with: "$with_gpu
 else
    with_gpu="--with-cudac=0" # Disable the Cuda Compiler search
