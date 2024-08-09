@@ -993,7 +993,7 @@ void Probleme_base::preparer_calcul()
   // ou il y a des conditions aux limites periodiques.
   // Rq : Si l'une des equations porte la condition a la limite periodique
   //      alors les autres doivent forcement la porter.
-  equation(0).domaine_dis()->modifier_pour_Cl(equation(0).domaine_Cl_dis().les_conditions_limites());
+  equation(0).domaine_dis()->modifier_pour_Cl(equation(0).domaine_Cl_dis()->les_conditions_limites());
   milieu().initialiser(temps);
   for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).preparer_calcul();
@@ -1691,7 +1691,7 @@ std::string Probleme_base::newCompute()
   for (int i = 0; i < nombre_d_equations(); i++)
     {
       const Equation_base& eq = equation(i);
-      const Conds_lim& condsLim = eq.domaine_Cl_dis().les_conditions_limites();
+      const Conds_lim& condsLim = eq.domaine_Cl_dis()->les_conditions_limites();
       for (auto const &condLim : condsLim)
         {
           const Cond_lim_base& la_cl_base = condLim.valeur();

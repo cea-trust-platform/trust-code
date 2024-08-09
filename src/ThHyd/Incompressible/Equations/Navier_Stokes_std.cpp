@@ -344,7 +344,7 @@ void Navier_Stokes_std::completer()
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
       Domaine_dis_base& domaine = domaine_dis().valeur();
-      domaine.init_dist_paroi_globale(domaine_Cl_dis().les_conditions_limites());
+      domaine.init_dist_paroi_globale(domaine_Cl_dis()->les_conditions_limites());
       Cerr << "Initializing distance_paroi_globale ... " << finl;
       const DoubleTab& dist_calc = domaine.y_elem();
       for (int e = 0 ; e < domaine.nb_elem() ; e++) distance_paroi_globale->valeurs()(e, 0) = dist_calc(e);

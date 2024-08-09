@@ -201,7 +201,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_elem(DoubleTab& gr
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient
   const DoubleTab&  fg_w = ch_a.fgrad_w;
-  const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
+  const Conds_lim& cls_a = ch_a.domaine_Cl_dis()->les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 
   for (int n = 0; n < N; n++)
@@ -254,7 +254,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient
   const DoubleTab&  fg_w = ch_a.fgrad_w;
-  const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
+  const Conds_lim& cls_a = ch_a.domaine_Cl_dis()->les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 
   for (int n = 0; n < N; n++)

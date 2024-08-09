@@ -125,7 +125,7 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
 
   for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n_bord);
       // corrige si Neumann_sortie_libre
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {

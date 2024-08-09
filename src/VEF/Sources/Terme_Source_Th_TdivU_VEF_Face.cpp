@@ -95,7 +95,7 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_domaine_cl()
   Domaine_Cl_dis& mon_domcl=ref_cast(Domaine_Cl_dis,mon_domcl_);
   mon_domcl=eqn_t->domaine_Cl_dis();
   domainecl_sa=eqn_t->domaine_Cl_dis().valeur();
-  Conds_lim& condlims=mon_domcl.les_conditions_limites();
+  Conds_lim& condlims=mon_domcl->les_conditions_limites();
   Conds_lim& condlims_sa=domainecl_sa->les_conditions_limites();
   int nb=condlims.size();
 

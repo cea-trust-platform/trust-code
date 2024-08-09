@@ -688,10 +688,10 @@ void Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom
             compteur = 0;
 
             const Domaine_Cl_dis& zcl=eqn.domaine_Cl_dis();
-            int nb_cond_lim=zcl.nb_cond_lim(),num_cl;
+            int nb_cond_lim=zcl->nb_cond_lim(),num_cl;
             for (num_cl=0; num_cl<nb_cond_lim; num_cl++)
               {
-                const Cond_lim& la_cl=zcl.les_conditions_limites(num_cl);
+                const Cond_lim& la_cl=zcl->les_conditions_limites(num_cl);
                 const Frontiere_dis_base& frontiere_dis=la_cl->frontiere_dis();
                 const Frontiere& frontiere=frontiere_dis.frontiere();
                 const Faces& faces=frontiere.faces();
@@ -867,10 +867,10 @@ void Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncom
               compteur = 0;
               int num_cl;
               const Domaine_Cl_dis& zcl=eqn.domaine_Cl_dis();
-              int nb_cond_lim=zcl.nb_cond_lim();
+              int nb_cond_lim=zcl->nb_cond_lim();
               for (num_cl=0; num_cl<nb_cond_lim; num_cl++)
                 {
-                  const Cond_lim& la_cl=zcl.les_conditions_limites(num_cl);
+                  const Cond_lim& la_cl=zcl->les_conditions_limites(num_cl);
                   const Frontiere_dis_base& frontiere_dis=la_cl->frontiere_dis();
                   const Frontiere& frontiere=frontiere_dis.frontiere();
                   const Faces& faces=frontiere.faces();

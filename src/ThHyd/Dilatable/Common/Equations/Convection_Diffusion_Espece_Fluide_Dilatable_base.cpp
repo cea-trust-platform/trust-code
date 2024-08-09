@@ -48,7 +48,7 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
       if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
         ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;
     }
-  zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
+  zcl_modif_->les_conditions_limites().set_modifier_val_imp(0);
   return 1;
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,7 @@ const DoubleTab& Source_WC_Chaleur::correct_grad_boundary(const Domaine_VF& doma
   const Domaine_Cl_dis& domaine_cl = mon_equation->domaine_Cl_dis();
   for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       // recuperer face et remplace gradient par 0
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();

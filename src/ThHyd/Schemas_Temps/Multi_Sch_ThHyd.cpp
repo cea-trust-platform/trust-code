@@ -202,7 +202,7 @@ bool Multi_Sch_ThHyd::iterateTimeStep(bool& converged)
         }
       else
         {
-          eqn_i.domaine_Cl_dis().mettre_a_jour(temps);
+          eqn_i.domaine_Cl_dis()->mettre_a_jour(temps);
           faire_un_pas_de_temps_eqn_base(eqn_i);
         }
     }

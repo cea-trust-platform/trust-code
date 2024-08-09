@@ -550,7 +550,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   passe = present;
   // futur=present;
   // sert pour la pression et les couplages
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
   //present=futur;
 
   compteur=0;
@@ -565,7 +565,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
       convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       if (!ok) return 0; //si echec total
       futur=present;
-      eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
     }
   present -= passe;

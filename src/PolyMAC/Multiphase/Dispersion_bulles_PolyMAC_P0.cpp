@@ -90,7 +90,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient
   const DoubleTab&  fg_w = ch_a.fgrad_w;
-  const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
+  const Conds_lim& cls_a = ch_a.domaine_Cl_dis()->les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 
   // Et pour les methodes span de la classe Interface pour choper la tension de surface

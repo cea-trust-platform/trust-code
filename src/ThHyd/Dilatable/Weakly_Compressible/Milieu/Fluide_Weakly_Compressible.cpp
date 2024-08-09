@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -231,11 +231,11 @@ void Fluide_Weakly_Compressible::checkTraitementPth(const Domaine_Cl_dis& domain
 {
   // TODO : FIXME : we should be able to use this in closed cavities too !!
   int pression_imposee=0;
-  int size=domaine_cl.les_conditions_limites().size();
+  int size=domaine_cl->les_conditions_limites().size();
   assert(size!=0);
   for (int n=0; n<size; n++)
     {
-      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n);
+      const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
     }
 

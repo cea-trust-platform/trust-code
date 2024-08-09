@@ -87,7 +87,7 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   update_critere_statio(futur, eqn);
   futur *= dt_;
   futur += sauv;
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   futur.echange_espace_virtuel();
 
   return 1;

@@ -45,7 +45,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   int n_bord ;
   for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
         return Pth_n;
     }

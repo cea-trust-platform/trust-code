@@ -334,7 +334,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       os.set_col_width(wcol - !gnuplot_header);
       os.add_col("Time");
       os.set_col_width(wcol);
-      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis().les_conditions_limites();
+      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis()->les_conditions_limites();
 
       if (flux_bords_.nb_dim()!=2)
         {

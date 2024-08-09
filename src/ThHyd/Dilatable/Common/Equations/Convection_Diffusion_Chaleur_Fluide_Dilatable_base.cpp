@@ -155,7 +155,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
  */
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
 {
-  zcl_modif_=(domaine_Cl_dis());
+  zcl_modif_= domaine_Cl_dis();
   Conds_lim& condlims=zcl_modif_->les_conditions_limites();
   int nb=condlims.size();
   // pour chaque condlim on recupere le champ_front et on met 1
@@ -167,7 +167,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
       if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
         ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;
     }
-  zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
+  zcl_modif_->les_conditions_limites().set_modifier_val_imp(0);
   return 1;
 }
 

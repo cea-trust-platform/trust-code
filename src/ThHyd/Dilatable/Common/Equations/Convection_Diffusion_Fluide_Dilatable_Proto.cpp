@@ -100,7 +100,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   const Schema_Temps_base& sch = eqn.schema_temps();
   int diffusion_implicite=sch.diffusion_implicite();
-  eqn.domaine_Cl_dis().les_conditions_limites().set_modifier_val_imp(0);
+  eqn.domaine_Cl_dis()->les_conditions_limites().set_modifier_val_imp(0);
 
   /*
    * FIRST TERM : diffusive
@@ -121,7 +121,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
         }
     }
 
-  eqn.domaine_Cl_dis().les_conditions_limites().set_modifier_val_imp(1);
+  eqn.domaine_Cl_dis()->les_conditions_limites().set_modifier_val_imp(1);
   derivee.echange_espace_virtuel();
 
   // Add source term (if any, but for temperatur eit is sure !!! )

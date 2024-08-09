@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,7 +114,7 @@ void EDO_Pression_th_VDF::mettre_a_jour_CL(double P)
 {
   for (int n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Sortie_libre_pression_imposee_QC, la_cl.valeur()))
         {
           Sortie_libre_pression_imposee_QC& cl = ref_cast_non_const(Sortie_libre_pression_imposee_QC,la_cl.valeur());

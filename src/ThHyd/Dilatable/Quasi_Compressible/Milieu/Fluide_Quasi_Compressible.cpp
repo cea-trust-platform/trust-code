@@ -75,11 +75,11 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine
   else
     {
       int pression_imposee=0;
-      int size=domaine_cl.les_conditions_limites().size();
+      int size=domaine_cl->les_conditions_limites().size();
       assert(size!=0);
       for (int n=0; n<size; n++)
         {
-          const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n);
+          const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
         }
 

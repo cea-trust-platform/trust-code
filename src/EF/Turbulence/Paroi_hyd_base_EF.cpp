@@ -63,11 +63,10 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
       if (tab_u_star_.size_array() > 0)
         {
           // Boucle sur les frontieres pour recuperer u_star si tab_u_star dimensionne
-          const Domaine_Cl_dis& zcl = my_eqn.domaine_Cl_dis();
           int nb_front = my_eqn.domaine_dis()->nb_front_Cl();
           for (int n_bord = 0; n_bord < nb_front; n_bord++)
             {
-              const Cond_lim& la_cl = zcl.les_conditions_limites(n_bord);
+              const Cond_lim& la_cl = my_eqn.domaine_Cl_dis()->les_conditions_limites(n_bord);
               if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());

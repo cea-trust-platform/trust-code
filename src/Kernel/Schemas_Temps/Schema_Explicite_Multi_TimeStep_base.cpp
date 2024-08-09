@@ -93,7 +93,7 @@ int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   DoubleTab& futur   = eqn.inconnue().futur();
 
   // sert pour la pression et les couplages
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
   DoubleTab dudt(futur);
   /*
@@ -120,7 +120,7 @@ int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
 
   Debog::verifier("Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base, dudt",dudt);
 
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
   update_critere_statio(dudt, eqn);
   futur.echange_espace_virtuel();
 

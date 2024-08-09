@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -298,12 +298,12 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
   intermediaire = dudt;
   intermediaire*= dt_intermediaire;
   intermediaire+= present;
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
   intermediaire.echange_espace_virtuel();
   final = dudt;
   final*= dt_final;
   final+= present;
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_final);
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_final);
   final.echange_espace_virtuel();
 
   delta+=intermediaire; // delta = Contient u(n+1/2,p+1) - u(n+1/2,p)

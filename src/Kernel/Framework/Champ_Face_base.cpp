@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ Entree& Champ_Face_base::readOn(Entree& is) { return is; }
 void Champ_Face_base::init_fcl() const
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF,le_dom_VF.valeur());
-  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
   int i, f, n;
 
   fcl_.resize(domaine.nb_faces_tot(), 3);

@@ -912,7 +912,7 @@ int Equation_base::preparer_calcul()
   Debog::verifier(msg ,inconnue());
 
   les_sources.initialiser(temps);
-  domaine_Cl_dis().imposer_cond_lim(inconnue(),temps);
+  domaine_Cl_dis()->imposer_cond_lim(inconnue(),temps);
   inconnue().valeurs().echange_espace_virtuel();
 
   /* initialisation de parametre_equation() par le schema en temps si celui-ci le permet */
@@ -986,7 +986,7 @@ bool Equation_base::updateGivenFields()
     {
       double tps=sch.temps_futur(i);
       // Calcul des CLs a ce temps.
-      domaine_Cl_dis().mettre_a_jour(tps);
+      domaine_Cl_dis()->mettre_a_jour(tps);
     }
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
   domaine_Cl_dis()->calculer_derivee_en_temps(temps_present,temps_futur);

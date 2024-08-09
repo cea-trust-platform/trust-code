@@ -464,7 +464,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
    */
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
-      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
@@ -524,8 +524,8 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Write flux on boundaries
       for (int num_cl = 0; num_cl < nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-          const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+          const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
           int perio = (sub_type(Periodique,la_cl.valeur()) ? 1 : 0);
           for (int k = 0; k < nb_compo; k++)
             {
@@ -564,8 +564,8 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Impression sur chaque face si demande
       for (int num_cl = 0; num_cl < nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-          const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+          const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();

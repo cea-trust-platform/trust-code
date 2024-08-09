@@ -315,7 +315,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
       fs.push_back(std::ref(domaine[i].get().face_surfaces())), nf.push_back(std::ref(domaine[i].get().face_normales()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
-      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis()->les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *op_ext[i]).nu());
       const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
       const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc.valeur());

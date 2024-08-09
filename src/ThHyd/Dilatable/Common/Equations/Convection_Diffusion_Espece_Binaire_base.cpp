@@ -91,7 +91,7 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_base::vitesse_pour_transpo
 int Convection_Diffusion_Espece_Binaire_base::preparer_calcul()
 {
   Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul();
-  zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
+  zcl_modif_->les_conditions_limites().set_modifier_val_imp(0);
   return 1;
 }
 

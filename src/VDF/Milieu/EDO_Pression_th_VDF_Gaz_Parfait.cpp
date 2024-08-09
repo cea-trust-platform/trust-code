@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       traitPth=1;
       for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
             {
               traitPth=2;
@@ -120,7 +120,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       const IntVect& orientation=le_dom->orientation();
       for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
         {
-          const Cond_lim_base& la_cl = le_dom_Cl->les_conditions_limites(n_bord).valeur();
+          const Cond_lim_base& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord).valeur();
           if (sub_type(Dirichlet, la_cl))
             {
               const Dirichlet& diri=ref_cast(Dirichlet,la_cl);
@@ -161,7 +161,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   int n_bord;
   for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
         return Pth_n;
 
@@ -227,7 +227,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   //DoubleVect norme(dimension);
   for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();

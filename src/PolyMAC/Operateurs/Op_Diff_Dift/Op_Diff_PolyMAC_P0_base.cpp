@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
 
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   domaine.domaine().creer_tableau_elements(nu_);
-  const Conds_lim& cls = eq.domaine_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = eq.domaine_Cl_dis()->les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite()));
   if (nu_constant_)
     for (auto &itr : cls)

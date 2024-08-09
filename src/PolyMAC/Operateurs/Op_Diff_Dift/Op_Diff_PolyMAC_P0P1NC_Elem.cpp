@@ -76,7 +76,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::init_op_ext() const
     {
       const Op_Diff_PolyMAC_P0P1NC_Elem *op = *ops_tbd.begin();
       ops_tbd.erase(ops_tbd.begin()), ops.insert(op);
-      const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
+      const Conds_lim& cls = op->equation().domaine_Cl_dis()->les_conditions_limites();
       for (const auto &itr : cls)
         if (sub_type(Echange_contact_PolyMAC_P0P1NC, itr.valeur()))
           {
@@ -92,7 +92,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::init_op_ext() const
       op_ext.push_back(op); /* remplissage de op_ext avec l'operateur local en 1er */
 
   /* remplissage des o_idx des Echange_Contact_PolyMAC_P0P1NC connectes */
-  const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = equation().domaine_Cl_dis()->les_conditions_limites();
   for (int i = 0; i < cls.size(); i++)
     if (sub_type(Echange_contact_PolyMAC_P0P1NC, cls[i].valeur()))
       {
@@ -147,7 +147,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0P1NC, op_ext[i]->equation().domaine_dis().valeur())));
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces()));
-      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis()->les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0P1NC_Elem, *op_ext[i]).nu());
       const Champ_Elem_PolyMAC_P0P1NC& ch = ref_cast(Champ_Elem_PolyMAC_P0P1NC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
 
@@ -254,7 +254,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
       fs.push_back(std::ref(domaine[i].get().face_surfaces()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv()));
       pe.push_back(std::ref(equation().milieu().porosite_elem())), pf.push_back(std::ref(equation().milieu().porosite_face())), ve.push_back(std::ref(domaine[i].get().volumes()));
-      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis()->les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0P1NC_Elem, *op_ext[i]).nu());
       const Champ_Elem_PolyMAC_P0P1NC& ch = ref_cast(Champ_Elem_PolyMAC_P0P1NC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());

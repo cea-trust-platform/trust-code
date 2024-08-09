@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -172,7 +172,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t mat
 {
   statistiques().begin_count(diffusion_counter_);
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
-  const Conds_lim& cls = ch.domaine_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = ch.domaine_Cl_dis()->les_conditions_limites();
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces(), &f_s = domaine.face_sommets(), &e_a = domaine.domaine().elem_aretes(), &fcl = ch.fcl(), &f_e = domaine.face_voisins();
   const std::string& nom_inco = ch.le_nom().getString();

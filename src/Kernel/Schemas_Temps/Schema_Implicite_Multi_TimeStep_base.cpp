@@ -440,7 +440,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
     }
 
   // sert pour la pression et les couplages
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
   Cout << finl;
   while ((!convergence_eqn)&&(compteur<nb_ite_max))
@@ -456,7 +456,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
       convergence_eqn=le_solveur->iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       modify_equation_parameters(eqn,stored_parameters);
       futur=present;
-      eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
     }
 
