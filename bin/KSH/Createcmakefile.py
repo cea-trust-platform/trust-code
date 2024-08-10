@@ -289,6 +289,7 @@ if(NOT VISUAL)
 
     set(MPI_INCLUDE $ENV{MPI_INCLUDE})
     set(CUDA_INC_PATH $ENV{CUDA_INC_PATH})
+    set(ROCM_PATH $ENV{ROCM_PATH})
     set(TRUST_ARCH $ENV{TRUST_ARCH})
     set(TRUST_ROOT $ENV{TRUST_ROOT})
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -379,6 +380,7 @@ include_directories(SYSTEM
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include 
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include 
     ${CUDA_INC_PATH} 
+    ${ROCM_PATH}/include  
     ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include 
     ${TRUST_ROOT}/lib/src/LIBROCALUTION/include 
     ${TRUST_LATAFILTER}/include 

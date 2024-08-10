@@ -1,4 +1,6 @@
-$TRUST_CC -O3 -mp -target=gpu -I$MPI_ROOT/include -I$CUDA_ROOT/include -L$CUDA_ROOT/lib64 -lcudart -o use_device_ptr use_device_ptr.cpp || exit -1
+[ "$TRUST_USE_CUDA" = 1 ] && OPENMP="-fopenmp -mp=gpu -cuda -I$CUDA_ROOT/include -L$CUDA_ROOT/lib64 -lcudart "
+[ "$TRUST_USE_ROCM" = 1 ] && OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
+$TRUST_CC -O3 -I$MPI_ROOT/include $OPENMP -o use_device_ptr use_device_ptr.cpp || exit -1
 echo "Build OK"
 touch dumb.data && export exec=`pwd`/use_device_ptr
 echo "===== Running on 1 process: ======"
