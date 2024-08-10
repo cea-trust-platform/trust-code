@@ -16,7 +16,13 @@
 #include <DeviceMemory.h>
 #include <iostream>
 #include <Process.h>
+#include <Nom.h>
 #include <Device.h>
+#ifndef LATATOOLS
+#ifdef TRUST_USE_ROCM
+#include <hip/hip_runtime.h>
+#endif
+#endif
 
 map_t DeviceMemory::memory_map_;
 size_t DeviceMemory::initial_free_ = 0;
@@ -32,8 +38,9 @@ size_t DeviceMemory::deviceMemGetInfo(bool print_total) // free or total bytes o
 #ifdef TRUST_USE_CUDA
   cudaMemGetInfo(&free, &total);
 #endif
-#ifdef TRUST_USE_HIP
-  hipMemGetInfo(&free_bytes, &total_bytes);
+#ifdef TRUST_USE_ROCM
+  auto err = hipMemGetInfo(&free, &total);
+  if (err) Process::exit("Error during hipMemGetInfo");
 #endif
 #endif
   return print_total ? total : free;

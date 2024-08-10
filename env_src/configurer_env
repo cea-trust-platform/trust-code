@@ -703,7 +703,10 @@ case $arch in
 	then
            PATH=$PATH:/opt/rocm/bin # Pour trouver les compilateurs si necessaire
            TRUST_CC_BASE="crayCC   amdclang++ "$TRUST_CC_BASE
-           TRUST_F77_BASE="crayftn flang amdflang "$TRUST_F77_BASE
+           # Attention flang amdflang s'ils n'utilisent pas -fopenmp linke avec libompstub et Kokkos::initialize() ne trouve pas la carte GPU...
+           # See https://github.com/flang-compiler/flang-driver/pull/24
+           # On prend donc gfortran en priorite...
+           TRUST_F77_BASE="crayftn gfortran flang amdflang "$TRUST_F77_BASE
            TRUST_cc_BASE="craycc   amdclang   "$TRUST_cc_BASE
 	fi
 
@@ -1302,9 +1305,8 @@ then
       [ -d $CUDA_ROOT/$lib ] && echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT/$lib " >> $env
    done
    echo "ADD_LD_LIBRARY_PATH \$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib" >> $env
-else
-   TRUST_USE_CUDA=0
 fi
+m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 
 ########
 # ROCM #
@@ -1315,7 +1317,6 @@ then
    [ "$ROCM_PATH" = "" ] && [ -d /opt/rocm ] && ROCM_PATH=/opt/rocm
    [ "$ROCM_PATH" = "" ] && echo "Error, can't find ROCM environment. Specify ROCM_PATH." && exit -1
    # Ecriture
-   m="# TRUST will use ROCM ?";e="TRUST_USE_ROCM=\"$TRUST_USE_ROCM\" && export TRUST_USE_ROCM";ecrit $m"|"$e"|"$env
    m="# PATH to ROCM";e="ROCM_PATH=\"$ROCM_PATH\" && export ROCM_PATH";ecrit $m"|"$e"|"$env;eval $e
    echo "ADD_PATH_AFTER \$ROCM_PATH/bin" >> $env
    echo "ADD_LD_LIBRARY_PATH_AFTER \$ROCM_PATH/lib" >> $env
@@ -1326,6 +1327,7 @@ then
    [ "${ROCM_ARCH#gfx103}" != $ROCM_ARCH ] && ROCM_ARCH=gfx1030 && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
    echo "export ROCM_ARCH=$ROCM_ARCH # Carte AMD" >> $env
 fi
+m="# TRUST will use ROCM ?";e="TRUST_USE_ROCM=\"$TRUST_USE_ROCM\" && export TRUST_USE_ROCM";ecrit $m"|"$e"|"$env
 
 ###########################################################
 # Introduction de TRUST_USE_GPU pour gerer Nvidia/AMD/Intel
@@ -1897,10 +1899,10 @@ case $TRUST_ARCH_CC in
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
 	SYSLIBS=$SYSLIBS"-lgfortran -lgcc"
-	TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	[ "$TRUST_F77_BASE" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	[ ${TRUST_F77_BASE%flang} != $TRUST_F77_BASE ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lpgmath -lomp"
 	F77Flags="-O3 -std=legacy -fPIC $ArmFlags $AoccFlags"
+	TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
@@ -1921,7 +1923,9 @@ case $TRUST_ARCH_CC in
 	      [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
         SYSLIBS=$SYSLIBS" ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}" # Librairie GTL necessaire pour activer GPU-Direct
         F77Flags="-O3 -fPIC"
-        F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
+        [ $TRUST_ARCH_CC = linux_crayCC ] && F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
+	TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
+	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
         [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS="-lgfortran" && rep=/usr/lib/gcc/x86_64-linux-gnu/11 && [ -d $rep ] && SYSLIBS="-L$rep "$SYSLIBS # is247793.intra.cea.fr !
@@ -2207,8 +2211,10 @@ then
    # Vu sur orcus (fait ch..r) -pedantic pose probleme:
    echo "Cuda: -pedantic suppressed in \$CppFlags"
    CppFlags=`echo $CppFlags | sed "s?-pedantic??g"`
+elif [ "$TRUST_USE_ROCM" = 1 ]
+then
+   Defines=$Defines" -DTRUST_USE_ROCM -D__HIP_PLATFORM_AMD__"
 fi
-m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 
 #################
 # OpenMP on CPU #
@@ -2315,6 +2321,7 @@ double b[3];
 fi
 # Ajout des flags OpenMP:
 CppFlags=$openmp" "$openmp_target" "$CppFlags
+#F77Flags=$openmp" "$openmp_target" "$F77Flags
 SYSLIBS=$SYSLIBS" "$openmp
 
 ##########

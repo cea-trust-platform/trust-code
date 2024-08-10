@@ -1,7 +1,6 @@
 #include <iostream>
 #include <omp.h>
 #include <chrono>
-#include <cuda_runtime.h>
 #include <mpi.h>
 
 int main() {

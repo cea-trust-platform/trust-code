@@ -4,24 +4,24 @@ rm -f kernels
 # Aucun effet (meme O3 !) sur le device...
 KOKKOS_INC="-I$TRUST_KOKKOS_ROOT/linux_opt/include"
 KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore"
-if [ "$ROCM_PATH" != "" ]
+[ "$TRUST_USE_CUDA" = 1 ] && OPENMP="-fopenmp -mp=gpu -cuda"
+[ "$TRUST_USE_ROCM" = 1 ] && OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
+if [ "$TRUST_USE_KOKKOS_HIP" = 1  ]
 then
    # Mix OpenMP target and HIP code with separate compilation units:
 
    # Build OpenMP code with crayCC:
-   OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
-   crayCC -g -O3 -std=c++17 $OPENMP -c kernels_omp_only.cpp || exit -1
+   $TRUST_CC_BASE -g -O3 -std=c++17 $OPENMP -c kernels_omp_only.cpp || exit -1
 
    # Build HIP code with hipcc or (crayCC -xhip):
    HIP="-xhip --offload-arch=$ROCM_ARCH"
-   crayCC -g -O3 -std=c++17 $HIP $KOKKOS_INC -c kernels_hip_only.cpp || exit -1
+   $TRUST_CC_BASE -g -O3 -std=c++17 $HIP $KOKKOS_INC -c kernels_hip_only.cpp || exit -1
 
    # Link with crayCC:
    HIP_LIB="-L$ROCM_PATH/lib -lamdhip64 -ldl"
-   crayCC $OPENMP -o kernels kernels_hip_only.o kernels_omp_only.o $KOKKOS_LIB $HIP_LIB
+   $TRUST_CC_BASE $OPENMP -o kernels kernels_hip_only.o kernels_omp_only.o $KOKKOS_LIB $HIP_LIB
 else
    # Mix OpenMP target and Kokkos in the same file:
-   OPENMP="-fopenmp -mp=gpu -cuda"
    $TRUST_CC -g -O3 -std=c++17 $OPENMP $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
 fi
 echo "Build OK"
@@ -33,6 +33,12 @@ touch dumb.data && exec=`pwd`/kernels trust dumb 1
 # [Kernel  a+=b] OMPT   Mean time: 0.101147 ms 51.4 GFLOPS
 # [Kernel OpDiv] CPU    Mean time: 133.323 ms 0.1 GFLOPS
 # [Kernel OpDiv] OMPT   Mean time: 4.42834 ms 4.6 GFLOPS
+# GFX1100  (amdclang++ 18.0)
+# [Kernel  a+=b] CPU    Mean time: 1.15491 ms 4.5 GFLOPS
+# [Kernel  a+=b] OMPT   Mean time: 0.181919 ms 28.5 GFLOPS
+# [Kernel OpDiv] CPU    Mean time: 210.977 ms 0 GFLOPS
+# [Kernel OpDiv] OMPT   Mean time: 2.06195 ms 10 GFLOPS
+# [Kernel OpDiv] KOMPT  Mean time: 1.49332 ms 13.9 GFLOPS  !!! Marche tres bien le backend OMPT de Kokkos ici
 # GFX1032 (amdclang++ 18.0)
 # [Kernel  a+=b] CPU    Mean time: 3.18877 ms 1.6 GFLOPS
 # [Kernel  a+=b] OMPT   Mean time: 0.770906 ms 6.7 GFLOPS

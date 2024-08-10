@@ -889,7 +889,7 @@ then
       exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet
    else
       Mpirun="perf record --call-graph dwarf -o $NOM.perf $Mpirun"
-   fi   
+   fi
 elif [ "$NSYS" = 1 ]
 then
    rm -f $NOM.qdrep
