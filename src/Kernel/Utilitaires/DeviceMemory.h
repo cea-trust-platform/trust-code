@@ -36,7 +36,7 @@ public:
   static size_t deviceMemGetInfo(bool);
   static map_t& getMemoryMap() { return memory_map_; };
   static void printMemoryMap();
-  static size_t internal_items_size_;
+  static int internal_items_size_;
 
 private:
   static map_t memory_map_; // Define a map to track memory allocations on device

@@ -20,7 +20,7 @@
 map_t DeviceMemory::memory_map_;
 size_t DeviceMemory::initial_free_ = 0;
 // Typical size of internal_items (elem,face,som) used as threshold to detect excessive H2D/D2H copies or host array allocation
-size_t DeviceMemory::internal_items_size_ = 1e9;
+int DeviceMemory::internal_items_size_ = 1e9;
 
 // Memory:
 size_t DeviceMemory::deviceMemGetInfo(bool print_total) // free or total bytes of the device

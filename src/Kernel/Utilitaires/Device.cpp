@@ -207,7 +207,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
     {
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
       clock_start = Statistiques::get_time_now();
-      int bytes = sizeof(_TYPE_) * size;
+      size_t bytes = sizeof(_TYPE_) * size;
       size_t free_bytes  = DeviceMemory::deviceMemGetInfo(0);
       size_t total_bytes = DeviceMemory::deviceMemGetInfo(1);
       if (bytes>free_bytes)

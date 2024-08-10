@@ -445,7 +445,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
             if (b_v(nps+i)!=b_v(nps+k))
               {
                 printf("En outre, le second membre n'a pas la meme valeur sur les 2 sommets periodiques.\n");
-                printf("b(nps+i)=%d <> b(nps+k)=%d\n",b_v(nps+i),b_v(nps+k));
+                printf("b(nps+i)=%f <> b(nps+k)=%f\n",b_v(nps+i),b_v(nps+k));
               }
             Kokkos::abort("Il y'a probabilite que le modele utilise soit mal implemente pour\nune condition de periodicite. Contacter le support TRUST.");
           }
