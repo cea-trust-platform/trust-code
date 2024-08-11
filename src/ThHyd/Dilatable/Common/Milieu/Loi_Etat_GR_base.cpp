@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,11 +82,10 @@ void Loi_Etat_GR_base::initialiser_inco_ch()
 
   DoubleTab& tab_TH = le_fluide->inco_chaleur().valeurs();
   double Pth = le_fluide->pression_th();
-  int som,n = tab_TH.dimension(0);
-  tab_rho_n.resize(n);
-  tab_rho_np1.resize(n);
-
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  tab_rho_n=tab_rho;
+  tab_rho_np1=tab_rho;
+  int som,n = tab_TH.dimension(0);
   if (le_fluide->inco_chaleur()->le_nom() == "enthalpie")
     {
       for (som=0 ; som<n ; som++)

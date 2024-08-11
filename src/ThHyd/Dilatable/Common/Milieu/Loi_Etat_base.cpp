@@ -106,12 +106,8 @@ void Loi_Etat_base::mettre_a_jour(double temps)
 {
   //remplissage de rho avec rho(n+1)
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  int i, n=tab_rho.size_totale();
-  for (i=0 ; i<n ; i++)
-    {
-      tab_rho_n(i) = tab_rho_np1(i);
-      tab_rho(i,0) = tab_rho_np1(i);
-    }
+  tab_rho_n = tab_rho_np1;
+  tab_rho = tab_rho_np1;
   le_fluide->masse_volumique().mettre_a_jour(temps);
 }
 
@@ -144,7 +140,7 @@ void Loi_Etat_base::calculer_lambda()
   const DoubleTab& tab_mu = mu.valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
   DoubleTab& tab_lambda = lambda.valeurs();
-
+  ToDo_Kokkos("critical");
   int i, n = tab_lambda.size();
   // La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (!sub_type(Champ_Uniforme,lambda.valeur()))
@@ -208,22 +204,19 @@ void Loi_Etat_base::calculer_nu()
  */
 void Loi_Etat_base::calculer_alpha()
 {
-  const Champ_Don& lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = lambda.valeurs();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
-
-  int i, n = tab_alpha.size();
-  if (sub_type(Champ_Uniforme,lambda.valeur()))
-    {
-      double lambda0 = tab_lambda(0,0);
-      for (i=0 ; i<n ; i++) tab_alpha(i,0) = lambda0 / (tab_rho(i,0)*tab_Cp(i,0));
-    }
-  else
-    {
-      for (i=0 ; i<n ; i++) tab_alpha(i,0) = tab_lambda(i,0) / (tab_rho(i,0)*tab_Cp(i,0));
-    }
+  const Champ_Don& conductivite = le_fluide->conductivite();
+  bool uniforme = sub_type(Champ_Uniforme,conductivite.valeur());
+  int n = tab_alpha.size();
+  CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite.valeurs()).view_ro();
+  CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique().valeurs()).view_ro();
+  CDoubleArrView rho = static_cast<const DoubleVect&>(le_fluide->masse_volumique().valeurs()).view_ro();
+  DoubleArrView alpha = static_cast<DoubleVect&>(tab_alpha).view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
+  {
+    alpha(i) = lambda(uniforme ? 0 : i) / (rho(i) * Cp(i));
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   tab_alpha.echange_espace_virtuel();
   Debog::verifier("Loi_Etat_base::calculer_alpha alpha",tab_alpha);
 }
@@ -254,6 +247,7 @@ void Loi_Etat_base::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
+  ToDo_Kokkos("critical, not easy cause virtual function");
   for (int som=0 ; som<n ; som++)
     {
       tab_rho_np1(som) = calculer_masse_volumique(Pth,tab_ICh(som,0));
@@ -317,7 +311,5 @@ void Loi_Etat_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 
 void Loi_Etat_base::abortTimeStep()
 {
-  int i, n=tab_rho_n.size_totale();
-  for (i=0 ; i<n ; i++)
-    tab_rho_np1(i) = tab_rho_n(i);
+  tab_rho_np1 = tab_rho_n;
 }
