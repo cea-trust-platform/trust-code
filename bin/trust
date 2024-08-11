@@ -564,7 +564,7 @@ do
       fi
    elif [ "$1" = "-clean" ]
    then
-      for ext in list newton_evol lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
+      for ext in list newton_evol lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress perf nsys-rep sqlite
       do
          echo "rm *.$ext files."
          rm -f *.$ext
