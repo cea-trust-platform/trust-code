@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,11 @@
 #ifndef distances_VEF_inclus
 #define distances_VEF_inclus
 #include <Domaine_VEF.h>
+// Kokkos
+KOKKOS_FUNCTION
+double distance(int dim,int fac,int elem,CDoubleTabView xp, CDoubleTabView xv, CDoubleTabView face_normale);
+KOKKOS_FUNCTION
+double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num, CDoubleTabView face_normale, double* val);
 //double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1);
 double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1, double& val2);
 double norm_2D_vit1_lp(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1,double& val2);

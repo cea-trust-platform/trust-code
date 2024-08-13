@@ -217,26 +217,23 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
   if (sub_type(Fluide_base, eqn_hydr.milieu()))
     {
       const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-      const IntTab& face_voisins = domaine_VEF.face_voisins();
-      const IntTab& elem_faces = domaine_VEF.elem_faces();
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
       const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
       const DoubleTab& tab_visco = ch_visco_cin->valeurs();
-      const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
 
-      double visco;
+      double visco0;
       bool l_unif;
       if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
         {
           if (tab_visco(0, 0) > DMINFLOAT)
-            visco = tab_visco(0, 0);
+            visco0 = tab_visco(0, 0);
           else
-            visco = DMINFLOAT;
+            visco0 = DMINFLOAT;
           l_unif = true;
         }
       else
         {
-          visco = -1;
+          visco0 = -1;
           l_unif = false;
         }
       if ((!l_unif) && (tab_visco.local_min_vect() < DMINFLOAT))
@@ -248,40 +245,41 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
       for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
-
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces();
               int dim = Objet_U::dimension;
-              // Minimal port with: Partial copy of velocity on the host, loop on the host, velocity back on the device
-              // A full Kokkos port will involve more work with distance_XD/norm_XD_vit1 KOKKOS_INLINE_FUNCTION
-              copyPartialFromDevice(vit, ndeb * dim, nfin * dim, __KERNEL_NAME__);
-              start_gpu_timer(__KERNEL_NAME__);
-              for (int num_face = ndeb; num_face < nfin; num_face++)
-                {
-                  int num[3] {};
-                  double val[3] {};
-                  int elem = face_voisins(num_face, 0);
-                  int fac=0;
-                  for (int i=0; i<dim; i++)
-                    {
-                      if (elem_faces(elem, fac)==num_face) fac++;
-                      num[i] = elem_faces(elem, fac);
-                      fac++;
-                    }
-
-                  double dist = dim==2 ? distance_2D(num_face, elem, domaine_VEF) : distance_3D(num_face, elem, domaine_VEF);
-                  dist *= (dim+1.)/dim;                      // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                  double norm_v = dim==2 ? norm_2D_vit1(vit, num[0], num[1], num_face, domaine_VEF, val[0], val[1]) : norm_3D_vit1(vit, num_face, num[0], num[1], num[2], domaine_VEF, val[0], val[1], val[2]);
-
-                  double d_visco = l_unif ? visco : tab_visco[elem];
-                  double norm_tau = d_visco * norm_v / dist;
-                  double u_etoile = sqrt(norm_tau);
-                  tab_u_star_(num_face) = u_etoile;
-                }                      // loop on faces
-              copyPartialToDevice(vit, ndeb * dim, nfin * dim, __KERNEL_NAME__);
+              int nfac = domaine_VEF.domaine().nb_faces_elem();
+              CDoubleTabView xp = domaine_VEF.xp().view_ro();
+              CDoubleTabView xv = domaine_VEF.xv().view_ro();
+              CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+              CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+              CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+              CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();
+              CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
+              DoubleArrView tab_u_star = tab_u_star_.view_rw();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+              {
+                int num[3] {};
+                double val[3] {};
+                int elem = face_voisins(num_face, 0);
+                int fac = 0;
+                for (int i = 0; i < dim; i++)
+                  {
+                    if (elem_faces(elem, fac) == num_face) fac++;
+                    num[i] = elem_faces(elem, fac);
+                    fac++;
+                  }
+                double dist = distance(dim, num_face, elem, xp, xv, face_normale);
+                dist *= (dim + 1.) / dim;                      // pour se ramener a distance paroi / milieu de num[0]-num[1]
+                double norm_v = norm_vit1(dim, vit, num_face, nfac, num, face_normale, val);
+                double d_visco = l_unif ? visco0 : visco[elem];
+                double norm_tau = d_visco * norm_v / dist;
+                double u_etoile = sqrt(norm_tau);
+                tab_u_star(num_face) = u_etoile;
+              });          // loop on faces
               end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }                      // Fin de paroi fixe
         }                      // Fin boucle sur les bords
