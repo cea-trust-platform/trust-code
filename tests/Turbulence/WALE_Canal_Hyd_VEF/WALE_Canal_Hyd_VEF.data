@@ -121,6 +121,7 @@ Lire pb
 			pression elem
 			vitesse som
 			viscosite_turbulente elem
+			u_star som
 			}
 		}
 	}
