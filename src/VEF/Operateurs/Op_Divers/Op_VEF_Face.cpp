@@ -379,48 +379,23 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
   if (op.equation().inconnue().le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
     {
-      const Champ_base& rho = (op.equation()).milieu().masse_volumique().valeur();
-      const Champ_Don& Cp = (op.equation()).milieu().capacite_calorifique();
-      int rho_uniforme = (sub_type(Champ_Uniforme,rho) ? 1 : 0);
-      int cp_uniforme = (sub_type(Champ_Uniforme,Cp.valeur()) ? 1 : 0);
-      double Cp_ = 0, rho_ = 0;
-      int is_rho_u = pb.is_dilatable();
-      if (is_rho_u)
-        {
-          is_rho_u = 0;
-          if (sub_type(Op_Conv_VEF_base, op))
-            {
-              if (ref_cast(Op_Conv_VEF_base,op).vitesse().le_nom() == "rho_u")
-                is_rho_u = 1;
-            }
-        }
+      const Champ_base& rho = op.equation().milieu().masse_volumique().valeur();
+      const Champ_Don& Cp = op.equation().milieu().capacite_calorifique();
+      bool rho_uniforme = sub_type(Champ_Uniforme,rho);
+      bool cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur());
+      bool is_rho_u = (sub_type(Op_Conv_VEF_base, op) && ref_cast(Op_Conv_VEF_base,op).vitesse().le_nom() == "rho_u") ? true : false;
       const int nb_faces_bords = le_dom_vef.nb_faces_bord();
-      for (int face = 0; face < nb_faces_bords; face++)
-        {
-          if (cp_uniforme)
-            Cp_ = Cp(0, 0);
-          else
-            {
-              if (Cp.nb_comp() == 1)
-                Cp_ = Cp(face);
-              else
-                Cp_ = Cp(face, 0);
-            }
-          if (rho_uniforme)
-            rho_ = rho(0, 0);
-          else
-            {
-              if (rho.nb_comp() == 1)
-                rho_ = rho(face);
-              else
-                rho_ = rho(face, 0);
-            }
-          // si on est en QC temperature et si on a calcule div(rhou * T)
-          // il ne faut pas remultiplier par rho
-          if (is_rho_u)
-            rho_ = 1;
-          flux_bords_(face, 0) *= (rho_ * Cp_);
-        }
+      CDoubleArrView rho_face = static_cast<const DoubleVect&>(rho.valeurs()).view_ro();
+      CDoubleArrView Cp_face = static_cast<const DoubleVect&>(Cp.valeurs()).view_ro();
+      DoubleArrView flux_bords = static_cast<DoubleVect&>(flux_bords_).view_rw();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bords, KOKKOS_LAMBDA(
+                             const int face)
+      {
+        // si on est en QC temperature et si on a calcule div(rhou * T)
+        // il ne faut pas remultiplier par rho
+        flux_bords(face) *= (is_rho_u ? 1 : rho_face(rho_uniforme?0:face)) * Cp_face(cp_uniforme?0:face);
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
 
   // On multiplie par rho si Navier Stokes incompressible
@@ -439,7 +414,6 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
               flux_bords_addr[face * nb_compo + k] *= coef;
         }
     }
-
 }
 
 /*! @brief Impression des flux d'un operateur VEF aux faces (ie: diffusion, convection)
