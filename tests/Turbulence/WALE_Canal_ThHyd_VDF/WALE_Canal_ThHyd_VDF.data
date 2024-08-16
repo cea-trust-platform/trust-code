@@ -113,7 +113,7 @@ perioz periodique
 		{
 		diffusion { }
 		convection { amont }
-		Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire }
+		Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire dt_impr_nusselt 0.4 }
 		boundary_conditions 
 			{
 periox periodique 
