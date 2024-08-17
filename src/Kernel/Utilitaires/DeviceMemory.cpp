@@ -16,11 +16,13 @@
 #include <DeviceMemory.h>
 #include <iostream>
 #include <Process.h>
+#include <Device.h>
 
 map_t DeviceMemory::memory_map_;
 size_t DeviceMemory::initial_free_ = 0;
 // Typical size of internal_items (elem,face,som) used as threshold to detect excessive H2D/D2H copies or host array allocation
 int DeviceMemory::internal_items_size_ = 1e9;
+int DeviceMemory::nb_pas_dt_ = -1;
 
 // Memory:
 size_t DeviceMemory::deviceMemGetInfo(bool print_total) // free or total bytes of the device
@@ -55,4 +57,9 @@ void DeviceMemory::printMemoryMap()
       std::cout << "Host ptr: " << ptr << " size: " << sz << " loc: " << (int)loc << std::endl;
     }
   std::cout << "===================================" << std::endl;
+}
+
+bool DeviceMemory::warning(int items)
+{
+  return clock_on && nb_pas_dt_>1 && items>=internal_items_size_;
 }

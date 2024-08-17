@@ -227,7 +227,7 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, i
           _TYPE_ * addr_dest = span_.data() + first_element_dest;
           memcpy(addr_dest, addr_source, nb_elements * sizeof(_TYPE_));
 #ifdef _OPENMP
-          if (nb_elements>=DeviceMemory::internal_items_size_ && Process::je_suis_maitre())
+          if (DeviceMemory::warning(nb_elements) && Process::je_suis_maitre())
             Cerr << "[Host] Filling a large TRUSTArray (" << nb_elements << " items) which is slow during a GPU run! Set a breakpoint to fix." << finl;
 #endif
         }

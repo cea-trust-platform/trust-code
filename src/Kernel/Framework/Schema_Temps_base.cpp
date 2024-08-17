@@ -27,6 +27,7 @@
 #include <Param.h>
 #include <Debog.h>
 #include <cfloat>
+#include <DeviceMemory.h>
 
 // XD dt_start class_generic dt_start 0 not_set
 // XD dt_calc_dt_calc dt_start dt_calc 0 The time step at first iteration is calculated in agreement with CFL condition.
@@ -589,7 +590,6 @@ extern "C" {
  */
 int Schema_Temps_base::mettre_a_jour()
 {
-
   temps_precedent_ = temps_courant_;
   temps_courant_ += dt_;
   nb_pas_dt_++;
@@ -680,6 +680,7 @@ int Schema_Temps_base::lsauv() const
 
 void Schema_Temps_base::mettre_a_jour_dt_stab()
 {
+  DeviceMemory::nb_pas_dt_ = nb_pas_dt_;
   imprimer(Cout);
   dt_stab_=pb_base().calculer_pas_de_temps();
 }
