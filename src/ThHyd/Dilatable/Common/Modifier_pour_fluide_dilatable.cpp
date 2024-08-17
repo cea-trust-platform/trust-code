@@ -44,7 +44,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
   if (tab.get_md_vector() == md_faces_bord)
     {
       const DoubleTab& rho = ref_cast(Fluide_Dilatable_base,le_fluide).rho_discvit();
-      DoubleVect rho_bord;
+      DoubleTrav rho_bord;
       // B.M. je cree une copie sinon il faut truander les tests sur les tailles dans multiply_any_shape
       // ou creer un DoubleTab qui pointe sur rho...
       zvf.creer_tableau_faces_bord(rho_bord, RESIZE_OPTIONS::NOCOPY_NOINIT);
