@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Convection_Diffusion_Fluide_Dilatable_Proto_included
 
 #include <TRUSTTabs_forward.h>
-
+#include <Champ_Inc.h>
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Convection_Diffusion_std;
 class Fluide_Dilatable_base;
@@ -53,7 +53,7 @@ protected:
   virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
   virtual bool is_thermal() const = 0;
   virtual bool is_generic() const = 0;
-
+  mutable Champ_Inc ch_unite_;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_Proto_included */

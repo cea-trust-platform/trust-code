@@ -46,14 +46,17 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
     }
 
   // on cherche a changer temporairement le domaine_cl
-  Champ_Inc ch_unite = eqn.inconnue();
-  ch_unite->valeurs() = 1.0;
-  ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(ch_unite, true);
+  if (ch_unite_.est_nul())
+    {
+      ch_unite_ = eqn.inconnue();
+      ch_unite_->valeurs() = 1.0;
+    }
+  ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(ch_unite_, true);
 
   if (eqn.discretisation().que_suis_je() != "VDF")
     ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_domaine_cl_dis(eqn.domaine_cl_modif());
 
-  op_conv.ajouter(ch_unite->valeurs(), Div);
+  op_conv.ajouter(ch_unite_->valeurs(), Div);
   ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(eqn.inconnue(), false);
 
   if (eqn.discretisation().que_suis_je() != "VDF")
@@ -72,7 +75,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 (Convection_Diffusion_Fluide_Dilatable_base& eqn, DoubleTab& derivee, const bool is_expl)
 {
   /*
-   * ATEENTION : THIS IS A GENERIC METHOD THAT IS USED TO SOLVE EXPLICITLY (OR DIFFUSION IMPLICIT)
+   * ATTENTION : THIS IS A GENERIC METHOD THAT IS USED TO SOLVE EXPLICITLY (OR DIFFUSION IMPLICIT)
    * A THERMAL OR SPECIES CONV/DIFF EQUATION. SO THE VARIABLE CAN EITHER BE THE TEMPERATURE T OR
    * THE MASS FRACTION Y.
    *
