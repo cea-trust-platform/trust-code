@@ -414,7 +414,7 @@ void Champ_base::corriger_unite_nom_compo()
 }
 
 
-int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Domaine& dom) const
+void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Domaine& dom) const
 {
   //nom_post=le_nom();
   Nom nom_dom=dom.le_nom();
@@ -428,22 +428,23 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
       nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
     }
 
-  int nb_elem_PE = mppartial_sum(nb_elem);
-
-  DoubleTab centres_de_gravites(nb_elem, dimension);
+  DoubleTrav centres_de_gravites(nb_elem, dimension);
 
   les_valeurs.resize(nb_elem, nb_compo_);
 
   if(nom_dom==nom_dom_inc)
     {
-
       if(sub_type(Champ_Inc_base, *this) )
         {
           const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).domaine_dis_base());
           // Pour eviter un resize par nb_elem_tot par appel a xp()
-          for (int i=0; i<nb_elem; i++)
-            for (int k=0; k<dimension ; k++)
-              centres_de_gravites(i,k) = zvf.xp(i,k);
+          CDoubleTabView xp = zvf.xp().view_ro();
+          DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem,dimension}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            centres_de_gravites_v(i,j) = xp(i,j);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         dom.calculer_centres_gravite(centres_de_gravites);
@@ -472,10 +473,9 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
 
   nom_post+= Nom("_elem_");
   nom_post+= nom_dom;
-  return nb_elem_PE;
-
 }
-int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_elem,Nom& nom_post,const Domaine& dom) const
+
+void Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_elem,Nom& nom_post,const Domaine& dom) const
 {
   //nom_post=nom_compo(ncomp);
   Nom nom_dom=dom.le_nom();
@@ -489,9 +489,7 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
       nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
     }
 
-  int nb_elem_PE = mppartial_sum(nb_elem);
-
-  DoubleTab centres_de_gravites(nb_elem, dimension);
+  DoubleTrav centres_de_gravites(nb_elem, dimension);
   les_valeurs.resize(nb_elem);
   if(nom_dom==nom_dom_inc)
     {
@@ -522,8 +520,6 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
     }
   nom_post+= Nom("_elem_");
   nom_post+= nom_dom;
-  //
-  return nb_elem_PE;
 }
 
 // Ajoute la contribution des autres processeurs a valeurs et compteur
@@ -623,7 +619,7 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
     }
 }
 
-int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom& nom_post,const Domaine& dom) const
+void Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom& nom_post,const Domaine& dom) const
 {
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
@@ -635,7 +631,6 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
     {
       nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
     }
-  int nb_som_PE = mppartial_sum(nb_som);
 
   const DoubleTab& coord_sommets=dom.coord_sommets() ;
 
@@ -820,13 +815,12 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
 
   nom_post+= Nom("_som_");
   nom_post+= nom_dom;
-  return nb_som_PE;
 }
-int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_som,Nom& nom_post,const Domaine& dom,int appliquer_cl) const
+
+void Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_som,Nom& nom_post,const Domaine& dom,int appliquer_cl) const
 {
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
-  int nb_som_PE = mppartial_sum(nb_som);
   if(sub_type(Champ_Inc_base, *this) )
     {
       nom_dom_inc=ref_cast(Champ_Inc_base, *this).domaine().le_nom();
@@ -930,9 +924,7 @@ int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp
     }
   nom_post+= Nom("_som_");
   nom_post+= nom_dom;
-  return  nb_som_PE;
 }
-
 
 int Champ_base::completer_post_champ(const Domaine& dom,const int is_axi,const Nom& loc_post,
                                      const Nom& le_nom_champ_post,Format_Post_base& format) const

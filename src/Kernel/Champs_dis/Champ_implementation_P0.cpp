@@ -130,47 +130,43 @@ int Champ_implementation_P0::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   return 1;
 }
 
-DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) const
+DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& tab_result) const
 {
   const Champ_base& ch_base = le_champ();
   int nb_components = ch_base.nb_comp();
-  const DoubleTab& values = ch_base.valeurs();
-
+  const DoubleTab& tab_values = ch_base.valeurs();
   const Domaine& domaine = get_domaine_geom();
   int nb_cells = domaine.nb_elem_tot();
   int nb_nodes = domaine.nb_som();
   int nb_nodes_per_cell = domaine.nb_som_elem();
-
-  ArrOfInt count(nb_nodes);
-
-  assert((result.dimension_tot(0) == nb_nodes) || (result.dimension(0) == nb_nodes));
-
-  result = 0;
-  count = 0;
-
-  assert(result.line_size() == nb_components);
-  assert(values.line_size() == nb_components);
-  ToDo_Kokkos("critical");
-  for (int i = 0; i < nb_cells; i++)
-    for (int j = 0; j < nb_nodes_per_cell; j++)
+  assert((tab_result.dimension_tot(0) == nb_nodes) || (tab_result.dimension(0) == nb_nodes));
+  assert(tab_result.line_size() == nb_components);
+  assert(tab_values.line_size() == nb_components);
+  int nb_dim = tab_values.nb_dim();
+  IntTrav tab_count(nb_nodes);
+  tab_result = 0;
+  CIntTabView sommet_elem = domaine.les_elems().view_ro();
+  CDoubleTabView values = tab_values.view_ro();
+  IntArrView count = static_cast<ArrOfInt&>(tab_count).view_rw();
+  DoubleTabView result = tab_result.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_cells,nb_nodes_per_cell}), KOKKOS_LAMBDA(const int i, const int j)
+  {
+    int node = sommet_elem(i, j);
+    if (node < nb_nodes)
       {
-        int node = domaine.sommet_elem(i, j);
-        if (node < nb_nodes)
-          {
-            count[node]++;
-            if (values.nb_dim() == 1) // TODO : FIXME : champ porosite doit etre un DoubleTab
-              for (int k = 0; k < nb_components; k++)
-                result(node, k) += values(i);
-            else
-              for (int k = 0; k < nb_components; k++)
-                result(node, k) += values(i, k);
-          }
+        Kokkos::atomic_add(&count[node], 1);
+        for (int k = 0; k < nb_components; k++)
+          Kokkos::atomic_add(&result(node, k), values(i, nb_dim == 1 ? 0 : k));
       }
-  for (int i = 0; i < nb_nodes; i++)
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_nodes, KOKKOS_LAMBDA(const int i)
+  {
     for (int j = 0; j < nb_components; j++)
       result(i, j) /= count[i];
-
-  return result;
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  return tab_result;
 }
 
 DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const

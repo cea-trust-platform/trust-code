@@ -1718,23 +1718,26 @@ int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& 
 
 int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
                                       const double temps,
-                                      Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
+                                      Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& tab_valeurs)
 {
   const Nom& id_du_domaine = dom.le_nom();
   const Nom& id_champ_ecrit = nom_post;
 
-  const int dim0 = valeurs.dimension(0);
-  const int N = valeurs.line_size();
-  DoubleTab valeurs_tmp(dim0, ncomp == -1 ? N : 1);
-
-  for (int i = 0; i < dim0; i++)
+  const int size = tab_valeurs.dimension(0);
+  const int N = tab_valeurs.line_size();
+  DoubleTrav val_post_ecrit(size, ncomp == -1 ? N : 1);
+  CDoubleTabView valeurs = tab_valeurs.view_ro();
+  DoubleTabView val_post = val_post_ecrit.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
+  {
     if (ncomp == -1)
       for (int j = 0; j < N; j++)
-        valeurs_tmp(i, j) = valeurs(i, j);
+        val_post(i, j) = valeurs(i, j);
     else
-      valeurs_tmp(i, 0) = valeurs(i, ncomp);
+      val_post(i, 0) = valeurs(i, ncomp);
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  const DoubleTab& val_post_ecrit = valeurs_tmp;
   if (Motcle(format)=="XYZ")
     {
       if (localisation == "SOM")

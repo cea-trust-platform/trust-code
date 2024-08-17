@@ -268,6 +268,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   int nb_comp = source.nb_comp();
 
   Champ_Fonc es_tmp;
+  ToDo_Kokkos("critical: copie d'un champ et de son tableau de valeurss");
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   //double default_value=-1e35;
@@ -307,44 +308,42 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       return espace_stockage.valeur();
     }
 
-  int imax=0;
-  //  int jmax=0;;
-  imax = espace_valeurs.dimension(0);
-  //if (espace_valeurs.nb_dim()==2)
-  //  jmax = espace_valeurs.dimension(1);
-
+  int imax = espace_valeurs.dimension(0);
   if (localisation_ == "elem")
     {
       const int nb_elements = domaine.nb_elem();
-
       if (ncomp==-1)
         {
-          DoubleTab val_temp;
+          DoubleTrav val_temp;
           source.calculer_valeurs_elem_post(val_temp,
                                             nb_elements,
                                             nom_champ_interpole,
                                             domaine);
-
-          for (int i_val=0; i_val<imax; i_val++)
-            for (int j_val=0; j_val<nb_comp; j_val++)
-              espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
-
+          CDoubleTabView val_temp_v = val_temp.view_ro();
+          DoubleTabView espace_valeurs_v = espace_valeurs.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {imax,nb_comp}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            espace_valeurs_v(i,j) = val_temp_v(i,j);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
         {
-          DoubleTab val_temp;
+          DoubleTrav val_temp;
           source.calculer_valeurs_elem_compo_post(val_temp,
                                                   ncomp,
                                                   nb_elements,
                                                   nom_champ_interpole,
                                                   domaine);
-
-          int dim0 = val_temp.dimension(0);
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              if (j==ncomp)
-                espace_valeurs(i,j) = val_temp(i);
+          CDoubleArrView val_temp_v = static_cast<const DoubleVect&>(val_temp).view_ro();
+          DoubleTabView espace_valeurs_v = espace_valeurs.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {val_temp.dimension(0),nb_comp}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            if (j==ncomp)
+              espace_valeurs_v(i,j) = val_temp_v(i);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
 
     }
@@ -357,48 +356,42 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       copie_source.valeurs().echange_espace_virtuel();
       if (ncomp==-1)
         {
-          DoubleTab val_temp;
+          DoubleTrav val_temp;
           copie_source->calculer_valeurs_som_post(val_temp,
                                                   nb_sommets,
                                                   nom_champ_interpole,
                                                   domaine);
-          for (int i_val=0; i_val<imax; i_val++)
-            for (int j_val=0; j_val<nb_comp; j_val++)
-              espace_valeurs(i_val,j_val) = val_temp(i_val,j_val);
+          CDoubleTabView val_temp_v = val_temp.view_ro();
+          DoubleTabView espace_valeurs_v = espace_valeurs.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {imax,nb_comp}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            espace_valeurs_v(i,j) = val_temp_v(i,j);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
         {
-          DoubleTab val_temp;
+          DoubleTrav val_temp;
           copie_source->calculer_valeurs_som_compo_post(val_temp,
                                                         ncomp,
                                                         nb_sommets,
                                                         nom_champ_interpole,
                                                         domaine);
-
-          int dim0 = val_temp.dimension(0);
-          for (int i=0; i<dim0; i++)
-            for (int j=0; j<nb_comp; j++)
-              if (j==ncomp)
-                espace_valeurs(i,j) = val_temp(i);
+          CDoubleArrView val_temp_v = static_cast<const DoubleVect&>(val_temp).view_ro();
+          DoubleTabView espace_valeurs_v = espace_valeurs.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {val_temp.dimension(0),nb_comp}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            if (j==ncomp)
+              espace_valeurs_v(i,j) = val_temp_v(i);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
     }
   else
     {
-      //     const Nom& nom_source = source.que_suis_je();
-      //if (((nom_source=="Champ_P1NC") || (nom_source=="Champ_Fonc_P1NC")) && (localisation_=="faces"))
-      // {
       espace_stockage->affecter(source);
-      // }
-      /* else
-          {
-            Cerr << "Champ_Generique_Interpolation::get_champ localisation uncoded " << localisation_ << " for " <<source.que_suis_je()<<finl;
-            exit();
-          }
-      */
     }
-
-
 
   if (optimisation_sous_maillage_==-1)
     {
