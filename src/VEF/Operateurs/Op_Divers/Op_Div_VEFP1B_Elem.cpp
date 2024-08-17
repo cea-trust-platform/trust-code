@@ -696,42 +696,41 @@ for(int isom=0; isom<3; isom++)
 #endif
 
 // Divise par le volume
-void Op_Div_VEFP1B_Elem::volumique_P0(DoubleTab& div) const
+void Op_Div_VEFP1B_Elem::volumique_P0(DoubleTab& tab_div) const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const DoubleVect& vol = domaine_VEF.volumes();
   int nb_elem = domaine_VEF.domaine().nb_elem_tot();
-  bool kernelOnDevice = div.checkDataOnDevice(vol, "Op_Div_VEFP1B_Elem::volumique_P0(x)");
-  const double *vol_addr = mapToDevice(vol, "", kernelOnDevice);
-  double *div_addr = computeOnTheDevice(div, "", kernelOnDevice);
-  #pragma omp target teams distribute parallel for if (kernelOnDevice)
-  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
-    div_addr[num_elem] /= vol_addr[num_elem];
+  CDoubleArrView vol = domaine_VEF.volumes().view_ro();
+  DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
+  Kokkos::parallel_for(__KERNEL_NAME__, nb_elem, KOKKOS_LAMBDA(const int i) { div(i) /= vol(i); });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
-void Op_Div_VEFP1B_Elem::volumique(DoubleTab& div) const
+void Op_Div_VEFP1B_Elem::volumique(DoubleTab& tab_div) const
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   int n = 0;
   if (domaine_VEF.get_alphaE())
     {
-      volumique_P0(div);
+      volumique_P0(tab_div);
       n += domaine_VEF.nb_elem_tot();
     }
   if (domaine_VEF.get_alphaS())
     {
-      const DoubleVect& vol = domaine_VEF.volume_aux_sommets();
-      int size_tot = vol.size_totale();
-      for (int i = 0; i < size_tot; i++)
-        div(n + i) /= vol(i);
+      int size_tot = domaine_VEF.volume_aux_sommets().size_totale();
+      CDoubleArrView vol = domaine_VEF.volume_aux_sommets().view_ro();
+      DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
+      Kokkos::parallel_for(__KERNEL_NAME__, size_tot, KOKKOS_LAMBDA(const int i) { div(n + i) /= vol(i); });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       n += domaine_VEF.nb_som_tot();
     }
   if (domaine_VEF.get_alphaA())
     {
       const DoubleVect& vol = domaine_VEF.get_volumes_aretes();
       int size_tot = vol.size_totale();
+      ToDo_Kokkos("critical");
       for (int i = 0; i < size_tot; i++)
-        div(n + i) /= vol(i);
+        tab_div(n + i) /= vol(i);
     }
 }
 
