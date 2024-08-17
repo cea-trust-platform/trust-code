@@ -742,7 +742,7 @@ void Domaine_VF::info_elem_som()
   int internal_item = std::min(nbelem, nbfaces);
   internal_item = std::min(internal_item, nbsom);
   // premiere_face_int()*dimension+1 pour ne pas alerter sur flux vectoriels aux faces frontieres:
-  DeviceMemory::internal_items_size_ = max(premiere_face_int()*dimension+1,internal_item);
+  DeviceMemory::internal_items_size_ = std::max(premiere_face_int()*dimension+1,internal_item);
 }
 
 void Domaine_VF::creer_tableau_faces(Array_base& t, RESIZE_OPTIONS opt) const

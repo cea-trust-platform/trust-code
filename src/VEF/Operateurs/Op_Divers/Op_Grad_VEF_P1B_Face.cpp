@@ -378,7 +378,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
   CIntTabView som_v = som_.view_ro();
   CDoubleTabView pre = tab_pre.view_ro();
   DoubleTabView grad = tab_grad.view_rw();
-  int dimension = Objet_U::dimension;
+  int dim = Objet_U::dimension;
 
   Kokkos::parallel_for(
     start_gpu_timer(__KERNEL_NAME__),
@@ -392,13 +392,13 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
       signe = -1;
 
     double sigma[3];
-    for (int comp = 0; comp < dimension; comp++)
+    for (int comp = 0; comp < dim; comp++)
       sigma[comp] = face_normales(face,comp) * signe;
 
     for (int indice2 = 0; indice2 < nfe; indice2++)
       {
         int face2 = elem_faces(elem,indice2);
-        for (int comp = 0; comp < dimension; comp++)
+        for (int comp = 0; comp < dim; comp++)
           {
             Kokkos::atomic_add(&grad(face2,comp), -(coeff_som(elem) * pre(som_v(elem,indice),0) * sigma[comp] * porosite_face(face2)));
           }
@@ -418,7 +418,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
   if (has_sortie_libre)
     {
       int premiere_face_int = domaine_VEF.premiere_face_int();
-      copyPartialFromDevice(tab_grad, 0, premiere_face_int * dimension, "grad on boundary");
+      copyPartialFromDevice(tab_grad, 0, premiere_face_int * dim, "grad on boundary");
       copyPartialFromDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
       const IntTab& face_sommets = domaine_VEF.face_sommets();
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
@@ -436,15 +436,15 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
                   for (int indice = 0; indice < (nfe - 1); indice++)
                     {
                       int som = nps + dom.get_renum_som_perio(face_sommets(face, indice));
-                      for (int comp = 0; comp < dimension; comp++)
-                        tab_grad(face, comp) -= 1. / dimension * tab_face_normales(face, comp) * (tab_pre(som) - P_imp) *
+                      for (int comp = 0; comp < dim; comp++)
+                        tab_grad(face, comp) -= 1. / dim * tab_face_normales(face, comp) * (tab_pre(som) - P_imp) *
                                                 tab_porosite_face(face);
                     }
                 } //fin du if sur "Neumann_sortie_libre"
             }
         }
       copyPartialToDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
-      copyPartialToDevice(tab_grad, 0, premiere_face_int * dimension, "grad on boundary");
+      copyPartialToDevice(tab_grad, 0, premiere_face_int * dim, "grad on boundary");
     }
 
   return tab_grad;

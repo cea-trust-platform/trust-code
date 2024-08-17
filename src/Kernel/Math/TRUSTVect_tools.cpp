@@ -158,7 +158,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_T
 #ifndef _OPENMP
                   if (x == 0) error_divide(__func__);
 #endif
-                  p_resu *= (1. / x);
+                  p_resu *= (1 / x);
                 }
             }
         }

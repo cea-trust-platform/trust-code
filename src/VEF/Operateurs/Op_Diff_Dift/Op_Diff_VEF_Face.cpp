@@ -713,7 +713,8 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
         int fac_asso = face_associee(fac);
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1,i); j > fac)
+            int j = elem_faces(elem1,i);
+            if (j > fac)
               {
                 double val = viscA(fac,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
                 double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
@@ -731,24 +732,27 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                   }
               }
             if (elem2 != -1)
-              if (int j = elem_faces(elem2,i); j > fac)
-                {
-                  double val = viscA(fac,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
-                  double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
-                  double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+              {
+                j = elem_faces(elem2,i);
+                if (j > fac)
+                  {
+                    double val = viscA(fac,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
+                    double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
+                    double coeff_face2 = val * (marq ? porosite_face(j) : 1);
 
-                  for (int nc = 0; nc < nb_comp; nc++)
-                    {
-                      int n0 = fac*nb_comp + nc;
-                      int j0 = j*nb_comp + nc;
-                      int n1 = fac_asso*nb_comp+nc;
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        int n0 = fac*nb_comp + nc;
+                        int j0 = j*nb_comp + nc;
+                        int n1 = fac_asso*nb_comp+nc;
 
-                      Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
-                      Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
-                      Kokkos::atomic_add(&matrice(j0,n1), -coeff_face1);
-                      Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
-                    }
-                }
+                        Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                        Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                        Kokkos::atomic_add(&matrice(j0,n1), -coeff_face1);
+                        Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
+                      }
+                  }
+              }
           }
       }
     else if (type_face == 1)
@@ -757,7 +761,8 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
 
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1,i); j > fac)
+            int j = elem_faces(elem1,i);
+            if (j > fac)
               {
                 double val = viscA(fac,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
                 double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
@@ -783,7 +788,8 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
 
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1,i); j > fac)
+            int j = elem_faces(elem1,i);
+            if (j > fac)
               {
                 double val = viscA(fac,j,elem1,nu(elem1,0), face_voisins, face_normale, inverse_volumes);
                 double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
@@ -801,23 +807,26 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                   }
               }
             if (elem2 != -1)
-              if (int j = elem_faces(elem2,i); j > fac)
-                {
-                  double val = viscA(fac,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
-                  double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
-                  double coeff_face2 = val * (marq ? porosite_face(j) : 1);
+              {
+                j = elem_faces(elem2,i);
+                if (j > fac)
+                  {
+                    double val = viscA(fac,j,elem2,nu(elem2,0), face_voisins, face_normale, inverse_volumes);
+                    double coeff_face1 = val * (marq ? porosite_face(fac) : 1);
+                    double coeff_face2 = val * (marq ? porosite_face(j) : 1);
 
-                  for (int nc = 0; nc < nb_comp; nc++)
-                    {
-                      int n0 = fac*nb_comp+nc;
-                      int j0 = j*nb_comp+nc;
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        int n0 = fac*nb_comp+nc;
+                        int j0 = j*nb_comp+nc;
 
-                      Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
-                      Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
-                      Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
-                      Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
-                    }
-                }
+                        Kokkos::atomic_add(&matrice(n0,n0), +coeff_face1);
+                        Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
+                        Kokkos::atomic_add(&matrice(j0,n0), -coeff_face1);
+                        Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
+                      }
+                  }
+              }
           }
       }
   };
@@ -995,7 +1004,8 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
 
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1, i); j > fac)
+            int j = elem_faces(elem1, i);
+            if (j > fac)
               {
                 for (int nc = 0; nc < nb_comp; nc++)
                   {
@@ -1011,22 +1021,25 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
                   }
               }
             if (elem2 != -1)
-              if (int j = elem_faces(elem2, i); j > fac)
-                {
-                  for (int nc = 0; nc < nb_comp; nc++)
-                    {
-                      double val = 0.5 * viscA(fac, j, elem2, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
+              {
+                j = elem_faces(elem2, i);
+                if (j > fac)
+                  {
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        double val = 0.5 * viscA(fac, j, elem2, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
 
-                      int n0 = fac * nb_comp + nc;
-                      int j0 = j * nb_comp + nc;
-                      int n0perio = fac_asso * nb_comp + nc;
+                        int n0 = fac * nb_comp + nc;
+                        int j0 = j * nb_comp + nc;
+                        int n0perio = fac_asso * nb_comp + nc;
 
-                      matrice(n0, n0) += val * porosite_eventuelle(fac);
-                      matrice(n0, j0) -= val * porosite_eventuelle(j);
-                      matrice(j0, n0perio) -= val * porosite_eventuelle(fac);
-                      matrice(j0, j0) += val * porosite_eventuelle(j);
-                    }
-                }
+                        matrice(n0, n0) += val * porosite_eventuelle(fac);
+                        matrice(n0, j0) -= val * porosite_eventuelle(j);
+                        matrice(j0, n0perio) -= val * porosite_eventuelle(fac);
+                        matrice(j0, j0) += val * porosite_eventuelle(j);
+                      }
+                  }
+              }
           }
       }
     // Faces de bord non périodiques
@@ -1036,7 +1049,8 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
 
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1, i); j > fac)
+            int j = elem_faces(elem1, i);
+            if (j > fac)
               {
                 for (int nc = 0; nc < nb_comp; nc++)
                   {
@@ -1061,7 +1075,8 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
 
         for (int i = 0; i < nb_faces_elem; i++)
           {
-            if (int j = elem_faces(elem1, i); j > fac)
+            int j = elem_faces(elem1, i);
+            if (j > fac)
               {
                 for (int nc = 0; nc < nb_comp; nc++)
                   {
@@ -1078,20 +1093,23 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
               }
 
             if (elem2 != -1)
-              if (int j = elem_faces(elem2, i); j > fac)
-                {
-                  for (int nc = 0; nc < nb_comp; nc++)
-                    {
-                      double val = viscA(fac, j, elem2, nu(elem2, nc), face_voisins, face_normales, inverse_volumes);
-                      int n0 = fac * nb_comp + nc;
-                      int j0 = j * nb_comp + nc;
+              {
+                j = elem_faces(elem2, i);
+                if (j > fac)
+                  {
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        double val = viscA(fac, j, elem2, nu(elem2, nc), face_voisins, face_normales, inverse_volumes);
+                        int n0 = fac * nb_comp + nc;
+                        int j0 = j * nb_comp + nc;
 
-                      Kokkos::atomic_add(&matrice(n0, n0), +(val * porosite_eventuelle(fac)));
-                      Kokkos::atomic_add(&matrice(n0, j0), -(val * porosite_eventuelle(j)));
-                      Kokkos::atomic_add(&matrice(j0, n0), -(val * porosite_eventuelle(fac)));
-                      Kokkos::atomic_add(&matrice(j0, j0), +(val * porosite_eventuelle(j)));
-                    }
-                }
+                        Kokkos::atomic_add(&matrice(n0, n0), +(val * porosite_eventuelle(fac)));
+                        Kokkos::atomic_add(&matrice(n0, j0), -(val * porosite_eventuelle(j)));
+                        Kokkos::atomic_add(&matrice(j0, n0), -(val * porosite_eventuelle(fac)));
+                        Kokkos::atomic_add(&matrice(j0, j0), +(val * porosite_eventuelle(j)));
+                      }
+                  }
+              }
           }
       }
   };

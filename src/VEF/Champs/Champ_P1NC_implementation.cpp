@@ -1668,13 +1668,16 @@ valeur_aux_sommets(const Domaine& dom,
         Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_som_return,nb_compo_}), KOKKOS_LAMBDA(
                                const int num_som, const int ncomp)
         {
-          champ_som(num_som, ncomp) /= compteur(num_som);
-          if (methode_calcul_valeurs_sommets > 1)
+          if (compteur(num_som)>0)
             {
-              if (champ_som(num_som, ncomp) < min_som(num_som, ncomp))
-                champ_som(num_som, ncomp) = min_som(num_som, ncomp);
-              if (champ_som(num_som, ncomp) > max_som(num_som, ncomp))
-                champ_som(num_som, ncomp) = max_som(num_som, ncomp);
+              champ_som(num_som, ncomp) /= compteur(num_som);
+              if (methode_calcul_valeurs_sommets > 1)
+                {
+                  if (champ_som(num_som, ncomp) < min_som(num_som, ncomp))
+                    champ_som(num_som, ncomp) = min_som(num_som, ncomp);
+                  if (champ_som(num_som, ncomp) > max_som(num_som, ncomp))
+                    champ_som(num_som, ncomp) = max_som(num_som, ncomp);
+                }
             }
         });
         end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
