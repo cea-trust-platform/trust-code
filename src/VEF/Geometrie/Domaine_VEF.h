@@ -86,7 +86,6 @@ public:
   inline const DoubleTab& facette_normales() const { return facette_normales_; }
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
-  KOKKOS_INLINE_FUNCTION int oriente_normale(int face_opp, int elem2, CIntTabView face_voisins_v) const { return (face_voisins_v(face_opp, 0) == elem2) ? 1 : -1; }
   inline int oriente_normale(int face_opp, int elem2) const { return (face_voisins(face_opp, 0) == elem2) ? 1 : -1; }
   inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
 
@@ -137,6 +136,12 @@ private:
   void creer_faces_virtuelles_non_std();
   Sortie& ecrit(Sortie& os) const;
 };
+
+// Fonction Kokkos hors classe: En effet, sinon avec dom_VEF.oriente_normale(...), une instance de Domaine_VEF est copiee du host au device !
+KOKKOS_INLINE_FUNCTION int oriente_normale(int face_opp, int elem2, CIntTabView face_voisins)
+{
+  return (face_voisins(face_opp, 0) == elem2) ? 1 : -1;
+}
 
 // Methode pour tester:
 void exemple_champ_non_homogene(const Domaine_VEF&, DoubleTab&);

@@ -72,8 +72,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
       if (flag)
         {
           Cerr << "On utilise une diffusion turbulente non lineaire dans NS" << finl;
-          start_gpu_timer();
-          Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re",
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
                                  const int elem)
           {
@@ -85,8 +84,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
       else
         {
           CDoubleTabView3 grad = grad_.view3_ro();
-          start_gpu_timer();
-          Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re",
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
                                  const int elem)
           {
@@ -95,7 +93,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
                 Re(elem, i, j) = nu_turb(elem,0) * (grad(elem, i, j) + grad(elem, j, i));
           });
         }
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       Re_.echange_espace_virtuel();
     }
 }
@@ -128,7 +126,6 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
   CDoubleTabView3 grad = grad_.view3_ro();
   DoubleTabView flux_bords = tab_flux_bords.view_rw();
   DoubleTabView resu = tab_resu.view_rw();
-  start_gpu_timer();
   for (int n_bord = 0; n_bord < nb_cl; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -136,7 +133,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen CL periodique",
+        Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                              Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(
                                const int num_face)
         {
@@ -152,7 +149,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
       else // CL pas periodique
         {
           bool Symetrie = sub_type(Symetrie, la_cl.valeur());
-          Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen CL autre",
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(
                                  const int num_face)
           {
@@ -170,8 +167,8 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
               flux_bords(num_face, 0) = 0.;
           });
         }
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen");
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
@@ -189,8 +186,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& tab_inconn
   CDoubleTabView3 grad = grad_.view3_ro();
   CDoubleTabView3 Re = Re_.view3_ro();
   DoubleTabView resu = tab_resu.view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(nint, nb_faces), KOKKOS_LAMBDA(
                          const int num_face)
   {
@@ -202,7 +198,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& tab_inconn
             resu(num_face, i) -= ori * face_normale(num_face, j) * (nu(elem,0) * grad(elem, i, j) + Re(elem, i, j));
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
@@ -249,7 +245,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
   copyPartialFromDevice(resu, 0, size, "resu on boundary");
   copyPartialFromDevice(inconnue, 0, size, "inconnue on boundary");
   copyPartialFromDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
-  start_gpu_timer();
+  start_gpu_timer(__KERNEL_NAME__);
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -303,7 +299,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
           for (int nc = 0; nc < nb_comp; nc++)
             tab_flux_bords(face, nc) = 0.;
     }
-  end_gpu_timer(0, "Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen\n");
+  end_gpu_timer(0, __KERNEL_NAME__);
   copyPartialToDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
   copyPartialToDevice(resu, 0, size, "resu on boundary");
   copyPartialToDevice(inconnue, 0, size, "inconnue on boundary");
@@ -394,8 +390,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
       assert(matrice_morse != nullptr);
       matrice.set(*matrice_morse);
     }
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                          const int ind_face)
   {
@@ -499,7 +494,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
@@ -563,8 +558,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                   assert(matrice_morse != nullptr);
                   matrice.set(*matrice_morse);
                 }
-              start_gpu_timer();
-              Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__",
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                    Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                                      const int ind_face)
               {
@@ -587,7 +581,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                     // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
 
                     if (!is_EXPLICIT)
-                      bon_gradient = 1. / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1, face_voisins));
+                      bon_gradient = 1. / d_equiv(ind_face) * (-oriente_normale(num_face, elem1, face_voisins));
 
                     double surface_face = face_surfaces(num_face);
                     double nutotal = nu(elem1, nc) + nu_turb(elem1);
@@ -600,8 +594,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                             if (j != num_face)
                               {
                                 double surface_pond = 0.;
-                                double signe_j = domaine_VEF.oriente_normale(j, elem1, face_voisins);
-                                double signe_num_face = domaine_VEF.oriente_normale(num_face, elem1, face_voisins);
+                                double signe_j = oriente_normale(j, elem1, face_voisins);
+                                double signe_num_face = oriente_normale(num_face, elem1, face_voisins);
                                 for (int kk = 0; kk < dim; kk++)
                                   surface_pond -= (face_normale(j, kk) * signe_j *
                                                    face_normale(num_face, kk) * signe_num_face) /
@@ -610,7 +604,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                                 Tf += inconnue(j, nc) * surface_pond;
                               }
 
-                            double signe_j = domaine_VEF.oriente_normale(j, elem1, face_voisins);
+                            double signe_j = oriente_normale(j, elem1, face_voisins);
                             for (int kk = 0; kk < dim; kk++)
                               le_mauvais_gradient[kk] += inconnue(j, nc) * face_normale(j, kk) * signe_j;
                           }
@@ -624,14 +618,14 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                         // inconnue(num_face) est la temperature de paroi : Tw.
                         // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
                         // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
-                        double signe_num_face = domaine_VEF.oriente_normale(num_face, elem1, face_voisins);
+                        double signe_num_face = oriente_normale(num_face, elem1, face_voisins);
                         bon_gradient = (Tf - inconnue(num_face, nc)) / d_equiv(ind_face) * (-signe_num_face);
 
                         for (int i = 0; i < nb_faces_elem; i++)
                           {
                             const int j = elem_faces(elem1, i);
                             double correction = 0.;
-                            double signe_j = domaine_VEF.oriente_normale(j, elem1, face_voisins);
+                            double signe_j = oriente_normale(j, elem1, face_voisins);
                             for (int kk = 0; kk < dim; kk++)
                               {
                                 double resu2 =
@@ -656,8 +650,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                                   le_mauvais_gradient[kk] = 0;
                                 int jj = elem_faces(elem1, ii);
                                 double surface_pond = 0;
-                                double signe_jj = domaine_VEF.oriente_normale(jj, elem1, face_voisins);
-                                double signe_num_face = domaine_VEF.oriente_normale(num_face, elem1, face_voisins);
+                                double signe_jj = oriente_normale(jj, elem1, face_voisins);
+                                double signe_num_face = oriente_normale(num_face, elem1, face_voisins);
                                 for (int kk = 0; kk < dim; kk++)
                                   surface_pond -= (face_normale(jj, kk) * signe_jj *
                                                    face_normale(num_face, kk) * signe_num_face) /
@@ -676,7 +670,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                                     le_mauvais_gradient[kk] * face_normale(num_face, kk) / surface_face;
 
                                 double resu1 = 0, resu2 = 0;
-                                double signe_j = domaine_VEF.oriente_normale(j, elem1, face_voisins);
+                                double signe_j = oriente_normale(j, elem1, face_voisins);
                                 for (int kk = 0; kk < dim; kk++)
                                   {
                                     double coeff = -nutotal * face_normale(num_face, kk) * face_normale(j, kk) * signe_j / surface_face;
@@ -696,7 +690,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                       }
                   }
               });
-              end_gpu_timer(Objet_U::computeOnDevice, "ajouter_bord_scalaire_impose_gen__");
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
         }
     }
@@ -742,8 +736,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
       assert(matrice_morse != nullptr);
       matrice.set(*matrice_morse);
     }
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                          const int ind_face)
   {
@@ -819,7 +812,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
@@ -854,8 +847,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
       assert(matrice_morse != nullptr);
       matrice.set(*matrice_morse);
     }
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(premiere_face_int, nb_faces), KOKKOS_LAMBDA(
                          const int num_face0)
   {
@@ -940,7 +932,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 #endif /* Op_Dift_VEF_Face_Gen_TPP_included */

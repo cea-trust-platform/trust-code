@@ -242,48 +242,45 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
           const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
           const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
           bool unif = sub_type(Champ_Uniforme, le_fluide.conductivite().valeur());
+          CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite().valeurs()).view_ro();
+          CDoubleArrView conductivite_turbulente = static_cast<const DoubleVect&>(mon_modele_turb_scal->conductivite_turbulente().valeurs()).view_ro();
+          CDoubleArrView face_surfaces = le_dom_VEF->face_surfaces().view_ro();
+          CDoubleTabView face_normales = le_dom_VEF->face_normales().view_ro();
+          CIntTabView face_voisins = le_dom_VEF->face_voisins().view_ro();
+          CIntTabView elem_faces = le_dom_VEF->elem_faces().view_ro();
+          CDoubleArrView temperature_v = static_cast<const DoubleVect&>(temperature).view_ro();
+          DoubleArrView lambda_v = static_cast<DoubleVect&>(lambda).view_wo();
+          DoubleArrView lambda_t_v = static_cast<DoubleVect&>(lambda_t).view_wo();
+          DoubleArrView tfluide_v = static_cast<DoubleVect&>(tfluide).view_rw();
+          Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::RangePolicy<>(ndeb, nfin),
+                               KOKKOS_LAMBDA(const int num_face)
           {
-            const Domaine_VEF& dom_VEF = le_dom_VEF.valeur();
-            CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite().valeurs()).view_ro();
-            CDoubleArrView conductivite_turbulente = static_cast<const DoubleVect&>(mon_modele_turb_scal->conductivite_turbulente().valeurs()).view_ro();
-            CDoubleArrView face_surfaces = le_dom_VEF->face_surfaces().view_ro();
-            CDoubleTabView face_normales = le_dom_VEF->face_normales().view_ro();
-            CIntTabView face_voisins = le_dom_VEF->face_voisins().view_ro();
-            CIntTabView elem_faces = le_dom_VEF->elem_faces().view_ro();
-            CDoubleArrView temperature_v = static_cast<const DoubleVect&>(temperature).view_ro();
-            DoubleArrView lambda_v = static_cast<DoubleVect&>(lambda).view_wo();
-            DoubleArrView lambda_t_v = static_cast<DoubleVect&>(lambda_t).view_wo();
-            DoubleArrView tfluide_v = static_cast<DoubleVect&>(tfluide).view_rw();
-            Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::RangePolicy<>(ndeb, nfin),
-                                 KOKKOS_LAMBDA(const int num_face)
-            {
-              int ind_face = num_face - ndeb;
-              int elem = face_voisins(num_face, 0);
-              if (elem == -1)
-                elem = face_voisins(num_face, 1);
+            int ind_face = num_face - ndeb;
+            int elem = face_voisins(num_face, 0);
+            if (elem == -1)
+              elem = face_voisins(num_face, 1);
 
-              lambda_v(ind_face) = conductivite(unif ? 0 : elem);
-              lambda_t_v(ind_face) = conductivite_turbulente(elem);
+            lambda_v(ind_face) = conductivite(unif ? 0 : elem);
+            lambda_t_v(ind_face) = conductivite_turbulente(elem);
 
-              // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
-              double surface_face = face_surfaces(num_face);
-              for (int i = 0; i < nb_faces_elem; i++)
-                {
-                  int j = elem_faces(elem, i);
-                  if (j != num_face)
-                    {
-                      double surface_pond = 0.;
-                      for (int kk = 0; kk < dim; kk++)
-                        surface_pond -=
-                          (face_normales(j, kk) * dom_VEF.oriente_normale(j, elem, face_voisins) *
-                           face_normales(num_face, kk) * dom_VEF.oriente_normale(num_face, elem, face_voisins))
-                          / (surface_face * surface_face);
-                      tfluide_v(ind_face) += temperature_v(j) * surface_pond;
-                    }
-                }
-            });
-            end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-          }
+            // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
+            double surface_face = face_surfaces(num_face);
+            for (int i = 0; i < nb_faces_elem; i++)
+              {
+                int j = elem_faces(elem, i);
+                if (j != num_face)
+                  {
+                    double surface_pond = 0.;
+                    for (int kk = 0; kk < dim; kk++)
+                      surface_pond -=
+                        (face_normales(j, kk) * oriente_normale(j, elem, face_voisins) *
+                         face_normales(num_face, kk) * oriente_normale(num_face, elem, face_voisins))
+                        / (surface_face * surface_face);
+                    tfluide_v(ind_face) += temperature_v(j) * surface_pond;
+                  }
+              }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
           // Ecriture
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
