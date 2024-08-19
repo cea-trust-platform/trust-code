@@ -19,25 +19,9 @@
 #include <Modele_turbulence_scal_base.h>
 #include <TRUST_Deriv.h>
 
-/*! @brief class Modele_turbulence_scal Cette classe represente n'importe quelle classe
- *
- *  derivee de Modele_turbulence_scal_base
- *
- */
 class Modele_turbulence_scal: public MorEqn, public DERIV(Modele_turbulence_scal_base)
 {
   Declare_instanciable(Modele_turbulence_scal);
-public:
-  inline const Champ_Fonc& conductivite_turbulente() const { return valeur().conductivite_turbulente(); }
-  inline const Turbulence_paroi_scal& loi_paroi() const { return valeur().loi_paroi(); }
-  inline void completer() { valeur().completer(); }
-  inline void mettre_a_jour(double t) { valeur().mettre_a_jour(t); }
-  inline void discretiser() { valeur().discretiser(); }
-  inline void imprimer(Sortie &os) const { valeur().imprimer(os); }
-  inline int preparer_calcul() { return valeur().preparer_calcul(); }
-  inline int loi_paroi_non_nulle() const { return valeur().loi_paroi_non_nulle(); }
-  inline int sauvegarder(Sortie &os) const override { return valeur().sauvegarder(os); }
-  inline int reprendre(Entree &is) override { return valeur().reprendre(is); }
 };
 
 #endif /* Modele_turbulence_scal_included */

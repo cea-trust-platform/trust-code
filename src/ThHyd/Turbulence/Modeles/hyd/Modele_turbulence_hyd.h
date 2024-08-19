@@ -19,37 +19,9 @@
 #include <Modele_turbulence_hyd_base.h>
 #include <TRUST_Deriv.h>
 
-/*! @brief Classe Modele_turbulence_hyd Classe generique de la hierarchie des modeles de turbulence utilises par une equation_base
- *     un objet Modele_turbulence_hyd peut referencer n'importe quel objet derivant de Modele_turbulence_hyd_base.
- *
- *     La plupart des methodes appellent les methodes de l'objet Modele_turbulence_hyd sous-jacent via la methode valeur() declaree grace a la macro
- *
- * @sa Modele_turbulence_hyd_base MorEqn
- */
 class Modele_turbulence_hyd: public MorEqn, public DERIV(Modele_turbulence_hyd_base)
 {
   Declare_instanciable(Modele_turbulence_hyd);
-public:
-  inline const Champ_Fonc& viscosite_turbulente() const { return valeur().viscosite_turbulente(); }
-  inline const Turbulence_paroi& loi_paroi() const { return valeur().loi_paroi(); }
-  inline void mettre_a_jour(double t) { valeur().mettre_a_jour(t); }
-  inline void discretiser() { valeur().discretiser(); }
-  inline void imprimer(Sortie &os) const { valeur().imprimer(os); }
-  inline int sauvegarder(Sortie &os) const override { return valeur().sauvegarder(os); }
-  inline int reprendre(Entree &is) override { return valeur().reprendre(is); }
-  inline int preparer_calcul() { return valeur().preparer_calcul(); }
-
-  inline void completer()
-  {
-    valeur().completer();
-    valeur().loi_paroi()->completer();
-  }
-
-  inline Modele_turbulence_hyd& operator=(const Modele_turbulence_hyd_base &x)
-  {
-    DERIV(Modele_turbulence_hyd_base)::operator=(x);
-    return *this;
-  }
 };
 
 #endif /* Modele_turbulence_hyd_included */

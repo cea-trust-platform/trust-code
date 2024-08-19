@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ class Navier_Stokes_Turbulent: public Navier_Stokes_std
 public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Champ_Fonc& viscosite_turbulente() const { return le_modele_turbulence.viscosite_turbulente(); }
+  inline const Champ_Fonc& viscosite_turbulente() const { return le_modele_turbulence->viscosite_turbulente(); }
   inline const Modele_turbulence_hyd& modele_turbulence() const { return le_modele_turbulence; }
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;

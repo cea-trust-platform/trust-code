@@ -29,7 +29,7 @@ Entree& Convection_Diffusion_Turbulent::lire_modele(Entree& is, const Equation_b
   Cerr << "Reading and typing of the turbulence model : " << finl;
   le_modele_turbulence.associer_eqn(eqn);
   is >> le_modele_turbulence;
-  le_modele_turbulence.discretiser();
+  le_modele_turbulence->discretiser();
   return is;
 }
 
@@ -120,7 +120,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
  */
 void Convection_Diffusion_Turbulent::completer()
 {
-  le_modele_turbulence.completer();
+  le_modele_turbulence->completer();
   le_modele_turbulence->loi_paroi()->completer();
 }
 
@@ -135,7 +135,7 @@ bool Convection_Diffusion_Turbulent::initTimeStep(double dt)
  */
 int Convection_Diffusion_Turbulent::preparer_calcul()
 {
-  le_modele_turbulence.preparer_calcul();
+  le_modele_turbulence->preparer_calcul();
   return 1;
 }
 
@@ -149,7 +149,7 @@ int Convection_Diffusion_Turbulent::preparer_calcul()
  */
 int Convection_Diffusion_Turbulent::sauvegarder(Sortie& os) const
 {
-  return le_modele_turbulence.sauvegarder(os);
+  return le_modele_turbulence->sauvegarder(os);
 }
 
 /*! @brief Reprise (apres une sauvegarde) a partir d'un flot d'entree.
@@ -160,7 +160,7 @@ int Convection_Diffusion_Turbulent::sauvegarder(Sortie& os) const
  */
 int Convection_Diffusion_Turbulent::reprendre(Entree& is)
 {
-  le_modele_turbulence.reprendre(is);
+  le_modele_turbulence->reprendre(is);
   return 1;
 }
 
@@ -170,5 +170,5 @@ int Convection_Diffusion_Turbulent::reprendre(Entree& is)
  */
 void Convection_Diffusion_Turbulent::mettre_a_jour(double temps)
 {
-  le_modele_turbulence.mettre_a_jour(temps);
+  le_modele_turbulence->mettre_a_jour(temps);
 }

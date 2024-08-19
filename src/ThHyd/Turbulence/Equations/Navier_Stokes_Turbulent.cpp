@@ -55,7 +55,7 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
       Cerr << "Reading and typing of the turbulence model :";
       le_modele_turbulence.associer_eqn(*this);
       is >> le_modele_turbulence;
-      le_modele_turbulence.discretiser();
+      le_modele_turbulence->discretiser();
       RefObjU le_modele;
       le_modele = le_modele_turbulence.valeur();
       liste_modeles_.add_if_not(le_modele);
@@ -201,7 +201,7 @@ int Navier_Stokes_Turbulent::preparer_calcul()
     loipar->init_lois_paroi();
 
   Navier_Stokes_std::preparer_calcul();
-  le_modele_turbulence.preparer_calcul();
+  le_modele_turbulence->preparer_calcul();
   return 1;
 }
 
@@ -222,7 +222,7 @@ int Navier_Stokes_Turbulent::sauvegarder(Sortie& os) const
   int bytes = 0;
   bytes += Navier_Stokes_std::sauvegarder(os);
   assert(bytes % 4 == 0);
-  bytes += le_modele_turbulence.sauvegarder(os);
+  bytes += le_modele_turbulence->sauvegarder(os);
   assert(bytes % 4 == 0);
   return bytes;
 }
@@ -242,7 +242,7 @@ int Navier_Stokes_Turbulent::reprendre(Entree& is)
   ident_modele += Nom(temps, probleme().reprise_format_temps());
 
   avancer_fichier(is, ident_modele);
-  le_modele_turbulence.reprendre(is);
+  le_modele_turbulence->reprendre(is);
 
   return 1;
 }
@@ -255,7 +255,8 @@ int Navier_Stokes_Turbulent::reprendre(Entree& is)
 void Navier_Stokes_Turbulent::completer()
 {
   Navier_Stokes_std::completer();
-  le_modele_turbulence.completer();
+  le_modele_turbulence->completer();
+  le_modele_turbulence->loi_paroi()->completer();
 }
 
 /*! @brief Effecttue une mise a jour en temps de l'equation.
@@ -265,7 +266,7 @@ void Navier_Stokes_Turbulent::completer()
 void Navier_Stokes_Turbulent::mettre_a_jour(double temps)
 {
   Navier_Stokes_std::mettre_a_jour(temps);
-  le_modele_turbulence.mettre_a_jour(temps);
+  le_modele_turbulence->mettre_a_jour(temps);
 }
 
 const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
@@ -298,7 +299,7 @@ void Navier_Stokes_Turbulent::get_noms_champs_postraitables(Noms& nom, Option op
 void Navier_Stokes_Turbulent::imprimer(Sortie& os) const
 {
   Navier_Stokes_std::imprimer(os);
-  le_modele_turbulence.imprimer(os);
+  le_modele_turbulence->imprimer(os);
 }
 
 const RefObjU& Navier_Stokes_Turbulent::get_modele(Type_modele type) const
