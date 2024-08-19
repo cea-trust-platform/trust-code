@@ -16,10 +16,10 @@
 #ifndef Operateur_negligeable_included
 #define Operateur_negligeable_included
 
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <TRUSTTab.h>
 
-class Domaine_Cl_dis;
 class Champ_Inc;
 
 /*! @brief Classe Opnegligeable Cette classe definit l'interface d'un operateur negligeable

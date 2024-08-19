@@ -17,13 +17,13 @@
 #define Source_Fluide_Dilatable_VEF_Proto_included
 
 #include <TRUSTTabs_forward.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;
-class Domaine_VEF;
 class Equation_base;
-class Domaine_Cl_dis;
+class Domaine_VEF;
 
 class Source_Fluide_Dilatable_VEF_Proto
 {

@@ -32,18 +32,15 @@
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
 #include <Champ_Uniforme.h>
-
 #include <Champ_Inc.h>
-
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_EF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Domaine_Cl_dis.h>
 
 Implemente_instanciable(EF_discretisation,"EF",Discret_Thyd);
 // XD ef discretisation_base ef -1 Element Finite discretization.
-
-
 
 
 Entree& EF_discretisation::readOn(Entree& s)

@@ -14,14 +14,15 @@
 *****************************************************************************/
 
 #include <Echange_contact_Correlation_VEF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Champ_front_calc.h>
 #include <communications.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
 #include <Schema_Comm.h>
-#include <Solv_TDMA.h>
 #include <Domaine_VEF.h>
+#include <Solv_TDMA.h>
 #include <EFichier.h>
 #include <SFichier.h>
 #include <Domaine.h>

@@ -14,27 +14,22 @@
 *****************************************************************************/
 
 #include <Schema_Euler_Implicite.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Probleme_Couple.h>
+#include <communications.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Probleme_Couple.h>
+#include <LecFicDiffuse.h>
 #include <Milieu_base.h>
 #include <Param.h>
-#include <LecFicDiffuse.h>
-#include <communications.h>
 #include <string>
 
 Implemente_instanciable(Schema_Euler_Implicite,"Schema_euler_implicite|Scheme_euler_implicit",Schema_Implicite_base);
-
-//     printOn()
-/////
 
 Sortie& Schema_Euler_Implicite::printOn(Sortie& s) const
 {
   return  Schema_Implicite_base::printOn(s);
 }
-
-//// readOn
-//
 
 Entree& Schema_Euler_Implicite::readOn(Entree& s)
 {

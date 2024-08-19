@@ -13,27 +13,28 @@
 *
 *****************************************************************************/
 
-#include <Champ_Inc_P0_base.h>
-#include <Domaine.h>
-#include <Equation_base.h>
-#include <Domaine_dis_base.h>
-#include <Frontiere_dis_base.h>
-#include <Domaine_Cl_dis.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_homogene.h>
 #include <Echange_externe_impose.h>
 #include <Echange_global_impose.h>
-#include <Neumann_paroi.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Frontiere_dis_base.h>
+#include <Dirichlet_homogene.h>
+#include <Champ_Inc_P0_base.h>
+#include <Domaine_dis_base.h>
+#include <Neumann_homogene.h>
 #include <Neumann_val_ext.h>
+#include <Domaine_Cl_dis.h>
+#include <Neumann_paroi.h>
+#include <Equation_base.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <Domaine.h>
 
 Implemente_base(Champ_Inc_P0_base,"Champ_Inc_P0_base",Champ_Inc_base);
 
 Sortie& Champ_Inc_P0_base::printOn(Sortie& os) const
 {
-  os << que_suis_je() << " " << le_nom();
-  return os;
+  return os << que_suis_je() << " " << le_nom();
 }
 
 Entree& Champ_Inc_P0_base::readOn(Entree& is)

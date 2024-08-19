@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-#include <PlaqThVDF.h>
-#include <Probleme_base.h>
-#include <Milieu_base.h>
-#include <Champ_front_calc.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Modele_turbulence_scal_base.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Champ_front_calc.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 #include <Domaine_VDF.h>
+#include <PlaqThVDF.h>
 
 Implemente_instanciable(PlaqThVDF,"Plaque_Thermique_VDF",Echange_global_impose);
 

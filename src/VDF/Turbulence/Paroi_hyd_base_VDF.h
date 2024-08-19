@@ -17,12 +17,12 @@
 #define Paroi_hyd_base_VDF_included
 
 #include <Turbulence_paroi_base.h>
+#include <Domaine_Cl_dis.h>
 #include <distances_VDF.h>
 #include <TRUST_Ref.h>
 
 class Champ_Fonc_base;
 class Domaine_Cl_VDF;
-class Domaine_Cl_dis;
 class Domaine_VDF;
 
 class Paroi_hyd_base_VDF : public Turbulence_paroi_base

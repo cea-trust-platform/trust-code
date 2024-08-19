@@ -16,12 +16,10 @@
 #ifndef Domaine_Cl_dis_included
 #define Domaine_Cl_dis_included
 
-#include <Domaine_Cl_dis_base.h>
 #include <TRUST_Deriv.h>
 
-class Domaine_Cl_dis : public DERIV(Domaine_Cl_dis_base)
-{
-  Declare_instanciable(Domaine_Cl_dis);
-};
+class Domaine_Cl_dis_base;
 
-#endif
+using Domaine_Cl_dis = OWN_PTR(Domaine_Cl_dis_base);
+
+#endif /* Domaine_Cl_dis_included */

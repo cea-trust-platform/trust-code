@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,10 +14,11 @@
 *****************************************************************************/
 
 #include <Source_Generique_P0_Elem.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Domaine_Cl_dis.h>
 #include <Synonyme_info.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Domaine_Cl_dis.h>
 #include <Domaine_VF.h>
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
@@ -31,8 +32,7 @@ Sortie& Source_Generique_P0_Elem::printOn(Sortie& os) const
 
 Entree& Source_Generique_P0_Elem::readOn(Entree& is)
 {
-  Source_Generique_base::readOn(is);
-  return is;
+  return Source_Generique_base::readOn(is);
 }
 
 DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const

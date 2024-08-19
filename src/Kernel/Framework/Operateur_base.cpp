@@ -25,6 +25,7 @@
 #include <Matrice_Morse.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
+#include <Domaine_Cl_dis_base.h>
 
 Implemente_base_sans_constructeur(Operateur_base,"Operateur_base",Objet_U);
 

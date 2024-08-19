@@ -15,6 +15,7 @@
 
 #include <Sortie_libre_Gradient_Pression_libre_VEFPreP1B.h>
 #include <Champ_P1_isoP1Bulle.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
 #include <distances_VEF.h>

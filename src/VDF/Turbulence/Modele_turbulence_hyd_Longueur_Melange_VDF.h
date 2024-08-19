@@ -18,7 +18,6 @@
 
 #include <Modele_turbulence_hyd_Longueur_Melange_base.h>
 
-class Domaine_Cl_dis;
 class Domaine_Cl_VDF;
 class Domaine_VDF;
 

@@ -15,6 +15,7 @@
 
 #include <Modele_turbulence_hyd_0_eq_base.h>
 #include <Modifier_pour_fluide_dilatable.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <stat_counters.h>

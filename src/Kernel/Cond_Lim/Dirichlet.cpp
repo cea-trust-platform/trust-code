@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 #include <Dirichlet.h>
 
 Implemente_base(Dirichlet, "Dirichlet", Cond_lim_base);
 // XD dirichlet condlim_base dirichlet -1 Dirichlet condition at the boundary called bord (edge) : 1). For Navier-Stokes equations, velocity imposed at the boundary; 2). For scalar transport equation, scalar imposed at the boundary.
-
 
 Sortie& Dirichlet::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

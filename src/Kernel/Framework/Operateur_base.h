@@ -16,6 +16,7 @@
 #ifndef Operateur_base_included
 #define Operateur_base_included
 
+#include <Domaine_Cl_dis.h>
 #include <Equation_base.h>
 #include <Domaine_dis.h>
 #include <SolveurSys.h>
@@ -23,7 +24,6 @@
 #include <Matrice.h>
 
 class Frontiere_dis_base;
-class Domaine_Cl_dis;
 class Matrice_Morse;
 class EcrFicPartage;
 class Champ_Inc;

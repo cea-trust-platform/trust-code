@@ -14,10 +14,11 @@
 *****************************************************************************/
 
 #include <Reordonner_faces_periodiques.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Domaine_Cl_dis.h>
+#include <Domaine_VF.h>
 #include <Periodique.h>
 #include <Domaine.h>
-#include <Domaine_VF.h>
 #include <Scatter.h>
 
 Implemente_instanciable(Periodique, "Periodique", Cond_lim_base);

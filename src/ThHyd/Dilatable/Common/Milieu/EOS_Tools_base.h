@@ -17,12 +17,12 @@
 #define EOS_Tools_base_included
 
 #include <TRUSTTabs_forward.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 #include <Objet_U.h>
 
 class Fluide_Dilatable_base;
-class Domaine_Cl_dis;
 
 /*! @brief classe Abstraite EOS_Tools_base
  *

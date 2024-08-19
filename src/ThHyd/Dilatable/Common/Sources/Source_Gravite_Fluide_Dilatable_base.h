@@ -17,12 +17,12 @@
 #define Source_Gravite_Fluide_Dilatable_base_included
 
 #include <TRUSTTabs_forward.h>
+#include <Domaine_Cl_dis.h>
 #include <Source_base.h>
 #include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
-class Domaine_Cl_dis;
 
 /*! @brief class Source_Gravite_Fluide_Dilatable_base
  *

@@ -16,6 +16,7 @@
 #ifndef TRUSTSchema_RK_included
 #define TRUSTSchema_RK_included
 
+#include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <type_traits>

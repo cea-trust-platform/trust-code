@@ -16,16 +16,18 @@
 #include <Source_Fluide_Dilatable_VEF_Proto.h>
 #include <Neumann_sortie_libre.h>
 #include <Discretisation_base.h>
-#include <Equation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Domaine_Cl_VEF.h>
+#include <Equation_base.h>
 #include <Milieu_base.h>
+#include <Domaine_VEF.h>
 #include <Periodique.h>
 #include <TRUSTTab.h>
-#include <Domaine_VEF.h>
 #include <Symetrie.h>
-#include <kokkos++.h>
+
 #include <TRUSTArray_kokkos.tpp>
 #include <TRUSTTab_kokkos.tpp>
+#include <kokkos++.h>
 
 void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {

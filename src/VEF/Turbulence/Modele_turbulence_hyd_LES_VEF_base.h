@@ -19,7 +19,6 @@
 #include <Modele_turbulence_hyd_LES_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_dis;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
 

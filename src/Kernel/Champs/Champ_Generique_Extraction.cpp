@@ -13,38 +13,35 @@
 *
 *****************************************************************************/
 
+#include <Champ_Generique_Interpolation.h>
 #include <Champ_Generique_Extraction.h>
 #include <Champ_Generique_refChamp.h>
-#include <Domaine_VF.h>
-#include <Postraitement.h>
-#include <Discretisation_base.h>
-#include <Domaine_dis_cache.h>
-#include <TRUST_Deriv.h>
-#include <Domaine.h>
-#include <Equation_base.h>
 #include <Champ_front_uniforme.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
+#include <Domaine_dis_cache.h>
+#include <Equation_base.h>
 #include <NettoieNoeuds.h>
+#include <Postraitement.h>
 #include <Synonyme_info.h>
+#include <TRUST_Deriv.h>
+#include <Domaine_VF.h>
+#include <Cond_lim.h>
+#include <Domaine.h>
 #include <Param.h>
-#include <Champ_Generique_Interpolation.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Extraction,"Extraction",Champ_Gen_de_Champs_Gen);
 // XD extraction champ_post_de_champs_post extraction -1 To create a surface field (values at the boundary) of a volume field
 
 Add_synonym(Champ_Generique_Extraction,"Champ_Post_Extraction");
 
-/*! @brief voir reset()
- *
- */
 Champ_Generique_Extraction::Champ_Generique_Extraction()
 {
-  // valeurs par defaut
   reset();
   methode_="trace";
 }
 
-//cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Extraction::readOn(Entree& is)
 {
   Champ_Gen_de_Champs_Gen::readOn(is);
@@ -57,9 +54,6 @@ Entree& Champ_Generique_Extraction::readOn(Entree& is)
   return is;
 }
 
-/*! @brief appel invalide
- *
- */
 Sortie& Champ_Generique_Extraction::printOn(Sortie& os) const
 {
   exit();

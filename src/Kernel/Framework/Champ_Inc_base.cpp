@@ -15,6 +15,7 @@
 
 #include <EcritureLectureSpecial.h>
 #include <Scalaire_impose_paroi.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Champ_Inc_P1_base.h>
@@ -23,9 +24,9 @@
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Domaine_VF.h>
 #include <Dirichlet.h>
 #include <Domaine.h>
-#include <Domaine_VF.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 

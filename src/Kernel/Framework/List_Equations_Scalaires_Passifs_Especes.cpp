@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <List_Equations_Scalaires_Passifs_Especes.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Probleme_base.h>
 
 Implemente_instanciable(List_Equations_Scalaires_Passifs_Especes,"Equations_Scalaires_Passifs|Equations_Especes",Equation_base);

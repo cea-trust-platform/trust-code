@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Echange_impose_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>

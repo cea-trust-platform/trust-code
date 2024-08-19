@@ -20,7 +20,6 @@
 #include <TRUST_Ref.h>
 
 class Fluide_Weakly_Compressible;
-class Domaine_Cl_dis;
 class Domaine_VF;
 
 /*! @brief class Source_WC_Chaleur

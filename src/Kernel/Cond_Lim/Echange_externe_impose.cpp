@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Echange_externe_impose.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 
 Implemente_instanciable(Echange_externe_impose, "Paroi_echange_externe_impose", Echange_impose_base);

@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Domaine_Cl_dis_base.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
 #include <Champ_Face_base.h>

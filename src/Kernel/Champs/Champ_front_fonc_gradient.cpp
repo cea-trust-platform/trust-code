@@ -15,10 +15,10 @@
 
 
 #include <Champ_front_fonc_gradient.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Frontiere_dis_base.h>
 
 Implemente_instanciable(Champ_front_fonc_gradient,"Champ_front_fonc_gradient",Champ_front_tangentiel);
-
 
 Sortie& Champ_front_fonc_gradient::printOn(Sortie& os) const
 {
@@ -28,7 +28,6 @@ Sortie& Champ_front_fonc_gradient::printOn(Sortie& os) const
 
 Entree& Champ_front_fonc_gradient::readOn(Entree& s)
 {
-  Cerr << "Champ_front_fonc_gradient::readOn" << finl;
   return s;
 }
 

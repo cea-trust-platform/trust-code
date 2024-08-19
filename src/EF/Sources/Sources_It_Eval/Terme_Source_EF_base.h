@@ -17,8 +17,8 @@
 #define Terme_Source_EF_base_included
 
 #include <Iterateur_Source_base.h>
+#include <Domaine_Cl_dis.h>
 
-class Domaine_Cl_dis;
 class Probleme_base;
 
 class Terme_Source_EF_base: public Source_base

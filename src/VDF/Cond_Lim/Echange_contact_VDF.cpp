@@ -17,6 +17,7 @@
 #include <Schema_Euler_Implicite.h>
 #include <Turbulence_paroi_scal.h>
 #include <Echange_contact_VDF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Champ_front_calc.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>

@@ -17,6 +17,7 @@
 #define Op_Diff_VEF_base_included
 
 #include <Operateur_Diff_base.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_VEF.h>
 #include <Domaine_dis.h>
 #include <Op_VEF_Face.h>
@@ -24,7 +25,6 @@
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;
-class Domaine_Cl_dis;
 class Champ_Inc_base;
 class Sortie;
 

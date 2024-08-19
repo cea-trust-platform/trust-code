@@ -18,8 +18,10 @@
 
 #include <Interface_blocs.h>
 #include <Domaine_forward.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_VF.h>
 #include <Champ_base.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <TRUST_Ref.h>
 #include <MorEqn.h>
@@ -27,7 +29,6 @@
 
 class Frontiere_dis_base;
 class Domaine_dis_base;
-class Domaine_Cl_dis;
 class MD_Vector;
 
 /*! @brief Classe Champ_Inc_base

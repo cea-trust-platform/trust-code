@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,7 @@
 
 #include <Cond_lim_utilisateur_base.h>
 #include <Discretisation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Probleme_Couple.h>
 #include <Entree_complete.h>
 #include <Probleme_base.h>

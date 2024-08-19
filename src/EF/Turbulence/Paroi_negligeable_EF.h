@@ -17,9 +17,9 @@
 #define Paroi_negligeable_EF_included
 
 #include <Paroi_hyd_base_EF.h>
+#include <Domaine_Cl_dis.h>
 
 class Champ_Fonc_base;
-class Domaine_Cl_dis;
 
 class Paroi_negligeable_EF: public Paroi_hyd_base_EF
 {

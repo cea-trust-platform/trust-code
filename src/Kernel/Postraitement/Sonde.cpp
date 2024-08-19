@@ -15,13 +15,14 @@
 
 #include <Champ_Generique_Interpolation.h>
 #include <Champ_Generique_refChamp.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Entree_complete.h>
+#include <Domaine_Cl_dis.h>
 #include <communications.h>
 #include <Champ_Inc_base.h>
 #include <Postraitement.h>
-#include <Domaine_Cl_dis.h>
-#include <sys/stat.h>
 #include <Domaine_VF.h>
+#include <sys/stat.h>
 #include <Sonde.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,28 +14,24 @@
 *****************************************************************************/
 
 #include <Echange_contact_VDF_Plaque_Flux_Cte.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Domaine_VDF.h>
 #include <Milieu_base.h>
-#include <Champ_Uniforme.h>
 #include <Conduction.h>
 
+Implemente_instanciable(Echange_contact_VDF_Plaque_Flux_Cte, "Paroi_Echange_contact_Plaque_Parallele_Flux_Cte_VDF", Echange_contact_Correlation_VDF);
 
-Implemente_instanciable(Echange_contact_VDF_Plaque_Flux_Cte,"Paroi_Echange_contact_Plaque_Parallele_Flux_Cte_VDF",Echange_contact_Correlation_VDF);
-
-
-
-
-Sortie& Echange_contact_VDF_Plaque_Flux_Cte::printOn(Sortie& s ) const
+Sortie& Echange_contact_VDF_Plaque_Flux_Cte::printOn(Sortie& s) const
 {
   return s << que_suis_je() << finl;
 }
 
-Entree& Echange_contact_VDF_Plaque_Flux_Cte::readOn(Entree& is )
+Entree& Echange_contact_VDF_Plaque_Flux_Cte::readOn(Entree& is)
 {
   return Echange_contact_Correlation_VDF::readOn(is);
 }
-
 
 /**
  * Calcule le coeff d echange suivant la correlation de Shah
@@ -49,28 +45,22 @@ double Echange_contact_VDF_Plaque_Flux_Cte::calculer_coefficient_echange(int i)
   //Pr = getMu(i)*getCp()/getLambda(i);
   /*x_star = coord(i)-coord(0);
 
-  if (x_star < 2e-4)
-  {
-  Nu = 1.49*pow(x_star,-0.3333);
-  }
-  else if (x_star > 1e-3)
-  {
-  Nu = 8.235+8.68*pow(1000*x_star,-0.506)*exp(-164*x_star);
-  }
-  else
-  Nu = 1.49*pow(x_star,-0.3333)-0.4;
-  */
+   if (x_star < 2e-4)
+   {
+   Nu = 1.49*pow(x_star,-0.3333);
+   }
+   else if (x_star > 1e-3)
+   {
+   Nu = 8.235+8.68*pow(1000*x_star,-0.506)*exp(-164*x_star);
+   }
+   else
+   Nu = 1.49*pow(x_star,-0.3333)-0.4;
+   */
   Nu = 8.24;
-  return Nu*getLambda(i)/getDh();
+  return Nu * getLambda(i) / getDh();
 }
-
-
 
 double Echange_contact_VDF_Plaque_Flux_Cte::volume(double s, double d)
 {
-  return s*0.25*d;
+  return s * 0.25 * d;
 }
-
-
-
-

@@ -17,11 +17,11 @@
 #define Source_QC_Chaleur_Verif_included
 
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Fluide_Quasi_Compressible;
-class Domaine_Cl_dis;
 
 /*! @brief class Source_QC_Chaleur_Verif
  *

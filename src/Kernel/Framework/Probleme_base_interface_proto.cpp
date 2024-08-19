@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Probleme_base_interface_proto.h>
+#include <Domaine_Cl_dis_base.h>
 #include <ICoCoExceptions.h>
 #include <Probleme_base.h>
 #include <Postraitement.h>

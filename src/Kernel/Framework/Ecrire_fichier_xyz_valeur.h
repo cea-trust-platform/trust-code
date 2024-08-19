@@ -47,8 +47,8 @@ private :
   void writeValuesOnBoundary_(const Nom& fname, const std::string& bname, const DoubleTab& pos, const DoubleTab& val) const;
 
   REF(Equation_base) eqn_;
-  int binary_file_;
-  double dt_; //file writing frequency
+  int binary_file_ = 1;
+  double dt_ = -123.; //file writing frequency
   Noms fields_names_;
   Noms boundary_names_;
 

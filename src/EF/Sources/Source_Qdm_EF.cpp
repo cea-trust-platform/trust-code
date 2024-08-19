@@ -13,30 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Source_Qdm_EF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Champ_Uniforme.h>
-#include <Domaine.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_EF.h>
-#include <Domaine_Cl_EF.h>
-
+#include <Source_Qdm_EF.h>
 #include <Equation_base.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Source_Qdm_EF,"Source_Qdm_EF",Source_base);
-
-
-
-//// printOn
-//
 
 Sortie& Source_Qdm_EF::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Source_Qdm_EF::readOn(Entree& s )
 {

@@ -18,6 +18,7 @@
 
 #include <Ecrire_fichier_xyz_valeur.h>
 #include <Parametre_equation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Solveur_Masse_base.h>
 #include <Matrice_Morse_Diag.h>
 #include <MD_Vector_tools.h>
@@ -28,6 +29,7 @@
 #include <Matrice_Morse.h>
 #include <Domaine_dis.h>
 #include <Champs_Fonc.h>
+#include <Champ_Inc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
@@ -37,9 +39,9 @@
 
 class Discretisation_base;
 class Schema_Temps_base;
+class Cond_lim_base;
 class Milieu_base;
 class Operateur;
-class Champ_Inc;
 class Motcle;
 class Param;
 

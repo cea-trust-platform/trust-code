@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,6 @@
 #include <TRUST_Ref.h>
 
 class Fluide_Quasi_Compressible;
-class Domaine_Cl_dis;
 class Domaine_VDF;
 
 /*! @brief classe EDO_Pression_th_VDF Cette classe represente l'EDO sur la pression associee au schema de

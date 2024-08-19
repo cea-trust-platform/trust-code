@@ -19,6 +19,7 @@
 #include <Champs_compris_interface.h>
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
+#include <Domaine_Cl_dis.h>
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
 #include <Domaine_dis.h>
@@ -26,7 +27,6 @@
 #include <SFichier.h>
 #include <MorEqn.h>
 
-class Domaine_Cl_dis;
 class Probleme_base;
 class Matrice_Morse;
 

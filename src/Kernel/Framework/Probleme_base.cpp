@@ -16,6 +16,7 @@
 #include <EcritureLectureSpecial.h>
 #include <Entree_Fichier_base.h>
 #include <Discretisation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Loi_Fermeture_base.h>
 #include <EcrFicCollecteBin.h>
 #include <LecFicDiffuseBin.h>

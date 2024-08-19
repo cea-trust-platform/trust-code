@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Domaine_Cl_dis_base.h>
 #include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
 #include <Format_Post_base.h>
@@ -20,6 +21,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Schema_Comm.h>
+#include <Domaine_VF.h>
 #include <Champ_base.h>
 #include <TRUSTVects.h>
 #include <TRUSTTrav.h>
@@ -27,29 +29,14 @@
 #include <TRUSTList.h>
 #include <Symetrie.h>
 #include <strings.h>
-#include <Domaine_VF.h>
 
 Implemente_base_sans_constructeur(Champ_base,"Champ_base",Field_base);
 
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le nom du champ sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_base::printOn(Sortie& os) const
 {
   return os << le_nom() << finl;
 }
 
-
-/*! @brief Lecture du nom d'un champ sur un flot d'entree.
- *
- * Format:
- *       nom_du_champ
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Champ_base::readOn(Entree& is)
 {
   return is >> nom_;

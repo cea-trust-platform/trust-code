@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 #define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
+#include <Domaine_Cl_dis.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_dis;
 class Domaine_VF;
 
 /*! @brief class Source_Generique_VDF_Elem

@@ -16,6 +16,7 @@
 #ifndef Discretisation_base_included
 #define Discretisation_base_included
 
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <Champ_base.h> // Pour Nature_du_champ
 #include <TRUST_Ref.h>
@@ -24,7 +25,6 @@ class Champ_Fonc_Tabule;
 class Schema_Temps_base;
 class Domaine_dis_base;
 class Champ_Fonc_base;
-class Domaine_Cl_dis;
 class Champ_Inc_base;
 class Probleme_base;
 class Equation_base;

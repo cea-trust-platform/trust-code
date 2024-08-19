@@ -18,12 +18,12 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
+#include <Domaine_Cl_dis.h>
 #include <TRUST_Deriv.h>
 #include <MorEqn.h>
 
 class Domaine_Cl_dis_base;
 class Domaine_dis_base;
-class Domaine_Cl_dis;
 class Matrice_Morse;
 class Matrice_Base;
 

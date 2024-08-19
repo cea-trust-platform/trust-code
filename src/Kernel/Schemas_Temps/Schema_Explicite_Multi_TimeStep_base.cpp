@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Schema_Explicite_Multi_TimeStep_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 #include <TRUSTTrav.h>
 #include <Debog.h>

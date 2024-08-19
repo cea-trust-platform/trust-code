@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Fluide_Weakly_Compressible.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Source_WC_Chaleur.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>

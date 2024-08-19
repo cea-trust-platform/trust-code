@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Sortie_libre_Gradient_Pression_impose_VEFPreP1B.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Champ_P1_isoP1Bulle.h>
 #include <Navier_Stokes_std.h>
 #include <distances_VEF.h>

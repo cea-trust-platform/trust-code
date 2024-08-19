@@ -18,8 +18,7 @@
 
 #include <Fluide_Dilatable_base.h>
 #include <EDO_Pression_th_base.h>
-
-class Domaine_Cl_dis;
+#include <Domaine_Cl_dis.h>
 
 /*! @brief classe Fluide_Quasi_Compressible Cette classe represente un d'un fluide quasi compressible
  *

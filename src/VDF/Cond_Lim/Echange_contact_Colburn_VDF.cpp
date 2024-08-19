@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,42 +14,37 @@
 *****************************************************************************/
 
 #include <Echange_contact_Colburn_VDF.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Domaine_VDF.h>
 #include <Milieu_base.h>
-#include <Champ_Uniforme.h>
 #include <Conduction.h>
 
-Implemente_instanciable(Echange_contact_Colburn_VDF,"Paroi_Echange_contact_Colburn_VDF",Echange_contact_Correlation_VDF);
+Implemente_instanciable(Echange_contact_Colburn_VDF, "Paroi_Echange_contact_Colburn_VDF", Echange_contact_Correlation_VDF);
 
-
-
-Sortie& Echange_contact_Colburn_VDF::printOn(Sortie& s ) const
+Sortie& Echange_contact_Colburn_VDF::printOn(Sortie& s) const
 {
   return s << que_suis_je() << finl;
 }
 
-Entree& Echange_contact_Colburn_VDF::readOn(Entree& is )
+Entree& Echange_contact_Colburn_VDF::readOn(Entree& is)
 {
   return Echange_contact_Correlation_VDF::readOn(is);
 }
-
 
 /**
  * Calcule le coeff d echange suivant la correlation de Colburn
  */
 double Echange_contact_Colburn_VDF::calculer_coefficient_echange(int i)
 {
-  double Re,Pr;
-  Re = std::fabs(getQh()*getDh()/getMu(i));
-  Pr = getMu(i)*getCp()/getLambda(i);
-  return 0.023*pow(Re,0.8)*pow(Pr,1./3.)*getLambda(i)/getDh();
+  double Re, Pr;
+  Re = std::fabs(getQh() * getDh() / getMu(i));
+  Pr = getMu(i) * getCp() / getLambda(i);
+  return 0.023 * pow(Re, 0.8) * pow(Pr, 1. / 3.) * getLambda(i) / getDh();
 }
-
 
 double Echange_contact_Colburn_VDF::volume(double s, double d)
 {
-  return s*0.1963495*d;
+  return s * 0.1963495 * d;
 }
-
-

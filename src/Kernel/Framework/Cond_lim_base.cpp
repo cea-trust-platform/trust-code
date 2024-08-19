@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Discretisation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Cond_lim_base.h>
 #include <Equation_base.h>
 

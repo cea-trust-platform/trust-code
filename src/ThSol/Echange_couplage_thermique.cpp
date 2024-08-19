@@ -15,6 +15,7 @@
 
 #include <Echange_couplage_thermique.h>
 #include <Discretisation_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>

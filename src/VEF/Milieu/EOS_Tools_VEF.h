@@ -17,11 +17,11 @@
 #define EOS_Tools_VEF_included
 
 #include <EOS_Tools_base.h>
+#include <Domaine_Cl_dis.h>
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
 class Fluide_Dilatable_base;
-class Domaine_Cl_dis;
 class Domaine_VEF;
 
 /*! @brief classe EOS_Tools_VEF Cette classe et specifique a discretisation de type VEF.

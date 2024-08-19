@@ -19,7 +19,6 @@
 #include <Paroi_hyd_base_VDF.h>
 
 class Champ_Fonc_base;
-class Domaine_Cl_dis;
 
 class Paroi_negligeable_VDF : public Paroi_hyd_base_VDF
 {

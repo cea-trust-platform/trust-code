@@ -16,6 +16,7 @@
 #include <Convection_Diffusion_Chaleur_WC.h>
 #include <Source_WC_Chaleur_VDF.h>
 #include <Neumann_sortie_libre.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Navier_Stokes_WC.h>
 #include <Probleme_base.h>
 #include <Domaine_VF.h>

@@ -17,6 +17,7 @@
 #define Turbulence_paroi_base_included
 
 #include <Champs_compris_interface.h>
+#include <Domaine_Cl_dis.h>
 #include <Champs_compris.h>
 #include <Domaine_dis.h>
 #include <Champ_Fonc.h>
@@ -27,7 +28,6 @@ class Modele_turbulence_hyd_base;
 class Probleme_base;
 class EcrFicPartage;
 class Modele_turbulence_hyd;
-class Domaine_Cl_dis;
 class Param;
 
 /*! @brief Classe Turbulence_paroi_base Classe de base pour la hierarchie des classes representant les modeles

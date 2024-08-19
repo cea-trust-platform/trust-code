@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,10 @@
 #define Paroi_hyd_base_EF_included
 
 #include <Turbulence_paroi_base.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_EF.h>
 #include <Domaine_EF.h>
 #include <TRUST_Ref.h>
-
-class Domaine_Cl_dis;
 
 /*! @brief CLASS: Paroi_hyd_base_EF Classe de base des lois de paroi hydraulique en EF
  *

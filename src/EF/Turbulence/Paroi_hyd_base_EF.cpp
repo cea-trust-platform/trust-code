@@ -13,10 +13,11 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd_base.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Discretisation_base.h>
-#include <Modele_turbulence_hyd_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Paroi_hyd_base_EF.h>
 #include <Schema_Temps_base.h>
 #include <communications.h>

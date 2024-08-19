@@ -17,6 +17,7 @@
 #define Fluide_Dilatable_base_included
 
 #include <EOS_Tools_base.h>
+#include <Domaine_Cl_dis.h>
 #include <Loi_Etat_base.h>
 #include <Fluide_base.h>
 #include <TRUST_Deriv.h>
@@ -24,7 +25,6 @@
 #include <Champ_Inc.h>
 
 class Probleme_base;
-class Domaine_Cl_dis;
 
 /*! @brief classe Fluide_Dilatable_base Cette classe represente un d'un fluide dilatable,
  *

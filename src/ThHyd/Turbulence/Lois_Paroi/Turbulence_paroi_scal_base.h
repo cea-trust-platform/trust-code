@@ -18,6 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
+#include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
@@ -27,7 +28,6 @@
 class Modele_turbulence_scal_base;
 class Probleme_base;
 class EcrFicPartage;
-class Domaine_Cl_dis;
 class Champ_Don;
 class Domaine_VF;
 

@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Source_PDF_base.h>
 #include <Domaine_Cl_dis.h>

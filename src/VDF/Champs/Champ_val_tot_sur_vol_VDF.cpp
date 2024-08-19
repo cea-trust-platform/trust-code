@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,9 +14,10 @@
 *****************************************************************************/
 
 #include <Champ_val_tot_sur_vol_VDF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
-#include <Milieu_base.h>
 #include <Sous_Domaine.h>
+#include <Milieu_base.h>
 #include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_val_tot_sur_vol_VDF,"Valeur_totale_sur_volume_VDF",Champ_val_tot_sur_vol_base);
@@ -24,14 +25,12 @@ Implemente_instanciable(Champ_val_tot_sur_vol_VDF,"Valeur_totale_sur_volume_VDF"
 
 Sortie& Champ_val_tot_sur_vol_VDF::printOn(Sortie& os) const
 {
-  Champ_val_tot_sur_vol_base::printOn(os);
-  return os;
+  return Champ_val_tot_sur_vol_base::printOn(os);
 }
 
 Entree& Champ_val_tot_sur_vol_VDF::readOn(Entree& is)
 {
-  Champ_val_tot_sur_vol_base::readOn(is);
-  return is;
+  return Champ_val_tot_sur_vol_base::readOn(is);
 }
 
 DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis,DoubleVect& vol_glob_pond)

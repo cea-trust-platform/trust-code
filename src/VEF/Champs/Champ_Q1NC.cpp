@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 #include <Champ_Q1NC.h>
 #include <Periodique.h>

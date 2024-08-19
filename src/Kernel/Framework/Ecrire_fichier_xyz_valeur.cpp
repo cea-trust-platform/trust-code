@@ -15,6 +15,7 @@
 
 #include <Operateur_Statistique_tps_base.h>
 #include <Ecrire_fichier_xyz_valeur.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Postraitement.h>
 #include <Equation_base.h>
