@@ -18,8 +18,8 @@
 
 #include <SolvElem_base.h>
 #include <solv_iteratif.h>
+#include <Precond_base.h>
 #include <TRUST_Deriv.h>
-#include <Precond.h>
 
 class Matrice_Morse;
 class Param;
@@ -37,8 +37,8 @@ public :
   }
   inline OWN_PTR(SolvElem_base)& le_solveur_elem() { return le_solveur_elem_; }
   inline const OWN_PTR(SolvElem_base)& le_solveur_elem() const { return le_solveur_elem_; }
-  inline const Precond& get_precond() const { return le_precond_; }
-  inline void set_precond(const Precond& pre ) { le_precond_ = pre; }
+  inline const OWN_PTR(Precond_base)& get_precond() const { return le_precond_; }
+  inline void set_precond(const OWN_PTR(Precond_base)& pre ) { le_precond_ = pre; }
   void reinit() override;
 
 protected :
@@ -46,7 +46,7 @@ protected :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, const DoubleVect& secmem, DoubleVect& solution);
 
-  Precond le_precond_;
+  OWN_PTR(Precond_base) le_precond_;
   OWN_PTR(SolvElem_base) le_solveur_elem_;
   int nb_it_max_, nb_it_max_flag, force_;
 };

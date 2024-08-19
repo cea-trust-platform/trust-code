@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,21 +19,17 @@
 #include <Motcle.h>
 #include <Param.h>
 
-Implemente_instanciable(Solv_GCP_NS,"Solv_GCP_NS",solv_iteratif);
+Implemente_instanciable(Solv_GCP_NS, "Solv_GCP_NS", solv_iteratif);
 // XD gcp_ns solv_gcp gcp_ns -1 not_set
 // XD attr solveur0 solveur_sys_base solveur0 0 Solver type.
 // XD attr solveur1 solveur_sys_base solveur1 0 Solver type.
 
-
-//
-// printOn et readOn
-
-Sortie& Solv_GCP_NS::printOn(Sortie& s ) const
+Sortie& Solv_GCP_NS::printOn(Sortie& s) const
 {
-  return s ;
+  return s;
 }
 
-Entree& Solv_GCP_NS::readOn(Entree& is )
+Entree& Solv_GCP_NS::readOn(Entree& is)
 {
   Param param(que_suis_je());
   set_param(param);
@@ -43,64 +39,59 @@ Entree& Solv_GCP_NS::readOn(Entree& is )
 
 void Solv_GCP_NS::set_param(Param& param)
 {
-  param.ajouter_non_std("impr",(this));
-  param.ajouter("seuil",&seuil_);
-  param.ajouter_non_std("solveur0",(this));
-  param.ajouter_non_std("solveur1",(this));
-  param.ajouter("precond",&le_precond_);
-  param.ajouter_non_std("quiet",(this));
+  param.ajouter_non_std("impr", (this));
+  param.ajouter("seuil", &seuil_);
+  param.ajouter_non_std("solveur0", (this));
+  param.ajouter_non_std("solveur1", (this));
+  param.ajouter("precond", &le_precond_);
+  param.ajouter_non_std("quiet", (this));
 }
 
 int Solv_GCP_NS::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   int retval = 1;
 
-  if (mot=="impr") fixer_limpr(1);
-  else if (mot=="quiet") fixer_limpr(-1);
-  else if (mot=="solveur0")
+  if (mot == "impr")
+    fixer_limpr(1);
+  else if (mot == "quiet")
+    fixer_limpr(-1);
+  else if (mot == "solveur0")
     {
       is >> solveur_poisson0;
       solveur_poisson0.nommer("poisson_solver0");
     }
-  else if (mot=="solveur1")
+  else if (mot == "solveur1")
     {
       is >> solveur_poisson1;
       solveur_poisson1.nommer("poisson_solver1");
     }
-  else retval = -1;
+  else
+    retval = -1;
 
   return retval;
 }
 
-static inline void corriger(DoubleVect& X,
-                            double alpha,
-                            double beta,
-                            const DoubleVect& X1,
-                            const DoubleVect& X0,
-                            int prems, int n)
+static inline void corriger(DoubleVect& X, double alpha, double beta, const DoubleVect& X1, const DoubleVect& X0, int prems, int n)
 {
-  int sz=prems+n;
-  int i=0;
-  for(; i<prems; i++)
-    X(i)+=beta*X0(i);
-  for(; i<sz; i++)
-    X(i)+=alpha*X1(i-prems);
+  int sz = prems + n;
+  int i = 0;
+  for (; i < prems; i++)
+    X(i) += beta * X0(i);
+  for (; i < sz; i++)
+    X(i) += alpha * X1(i - prems);
 }
 
-
-static inline void injecter(const DoubleVect& X, DoubleVect& tmp,
-                            int prems, int n)
+static inline void injecter(const DoubleVect& X, DoubleVect& tmp, int prems, int n)
 {
-  int sz=prems+n;
-  for(int i=prems; i<sz; i++)
-    tmp(i)=X(i-prems);
+  int sz = prems + n;
+  for (int i = prems; i < sz; i++)
+    tmp(i) = X(i - prems);
 }
-static inline void extraire(DoubleVect& X, const DoubleVect& tmp,
-                            int prems, int n)
+static inline void extraire(DoubleVect& X, const DoubleVect& tmp, int prems, int n)
 {
-  int sz=prems+n;
-  for(int i=prems; i<sz; i++)
-    X(i-prems)=tmp(i);
+  int sz = prems + n;
+  for (int i = prems; i < sz; i++)
+    X(i - prems) = tmp(i);
 }
 
 inline void erreur()
@@ -110,11 +101,7 @@ inline void erreur()
   Process::exit();
 }
 
-int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
-                                  const DoubleVect& secmem,
-                                  DoubleVect& solution,
-
-                                  int niter_max)
+int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution, int niter_max)
 {
   // A00 X0 + A01 X1 = F0
   // A10 X0 + A11 X1 = F1
@@ -129,27 +116,29 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
   assert(solution.size_totale() == secmem.size_totale());
   const int n = secmem.size_totale();
 
-  const Matrice_Bloc_Sym& matbloc=ref_cast(Matrice_Bloc_Sym, matrice);
-  if (matbloc.nb_bloc_lignes()!=2 || matbloc.nb_bloc_colonnes()!=2) erreur();
+  const Matrice_Bloc_Sym& matbloc = ref_cast(Matrice_Bloc_Sym, matrice);
+  if (matbloc.nb_bloc_lignes() != 2 || matbloc.nb_bloc_colonnes() != 2)
+    erreur();
 
-  const Matrice_Base& A00=matbloc.get_bloc(0,0);
-  const Matrice_Base& A01=matbloc.get_bloc(0,1);
-  const Matrice_Base& A11=matbloc.get_bloc(1,1);
-  int n0=A00.nb_lignes();
-  int n1=A11.nb_lignes();
+  const Matrice_Base& A00 = matbloc.get_bloc(0, 0);
+  const Matrice_Base& A01 = matbloc.get_bloc(0, 1);
+  const Matrice_Base& A11 = matbloc.get_bloc(1, 1);
+  int n0 = A00.nb_lignes();
+  int n1 = A11.nb_lignes();
   int nmax_min = 100;
-  int nmax= std::max(Process::mp_sum(n), nmax_min);
+  int nmax = std::max(Process::mp_sum(n), nmax_min);
   int niter = 0;
-  double dold,dnew,alfa;
+  double dold, dnew, alfa;
 
-  solution=0.0;
+  solution = 0.0;
   // Creation de tableaux distribues X1 et F1 sur les sommets
   ConstDoubleTab_parts mo_solution(solution);
-  DoubleVect X1=mo_solution[1];
+  DoubleVect X1 = mo_solution[1];
   // DoubleVect X1;
   // champ.domaine().creer_tableau_sommets(X1);
   DoubleVect F1(X1);
-  if (X1.size_totale()!=n1) erreur();
+  if (X1.size_totale() != n1)
+    erreur();
 
   //DoubleVect resu(solution);
 
@@ -157,9 +146,10 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
   //DoubleVect X0;
   //champ.domaine().creer_tableau_elements(X0);
   //  ConstDoubleTab_parts mo_solution(solution);
-  DoubleVect X0=mo_solution[0];
+  DoubleVect X0 = mo_solution[0];
   DoubleVect F0(X0);
-  if (X0.size_totale()!=n0) erreur();
+  if (X0.size_totale() != n0)
+    erreur();
 
   //F0 :
   extraire(F0, secmem, 0, n0);
@@ -173,49 +163,51 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
   A01.multvect(X1, F0);
   // residu=-F0+A01 X1
   residu -= F0;
-  residu *=-1;
+  residu *= -1;
   DoubleVect g(F0);
   double norme = mp_norme_vect(residu);
-  if(le_precond_.non_nul())
-    le_precond_.preconditionner(A00,residu,g);
+  if (le_precond_.non_nul())
+    le_precond_->preconditionner(A00, residu, g);
   else
     solveur_poisson0.resoudre_systeme(A00, residu, g);
 
   DoubleVect p(g);
   p *= -1.;
 
-  dold = mp_prodscal(residu,g);
+  dold = mp_prodscal(residu, g);
   dnew = dold;
-  if (limpr()>-1)
+  if (limpr() > -1)
     Cout << "GCP NS residue = " << norme << " " << finl;
-  double s=0;
-  while ( ( norme > seuil_ ) && (niter++ < nmax) )
+  double s = 0;
+  while ((norme > seuil_) && (niter++ < nmax))
     {
       // F1=A10 p
       p.echange_espace_virtuel();
       A01.multvectT(p, F1);
       // X1=-A11^(-1) A10p
-      if ((limpr()==1)&& (je_suis_maitre())) Cout << "Solveur1: " ;
+      if ((limpr() == 1) && (je_suis_maitre()))
+        Cout << "Solveur1: ";
       solveur_poisson1.resoudre_systeme(A11, F1, X1);
-      X1*=-1.;
+      X1 *= -1.;
       //F0=(A00  -A01 A11^(-1) A10) p
       X1.echange_espace_virtuel();
       A01.multvect(X1, F0);
       A00.ajouter_multvect(p, F0);
-      s = mp_prodscal(F0,p);
-      alfa = dold/(s);
+      s = mp_prodscal(F0, p);
+      alfa = dold / (s);
       corriger(solution, alfa, alfa, X1, p, n0, n1);
-      residu.ajoute(alfa,F0);
+      residu.ajoute(alfa, F0);
       norme = mp_norme_vect(residu);
-      if(norme>seuil_ && dnew>0)
+      if (norme > seuil_ && dnew > 0)
         {
-          if ((limpr()==1)&& (je_suis_maitre())) Cout << "Solveur0: " ;
-          if(le_precond_.non_nul())
-            le_precond_.preconditionner(A00,residu,g);
+          if ((limpr() == 1) && (je_suis_maitre()))
+            Cout << "Solveur0: ";
+          if (le_precond_.non_nul())
+            le_precond_->preconditionner(A00, residu, g);
           else
             solveur_poisson0.resoudre_systeme(A00, residu, g);
-          dnew = mp_prodscal(residu,g);
-          p *= (dnew/dold);
+          dnew = mp_prodscal(residu, g);
+          p *= (dnew / dold);
           p -= g;
           dold = dnew;
           if (dnew < 0)
@@ -226,30 +218,23 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
               exit();
             }
         }
-      if ((limpr()==1)&& (je_suis_maitre()))
+      if ((limpr() == 1) && (je_suis_maitre()))
         {
           Cout << "GCP NS residue = " << norme << " " << finl;
-          if ((niter % 15) == 0) Cout << finl ;
+          if ((niter % 15) == 0)
+            Cout << finl;
         }
     }
-  if(norme > seuil_)
+  if (norme > seuil_)
     {
       Cerr << "No convergence after : " << niter << " iterations\n";
-      Cerr << " Residue : "<< norme << "\n";
+      Cerr << " Residue : " << norme << "\n";
     }
   solution.echange_espace_virtuel();
-  return(niter);
+  return (niter);
 }
 
-int Solv_GCP_NS::
-resoudre_systeme(const Matrice_Base& la_matrice,
-                 const DoubleVect& secmem,
-                 DoubleVect& solution
-                )
+int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
-  return resoudre_systeme(la_matrice, secmem, solution,  1000000);
+  return resoudre_systeme(la_matrice, secmem, solution, 1000000);
 }
-
-
-
-

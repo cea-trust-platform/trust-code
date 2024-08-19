@@ -45,7 +45,7 @@ Champ_P1NC_implementation::Champ_P1NC_implementation()
   filtrer_L2_deja_appele_=0;
   // definition des types de solveurs par defaut (sinon, lecture dans solveur.bar)
   solveur_L2.typer("Solv_GCP");
-  Precond p;
+  OWN_PTR(Precond_base) p;
   p.typer("SSOR");
   ref_cast(Solv_GCP,solveur_L2.valeur()).set_precond(p);
   solveur_L2.nommer("solveur_L2");

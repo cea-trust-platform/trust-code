@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,9 +33,6 @@ class SolveurSys : public DERIV(SolveurSys_base)
   Declare_instanciable(SolveurSys);
 public:
   int resoudre_systeme(const Matrice_Base &matrice, const DoubleVect &secmem, DoubleVect &solution);
-  int resoudre_systeme(const Matrice_Base &matrice, const DoubleVect &secmem, DoubleVect &solution, int niter_max);
-
-  inline int supporte_matrice_morse_sym() { return valeur().supporte_matrice_morse_sym(); }
   inline const Nom& le_nom() const override { return nom_; }
   inline void nommer(const Nom& nom) override { nom_ = nom; }
 

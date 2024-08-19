@@ -64,7 +64,7 @@ void Op_Diff_RotRot::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_d
   //////////////////////////////////////////////////
 
   solveur_.typer("Solv_GCP");
-  Precond p;
+  OWN_PTR(Precond_base) p;
   p.typer("SSOR");
   ref_cast(Solv_GCP,solveur.valeur()).set_precond(p);
   assembler_matrice(matrice_vorticite_);

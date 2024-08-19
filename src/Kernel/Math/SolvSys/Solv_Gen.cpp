@@ -254,10 +254,10 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           // On preconditionne
           //int ii;
           if(sub_type(ILU_SP,le_precond_.valeur()))
-            le_precond_.preconditionner(mat_loc, W7, W8);
+            le_precond_->preconditionner(mat_loc, W7, W8);
           else
-            le_precond_.preconditionner(mat_loc,secmem,solution);
-          //             le_precond_.preconditionner(matrice,secmem,solution);
+            le_precond_->preconditionner(mat_loc,secmem,solution);
+          //             le_precond_->preconditionner(matrice,secmem,solution);
           le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();
         }
@@ -266,9 +266,9 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
           exit();
           // On preconditionne
           if(sub_type(ILU_SP,le_precond_.valeur()))
-            le_precond_.preconditionner(mat_loc, W7, W8);
+            le_precond_->preconditionner(mat_loc, W7, W8);
           else
-            le_precond_.preconditionner(mat_loc,secmem,solution);
+            le_precond_->preconditionner(mat_loc,secmem,solution);
 
           le_solveur_elem_->iteration(ntot,secmem,solution,ipar,fpar,w);
           solution.echange_espace_virtuel();

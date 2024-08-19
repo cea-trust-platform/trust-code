@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef PrecondA_included
 #define PrecondA_included
 
-
-#include <Precond.h>
+#include <Precond_base.h>
+#include <TRUST_Deriv.h>
 
 class Matrice_Morse_Sym;
 class Matrice_Bloc_Sym;
@@ -36,7 +36,7 @@ protected:
   int preconditionner_(const Matrice_Base&, const DoubleVect& src, DoubleVect& solution) override;
   void prepare_(const Matrice_Base&, const DoubleVect& src) override;
 
-  Precond le_precond_0, le_precond_1, le_precond_a;
+  OWN_PTR(Precond_base) le_precond_0, le_precond_1, le_precond_a;
   double alpha_0 = -100., alpha_1 = -100., alpha_a = -100.;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,11 +13,11 @@
 *
 *****************************************************************************/
 
-#include <PrecondA.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc_Sym.h>
-#include <Motcle.h>
 #include <TRUSTTab_parts.h>
+#include <PrecondA.h>
+#include <Motcle.h>
 #include <Param.h>
 
 Implemente_instanciable(PrecondA,"ssor_bloc",Precond_base);
@@ -46,7 +46,7 @@ void PrecondA::set_param(Param& param)
   param.ajouter("alpha_a",&alpha_a);   // XD attr alpha_a floattant alpha_a 1 not_set
 }
 
-static void prepare_precond(Precond& p, const Matrice_Base& m, const DoubleVect& v,
+static void prepare_precond(OWN_PTR(Precond_base)& p, const Matrice_Base& m, const DoubleVect& v,
                             Precond_base::Init_Status status)
 {
   if (p.non_nul())
@@ -140,14 +140,14 @@ int PrecondA::preconditionner_(const Matrice_Base& matrice,
 
   // Descente :
 
-  le_precond_1.preconditionner(A11,Y1,X1);
+  le_precond_1->preconditionner(A11,Y1,X1);
   operator_multiply(X1, -alpha_1, VECT_ALL_ITEMS);
   A11.ajouter_multvect(X1, Y1);
   A01.ajouter_multvect(X1, Y0);
   if(nblocs == 3)
     A1a.ajouter_multvectT(X1, Ya);
   operator_multiply(X1, -1, VECT_ALL_ITEMS);
-  le_precond_0.preconditionner(A00,Y0,X0);
+  le_precond_0->preconditionner(A00,Y0,X0);
   operator_multiply(X0, -alpha_0, VECT_ALL_ITEMS);
   A00.ajouter_multvect(X0, Y0);
   A01.ajouter_multvectT(X0, Y1);
@@ -156,7 +156,7 @@ int PrecondA::preconditionner_(const Matrice_Base& matrice,
   operator_multiply(X0, -1, VECT_ALL_ITEMS);
   if(nblocs == 3)
     {
-      le_precond_a.preconditionner(Aaa,Ya,Xa);
+      le_precond_a->preconditionner(Aaa,Ya,Xa);
       operator_multiply(Xa, -alpha_a, VECT_ALL_ITEMS);
       Aaa.ajouter_multvect(Xa, Ya);
       A1a.ajouter_multvect(Xa, Y1);
@@ -183,21 +183,21 @@ int PrecondA::preconditionner_(const Matrice_Base& matrice,
 
   if(nblocs == 3)
     {
-      le_precond_a.preconditionner(Aaa,Ya,Xa);
+      le_precond_a->preconditionner(Aaa,Ya,Xa);
       operator_multiply(Xa, -alpha_a, VECT_ALL_ITEMS);
       Aaa.ajouter_multvect(Xa, Ya);
       A1a.ajouter_multvect(Xa, Y1);
       A0a.ajouter_multvect(Xa, Y0);
       operator_multiply(Xa, -1., VECT_ALL_ITEMS);
     }
-  le_precond_0.preconditionner(A00,Y0,X0);
+  le_precond_0->preconditionner(A00,Y0,X0);
   operator_multiply(X0, -alpha_0, VECT_ALL_ITEMS);
   A00.ajouter_multvect(X0, Y0);
   A01.ajouter_multvectT(X0, Y1);
   if(nblocs == 3)
     A0a.ajouter_multvectT(X0, Ya);
   operator_multiply(X0, -1., VECT_ALL_ITEMS);
-  le_precond_1.preconditionner(A11,Y1,X1);
+  le_precond_1->preconditionner(A11,Y1,X1);
   operator_multiply(X1, -alpha_1, VECT_ALL_ITEMS);
   A11.ajouter_multvect(X1, Y1);
   A01.ajouter_multvect(X1, Y0);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis& domaine_dis, const Do
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   inconnue_ = ref_cast(Champ_P1NC, ch_transporte.valeur());
   solveur.typer("Solv_GCP");
-  Precond p;
+  OWN_PTR(Precond_base) p;
   p.typer("SSOR");
   ref_cast(Solv_GCP,solveur.valeur()).set_precond(p);
   solveur.nommer("diffusion_solver");

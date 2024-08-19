@@ -17,8 +17,10 @@
 #define Solv_GCP_NS_included
 
 #include <solv_iteratif.h>
+#include <Precond_base.h>
+#include <TRUST_Deriv.h>
 #include <SolveurSys.h>
-#include <Precond.h>
+
 class Param;
 
 class Solv_GCP_NS : public solv_iteratif
@@ -27,14 +29,9 @@ class Solv_GCP_NS : public solv_iteratif
 public :
 
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
-
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&,
-                       int) override;
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&, int) override;
   inline void reinit() override;
-  inline int supporte_matrice_morse_sym() override
-  {
-    return 0;
-  }; // Matrice_Morse_Sym non supporte
+  inline int supporte_matrice_morse_sym() override { return 0; } // Matrice_Morse_Sym non supporte
 
 protected :
   void set_param(Param& param);
@@ -42,7 +39,7 @@ protected :
 
   SolveurSys solveur_poisson1;
   SolveurSys solveur_poisson0;
-  Precond le_precond_;
+  OWN_PTR(Precond_base) le_precond_;
 };
 
 inline void Solv_GCP_NS::reinit()

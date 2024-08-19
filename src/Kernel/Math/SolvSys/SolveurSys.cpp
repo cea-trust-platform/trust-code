@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,71 +18,48 @@
 #include <Motcle.h>
 #include <Param.h>
 
-Implemente_instanciable(SolveurSys,"SolveurSys",DERIV(SolveurSys_base));
+Implemente_instanciable(SolveurSys, "SolveurSys", DERIV(SolveurSys_base));
 
-Sortie& SolveurSys::printOn(Sortie& s ) const
+Sortie& SolveurSys::printOn(Sortie& s) const
 {
   return DERIV(SolveurSys_base)::printOn(s);
 }
 
-Entree& SolveurSys::readOn(Entree& is )
+Entree& SolveurSys::readOn(Entree& is)
 {
   Param param(que_suis_je());
   Nom solver_name;
-  param.ajouter("solveur_pression",&solver_name,Param::REQUIRED);
+  param.ajouter("solveur_pression", &solver_name, Param::REQUIRED);
   param.lire_sans_accolade(is);
 
   Nom type_solv_sys("Solv_");
-  type_solv_sys+=solver_name;
+  type_solv_sys += solver_name;
   typer(type_solv_sys);
   return is >> valeur();
 }
 
 static int nested_solver = 0;
 
-
-int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
-                                 const DoubleVect& secmem,
-                                 DoubleVect& solution)
+int SolveurSys::resoudre_systeme(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
   valeur().save_matrice_secmem_conditionnel(matrice, secmem, solution);
 
   // Cas de solveurs emboites: n'afficher que le temps du solveur "exterieur"
   // temporaire : test issu du baltik IJK_FT en commentaire car sinon erreur dans .TU avec PETSC (solveurs Ax=B => 0%)
-  //if (nested_solver == 0)
   statistiques().begin_count(solv_sys_counter_);
   nested_solver++;
-  int nb_iter = valeur().resoudre_systeme(matrice,secmem,solution);
+  int nb_iter = valeur().resoudre_systeme(matrice, secmem, solution);
 
   nested_solver--;
   // temporaire : test issu du baltik IJK_FT en commentaire car sinon erreur avec script Check_solver.sh pour test PETSC_VEF
-  //if (nested_solver == 0)
-  //  {
   statistiques().end_count(solv_sys_counter_, nb_iter);
 
   // Si limpr vaut -1, on n'imprime pas
-  if (valeur().limpr()>=0)
-    {
-      Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
-    }
-  if (valeur().limpr()==1)
-    {
-      Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
-    }
+  if (valeur().limpr() >= 0)
+    Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
 
-//  }
+  if (valeur().limpr() == 1)
+    Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
+
   return nb_iter;
 }
-
-
-
-
-int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
-                                 const DoubleVect& secmem,
-                                 DoubleVect& solution,
-                                 int niter_max)
-{
-  return valeur().resoudre_systeme(matrice,secmem,solution,niter_max);
-}
-
-

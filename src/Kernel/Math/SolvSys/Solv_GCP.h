@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,37 +16,36 @@
 #ifndef Solv_GCP_included
 #define Solv_GCP_included
 
-#include <Precond.h>
-#include <solv_iteratif.h>
-#include <Matrice_Morse_Sym.h>
 #include <Matrice_SuperMorse.h>
+#include <Matrice_Morse_Sym.h>
+#include <solv_iteratif.h>
+#include <Precond_base.h>
+#include <TRUST_Deriv.h>
 
-class Solv_GCP : public solv_iteratif
+class Solv_GCP: public solv_iteratif
 {
   Declare_instanciable_sans_constructeur(Solv_GCP);
-public :
+public:
   Solv_GCP();
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int) override;
-  inline const Precond& get_precond() const;
-  inline Precond& get_precond();
-  inline void set_precond(const Precond&);
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&, int) override;
+  inline const OWN_PTR(Precond_base)& get_precond() const { return le_precond_; }
+  inline OWN_PTR(Precond_base)& get_precond() { return le_precond_; }
+  inline void set_precond(const OWN_PTR(Precond_base)& pre) { le_precond_ = pre; }
   void reinit() override;
   int supporte_matrice_morse_sym() override
   {
-    return !le_precond_.non_nul() || le_precond_.supporte_matrice_morse_sym();
-  };
-  // GCP does not need that b has an updated virtual space...
-  int get_flag_updated_input() const override
-  {
-    return 0;
+    return !le_precond_.non_nul() || le_precond_->supporte_matrice_morse_sym();
   }
+  // GCP does not need that b has an updated virtual space...
+  int get_flag_updated_input() const override { return 0; }
+
 protected:
   void prepare_data(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution);
   int resoudre_(const Matrice_Base&, const DoubleVect&, DoubleVect&, int);
 
   int optimized_;
-  Precond le_precond_;
+  OWN_PTR(Precond_base) le_precond_;
   // Parametre du jdd: veut-on appliquer un preconditionnement diagonal global ?
   // Dans ce cas, on copie la matrice, on multiplie la matrice a gauche et a droite par 1/sqrt(diagonale)
   // et on multiplie second membre avant et solution apres par la meme chose.
@@ -88,20 +87,4 @@ protected:
   int nb_it_max_;
 };
 
-inline void Solv_GCP::set_precond(const Precond& pre)
-{
-  le_precond_ = pre;
-}
-
-inline const Precond& Solv_GCP::get_precond() const
-{
-  return le_precond_;
-}
-
-inline Precond& Solv_GCP::get_precond()
-{
-  return le_precond_;
-}
-
-
-#endif
+#endif /* Solv_GCP_included */

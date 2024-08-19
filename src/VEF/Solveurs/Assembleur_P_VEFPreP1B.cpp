@@ -342,7 +342,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
       modifier_matrice(la_matrice_de_travail_);
 
       // Conversion eventuelle en Matrice_Morse_Sym
-      if (ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym() &&
+      if (ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression()->supporte_matrice_morse_sym() &&
           domaine_vef.get_alphaE() != nombre_supports) // On n'est pas en P0
         {
           //////////////////////////////////////////////////////////

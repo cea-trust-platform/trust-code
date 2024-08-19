@@ -26,9 +26,6 @@
 Implemente_instanciable_sans_constructeur(Solv_GCP,"Solv_GCP",solv_iteratif);
 // XD solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
 
-//
-// printOn et readOn
-
 Solv_GCP::Solv_GCP()
 {
   seuil_=1.e-12;

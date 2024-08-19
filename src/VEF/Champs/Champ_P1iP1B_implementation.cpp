@@ -390,7 +390,7 @@ void corriger(const Domaine_VEF& domaine_VEF, DoubleTab& champ_filtre_, Matrice&
 
       SolveurSys solveur;
       solveur.typer("Solv_GCP");
-      Precond p;
+      OWN_PTR(Precond_base) p;
       p.typer("SSOR");
       ref_cast(Solv_GCP,solveur.valeur()).set_precond(p);
       solveur.nommer("Pa_filter_solver");
