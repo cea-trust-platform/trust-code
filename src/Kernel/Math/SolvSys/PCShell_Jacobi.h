@@ -43,9 +43,9 @@ public :
     return diag_;
   }
 
-  PetscErrorCode setUpPC_(PC, Mat, Vec) override;
-  PetscErrorCode computePC_(PC, Vec, Vec) override;
-  PetscErrorCode destroyPC_(PC) override;
+  PetscErrorCode setUpPC(PC, Mat, Vec) override;
+  PetscErrorCode computePC(PC, Vec, Vec) override;
+  PetscErrorCode destroyPC(PC) override;
 #endif
 
 protected :

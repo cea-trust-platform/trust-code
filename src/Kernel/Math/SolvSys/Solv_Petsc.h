@@ -26,7 +26,8 @@
 #include <petscdm.h>
 #include <TRUSTTab.h>
 #endif
-#include <PCShell.h>
+#include <PCShell_base.h>
+#include <TRUST_Deriv.h>
 
 class Matrice_Morse_Sym;
 class Matrice_Morse;
@@ -38,7 +39,7 @@ extern bool gmres_right_unpreconditionned;
 /* Struct to associate Petsc preconditionner to user-provided preconditioner */
 typedef struct
 {
-  PCShell pc_shell;
+  OWN_PTR(PCShell_base) pc_shell;
 } PCstruct;
 
 

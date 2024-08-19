@@ -668,7 +668,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 30:
               {
                 pc="pcshell";
-                PCShell& pcs = pc_user_.pc_shell;
+                OWN_PTR(PCShell_base)& pcs = pc_user_.pc_shell;
                 is >> motlu;
                 pcs.typer(motlu);
                 is >> pcs.valeur();
@@ -1294,8 +1294,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                   PCstruct *pcstruct;
 
                   PCShellGetContext(pc_apply,(void**) &pcstruct);
-                  PCShell& pcs=pcstruct->pc_shell;
-                  return pcs.computePC(pc_apply,x,y);
+                  OWN_PTR(PCShell_base)& pcs=pcstruct->pc_shell;
+                  return pcs->computePC(pc_apply,x,y);
                 };
 
                 auto PCShellUserDestroy =  [](PC pc_apply)
@@ -1303,8 +1303,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                   PCstruct *pcstruct;
 
                   PCShellGetContext(pc_apply,(void**) &pcstruct);
-                  PCShell& pcs=pcstruct->pc_shell;
-                  return pcs.destroyPC(pc_apply);
+                  OWN_PTR(PCShell_base)& pcs=pcstruct->pc_shell;
+                  return pcs->destroyPC(pc_apply);
                 };
 
                 PCShellSetApply(PreconditionneurPetsc_, PCShellUserApply);
@@ -2005,8 +2005,8 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
       if (reuse_preconditioner()) Cout << "Matrix has changed but reusing previous preconditioner..." << finl;
       if (type_pc_ == "shell" && !reuse_preconditioner())
         {
-          PCShell& pcs=pc_user_.pc_shell;
-          pcs.setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
+          OWN_PTR(PCShell_base)& pcs=pc_user_.pc_shell;
+          pcs->setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
         }
       else
         KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE

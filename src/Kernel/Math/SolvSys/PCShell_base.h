@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,18 +26,14 @@
 class PCShell_base : public Objet_U
 {
   Declare_base(PCShell_base);
-
 public :
 #ifdef PETSCKSP_H
 
-  virtual PetscErrorCode setUpPC_(PC, Mat, Vec) = 0;
-  virtual PetscErrorCode computePC_(PC, Vec, Vec) = 0;
-  virtual PetscErrorCode destroyPC_(PC) = 0;
+  virtual PetscErrorCode setUpPC(PC, Mat, Vec) = 0;
+  virtual PetscErrorCode computePC(PC, Vec, Vec) = 0;
+  virtual PetscErrorCode destroyPC(PC) = 0;
 #endif
-
-protected :
-
-} ;
+};
 
 
 #endif /* PCShell_base_included */

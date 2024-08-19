@@ -28,7 +28,7 @@ Entree& PCShell_Jacobi::readOn(Entree& is )
 }
 
 #ifdef PETSCKSP_H
-PetscErrorCode PCShell_Jacobi::setUpPC_(PC pc, Mat pmat, Vec x)
+PetscErrorCode PCShell_Jacobi::setUpPC(PC pc, Mat pmat, Vec x)
 {
 
   if (diag_==nullptr)
@@ -38,13 +38,13 @@ PetscErrorCode PCShell_Jacobi::setUpPC_(PC pc, Mat pmat, Vec x)
   return 0;
 }
 
-PetscErrorCode PCShell_Jacobi::computePC_(PC pc, Vec x, Vec y)
+PetscErrorCode PCShell_Jacobi::computePC(PC pc, Vec x, Vec y)
 {
   VecPointwiseMult(y, x, diag_);
   return 0;
 }
 
-PetscErrorCode PCShell_Jacobi::destroyPC_(PC pc)
+PetscErrorCode PCShell_Jacobi::destroyPC(PC pc)
 {
   VecDestroy(&diag_);
   return 0;
