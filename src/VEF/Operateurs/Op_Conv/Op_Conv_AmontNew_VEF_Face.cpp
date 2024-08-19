@@ -88,7 +88,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const Domaine& domaine = domaine_VEF.domaine();
   const Elem_VEF& type_elem=domaine_VEF.type_elem();
-  const int nfa7 = type_elem.nb_facette();
+  const int nfa7 = type_elem->nb_facette();
   int nb_faces_tot=domaine_VEF.nb_faces_tot();
   int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const DoubleVect& volumes=domaine_VEF.volumes();
@@ -390,8 +390,8 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
       domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(), itypcl,porosite_face);
 
       //for (j=0; j<dimension; j++) vc(j) =  vs(j)/nfac ;
-      type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),
-                          itypcl,porosite_face);
+      type_elem->calcul_vc(face,vc,vs,vsom,vitesse(),
+                           itypcl,porosite_face);
 
       // Boucle sur les facettes du polyedre
 
@@ -415,7 +415,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
                 {
                   psc+= vsom(KEL(i+2,fa7),j)*cc[j];
                 }
-              type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
+              type_elem->calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
               // Boucle sur les facettes du polyedre
               psc /= nb_som_facette;
               num10 = face[KEL(0,fa7)];

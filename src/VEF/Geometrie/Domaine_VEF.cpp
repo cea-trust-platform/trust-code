@@ -282,12 +282,12 @@ void Domaine_VEF::discretiser()
     const int n_tot = nb_faces_tot();
     for (num_face = 0; num_face < n_tot; num_face++)
       {
-        type_elem_.normale(num_face, face_normales_, face_som, face_vois, elem_face, domaine_geom);
+        type_elem_->normale(num_face, face_normales_, face_som, face_vois, elem_face, domaine_geom);
       }
   }
 
   // Calcul de facette_normales_
-  type_elem_.creer_facette_normales(domaine_geom, facette_normales(), rang_elem_non_std());
+  type_elem_->creer_facette_normales(domaine_geom, facette_normales(), rang_elem_non_std());
 
   calculer_volumes_entrelaces();
   Cerr << "Informations of the Domaine VEF of the domain " << domaine().le_nom() << " : " << finl;

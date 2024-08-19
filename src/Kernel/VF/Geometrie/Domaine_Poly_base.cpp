@@ -289,9 +289,9 @@ void Domaine_Poly_base::discretiser()
     const int n_tot = nb_faces_tot();
     for (num_face = 0; num_face < n_tot; num_face++)
       {
-        type_elem_.normale(num_face,
-                           face_normales_,
-                           face_som, face_vois, elem_face, domaine_geom);
+        type_elem_->normale(num_face,
+                            face_normales_,
+                            face_som, face_vois, elem_face, domaine_geom);
       }
 
     DoubleTab old(face_normales_);

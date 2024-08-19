@@ -107,6 +107,7 @@ inline int Prisme_32_64<_SIZE_>::face_sommet(int face, int sommet) const
 template <typename _SIZE_>
 inline int Prisme_32_64<_SIZE_>::nb_faces(int i) const
 {
+  assert(i < nb_type_face());
   switch(i)
     {
     case 0:
@@ -130,6 +131,7 @@ inline int Prisme_32_64<_SIZE_>::nb_faces(int i) const
 template <typename _SIZE_>
 inline int Prisme_32_64<_SIZE_>::nb_som_face(int i) const
 {
+  assert(i < nb_type_face());
   switch(i)
     {
     case 0:

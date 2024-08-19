@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,31 +20,19 @@
 #include <Elem_poly_base.h>
 #include <TRUST_Deriv.h>
 
-class Champ_Inc_base;
-
 class Elem_poly: public DERIV(Elem_poly_base)
 {
   Declare_instanciable(Elem_poly);
-
 public:
 
   inline Elem_poly& operator =(const Elem_poly_base&);
   void typer(Nom);
-  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Domaine&) const;
-
 };
-
 
 inline Elem_poly& Elem_poly::operator =(const Elem_poly_base& elem_base)
 {
   DERIV(Elem_poly_base)::operator=(elem_base);
   return *this;
 }
-
-inline void Elem_poly::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Domaine& domaine_geom) const
-{
-  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, domaine_geom);
-}
-
 
 #endif
