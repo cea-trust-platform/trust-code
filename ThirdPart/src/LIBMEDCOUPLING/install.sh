@@ -60,9 +60,8 @@ build_and_test_mc()
        export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
-    ## Keeping a model of how to apply a patch:
-    #echo "Applying patch for  ..."
-    #(cd $src_dir; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/xxx.patch )
+    echo "Applying patch for const pointer in IKDEC ..."
+    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
     
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
