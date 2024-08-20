@@ -483,15 +483,9 @@ void Sonde_Int::postraiter(double un_temps)
               for(int i=0; i<n1; i++)
                 for(k=0; k<n2; k++)
                   {
-#if INT_is_64_ == 1 // ultimately should always be the second part!!
-                    val_max = std::max(labs(valeurs(i,k)),labs(valeurs_pe(i,k)));
-                    if(val_max==(labs(valeurs_pe(i,k))))
+                    val_max = std::max(std::abs(valeurs(i,k)),std::abs(valeurs_pe(i,k)));
+                    if(val_max==(std::abs(valeurs_pe(i,k))))
                       valeurs(i,k)=valeurs_pe(i,k);
-#else
-                    val_max = std::max(abs(valeurs(i,k)),abs(valeurs_pe(i,k)));
-                    if(val_max==(abs(valeurs_pe(i,k))))
-                      valeurs(i,k)=valeurs_pe(i,k);
-#endif
                   }
             }
 
