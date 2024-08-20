@@ -129,7 +129,7 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
     if (correlations_.count(mot.getString()))
       Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
     else
-      correlations_[mot.getString()].typer_lire(*this, mot, is);
+      Correlation_base::typer_lire_correlation(correlations_[mot.getString()], *this, mot, is);
   return is;
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,15 @@ Sortie& Correlation_base::printOn(Sortie& os) const { return os; }
 
 Entree& Correlation_base::readOn(Entree& is) { return is; }
 
-Entree& Correlation_base::lire(Entree& is) { return readOn(is); }
+void Correlation_base::typer_lire_correlation(Correlation& cor, const Probleme_base& pb, const Nom& type, Entree& is)
+{
+  /* on lit le nom de la correlation : si "type" est renseigne, alors */
+  Nom nom;
+  is >> nom;
+  cor.typer(type != "??" ? type + "_" + nom : nom);
+  cor->associer_pb(pb); // sinon rien va marcher
+  is >> cor.valeur(); // On lit :-)
+}
 
 void Correlation_base::associer_pb(const Probleme_base& pb)
 {

@@ -39,7 +39,7 @@ Entree& Source_Frottement_interfacial_base::readOn(Entree& is)
   if (!res_en_T) Process::exit("Source_Frottement_interfacial_base::readOn NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
 
   if (pbm.has_correlation("frottement_interfacial")) correlation_ = pbm.get_correlation("frottement_interfacial"); //correlation fournie par le bloc correlation
-  else correlation_.typer_lire(pbm, "frottement_interfacial", is); //sinon -> on la lit
+  else Correlation_base::typer_lire_correlation(correlation_, pbm, "frottement_interfacial", is); //sinon -> on la lit
   return is;
 }
 

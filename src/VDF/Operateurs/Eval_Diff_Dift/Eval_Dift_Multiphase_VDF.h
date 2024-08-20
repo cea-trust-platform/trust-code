@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Eval_Dift_Multiphase_VDF_included
 #define Eval_Dift_Multiphase_VDF_included
 
+#include <Correlation_base.h>
 #include <Eval_Dift_VDF.h>
-#include <Correlation.h>
 
 class Eval_Dift_Multiphase_VDF : public Eval_Dift_VDF
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,6 @@
 #define Op_Evanescence_Homogene_PolyMAC_P0_Face_included
 
 #include <Op_Evanescence_Homogene_Face_base.h>
-#include <Correlation.h>
 
 class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Op_Evanescence_Homogene_Face_base
 {

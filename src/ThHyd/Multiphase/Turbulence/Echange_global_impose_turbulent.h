@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,10 +17,9 @@
 #define Echange_global_impose_turbulent_included
 
 #include <Echange_global_impose.h>
+#include <Correlation_base.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
-
-class Correlation;
 
 /*! @brief Classe Echange_global_impose_turbulent
  *

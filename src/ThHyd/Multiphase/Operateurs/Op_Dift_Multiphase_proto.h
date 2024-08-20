@@ -18,7 +18,7 @@
 
 #include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
-#include <Correlation.h>
+#include <Correlation_base.h>
 #include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
 #include <vector>

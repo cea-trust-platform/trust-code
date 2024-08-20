@@ -27,7 +27,7 @@ Sortie& Frottement_interfacial_Rusche::printOn(Sortie& os) const
 
 Entree& Frottement_interfacial_Rusche::readOn(Entree& is)
 {
-  frottement_bulle_seule_.typer_lire(pb_.valeur(), "frottement_interfacial", is);
+  Correlation_base::typer_lire_correlation(frottement_bulle_seule_, pb_.valeur(), "frottement_interfacial", is);
 
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : nullptr;
 

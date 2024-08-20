@@ -27,7 +27,7 @@ Sortie& Op_Diff_Turbulent_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op
 Entree& Op_Diff_Turbulent_PolyMAC_P0_Face::readOn(Entree& is)
 {
   //lecture de la correlation de viscosite turbulente
-  corr_.typer_lire(equation().probleme(), "viscosite_turbulente", is);
+  Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "viscosite_turbulente", is);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
   ajout_champs_proto_face();
   return is;

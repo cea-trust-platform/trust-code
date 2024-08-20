@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 #define Source_Portance_interfaciale_base_included
 
 #include <Sources_Multiphase_base.h>
+#include <Correlation_base.h>
 #include <Champs_Fonc.h>
-#include <Correlation.h>
 
 /*! @brief Classe Source_Portance_interfaciale_base
  *

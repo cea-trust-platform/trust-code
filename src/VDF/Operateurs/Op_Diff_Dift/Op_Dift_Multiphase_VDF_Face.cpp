@@ -23,7 +23,7 @@ Sortie& Op_Dift_Multiphase_VDF_Face::printOn(Sortie& s ) const { return s << que
 Entree& Op_Dift_Multiphase_VDF_Face::readOn(Entree& is)
 {
   //lecture de la correlation de viscosite turbulente
-  corr_.typer_lire(equation().probleme(), "viscosite_turbulente", is);
+  Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "viscosite_turbulente", is);
   associer_corr_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(corr_);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
   ajout_champs_proto_face();

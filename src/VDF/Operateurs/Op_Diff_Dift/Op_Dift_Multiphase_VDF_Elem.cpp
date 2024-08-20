@@ -23,7 +23,7 @@ Sortie& Op_Dift_Multiphase_VDF_Elem::printOn(Sortie& s ) const { return s << que
 Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
 {
   //lecture de la correlation de diffusivite turbulente
-  corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
+  Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "transport_turbulent", is);
   associer_corr_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(corr_);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
   ajout_champs_proto_elem();

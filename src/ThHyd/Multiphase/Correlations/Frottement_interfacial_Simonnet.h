@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,12 +15,11 @@
 
 #ifndef Frottement_interfacial_Simonnet_included
 #define Frottement_interfacial_Simonnet_included
+
 #include <Frottement_interfacial_base.h>
-#include <Correlation.h>
+#include <Correlation_base.h>
 
 /*! @brief classe Frottement_interfacial_Simonnet coefficients de frottement interfacial d'un ecoulement a bulles en prennant en compte la densite
- *
- *
  *
  */
 class Frottement_interfacial_Simonnet : public Frottement_interfacial_base
@@ -38,4 +37,4 @@ protected:
   Correlation frottement_bulle_seule_ ;
 };
 
-#endif
+#endif /* Frottement_interfacial_Simonnet_included */

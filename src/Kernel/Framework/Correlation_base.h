@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,19 +18,25 @@
 
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <Param.h>
 
 class Probleme_base;
 
+// plus fort que les compilos :)
+class Correlation_base;
+using Correlation = OWN_PTR(Correlation_base);
+
 class Correlation_base : public Objet_U, public Champs_compris_interface
 {
   Declare_base(Correlation_base);
 public:
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
-  void associer_pb(const Probleme_base& pb);
   virtual void mettre_a_jour(double temps) { }
   virtual void completer() { }
+  void associer_pb(const Probleme_base&);
+
+  static void typer_lire_correlation(Correlation&, const Probleme_base&, const Nom&, Entree&);
 
   //Methodes de l interface des champs postraitables
   void creer_champ(const Motcle& motlu) override {};

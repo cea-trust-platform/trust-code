@@ -18,9 +18,9 @@
 
 #include <Energie_Multiphase.h>
 #include <Masse_Multiphase.h>
+#include <Correlation_base.h>
 #include <Pb_Fluide_base.h>
 #include <QDM_Multiphase.h>
-#include <Correlation.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <Interprete.h>

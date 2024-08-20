@@ -24,7 +24,7 @@ Sortie& Op_Diff_Turbulent_PolyMAC_P0_Elem::printOn(Sortie& os) const { return Op
 Entree& Op_Diff_Turbulent_PolyMAC_P0_Elem::readOn(Entree& is)
 {
   //lecture de la correlation de diffusivite turbulente
-  corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
+  Correlation_base::typer_lire_correlation(corr_, equation().probleme(), "transport_turbulent", is);
   associer_proto(ref_cast(Pb_Multiphase, equation().probleme()), champs_compris_);
   ajout_champs_proto_elem();
   return is;

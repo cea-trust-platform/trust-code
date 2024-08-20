@@ -19,8 +19,8 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Modele_turbulence_hyd_base.h>
 #include <Iterateur_VDF_base.h>
+#include <Correlation_base.h>
 #include <Champ_P0_VDF.h>
-#include <Correlation.h>
 #include <TRUST_Deriv.h>
 #include <type_traits>
 

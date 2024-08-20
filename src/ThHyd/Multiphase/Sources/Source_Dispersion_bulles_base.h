@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Source_Dispersion_bulles_base_included
 
 #include <Sources_Multiphase_base.h>
-#include <Correlation.h>
+#include <Correlation_base.h>
 #include <TRUST_Ref.h>
 
 /*! @brief Classe Source_Dispersion_bulles_base

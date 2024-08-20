@@ -44,7 +44,7 @@ Entree& Source_Portance_interfaciale_base::readOn(Entree& is)
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
   if (pbm->has_correlation("Portance_interfaciale")) correlation_ = pbm->get_correlation("Portance_interfaciale"); //correlation fournie par le bloc correlation
-  else correlation_.typer_lire((*pbm), "Portance_interfaciale", is); //sinon -> on la lit
+  else Correlation_base::typer_lire_correlation(correlation_, (*pbm), "Portance_interfaciale", is); //sinon -> on la lit
 
   pbm->creer_champ("vorticite"); // Besoin de vorticite
 

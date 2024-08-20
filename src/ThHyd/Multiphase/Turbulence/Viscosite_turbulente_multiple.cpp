@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ Entree& Viscosite_turbulente_multiple::readOn(Entree& is)
 
   for (is >> mot; mot != "}"; is >> mot)
     if (viscs_turbs.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-    else viscs_turbs[mot.getString()].typer_lire(pb_.valeur(), "viscosite_turbulente", is);
+    else Correlation_base::typer_lire_correlation(viscs_turbs[mot.getString()], pb_.valeur(), "viscosite_turbulente", is);
   return is;
 }
 
