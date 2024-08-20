@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces(), periodicite = (type_cl(la_cl) == periodique ? 1 : 0);
       for (face = ndeb; face < nfin; face++)
         {
@@ -175,9 +175,9 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
       op_base->ouvrir_fichier_partage(Flux_face, "", impr_bord);
       for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
           if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
             {

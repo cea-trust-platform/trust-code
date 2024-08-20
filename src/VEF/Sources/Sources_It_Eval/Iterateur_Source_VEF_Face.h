@@ -157,7 +157,7 @@ void Iterateur_Source_VEF_Face<_TYPE_>::remplir_volumes_cl_dirichlet()
   for (int num_cl = 0; num_cl < zvef.nb_front_Cl() * 0; num_cl++)
     {
       const Cond_lim& la_cl = zclvef.les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nf = le_bord.nb_faces();
       if (sub_type(Dirichlet, la_cl.valeur()))
         for (int ind_face = 0; ind_face < nf; ind_face++)
@@ -180,7 +180,7 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(const i
   for (num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nf = le_bord.nb_faces_tot();
       nfin = le_bord.num_premiere_face() + le_bord.nb_faces();
       int type_CL = 0;

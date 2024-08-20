@@ -157,7 +157,7 @@ int tester_compatibilite_hydr_thermique(const Domaine_Cl_dis& domaine_Cl_hydr, c
 int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, int& num_Cl)
 {
   Cerr << "The hydraulic and thermal boundary conditions are not consitent on border:" << finl;
-  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_th.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_th->frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_th->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
@@ -264,7 +264,7 @@ int tester_compatibilite_hydr_concentration(const Domaine_Cl_dis& domaine_Cl_hyd
 int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, int& num_Cl)
 {
   Cerr << "The hydraulic and concentration boundary conditions are not consitent on border:" << finl;
-  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co->frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_co->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;
@@ -385,7 +385,7 @@ int tester_compatibilite_hydr_fraction_massique(const Domaine_Cl_dis& domaine_Cl
 int message_erreur_fraction_massique(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_frac_mass, int& num_Cl)
 {
   Cerr << "The hydraulic and massic fraction boundary conditions are not consitent on border:" << finl;
-  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_frac_mass.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_frac_mass->frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr->que_suis_je() << " and " << la_cl_frac_mass->que_suis_je() << " !! " << finl;
   Process::exit();
   return 1;

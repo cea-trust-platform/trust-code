@@ -58,7 +58,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
       for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
           const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
             {
@@ -112,7 +112,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
       for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
           const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur())||sub_type(Symetrie,la_cl.valeur())||sub_type(Periodique,la_cl.valeur()))
             {

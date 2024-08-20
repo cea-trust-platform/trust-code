@@ -138,7 +138,7 @@ void Terme_Source_Canal_perio::completer()
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           if ( bord_periodique_ == le_bord.le_nom() ) // Le bord periodique est specifie
             {
               if (perio.est_periodique_selon_un_axe())
@@ -290,7 +290,7 @@ double Terme_Source_Canal_perio::compute_heat_flux() const
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           // Loop on boundary faces with imposed flux condition (Neumann)
-          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           for (int num_face=ndeb; num_face<nfin; num_face++)

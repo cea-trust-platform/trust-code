@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats(void)
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           if (le_bord.nb_faces())
             {
               chmoy_faceperio.resize(le_bord.nb_faces(),Objet_U::dimension);
@@ -98,7 +98,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(doubl
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
           for (int num_face=num1; num_face<num2; num_face++)
@@ -122,7 +122,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(doubl
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           if (sub_type(Periodique,la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
               int nb_faces_bord = mp_sum(le_bord.nb_faces());

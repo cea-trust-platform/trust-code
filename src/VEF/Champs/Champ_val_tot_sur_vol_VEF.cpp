@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,7 +134,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Domaine_dis_base& 
           const Cond_lim& la_cl = zclvef.les_conditions_limites(n_bord);
           if (sub_type(Dirichlet,la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int face;
               int num1 = 0;
               int num2 = le_bord.nb_faces();
@@ -165,7 +165,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Domaine_dis_base& 
       const Cond_lim& la_cl = zclvef.les_conditions_limites(n_bord);
       if (sub_type(Dirichlet,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int face;
           int num1 = 0;
           int num2 = le_bord.nb_faces();

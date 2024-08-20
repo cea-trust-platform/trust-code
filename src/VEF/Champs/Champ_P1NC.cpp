@@ -468,7 +468,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
 
       if( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl->que_suis_je() == "Frontiere_ouverte_vitesse_imposee_ALE")
         {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
           ToDo_Kokkos("critrical cause velocity copy");
@@ -628,8 +628,8 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   for (int n_bord = 0; n_bord < domaine_vef().nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Frontiere_dis_base& la_fr = la_cl.frontiere_dis();
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Frontiere_dis_base& la_fr = la_cl->frontiere_dis();
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       double h_moy = 0.;
@@ -844,7 +844,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& 
       const Cond_lim& la_cl = les_cl[num_cl];
       if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl->que_suis_je() == "Frontiere_ouverte_vitesse_imposee_ALE")
         {
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = la_front_dis.num_premiere_face();
           int nfin = ndeb + la_front_dis.nb_faces();
           int dim = Objet_U::dimension;

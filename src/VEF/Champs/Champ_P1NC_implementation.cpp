@@ -167,7 +167,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
         {
           //for n_bord
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int face;
           int num1 = 0;
           int num2 = le_bord.nb_faces_tot();
@@ -196,7 +196,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
         {
           //for n_bord
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int face;
           int num1 = 0;
           int num2 = le_bord.nb_faces_tot();
@@ -272,7 +272,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
     {
       //for n_bord
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord = le_bord.nb_faces();
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
@@ -357,7 +357,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
     {
       //for n_bord
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
 
@@ -390,7 +390,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
     {
       //for n_bord
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
 
@@ -794,7 +794,7 @@ valeur_P1_H1(const Champ_P1NC& cha,
         {
           //for n_bord
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
 
@@ -852,7 +852,7 @@ valeur_P1_H1(const Champ_P1NC& cha,
         {
           //for n_bord
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
 
@@ -982,7 +982,7 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
                     {
                       //Boucle sur les bords
                       const Cond_lim& la_cl = les_cl[num_cl];
-                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
                       int ndeb = 0;
                       int nfin = la_front_dis.nb_faces_tot();
 
@@ -1145,7 +1145,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
     for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
       {
         const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
         int nb_faces_tot_bord=le_bord.nb_faces_tot();
         int nb_faces_bord = le_bord.nb_faces();
         int num1 = 0;
@@ -1236,7 +1236,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
   for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot() ;
 

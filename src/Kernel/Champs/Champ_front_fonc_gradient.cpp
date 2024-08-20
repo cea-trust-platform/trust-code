@@ -42,7 +42,7 @@ const Cond_lim_base& Champ_front_fonc_gradient::condition_limite(const Nom& nom_
   int n=zcl.nb_cond_lim();
   for(int i=0; i<n ; i++)
     {
-      const Frontiere_dis_base& fr_dis=zcl.les_conditions_limites(i).frontiere_dis();
+      const Frontiere_dis_base& fr_dis=zcl.les_conditions_limites(i)->frontiere_dis();
       if (fr_dis.le_nom() == nom_bord)
         return zcl.les_conditions_limites(i);
     }

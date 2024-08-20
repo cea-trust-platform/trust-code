@@ -415,7 +415,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       CIntArrView num_face = le_bord.num_face().view_ro();
       int nb_faces_bord = le_bord.nb_faces();
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
@@ -577,7 +577,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
       if (sub_type(Periodique, la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           int nb_faces_bord = le_bord.nb_faces();
           for (int ind_face = 0; ind_face < nb_faces_bord; ind_face++)
             {
@@ -629,7 +629,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
           const Cond_lim& la_cl = itr;
           if (sub_type(Neumann,la_cl.valeur()) || sub_type(Neumann_val_ext, la_cl.valeur()))
             {
-              const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
               int nb_faces = la_front_dis.nb_faces_tot();
               int nsf = 0;
               if (nb_faces != 0)
@@ -911,7 +911,7 @@ int Op_Div_VEFP1B_Elem::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_vef->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       int perio = (sub_type(Periodique,la_cl.valeur()) ? 1 : 0);
@@ -967,9 +967,9 @@ int Op_Div_VEFP1B_Elem::impr(Sortie& os) const
       ouvrir_fichier_partage(Flux_face, "", impr_bord);
       for (int num_cl = 0; num_cl < nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl_vef->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl_vef->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl_vef->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (le_dom_vef->domaine().bords_a_imprimer().contient(la_fr.le_nom()))

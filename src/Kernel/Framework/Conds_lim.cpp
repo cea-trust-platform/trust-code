@@ -47,6 +47,6 @@ void Conds_lim::completer(const Domaine_dis& z)
 
   for (auto& itr : *this) itr->fixer_nb_valeurs_temporelles(nb_cases);
 
-  Domaine& dom=(*this)[0].frontiere_dis().frontiere().domaine();
+  Domaine& dom=(*this)[0]->frontiere_dis().frontiere().domaine();
   dom.construire_renum_som_perio(*this, z);
 }

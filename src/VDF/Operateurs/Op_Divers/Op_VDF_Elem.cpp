@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& 
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
           const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
           int ind_face_global;
           IntVect fait(nfaces);
@@ -115,7 +115,7 @@ void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& 
       if (sub_type(Periodique,la_cl.valeur()) )
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
           const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
           IntVect fait(nfaces);
           fait = 0;

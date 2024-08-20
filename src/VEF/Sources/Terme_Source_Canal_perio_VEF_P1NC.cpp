@@ -126,7 +126,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
       const Cond_lim& la_cl = domaine_Cl_dis.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           if (bord_periodique_ == le_bord.le_nom())
             {
               const Champ_Inc_base& velocity = (sub_type(Convection_Diffusion_std,equation()) ? ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante() : equation().inconnue());

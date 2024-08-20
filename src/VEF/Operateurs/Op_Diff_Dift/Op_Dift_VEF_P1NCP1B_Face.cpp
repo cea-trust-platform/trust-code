@@ -189,7 +189,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
       {
         if (!sub_type(Periodique, la_cl.valeur()))
           {
-            const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+            const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
             int num1 = le_bord.num_premiere_face();
             int num2 = num1 + le_bord.nb_faces();
             for (face = num1; face < num2; face++)
@@ -276,7 +276,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         int num1 = le_bord.num_premiere_face();
         int num2 = num1 + le_bord.nb_faces();
         if (sub_type(Periodique, la_cl.valeur()))
@@ -391,7 +391,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         int num1 = le_bord.num_premiere_face();
         int num2 = num1 + le_bord.nb_faces();
         if (sub_type(Neumann_sortie_libre, la_cl.valeur()))

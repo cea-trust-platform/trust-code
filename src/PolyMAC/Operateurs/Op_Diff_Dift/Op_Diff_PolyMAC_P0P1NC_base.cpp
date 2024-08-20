@@ -100,7 +100,7 @@ int Op_Diff_PolyMAC_P0P1NC_base::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (face = ndeb; face < nfin; face++)
@@ -180,9 +180,9 @@ int Op_Diff_PolyMAC_P0P1NC_base::impr(Sortie& os) const
       ouvrir_fichier_partage(Flux_face, "", impr_bord);
       for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))

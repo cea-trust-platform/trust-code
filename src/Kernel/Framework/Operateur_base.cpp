@@ -98,7 +98,7 @@ void Operateur_base::completer()
   const Conds_lim& les_cl = zcl->les_conditions_limites();
   for (auto& itr : les_cl)
     {
-      const Frontiere_dis_base& la_fr = itr.frontiere_dis();
+      const Frontiere_dis_base& la_fr = itr->frontiere_dis();
       col_width_ = std::max(col_width_, la_fr.le_nom().longueur());
     }
   int w_suffix = 3; // pour ajout _Mx (moment)
@@ -357,7 +357,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       // Time cl1_compo1  cl1_compo2 cl2 compo1 cl2_compo2 ...
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
-          const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
+          const Frontiere_dis_base& la_fr = les_cls[num_cl]->frontiere_dis();
           if (type!="sum" || eqn.domaine_dis()->domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
               Nom ch = la_fr.le_nom();
@@ -490,8 +490,8 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
           for (int n_bord=0; n_bord<nb_front; n_bord++)
             {
               const Cond_lim& la_cl = zcl_dis.les_conditions_limites(n_bord);
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-              if (surfacique) la_cl.frontiere_dis().frontiere().faces().calculer_surfaces(aire);
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
+              if (surfacique) la_cl->frontiere_dis().frontiere().faces().calculer_surfaces(aire);
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces();
 

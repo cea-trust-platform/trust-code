@@ -69,7 +69,7 @@ inline void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Domaine_EF&
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int nfin =le_bord.nb_faces_tot();
           for (int ind_face=0; ind_face<nfin; ind_face++)
             {

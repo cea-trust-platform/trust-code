@@ -201,7 +201,7 @@ void Op_Diff_VEF_Face_Stab::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1 = 0;
       num2 = le_bord.nb_faces();
@@ -695,7 +695,7 @@ void Op_Diff_VEF_Face_Stab::calculer_min(const DoubleTab& inconnueTab, int& dim,
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1 = 0;
       num2 = le_bord.nb_faces_tot();
@@ -783,7 +783,7 @@ void Op_Diff_VEF_Face_Stab::calculer_max(const DoubleTab& inconnueTab, int& dim,
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1 = 0;
       num2 = le_bord.nb_faces_tot();
@@ -832,7 +832,7 @@ void Op_Diff_VEF_Face_Stab::completer()
     for (int n_bord=0; n_bord<nb_bord; n_bord++)
       {
         const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
         int nb_faces_bord_tot=le_bord.nb_faces_tot();
         int face=-1;
 
@@ -893,7 +893,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_contribution(const DoubleTab& transporte, Ma
       for (int n_bord=0; n_bord<nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
 
@@ -1066,7 +1066,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_contribution_multi_scalaire(const DoubleTab&
       for (int n_bord=0; n_bord<nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
           if (sub_type(Periodique,la_cl.valeur()))

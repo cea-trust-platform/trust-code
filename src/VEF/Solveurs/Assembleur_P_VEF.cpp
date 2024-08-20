@@ -250,7 +250,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int nb_faces_bord_tot = le_bord.nb_faces_tot();
           IntVect fait(nb_faces_bord_tot);
           fait = 0;
@@ -435,7 +435,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
       // contribution a la matrice de pression.
 
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {

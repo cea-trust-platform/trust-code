@@ -90,7 +90,7 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
         {
 
           const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
 
@@ -133,7 +133,7 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
         {
 
           const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
 

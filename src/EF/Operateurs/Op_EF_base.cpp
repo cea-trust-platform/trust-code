@@ -271,7 +271,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
   for (const auto& itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl.valeur()))
         {
@@ -443,9 +443,9 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
-      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
       const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -503,9 +503,9 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   // Impression sur chaque face si demande
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
       const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       // Impression sur chaque face

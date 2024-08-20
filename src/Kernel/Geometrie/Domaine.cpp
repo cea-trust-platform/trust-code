@@ -2039,7 +2039,7 @@ void Domaine_32_64<int>::construire_renum_som_perio(const Conds_lim& les_cl, con
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       if (sub_type(Periodique, les_cl[n_bord].valeur()))
-        bords_perio.add(les_cl[n_bord].frontiere_dis().frontiere().le_nom());
+        bords_perio.add(les_cl[n_bord]->frontiere_dis().frontiere().le_nom());
     }
 
   Reordonner_faces_periodiques::renum_som_perio(*this, bords_perio, renum_som_perio_,

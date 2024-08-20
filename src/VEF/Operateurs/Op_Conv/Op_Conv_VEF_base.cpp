@@ -82,7 +82,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           if (!sub_type(Dirichlet, la_cl.valeur()) && !sub_type(Dirichlet_homogene, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces();
               for (int num_face = ndeb; num_face < nfin; num_face++)
@@ -180,7 +180,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
                 { /* Do nothing */}
               else
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
                   int ndeb = le_bord.num_premiere_face();
                   int nfin = ndeb + le_bord.nb_faces();
                   for (int num_face=ndeb; num_face<nfin; num_face++)
@@ -295,7 +295,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       for (int num_face=ndeb; num_face<nfin; num_face++)
@@ -344,7 +344,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int nb_faces_bord=le_bord.nb_faces();
           for (int ind_face=0; ind_face<nb_faces_bord; ind_face++)
             {

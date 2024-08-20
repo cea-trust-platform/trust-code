@@ -1625,7 +1625,7 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
   for (int ij=0; ij<nb_cond_lim; ij++)
     {
       const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij).frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij)->frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl_base))
         {
@@ -1685,7 +1685,7 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
   for (int ij=0; ij<nb_cond_lim; ij++)
     {
       const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij).frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij)->frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl_base))
         {

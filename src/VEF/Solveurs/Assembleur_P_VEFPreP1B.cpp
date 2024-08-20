@@ -720,7 +720,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
       if ((sub_type(Dirichlet, la_cl.valeur()))

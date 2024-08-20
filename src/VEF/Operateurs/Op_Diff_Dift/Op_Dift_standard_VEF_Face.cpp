@@ -143,7 +143,7 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif, const DoubleTa
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       const int nb_faces_b = le_bord.nb_faces();
       const int num1 = le_bord.num_premiere_face(), num2 = num1 + nb_faces_b;
 

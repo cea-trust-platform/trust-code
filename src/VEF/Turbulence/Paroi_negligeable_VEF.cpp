@@ -56,7 +56,7 @@ int Paroi_negligeable_VEF::init_lois_paroi()
   for (num_cl = 0; num_cl < les_cl.size(); num_cl++)
     {
       const Cond_lim& la_cl = les_cl[num_cl];
-      const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
       int num1, verif;
@@ -145,7 +145,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
 
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               ToDo_Kokkos("To avoid an expensive copy D2H of array velocity.");
@@ -247,7 +247,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
           const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces();
               int dim = Objet_U::dimension;

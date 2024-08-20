@@ -102,7 +102,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
           if (sub_type(Periodique,la_cl.valeur()))
             {
               //      const Periodique& la_cl_perio = (Periodique&) la_cl.valeur();
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
               for (face=num1; face<num2; face++)
@@ -182,7 +182,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
             {
               const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
 
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
               for (face=num1; face<num2; face++)

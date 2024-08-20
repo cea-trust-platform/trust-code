@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@ int Op_Div_EF::impr(Sortie& os) const
     {
       flux_bord=0;
       const Cond_lim& la_cl = la_zcl_EF->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -163,9 +163,9 @@ int Op_Div_EF::impr(Sortie& os) const
 
   for (int num_cl=0; num_cl<le_dom_EF->nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = la_zcl_EF->les_conditions_limites(num_cl).frontiere_dis();
+      const Frontiere_dis_base& la_fr = la_zcl_EF->les_conditions_limites(num_cl)->frontiere_dis();
       const Cond_lim& la_cl = la_zcl_EF->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       if (le_dom_EF->domaine().bords_a_imprimer().contient(la_fr.le_nom()))

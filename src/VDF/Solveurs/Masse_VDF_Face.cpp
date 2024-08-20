@@ -68,7 +68,7 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
 
           // pour chaque Condition Limite on regarde son type
           const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           const int ndeb = la_front_dis.num_premiere_face();
           const int nfin = ndeb + la_front_dis.nb_faces();
 

@@ -59,7 +59,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
     for (k=0; k<N; k++)
       {
         const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
         const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
         if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite

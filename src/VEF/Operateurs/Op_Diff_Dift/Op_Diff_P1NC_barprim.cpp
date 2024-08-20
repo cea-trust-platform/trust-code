@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,7 +105,7 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad, const Doub
     for (int n_bord = 0; n_bord < nb_bords; n_bord++)
       {
         const Cond_lim& la_cl = la_zcl_vef->les_conditions_limites(n_bord);
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         //Cerr << "la_cl = " << la_cl.valeur() << finl;
         int num1 = le_bord.num_premiere_face();
         int num2 = num1 + le_bord.nb_faces();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -955,7 +955,7 @@ void Domaine_VDF::creer_elements_fictifs(const Domaine_Cl_dis_base& zcldisbase)
       for (int n_bord=0; n_bord<nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           if ( (sub_type(Dirichlet_entree_fluide,la_cl.valeur())) ||
                (sub_type(Neumann_sortie_libre,la_cl.valeur())) )
             {

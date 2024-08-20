@@ -1458,7 +1458,7 @@ void Sonde::init_bords()
               for (int icl=0; icl<zcl->nb_cond_lim(); icl++)
                 {
                   const Cond_lim& cl = zcl->les_conditions_limites(icl);
-                  const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
+                  const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
                   const int ndeb = le_bord.num_premiere_face();
                   const int nfin = ndeb + le_bord.nb_faces();
                   for (int i=ndeb; i<nfin; i++)
@@ -1537,7 +1537,7 @@ void Sonde::mettre_a_jour_bords()
               int face = faces_bords_[iface];
               int icl = rang_cl_[iface];
               const Cond_lim& cl = zcl->les_conditions_limites(icl);
-              const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
               const int ndeb = le_bord.num_premiere_face();
               DoubleVect valcl;
               cl->champ_front()->valeurs_face(face-ndeb,valcl);

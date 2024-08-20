@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ void Source_Fluide_Dilatable_VDF_Proto::ajouter_impl(const DoubleVect& g,const d
   for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
     {
       const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur())) { /* Do nothing */ }

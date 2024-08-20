@@ -89,7 +89,7 @@ int Paroi_scal_hyd_base_VEF::init_lois_paroi()
       for (int n_bord = 0; n_bord < nb_front; n_bord++)
         {
           const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
           int size = le_bord.nb_faces();
           DoubleVect& dist_equiv = equivalent_distance_[n_bord];
@@ -169,7 +169,7 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
           const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
           const Domaine_Cl_VEF& domaine_Cl_VEF_th = ref_cast(Domaine_Cl_VEF, eqn.probleme().equation(1).domaine_Cl_dis().valeur());
           const Cond_lim& la_cl_th = domaine_Cl_VEF_th.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
           if (je_suis_maitre())
             {

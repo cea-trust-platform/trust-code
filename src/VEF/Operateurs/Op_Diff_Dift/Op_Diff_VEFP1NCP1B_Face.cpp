@@ -186,7 +186,7 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis& domaine_dis,
         {
           Cerr << "\nBoundary conditions of 'Symetrie' type with P1NCP1B diffusion operator are only allowed for Conduction equation!" << finl;
           Cerr << "Here you use a P1NCP1B diffusion operator in a '" << equation().que_suis_je() << "' equation where" << finl;
-          Cerr << "boundary condition number " << i << ", on boundary '" << la_cl.frontiere_dis().le_nom() << "' has been assigned to: '" << la_cl->que_suis_je() << "'." << finl;
+          Cerr << "boundary condition number " << i << ", on boundary '" << la_cl->frontiere_dis().le_nom() << "' has been assigned to: '" << la_cl->que_suis_je() << "'." << finl;
           Process::exit();
         }
     }
@@ -269,7 +269,7 @@ double Op_Diff_VEFP1NCP1B_Face::calculer_dt_stab() const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces();
@@ -348,7 +348,7 @@ calculer_dt_stab_elem(const DoubleTab& nu, DoubleTab& coeffOperateur) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces();
@@ -532,7 +532,7 @@ calculer_gradient_som(const DoubleVect& inconnue) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -722,7 +722,7 @@ corriger_div_pour_Cl(const DoubleVect& inconnue,const DoubleTab& nu,
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       //Reinitialisation de num1 et num2
       num1 = 0;
@@ -888,7 +888,7 @@ calculer_divergence_som(DoubleVect& div) const
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       num1 = 0;
       num2 = le_bord.nb_faces();
 
@@ -1124,7 +1124,7 @@ void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_elem(const DoubleVect& inconnu
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces();
@@ -1224,7 +1224,7 @@ void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_som(const DoubleVect& inconnue
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces();
@@ -1339,7 +1339,7 @@ ajouter_contribution_elem(const DoubleTab& inconnue,const DoubleVect& porosite_f
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
 
@@ -1513,7 +1513,7 @@ ajouter_contribution_som(const DoubleTab& inconnue,const DoubleVect& porosite_fa
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       num1=0;
       num2=le_bord.nb_faces_tot();
 
@@ -1546,7 +1546,7 @@ ajouter_contribution_som(const DoubleTab& inconnue,const DoubleVect& porosite_fa
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       num1=0;
       num2=le_bord.nb_faces();
 
@@ -2335,7 +2335,7 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -2390,7 +2390,7 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -2478,7 +2478,7 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -3151,7 +3151,7 @@ void Op_Diff_VEFP1NCP1B_Face::isFaceOfSymetry(ArrOfBit& is_symetry,int& nnz) con
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -3504,7 +3504,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces_tot();
@@ -3893,7 +3893,7 @@ void Op_Diff_VEFP1NCP1B_Face::corriger_Cl_test(DoubleTab& resu) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       num1=0;
       num2=le_bord.nb_faces();

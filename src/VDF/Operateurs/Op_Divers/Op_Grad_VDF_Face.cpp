@@ -55,7 +55,7 @@ void Op_Grad_VDF_Face::calculer_flux_bords() const
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -95,7 +95,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int impr_boundary = (zvdf.domaine().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -194,7 +194,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
           if (zvdf.domaine().bords_a_imprimer().contient(le_bord.le_nom()))
@@ -263,7 +263,7 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
   for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )

@@ -152,7 +152,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
     {
       /* pour chaque Condition Limite on regarde son type */
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       /* Test en bidim axi */
@@ -424,7 +424,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
     {
       /* pour chaque Condition Limite on regarde son type */
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       /* Test en bidim axi */
@@ -662,7 +662,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       /* Test en bidim axi */
@@ -1042,7 +1042,7 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
   for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       int periodicite = (type_cl(la_cl)==periodique?1:0);
@@ -1092,9 +1092,9 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
       op_base->ouvrir_fichier_partage(Flux_face,"",impr_bord);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (madomaine.bords_a_imprimer().contient(la_fr.le_nom()))
@@ -1151,7 +1151,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
     {
       /* pour chaque Condition Limite on regarde son type */
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))
@@ -1390,7 +1390,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::contribuer_au_seco
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))
@@ -1715,7 +1715,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
     {
       /* pour chaque Condition Limite on regarde son type */
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))
@@ -1927,7 +1927,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))
@@ -2308,7 +2308,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
     {
       /* pour chaque Condition Limite on regarde son type */
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))

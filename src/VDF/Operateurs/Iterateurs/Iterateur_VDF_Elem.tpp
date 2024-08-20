@@ -26,7 +26,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& 
 {
   const int ncomp = inco.line_size();
   ArrOfDouble aii(ncomp), ajj(ncomp);
-  const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+  const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
   const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
   if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
     {
@@ -80,7 +80,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
   for (int num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
       /* Test en bidim axi */
       if (bidim_axi && !sub_type(Symetrie, la_cl.valeur()))

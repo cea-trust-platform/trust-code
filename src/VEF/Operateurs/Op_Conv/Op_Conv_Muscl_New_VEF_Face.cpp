@@ -839,7 +839,7 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num2=le_bord.nb_faces_tot();
 
           if (sub_type(Periodique,la_cl.valeur()))
@@ -895,7 +895,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num2 = le_bord.nb_faces();//il ne faut boucler que sur les faces reelles ici
 
       if ( sub_type(Dirichlet_homogene,la_cl.valeur()) )
@@ -1100,7 +1100,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num2=le_bord.nb_faces();
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
@@ -1532,7 +1532,7 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num2=le_bord.nb_faces();
 
       if (sub_type(Periodique,la_cl.valeur()))
@@ -1622,7 +1622,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int nb_faces_tot=le_bord.nb_faces_tot();
 
           if ( (sub_type(Dirichlet,la_cl.valeur()))
@@ -1658,7 +1658,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_tot=le_bord.nb_faces_tot();
 
       if ( (sub_type(Dirichlet,la_cl.valeur()))

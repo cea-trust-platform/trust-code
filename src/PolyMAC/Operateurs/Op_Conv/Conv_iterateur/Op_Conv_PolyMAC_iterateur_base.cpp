@@ -67,7 +67,7 @@ double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
       if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
 
         {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           num1 = le_bord.num_premiere_face();
           num2 = num1 + le_bord.nb_faces();
           for (face = num1; face < num2; face++)
@@ -147,7 +147,7 @@ void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage, 
           if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
 
             {
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               num1 = le_bord.num_premiere_face();
               num2 = num1 + le_bord.nb_faces();
               for (face = num1; face < num2; face++)

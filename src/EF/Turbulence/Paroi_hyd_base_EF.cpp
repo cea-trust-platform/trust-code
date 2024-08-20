@@ -70,7 +70,7 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
               const Cond_lim& la_cl = my_eqn.domaine_Cl_dis()->les_conditions_limites(n_bord);
               if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
                 {
-                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
                   int ndeb = le_bord.num_premiere_face();
                   int nfin = ndeb + le_bord.nb_faces();
                   for (int num_face = ndeb; num_face < nfin; num_face++)
@@ -145,7 +145,7 @@ void Paroi_hyd_base_EF::imprimer_premiere_ligne_ustar(int boundaries_, const LIS
   for (int n_bord = 0; n_bord < domaine_EF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-      const Nom& nom_bord = la_cl.frontiere_dis().le_nom();
+      const Nom& nom_bord = la_cl->frontiere_dis().le_nom();
       if (je_suis_maitre() && (boundaries_list.contient(nom_bord) || boundaries_list.size() == 0))
         {
           if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()))
@@ -202,7 +202,7 @@ void Paroi_hyd_base_EF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, co
       const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
           if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
@@ -235,7 +235,7 @@ void Paroi_hyd_base_EF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, co
       const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
             {
               if (je_suis_maitre())

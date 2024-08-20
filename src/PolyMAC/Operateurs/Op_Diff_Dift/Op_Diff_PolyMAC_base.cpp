@@ -186,7 +186,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (face = ndeb; face < nfin; face++)
@@ -266,9 +266,9 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
       ouvrir_fichier_partage(Flux_face, "", impr_bord);
       for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
@@ -386,8 +386,8 @@ void Op_Diff_PolyMAC_base::update_nu() const
 
   for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
     {
-      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : domaine.premiere_face_int(), num =
-                  i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces() : domaine.nb_faces() - domaine.premiere_face_int();
+      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i]->frontiere_dis()).num_premiere_face() : domaine.premiere_face_int(), num =
+                  i < cls.size() ? ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces() : domaine.nb_faces() - domaine.premiere_face_int();
       for (f = deb; f < deb + num; f++) //nu par composante a chaque face
         {
           if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi

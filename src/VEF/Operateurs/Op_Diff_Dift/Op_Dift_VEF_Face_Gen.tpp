@@ -129,7 +129,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
   for (int n_bord = 0; n_bord < nb_cl; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
@@ -249,7 +249,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if (is_STAB && sub_type(Periodique, la_cl.valeur()))
@@ -324,7 +324,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
       if (sub_type(Periodique, la_cl.valeur()))
         ajouter_bord_perio_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(n_bord, transporte, nullptr, &matrice, nu, nu_turb, porosite_eventuelle);
@@ -358,7 +358,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
   const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
   const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
   const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = tab_inconnue.line_size();
   int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
@@ -526,7 +526,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
           if (ldp_appli)
             {
               const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
-              const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord).frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord)->frontiere_dis());
               const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = tab_inconnue.line_size(), size_flux_bords = domaine_VEF.nb_faces_bord();
               int num1 = 0, num2 = le_bord.nb_faces_tot();
               int dim = Objet_U::dimension;
@@ -708,7 +708,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = tab_inconnue.line_size(), premiere_face_int = domaine_VEF.premiere_face_int();;
 
-  const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord).frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord)->frontiere_dis());
   const int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
 
   CIntArrView le_bord_num_face = le_bord.num_face().view_ro();

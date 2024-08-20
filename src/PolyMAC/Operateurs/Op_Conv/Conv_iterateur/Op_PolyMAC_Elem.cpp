@@ -75,7 +75,7 @@ void Op_PolyMAC_Elem::dimensionner(const Domaine_PolyMAC& le_domaine, const Doma
       if (sub_type(Periodique, la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int numdeb = la_front_dis.num_premiere_face();
           int nfaces = la_front_dis.nb_faces();
           int ind_face_global;
@@ -143,7 +143,7 @@ void Op_PolyMAC_Elem::dimensionner(const Domaine_PolyMAC& le_domaine, const Doma
       if (sub_type(Periodique, la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int numdeb = la_front_dis.num_premiere_face();
           int nfaces = la_front_dis.nb_faces();
           int ind_face_local;

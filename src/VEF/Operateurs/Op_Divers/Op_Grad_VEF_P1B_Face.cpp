@@ -181,7 +181,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         int num1 = le_bord.num_premiere_face();
         int num2 = num1 + le_bord.nb_faces();
         if (sub_type(Periodique, la_cl.valeur()))
@@ -262,7 +262,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
           if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
             {
               const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
               for (int face = num1; face < num2; face++)
@@ -426,7 +426,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               const Neumann_sortie_libre& sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
@@ -541,7 +541,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_aretes(const DoubleTab& pre, DoubleTab&
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
-        const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         int num1 = le_bord.num_premiere_face();
         int num2 = num1 + le_bord.nb_faces();
         if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
@@ -788,7 +788,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
   for (int n_bord = 0; n_bord < nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int impr_boundary = (domaine_VEF.domaine().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -904,7 +904,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       for (int n_bord = 0; n_bord < nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
           if (domaine_VEF.domaine().bords_a_imprimer().contient(le_bord.le_nom()))

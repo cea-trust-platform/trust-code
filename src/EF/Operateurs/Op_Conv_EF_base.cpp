@@ -96,7 +96,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
   ;
       else
   {
-    const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+    const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
     int ndeb = le_bord.num_premiere_face();
     int nfin = ndeb + le_bord.nb_faces();
     for (int num_face=ndeb; num_face<nfin; num_face++) {

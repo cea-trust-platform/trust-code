@@ -39,7 +39,7 @@ void Champ_Face_base::init_fcl() const
   fcl_.resize(domaine.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
-      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
+      const Front_VF& fvf = ref_cast(Front_VF, cls[n]->frontiere_dis());
       int idx = sub_type(Neumann, cls[n].valeur())
                 + 2 * sub_type(Navier, cls[n].valeur())
                 + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())

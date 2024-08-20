@@ -70,7 +70,7 @@ static inline int okface(int& ind_face, int& face, const Cond_lim& la_cl)
 {
   face_associee=-1;
   int ok=1;
-  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+  const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
   int nb_faces_bord_tot = le_bord.nb_faces_tot();
   do
     {
@@ -2248,7 +2248,7 @@ void assemblerP1P1(const Domaine_dis_base& z,
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
         {
@@ -2343,7 +2343,7 @@ void updateP1P1(const Domaine_dis_base& z,
   for (auto &itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
@@ -2459,7 +2459,7 @@ void assemblerPaPa(const Domaine_dis_base& z,
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
         {
@@ -2550,7 +2550,7 @@ void updatePaPa(const Domaine_dis_base& z,
   for (auto &itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
@@ -2615,7 +2615,7 @@ void assemblerP0Pa(const Domaine_dis_base& z,
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
         {
@@ -2690,7 +2690,7 @@ void updateP0Pa(const Domaine_dis_base& z,
   for (auto &itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
@@ -2746,7 +2746,7 @@ void assemblerP1Pa(const Domaine_dis_base& z,
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
         {
@@ -2832,7 +2832,7 @@ void updateP1Pa(const Domaine_dis_base& z,
   for (auto &itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {
@@ -2890,7 +2890,7 @@ void assemblerP0P1(const Domaine_dis_base& z,
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
         {
@@ -2970,7 +2970,7 @@ void updateP0P1(const Domaine_dis_base& z,
   for (auto &itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int nb_faces_bord_tot = le_bord.nb_faces_tot();
       for (int ind_face = 0; ind_face < nb_faces_bord_tot; ind_face++)
         {

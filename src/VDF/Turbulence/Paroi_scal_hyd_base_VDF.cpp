@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ int Paroi_scal_hyd_base_VDF::init_lois_paroi()
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int n_faces = le_bord.nb_faces();
       equivalent_distance_[n_bord].resize(n_faces);
       //for a given boundary, loop over faces
@@ -93,7 +93,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
         {
           const Domaine_Cl_VDF& domaine_Cl_VDF_th = ref_cast(Domaine_Cl_VDF, eqn.probleme().equation(1).domaine_Cl_dis().valeur());
           const Cond_lim& la_cl_th = domaine_Cl_VDF_th.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
           //find the associated boundary
           int boundary_index = -1;

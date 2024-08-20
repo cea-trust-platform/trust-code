@@ -330,7 +330,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
           /*
           if (has_P_ref==0)
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int face=le_bord.num_premiere_face();
               assert(le_bord.nb_faces()>0);
               elem_ref=face_voisins(face,0);
@@ -341,7 +341,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
     }
   /*
        else {
-        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+        const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
         int num1 = 0;//le_bord.num_premiere_face();
         int num2 =  le_bord.nb_faces_tot();
         // test..........

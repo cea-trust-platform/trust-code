@@ -122,7 +122,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
             {
               const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
               const Cond_lim_base& cl_base=la_cl.valeur();
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
               // Les lois de parois ne s'appliquent qu'aux cas ou la CL
               // est de type temperature imposee, car dans les autres cas

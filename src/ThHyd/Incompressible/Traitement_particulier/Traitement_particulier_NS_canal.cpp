@@ -805,7 +805,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
               const Cond_lim& la_cl = itr;
               if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
                 {
-                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
                   nbfaces_bord_diri = la_front_dis.nb_faces();
                   int ndeb = la_front_dis.num_premiere_face();
                   int nfin = ndeb + nbfaces_bord_diri;
@@ -928,7 +928,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
               const Cond_lim& la_cl = itr;
               if (la_cl->que_suis_je() == "Paroi_decalee_Robin")
                 {
-                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
                   nbfaces_bord_robin = la_front_dis.nb_faces();
                   int ndeb = la_front_dis.num_premiere_face();
                   int nfin = ndeb + nbfaces_bord_robin;
@@ -1024,7 +1024,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 //          const Cond_lim& la_cl = les_cl[num_cl];
 //          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
 //            {
-//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
 //              nbfaces = la_front_dis.nb_faces();
 //              int ndeb = la_front_dis.num_premiere_face();
 //              int nfin = ndeb + nbfaces;
@@ -1053,7 +1053,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 //          const Cond_lim& la_cl = les_cl[num_cl];
 //          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
 //            {
-//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
 //              nbfaces = la_front_dis.nb_faces();
 //              int ndeb = la_front_dis.num_premiere_face();
 //              int nfin = ndeb + nbfaces;

@@ -228,7 +228,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       //if (sub_type(Neumann_sortie_libre, la_cl.valeur()) || sub_type(Dirichlet_entree_fluide, la_cl.valeur())) {

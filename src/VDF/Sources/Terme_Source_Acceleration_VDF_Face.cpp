@@ -148,7 +148,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
       // Si face de Dirichlet ou de Symetrie on ne fait rien
       // Si face de Neumann on calcule la contribution au terme source
       const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       const int ndeb = le_bord.num_premiere_face();
       const int nfin = ndeb + le_bord.nb_faces();
       TSAVDF_ajouter_liste_faces(ndeb, nfin,
@@ -187,7 +187,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
         if (sub_type(Periodique,la_cl.valeur()))
           {
             const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-            const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+            const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
             int nb_faces_bord=le_bord.nb_faces();
             ArrOfInt fait(nb_faces_bord);
             fait = 0;

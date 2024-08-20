@@ -153,7 +153,7 @@ void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl
           for ( int n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
             {
               const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
               int nfin = le_bord.nb_faces_tot();
               if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
@@ -204,7 +204,7 @@ void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl
         for ( int n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
           {
             const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-            const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+            const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
             int nfin = le_bord.nb_faces_tot();
             if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
@@ -279,7 +279,7 @@ DoubleTab& Op_Grad_EF::ajouter(const DoubleTab& pression, DoubleTab& grad) const
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         continue;
 
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int num1 = 0;
       int num2 = + le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl.valeur()) )
@@ -342,7 +342,7 @@ void Op_Grad_EF::calculer_flux_bords() const
   for (int n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -384,7 +384,7 @@ int Op_Grad_EF::impr(Sortie& os) const
   for ( n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -491,7 +491,7 @@ int Op_Grad_EF::impr(Sortie& os) const
   for ( n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
 
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();

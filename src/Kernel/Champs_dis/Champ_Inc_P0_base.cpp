@@ -91,7 +91,7 @@ void Champ_Inc_P0_base::init_fcl() const
   fcl_.resize(domaine.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
-      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
+      const Front_VF& fvf = ref_cast(Front_VF, cls[n]->frontiere_dis());
       int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
                 + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_val_ext, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());

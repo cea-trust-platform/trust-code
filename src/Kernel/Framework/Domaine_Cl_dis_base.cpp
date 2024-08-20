@@ -312,7 +312,7 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_face_reelle(int
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
-      const Frontiere& fr=les_conditions_limites(i).frontiere_dis().frontiere();
+      const Frontiere& fr=les_conditions_limites(i)->frontiere_dis().frontiere();
       if (face_globale>=fr.num_premiere_face() && face_globale < fr.num_premiere_face()+fr.nb_faces())
         {
           face_locale=face_globale-fr.num_premiere_face();
@@ -334,7 +334,7 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_face_virtuelle(
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
-      const Frontiere& fr=les_conditions_limites(i).frontiere_dis().frontiere();
+      const Frontiere& fr=les_conditions_limites(i)->frontiere_dis().frontiere();
       const ArrOfInt& faces_virt=fr.get_faces_virt();
       for (int j=0; j<faces_virt.size_array(); j++)
         if (face_globale==faces_virt[j])
@@ -356,7 +356,7 @@ Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_frontiere(Nom frontie
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
-      const Frontiere& fr=les_conditions_limites(i).frontiere_dis().frontiere();
+      const Frontiere& fr=les_conditions_limites(i)->frontiere_dis().frontiere();
       if (fr.le_nom()==frontiere)
         return les_conditions_limites(i).valeur();
     }
@@ -374,7 +374,7 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_frontiere(Nom f
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
-      const Frontiere& fr=les_conditions_limites(i).frontiere_dis().frontiere();
+      const Frontiere& fr=les_conditions_limites(i)->frontiere_dis().frontiere();
       if (fr.le_nom()==frontiere)
         return les_conditions_limites(i).valeur();
     }

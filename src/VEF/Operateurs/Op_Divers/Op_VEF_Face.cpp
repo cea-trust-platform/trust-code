@@ -188,7 +188,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
       if (sub_type(Dirichlet, la_cl.valeur()))
         {
           const Dirichlet& la_cl_Dirichlet = ref_cast(Dirichlet, la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int nfaces = la_front_dis.nb_faces();
           for (int ind_face = 0; ind_face < nfaces; ind_face++)
             {
@@ -214,7 +214,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
       if (sub_type(Dirichlet_homogene, la_cl.valeur()))
         {
           const Dirichlet_homogene& la_cl_Dirichlet_homogene = ref_cast(Dirichlet_homogene, la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int nfaces = la_front_dis.nb_faces_tot();
           for (int ind_face = 0; ind_face < nfaces; ind_face++)
             {
@@ -241,7 +241,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom, const Domaine_Cl_V
         if (le_dom_cl.equation().inconnue()->nature_du_champ() == vectoriel)
           {
             const IntVect& tab2 = la_matrice.get_tab2();
-            const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+            const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
             const DoubleTab& face_normales = le_dom.face_normales();
             int nfaces = la_front_dis.nb_faces_tot();
             ArrOfDouble somme(la_matrice.nb_colonnes()); // On dimensionne au plus grand
@@ -465,7 +465,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
       const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       int perio = (sub_type(Periodique,la_cl.valeur()) ? 1 : 0);
@@ -524,7 +524,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Write flux on boundaries
       for (int num_cl = 0; num_cl < nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
           int perio = (sub_type(Periodique,la_cl.valeur()) ? 1 : 0);
           for (int k = 0; k < nb_compo; k++)
@@ -564,9 +564,9 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Impression sur chaque face si demande
       for (int num_cl = 0; num_cl < nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           // Impression sur chaque face
@@ -614,7 +614,7 @@ void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice, cons
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           // on ne parcourt que la moitie des faces periodiques
           // on copiera a la fin le resultat dans la face associe..
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces() / 2;
           for (int dir = 0; dir < 2; dir++)
@@ -679,7 +679,7 @@ void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, cons
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           // on ne parcourt que la moitie des faces periodiques
           // on copiera a la fin le resultat dans la face associe..
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces() / 2;
           for (int dir = 0; dir < 2; dir++)
@@ -778,7 +778,7 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Mors
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       //      int num2 = num1 + le_bord.nb_faces();
 

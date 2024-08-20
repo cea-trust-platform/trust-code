@@ -195,7 +195,7 @@ void Champ_Q1_EF::calcul_y_plus(const Domaine_Cl_EF& domaine_Cl_EF, DoubleTab& y
 
       if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           // Loop on real faces
           ndeb = 0;
           nfin = le_bord.nb_faces_tot();

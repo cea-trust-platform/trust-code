@@ -131,7 +131,7 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
           // recuperer face et remplace gradient par 0
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
           for (int num_face=ndeb; num_face<nfin; num_face++) grad_Ptot(num_face,0) = 0.;
