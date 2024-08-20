@@ -295,7 +295,7 @@ void Milieu_composite::mettre_a_jour(double temps)
   h_ou_T.mettre_a_jour(temps);
 
   std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m_, &h_m_};
-  for (auto && f: fields) (*f).mettre_a_jour(temps);
+  for (auto && f: fields) (*f)->mettre_a_jour(temps);
 
   mettre_a_jour_tabs();
 

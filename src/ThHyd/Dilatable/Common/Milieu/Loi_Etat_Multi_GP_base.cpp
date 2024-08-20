@@ -197,7 +197,7 @@ void Loi_Etat_Multi_GP_base::calculer_mu()
   Champ_Don& mu = le_fluide->viscosite_dynamique();
   if (!sub_type(Champ_Uniforme,mu.valeur()))
     {
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur())) mu.mettre_a_jour(temperature_->temps());
+      if (sub_type(Champ_Fonc_Tabule,mu.valeur())) mu->mettre_a_jour(temperature_->temps());
       else calculer_mu_wilke();
     }
 }

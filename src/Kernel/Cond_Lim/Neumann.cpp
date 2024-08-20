@@ -18,7 +18,6 @@
 Implemente_base(Neumann, "Neumann", Cond_lim_base);
 // XD neumann condlim_base neumann -1 Neumann condition at the boundary called bord (edge) : 1). For Navier-Stokes equations, constraint imposed at the boundary; 2). For scalar transport equation, flux imposed at the boundary.
 
-
 Sortie& Neumann::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
 Entree& Neumann::readOn(Entree& s) { return Cond_lim_base::readOn(s); }
@@ -31,10 +30,10 @@ Entree& Neumann::readOn(Entree& s) { return Cond_lim_base::readOn(s); }
  */
 double Neumann::flux_impose(int i) const
 {
-  if (le_champ_front.valeurs().size() == 1)
-    return le_champ_front(0, 0);
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return le_champ_front(i, 0);
+  if (le_champ_front->valeurs().size() == 1)
+    return le_champ_front->valeurs()(0, 0);
+  else if (le_champ_front->valeurs().dimension(1) == 1)
+    return le_champ_front->valeurs()(i, 0);
   else
     Cerr << "Neumann::flux_impose error" << finl;
   Process::exit();
@@ -49,10 +48,10 @@ double Neumann::flux_impose(int i) const
  */
 double Neumann::flux_impose(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0) == 1)
-    return le_champ_front(0, j);
+  if (le_champ_front->valeurs().dimension(0) == 1)
+    return le_champ_front->valeurs()(0, j);
   else
-    return le_champ_front(i, j);
+    return le_champ_front->valeurs()(i, j);
 }
 
 /*! @brief Retourne le tableau flux_impose_ mis a jour
@@ -65,7 +64,7 @@ const DoubleTab& Neumann::flux_impose() const
   if (nb_faces_tot>0)
     {
       if (flux_impose_.dimension(0) != nb_faces_tot)
-        flux_impose_.resize(nb_faces_tot, le_champ_front.valeurs().dimension(1));
+        flux_impose_.resize(nb_faces_tot, le_champ_front->valeurs().dimension(1));
       int size = flux_impose_.dimension(0);
       int nb_comp = flux_impose_.dimension(1);
       for (int i = 0; i < size; i++)

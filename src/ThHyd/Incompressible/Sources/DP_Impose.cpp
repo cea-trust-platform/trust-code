@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ Entree& DP_Impose::lire_donnees(Entree& is)
 void DP_Impose::mettre_a_jour(double temps)
 {
   if (regul_) return;
-  DP_.mettre_a_jour(temps);
+  DP_->mettre_a_jour(temps);
 }
 
 void DP_Impose::update_dp_regul(const Equation_base& eqn, double deb, DoubleVect& bilan)

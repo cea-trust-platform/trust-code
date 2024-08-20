@@ -377,7 +377,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
   const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis().valeur());
   int nb_compo = flux_bords_.dimension(1);
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
-  if (op.equation().inconnue().le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
+  if (op.equation().inconnue()->le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
     {
       const Champ_base& rho = op.equation().milieu().masse_volumique().valeur();
       const Champ_Don& Cp = op.equation().milieu().capacite_calorifique();

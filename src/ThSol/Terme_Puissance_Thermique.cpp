@@ -77,7 +77,7 @@ void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base&
 
 void Terme_Puissance_Thermique::mettre_a_jour(double temps)
 {
-  la_puissance_lu.mettre_a_jour(temps);
+  la_puissance_lu->mettre_a_jour(temps);
   la_puissance->affecter(la_puissance_lu.valeur());
 }
 

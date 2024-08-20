@@ -90,7 +90,7 @@ protected:
  */
 inline Frontiere_dis_base& Cond_lim_base::frontiere_dis()
 {
-  return le_champ_front.frontiere_dis();
+  return le_champ_front->frontiere_dis();
 }
 
 /*! @brief Renvoie la frontiere discretisee a laquelle les conditions aux limites s'appliquent.
@@ -101,7 +101,7 @@ inline Frontiere_dis_base& Cond_lim_base::frontiere_dis()
  */
 inline const Frontiere_dis_base& Cond_lim_base::frontiere_dis() const
 {
-  return le_champ_front.frontiere_dis();
+  return le_champ_front->frontiere_dis();
 }
 
 /*! @brief Renvoie le domaine des conditions aux limites discretisee dont l'objet fait partie.

@@ -121,7 +121,7 @@ void Loi_Etat_base::calculer_mu()
     {
       // E. Saikali : Pourquoi pas Champ_fonc_xyz pour mu ???
       if (sub_type(Champ_Fonc_Tabule,mu.valeur()) || sub_type(Champ_Don_base,mu.valeur()))
-        mu.mettre_a_jour(temperature_->temps());
+        mu->mettre_a_jour(temperature_->temps());
       else
         {
           Cerr<<"The viscosity field mu of type "<<mu->que_suis_je()<<" is not recognized.";

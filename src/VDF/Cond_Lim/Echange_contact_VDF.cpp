@@ -56,7 +56,7 @@ void Echange_contact_VDF::completer()
 {
   Echange_global_impose::completer();
   int nb_cases=domaine_Cl_dis().equation().schema_temps().nb_valeurs_temporelles();
-  T_autre_pb().associer_fr_dis_base(T_ext().frontiere_dis());
+  T_autre_pb()->associer_fr_dis_base(T_ext()->frontiere_dis());
   T_autre_pb()->completer();
   T_autre_pb()->fixer_nb_valeurs_temporelles(nb_cases);
 }
@@ -292,7 +292,7 @@ int Echange_contact_VDF::initialiser(double temps)
 
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(nb_comp);
-  h_imp_.valeurs().resize(nb_faces_raccord1,nb_comp);
+  h_imp_->valeurs().resize(nb_faces_raccord1,nb_comp);
 
   if (domaine_dis1.domaine().raccord(nom_racc1)->que_suis_je() !="Raccord_distant_homogene")
     verifier_correspondance();
@@ -351,7 +351,7 @@ void Echange_contact_VDF::mettre_a_jour(double temps)
   int nb_comp = le_milieu.conductivite()->nb_comp();
   assert(nb_comp==1);
 
-  T_autre_pb().mettre_a_jour(temps);
+  T_autre_pb()->mettre_a_jour(temps);
 
   int is_pb_fluide=0;
 

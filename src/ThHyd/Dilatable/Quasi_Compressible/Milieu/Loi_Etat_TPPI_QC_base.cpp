@@ -59,7 +59,7 @@ void Loi_Etat_TPPI_QC_base::calculer_Cp()
   DoubleTab& tab_mu = mu.valeurs();
   TPPI_->tppi_get_mu_pT(p_span, temp_span, tab_mu.get_span());
   tab_mu.echange_espace_virtuel();
-  mu.mettre_a_jour(temperature_->temps());
+  mu->mettre_a_jour(temperature_->temps());
 
   /* Step 3 : Lambda */
   Champ_Don& lambda = le_fluide->conductivite();

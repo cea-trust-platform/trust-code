@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,9 +80,9 @@ void Fluide_Ostwald::creer_champs_non_lus()
 
 void Fluide_Ostwald::mettre_a_jour(double tps)
 {
-  K_.mettre_a_jour(tps);
+  K_->mettre_a_jour(tps);
   if (N_.non_nul() )
-    N_.mettre_a_jour(tps);
+    N_->mettre_a_jour(tps);
   Fluide_Incompressible::mettre_a_jour(tps);
 }
 

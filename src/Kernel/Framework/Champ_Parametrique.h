@@ -28,11 +28,11 @@ class Champ_Parametrique : public Champ_Don_base
   Declare_instanciable( Champ_Parametrique ) ;
 public:
   // Methodes surchargees:
-  void mettre_a_jour(double temps) override { champ().mettre_a_jour(temps); }
+  void mettre_a_jour(double temps) override { champ()->mettre_a_jour(temps); }
   int imprime(Sortie& os, int j) const override { return champ()->imprime(os,j); }
-  int fixer_nb_valeurs_nodales(int nb_noeuds) override { return champ().fixer_nb_valeurs_nodales(nb_noeuds); }
-  int reprendre(Entree& is) override { return champ().reprendre(is); }
-  int sauvegarder(Sortie& os) const override { return champ().sauvegarder(os); }
+  int fixer_nb_valeurs_nodales(int nb_noeuds) override { return champ()->fixer_nb_valeurs_nodales(nb_noeuds); }
+  int reprendre(Entree& is) override { return champ()->reprendre(is); }
+  int sauvegarder(Sortie& os) const override { return champ()->sauvegarder(os); }
   void resetTime(double time) override { champ()->resetTime(time); }
   DoubleTab& valeurs() override { return champ()->valeurs(); }
   const DoubleTab& valeurs() const override { return champ()->valeurs(); }

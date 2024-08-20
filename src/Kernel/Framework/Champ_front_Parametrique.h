@@ -31,16 +31,16 @@ class Champ_front_Parametrique : public Champ_front_base
 public:
   // Methodes surchargees:
   using Champ_Proto::valeurs;
-  inline virtual DoubleTab& valeurs() override { return champ().valeurs(); }
-  inline virtual const DoubleTab& valeurs() const override { return champ().valeurs(); }
+  inline virtual DoubleTab& valeurs() override { return champ()->valeurs(); }
+  inline virtual const DoubleTab& valeurs() const override { return champ()->valeurs(); }
   DoubleTab& valeurs_au_temps(double temps) override { return champ()->valeurs_au_temps(temps); }
   const DoubleTab& valeurs_au_temps(double temps) const override { return champ()->valeurs_au_temps(temps); }
-  const Frontiere_dis_base& frontiere_dis() const override { return champ().frontiere_dis(); }
-  Frontiere_dis_base& frontiere_dis() override { return champ().frontiere_dis(); }
+  const Frontiere_dis_base& frontiere_dis() const override { return champ()->frontiere_dis(); }
+  Frontiere_dis_base& frontiere_dis() override { return champ()->frontiere_dis(); }
   const Domaine_dis_base& domaine_dis() const override { return champ()->domaine_dis(); }
   Champ_front_base& affecter_(const Champ_front_base& ch) override { return champ()->affecter_(ch); }
-  void mettre_a_jour(double temps) override { champ().mettre_a_jour(temps); }
-  void calculer_coeffs_echange(double temps) override { champ().calculer_coeffs_echange(temps); };
+  void mettre_a_jour(double temps) override { champ()->mettre_a_jour(temps); }
+  void calculer_coeffs_echange(double temps) override { champ()->calculer_coeffs_echange(temps); };
   void valeurs_face(int i, DoubleVect& val) const override { champ()->valeurs_face(i,val); }
   inline void verifier(const Cond_lim_base& la_cl) const override { champ()->verifier(la_cl); };
   double get_temps_defaut() const override { return champ()->get_temps_defaut(); }
@@ -49,12 +49,12 @@ public:
   int avancer(double temps) override { return champ()->avancer(temps); }
   int reculer(double temps) override { return champ()->reculer(temps); }
   void fixer_nb_comp(int i) override { champ()->fixer_nb_comp(i); }
-  int nb_comp() const override { return champ().nb_comp(); }
+  int nb_comp() const override { return champ()->nb_comp(); }
   Nature_du_champ nature_du_champ() const override { return champ()->nature_du_champ(); }
   Nature_du_champ fixer_nature_du_champ(Nature_du_champ nat) override { return champ()->fixer_nature_du_champ(nat); }
 
   // Methodes surchargees avec boucles sur les champs
-  void associer_fr_dis_base(const Frontiere_dis_base& fr) override { for (auto& ch : champs_) ch.associer_fr_dis_base(fr); }
+  void associer_fr_dis_base(const Frontiere_dis_base& fr) override { for (auto& ch : champs_) ch->associer_fr_dis_base(fr); }
   int initialiser(double temps, const Champ_Inc_base& inco) override { for (auto& ch : champs_) ch->initialiser(temps, inco); return 1; }
   virtual void completer() override { for (auto& ch : champs_) ch->completer(); }
   void fixer_nb_valeurs_temporelles(int nb_cases) override { for (auto& ch : champs_) ch->fixer_nb_valeurs_temporelles(nb_cases); }

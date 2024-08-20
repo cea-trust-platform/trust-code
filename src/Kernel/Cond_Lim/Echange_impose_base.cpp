@@ -75,10 +75,10 @@ Entree& Echange_impose_base::readOn(Entree& s)
  */
 double Echange_impose_base::T_ext(int i) const
 {
-  if (T_ext().valeurs().size() == 1)
-    return T_ext()(0, 0);
-  else if (T_ext().valeurs().dimension(1) == 1)
-    return T_ext()(i, 0);
+  if (T_ext()->valeurs().size() == 1)
+    return T_ext()->valeurs()(0, 0);
+  else if (T_ext()->valeurs().dimension(1) == 1)
+    return T_ext()->valeurs()(i, 0);
   else
     {
       Cerr << "Echange_impose_base::T_ext erreur" << finl;
@@ -96,10 +96,10 @@ double Echange_impose_base::T_ext(int i) const
  */
 double Echange_impose_base::T_ext(int i, int j) const
 {
-  if (T_ext().valeurs().dimension(0) == 1)
-    return T_ext()(0, j);
+  if (T_ext()->valeurs().dimension(0) == 1)
+    return T_ext()->valeurs()(0, j);
   else
-    return T_ext()(i, j);
+    return T_ext()->valeurs()(i, j);
 }
 
 /*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante
@@ -112,10 +112,10 @@ double Echange_impose_base::T_ext(int i, int j) const
 double Echange_impose_base::h_imp(int i) const
 {
 
-  if (h_imp_.valeurs().size() == 1)
-    return h_imp_(0, 0);
-  else if (h_imp_.valeurs().dimension(1) == 1)
-    return h_imp_(i, 0);
+  if (h_imp_->valeurs().size() == 1)
+    return h_imp_->valeurs()(0, 0);
+  else if (h_imp_->valeurs().dimension(1) == 1)
+    return h_imp_->valeurs()(i, 0);
   else
     Cerr << "Echange_impose_base::h_imp erreur" << finl;
 
@@ -134,10 +134,10 @@ double Echange_impose_base::h_imp(int i) const
 double Echange_impose_base::h_imp(int i, int j) const
 {
 
-  if (h_imp_.valeurs().dimension(0) == 1)
-    return h_imp_(0, j);
+  if (h_imp_->valeurs().dimension(0) == 1)
+    return h_imp_->valeurs()(0, j);
   else
-    return h_imp_(i, j);
+    return h_imp_->valeurs()(i, j);
 
 }
 
@@ -151,13 +151,13 @@ double Echange_impose_base::h_imp(int i, int j) const
 void Echange_impose_base::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
-  h_imp_.mettre_a_jour(temps);
+  h_imp_->mettre_a_jour(temps);
 }
 
 int Echange_impose_base::initialiser(double temps)
 {
   if (h_imp_.non_nul())
-    h_imp_->initialiser(temps, domaine_Cl_dis().equation().inconnue()), h_imp_.mettre_a_jour(temps);
+    h_imp_->initialiser(temps, domaine_Cl_dis().equation().inconnue()), h_imp_->mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
 }
 

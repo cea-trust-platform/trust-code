@@ -33,9 +33,9 @@ Entree& Sortie_libre_Pression_imposee_Orlansky::readOn(Entree& s)
   if (supp_discs.size() == 0) supp_discs = { Nom("VDF") };
 
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   le_champ_front.typer("Champ_front_uniforme");
-  le_champ_front.valeurs().resize(1, dimension);
+  le_champ_front->valeurs().resize(1, dimension);
   le_champ_front->fixer_nb_comp(1);
   return s;
 }
@@ -61,8 +61,8 @@ void Sortie_libre_Pression_imposee_Orlansky::completer()
   int nb_faces_loc = le_bord.nb_faces();
   //  int ndeb = le_bord.num_premiere_face();
 
-  le_champ_front.valeurs().resize(nb_faces_loc);
-  le_champ_ext.valeurs().resize(nb_faces_loc, dimension);
+  le_champ_front->valeurs().resize(nb_faces_loc);
+  le_champ_ext->valeurs().resize(nb_faces_loc, dimension);
   VPhiP.resize(nb_faces_loc);
   VPhiV.resize(nb_faces_loc, dimension);
   pression_temps_moins_un.resize(nb_faces_loc);
@@ -96,8 +96,8 @@ void Sortie_libre_Pression_imposee_Orlansky::mettre_a_jour(double temps)
   int ndeb = le_bord.num_premiere_face();
   int nb_faces_loc = le_bord.nb_faces();
 
-  DoubleTab& pre_bord = le_champ_front.valeurs();
-  DoubleTab& vit_ext = le_champ_ext.valeurs();
+  DoubleTab& pre_bord = le_champ_front->valeurs();
+  DoubleTab& vit_ext = le_champ_ext->valeurs();
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, pression_interne->domaine_dis_base());
   const DoubleTab& pre = pression_interne->valeurs();
   const DoubleTab& vitesse = vitesse_interne->valeurs();
@@ -207,7 +207,7 @@ void Sortie_libre_Pression_imposee_Orlansky::mettre_a_jour(double temps)
 
 double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int face) const
 {
-  return le_champ_front.valeurs()(face);
+  return le_champ_front->valeurs()(face);
 }
 
 double Sortie_libre_Pression_imposee_Orlansky::flux_impose(int face, int ncomp) const

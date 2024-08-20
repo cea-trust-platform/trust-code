@@ -93,7 +93,7 @@ int Cond_lim_base::initialiser(double temps)
  */
 void Cond_lim_base::mettre_a_jour(double temps)
 {
-  le_champ_front.mettre_a_jour(temps);
+  le_champ_front->mettre_a_jour(temps);
 }
 
 /* @brief Reset current time for the boundary condition.
@@ -131,7 +131,7 @@ int Cond_lim_base::a_mettre_a_jour_ss_pas_dt()
  */
 void Cond_lim_base::calculer_coeffs_echange(double temps)
 {
-  le_champ_front.calculer_coeffs_echange(temps);
+  le_champ_front->calculer_coeffs_echange(temps);
 }
 
 /*! @brief Appel la verification du champ lu par l intermediaire de l equation pour laquelle on considere la condition limite
@@ -156,7 +156,7 @@ void Cond_lim_base::verifie_ch_init_nb_comp() const
 void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   assert(le_champ_front.non_nul());
-  le_champ_front.associer_fr_dis_base(fr);
+  le_champ_front->associer_fr_dis_base(fr);
   modifier_val_imp = 0;
 }
 

@@ -52,7 +52,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
       //Cerr << "[Parameter] Reading: " << ch->que_suis_je() << finl;
       fic >> motlu;
       // Pour eviter de surcharger plusieurs methodes de Champ_Don_base:
-      fixer_nb_comp(ch.nb_comp());
+      fixer_nb_comp(ch->nb_comp());
     }
   // On fixe le premier parametre:
   Sortie_Fichier_base::set_root(newCompute());

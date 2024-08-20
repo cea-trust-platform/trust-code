@@ -154,7 +154,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                     lambda = conductivite(0, 0);
                   else
                     {
-                      if (conductivite.nb_comp() == 1)
+                      if (conductivite->nb_comp() == 1)
                         lambda = conductivite(elem);
                       else
                         lambda = conductivite(elem, 0);
@@ -222,7 +222,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                     lambda = conductivite(0, 0);
                   else
                     {
-                      if (conductivite.nb_comp() == 1)
+                      if (conductivite->nb_comp() == 1)
                         lambda = conductivite(elem);
                       else
                         lambda = conductivite(elem, 0);

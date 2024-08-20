@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -107,10 +107,10 @@ double Sortie_libre_Text_H_ext::val_ext(int i) const
   if (type_cond_lim == 0)
     {
       //      Cerr<<"Sortie_libre_Text_H_ext Condition limite en temperature"<<finl;
-      if (le_champ_Text.valeurs().size() == 1)
-        return le_champ_Text(0, 0);
-      else if (le_champ_Text.valeurs().dimension(1) == 1)
-        return le_champ_Text(i, 0);
+      if (le_champ_Text->valeurs().size() == 1)
+        return le_champ_Text->valeurs()(0, 0);
+      else if (le_champ_Text->valeurs().dimension(1) == 1)
+        return le_champ_Text->valeurs()(i, 0);
       else
         Cerr << "Sortie_libre_Text_H_ext::val_ext" << finl;
       exit();
@@ -119,10 +119,10 @@ double Sortie_libre_Text_H_ext::val_ext(int i) const
   else
     {
       //      Cerr<<"Sortie_libre_Text_H_ext Condition limite en enthalpie"<<finl;
-      if (le_champ_hext.valeurs().size() == 1)
-        return le_champ_hext(0, 0);
-      else if (le_champ_hext.valeurs().dimension(1) == 1)
-        return le_champ_hext(i, 0);
+      if (le_champ_hext->valeurs().size() == 1)
+        return le_champ_hext->valeurs()(0, 0);
+      else if (le_champ_hext->valeurs().dimension(1) == 1)
+        return le_champ_hext->valeurs()(i, 0);
       else
         Cerr << "Sortie_libre_Text_H_ext::val_ext" << finl;
       exit();
@@ -141,18 +141,18 @@ double Sortie_libre_Text_H_ext::val_ext(int i, int j) const
   if (type_cond_lim == 0)
     {
       // Condition limite en temperature
-      if (le_champ_Text.valeurs().dimension(0) == 1)
-        return le_champ_Text(0, j);
+      if (le_champ_Text->valeurs().dimension(0) == 1)
+        return le_champ_Text->valeurs()(0, j);
       else
-        return le_champ_Text(i, j);
+        return le_champ_Text->valeurs()(i, j);
     }
   else
     {
       // Condition limite en enthalpie
-      if (le_champ_hext.valeurs().dimension(0) == 1)
-        return le_champ_hext(0, j);
+      if (le_champ_hext->valeurs().dimension(0) == 1)
+        return le_champ_hext->valeurs()(0, j);
       else
-        return le_champ_hext(i, j);
+        return le_champ_hext->valeurs()(i, j);
     }
 }
 
@@ -171,10 +171,10 @@ double Sortie_libre_Text_H_ext::flux_impose(int i) const
 {
   if (type_cond_lim == 0)
     {
-      if (le_champ_Text.valeurs().size() == 1)
-        return le_champ_Text(0, 0);
-      else if (le_champ_Text.valeurs().dimension(1) == 1)
-        return le_champ_Text(i, 0);
+      if (le_champ_Text->valeurs().size() == 1)
+        return le_champ_Text->valeurs()(0, 0);
+      else if (le_champ_Text->valeurs().dimension(1) == 1)
+        return le_champ_Text->valeurs()(i, 0);
       else
         Cerr << "Sortie_libre_Text_H_ext::flux_impose" << finl;
       exit();
@@ -182,10 +182,10 @@ double Sortie_libre_Text_H_ext::flux_impose(int i) const
     }
   else
     {
-      if (le_champ_hext.valeurs().size() == 1)
-        return le_champ_hext(0, 0);
-      else if (le_champ_hext.valeurs().dimension(1) == 1)
-        return le_champ_hext(i, 0);
+      if (le_champ_hext->valeurs().size() == 1)
+        return le_champ_hext->valeurs()(0, 0);
+      else if (le_champ_hext->valeurs().dimension(1) == 1)
+        return le_champ_hext->valeurs()(i, 0);
       else
         Cerr << "Sortie_libre_Text_H_ext::flux impose" << finl;
       exit();
@@ -207,17 +207,17 @@ double Sortie_libre_Text_H_ext::flux_impose(int i, int j) const
   if (type_cond_lim == 0)
     {
       // Condition limite en temperature
-      if (le_champ_Text.valeurs().dimension(0) == 1)
-        return le_champ_Text(0, j);
+      if (le_champ_Text->valeurs().dimension(0) == 1)
+        return le_champ_Text->valeurs()(0, j);
       else
-        return le_champ_Text(i, j);
+        return le_champ_Text->valeurs()(i, j);
     }
   else
     {
       // Condition limite en enthalpie
-      if (le_champ_hext.valeurs().dimension(0) == 1)
-        return le_champ_hext(0, j);
+      if (le_champ_hext->valeurs().dimension(0) == 1)
+        return le_champ_hext->valeurs()(0, j);
       else
-        return le_champ_hext(i, j);
+        return le_champ_hext->valeurs()(i, j);
     }
 }

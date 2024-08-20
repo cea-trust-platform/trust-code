@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ Entree& Echange_contact_PolyMAC::readOn(Entree& s )
 void Echange_contact_PolyMAC::completer()
 {
   Echange_externe_impose::completer();
-  T_autre_pb().associer_fr_dis_base(T_ext().frontiere_dis());
+  T_autre_pb()->associer_fr_dis_base(T_ext()->frontiere_dis());
   T_autre_pb()->completer();
 }
 
@@ -69,8 +69,8 @@ int Echange_contact_PolyMAC::initialiser(double temps)
 
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(N);
-  h_imp_.valeurs().resize(0, N);
-  fvf.frontiere().creer_tableau_faces(h_imp_.valeurs());
+  h_imp_->valeurs().resize(0, N);
+  fvf.frontiere().creer_tableau_faces(h_imp_->valeurs());
 
   ch.initialiser(temps,domaine_Cl_dis().equation().inconnue());
 

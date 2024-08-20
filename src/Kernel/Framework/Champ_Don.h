@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,11 +40,8 @@ public :
   inline operator const DoubleTab& () const = delete;
   inline int fixer_nb_valeurs_nodales(int );
   inline int nb_valeurs_nodales() const;
-  inline int nb_comp() const;
   inline Champ_base& affecter_(const Champ_base& ch);
   inline Champ_base& affecter_compo(const Champ_base& , int );
-  inline void mettre_a_jour(double temps);
-  inline int initialiser(const double temps);
 };
 
 /*! @brief Appel a l'objet sous-jacent.
@@ -80,15 +77,6 @@ inline int Champ_Don::fixer_nb_valeurs_nodales(int nb_noeuds)
   return valeur().fixer_nb_valeurs_nodales(nb_noeuds);
 }
 
-/*! @brief Appel a l'objet sous-jacent Renvoie le nombre de composantes du champ.
- *
- * @return (int) le nombre de composantes du champ
- */
-inline int Champ_Don::nb_comp() const
-{
-  return valeur().nb_comp();
-}
-
 /*! @brief Appel a l'objet sous-jacent Renvoie le nombre de degres de liberte par composante
  *
  * @return (int) le nombre de degres de liberte par composante
@@ -120,22 +108,6 @@ inline Champ_base& Champ_Don::affecter_(const Champ_base& ch)
 inline Champ_base& Champ_Don::affecter_compo(const Champ_base& ch, int compo)
 {
   return valeur().affecter_compo(ch, compo);
-}
-/*! @brief Appel a l'objet sous-jacent Provoque la mise a jour du champ si il est instationnaire.
- *
- * @param (double temps) le temps de mise a jour
- */
-inline void Champ_Don::mettre_a_jour(double temps)
-{
-  valeur().mettre_a_jour(temps);
-}
-
-/*! @brief Appel a l'objet sous-jacent Provoque l'initialisation du champ si necessaire
- *
- */
-inline int Champ_Don::initialiser(const double temps)
-{
-  return valeur().initialiser(temps);
 }
 
 #endif

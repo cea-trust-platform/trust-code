@@ -92,8 +92,8 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_base::mettre_a_jour(double te
   //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
   if (!Process::me()) bilan()(N) = DT_regul_;
 
-  himp_.mettre_a_jour(temps);
-  Text_.mettre_a_jour(temps);
+  himp_->mettre_a_jour(temps);
+  Text_->mettre_a_jour(temps);
 }
 
 void Terme_Puissance_Thermique_Echange_Impose_Elem_base::pid_process()

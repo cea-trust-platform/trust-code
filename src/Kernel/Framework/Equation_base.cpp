@@ -384,7 +384,7 @@ Entree& Equation_base::lire_cond_init(Entree& is)
     }
   Champ_Don ch_init;
   is >> ch_init;
-  const int nb_comp = ch_init.nb_comp();
+  const int nb_comp = ch_init->nb_comp();
   verifie_ch_init_nb_comp(inconnue(),nb_comp);
 
   //Cerr<<"inconnue()->que_suis_je() = "<<inconnue()->que_suis_je()<<finl;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ Entree& Champ_front_debit::readOn(Entree& is)
 {
   flow_rate_alone_=1;
   is >> flow_rate_;
-  fixer_nb_comp(dimension * flow_rate_.nb_comp());
+  fixer_nb_comp(dimension * flow_rate_->nb_comp());
   return is;
 }
 

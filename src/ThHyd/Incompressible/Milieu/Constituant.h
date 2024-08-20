@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ public :
 
   inline void mettre_a_jour(double temps) override
   {
-    if (D_.non_nul()) D_.mettre_a_jour(temps);
+    if (D_.non_nul()) D_->mettre_a_jour(temps);
   }
 
   void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
@@ -46,11 +46,11 @@ public :
 
   int initialiser(const double temps) override
   {
-    if (D_.non_nul()) D_.initialiser(temps);
+    if (D_.non_nul()) D_->initialiser(temps);
     return 1;
   }
 
-  inline int nb_constituants() const { return D_.nb_comp(); }
+  inline int nb_constituants() const { return D_->nb_comp(); }
 
 protected :
   Champ_Don D_; // Coefficient de diffusion du constituant dans un milieu

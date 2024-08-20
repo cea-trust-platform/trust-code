@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,19 +47,19 @@ void Echange_externe_impose_H::completer()
  */
 double Echange_externe_impose_H::T_ext(int i) const
 {
-  if (le_champ_front.valeurs().size() == 1)
+  if (le_champ_front->valeurs().size() == 1)
     {
       if (modifier_val_imp == 1)
-        return le_fluide->calculer_H(le_champ_front(0, 0));
+        return le_fluide->calculer_H(le_champ_front->valeurs()(0, 0));
       else
-        return le_champ_front(0, 0);
+        return le_champ_front->valeurs()(0, 0);
     }
-  else if (le_champ_front.valeurs().dimension(1) == 1)
+  else if (le_champ_front->valeurs().dimension(1) == 1)
     {
       if (modifier_val_imp == 1)
-        return le_fluide->calculer_H(le_champ_front(i, 0));
+        return le_fluide->calculer_H(le_champ_front->valeurs()(i, 0));
       else
-        return le_champ_front(i, 0);
+        return le_champ_front->valeurs()(i, 0);
     }
   else
     Cerr << "Echange_impose_base::T_ext erreur" << finl;
@@ -76,18 +76,18 @@ double Echange_externe_impose_H::T_ext(int i) const
  */
 double Echange_externe_impose_H::T_ext(int i, int j) const
 {
-  if (le_champ_front.valeurs().dimension(0) == 1)
+  if (le_champ_front->valeurs().dimension(0) == 1)
     {
       if (modifier_val_imp == 1)
-        return le_fluide->calculer_H(le_champ_front(0, j));
+        return le_fluide->calculer_H(le_champ_front->valeurs()(0, j));
       else
-        return le_champ_front(0, j);
+        return le_champ_front->valeurs()(0, j);
     }
   else
     {
       if (modifier_val_imp == 1)
-        return le_fluide->calculer_H(le_champ_front(i, j));
+        return le_fluide->calculer_H(le_champ_front->valeurs()(i, j));
       else
-        return le_champ_front(i, j);
+        return le_champ_front->valeurs()(i, j);
     }
 }

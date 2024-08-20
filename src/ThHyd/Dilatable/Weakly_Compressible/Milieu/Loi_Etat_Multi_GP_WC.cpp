@@ -83,7 +83,7 @@ void Loi_Etat_Multi_GP_WC::initialiser_inco_ch()
 void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don& Yn, double temps)
 {
   DoubleTab& tab_Yn = Yn.valeurs();
-  Yn.mettre_a_jour(temps);
+  Yn->mettre_a_jour(temps);
   tab_Yn = 1.0;// re-initialize as 1
   const int size = liste_Y(0)->valeurs().size();
   assert(tab_Yn.size() == size);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ public:
   {
     diam_hydr->mettre_a_jour(temps);
     diam_hydr_ortho->mettre_a_jour(temps);
-    v.mettre_a_jour(temps);
+    v->mettre_a_jour(temps);
   }
 
 protected:

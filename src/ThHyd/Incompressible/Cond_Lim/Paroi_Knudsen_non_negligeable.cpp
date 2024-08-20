@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,9 +61,9 @@ void Paroi_Knudsen_non_negligeable::completer()
   Nom type = "Champ_front_fonc_gradient_";
   type += domaine_Cl_dis().equation().discretisation().que_suis_je();
   // Typage definitif en fonction de la discretisation
-  Frontiere_dis_base& fr = le_champ_front.frontiere_dis();
+  Frontiere_dis_base& fr = le_champ_front->frontiere_dis();
   le_champ_front.typer(type);
-  le_champ_front.associer_fr_dis_base(fr);
+  le_champ_front->associer_fr_dis_base(fr);
   // Paroi defilante : le champ_front est la vitesse de nombre
   // de composantes la dimension du pb ... Est ce utile de dimensionner
   // maintenant cela ?

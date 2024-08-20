@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,13 +30,12 @@ class Paroi_Knudsen_non_negligeable: public Dirichlet_paroi_defilante
   Declare_instanciable(Paroi_Knudsen_non_negligeable);
 
 public:
-  inline const DoubleTab& vitesse_paroi() const { return vitesse_paroi_.valeurs(); }
-  inline const DoubleTab& k() const { return k_.valeurs(); }
+  inline const DoubleTab& vitesse_paroi() const { return vitesse_paroi_->valeurs(); }
+  inline const DoubleTab& k() const { return k_->valeurs(); }
   void completer() override;
 
 protected:
-  Champ_front vitesse_paroi_;
-  Champ_front k_;
+  Champ_front vitesse_paroi_, k_;
 };
 
-#endif
+#endif /* Paroi_Knudsen_non_negligeable_included */

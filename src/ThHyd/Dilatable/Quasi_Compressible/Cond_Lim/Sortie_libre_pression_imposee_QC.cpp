@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ Entree& Sortie_libre_pression_imposee_QC::readOn(Entree& s)
 
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   return s;
 }
 
@@ -74,10 +74,10 @@ double Sortie_libre_pression_imposee_QC::flux_impose(int i) const
   else
     rho_ = d_rho;
 
-  if (le_champ_front.valeurs().size() == 1)
-    return (le_champ_front(0, 0) - Pthn) / rho_;
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return (le_champ_front(i, 0) - Pthn) / rho_;
+  if (le_champ_front->valeurs().size() == 1)
+    return (le_champ_front->valeurs()(0, 0) - Pthn) / rho_;
+  else if (le_champ_front->valeurs().dimension(1) == 1)
+    return (le_champ_front->valeurs()(i, 0) - Pthn) / rho_;
   else
     Cerr << "Neumann::flux_impose erreur" << finl;
 
@@ -105,8 +105,8 @@ double Sortie_libre_pression_imposee_QC::flux_impose(int i, int j) const
   else
     rho_ = d_rho;
 
-  if (le_champ_front.valeurs().dimension(0) == 1)
-    return (le_champ_front(0, j) - Pthn) / rho_;
+  if (le_champ_front->valeurs().dimension(0) == 1)
+    return (le_champ_front->valeurs()(0, j) - Pthn) / rho_;
   else
-    return (le_champ_front(i, j) - Pthn) / rho_;
+    return (le_champ_front->valeurs()(i, j) - Pthn) / rho_;
 }

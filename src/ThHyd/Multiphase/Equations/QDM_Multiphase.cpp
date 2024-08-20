@@ -365,14 +365,14 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
               }
           }
 
-        verifie_ch_init_nb_comp(la_vitesse, src.nb_comp());
+        verifie_ch_init_nb_comp(la_vitesse, src->nb_comp());
         la_vitesse->affecter(src), vit_lu = 1;
         la_vitesse->passe() = la_vitesse->valeurs();
       }
     else if (nom == "pression" || nom == "pressure")
       {
         Champ_Don src;
-        is >> src, verifie_ch_init_nb_comp(la_pression, src.nb_comp());
+        is >> src, verifie_ch_init_nb_comp(la_pression, src->nb_comp());
         la_pression->affecter(src);
         la_pression_en_pa->passe() = la_pression_en_pa->valeurs() = la_pression->passe() = la_pression->valeurs();
         press_lu = 1;

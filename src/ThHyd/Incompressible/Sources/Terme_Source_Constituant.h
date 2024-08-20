@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public :
 
   void mettre_a_jour(double temps)
   {
-    la_source_constituant.mettre_a_jour(temps);
+    la_source_constituant->mettre_a_jour(temps);
   };
 
 protected:

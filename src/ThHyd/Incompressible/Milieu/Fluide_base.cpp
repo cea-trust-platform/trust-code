@@ -294,8 +294,8 @@ void Fluide_base::mettre_a_jour(double temps)
 {
   Milieu_base::mettre_a_jour(temps);
   if (beta_co.non_nul())
-    beta_co.mettre_a_jour(temps);
-  mu.mettre_a_jour(temps);
+    beta_co->mettre_a_jour(temps);
+  mu->mettre_a_jour(temps);
   calculer_nu();
   nu->changer_temps(temps);
   nu->valeurs().echange_espace_virtuel();
@@ -306,11 +306,11 @@ void Fluide_base::mettre_a_jour(double temps)
   // (Pour un fluide incompressible semi transparent).
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     {
-      coeff_absorption_.mettre_a_jour(temps);
-      indice_refraction_.mettre_a_jour(temps);
+      coeff_absorption_->mettre_a_jour(temps);
+      indice_refraction_->mettre_a_jour(temps);
 
       // Mise a jour de longueur_rayo
-      longueur_rayo_.mettre_a_jour(temps);
+      longueur_rayo_->mettre_a_jour(temps);
 
       if (sub_type(Champ_Uniforme, kappa().valeur()))
         {
@@ -335,10 +335,11 @@ int Fluide_base::initialiser(const double temps)
 {
   Cerr << "Fluide_base::initialiser()" << finl;
   Milieu_base::initialiser(temps);
-  mu.initialiser(temps);
+  mu->initialiser(temps);
 
   if (beta_co.non_nul())
-    beta_co.initialiser(temps);
+    beta_co->initialiser(temps);
+
   calculer_nu();
   nu->valeurs().echange_espace_virtuel();
   nu->changer_temps(temps);
@@ -348,11 +349,11 @@ int Fluide_base::initialiser(const double temps)
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     {
       Cerr << "Semi transparent fluid properties initialization." << finl;
-      coeff_absorption_.initialiser(temps);
-      indice_refraction_.initialiser(temps);
+      coeff_absorption_->initialiser(temps);
+      indice_refraction_->initialiser(temps);
 
       // Initialisation de longueur_rayo
-      longueur_rayo_.initialiser(temps);
+      longueur_rayo_->initialiser(temps);
       if (sub_type(Champ_Uniforme, kappa().valeur()))
         longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()(0, 0));
       else

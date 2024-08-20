@@ -140,7 +140,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   if(ch_lambda.non_nul())
     {
       // Returns number of components of lambda field
-      lambda_nb_comp = ch_lambda.nb_comp( );
+      lambda_nb_comp = ch_lambda->nb_comp( );
       if (sub_type(Champ_Fonc_MED,ch_lambda.valeur()))
         {
           double temps=ch_lambda->temps();
@@ -199,7 +199,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (rho.non_nul() && Cp.non_nul())
     {
-      assert (rho.nb_comp() == Cp.nb_comp());
+      assert (rho.nb_comp() == Cp->nb_comp());
       if(!rho_cp_comme_T_.non_nul())
         {
           const double temps = pb.schema_temps().temps_courant();
@@ -599,11 +599,11 @@ void Milieu_base::mettre_a_jour(double temps)
 
   if (g_via_associer_.non_nul()) g_via_associer_->mettre_a_jour(temps);
 
-  if (lambda.non_nul()) lambda.mettre_a_jour(temps);
+  if (lambda.non_nul()) lambda->mettre_a_jour(temps);
 
-  if (Cp.non_nul()) Cp.mettre_a_jour(temps);
+  if (Cp.non_nul()) Cp->mettre_a_jour(temps);
 
-  if (beta_th.non_nul()) beta_th.mettre_a_jour(temps);
+  if (beta_th.non_nul()) beta_th->mettre_a_jour(temps);
 
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
@@ -633,8 +633,8 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
         // porosites_champ->valeurs().echange_espace_virtuel();
       }
 
-  porosites_champ.mettre_a_jour(temps); /* ne fait rien si Champ_Input_P0_Composite */
-  diametre_hyd_champ.mettre_a_jour(temps);
+  porosites_champ->mettre_a_jour(temps); /* ne fait rien si Champ_Input_P0_Composite */
+  diametre_hyd_champ->mettre_a_jour(temps);
 }
 
 void Milieu_base::update_rho_cp(double temps)
@@ -754,11 +754,11 @@ int Milieu_base::initialiser(const double temps)
 
   if (g_via_associer_.non_nul()) g_via_associer_->initialiser(temps);
 
-  if (lambda.non_nul()) lambda.initialiser(temps);
+  if (lambda.non_nul()) lambda->initialiser(temps);
 
-  if (Cp.non_nul()) Cp.initialiser(temps);
+  if (Cp.non_nul()) Cp->initialiser(temps);
 
-  if (beta_th.non_nul()) beta_th.initialiser(temps);
+  if (beta_th.non_nul()) beta_th->initialiser(temps);
 
   if ( (lambda.non_nul()) && (Cp.non_nul()) && (rho.non_nul()) )
     {
@@ -782,8 +782,8 @@ int Milieu_base::initialiser_porosite(const double temps)
 {
   // TODO : XXX : a voir si ICoCo ? faut l'initialiser dans le main ?
   assert(porosites_champ.non_nul() && diametre_hyd_champ.non_nul());
-  porosites_champ.initialiser(temps);
-  diametre_hyd_champ.initialiser(temps);
+  porosites_champ->initialiser(temps);
+  diametre_hyd_champ->initialiser(temps);
   return 1;
 }
 

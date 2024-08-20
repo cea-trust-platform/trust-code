@@ -116,10 +116,10 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
  */
 double Neumann_sortie_libre::val_ext(int i) const
 {
-  if (le_champ_ext.valeurs().size() == 1)
-    return le_champ_ext(0, 0);
-  else if (le_champ_ext.valeurs().dimension(1) == 1)
-    return le_champ_ext(i, 0);
+  if (le_champ_ext->valeurs().size() == 1)
+    return le_champ_ext->valeurs()(0, 0);
+  else if (le_champ_ext->valeurs().dimension(1) == 1)
+    return le_champ_ext->valeurs()(i, 0);
   else
     {
       Cerr << "Neumann_sortie_libre::val_ext" << finl;
@@ -152,10 +152,10 @@ void Neumann_sortie_libre::associer_fr_dis_base(const Frontiere_dis_base& fr)
  */
 double Neumann_sortie_libre::val_ext(int i, int j) const
 {
-  if (le_champ_ext.valeurs().dimension(0) == 1)
-    return le_champ_ext(0, j);
+  if (le_champ_ext->valeurs().dimension(0) == 1)
+    return le_champ_ext->valeurs()(0, j);
   else
-    return le_champ_ext(i, j);
+    return le_champ_ext->valeurs()(i, j);
 }
 
 const DoubleTab& Neumann_sortie_libre::val_ext() const
@@ -165,7 +165,7 @@ const DoubleTab& Neumann_sortie_libre::val_ext() const
   if (nb_faces_tot>0)
     {
       if (val_ext_.dimension(0) != nb_faces_tot)
-        val_ext_.resize(nb_faces_tot, le_champ_ext.valeurs().dimension(1));
+        val_ext_.resize(nb_faces_tot, le_champ_ext->valeurs().dimension(1));
       int size = val_ext_.dimension(0);
       int nb_comp = val_ext_.dimension(1);
       for (int i = 0; i < size; i++)
@@ -177,12 +177,12 @@ const DoubleTab& Neumann_sortie_libre::val_ext() const
 
 const DoubleTab& Neumann_sortie_libre::tab_ext() const
 {
-  return le_champ_ext.valeurs();
+  return le_champ_ext->valeurs();
 }
 
 DoubleTab& Neumann_sortie_libre::tab_ext()
 {
-  return le_champ_ext.valeurs();
+  return le_champ_ext->valeurs();
 }
 
 void Neumann_sortie_libre::fixer_nb_valeurs_temporelles(int nb_cases)

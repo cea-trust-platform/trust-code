@@ -162,7 +162,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
   // meme si la cond lim est un flux (dans ce cas la convection restera nullle.)
   for (int i=0; i<nb; i++)
     {
-      DoubleTab& T=condlims[i]->champ_front().valeurs();
+      DoubleTab& T=condlims[i]->champ_front()->valeurs();
       T=1.;
       if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
         ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;

@@ -79,8 +79,8 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
       bilan()(0) -= c * (hm*T(num_face)-htextm) * vol;
 
     }
-  himp_.mettre_a_jour(temps);
-  Text_.mettre_a_jour(temps);
+  himp_->mettre_a_jour(temps);
+  Text_->mettre_a_jour(temps);
 }
 
 void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,

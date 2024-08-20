@@ -119,17 +119,17 @@ double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_fron
       const Champ_Don& Cp=mil.capacite_calorifique();
       double d_rho = sub_type(Champ_Uniforme,rho) ? rho(0,0) : rho(i);
       double d_Cp = sub_type(Champ_Uniforme,Cp.valeur()) ? Cp(0,0) : Cp.valeur()(i);
-      if (champ_ext.valeurs().dimension(0)==1)
-        return champ_ext(0,j)/(d_rho*d_Cp);
+      if (champ_ext->valeurs().dimension(0)==1)
+        return champ_ext->valeurs()(0,j)/(d_rho*d_Cp);
       else
-        return champ_ext(i,j)/(d_rho*d_Cp);
+        return champ_ext->valeurs()(i,j)/(d_rho*d_Cp);
     }
   else
     {
-      if (champ_ext.valeurs().dimension(0)==1)
-        return champ_ext(0,j);
+      if (champ_ext->valeurs().dimension(0)==1)
+        return champ_ext->valeurs()(0,j);
       else
-        return champ_ext(i,j);
+        return champ_ext->valeurs()(i,j);
     }
 }
 

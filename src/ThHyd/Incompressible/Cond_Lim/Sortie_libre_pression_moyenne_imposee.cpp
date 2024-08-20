@@ -35,7 +35,7 @@ Entree& Sortie_libre_pression_moyenne_imposee::readOn(Entree& s)
 
   s >> Pext_;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   le_champ_front.typer("Champ_front_fonc");
   le_champ_front->fixer_nb_comp(1);
   return s;
@@ -55,8 +55,8 @@ void Sortie_libre_pression_moyenne_imposee::completer()
   int i;
   ndeb_ = ref_cast(Front_VF,frontiere_dis()).num_premiere_face();
   nb_faces_ = ref_cast(Front_VF,frontiere_dis()).nb_faces();
-  le_champ_front.valeurs().resize(nb_faces_, 1);
-  DoubleTab& Pimp = le_champ_front.valeurs();
+  le_champ_front->valeurs().resize(nb_faces_, 1);
+  DoubleTab& Pimp = le_champ_front->valeurs();
   for (i = 0; i < nb_faces_; i++)
     Pimp(i, 0) = Pext_;
 
@@ -80,7 +80,7 @@ void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
   const DoubleTab& tab_P = ref_cast(Navier_Stokes_std,mon_dom_cl_dis->equation()).pression()->valeurs();
 
   int face, elem, facegl;
-  DoubleTab& Pimp = le_champ_front.valeurs();
+  DoubleTab& Pimp = le_champ_front->valeurs();
 
   double Ptot = 0, s, S = 0;
 
@@ -132,10 +132,10 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
   else
     rho_ = d_rho;
 
-  if (le_champ_front.valeurs().size() == 1)
-    return le_champ_front(0, 0) / rho_;
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return le_champ_front(i, 0) / rho_;
+  if (le_champ_front->valeurs().size() == 1)
+    return le_champ_front->valeurs()(0, 0) / rho_;
+  else if (le_champ_front->valeurs().dimension(1) == 1)
+    return le_champ_front->valeurs()(i, 0) / rho_;
   else
     Cerr << "Neumann::flux_impose erreur" << finl;
   exit();
@@ -162,9 +162,9 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i, int j) const
   else
     rho_ = d_rho;
 
-  if (le_champ_front.valeurs().dimension(0) == 1)
-    return le_champ_front(0, j) / rho_;
+  if (le_champ_front->valeurs().dimension(0) == 1)
+    return le_champ_front->valeurs()(0, j) / rho_;
   else
-    return le_champ_front(i, j) / rho_;
+    return le_champ_front->valeurs()(i, j) / rho_;
 }
 

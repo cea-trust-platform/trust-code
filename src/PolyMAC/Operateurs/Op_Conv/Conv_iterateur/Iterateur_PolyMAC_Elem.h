@@ -1005,7 +1005,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
           int num_elem=face_voisins(face,0);
           if (num_elem == -1) num_elem = face_voisins(face,1);
           if (cp_uniforme) Cp_=Cp(0,0);
-          else if (Cp.nb_comp()==1) Cp_=Cp(num_elem);
+          else if (Cp->nb_comp()==1) Cp_=Cp(num_elem);
           else Cp_=Cp(num_elem,0);
           if (rho_uniforme) rho_=rho(0,0);
           else if (rho.nb_comp()==1) rho_=rho(num_elem);

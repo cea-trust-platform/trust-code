@@ -657,14 +657,14 @@ Entree& Navier_Stokes_std::lire_cond_init(Entree& is)
         {
           Champ_Don ch_init;
           is >> ch_init;
-          verifie_ch_init_nb_comp(inconnue(),ch_init.nb_comp());
+          verifie_ch_init_nb_comp(inconnue(),ch_init->nb_comp());
           inconnue()->affecter(ch_init.valeur());
         }
       else if (ind==2)
         {
           Champ_Don ch_init;
           is >> ch_init;
-          verifie_ch_init_nb_comp(pression(),ch_init.nb_comp());
+          verifie_ch_init_nb_comp(pression(),ch_init->nb_comp());
           pression()->affecter(ch_init.valeur());
         }
       else if (ind==-1)

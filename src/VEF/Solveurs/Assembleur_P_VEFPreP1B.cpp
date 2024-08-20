@@ -841,7 +841,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
         if (domaine_VEF.get_alphaA())
           {
             // On en profite pour verifier si la pression est bien nulle si support Pa
-            const DoubleTab& val=ref_cast(Neumann_sortie_libre,les_cl[i].valeur()).champ_front().valeurs();
+            const DoubleTab& val=ref_cast(Neumann_sortie_libre,les_cl[i].valeur()).champ_front()->valeurs();
             int nbval=val.dimension(0);
             for (int n=0; n<nbval; n++)
               if (val(n,0)!=0)

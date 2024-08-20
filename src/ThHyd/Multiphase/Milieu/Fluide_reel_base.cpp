@@ -118,13 +118,13 @@ int Fluide_reel_base::initialiser(const double temps)
   // XXX Elie Saikali : utile pour cas reprise !
   ch_e.changer_temps(temps), ch_h_ou_T.changer_temps(temps);
 
-  Cp.initialiser(temps);
-  mu.initialiser(temps);
-  nu.initialiser(temps);
-  alpha.initialiser(temps);
-  alpha_fois_rho.initialiser(temps);
-  lambda.initialiser(temps);
-  beta_th.initialiser(temps);
+  Cp->initialiser(temps);
+  mu->initialiser(temps);
+  nu->initialiser(temps);
+  alpha->initialiser(temps);
+  alpha_fois_rho->initialiser(temps);
+  lambda->initialiser(temps);
+  beta_th->initialiser(temps);
   rho_cp_comme_T_.initialiser(temps);
 
   t_init_ = temps;
@@ -150,13 +150,13 @@ void Fluide_reel_base::mettre_a_jour(double t)
   else
     is_incompressible() ? calculate_fluid_properties_enthalpie_incompressible() : calculate_fluid_properties_enthalpie();
 
-  Cp.mettre_a_jour(t);
-  mu.mettre_a_jour(t);
-  lambda.mettre_a_jour(t);
-  nu.mettre_a_jour(t);
-  alpha.mettre_a_jour(t);
-  alpha_fois_rho.mettre_a_jour(t);
-  beta_th.mettre_a_jour(t);
+  Cp->mettre_a_jour(t);
+  mu->mettre_a_jour(t);
+  lambda->mettre_a_jour(t);
+  nu->mettre_a_jour(t);
+  alpha->mettre_a_jour(t);
+  alpha_fois_rho->mettre_a_jour(t);
+  beta_th->mettre_a_jour(t);
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(t);
 
   const Champ_Inc_base& ch_T_ou_h = res_en_T_ ? equation("temperature").inconnue().valeur() : equation("enthalpie").inconnue().valeur(),

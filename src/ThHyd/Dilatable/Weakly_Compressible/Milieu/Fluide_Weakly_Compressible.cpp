@@ -163,13 +163,13 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 void Fluide_Weakly_Compressible::mettre_a_jour_bis()
 {
   assert(pression_eos_.non_nul());
-  pression_eos_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  pression_eos_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 
   if (pression_hydro_.non_nul())
-    pression_hydro_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+    pression_hydro_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 
   if (unsolved_species_.non_nul())
-    unsolved_species_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+    unsolved_species_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
 void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb)
@@ -296,11 +296,11 @@ void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
   if (a_gravite())
     {
       calculer_pression_hydro();
-      pression_hydro_.mettre_a_jour(temps);
+      pression_hydro_->mettre_a_jour(temps);
     }
   // for post-processing
   pression_eos_.valeurs() = Pth_tab_;
-  pression_eos_.mettre_a_jour(temps);
+  pression_eos_->mettre_a_jour(temps);
 }
 
 /*! @brief Calcule la pression totale : pression thermodynamique + pression hydrodynamique

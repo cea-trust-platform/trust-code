@@ -39,7 +39,7 @@ Entree& Champ_front_xyz_debit::readOn(Entree& is)
   param.ajouter("velocity_profil", &velocity_profil_, Param::OPTIONAL); // XD_ADD_P front_field_base velocity_profil 0 velocity field to define the profil of velocity.
   param.ajouter("flow_rate", &flow_rate_, Param::REQUIRED); //  XD_ADD_P front_field_base flow_rate 1 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_t
   param.lire_avec_accolades_depuis(is);
-  fixer_nb_comp(dimension * flow_rate_.nb_comp());
+  fixer_nb_comp(dimension * flow_rate_->nb_comp());
   return is;
 }
 
@@ -92,7 +92,7 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 
 void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user)
 {
-  const int N = flow_rate_.nb_comp();
+  const int N = flow_rate_->nb_comp();
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF,domaine_dis());
   integrale_ = 0.;
 
@@ -118,13 +118,13 @@ void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bo
 void Champ_front_xyz_debit::initialiser_coefficient(const Champ_Inc_base& inco, double tps)
 {
   const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
-  coeff_.resize(le_bord.nb_faces_tot(), flow_rate_.nb_comp());
+  coeff_.resize(le_bord.nb_faces_tot(), flow_rate_->nb_comp());
   coeff_ = 1.;
 }
 
 void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, DoubleTab& velocity_user, double temps)
 {
-  const int N = flow_rate_.nb_comp();
+  const int N = flow_rate_->nb_comp();
 
   for(int i = 0; i < le_bord.nb_faces_tot(); i++)
     for (int n = 0; n < N; ++n)

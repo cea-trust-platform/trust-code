@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ Entree& Sortie_libre_pression_imposee::readOn(Entree& s)
 
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   return s;
 }
 
@@ -102,10 +102,10 @@ double Sortie_libre_pression_imposee::flux_impose(int i, int j) const
   else
     rho_ = d_rho;
 
-  if (le_champ_front.valeurs().dimension(0) == 1)
-    return le_champ_front(0, j) / rho_;
-  else if (j < le_champ_front.valeurs().dimension(1))
-    return le_champ_front(i, j) / rho_;
+  if (le_champ_front->valeurs().dimension(0) == 1)
+    return le_champ_front->valeurs()(0, j) / rho_;
+  else if (j < le_champ_front->valeurs().dimension(1))
+    return le_champ_front->valeurs()(i, j) / rho_;
   else
     Cerr << "Sortie_libre_pression_imposee::flux_impose erreur" << finl;
   Process::exit();

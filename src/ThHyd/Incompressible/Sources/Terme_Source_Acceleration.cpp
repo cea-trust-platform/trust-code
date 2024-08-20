@@ -387,12 +387,12 @@ void Terme_Source_Acceleration::mettre_a_jour(double temps)
 {
   //Cerr << "Terme_Source_Acceleration::mettre_a_jour temps=" << temps << finl;
   if (champ_acceleration_.non_nul())
-    champ_acceleration_.mettre_a_jour(temps);
+    champ_acceleration_->mettre_a_jour(temps);
   if (omega_.non_nul())
     {
-      omega_.mettre_a_jour(temps);
-      domegadt_.mettre_a_jour(temps);
-      centre_rotation_.mettre_a_jour(temps);
+      omega_->mettre_a_jour(temps);
+      domegadt_->mettre_a_jour(temps);
+      centre_rotation_->mettre_a_jour(temps);
     }
   get_set_terme_source_post().mettre_a_jour(temps);
 }

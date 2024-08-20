@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,23 +31,23 @@ Entree& Sortie_libre_Gradient_Pression_impose_VEF::readOn(Entree& s)
 
   s >> le_champ_front;
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   return s;
 }
 
 double Sortie_libre_Gradient_Pression_impose_VEF::flux_impose(int face) const
 {
-  if (le_champ_front.valeurs().size() == 1)
+  if (le_champ_front->valeurs().size() == 1)
     {
       double a1 = trace_pression_int[face];
       double a2 = coeff[face];
-      double a3 = le_champ_front(0, 0);
+      double a3 = le_champ_front->valeurs()(0, 0);
       double Pimp = a1 + a2 * a3;
       return Pimp;
     }
-  else if (le_champ_front.valeurs().line_size() == 1)
+  else if (le_champ_front->valeurs().line_size() == 1)
     {
-      return (trace_pression_int[face] + coeff[face] * le_champ_front(face, 0));
+      return (trace_pression_int[face] + coeff[face] * le_champ_front->valeurs()(face, 0));
     }
   else
     Cerr << "Sortie_libre_Gradient_Pression_impose_VEF::flux_impose erreur" << finl;

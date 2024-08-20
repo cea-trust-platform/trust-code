@@ -358,9 +358,9 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (sub_type(Champ_Don_base, rho))
     ref_cast(Champ_Don_base, rho).initialiser(temps);
 
-  mu.initialiser(temps);
-  lambda.initialiser(temps);
-  Cp.initialiser(temps);
+  mu->initialiser(temps);
+  lambda->initialiser(temps);
+  Cp->initialiser(temps);
   update_rho_cp(temps);
 
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
@@ -380,9 +380,9 @@ int Fluide_Dilatable_base::initialiser(const double temps)
 // (Pour un fluide incompressible semi transparent).
 void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
 {
-  coeff_absorption_.initialiser(temps);
-  indice_refraction_.initialiser(temps);
-  longueur_rayo_.initialiser(temps);
+  coeff_absorption_->initialiser(temps);
+  indice_refraction_->initialiser(temps);
+  longueur_rayo_->initialiser(temps);
   if (sub_type(Champ_Uniforme,kappa().valeur()))
     longueur_rayo()->valeurs()(0,0)=1/(3*kappa()(0,0));
   else
@@ -443,12 +443,12 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
   rho.mettre_a_jour(temps);
-  ch_temperature().mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
+  ch_temperature()->mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
   rho->changer_temps(temps);
   ch_temperature()->changer_temps(temps);
   mu->changer_temps(temps);
   lambda->changer_temps(temps);
-  Cp.mettre_a_jour(temps);
+  Cp->mettre_a_jour(temps);
   update_rho_cp(temps);
   write_mean_edo(temps); // si besoin (i.e. QC)
 }
@@ -469,7 +469,7 @@ void Fluide_Dilatable_base::preparer_calcul()
 void Fluide_Dilatable_base::update_pressure_fields(double temps)
 {
   calculer_pression_tot();
-  pression_tot_.mettre_a_jour(temps);
+  pression_tot_->mettre_a_jour(temps);
 }
 
 /*! @brief Complete le fluide avec les champs inconnus associes au probleme

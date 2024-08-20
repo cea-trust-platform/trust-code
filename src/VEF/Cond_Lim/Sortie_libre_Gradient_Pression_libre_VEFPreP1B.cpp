@@ -33,10 +33,10 @@ Entree& Sortie_libre_Gradient_Pression_libre_VEFPreP1B::readOn(Entree& is)
   if (supp_discs.size() == 0) supp_discs = { Nom("VEFPreP1B") };
 
   le_champ_front.typer("Champ_front_uniforme");
-  le_champ_front.valeurs().resize(1, dimension);
+  le_champ_front->valeurs().resize(1, dimension);
   le_champ_front->fixer_nb_comp(1);
   le_champ_ext.typer("Champ_front_uniforme");
-  le_champ_ext.valeurs().resize(1, dimension);
+  le_champ_ext->valeurs().resize(1, dimension);
   return is;
 }
 
@@ -236,10 +236,10 @@ double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B(int 
   const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
   double d_rho = rho(0, 0);
-  if (le_champ_front.valeurs().size() == 1)
-    return le_champ_front(0, 0) / d_rho;
-  else if (le_champ_front.valeurs().dimension(1) == 1)
-    return le_champ_front(face, 0) / d_rho;
+  if (le_champ_front->valeurs().size() == 1)
+    return le_champ_front->valeurs()(0, 0) / d_rho;
+  else if (le_champ_front->valeurs().dimension(1) == 1)
+    return le_champ_front->valeurs()(face, 0) / d_rho;
   else
     Cerr << "Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B() erreur" << finl;
   exit();

@@ -164,14 +164,14 @@ void Echange_interne_impose::update_inv_lambda()
 void Echange_interne_impose::mettre_a_jour(double tps)
 {
   Echange_externe_impose::mettre_a_jour(tps);
-  h_gap_.mettre_a_jour(tps);
+  h_gap_->mettre_a_jour(tps);
 
   update_inv_lambda();
 
   bool isVDF = sub_type(Domaine_VDF, frontiere_dis().domaine_dis());
 
-  DoubleTab& h_impose = h_imp_.valeurs();
-  DoubleTab& h_gap = h_gap_.valeurs();
+  DoubleTab& h_impose = h_imp_->valeurs();
+  DoubleTab& h_gap = h_gap_->valeurs();
 
   // If VDF, fix h_imp to take into account half cell on the other side of the wall:
   if (isVDF)
