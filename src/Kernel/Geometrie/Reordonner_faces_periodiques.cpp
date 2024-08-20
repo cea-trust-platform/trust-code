@@ -18,27 +18,30 @@
 #include <Octree_Double.h>
 #include <Param.h>
 
+namespace
+{
 inline void message()
 {
   Cerr << "You need to use the Corriger_frontiere_periodique keyword on the periodic boundaries." << finl;
   Cerr << "See the reference manual to use this keyword on your data file." << finl;
 }
 
-static inline void calculer_vecteur_2faces(const DoubleTab& coord,
-                                           const IntTab& faces,
-                                           const int i_face1,
-                                           const int i_face2,
-                                           ArrOfDouble& vect)
+template <typename _SIZE_>
+inline void calculer_vecteur_2faces(const DoubleTab_T<_SIZE_>& coord,
+                                    const IntTab_T<_SIZE_>& faces,
+                                    const _SIZE_ i_face1,
+                                    const _SIZE_ i_face2,
+                                    ArrOfDouble& vect)
 {
-  const int nb_som_faces = faces.dimension(1);
-  const int dim = coord.dimension(1);
+  const int nb_som_faces = (int)faces.dimension(1);
+  const int dim = (int)coord.dimension(1);
   assert(vect.size_array() == dim);
   vect = 0.;
   // Calcul du vecteur entre le centre de la face i et le centre de la face i+n
   for (int j = 0; j < nb_som_faces; j++)
     {
-      const int sommet1 = faces(i_face1, j);
-      const int sommet2 = faces(i_face2, j);
+      const _SIZE_ sommet1 = faces(i_face1, j),
+                   sommet2 = faces(i_face2, j);
       for (int compo = 0; compo < dim; compo++)
         vect[compo] += coord(sommet2, compo) - coord(sommet1, compo);
     }
@@ -46,13 +49,36 @@ static inline void calculer_vecteur_2faces(const DoubleTab& coord,
 }
 
 
-static double local_norme_vect(const DoubleVect& dv)
+double local_norme_vect(const DoubleVect& dv)
 {
   double x=0.0;
   for(int i=0; i< dv.size_reelle(); i++)
     x += dv(i)*dv(i);
   x = sqrt(x);
   return x;
+}
+
+template <typename _SIZE_>
+void build_trad_space(const Domaine_32_64<_SIZE_>& domaine, IntTab_T<_SIZE_>& renum)
+{
+  // If we reach this point, we are already in parallel, and hence we should be in 32b only,
+  // never in 64b
+  assert(Process::is_parallel());
+
+  const MD_Vector& md_sommets = domaine.les_sommets().get_md_vector();
+  Scatter::construire_espace_virtuel_traduction(md_sommets, md_sommets, renum, 1 /* erreurs fatales */);
+}
+
+#if INT_is_64_ == 2
+template <>
+void build_trad_space(const Domaine_32_64<trustIdType>& domaine, IntTab_T<trustIdType>& renum)
+{
+  Cerr << "Reordonner_faces_periodiques::renum_som_perio() was invoked from a parallel environment with" << finl;
+  Cerr << "a 64b object. Did you use 'Domaine_64' keyword instead of 'Domaine' after a Scatter keyword??" << finl;
+  Process::exit(-1);
+}
+#endif
+
 }
 
 void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord)
@@ -206,11 +232,15 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
  *  Valeur de retour: 1 si ok, 0 si l'erreur est superieure a precision_geom.
  *
  */
-int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& frontiere,
-                                                          ArrOfDouble& vecteur_delta,
-                                                          ArrOfDouble& erreur,
-                                                          const int verbose)
+template <typename _SIZE_>
+int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere_32_64<_SIZE_>& frontiere,
+                                                          ArrOfDouble& vecteur_delta, ArrOfDouble& erreur,
+                                                          bool verbose)
 {
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+
   const int dim = Objet_U::dimension;
   vecteur_delta.resize_array(dim);
   vecteur_delta = 0.;
@@ -218,27 +248,26 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
   erreur = 0.;
 
   if (verbose && Process::je_suis_maitre())
-    {
-      Cerr << "Check periodic faces to the boundary : " << frontiere.le_nom() << finl;
-    }
-  const IntTab& faces = frontiere.faces().les_sommets();
-  const int nb_faces = faces.dimension(0);
+    Cerr << "Check periodic faces to the boundary : " << frontiere.le_nom() << finl;
+
+  const IntTab_t& faces = frontiere.faces().les_sommets();
+  const int_t nb_faces = faces.dimension(0);
   if (nb_faces % 2 != 0)
     {
       Cerr << "Error in Check_faces_periodiques to the boundary " << frontiere.le_nom()
            << "\n The number of faces is odd : " << nb_faces << finl;
       Cerr << "You probably forgot to define periodicity on some boundaries during partition:" << finl;
       Cerr << "Partition domain { ... periodique 1 " << frontiere.le_nom() << " }" << finl;
-      Process::exit();
+      Process::Process::exit();
     }
-  const int n = nb_faces / 2;
-  const DoubleTab coord = frontiere.domaine().les_sommets();
+  const int_t n = nb_faces / 2;
+  const DoubleTab_t coord = frontiere.domaine().les_sommets();
 
   int i;
   // Calculer un vecteur delta (tous les procs n'ont pas forcement des faces de ce bord)
   vecteur_delta = -1.e37;
   if (n > 0)
-    calculer_vecteur_2faces(coord, faces, 0, n, vecteur_delta);
+    calculer_vecteur_2faces<_SIZE_>(coord, faces, 0, n, vecteur_delta);
   for (i = 0; i < dim; i++)
     vecteur_delta[i] = Process::mp_max(vecteur_delta[i]);
 
@@ -246,7 +275,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
   ArrOfDouble vect(dim);
   for (i = 0; i < n; i++)
     {
-      calculer_vecteur_2faces(coord, faces, i, i+n, vect);
+      calculer_vecteur_2faces<_SIZE_>(coord, faces, i, i+n, vect);
       // Calcul de la difference entre vect et vecteur_delta:
       for (int compo = 0; compo < dim; compo++)
         erreur[compo] = std::max(erreur[compo], std::fabs(vecteur_delta[compo] - vect[compo]));
@@ -281,65 +310,65 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
   return 1;
 }
 
-void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
-                                                   const Noms& liste_bords_periodiques,
-                                                   ArrOfInt& renum_som_perio,
-                                                   const int calculer_espace_virtuel)
+template<typename _SIZE_>
+void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& domaine, const Noms& liste_bords_periodiques,
+                                                   ArrOfInt_T<_SIZE_>& renum_som_perio, bool calculer_espace_virtuel)
 {
-  int i;
-  const int nb_som = domaine.nb_som();
-  IntTab renum(nb_som);
-  for (i = 0; i < nb_som; i++)
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+
+  const int_t nb_som = domaine.nb_som();
+  IntTab_t renum(nb_som);
+  for (int_t i = 0; i < nb_som; i++)
     renum[i] = renum_som_perio[i];
 
-  const DoubleTab coord = domaine.coord_sommets();
-  const int dim = coord.dimension(1);
+  const DoubleTab_t coord = domaine.coord_sommets();
+  const int dim = (int)coord.dimension(1);
 
   // Etape 1: pour chaque sommet reel, trouver un sommet associe (si plusieurs directions
   //  de periodicite, un sommet peut etre associe a plusieurs autres).
-
   for (auto& itr : liste_bords_periodiques)
     {
       const Nom& nom_bord = itr;
-      const Frontiere& front = domaine.bord(nom_bord);
+      const Frontiere_32_64<_SIZE_>& front = domaine.bord(nom_bord);
       // Direction periodique de ce bord:
       ArrOfDouble delta;
       ArrOfDouble erreur;
-      if (!check_faces_periodiques(front, delta, erreur, 1 /* verbose */))
-        exit();
+      if (!check_faces_periodiques(front, delta, erreur, true /* verbose */))
+        Process::exit();
       // Tableau pointant vers tous les sommets de toutes les faces
       // (on cast le IntTab en ArrOfInt)
-      const IntTab& faces_sommets = front.les_sommets_des_faces();
-      const int nb_som_face = faces_sommets.dimension(1);
-      const int nb_faces = faces_sommets.dimension(0) / 2;
+      const IntTab_t& faces_sommets = front.les_sommets_des_faces();
+      const int nb_som_face = (int)faces_sommets.dimension(1);
+      const int_t nb_faces = faces_sommets.dimension(0) / 2;
       // Boucle sur les faces d'un cote du domaine (premiere moitie des faces)
-      for (int i_face = 0; i_face < nb_faces; i_face++)
+      for (int_t i_face = 0; i_face < nb_faces; i_face++)
         {
-
           for (int i_som = 0; i_som < nb_som_face; i_som++)
             {
-              const int sommet = faces_sommets(i_face, i_som);
+              const int_t sommet = faces_sommets(i_face, i_som);
 
               // Trouver le sommet associe
               // Comme les frontieres sont ordonnees (voir check_faces_periodiques),
               // le sommet est forcement un des sommets de la face opposee.
               // Le vecteur qui va de "sommet" a "sommet_oppose" doit etre egal a "delta"
               // la direction de periodicite.
-              const int i_face_opposee = i_face + nb_faces;
-              int sommet_opp = -1;
-              int i_som_opp;
-              for (i_som_opp = 0; i_som_opp < nb_som_face; i_som_opp++)
+              const int_t i_face_opposee = i_face + nb_faces;
+              int_t sommet_opp = -1;
+              int i_som_opp = 0;
+              for (; i_som_opp < nb_som_face; i_som_opp++)
                 {
                   sommet_opp = faces_sommets(i_face_opposee, i_som_opp);
-                  for (i = 0; i < dim; i++)
+                  int i = 0;
+                  for (; i < dim; i++)
                     {
                       double epsilon = std::fabs((coord(sommet_opp, i) - coord(sommet, i)) - delta[i]);
                       if (epsilon > Objet_U::precision_geom)
                         break;
                     }
-                  if (i == dim)
-                    // On a trouve le sommet oppose
-                    break;
+                  // On a trouve le sommet oppose
+                  if (i == dim) break;
                 }
               if (i_som_opp >= nb_som_face)
                 {
@@ -348,7 +377,7 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
                        << " Boundary " << nom_bord << "\n Face 1: " << i_face << "\n Node: " << sommet << finl;
                   Cerr << " May be you should define the periodic boundary " << nom_bord << finl;
                   message();
-                  exit();
+                  Process::exit();
                 }
               renum[sommet_opp] = sommet;
             }
@@ -357,9 +386,9 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
 
   // Deuxieme etape: faire pointer tous les sommets periodiques lies entre eux vers le meme sommet
 
-  for (i = 0; i < nb_som; i++)
+  for (int_t i = 0; i < nb_som; i++)
     {
-      int j = renum[i];
+      int_t j = renum[i];
       // Parcourir les sommet relies pour cette chaine:
       while (j != renum[j])
         j = renum[j];
@@ -367,13 +396,19 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
     }
   // Calcul des valeurs pour les sommets virtuels.
   // Les sommets opposes aux sommets virtuels doivent etre connus, donc erreurs fatales.
-  if (calculer_espace_virtuel)
-    {
-      const MD_Vector& md_sommets = domaine.les_sommets().get_md_vector();
-      Scatter::construire_espace_virtuel_traduction(md_sommets, md_sommets, renum, 1 /* erreurs fatales */);
-    }
+  if (Process::is_parallel() && calculer_espace_virtuel)
+    ::build_trad_space(domaine, renum);
 
   // Recopie du resultat dans le tableau renum_som_perio
   assert(renum.dimension_tot(0) == domaine.nb_som_tot());
   renum_som_perio = renum;
 }
+
+// Explicit instanciations
+template int Reordonner_faces_periodiques::check_faces_periodiques<int>(const Frontiere_32_64<int>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
+template void Reordonner_faces_periodiques::renum_som_perio<int>(const Domaine_32_64<int>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<int>& renum_som_perio, bool calculer_espace_virtuel);
+
+#if INT_is_64_ == 2
+template int Reordonner_faces_periodiques::check_faces_periodiques<trustIdType>(const Frontiere_32_64<trustIdType>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
+template void Reordonner_faces_periodiques::renum_som_perio<trustIdType>(const Domaine_32_64<trustIdType>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<trustIdType>& renum_som_perio, bool calculer_espace_virtuel);
+#endif

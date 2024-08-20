@@ -20,35 +20,15 @@ namespace
 
 /*! @brief retire les doublons du tableau array (suppose que le tableau est trie dans l'ordre croissant)
  *
- *   On deplace les elements conserves pour qu'ils soient contigus
- *   au debut du tableau.
- *   ATTENTION: on ne resize pas le tableau, utiliser la valeur
- *   de retour pour le faire ensuite!
- *   (au cas ou on veuille appliquer cette fonction a un IntTab,
- *    il faut faire resize() et non resize_array())
- *  Valeur de retour : nombre d'elements conserves dans le tableau
- *
+ *  Valeur de retour : nombre d'elements conserves dans le tableau - array is not resized.
  */
-template <typename _SIZE_>
-_SIZE_ array_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
+template <typename _TYPE_, typename _SIZE_>
+_SIZE_ array_retirer_doublons(TRUSTArray<_TYPE_,_SIZE_>& array)
 {
-  const _SIZE_ size = array.size_array();
-  if (size == 0)
-    return 0;
-  // Retire les doublons
-  _SIZE_ new_size = 1;
-  _SIZE_ last_value = array[0];
-  for (_SIZE_ i = 1; i < size; i++)
-    {
-      // Le tableau doit etre trie !
-      assert(array[i] >= last_value);
-      if (array[i] != last_value)
-        {
-          array[new_size] = last_value = array[i];
-          new_size++;
-        }
-    }
-  return new_size;
+  auto sz_arr = array.size_array();
+  auto last = std::unique(array.addr(), array.addr()+sz_arr);
+
+  return static_cast<_SIZE_>(std::distance(array.addr(), last));
 }
 
 }
@@ -56,12 +36,11 @@ _SIZE_ array_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
 /*! @brief Trie le tableau array dans l'ordre croissant et retire les doublons.
  *
  */
-template <typename _SIZE_>
-void array_trier_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
+template <typename _TYPE_, typename _SIZE_>
+void array_trier_retirer_doublons(TRUSTArray<_TYPE_,_SIZE_>& array)
 {
-  // IntVect n'est pas traite correctement car on ne
-  //  fait pas un resize() mais un resize_array().
-  assert(typeid(array) != typeid(IntVect_T<_SIZE_>));
+  // IntVect n'est pas traite correctement car on ne fait pas un resize() mais un resize_array().
+  assert(typeid(array) != typeid(TRUSTVect<_TYPE_, _SIZE_>));
   const _SIZE_ size = array.size_array();
   if (size == 0)
     return;
@@ -72,12 +51,6 @@ void array_trier_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
   array.resize_array(sz);
 }
 
-// Explicit instanciation
-template void array_trier_retirer_doublons(ArrOfInt_T<int>& array);
-#if INT_is_64_ == 2
-template void array_trier_retirer_doublons(ArrOfInt_T<trustIdType>& array);
-#endif
-
 /*! @brief calcule l'intersection entre les deux listes d'entiers liste1 et liste2.
  *
  * Le resultat est mis dans liste1.
@@ -85,19 +58,19 @@ template void array_trier_retirer_doublons(ArrOfInt_T<trustIdType>& array);
  *   triee en sortie.
  *
  */
-void array_calculer_intersection(ArrOfInt& liste1, const ArrOfInt& liste2)
+template <typename _TYPE_, typename _SIZE_>
+void array_calculer_intersection(TRUSTArray<_TYPE_,_SIZE_>& liste1, const TRUSTArray<_TYPE_,_SIZE_>& liste2)
 {
-  const int sz1 = liste1.size_array();
-  const int sz2 = liste2.size_array();
-  int i; // Pointeur en lecture dans liste1
-  int j = 0; // Pointeur en lecture dans liste2
-  int k = 0; // Pointeur en ecriture
-  for (i = 0; i < sz1; i++)
+  const _SIZE_ sz1 = liste1.size_array();
+  const _SIZE_ sz2 = liste2.size_array();
+  _SIZE_ j = 0; // Pointeur en lecture dans liste2
+  _SIZE_ k = 0; // Pointeur en ecriture
+  for (_SIZE_ i = 0; i < sz1; i++)
     {
       // On verifie que les listes sont triees dans l'ordre croissant
       assert((i >= sz1-1) || (liste1[i] < liste1[i+1]));
       assert((j >= sz2-1) || (liste2[j] < liste2[j+1]));
-      const int valeur_i = liste1[i];
+      const _TYPE_ valeur_i = liste1[i];
       // Avancer dans liste2 jusqu'a trouver ou depasser liste1[i]
       while (j < sz2 && liste2[j] < valeur_i)
         j++;
@@ -158,38 +131,6 @@ void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_eleme
   sorted_array.resize_array(i_write);
 }
 
-/*! @brief cherche la "valeur" dans le tableau tab par recherche binaire Le tableau tab doit etre trie dans l'ordre croissant
- *
- *   Si elle n'est pas trouvee, renvoie -1 (y compris si tab est vide),
- *   sinon, renvoie un index i tel que tab[i] == valeur
- *   (si la valeur figure plusieurs fois dans le tableau, on ne renvoie
- *   pas forcement la premiere occurence).
- *
- */
-int array_bsearch(const ArrOfInt& tab, int valeur)
-{
-  // attention tout est important !
-  int i = 0;
-  int j = tab.size_array(); // j = fin de tableau + 1 (important)
-  while (j > i)
-    {
-      // Le tableau doit etre trie
-      assert(j == tab.size_array() || tab[i] <= tab[j]);
-      const int milieu = (i + j) / 2;
-      const int val = tab[milieu];
-      if (val > valeur)
-        j = milieu; // prendre la valeur milieu et pas milieu - 1
-      else if (val < valeur)
-        i = milieu + 1; // prendre la valeur milieu + 1 et pas milieu
-      else
-        return milieu;
-    }
-  // Si on arrive ici, c'est que i==j, donc
-  // - soit j == fin de tableau + 1 et on n'a pas trouve la valeur
-  // - soit tab[j] a ete teste et n'est pas egale a valeur
-  // Dans les deux cas, valeur n'est pas dans le tableau
-  return -1;
-}
 
 static trustIdType fct_qsort_nbcolonnes;
 
@@ -198,29 +139,31 @@ template <typename T> True_int my_sign(T val)
   return (T(0) < val) - (val < T(0));
 }
 
+template <typename _SIZE_>
 True_int fct_qsort_tableau_2(const void *ptr1, const void *ptr2)
 {
-  const int *t1 = (const int *) ptr1;
-  const int *t2 = (const int *) ptr2;
-  int delta = t1[0] - t2[0];
-  int delta2 = t1[1] - t2[1];
+  const _SIZE_ *t1 = (const _SIZE_ *) ptr1;
+  const _SIZE_ *t2 = (const _SIZE_ *) ptr2;
+  _SIZE_ delta = t1[0] - t2[0];
+  _SIZE_ delta2 = t1[1] - t2[1];
   True_int s1 = my_sign(delta);
   return s1 ? s1 : my_sign(delta2);
 }
 
+template <typename _SIZE_>
 True_int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
 {
-  const int *t1 = (const int *) ptr1;
-  const int *t2 = (const int *) ptr2;
-  const int n = (int)fct_qsort_nbcolonnes - 1;
-  int i;
+  const _SIZE_ *t1 = (const _SIZE_ *) ptr1;
+  const _SIZE_ *t2 = (const _SIZE_ *) ptr2;
+  const _SIZE_ n = (_SIZE_)fct_qsort_nbcolonnes - 1;
+  _SIZE_ i;
   for (i = 0; i < n; i++)
     {
-      int delta = t1[i] - t2[i];
+      _SIZE_ delta = t1[i] - t2[i];
       if (delta)
         return my_sign(delta);
     }
-  int delta= t1[i] - t2[i];
+  _SIZE_ delta= t1[i] - t2[i];
   return my_sign(delta);
 }
 
@@ -231,12 +174,13 @@ True_int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
  *   Valeur de retour: nombre de colonnes du tableau (produit des tab.dimension(i) pour i>0)
  *
  */
-int tri_lexicographique_tableau(IntTab& tab)
+template <typename _SIZE_>
+int tri_lexicographique_tableau(IntTab_T<_SIZE_>& tab)
 {
   // On verifie que le tableau n'est pas un tableau distribue:
   assert(!tab.get_md_vector().non_nul());
 
-  const int nb_lignes = tab.dimension(0);
+  const _SIZE_ nb_lignes = tab.dimension(0);
   const int nb_colonnes = tab.line_size();
 
   if (nb_lignes != 0)
@@ -245,11 +189,11 @@ int tri_lexicographique_tableau(IntTab& tab)
       if (nb_colonnes == 1)
         tab.ordonne_array();
       else if (nb_colonnes == 2)
-        qsort(tab.addr(), nb_lignes, nb_colonnes * sizeof(int), fct_qsort_tableau_2);
+        qsort(tab.addr(), nb_lignes, nb_colonnes * sizeof(_SIZE_), fct_qsort_tableau_2<_SIZE_>);
       else
         {
           fct_qsort_nbcolonnes = nb_colonnes;
-          qsort(tab.addr(), nb_lignes, nb_colonnes * sizeof(int), fct_qsort_tableau_n);
+          qsort(tab.addr(), nb_lignes, nb_colonnes * sizeof(_SIZE_), fct_qsort_tableau_n<_SIZE_>);
         }
     }
 
@@ -349,46 +293,33 @@ int tri_lexicographique_tableau_indirect(const IntTab_T<_SIZE_>& tab, ArrOfInt_T
   return nb_colonnes;
 }
 
-// Explicit instanciation
-template const IntVect_T<int> *fct_qsort_tab_ptr<int>;
-template int tri_lexicographique_tableau_indirect(const IntTab_T<int>& tab, ArrOfInt_T<int>& index);
-
-#if INT_is_64_ == 2
-template static const IntVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
-template int tri_lexicographique_tableau_indirect(const IntTab_T<trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
-#endif
-
-void resize_tab_lines(IntTab& tab, const int n)
-{
-  tab.resize_dim0(n);
-}
 
 /*! @brief Trie le tableau tab dans l'ordre lexicographique et retire les doublons (attention [1,2] n'est pas egal a [2,1])
  *
  */
-void tableau_trier_retirer_doublons(IntTab& tab)
+template <typename _SIZE_>
+void tableau_trier_retirer_doublons(IntTab_T<_SIZE_>& tab)
 {
-  const int nb_lignes = tab.dimension(0);
-  if (nb_lignes == 0)
-    return;
+  const _SIZE_ nb_lignes = tab.dimension(0);
+  if (nb_lignes == 0) return;
 
   const int nb_colonnes = tri_lexicographique_tableau(tab);
 
   // Retire les doublons
   if (nb_colonnes == 1)
     {
-      const int new_size = array_retirer_doublons(tab);
-      resize_tab_lines(tab, new_size);
+      const _SIZE_ new_size = ::array_retirer_doublons(tab);
+      tab.resize_dim0(new_size);
     }
   else if (nb_colonnes == 2)
     {
-      int j = 1; // Taille du tableau apres suppression
-      int last_x = tab(0, 0);
-      int last_y = tab(0, 1);
+      _SIZE_ j = 1; // Taille du tableau apres suppression
+      _SIZE_ last_x = tab(0, 0);
+      _SIZE_ last_y = tab(0, 1);
       for (int i = 1; i < nb_lignes; i++)
         {
-          const int x = tab(i, 0);
-          const int y = tab(i, 1);
+          const _SIZE_ x = tab(i, 0);
+          const _SIZE_ y = tab(i, 1);
           if (x != last_x || y != last_y)
             {
               tab(j, 0) = last_x = x;
@@ -396,25 +327,44 @@ void tableau_trier_retirer_doublons(IntTab& tab)
               j++;
             }
         }
-      resize_tab_lines(tab, j);
+      tab.resize_dim0(j);
     }
   else
     {
-      int j = 0; // Derniere ligne retenue
+      _SIZE_ j = 0; // Derniere ligne retenue
       fct_qsort_nbcolonnes = nb_colonnes;
       for (int i = 1; i < nb_lignes; i++)
         {
           // Si la ligne i est differente de la ligne j, on la conserve:
-          if (!fct_qsort_tableau_n(&tab(i, 0), &tab(j, 0)))
+          if (!fct_qsort_tableau_n<_SIZE_>(&tab(i, 0), &tab(j, 0)))
             {
               j++;
               for (int k = 0; k < nb_colonnes; k++)
                 tab(j, k) = tab(i, k);
             }
         }
-      resize_tab_lines(tab, j+1);
+      tab.resize_dim0(j+1);
     }
 }
+
+// Explicit instanciations
+template const IntVect_T<int> *fct_qsort_tab_ptr<int>;
+template int tri_lexicographique_tableau_indirect(const IntTab_T<int>& tab, ArrOfInt_T<int>& index);
+template int tri_lexicographique_tableau(IntTab_T<int>& tab);
+template void tableau_trier_retirer_doublons(IntTab_T<int>& tab);
+template void array_calculer_intersection(TRUSTArray<int,int>& liste1, const TRUSTArray<int,int>& liste2);
+template void array_trier_retirer_doublons(TRUSTArray<int,int>& array);
+
+#if INT_is_64_ == 2
+template static const IntVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
+template int tri_lexicographique_tableau_indirect(const IntTab_T<trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
+template int tri_lexicographique_tableau(IntTab_T<trustIdType>& tab);
+template void tableau_trier_retirer_doublons(IntTab_T<trustIdType>& tab);
+template void array_calculer_intersection(TRUSTArray<int,trustIdType>& liste1, const TRUSTArray<int,trustIdType>& liste2);
+template void array_trier_retirer_doublons(TRUSTArray<int,trustIdType>& array);
+template void array_trier_retirer_doublons(TRUSTArray<trustIdType,trustIdType>& array);
+#endif
+
 
 static inline int same_line(const IntVect& v, int i, int j)
 {

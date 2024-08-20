@@ -39,7 +39,7 @@ void Periodique::completer()
 
   // Recherche de la direction de periodicite:
   ArrOfDouble erreur;
-  int ok = Reordonner_faces_periodiques::check_faces_periodiques(frontiere, direction_perio_, erreur, 1 /* verbose */);
+  int ok = Reordonner_faces_periodiques::check_faces_periodiques(frontiere, direction_perio_, erreur, true /* verbose */);
   if (!ok)
     exit();
 

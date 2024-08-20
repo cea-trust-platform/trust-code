@@ -21,13 +21,14 @@
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *
  */
-template <typename _SIZE_>
-void array_trier_retirer_doublons(ArrOfInt_T<_SIZE_>& array);
+template <typename _TYPE_, typename _SIZE_>
+void array_trier_retirer_doublons(TRUSTArray<_TYPE_,_SIZE_>& array);
 
 /*! @brief Methode outil pour calculer l'intersection entre deux listes d'entiers.
  *
  */
-void array_calculer_intersection(ArrOfInt& liste1, const ArrOfInt& liste2);
+template <typename _TYPE_, typename _SIZE_>
+void array_calculer_intersection(TRUSTArray<_TYPE_,_SIZE_>& liste1, const TRUSTArray<_TYPE_,_SIZE_>& liste2);
 
 /*! @brief Methode outil pour calculer la difference entre deux listes d'entiers triees
  *
@@ -42,7 +43,8 @@ int array_bsearch(const ArrOfInt& tab, int valeur);
 /*! @brief Tri lexicographique d'un tableau
  *
  */
-int tri_lexicographique_tableau(IntTab& tab);
+template <typename _SIZE_>
+int tri_lexicographique_tableau(IntTab_T<_SIZE_>& tab);
 
 /*! @brief Tri indirect (on trie le tableau index qui contient des numeros de lignes dans tab)
  *
@@ -53,7 +55,8 @@ int tri_lexicographique_tableau_indirect(const IntTab_T<_SIZE_>& tab, ArrOfInt_T
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *
  */
-void tableau_trier_retirer_doublons(IntTab& tab);
+template <typename _SIZE_>
+void tableau_trier_retirer_doublons(IntTab_T<_SIZE_>& tab);
 
 /*! @brief Methode outil pour trouver les doublons (permet de retirer les doublons sans changer l'ordre des elements)
  *

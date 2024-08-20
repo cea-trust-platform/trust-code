@@ -27,31 +27,36 @@
  * Voir construire_partition
  *
  */
-
-class Partitionneur_Metis : public Partitionneur_base
+template <typename _SIZE_>
+class Partitionneur_Metis_32_64 : public Partitionneur_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Partitionneur_Metis);
+  Declare_instanciable_32_64(Partitionneur_Metis_32_64);
+
 public:
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntVect_t = IntVect_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  using BigIntVect_ = TRUSTVect<int, _SIZE_>;
 
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_domaine(const Domaine& domaine) override;
-  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
+  void associer_domaine(const Domaine_t& domaine) override { ref_domaine_ = domaine; }
+  void construire_partition(BigIntVect_& elem_part, int& nb_parts_tot) const override;
 
 
 private:
 
   // Parametres du partitionneur
-  OBS_PTR(Domaine) ref_domaine_;
-  int nb_parties_;
+  OBS_PTR(Domaine_t) ref_domaine_;
+  int nb_parties_ = -1;
 
   // Options de metis
   enum AlgoMetis { PMETIS, KMETIS };
-  AlgoMetis algo_;
-  int match_type_;
-  int ip_type_;
-  int ref_type_;
-  int nb_essais_;
+  AlgoMetis algo_ = PMETIS;
+  int nb_essais_ = -1;
 
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.
   //  C'est mieux de l'utiliser s'il y a des bords periodiques, le
@@ -60,8 +65,8 @@ private:
   //  Cette option n'est pas indispensable: le maillage genere est
   //  valide dans avec ou sans l'option car on verifie de toutes facons
   //  la partition generee par metis (voir (***))
-  int use_weights_;
-  int use_segment_to_build_connectivite_elem_elem_;
+  int use_weights_ = 0;
+  int use_segment_to_build_connectivite_elem_elem_ = 0;
 
 };
 #ifndef NO_METIS

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,10 +39,17 @@ public :
   static void convert_to_symmetric_morse_matrix(const Matrice_Base& in, Matrice_Morse_Sym& out);
 
   // checking stencil
-  static bool is_normalized_stencil(const IntTab& stencil);
+  template <typename _SIZE_>
+  static bool is_normalized_stencil(const IntTab_T<_SIZE_>& stencil);
 
   // checking symmetric stencil
   static bool is_normalized_symmetric_stencil(const IntTab& stencil);
+
+  // Fill the two arrays tab1, tab2 of the CSR morse structure. This is used in the 32b (int) version in allocate_morse_matrix
+  // but also in some of the partitionners. Those two arrays must have been resized correctly already.
+  template <typename _SIZE_>
+  static void fill_csr_arrays(const _SIZE_ nb_lines, const _SIZE_ nb_columns, const TRUSTTab<_SIZE_,_SIZE_>& stencil,
+                              TRUSTVect<_SIZE_,_SIZE_>& tab1, TRUSTVect<_SIZE_,_SIZE_>& tab2);
 
   // building morse matrices by creating new matrix (from given stencil)
   // so we need to specify is the stencil is to attach or not to the matrix

@@ -215,6 +215,11 @@ int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TR
   return envoyer_all_to_all_(src, dest);
 }
 
+int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest)
+{
+  return envoyer_all_to_all_(src, dest);
+}
+
 /*! @brief On suppose que les tableaux en entree et en sortie sont de taille nproc() .
  *
  * On envoie src[0] au proc 0,

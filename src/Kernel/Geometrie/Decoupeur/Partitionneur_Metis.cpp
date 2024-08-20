@@ -28,35 +28,41 @@ inline void not_implemented(const Nom& chaine)
   Process::exit();
 }
 
-Implemente_instanciable_sans_constructeur(Partitionneur_Metis,"Partitionneur_Metis",Partitionneur_base);
+Implemente_instanciable_32_64(Partitionneur_Metis_32_64,"Partitionneur_Metis",Partitionneur_base_32_64<_T_>);
 // XD partitionneur_metis partitionneur_deriv metis -1 Metis is an external partitionning library. It is a general algorithm that will generate a partition of the domain.
 
-Partitionneur_Metis::Partitionneur_Metis()
+namespace
 {
-  nb_parties_ = -1;
-  nb_essais_ = 1;
-  algo_ = PMETIS;
-  match_type_ = -1;
-  ip_type_ = -1;
-  ref_type_ = -1;
-  use_weights_ = 0;
-  use_segment_to_build_connectivite_elem_elem_=0;
+
+/*! Handy method to convert a METIS idx_t to a '_SIZE_' value.
+ * In the case where METIS is compiled in 64b, and the template is instanciated in 32b, this is actually a down-cast, so check.
+ */
+template<typename _SIZE_>
+_SIZE_ from_idx_t_to_SIZE(idx_t val)
+{
+  assert(val < std::numeric_limits<_SIZE_>::max());
+  return (_SIZE_) val;
+}
 }
 
-Sortie& Partitionneur_Metis::printOn(Sortie& os) const
+
+template <typename _SIZE_>
+Sortie& Partitionneur_Metis_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  Cerr << "Partitionneur_Metis::printOn invalid\n" << finl;
-  exit();
+  Cerr << "Partitionneur_Metis_32_64<_SIZE_>::printOn invalid\n" << finl;
+  Process::exit();
   return os;
 }
 
-Entree& Partitionneur_Metis::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Partitionneur_Metis_32_64<_SIZE_>::readOn(Entree& is)
 {
-  Partitionneur_base::readOn(is);
+  Partitionneur_base_32_64<_SIZE_>::readOn(is);
   return is;
 }
 
-void Partitionneur_Metis::set_param(Param& param)
+template <typename _SIZE_>
+void Partitionneur_Metis_32_64<_SIZE_>::set_param(Param& param)
 {
   param.ajouter("nb_parts",&nb_parties_,Param::REQUIRED);
   param.ajouter("nb_essais",&nb_essais_);
@@ -70,11 +76,12 @@ void Partitionneur_Metis::set_param(Param& param)
   param.ajouter_flag("use_segment_to_build_connectivite_elem_elem",&use_segment_to_build_connectivite_elem_elem_); // option pour construire le grpah a partir des liens (segment) pour reseau electrique, sides ....
 }
 
-int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+template <typename _SIZE_>
+int Partitionneur_Metis_32_64<_SIZE_>::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if(Process::is_parallel())
     {
-      Cerr << "WARNING! You're using a sequential algorithm on " << nproc() << "processors " << finl;
+      Cerr << "WARNING! You're using a sequential algorithm on " << this->nproc() << "processors " << finl;
       Cerr << "Use PARMETIS for parallel domain cutting" << finl;
       Process::exit();
     }
@@ -106,12 +113,7 @@ int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       return 1;
     }
   else
-    return Partitionneur_base::lire_motcle_non_standard(mot,is);
-}
-
-void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
-{
-  ref_domaine_ = domaine;
+    return Partitionneur_base_32_64<_SIZE_>::lire_motcle_non_standard(mot,is);
 }
 
 /*! @brief Calcule le graphe de connectivite pour Metis, appelle le partitionneur et remplit elem_part (pour chaque element, numero de la partie qui lui
@@ -121,33 +123,30 @@ void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
  *   et a equilibrer le nombre d'elements par partie.
  *
  */
-void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
+template <typename _SIZE_>
+void Partitionneur_Metis_32_64<_SIZE_>::construire_partition(BigIntVect_& elem_part, int& nb_parts_tot) const
 {
 #ifdef NO_METIS
   Cerr << "METIS is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
-
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-
   if (!ref_domaine_.non_nul())
     {
-      Cerr << "Error in Partitionneur_Metis::construire_partition\n";
+      Cerr << "Error in Partitionneur_Metis_32_64<_SIZE_>::construire_partition\n";
       Cerr << " The domain has not been associated" << finl;
-      exit();
+      Process::exit();
     }
   if (nb_parties_ <= 0)
     {
-      Cerr << "Error in Partitionneur_Metis::construire_partition\n";
+      Cerr << "Error in Partitionneur_Metis_32_64<_SIZE_>::construire_partition\n";
       Cerr << " The parts number has not been initialized" << finl;
-      exit();
+      Process::exit();
     }
 
   // Cas particulier: si nb_parts == 1, METIS ne veut rien faire...
   if (nb_parties_ == 1)
     {
-
-      int nb_elem = ref_domaine_->nb_elem_tot();
+      int_t nb_elem = ref_domaine_->nb_elem_tot();
       if (use_segment_to_build_connectivite_elem_elem_==1)
         nb_elem = ref_domaine_->nb_som();
       elem_part.resize(nb_elem);
@@ -158,26 +157,21 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
   if (ref_domaine_->nb_elem() == 0)
     return;
 
-  Cerr << "Partitionneur_Metis::construire_partition" << finl;
+  Cerr << "Partitionneur_Metis_32_64<_SIZE_>::construire_partition" << finl;
   Cerr << " Construction of graph connectivity..." << finl;
-  Static_Int_Lists graph_elements_perio;
+  Static_Int_Lists_32_64<_SIZE_> graph_elements_perio;
   //const Domaine& dom = ref_domaine_.valeur();
   Domain_Graph graph;
   if (use_segment_to_build_connectivite_elem_elem_==0)
-    {
-      graph.construire_graph_elem_elem(ref_domaine_.valeur(), liste_bords_periodiques_,
-                                       use_weights_,
-                                       graph_elements_perio);
-
-    }
+    graph.construire_graph_elem_elem<_SIZE_>(ref_domaine_.valeur(), this->liste_bords_periodiques_,
+                                             use_weights_,
+                                             graph_elements_perio);
   else
-    {
-      graph.construire_graph_from_segment(ref_domaine_.valeur(), use_weights_);
+    graph.construire_graph_from_segment<_SIZE_>(ref_domaine_.valeur(), use_weights_);
 
-    }
-  std::vector<int> partition(graph.nvtxs);
-  int int_parts = nb_parties_;
-  int edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
+  std::vector<idx_t> partition(graph.nvtxs);
+  idx_t int_parts = nb_parties_;
+  idx_t edgecut = 0; // valeur renvoyee par metis (nombre total de faces de joint)
 
   switch(algo_)
     {
@@ -187,7 +181,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         Cerr << "Call for PMETIS" << finl;
         Cerr << "===============" << finl;
         // Voir le manual.pdf de METIS 5.0
-        int options[METIS_NOPTIONS];
+        idx_t options[METIS_NOPTIONS];
         METIS_SetDefaultOptions(options);
         //options[METIS_OPTION_PTYPE]=METIS_PTYPE_RB|METIS_PTYPE_KWAY; // Methode de partitionnement
         //options[METIS_OPTION_OBJTYPE]=METIS_OBJTYPE_CUT|METIS_OBJTYPE_VOL; // Objective type
@@ -198,7 +192,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         options[METIS_OPTION_NUMBERING]=0;              // Numerotation C qui demarre a 0
         options[METIS_OPTION_DBGLVL]=111111111;         // Mode verbose maximal
         //options[METIS_OPTION_NO2HOP]=1;                 // 5.1.0: not perform any 2-hop matchings (as 5.0.3)
-        int ncon=1;
+        idx_t ncon=1;
 
         // Implementation reduite (plusieurs valeurs par defaut->nullptr) pour METIS 5.0
         int status = METIS_PartGraphRecursive(&graph.nvtxs, &ncon, graph.xadj.addr(),
@@ -212,7 +206,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
             if (status == METIS_ERROR_MEMORY) Cerr << "It seems it couldn't allocate enough memory." << finl;
             if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
             Cerr << "Contact TRUST support." << finl;
-            exit();
+            Process::exit();
           }
         Cerr << "===============" << finl;
         break;
@@ -220,7 +214,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
     case KMETIS:
       {
         Cerr << " Call for KMETIS" << finl;
-        int options[METIS_NOPTIONS];
+        idx_t options[METIS_NOPTIONS];
         METIS_SetDefaultOptions(options);
         //options[METIS_OPTION_PTYPE]=METIS_PTYPE_RB|METIS_PTYPE_KWAY; // Methode de partitionnement
         //options[METIS_OPTION_OBJTYPE]=METIS_OBJTYPE_CUT|METIS_OBJTYPE_VOL; // Objective type
@@ -230,7 +224,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
         options[METIS_OPTION_NCUTS]=nb_essais_;         // Nombre de partitionnements testes pour en prendre le meilleur
         options[METIS_OPTION_NUMBERING]=0;     // Numerotation C qui demarre a 0
         options[METIS_OPTION_DBGLVL]=111111111; // Mode verbose maximal
-        int ncon=1;
+        idx_t ncon=1;
         // Conseil de la doc Metis 4.0 : METIS_PartGraphKway si int_parts>8, METIS_PartGraphRecursive sinon...
         // En effet semble plus rapide, mais edgecut en sortie est moins bon...
         int status = METIS_PartGraphKway(&graph.nvtxs, &ncon, graph.xadj.addr(),
@@ -244,14 +238,14 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
             if (status == METIS_ERROR_MEMORY) Cerr << "It seems it couldn't allocate enough memory." << finl;
             if (status == METIS_ERROR)        Cerr << "It seems there is a METIS internal error." << finl;
             Cerr << "Contact TRUST support." << finl;
-            exit();
+            Process::exit();
           }
         break;
       }
     default:
       {
-        Cerr << "Internal error Partitionneur_Metis: not coded" << finl;
-        exit();
+        Cerr << "Internal error Partitionneur_Metis_32_64: not coded" << finl;
+        Process::exit();
       }
     }
   Cerr << "Partitioning quality : edgecut = " << edgecut << finl;
@@ -260,29 +254,33 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
 
-  const int n = graph.nvtxs;
+  const int_t n = from_idx_t_to_SIZE<_SIZE_>(graph.nvtxs);
   elem_part.resize(n);
-  for (int i = 0; i < n; i++)
-    elem_part[i] = partition[i];
+  for (int_t i = 0; i < n; i++)
+    elem_part[i] = static_cast<int>(partition[i]); // here cast is OK, a partition index (i.e. a proc number) should always be under 32b
 
   // Correction de la partition pour la periodicite. (***)
   if (graph_elements_perio.get_nb_lists() > 0)
     {
       Cerr << "Correction of the partition for the periodicity" << finl;
-      corriger_bords_avec_liste(ref_domaine_.valeur(),
-                                liste_bords_periodiques_,
-                                0,
-                                elem_part);
-      Cerr << "  If this number is high, we can improve the splitting with the option use_weights\n"
+      this->corriger_bords_avec_liste(ref_domaine_.valeur(), this->liste_bords_periodiques_, 0, elem_part);
+      Cerr << "  If this number is high, you can improve the splitting with the option use_weights\n"
            << "  but it takes more memory)" << finl;
     }
 
   if (use_segment_to_build_connectivite_elem_elem_==0)
     {
       Cerr << "Correction elem0 on processor 0" << finl;
-      corriger_elem0_sur_proc0(elem_part);
+      this->corriger_elem0_sur_proc0(elem_part);
     }
 #endif
-#endif
 }
+
+
+
+template class Partitionneur_Metis_32_64<int>;
+#if INT_is_64_ == 2
+template class Partitionneur_Metis_32_64<trustIdType>;
+#endif
+
 

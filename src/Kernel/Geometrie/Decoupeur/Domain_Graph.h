@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,39 +15,40 @@
 #ifndef Domain_Graph_included
 #define Domain_Graph_included
 
-/*! @brief Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need
+#include <metis.h>   // to have idx_t, the entity index of METIS (32 or 64b depending on how METIS/PETSc was compiled)
+
+/*! @brief Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need.
  *
  */
-
 class Domain_Graph
 {
-
-  friend class Partitionneur_Metis;
-  friend class Partitionneur_Parmetis;
-  friend class Partitionneur_Ptscotch;
-
 public:
 
-  void construire_graph_from_segment(const Domaine& dom,
-                                     const int use_weights );
+  using ArrOfIdx_ = TRUSTArray<idx_t, idx_t>;
 
-  void construire_graph_elem_elem(const Domaine& dom,
+  template <typename _SIZE_>
+  void construire_graph_from_segment(const Domaine_32_64<_SIZE_>& dom,
+                                     bool use_weights );
+
+  template <typename _SIZE_>
+  void construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
                                   const Noms& liste_bords_periodiques,
-                                  const int use_weights,
-                                  Static_Int_Lists& graph_elements_perio);
+                                  bool use_weights,
+                                  Static_Int_Lists_32_64<_SIZE_>& graph_elements_perio);
 
+  //
+  // All members are public to facilitate access from Partitionneur_* classes (rather than friend-ing everything):
+  //
 
-
-private:
-  int nvtxs;                        /* The number of vertices */
-  int nedges;                        /* The total number of edges */
-  int weightflag;
-  ArrOfInt xadj;                        /* CRS storage scheme */
-  ArrOfInt adjncy;
-  ArrOfInt vwgts;
-  ArrOfInt ewgts;
-  ArrOfInt vtxdist;                     //for parmetis: distribution of the initial graph on the procs
-  ArrOfInt edgegsttab;                  //for ptscotch: local numbering of vertices
+  idx_t nvtxs;                /* The number of vertices */
+  idx_t nedges;               /* The total number of edges */
+  idx_t weightflag;
+  ArrOfIdx_ xadj;             /* CRS storage scheme */
+  ArrOfIdx_ adjncy;
+  ArrOfIdx_ vwgts;
+  ArrOfIdx_ ewgts;
+  ArrOfIdx_ vtxdist;          // for parmetis: distribution of the initial graph on the procs
+  ArrOfIdx_ edgegsttab;       // for ptscotch: local numbering of vertices
 };
 
 #endif

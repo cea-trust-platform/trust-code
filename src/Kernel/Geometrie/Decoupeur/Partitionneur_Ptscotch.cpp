@@ -82,6 +82,8 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
+#if !defined(INT_is_64_) || INT_is_64_ == 1
+
   if (!ref_domaine_.non_nul())
     {
       Cerr << "Error in Partitionneur_Ptscotch::construire_partition\n";
@@ -125,8 +127,6 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   SCOTCH_randomReset();
   SCOTCH_Dgraph scotch_graph;
   SCOTCH_dgraphInit(&scotch_graph, Comm_Group_MPI::get_trio_u_world());
-  // TODO IG
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   SCOTCH_dgraphBuild(&scotch_graph,
                      0,             // baseval               , base first indice 0
                      n,   // vertlocnbr            , nb of local graph nodes
@@ -140,13 +140,10 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
                      graph.adjncy.addr(),        // edgeloctab[edgelocnbr], global indexes of edges
                      graph.edgegsttab.addr(),   // edgegsttab            , optional, should be computed internally, set to zero
                      0); // edloloctab            , graph edges loads, set to zero
-#endif
   SCOTCH_Strat scotch_strategy;
   SCOTCH_stratInit(&scotch_strategy);
 
-#if !defined(INT_is_64_) || INT_is_64_ == 1
   SCOTCH_dgraphPart(&scotch_graph,nb_parties_,&scotch_strategy,partition);
-#endif
 
   SCOTCH_stratExit(&scotch_strategy);
   SCOTCH_dgraphExit(&scotch_graph);
@@ -172,7 +169,9 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
   elem_part.echange_espace_virtuel();
-
+#else
+  Process::exit("Partitionneur_Ptscotch not ported yet!! TODO.");
+#endif
 #endif
 }
 

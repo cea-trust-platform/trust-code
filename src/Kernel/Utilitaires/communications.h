@@ -40,6 +40,7 @@ int is_parallel_object(const int x);
 
 int envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<TRUSTTab<double>>& dest);
 int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest);
+int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 void envoyer_all_gather(const DoubleTab& src, DoubleTab& dest);

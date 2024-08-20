@@ -303,6 +303,8 @@ void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& doma
 //    }
   // Save all this:
   mfumesh_->setGroupsAtLevel(-1, grps);
+#else
+  Process::exit("EcrierMED todo 64b");
 #endif
 }
 

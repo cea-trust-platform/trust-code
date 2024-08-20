@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,19 +83,19 @@ void Matrix_tools::convert_to_symmetric_morse_matrix( const Matrice_Base& in,
 }
 
 // checking stencil
-bool Matrix_tools::is_normalized_stencil( const IntTab& stencil )
+template <typename _SIZE_>
+bool Matrix_tools::is_normalized_stencil( const IntTab_T<_SIZE_>& stencil )
 {
-  const int size = stencil.dimension( 0 );
-  for ( int i=1; i<size; ++i )
+  using int_t = _SIZE_;
+  const int_t size = stencil.dimension( 0 );
+  for ( int_t i=1; i<size; ++i )
     {
-      int delta1 = stencil( i-1, 0 ) - stencil( i, 0 );
-      int delta2 = stencil( i-1, 1 ) - stencil( i, 1 );
-      int delta  = ( delta1 == 0 ) ? delta2 : delta1;
+      int_t delta1 = stencil( i-1, 0 ) - stencil( i, 0 );
+      int_t delta2 = stencil( i-1, 1 ) - stencil( i, 1 );
+      int_t delta  = ( delta1 == 0 ) ? delta2 : delta1;
 
       if ( delta >= 0 )
-        {
-          return false;
-        }
+        return false;
     }
   return true;
 }
@@ -123,6 +123,43 @@ bool Matrix_tools::is_normalized_symmetric_stencil( const IntTab& stencil )
   return true;
 }
 
+template <typename _SIZE_>
+void Matrix_tools::fill_csr_arrays(const _SIZE_ nb_lines, const _SIZE_ nb_columns, const TRUSTTab<_SIZE_,_SIZE_>& stencil,
+                                   TRUSTVect<_SIZE_,_SIZE_>& tab1, TRUSTVect<_SIZE_,_SIZE_>& tab2)
+{
+  assert( is_normalized_stencil( stencil ) );
+
+  const _SIZE_ nb_coefficients = stencil.dimension( 0 );
+
+  assert(tab1.size_array() == nb_lines+1);
+  assert(tab2.size_array() == nb_coefficients);
+
+  if ( nb_coefficients > 0 )
+    {
+      tab1 = 0 ;
+      tab1[0] = 1;
+      for (_SIZE_ i=0; i<nb_coefficients; ++i )
+        {
+          assert( stencil( i ,0 ) >= 0         );
+          assert( stencil( i ,0 ) < nb_lines   );
+          assert( stencil( i ,1 ) >= 0         );
+          assert( stencil( i ,1 ) < nb_columns );
+
+          tab1[stencil(i, 0) + 1] += 1;
+          tab2[i] = stencil(i, 1) + 1;
+        }
+      for ( int i=0; i<nb_lines; ++i )
+        tab1[i + 1] += tab1[i];
+    }
+}
+
+// Explicit instanciation
+template void Matrix_tools::fill_csr_arrays(const int nb_lines, const int nb_columns, const TRUSTTab<int,int>& stencil,
+                                            TRUSTVect<int,int>& tab1, TRUSTVect<int,int>& tab2);
+#if INT_is_64_ == 2
+template void Matrix_tools::fill_csr_arrays(const trustIdType nb_lines, const trustIdType nb_columns, const TRUSTTab<trustIdType,trustIdType>& stencil,
+                                            TRUSTVect<trustIdType,trustIdType>& tab1, TRUSTVect<trustIdType,trustIdType>& tab2);
+#endif
 
 // building morse matrices
 void Matrix_tools::allocate_morse_matrix( const int nb_lines,
@@ -131,39 +168,13 @@ void Matrix_tools::allocate_morse_matrix( const int nb_lines,
                                           Matrice_Morse& matrix ,
                                           const bool& attach_stencil_to_matrix )
 {
-
   assert( is_normalized_stencil( stencil ) );
 
   const int nb_coefficients = stencil.dimension( 0 );
-
-  matrix.dimensionner( nb_lines,
-                       nb_columns,
-                       nb_coefficients );
-
-  if ( nb_coefficients > 0 )
-    {
-      matrix.get_set_tab1( ) = 0 ;
-      matrix.get_set_tab1( )( 0 ) = 1;
-      for ( int i=0; i<nb_coefficients; ++i )
-        {
-          assert( stencil( i ,0 ) >= 0         );
-          assert( stencil( i ,0 ) < nb_lines   );
-          assert( stencil( i ,1 ) >= 0         );
-          assert( stencil( i ,1 ) < nb_columns );
-
-          matrix.get_set_tab1( )( stencil( i, 0 ) + 1 ) += 1;
-          matrix.get_set_tab2( )( i ) = stencil( i, 1 ) + 1;
-        }
-      for ( int i=0; i<nb_lines; ++i )
-        {
-          matrix.get_set_tab1()( i + 1 ) += matrix.get_tab1()( i );
-        }
-    }
-
+  matrix.dimensionner( nb_lines, nb_columns, nb_coefficients );
+  fill_csr_arrays<int>(nb_lines, nb_columns, stencil, matrix.get_set_tab1(), matrix.get_set_tab2());
   if( attach_stencil_to_matrix )
-    {
-      matrix.set_stencil( stencil );
-    }
+    matrix.set_stencil( stencil );
 }
 
 void Matrix_tools::build_morse_matrix( const int     nb_lines,

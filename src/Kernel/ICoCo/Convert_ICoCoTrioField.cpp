@@ -134,7 +134,7 @@ void build_triomesh(const Domaine_dis_base& dom_dis, ICoCo::TrioField& afield, i
 #include <MEDCouplingFieldDouble.hxx>
 #include <MCAuto.hxx>
 #include <string.h>
-
+#include <vector>
 
 
 using ICoCo::TrioField;
@@ -245,7 +245,11 @@ MEDDoubleField build_medfield(TrioField& triofield)
         }
       int size = triofield._nodes_per_elem;
       while (conn[size - 1] == -1) size--; //on enleve les -1 a la fin de la connectivite
-#if !defined(INT_is_64_) || INT_is_64_ == 1
+#if INT_is_64_ == 2
+      // Convert int into mcIdType
+      std::vector<mcIdType> conn_mc(conn, conn+size);
+      mesh->insertNextCell(elemtype,size,conn_mc.data());
+#else
       mesh->insertNextCell(elemtype,size,conn);
 #endif
     }

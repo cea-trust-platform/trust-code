@@ -47,25 +47,48 @@ class Param;
  *    periodiques et autres...)
  *
  */
-class Partitionneur_base : public Objet_U
+template <typename _SIZE_>
+class Partitionneur_base_32_64 : public Objet_U
 {
-  Declare_base(Partitionneur_base);
-public:
-  virtual void set_param(Param& param)=0;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  virtual void associer_domaine(const Domaine& domaine) = 0;
-  virtual void declarer_bords_periodiques(const Noms& noms_bords_periodiques);
-  virtual void construire_partition(IntVect& elem_part, int& nb_parts_tot) const = 0;
+  Declare_base_32_64(Partitionneur_base_32_64);
 
-  static void corriger_elem0_sur_proc0(IntVect& elem_part);
-  static int calculer_graphe_connexions_periodiques(const Domaine& domaine, const Noms& liste_bords_periodiques, const Static_Int_Lists& som_elem, const int my_offset, Static_Int_Lists& graph);
-  static int corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio, const Static_Int_Lists& som_elem, const Domaine& domaine, const Noms& liste_bords_perio, IntVect& elem_part);
-  static void corriger_bords_avec_liste(const Domaine& dom, const Noms& liste_bords_periodiques, const int my_offset, IntVect& elem_part);
-  static int corriger_sommets_bord(const Domaine& domaine, const Noms& liste_bords_perio, const ArrOfInt& renum_som_perio, const Static_Int_Lists& som_elem, IntVect& elem_part);
-  static int corriger_multiperiodique(const Domaine& domaine, const Noms& liste_bords_perio, const ArrOfInt& renum_som_perio, const Static_Int_Lists& som_elem, IntVect& elem_part);
+public:
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntVect_t = IntVect_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Static_Int_Lists_t = Static_Int_Lists_32_64<_SIZE_>;
+  using Bord_t = Bord_32_64<_SIZE_>;
+
+  using BigArrOfInt_ = TRUSTArray<int, _SIZE_>;  // always int as value type, will hold proc/partition number.
+  using BigIntVect_ = TRUSTVect<int, _SIZE_>;
+
+  virtual void set_param(Param& param)=0;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override { return -1; }
+  virtual void associer_domaine(const Domaine_t& domaine) = 0;
+  virtual void declarer_bords_periodiques(const Noms& noms_bords_periodiques) { liste_bords_periodiques_ = noms_bords_periodiques; }
+  virtual void construire_partition(BigIntVect_& elem_part, int& nb_parts_tot) const = 0;
+
+  static void corriger_elem0_sur_proc0(BigIntVect_& elem_part);
+
+  static int_t calculer_graphe_connexions_periodiques(const Domaine_t& domaine, const Noms& liste_bords_periodiques,
+                                                      const Static_Int_Lists_t& som_elem, const int_t my_offset,
+                                                      Static_Int_Lists_t& graph);
+
+  static int_t corriger_bords_avec_graphe(const Static_Int_Lists_t& graph_elements_perio, const Static_Int_Lists_t& som_elem,
+                                          const Domaine_t& domaine, const Noms& liste_bords_perio, BigIntVect_& elem_part);
+  static void corriger_bords_avec_liste(const Domaine_t& dom, const Noms& liste_bords_periodiques, const int_t my_offset, BigIntVect_& elem_part);
+  static int_t corriger_sommets_bord(const Domaine_t& domaine, const Noms& liste_bords_perio, const ArrOfInt_t& renum_som_perio,
+                                     const Static_Int_Lists_t& som_elem, BigIntVect_& elem_part);
+  static int_t corriger_multiperiodique(const Domaine_t& domaine, const Noms& liste_bords_perio, const ArrOfInt_t& renum_som_perio,
+                                        const Static_Int_Lists_t& som_elem, BigIntVect_& elem_part);
 
 protected:
   Noms liste_bords_periodiques_;
 };
+
+using Partitionneur_base = Partitionneur_base_32_64<int>;
+using Partitionneur_base_64 = Partitionneur_base_32_64<trustIdType>;
 
 #endif

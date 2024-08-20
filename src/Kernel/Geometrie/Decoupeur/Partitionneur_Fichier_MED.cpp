@@ -189,5 +189,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       nb_parts_tot = 1+int(local_max_vect(partition_field_outer_domain.valeurs()));
       return;
     }
+#else
+  Process::exit("Partitionneur_Fichier_MED not ported yet!! TODO.");
 #endif
 }

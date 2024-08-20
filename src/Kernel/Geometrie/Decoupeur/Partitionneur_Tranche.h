@@ -26,21 +26,36 @@
  * Voir construire_partition
  *
  */
-class Partitionneur_Tranche : public Partitionneur_base
+template <typename _SIZE_>
+class Partitionneur_Tranche_32_64 : public Partitionneur_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Partitionneur_Tranche);
+  Declare_instanciable_32_64(Partitionneur_Tranche_32_64);
+
 public:
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntVect_t = IntVect_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  using BigIntVect_ = TRUSTVect<int, _SIZE_>;  // always int as value type, will hold proc/partition number.
+
   void set_param(Param& param) override;
-  void associer_domaine(const Domaine& domaine) override;
+  void associer_domaine(const Domaine_t& domaine) override;
   void initialiser(const ArrOfInt& nb_tranches);
-  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
-  static void chercher_direction_perio(const Domaine& domaine, const Noms& liste_bords_perio, ArrOfInt& directions_perio);
+  void construire_partition(BigIntVect_& elem_part, int& nb_parts_tot) const override;
+  static void chercher_direction_perio(const Domaine_t& domaine, const Noms& liste_bords_perio, ArrOfInt& directions_perio);
 
 private:
   // Parametres du partitionneur
-  OBS_PTR(Domaine) ref_domaine_;
+  OBS_PTR(Domaine_t) ref_domaine_;
+
   // Pour chaque dimension d'espace, 2 ou 3, nombre de tranches
   // a creer dans cette direction (>=1)
   ArrOfInt nb_tranches_;
 };
+
+using Partitionneur_Tranche = Partitionneur_Tranche_32_64<int>;
+using Partitionneur_Tranche_64 = Partitionneur_Tranche_32_64<trustIdType>;
+
 #endif

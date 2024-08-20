@@ -24,32 +24,38 @@
 #include <Partitionneur_base.h>
 #include <map>
 
-static void construire_connectivite_real_som_virtual_elem(const int       nb_sommets,
-                                                          const IntTab&      les_elems,
-                                                          Static_Int_Lists& som_elem,
-                                                          const IntTab& elem_virt_pe_num,
-                                                          const  ArrOfInt& offsets)
+namespace
 {
+
+template <typename _SIZE_>
+void construire_connectivite_real_som_virtual_elem(const _SIZE_       nb_sommets,
+                                                   const IntTab_T<_SIZE_>&      les_elems,
+                                                   Static_Int_Lists_32_64<_SIZE_>& som_elem,
+                                                   const IntTab_T<_SIZE_>& elem_virt_pe_num,
+                                                   const SmallArrOfTID_T<_SIZE_>& offsets)
+{
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+
   // Nombre d'elements du domaine
-  const int nb_elem = les_elems.dimension_tot(0);
-  const int local_nb_elem = les_elems.dimension(0);
+  const int_t nb_elem = les_elems.dimension_tot(0);
+  const int_t local_nb_elem = les_elems.dimension(0);
   // Nombre de sommets par element
-  const int nb_sommets_par_element = les_elems.dimension(1);
+  const int nb_sommets_par_element = (int)les_elems.dimension(1);
 
   // Construction d'un tableau initialise a zero : pour chaque sommet,
   // nombre d'elements voisins de ce sommet
-  ArrOfInt nb_elements_voisins(nb_sommets);
+  ArrOfInt_t nb_elements_voisins(nb_sommets);
 
   // Premier passage : on calcule le nombre d'elements voisins de chaque
   // sommet pour creer la structure de donnees
-  int elem, i;
 
   //real elements
-  for (elem = 0; elem < nb_elem; elem++)
+  for (int_t elem = 0; elem < nb_elem; elem++)
     {
-      for (i = 0; i < nb_sommets_par_element; i++)
+      for (int i = 0; i < nb_sommets_par_element; i++)
         {
-          int sommet = les_elems(elem, i);
+          int_t sommet = les_elems(elem, i);
           if(sommet >= nb_sommets) continue; //skipping virtual node
           // GF cas des polyedres
           if (sommet==-1) break;
@@ -64,21 +70,21 @@ static void construire_connectivite_real_som_virtual_elem(const int       nb_som
   nb_elements_voisins = 0;
 
   // Remplissage du tableau des elements voisins.
-  for (elem = 0; elem < nb_elem; elem++)
+  for (int_t elem = 0; elem < nb_elem; elem++)
     {
-      for (i = 0; i < nb_sommets_par_element; i++)
+      for (int i = 0; i < nb_sommets_par_element; i++)
         {
-          int sommet = les_elems(elem, i);
+          int_t sommet = les_elems(elem, i);
           if(sommet >= nb_sommets) continue;
           // GF cas des polyedres
           if (sommet==-1) break;
-          int n = (nb_elements_voisins[sommet])++;
+          int_t n = (nb_elements_voisins[sommet])++;
 
-          int elem_num_global = -1;
+          int_t elem_num_global = -1;
           if(elem>= local_nb_elem)
             {
-              int proc_of_elem = elem_virt_pe_num(elem-local_nb_elem, 0);
-              int elem_number_on_local_proc = elem_virt_pe_num(elem-local_nb_elem, 1);
+              int proc_of_elem = static_cast<int>(elem_virt_pe_num(elem-local_nb_elem, 0));  // first col of this array is always int
+              int_t elem_number_on_local_proc = elem_virt_pe_num(elem-local_nb_elem, 1);
               elem_num_global = elem_number_on_local_proc + offsets[proc_of_elem];
             }
           else
@@ -91,16 +97,24 @@ static void construire_connectivite_real_som_virtual_elem(const int       nb_som
   // Tri de toutes les listes dans l'ordre croissant
   som_elem.trier_liste(-1);
 }
+}
 
-void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
-                                                 const int use_weights)
+template <typename _SIZE_>
+void Domain_Graph::construire_graph_from_segment(const Domaine_32_64<_SIZE_>& dom,
+                                                 bool use_weights)
 {
-  const IntTab& liaisons = dom.les_elems();
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+
+  const IntTab_t& liaisons = dom.les_elems();
 
   // ****************************************************************
   // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
-  int nb_edges = liaisons.size_array(); // 2 liens par liaison
-  int nb_elem=liaisons.local_max_vect()+1;  // mouif
+  int_t nb_edges = liaisons.size_array(); // 2 liens par liaison
+  int_t nb_elem=liaisons.local_max_vect()+1;  // mouif <- [ABN] lol
+
+  assert(nb_elem < std::numeric_limits<_SIZE_>::max());
+
   nvtxs = nb_elem;
   xadj.resize_array(nb_elem+1);
   vwgts.resize_array(0);
@@ -117,75 +131,91 @@ void Domain_Graph::construire_graph_from_segment(const Domaine& dom,
     }
 
   // on construit connectivite item item
-  IntTab stencyl(0,2);
+  IntTab_t stencil(0,2);
 
-  int size=0;
-  int nbl=liaisons.dimension(0);
+  int_t size=0;
+  int_t nbl=liaisons.dimension(0);
   for (int i=0; i<nbl; i++)
     {
-      stencyl.resize(size+2,2);
-      int n1=liaisons(i,0);
-      int n2=liaisons(i,1);
+      stencil.resize(size+2,2);
+      int_t n1=liaisons(i,0);
+      int_t n2=liaisons(i,1);
       {
-        stencyl(size,0)=n1;
-        stencyl(size,1)=n2;
+        stencil(size,0)=n1;
+        stencil(size,1)=n2;
 
         size++;
-        stencyl(size,0)=n2;
-        stencyl(size,1)=n1;
+        stencil(size,0)=n2;
+        stencil(size,1)=n1;
 
         size++;
       }
     }
-  tableau_trier_retirer_doublons(stencyl);
-  Matrice_Morse A;
-  Matrix_tools::allocate_morse_matrix(nb_elem,nb_elem,stencyl,A);
+  tableau_trier_retirer_doublons(stencil);
 
-  nb_edges=A.get_tab2().size_array(); // des liens peuvent etre doubles
+  // Dimensioning tab1, tab2
+  IntTab_t tab1, tab2;
+  tab1.resize(nb_elem+1);
+  tab1 = 1;
+  tab1[nb_elem]=size+1;
+  tab2.resize(size);
+
+  Matrix_tools::fill_csr_arrays(nb_elem,nb_elem,stencil,tab1, tab2);
+
+  nb_edges=tab2.size_array(); // des liens peuvent etre doubles
   nedges = nb_edges;
   adjncy.resize_array(nb_edges);
   //
-  assert(A.get_tab1().size_array()==nvtxs+1);
-  for (int c=0; c<nvtxs+1; c++)
-    {
-      xadj[c]=A.get_tab1()(c)-1;
-    }
-  for (int c=0; c<nedges; c++)
-    {
-      adjncy[c]=A.get_tab2()(c)-1;
-    }
+  assert(tab1.size_array()==nvtxs+1);
 
+  for (int_t c=0; c<static_cast<_SIZE_>(nvtxs+1); c++)  // overflow check done before
+    xadj[c]=tab1[c]-1;
+  for (int_t c=0; c<static_cast<_SIZE_>(nedges); c++)
+    adjncy[c]=tab2[c]-1;
 }
 
 // Si use_weights, on pondere les liens entre les elements periodiques
 // pour les forcer a etre sur le meme processeur. Cela diminue le nombre
 // de corrections a faire ensuite (voir (***))
-void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
+template<typename _SIZE_>
+void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
                                               const Noms& liste_bords_periodiques,
-                                              const int use_weights,
-                                              Static_Int_Lists& graph_elements_perio)
+                                              bool use_weights,
+                                              Static_Int_Lists_32_64<_SIZE_>& graph_elements_perio)
 {
-  Static_Int_Lists som_elem;
-  const Elem_geom_base& type_elem = dom.type_elem().valeur();
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
+  using Poly_geom_base_t = Poly_geom_base_32_64<_SIZE_>;
+
+  Static_Int_Lists_32_64<_SIZE_> som_elem;
+  const Elem_geom_base_32_64<_SIZE_>& type_elem = dom.type_elem().valeur();
   IntTab faces_element_reference;
-  const int is_regular =
-    type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
+  const int is_regular = type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
   if (! is_regular)
     {
       Cerr << "Error in Domain_Graph::construire_graph_elem_elem\n"
            << " The type of element is not supported" << finl;
-      ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
+      ref_cast(Poly_geom_base_t, type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
+      Process::exit();
     }
   int nb_faces_par_element = faces_element_reference.dimension(0);
   const int nb_sommets_par_face = faces_element_reference.dimension(1);
 
-  const IntTab& elem_som = dom.les_elems();
-  const int nb_elem = dom.nb_elem();
+  const IntTab_t& elem_som = dom.les_elems();
+  const int_t nb_elem = dom.nb_elem();
 
-  ArrOfInt offsets(Process::nproc());
-  offsets = mppartial_sum(nb_elem);
+  if (nb_elem > std::numeric_limits<_SIZE_>::max())
+    {
+      Cerr << "Are you trying to partition a Domain_64 with a non-64b 'Partitionneur' ? Number of elements is too big!" << finl;
+      Process::exit(-1);
+    }
+
+  SmallArrOfTID_t offsets(Process::nproc());
+  // TODO MP_SUM // IG
+  offsets = mppartial_sum((int)nb_elem);
   envoyer_all_to_all(offsets, offsets);
-  int my_offset = offsets[Process::me()];
+  int_t my_offset = offsets[Process::me()];
 
   Cerr << " Construction of the som_elem connectivity" << finl;
   if(Process::is_parallel())
@@ -194,51 +224,43 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
       //in the latter, we also build the connectivity for virtual nodes
       //here, we add the connectivity of real nodes only with virtual elements
       // + we want som_elem to contain global numerotation for elements
-      IntTab elem_virt_pe_num;
+      IntTab_t elem_virt_pe_num;
       dom.construire_elem_virt_pe_num(elem_virt_pe_num);
-      construire_connectivite_real_som_virtual_elem(dom.nb_som(),
-                                                    elem_som,
-                                                    som_elem,
-                                                    elem_virt_pe_num,
-                                                    offsets);
-
+      construire_connectivite_real_som_virtual_elem(dom.nb_som(), elem_som, som_elem, elem_virt_pe_num, offsets);
     }
   else
-    construire_connectivite_som_elem(dom.nb_som(),
-                                     elem_som,
-                                     som_elem,
+    construire_connectivite_som_elem(dom.nb_som(), elem_som, som_elem,
                                      0 /* ne pas inclure les elements virtuels */);
 
-
-  int nb_connexions_perio = 0;
+  int_t nb_connexions_perio = 0;
   if (liste_bords_periodiques.size() > 0)
     {
       Cerr << " Construction of graph connectivity for periodic boundaries" << finl;
-      nb_connexions_perio = Partitionneur_base::calculer_graphe_connexions_periodiques(dom,
-                                                                                       liste_bords_periodiques,
-                                                                                       som_elem,
-                                                                                       my_offset,
-                                                                                       graph_elements_perio);
+      nb_connexions_perio = Partitionneur_base_32_64<_SIZE_>::calculer_graphe_connexions_periodiques(dom,
+                                                                                                     liste_bords_periodiques,
+                                                                                                     som_elem,
+                                                                                                     my_offset,
+                                                                                                     graph_elements_perio);
     }
 
   // ****************************************************************
   // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
 
   // Nombre total de faces de bord:
-  const int nb_faces_bord = dom.nb_faces_frontiere();
+  const int_t nb_faces_bord = dom.nb_faces_frontiere();
 
   // Chaque element du maillage est un "vertex" du graph.
   // Les "edges" du graph relient chaque element a ses voisins par une face.
   // Il y a autant d'edges que de faces ayant deux voisins, fois 2
   // Formule classique: nb_faces internes = nnn/2 avec :
-  int nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
-  if (sub_type(Poly_geom_base,dom.type_elem().valeur()))
+  int_t nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
+  if (sub_type(Poly_geom_base_t, dom.type_elem().valeur()))
     {
-      const Poly_geom_base& poly=ref_cast(Poly_geom_base,dom.type_elem().valeur());
+      const Poly_geom_base_t& poly=ref_cast(Poly_geom_base_t,dom.type_elem().valeur());
       nnn= poly.get_somme_nb_faces_elem() - nb_faces_bord + nb_connexions_perio;
     }
 
-  const int nb_edges = nnn + nb_faces_bord;
+  const int_t nb_edges = nnn + nb_faces_bord;
 
   nvtxs = nb_elem + dom.nb_faces_joint(); //each joint face is linked to a virtual element
   xadj.resize_array(nb_elem+1);
@@ -263,7 +285,8 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   vtxdist.resize_array(Process::nproc()+1);
   for(int p = 0; p < Process::nproc(); p++)
     vtxdist[p] = offsets[p];
-  vtxdist[Process::nproc()] = Process::mp_sum(nb_elem);
+  // TODO IG mp_sum
+  vtxdist[Process::nproc()] = Process::mp_sum((int)nb_elem);
 
   Cerr << " Construction of the elem_elem connectivity" << finl;
   // ***************************************************************
@@ -273,40 +296,36 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   //  l'element voisin par une face a l'aide de la fonction find_adjacent_elements.
   //
   // Deux tableaux de travail:
-  ArrOfInt une_face(nb_sommets_par_face); // Les sommets de la face en cours
-  ArrOfInt voisins; // Les elements voisins d'une_face
-
+  SmallArrOfTID_t une_face(nb_sommets_par_face); // Les sommets de la face en cours
+  SmallArrOfTID_t voisins; // Les elements voisins d'une_face
 
   int error = 0;
-  int edge_count = 0;
-  int i_elem;
-  for (i_elem = 0; i_elem < nb_elem; i_elem++)
+  int_t edge_count = 0;
+  for (int_t i_elem = 0; i_elem < nb_elem; i_elem++)
     {
       xadj[i_elem] = edge_count;
-      int i_face;
 
       if (!is_regular)
         {
-          ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem);
+          ref_cast(Poly_geom_base_t,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem);
           int nb_faces_elem       = faces_element_reference.dimension(0);
           while ( faces_element_reference(nb_faces_elem-1,0)==-1)
             nb_faces_elem--;
           nb_faces_par_element= nb_faces_elem;
         }
-      for (i_face = 0; i_face < nb_faces_par_element; i_face++)
+      for (int i_face = 0; i_face < nb_faces_par_element; i_face++)
         {
           // Construction de cette face de l'element:
           // (indice des sommets de la face dans le domaine)
           {
-            int i;
-            for (i = 0; i < nb_sommets_par_face; i++)
+            for (int i = 0; i < nb_sommets_par_face; i++)
               {
                 const int i_som = faces_element_reference(i_face, i);
                 if (i_som<0)
                   une_face[i] = i_som;
                 else
                   {
-                    const int sommet = elem_som(i_elem, i_som);
+                    const int_t sommet = elem_som(i_elem, i_som);
                     une_face[i] = sommet;
                   }
               }
@@ -316,7 +335,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
           find_adjacent_elements(som_elem, une_face, voisins);
 
           const int nb_voisins = voisins.size_array();
-          int elem_voisin = -1;
+          int_t elem_voisin = -1;
           switch (nb_voisins)
             {
             case 0:
@@ -328,7 +347,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
             case 1:
               {
                 // Un seul voisin, c'est une face frontiere
-                const int elem = voisins[0];
+                const int_t elem = voisins[0];
                 if (elem != i_elem + my_offset)
                   error = 3; // l'element i_elem n'est pas voisin: erreur interne
                 else
@@ -338,8 +357,8 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
             case 2:
               {
                 // Le cas le plus courant:
-                const int elem0 = voisins[0];
-                const int elem1 = voisins[1];
+                const int_t elem0 = voisins[0];
+                const int_t elem1 = voisins[1];
                 if (elem0 == i_elem + my_offset) //neighbours contain global numerotation
                   elem_voisin = elem1;
                 else if (elem1 == i_elem + my_offset)
@@ -377,17 +396,16 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
                     ewgts[edge_count] = 1; // -1 peut faire des partitions discontinues ou pas equilibrees du tout
 
                 }
-
               edge_count++;
             }
         }
       // Ajout des connexions supplementaires pour les faces periodiques
       if (nb_connexions_perio > 0)
         {
-          const int n = graph_elements_perio.get_list_size(i_elem);
-          for (int i = 0; i < n; i++)
+          const int_t n = graph_elements_perio.get_list_size(i_elem);
+          for (int_t i = 0; i < n; i++)
             {
-              const int elem_voisin = graph_elements_perio(i_elem, i);
+              const int_t elem_voisin = graph_elements_perio(i_elem, i);
               if (edge_count >= nb_edges)
                 {
                   error = 1;
@@ -399,9 +417,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
               // Attention, si on met un poids nettement plus eleve que les autres
               // edges, on degrade la qualite du decoupage !
               if (use_weights)
-                {
-                  ewgts[edge_count] = 4;
-                }
+                ewgts[edge_count] = 4;
               edge_count++;
             }
         }
@@ -421,29 +437,22 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
   xadj[nb_elem] = edge_count;
   nedges = edge_count;
 
-  std::map<int,int> global_to_local_index;
-  int cnt=nb_elem;
-  for(int e=0; e<nb_edges + nb_faces_bord; e++)
+  std::map<int_t,int_t> global_to_local_index;
+  int_t cnt=nb_elem;
+  for(int_t e=0; e<nb_edges + nb_faces_bord; e++)
     {
-      int vertex = adjncy[e];
+      int_t vertex = static_cast<_SIZE_>(adjncy[e]);  // overflow check done aboveS
       if( my_offset <= vertex && vertex < nb_elem+my_offset) //neighbour belongs to me
-        {
-          edgegsttab[e] = vertex - my_offset;
-        }
+        edgegsttab[e] = vertex - my_offset;
       else
         {
-          std::map<int,int>::iterator it = global_to_local_index.find(vertex);
-          if(it != global_to_local_index.end())
-            {
-              edgegsttab[e] = global_to_local_index[vertex];
-
-            }
+          if(global_to_local_index.find(vertex) != global_to_local_index.end())
+            edgegsttab[e] = global_to_local_index[vertex];
           else
             {
               global_to_local_index[vertex] =cnt++;
               edgegsttab[e] = global_to_local_index[vertex];
             }
-
         }
     }
 
@@ -472,3 +481,15 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine& dom,
     }
 
 }
+
+
+// Explicit instanciations:
+template void Domain_Graph::construire_graph_from_segment(const Domaine_32_64<int>& dom, bool use_weights );
+template void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<int>& dom, const Noms& liste_bords_periodiques,
+                                                       bool use_weights, Static_Int_Lists_32_64<int>& graph_elements_perio);
+
+#if INT_is_64_ == 2
+template void Domain_Graph::construire_graph_from_segment(const Domaine_32_64<trustIdType>& dom, bool use_weights );
+template void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<trustIdType>& dom, const Noms& liste_bords_periodiques,
+                                                       bool use_weights, Static_Int_Lists_32_64<trustIdType>& graph_elements_perio);
+#endif

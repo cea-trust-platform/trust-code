@@ -155,10 +155,6 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;
   Cerr << "===============" << finl;
 
-#ifdef INT_is_64_
-  // TODO IG FIXME  MD_Vector_tools::creer_tableau_distribue called from 64b world ... ?
-  throw;
-#endif
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_->md_vector_elements(), elem_part);
   const int n = ref_domaine_->nb_elem();
   for (int i = 0; i < n; i++)
@@ -179,6 +175,8 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
   elem_part.echange_espace_virtuel();
+#else
+  Process::exit("Partitionneur_Parmetis not ported yet!! TODO.");
 #endif
 #endif
 }

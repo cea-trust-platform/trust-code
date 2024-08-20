@@ -485,6 +485,8 @@ void LireMED::prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2)
             les_elems2(i, j) = conn[index + j];
         }
     }
+#else
+  Process::exit("LireMED TODO 64b");
 #endif
 }
 #endif
