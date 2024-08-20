@@ -223,7 +223,7 @@ int Fluide_reel_base::check_unknown_range() const
   int ok = 1, zero = 0, nl = e_int.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC_P0P1NC)
   for (auto &&i_r : res_en_T_ ? unknown_range() : unknown_range_h())
     {
-      const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
+      const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression()->valeurs() : equation(i_r.first).inconnue()->valeurs();
       double vmin = DBL_MAX, vmax = -DBL_MAX;
       for (int i = 0, j = std::min(std::max(id_composite, zero), vals.dimension(1) - 1); i < nl; i++)
         vmin = std::min(vmin, vals(i, j)), vmax = std::max(vmax, vals(i, j));

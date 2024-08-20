@@ -549,7 +549,7 @@ void VEF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, 
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_VEF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
+      ch_W.changer_temps(ch_vitesse->temps());
     }
   else if (sub_type(Quadri_VEF,domaine_VEF.type_elem().valeur()) || sub_type(Hexa_VEF, domaine_VEF.type_elem().valeur()))
     {
@@ -570,7 +570,7 @@ void VEF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, 
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_VEF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
+      ch_W.changer_temps(ch_vitesse->temps());
     }
   else
     {
@@ -694,7 +694,7 @@ void VEF_discretisation::critere_Q(const Domaine_dis& z, const Domaine_Cl_dis& z
   ch_cQ.fixer_nb_comp(1);
   ch_cQ.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch_cQ.fixer_unite("s-2");
-  ch_cQ.changer_temps(ch_vitesse.temps());
+  ch_cQ.changer_temps(ch_vitesse->temps());
 }
 
 void VEF_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
@@ -712,7 +712,7 @@ void VEF_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl,
   ch_yp.fixer_nb_comp(1);
   ch_yp.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse.temps());
+  ch_yp.changer_temps(ch_vitesse->temps());
 }
 
 void VEF_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
@@ -732,7 +732,7 @@ void VEF_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl,
   ch_grad_u.fixer_nb_comp(nb_comp);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse.temps());
+  ch_grad_u.changer_temps(ch_vitesse->temps());
 
   if (dimension == 2)
     {
@@ -761,7 +761,7 @@ void VEF_discretisation::grad_T(const Domaine_dis& z, const Domaine_Cl_dis& zcl,
   Cerr << "Discretisation de gradient_temperature" << finl;
 
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z.valeur());
-  creer_champ(ch, domaine_vef, "gradient_temperature_Champ_P1NC", "gradient_temperature", "K/m", dimension, domaine_vef.nb_elem(), ch_temperature.temps());
+  creer_champ(ch, domaine_vef, "gradient_temperature_Champ_P1NC", "gradient_temperature", "K/m", dimension, domaine_vef.nb_elem(), ch_temperature->temps());
 
   grad_T_Champ_P1NC& ch_gt = ref_cast(grad_T_Champ_P1NC, ch.valeur());
   const Champ_P1NC& temp = ref_cast(Champ_P1NC, ch_temperature.valeur());
@@ -786,7 +786,7 @@ void VEF_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& zcl,
   ch_gt.fixer_nb_comp(1);
   ch_gt.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch_gt.fixer_unite("W/m2.K");
-  ch_gt.changer_temps(ch_temperature.temps());
+  ch_gt.changer_temps(ch_temperature->temps());
 }
 
 void VEF_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
@@ -802,7 +802,7 @@ void VEF_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_C
   ch.fixer_nb_comp(1);
   ch.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch.fixer_unite("s-1");
-  ch.changer_temps(ch_vitesse.temps());
+  ch.changer_temps(ch_vitesse->temps());
 }
 
 void VEF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(REF(Champ_base)) &ch_inc) const
@@ -824,8 +824,8 @@ void VEF_discretisation::residu(const Domaine_dis& z, const Champ_Inc& ch_inco, 
   Cerr << "Discretization of " << ch_name << finl;
 
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z.valeur());
-  int nb_comp = ch_inco.valeurs().line_size();
-  Discretisation_base::discretiser_champ("champ_face", domaine_vef, ch_name, "units_not_defined", nb_comp, ch_inco.temps(), champ);
+  int nb_comp = ch_inco->valeurs().line_size();
+  Discretisation_base::discretiser_champ("champ_face", domaine_vef, ch_name, "units_not_defined", nb_comp, ch_inco->temps(), champ);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, champ.valeur());
   DoubleTab& tab = ch_fonc.valeurs();
   tab = -10000.0;

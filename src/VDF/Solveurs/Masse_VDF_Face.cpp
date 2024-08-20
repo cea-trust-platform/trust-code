@@ -116,7 +116,7 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
 {
   if (sub_type(Pb_Multiphase, equation().probleme()))
     {
-      const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
+      const DoubleTab& inco = equation().inconnue()->valeurs(), &passe = equation().inconnue()->passe();
       Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
       const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
       const Conds_lim& cls = ref_cast(Domaine_Cl_dis_base, equation().domaine_Cl_dis().valeur()).les_conditions_limites();
@@ -124,7 +124,7 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
       const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
       const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
       const DoubleTab& rho = equation().milieu().masse_volumique().passe(),
-                       *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = domaine.volumes_entrelaces_dir();
+                       *alpha = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = domaine.volumes_entrelaces_dir();
       const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
       int i, e, f, m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
 
@@ -169,7 +169,7 @@ DoubleTab& Masse_VDF_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, i
   const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
   const Conds_lim& cls = ref_cast(Domaine_Cl_dis_base, equation().domaine_Cl_dis().valeur()).les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();
-  const DoubleTab& vit = equation().inconnue().valeurs();
+  const DoubleTab& vit = equation().inconnue()->valeurs();
   const DoubleVect& fs = domaine.face_surfaces();
   int f, n, N = x.line_size(), d, D = dimension;
 

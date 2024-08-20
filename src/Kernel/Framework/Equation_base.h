@@ -162,7 +162,7 @@ public :
     interface {dimensionner/ajouter/assembler}_blocs
     specificites : - has_interface_blocs() renvoie 1 si tous les termes de l'equation supportent cette interface
                    - dimensionner_blocs() non memoize (a gerer par l'appelant) / appelable sur des matrices non vides
-                   - assembler_blocs() utilise les valeurs des inconnues/champs a l'instant present (genre inconnue().valeurs())
+                   - assembler_blocs() utilise les valeurs des inconnues/champs a l'instant present (genre inconnue()->valeurs())
                    - assembler_blocs_*() raisonne en increments : M.dInco = S -> attention aux seuils des solveurs
                    - certaines variables (ensemble semi_impl) peuvent etre traitees en "semi-implicite"
                      (on utilise des valeurs predites, pas de derivees renseignees)

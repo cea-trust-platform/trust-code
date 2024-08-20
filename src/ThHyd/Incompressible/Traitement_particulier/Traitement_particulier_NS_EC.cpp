@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,7 +133,7 @@ void Traitement_particulier_NS_EC::ouvrir_fichier(SFichier& s) const
 
 void Traitement_particulier_NS_EC::preparer_calcul_particulier()
 {
-  tinit = mon_equation->inconnue().temps();
+  tinit = mon_equation->inconnue()->temps();
   nb_bip=0;
   double Ec;
   calculer_Ec(Ec);
@@ -148,7 +148,7 @@ void Traitement_particulier_NS_EC::preparer_calcul_particulier()
 }
 void Traitement_particulier_NS_EC::post_traitement_particulier()
 {
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation->inconnue()->temps();
   double nb = floor((temps - tinit) / periode);
   if (nb > nb_bip + 0.5)
     {
@@ -256,11 +256,11 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
 void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
 {
 
-  const Domaine_dis_base& zdisbase        = mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase        = mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VF&    domaine_VF            = ref_cast(Domaine_VF, zdisbase);
   const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
   const DoubleTab&  xv                 = domaine_VF.xv();
-  const DoubleTab&  vitesse            = mon_equation->inconnue().valeurs();
+  const DoubleTab&  vitesse            = mon_equation->inconnue()->valeurs();
   REF(ArrOfDouble) translation(xv);
   REF(ArrOfDouble) rotation(xv);
   REF(DoubleTab) rho(xv);

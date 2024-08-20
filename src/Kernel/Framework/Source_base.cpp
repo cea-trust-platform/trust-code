@@ -239,7 +239,7 @@ DoubleTab& Source_base::calculer(DoubleTab& secmem) const
 void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
 {
   if (!has_interface_blocs()) return;
-  DoubleTrav secmem(equation().inconnue().valeurs()); //sera jete
+  DoubleTrav secmem(equation().inconnue()->valeurs()); //sera jete
   ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
 }
 

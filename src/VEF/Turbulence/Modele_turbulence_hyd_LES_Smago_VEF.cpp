@@ -75,7 +75,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 #endif
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  double temps = mon_equation_->inconnue().temps();
+  double temps = mon_equation_->inconnue()->temps();
   la_viscosite_turbulente_.changer_temps(temps);
   return la_viscosite_turbulente_;
 }
@@ -83,7 +83,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 void Modele_turbulence_hyd_LES_Smago_VEF::calculer_S_barre()
 {
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
-  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue()->valeurs();
 
   Champ_P1NC::calcul_S_barre(la_vitesse, SMA_barre_, domaine_Cl_VEF);
 }

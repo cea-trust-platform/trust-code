@@ -72,7 +72,7 @@ void Champ_Q1_EF::gradient(DoubleTab& gradient_elem)
   // Gradient ordre 1 (valeur moyenne dans un element)
   // Order 1 gradient (mean value within an element)
   const Domaine_EF& domaine_EF_ = domaine_EF();
-  const DoubleTab& vitesse = equation().inconnue().valeurs();
+  const DoubleTab& vitesse = equation().inconnue()->valeurs();
   const IntTab& elems = domaine_EF_.domaine().les_elems();
   int nb_som_elem = domaine_EF_.domaine().nb_som_elem();
   int nb_elems = domaine_EF_.domaine().nb_elem_tot();
@@ -155,7 +155,7 @@ void Champ_Q1_EF::calcul_y_plus(const Domaine_Cl_EF& domaine_Cl_EF, DoubleTab& y
   int nb_nodes_free = nsom_elem - nsom;
   const IntTab& elems=domaine_EF.domaine().les_elems() ;
   const Equation_base& eqn_hydr = equation();
-  const DoubleTab& vitesse = eqn_hydr.inconnue().valeurs();
+  const DoubleTab& vitesse = eqn_hydr.inconnue()->valeurs();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ch_visco_cin->valeurs();

@@ -52,7 +52,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   // Verifie la validite de T0:
   check();
 
-  const DoubleTab& param = equation_scalaire().inconnue().valeurs();
+  const DoubleTab& param = equation_scalaire().inconnue()->valeurs();
   int nbcomp_param = param.line_size(), nbcomp = resu.line_size();
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   const double* Scalaire0_addr = mapToDevice(Scalaire0_);

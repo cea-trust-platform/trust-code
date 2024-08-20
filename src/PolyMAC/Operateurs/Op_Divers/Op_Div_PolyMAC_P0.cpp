@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const IntTab& f_e = domaine.face_voisins();
   int i, e, f, n, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(),
-                  N = equation().inconnue().valeurs().line_size(), D = dimension;
+                  N = equation().inconnue()->valeurs().line_size(), D = dimension;
 
   IntTab stencil(0, 2);
 

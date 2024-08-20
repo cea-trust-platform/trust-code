@@ -139,8 +139,8 @@ inline double aij_extradiag__(const Op_Dift_Stab_VEF_Face& z_class, const int el
 
   double volume = 0., signei = 1., signej = 1., aij = 0.;
 
-  assert(dim < z_class.equation().inconnue().valeurs().dimension(1));
-  assert(dim2 < z_class.equation().inconnue().valeurs().dimension(1));
+  assert(dim < z_class.equation().inconnue()->valeurs().dimension(1));
+  assert(dim2 < z_class.equation().inconnue()->valeurs().dimension(1));
   assert(dim < dim2);
 
   volume = 1. / volumes(elem);
@@ -224,7 +224,7 @@ void calculer_coefficients__(const Op_Dift_Stab_VEF_Face& z_class, const DoubleT
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
-            nb_comp = z_class.equation().inconnue().valeurs().line_size();
+            nb_comp = z_class.equation().inconnue()->valeurs().line_size();
 
   assert(Aij.dimension(0) == nb_elem_tot);
   assert(Aij.dimension(1) == nb_faces_elem);

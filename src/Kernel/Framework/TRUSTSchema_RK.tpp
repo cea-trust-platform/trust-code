@@ -25,7 +25,7 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
   if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
-  DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
+  DoubleTab& xi = eqn.inconnue()->valeurs(), &xip1 = eqn.inconnue()->futur();
   DoubleTrav present(xi), qi(xi);
   present = xi;
   qi = xi;
@@ -66,7 +66,7 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   static constexpr int NB_PTS = IS_DEUX ? 2 : ( IS_TROIS ? 3 : 4);
   static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
 
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
+  DoubleTab& present = eqn.inconnue()->valeurs(), &futur = eqn.inconnue()->futur();
   if (ki_.size()!=NB_PTS)
     {
       ki_.resize(NB_PTS);

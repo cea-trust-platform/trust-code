@@ -140,7 +140,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
   DoubleTab wpTp_p(n_probes,Nap);
   wpTp_p=0.;
 
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
 
 
   // On ne fait des statistiques sur le champ thermique que si l'on fait des statistiques sur le champ dynamique en meme temps.
@@ -164,7 +164,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
   // On ne fait des statistiques sur le champ thermique que si l'on fait des statistiques sur le champ dynamique en meme temps.
   if ((oui_u_inst != 0)&&(oui_stats_thermo != 0)&&(oui_stat != 0))
     {
-      double tpsbis = mon_equation->inconnue().temps();
+      double tpsbis = mon_equation->inconnue()->temps();
       if ((tpsbis>=temps_deb)&&(tpsbis<=temps_fin))
         {
           static int init_stat_temps = 0;
@@ -201,7 +201,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
 void Traitement_particulier_NS_Profils_thermo_VDF::calculer_moyennes_spatiales_thermo(DoubleTab& tmoy, DoubleTab& trms, DoubleTab& uptp, DoubleTab& vptp, DoubleTab& wptp, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const DoubleTab& xUV)
 {
 
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const IntTab& elem_faces = domaine_VDF.elem_faces();
 
@@ -212,10 +212,10 @@ void Traitement_particulier_NS_Profils_thermo_VDF::calculer_moyennes_spatiales_t
   int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs des 3 composantes de la vitesse a partir de mon_equation.
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
 
   // On veut acceder aux valeurs de la temperature a partir de mon_equation_NRJ.
-  const DoubleTab& Temp = mon_equation_NRJ->inconnue().valeurs();
+  const DoubleTab& Temp = mon_equation_NRJ->inconnue()->valeurs();
 
 
 
@@ -310,7 +310,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::calculer_moyennes_spatiales_t
       if((tmin_tmax==1)&&(deja_fait==0))
         {
           SFichier fic1("T_min_max.dat",ios::app);
-          double tps = mon_equation->inconnue().temps();
+          double tps = mon_equation->inconnue()->temps();
           fic1 << tps << " " << Tmin << " " << xp(elem_min,0) << " " << xp(elem_min,1);
           fic1 << " " << Tmax << " " << xp(elem_max,0) << " " << xp(elem_max,1) <<finl;
           fic1.flush();
@@ -463,7 +463,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_spat_the
 {
 
   int i,j;
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
   Nom temps = Nom(tps);
 
   for(i=0; i<n_probes; i++)
@@ -540,7 +540,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_temp_the
   for(i=0; i<n_probes; i++)
     {
       Nom nom_fic = "./Time_Avg/Avg_time_temp_";
-      double tps = mon_equation->inconnue().temps();
+      double tps = mon_equation->inconnue()->temps();
 
       switch(dir_profil)
         {
@@ -594,7 +594,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::sauver_stat() const
 {
 
   Traitement_particulier_NS_Profils::sauver_stat();
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
 
   if (  (oui_stat == 1)&&(tps>=temps_deb)&&(tps<=temps_fin) )
     {
@@ -635,7 +635,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::sauver_stat() const
 void Traitement_particulier_NS_Profils_thermo_VDF::reprendre_stat()
 {
   Traitement_particulier_NS_Profils::reprendre_stat();
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
   int i,j;
   double ti;
   // double ti2;

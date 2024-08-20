@@ -65,13 +65,13 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleTab& nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(), *alp =
-                                                          sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, *a_r =
+                                                          sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr, *a_r =
                                                             sub_type(Pb_Multiphase, equation().probleme()) ?
                                                             &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
-  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
+  int i, e, f, n, N = equation().inconnue()->valeurs().line_size();
   double dt = 1e10;
   DoubleTrav flux(N), vol(N);
   for (e = 0; e < domaine.nb_elem(); e++)
@@ -171,7 +171,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   statistiques().begin_count(diffusion_counter_);
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : nullptr; //facultatif
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : equation().inconnue()->valeurs();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();

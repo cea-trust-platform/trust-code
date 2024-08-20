@@ -249,7 +249,7 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
     {
       Matrice_Morse matrix_unused;
       DoubleTrav secmem_unused;
-      iterer_NS(eqn, current, ref_cast(QDM_Multiphase, eqn).pression().valeurs(), dt, matrix_unused, 0, secmem_unused, numero_iteration, cv, ok);
+      iterer_NS(eqn, current, ref_cast(QDM_Multiphase, eqn).pression()->valeurs(), dt, matrix_unused, 0, secmem_unused, numero_iteration, cv, ok);
       return cv;
     }
 
@@ -259,7 +259,7 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
   if (!sets_)
     for (auto &&op_ext : op_diff.op_ext)
-      semi_impl[nom_inco + (op_ext != &op_diff ? "/" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
+      semi_impl[nom_inco + (op_ext != &op_diff ? "/" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue()->passe();
 
   if (!mat_pred_.count(nom_pb_inco)) /* matrice : dimensionnement au premier passage */
     eqn.dimensionner_blocs( { { nom_inco, &mat_pred_[nom_pb_inco] } }, semi_impl);
@@ -284,7 +284,7 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
 
   /* mise a jour */
   eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
-  eqn.inconnue().futur() = current;
+  eqn.inconnue()->futur() = current;
   return true;
 }
 
@@ -322,7 +322,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
   for (auto &&i_eq : eqs)
     if (i_eq.second != &eq_qdm)
       {
-        semi_impl[i_eq.first] = i_eq.second->inconnue().passe();
+        semi_impl[i_eq.first] = i_eq.second->inconnue()->passe();
         if (i_eq.second->has_champ_conserve())
           semi_impl[i_eq.second->champ_conserve().le_nom().getString()] = i_eq.second->champ_conserve().passe();
         if (i_eq.second->has_champ_convecte())
@@ -350,16 +350,16 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
             {
               Cerr << "Prediction of " << i_eq.first << finl;
               const DoubleTab inut_loc(0);
-              iterer_eqn(*i_eq.second, inut_loc, i_eq.second->inconnue().valeurs(), dt, 0, ok);
+              iterer_eqn(*i_eq.second, inut_loc, i_eq.second->inconnue()->valeurs(), dt, 0, ok);
               /*
-               semi_impl[i_eq.first] = (*i_eq.second).inconnue().valeurs();
+               semi_impl[i_eq.first] = (*i_eq.second).inconnue()->valeurs();
                if (i_eq.second->has_champ_conserve()) semi_impl[i_eq.second->champ_conserve().le_nom().getString()] = i_eq.second->champ_conserve().passe();
                if (i_eq.second->has_champ_convecte()) semi_impl[i_eq.second->champ_convecte().le_nom().getString()] = i_eq.second->champ_convecte().passe();
                */
             }
     }
   else
-    semi_impl["vitesse"] = eq_qdm.inconnue().passe();
+    semi_impl["vitesse"] = eq_qdm.inconnue()->passe();
   eqn.solv_masse()->corriger_solution(current, current, 0); //pour PolyMAC_P0 : vf -> ve
 
   //premier passage : dimensionnement de mat_semi_impl et de mdv_semi_impl, remplissage de p_degen_
@@ -566,11 +566,11 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
       for (auto &&n_i : inco)
         n_i.second->futur() = n_i.second->valeurs();
-      eq_qdm.pression().futur() = eq_qdm.pression().valeurs();
+      eq_qdm.pression()->futur() = eq_qdm.pression()->valeurs();
       ConstDoubleTab_parts ppart(inco["pression"]->valeurs());
       //en multiphase, la pression est deja en Pa
       /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC_P0P1NC), alors on ne copie que la 1ere partie */
-      eq_qdm.pression_pa().valeurs() = eq_qdm.pression_pa().valeurs().dimension_tot(0) < inco["pression"]->valeurs().dimension_tot(0) ? ppart[0] : inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
+      eq_qdm.pression_pa()->valeurs() = eq_qdm.pression_pa()->valeurs().dimension_tot(0) < inco["pression"]->valeurs().dimension_tot(0) ? ppart[0] : inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
       first_call_ = 0;
     }
   else

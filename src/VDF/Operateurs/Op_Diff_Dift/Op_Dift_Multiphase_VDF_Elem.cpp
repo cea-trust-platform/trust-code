@@ -82,7 +82,7 @@ double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
   const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleTab& lambda = alpha_() /* comme mu */, &diffu = diffusivite_pour_pas_de_temps().valeurs() /* comme nu */;
-  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe();
+  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe();
   const int cL = (lambda.dimension(0) == 1), cD = (diffu.dimension(0) == 1), dim = Objet_U::dimension;
 
   ArrOfInt numfa(2 * dim);

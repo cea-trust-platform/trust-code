@@ -47,7 +47,7 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
   const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
   const DoubleTab& himp = himp_->valeurs();
   const DoubleTab& Text = Text_->valeurs();
-  const DoubleTab& T = equation().inconnue().valeurs();
+  const DoubleTab& T = equation().inconnue()->valeurs();
   const DoubleVect& volumes_elements = domaine.volumes();
 
   bilan()(0) = 0;
@@ -101,7 +101,7 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::ajouter(DoubleTab&
   const DoubleTab& himp = himp_->valeurs();
   const DoubleTab& Text = Text_->valeurs();
 
-  const DoubleTab& T = equation().inconnue().valeurs();
+  const DoubleTab& T = equation().inconnue()->valeurs();
   const DoubleVect& volumes_elements = domaine.volumes();
 
   for (int num_face=0; num_face<nb_faces; num_face++)
@@ -150,7 +150,7 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::contribuer_a_avec(const 
   const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
   const DoubleTab& himp = himp_->valeurs();
   // const DoubleTab& Text = Text_->valeurs();
-  // const DoubleTab& T = equation().inconnue().valeurs();
+  // const DoubleTab& T = equation().inconnue()->valeurs();
   const DoubleVect& volumes_elements = domaine.volumes();
 
 

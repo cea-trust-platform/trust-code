@@ -105,12 +105,12 @@ double Op_Diff_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces();
-  const DoubleTab& nf = domaine.face_normales(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, &diffu =
+  const DoubleTab& nf = domaine.face_normales(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr, &diffu =
                                                           diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
-  int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
+  int i, e, f, n, N = equation().inconnue()->valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
   double dt = 1e10;
   DoubleTrav flux(N);
   for (e = 0; e < domaine.nb_elem(); e++)
@@ -335,7 +335,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
   for (f = 0; f < domaine[0].get().nb_faces(); f++)
     if (!aux_only && semi && mat[0])
       for (n = 0; n < N[0]; n++) //semi-implicite : T_f^+ = var_aux
-        secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs())(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n,
+        secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - (le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : equation().inconnue()->valeurs())(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n,
                                     N[0] * (ne_tot[0] + f) + n)++;
     else if (fcl[0](f, 0) == 0 || fcl[0](f, 0) == 5)
       continue; //face interne ou Neumann_val_ext -> rien
@@ -346,8 +346,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
         const Echange_contact_PolyMAC_P0P1NC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[fcl[0](f, 1)].valeur()) : nullptr;
         int o_p = ech ? ech->o_idx : -1, o_f = ech ? ech->f_dist(fcl[0](f, 2)) : -1;
         const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-        const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
-                         &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+        const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
+                         &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(), &vit = pbm.equation_qdm().inconnue()->passe(),
                           &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
                                                                                  pbm.milieu().capacite_calorifique().passe();
         Flux_parietal_base::input_t in;
@@ -401,8 +401,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
         if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
           {
             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
-            const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
-                             &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+            const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
+                             &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(), &vit = pbm.equation_qdm().inconnue()->passe(),
                               &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
                                                                                      pbm.milieu().capacite_calorifique().passe();
             DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), v(N[o_p], D), nv(N[o_p]);

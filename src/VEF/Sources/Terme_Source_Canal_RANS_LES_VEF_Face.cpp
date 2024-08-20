@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -188,9 +188,9 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::associer_pb(const Probleme_base& pb)
 
 void Terme_Source_Canal_RANS_LES_VEF_Face::init()
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
   int nb_faces = domaine_VEF.nb_faces();
   const DoubleTab& xv = domaine_VEF.xv();
   const double tps = mon_equation->schema_temps().temps_courant();
@@ -286,7 +286,7 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::mettre_a_jour(double temps)
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   //  const DoubleTab& xv = domaine_VEF.xv();
 
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
   const double tps = mon_equation->schema_temps().temps_courant();
@@ -392,7 +392,7 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VEF_Face::ajouter(DoubleTab& resu) const
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
 
   //   DoubleTab resu_old(U_RANS);
   //   DoubleTab utemp_bar(utemp);

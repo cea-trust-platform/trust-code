@@ -33,7 +33,7 @@ DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, solv_mass_->equation()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()).equation_masse().champ_conserve().passe() : nullptr,
                    &vfd = domaine.volumes_entrelaces_dir();
-  int i, e, f, n, N = solv_mass_->equation().inconnue().valeurs().line_size();
+  int i, e, f, n, N = solv_mass_->equation().inconnue()->valeurs().line_size();
   double fac;
 
   //vitesses aux faces
@@ -60,7 +60,7 @@ void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, con
 
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
   const Domaine_VF& domaine = le_dom_.valeur();
-  const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs();
+  const DoubleTab& inco = solv_mass_->equation().inconnue()->valeurs();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   int i, f, m, n, N = inco.line_size();
@@ -80,14 +80,14 @@ void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, con
 
 void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs(), &passe = solv_mass_->equation().inconnue().passe();
+  const DoubleTab& inco = solv_mass_->equation().inconnue()->valeurs(), &passe = solv_mass_->equation().inconnue()->passe();
   Matrice_Morse *mat = matrices[solv_mass_->equation().inconnue().le_nom().getString()]; //facultatif
   const Domaine_VF& domaine = le_dom_.valeur();
   const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : nullptr;
   const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &rho = solv_mass_->equation().milieu().masse_volumique().passe(),
-                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;
+                   *alpha = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   int i, e, f, m, n, N = inco.line_size(), cR = rho.dimension_tot(0) == 1;
 

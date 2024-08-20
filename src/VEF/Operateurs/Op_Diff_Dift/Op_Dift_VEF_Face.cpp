@@ -120,7 +120,7 @@ void Op_Dift_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
   // On traite les faces bord
   if (equation().inconnue()->nature_du_champ() == vectoriel)
     {
-      const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs(), &inconnue_org = equation().inconnue().valeurs();
+      const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs(), &inconnue_org = equation().inconnue()->valeurs();
       DoubleTab nu, nu_turb_m, tab_inconnue;
 
       int marq = phi_psi_diffuse(equation());

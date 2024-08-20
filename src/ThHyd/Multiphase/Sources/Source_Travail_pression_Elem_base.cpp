@@ -32,9 +32,9 @@ void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, 
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const DoubleTab& inco = equation().inconnue().valeurs();
+  const DoubleTab& inco = equation().inconnue()->valeurs();
   int i, j, e, eb, ne = domaine.nb_elem(), f,n, N = inco.line_size(), m,
-                   M = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().valeurs().line_size();
+                   M = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression()->valeurs().line_size();
 
   for (auto &&n_m : matrices)
     if (n_m.first == "pression" || (n_m.first == "alpha" && !semi_impl.count("alpha")) || n_m.first == "vitesse")

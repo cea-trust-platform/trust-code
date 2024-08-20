@@ -80,7 +80,7 @@ inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()
 //Calcule W=-dZ/dt, 2nd membre de l'equation div(rhoU) = W
 inline void Fluide_Quasi_Compressible::secmembre_divU_Z(DoubleTab& tab_W) const
 {
-  double temps=vitesse_->temps();
+  double temps=vitesse_->valeur().temps();
   if (temps>temps_debut_prise_en_compte_drho_dt_)
     {
       eos_tools_->secmembre_divU_Z(tab_W);

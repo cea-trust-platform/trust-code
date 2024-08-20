@@ -405,7 +405,7 @@ void Fluide_base::creer_e_int() const
   Champ_Inc e_int_inc;
   const Equation_base& eq = equation_.count("temperature") ? equation("temperature") : equation("enthalpie");
   eq.discretisation().discretiser_champ("champ_elem", eq.domaine_dis(), "energie_interne", "J/kg", 1, eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
-  e_int_inc.associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
+  e_int_inc->associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
   e_int = e_int_inc;
   e_int.mettre_a_jour(eq.inconnue()->temps());
   e_int_auto_ = 1;

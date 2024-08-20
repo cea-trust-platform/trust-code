@@ -135,7 +135,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   std::vector<int> N(n_ext); //nombre de composantes par probleme de op_ext
   for (int i = 0; i < n_ext; i++)
     {
-      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+      N[i] = op_ext[i]->equation().inconnue()->valeurs().line_size();
 
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;

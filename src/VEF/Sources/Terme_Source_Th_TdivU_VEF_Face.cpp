@@ -155,7 +155,7 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
       Cerr << "The source term Source_Th_TdivU_VEF_P1NC is only dedicated to thermal equation" << finl;
       exit();
     }
-  const DoubleTab& temperature=equation().inconnue().valeurs();
+  const DoubleTab& temperature=equation().inconnue()->valeurs();
   const int nb_faces = temperature.dimension_tot(0);
 
   // Calcul de TdivU d'apres le schema de convection

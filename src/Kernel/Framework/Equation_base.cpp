@@ -136,7 +136,7 @@ const Domaine_dis& Equation_base::domaine_dis() const
  */
 void Equation_base::completer()
 {
-  inconnue().associer_eqn(*this);
+  inconnue()->associer_eqn(*this);
   if (le_dom_Cl_dis.non_nul())
     le_dom_Cl_dis->completer();
 
@@ -451,7 +451,7 @@ int Equation_base::reprendre(Entree& fich)
   field_tag += probleme().domaine().le_nom();
   field_tag += Nom(temps,probleme().reprise_format_temps());
   avancer_fichier(fich, field_tag);
-  inconnue().reprendre(fich);
+  inconnue()->reprendre(fich);
   return 1;
 }
 
@@ -519,7 +519,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
   if (schema_temps().diffusion_implicite() && !calcul_explicite)
     {
       // Add convection operator only if equation has one
-      derivee=inconnue().valeurs();
+      derivee=inconnue()->valeurs();
       if (nombre_d_operateurs()>1)
         {
           derivee_en_temps_conv(secmem, derivee);
@@ -552,8 +552,8 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
   if (calculate_time_derivative())
     {
       // Store dI/dt(n) = M-1 secmem :
-      derivee_en_temps().valeurs()=secmem;
-      solveur_masse->appliquer(derivee_en_temps().valeurs());
+      derivee_en_temps()->valeurs()=secmem;
+      solveur_masse->appliquer(derivee_en_temps()->valeurs());
       schema_temps().modifier_second_membre((*this),secmem); // Change secmem for some schemes (eg: Adams_Bashforth)
     }
 
@@ -602,7 +602,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
               if(!sys_invariant_)
                 {
                   Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
-                  op.contribuer_a_avec(inconnue().valeurs(), matrice);
+                  op.contribuer_a_avec(inconnue()->valeurs(), matrice);
                   solv_masse()->ajouter_masse(dt, op.set_matrice().valeur());
 
                   if(
@@ -627,21 +627,21 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
           Matrice_Base& matrice=op.set_matrice().valeur();
           // DoubleTrav secmem(derivee);
           secmem=derivee;
-          solv_masse()->ajouter_masse(dt, secmem, inconnue().valeurs());
+          solv_masse()->ajouter_masse(dt, secmem, inconnue()->valeurs());
           op.contribuer_au_second_membre(secmem );
           op.set_solveur().resoudre_systeme(matrice,
                                             secmem,
                                             derivee
                                            );
-          solv_masse()->corriger_solution(derivee,inconnue().valeurs());
+          solv_masse()->corriger_solution(derivee,inconnue()->valeurs());
 
-          derivee-=inconnue().valeurs();
+          derivee-=inconnue()->valeurs();
           derivee/=dt;
 
           //Sert uniquement a calculer les flux sur les bords quand la diffusion est implicitee !
           DoubleTab resu;
           resu=derivee;
-          operateur(0).calculer(inconnue().valeurs(), resu);
+          operateur(0).calculer(inconnue()->valeurs(), resu);
         }
       else
         {
@@ -826,8 +826,8 @@ void Equation_base::mettre_a_jour(double temps)
 {
   // On tourne la roue de l'inconnue
   // Update the unknown:
-  inconnue().mettre_a_jour(temps);
-  if (calculate_time_derivative()) derivee_en_temps().mettre_a_jour(temps);
+  inconnue()->mettre_a_jour(temps);
+  if (calculate_time_derivative()) derivee_en_temps()->mettre_a_jour(temps);
 
   les_sources.mettre_a_jour(temps);
 
@@ -903,8 +903,8 @@ int Equation_base::preparer_calcul()
   initialise_residu();
   double temps=schema_temps().temps_courant();
   inconnue()->verifie_valeurs_cl();
-  inconnue().changer_temps(temps);
-  if (calculate_time_derivative()) derivee_en_temps().changer_temps(temps);
+  inconnue()->changer_temps(temps);
+  if (calculate_time_derivative()) derivee_en_temps()->changer_temps(temps);
   le_dom_Cl_dis->initialiser(temps);
 
   Nom msg=que_suis_je();
@@ -913,7 +913,7 @@ int Equation_base::preparer_calcul()
 
   les_sources.initialiser(temps);
   domaine_Cl_dis()->imposer_cond_lim(inconnue(),temps);
-  inconnue().valeurs().echange_espace_virtuel();
+  inconnue()->valeurs().echange_espace_virtuel();
 
   /* initialisation de parametre_equation() par le schema en temps si celui-ci le permet */
   if (sub_type(Schema_Implicite_base, schema_temps()))
@@ -1528,8 +1528,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (precond_diag)
         {
           statistiques().begin_count(assemblage_sys_counter_);
-          const int nb_case = inconnue().valeurs().dimension_tot(0);
-          const int nb_comp = inconnue().valeurs().line_size();
+          const int nb_case = inconnue()->valeurs().dimension_tot(0);
+          const int nb_comp = inconnue()->valeurs().line_size();
           if (nb_comp * nb_case != n)
             {
               Cerr << "the size of the unknown and the second member does not match" << finl;
@@ -1539,13 +1539,13 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             }
           if (diag_.ordre()==1) diag_.dimensionne_diag(n);
           diag_.clean(); // Set to 0
-          operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag_);
+          operateur(0).l_op_base().contribuer_a_avec(inconnue()->valeurs(), diag_);
           for (int i = 0; i < size_s; i++)
             if (marq[i])
-              sources()(i)->contribuer_a_avec(inconnue().valeurs(), diag_);
+              sources()(i)->contribuer_a_avec(inconnue()->valeurs(), diag_);
           // La diagonale est proportionnelle au volume de controle....
           // Il faut appliquer le solveur_masse
-          DoubleTrav tab_tempo(inconnue().valeurs());
+          DoubleTrav tab_tempo(inconnue()->valeurs());
           {
             Matrice_Morse_View diag; // ToDo Kokkos CMatrice_Morse_View diag = diag_.view_ro();
             diag.set(diag_);
@@ -1777,14 +1777,14 @@ const RefObjU& Equation_base::get_modele(Type_modele type) const
 // par defaut, cela ne fait qu'avancer ou reculer l'inconnue (et champ_conserve_ si initialise)
 void Equation_base::avancer(int i)
 {
-  inconnue().avancer(i);
+  inconnue()->avancer(i);
   if (champ_conserve_.non_nul()) champ_conserve_->avancer(i);
   if (champ_convecte_.non_nul()) champ_convecte_->avancer(i);
 }
 
 void Equation_base::reculer(int i)
 {
-  inconnue().reculer(i);
+  inconnue()->reculer(i);
   if (champ_conserve_.non_nul()) champ_conserve_->reculer(i);
   if (champ_convecte_.non_nul()) champ_convecte_->reculer(i);
 }
@@ -2016,7 +2016,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
-      if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
+      if(mat) mat->ajouter_multvect(inconnue()->valeurs(), secmem);
     }
 }
 
@@ -2040,7 +2040,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 void Equation_base::init_champ_conserve() const
 {
   if (champ_conserve_.non_nul()) return; //deja fait
-  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
+  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue()->valeurs().size_reelle_ok() ? inconnue()->valeurs().dimension(0) : -1, Nc = inconnue()->valeurs().line_size();
   //champ_conserve_ : meme type / support que l'inconnue
   discretisation().creer_champ(champ_conserve_, domaine_dis().valeur(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
@@ -2078,7 +2078,7 @@ void Equation_base::imprime_residu(SFichier& fic)
     {
       Nom tab = schema_temps().norm_residu() == "max" ? "\t " : "\t\t ";
       fic << residu_(i) << tab;
-      int nb_unknowns = inconnue().valeurs().dimension_tot(0);
+      int nb_unknowns = inconnue()->valeurs().dimension_tot(0);
       double residual_limit = ( nb_unknowns == 0 ? DMAXFLOAT : DMAXFLOAT/nb_unknowns);
       if (residu_(i)>residual_limit)
         {
@@ -2092,8 +2092,8 @@ void Equation_base::imprime_residu(SFichier& fic)
   // Affichage min/max
   if (schema_temps().impr_extremums() && limpr())
     {
-      double vmax = mp_max_vect(inconnue().valeurs());
-      double vmin = mp_min_vect(inconnue().valeurs());
+      double vmax = mp_max_vect(inconnue()->valeurs());
+      double vmin = mp_min_vect(inconnue()->valeurs());
       Cout << finl << inconnue().le_nom() << " field [min/max]: ";
       if (je_suis_maitre()) printf("[ %.2e / %.2e ]",vmin,vmax);
       Cout << finl;
@@ -2149,7 +2149,7 @@ Nom Equation_base::expression_residu()
 void Equation_base::initialise_residu(int size)
 {
   if (size==0)
-    size = inconnue().valeurs().line_size();
+    size = inconnue()->valeurs().line_size();
   residu_.resize(size);
   residu_initial_.resize(size);
   residu_=0;

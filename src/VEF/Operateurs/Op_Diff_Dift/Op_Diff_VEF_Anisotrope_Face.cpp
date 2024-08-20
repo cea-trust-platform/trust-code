@@ -957,7 +957,7 @@ void Op_Diff_VEF_Anisotrope_Face::verifier() const
   const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
 
   const DoubleTab& xv=domaine_VEF.xv();
-  DoubleTab vit(equation().inconnue().valeurs());
+  DoubleTab vit(equation().inconnue()->valeurs());
   DoubleTab resu(vit);
   int i, comp;
   if(dimension==2)

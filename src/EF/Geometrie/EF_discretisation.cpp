@@ -404,7 +404,7 @@ void EF_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitesse,
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
+      ch_W.changer_temps(ch_vitesse->temps());
     }
   else if (sub_type(Quadri_EF,domaine_EF.type_elem().valeur()) || sub_type(Hexa_EF,domaine_EF.type_elem().valeur()))
     {
@@ -425,7 +425,7 @@ void EF_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitesse,
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
+      ch_W.changer_temps(ch_vitesse->temps());
     }
   else
     {
@@ -528,7 +528,7 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z
   ch_mu.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
 
   Cerr<<"fait changer_temps"<<finl;
-  ch_mu.changer_temps(vit.temps());
+  ch_mu.changer_temps(vit->temps());
   Cerr<<"mu EF est discretise "<<finl;
 #endif
 }
@@ -564,7 +564,7 @@ void EF_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zcl
   ch_cQ.fixer_nb_comp(1);
   ch_cQ.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_cQ.fixer_unite("s-2");
-  ch_cQ.changer_temps(ch_vitesse.temps());
+  ch_cQ.changer_temps(ch_vitesse->temps());
 #endif
 }
 
@@ -584,7 +584,7 @@ void EF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,co
   ch_yp.fixer_nb_comp(1);
   ch_yp.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse.temps());
+  ch_yp.changer_temps(ch_vitesse->temps());
 }
 
 void EF_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
@@ -603,7 +603,7 @@ void EF_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl_dis& zcl,co
   ch_gt.fixer_nb_comp(dimension);
   ch_gt.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_gt.fixer_unite("K/m");
-  ch_gt.changer_temps(ch_temperature.temps());
+  ch_gt.changer_temps(ch_temperature->temps());
 #endif
 }
 
@@ -625,7 +625,7 @@ void EF_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl_dis& zcl,co
   ch_gt.fixer_nb_comp(1);
   ch_gt.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_gt.fixer_unite("W/m2.K");
-  ch_gt.changer_temps(ch_temperature.temps());
+  ch_gt.changer_temps(ch_temperature->temps());
 #endif
 }
 void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  champs_param) const

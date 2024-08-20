@@ -133,7 +133,7 @@ DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab
   DoubleTrav derivee_bis(derivee);
 
   // on commence par retirer phi*div(1 U)
-  const DoubleTab& frac_mass = inconnue().valeurs();
+  const DoubleTab& frac_mass = inconnue()->valeurs();
 
   Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(derivee_bis,*this);
 
@@ -225,7 +225,7 @@ void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices
 {
   statistiques().begin_count(assemblage_sys_counter_);
   const std::string& nom_inco = inconnue().le_nom().getString();
-  const DoubleTab& inco = inconnue().valeurs();
+  const DoubleTab& inco = inconnue()->valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   secmem = 0;

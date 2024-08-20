@@ -129,7 +129,7 @@ void Loi_Etat_Multi_GP_base::calculer_alpha()
     }
   else // VEF
     {
-      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
+      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse()->domaine_dis_base()).elem_faces();
       double rhoelem, Cpelem;
       int face, nfe = elem_faces.line_size();
 
@@ -213,7 +213,7 @@ void Loi_Etat_Multi_GP_base::calculer_tab_mu(const DoubleTab& mu, int size)
     }
   else // VEF (average on elem from values on face);
     {
-      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
+      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse()->domaine_dis_base()).elem_faces();
       const int nfe = elem_faces.line_size();
       tab_mu = 0;
       for (int elem=0; elem<nb_elem; elem++)

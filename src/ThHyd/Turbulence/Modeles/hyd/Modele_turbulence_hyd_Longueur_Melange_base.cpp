@@ -31,5 +31,5 @@ void Modele_turbulence_hyd_Longueur_Melange_base::calculer_energie_cinetique_tur
   // pour des raisons de commodite, l'estimation de k est realisee dans calculer_viscosite_turbulente()
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  energie_cinetique_turb_.changer_temps(mon_equation_->inconnue().temps());
+  energie_cinetique_turb_.changer_temps(mon_equation_->inconnue()->temps());
 }

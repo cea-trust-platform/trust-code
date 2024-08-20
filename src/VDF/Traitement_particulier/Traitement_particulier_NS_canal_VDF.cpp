@@ -55,7 +55,7 @@ void Traitement_particulier_NS_canal_VDF::remplir_Y(DoubleVect& tab_Y,  DoubleVe
   // utiles au calcul des differentes moyennes
   // Initialisation de : Y, compt
 
-  const Domaine_dis_base& zdisbase = mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase = mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, zdisbase);
   const DoubleTab& xp = domaine_VF.xp();
   int nb_elems = domaine_VF.domaine().nb_elem();
@@ -117,7 +117,7 @@ void Traitement_particulier_NS_canal_VDF::remplir_Y(DoubleVect& tab_Y,  DoubleVe
 
 void Traitement_particulier_NS_canal_VDF::remplir_Tab_recap(IntTab& Tab_rec) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& xp = domaine_VDF.xp();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
@@ -233,11 +233,11 @@ void Traitement_particulier_NS_canal_VDF::remplir_Tab_recap(IntTab& Tab_rec) con
 
 void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   //  const DoubleTab& xp = domaine_VDF.xp();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
   double u,v,wl;
   int nb_elems = domaine_VDF.domaine().nb_elem();
   int num_elem,i;
@@ -305,7 +305,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_
 
 void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_nut(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   //const DoubleTab& xp = domaine_VDF.xp();
   const RefObjU& modele_turbulence = mon_equation->get_modele(TURBULENCE);
@@ -328,12 +328,12 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_nut(DoubleTa
 
 void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_Temp(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   //const DoubleTab& xp = domaine_VDF.xp();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleTab& temperature = Temp->valeurs();
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
   double u,v,wl,T;
   int nb_elems = domaine_VDF.domaine().nb_elem();
   int num_elem,i;

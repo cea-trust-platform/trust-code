@@ -105,10 +105,10 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
 
 bool Navier_Stokes_Fluide_Dilatable_base::initTimeStep(double dt)
 {
-  DoubleTab& tab_vitesse=inconnue().valeurs();
+  DoubleTab& tab_vitesse=inconnue()->valeurs();
   Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,le_fluide.valeur());
   const DoubleTab& tab_rho = fluide_dil.rho_discvit();
-  DoubleTab& rhovitesse = rho_la_vitesse_.valeurs(); // will be filled
+  DoubleTab& rhovitesse = rho_la_vitesse_->valeurs(); // will be filled
   rho_vitesse_impl(tab_rho,tab_vitesse,rhovitesse);
 
   return  Navier_Stokes_std::initTimeStep(dt);

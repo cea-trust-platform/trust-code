@@ -330,7 +330,7 @@ void VDF_discretisation::vorticite(Domaine_dis& z,
     }
   ch_W.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
   ch_W.fixer_unite("s-1");
-  ch_W.changer_temps(ch_vitesse.temps());
+  ch_W.changer_temps(ch_vitesse->temps());
 }
 
 void VDF_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
@@ -347,7 +347,7 @@ void VDF_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zc
   ch_Criter_Q.fixer_nb_comp(1);
   ch_Criter_Q.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
   ch_Criter_Q.fixer_unite("s-2");
-  ch_Criter_Q.changer_temps(ch_vitesse.temps());
+  ch_Criter_Q.changer_temps(ch_vitesse->temps());
 }
 
 void VDF_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
@@ -355,7 +355,7 @@ void VDF_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
   const Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z.valeur());
   const Domaine_Cl_VDF& domaine_cl_vdf=ref_cast(Domaine_Cl_VDF, zcl.valeur());
-  const int N = ch_vitesse.valeurs().line_size();
+  const int N = ch_vitesse->valeurs().line_size();
   ch.typer("grad_U_Champ_Face");
   grad_U_Champ_Face& ch_grad_u=ref_cast(grad_U_Champ_Face,ch.valeur());
   ch_grad_u.associer_domaine_dis_base(domaine_vdf);
@@ -387,7 +387,7 @@ void VDF_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
   ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse.temps());
+  ch_grad_u.changer_temps(ch_vitesse->temps());
 }
 
 
@@ -407,7 +407,7 @@ void VDF_discretisation::reynolds_maille(const Domaine_dis& z, const Fluide_base
   if (dimension==3) ch.fixer_nom_compo(2, "Reynolds_maille_Z");
   ch.fixer_nb_valeurs_nodales(domaine_vdf.nb_faces());
   ch.fixer_unite("adimensionnel");
-  ch.changer_temps(ch_vitesse.temps());
+  ch.changer_temps(ch_vitesse->temps());
 }
 
 void VDF_discretisation::courant_maille(const Domaine_dis& z, const Schema_Temps_base& sch, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
@@ -425,7 +425,7 @@ void VDF_discretisation::courant_maille(const Domaine_dis& z, const Schema_Temps
   if (dimension==3) ch.fixer_nom_compo(2, "Courant_maille_Z");
   ch.fixer_nb_valeurs_nodales(domaine_vdf.nb_faces());
   ch.fixer_unite("adimensionnel");
-  ch.changer_temps(ch_vitesse.temps());
+  ch.changer_temps(ch_vitesse->temps());
 }
 
 void VDF_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
@@ -441,7 +441,7 @@ void VDF_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_C
   ch.fixer_nb_comp(1);
   ch.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
   ch.fixer_unite("s-1");
-  ch.changer_temps(ch_vitesse.temps());
+  ch.changer_temps(ch_vitesse->temps());
 }
 
 void VDF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
@@ -471,7 +471,7 @@ void VDF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
       ch_y_plus.fixer_nb_comp(1);
       ch_y_plus.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
       ch_y_plus.fixer_unite("adimensionnel");
-      ch_y_plus.changer_temps(ch_vitesse.temps());
+      ch_y_plus.changer_temps(ch_vitesse->temps());
     }
 }
 
@@ -488,7 +488,7 @@ void VDF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   ch_tp.fixer_nb_comp(1);
   ch_tp.fixer_nb_valeurs_nodales(domaine_vdf.nb_faces());
   ch_tp.fixer_unite("K");
-  ch_tp.changer_temps(eqn.inconnue().temps());
+  ch_tp.changer_temps(eqn.inconnue()->temps());
 } */
 
 void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule,const VECT(REF(Champ_base))& ch_inc) const
@@ -561,7 +561,7 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
     {
       const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
       const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF,vit.domaine_dis_base());
-      int N = ch_vitesse.valeurs().line_size();
+      int N = ch_vitesse->valeurs().line_size();
       ch.typer("Rotationnel_Champ_Face");
       Rotationnel_Champ_Face& ch_W=ref_cast(Rotationnel_Champ_Face,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_VDF);
@@ -603,10 +603,10 @@ void VDF_discretisation::residu( const Domaine_dis& z, const Champ_Inc& ch_inco,
   else
     {
       loc = "champ_elem";
-      nb_comp = ch_inco.valeurs().line_size();
+      nb_comp = ch_inco->valeurs().line_size();
     }
 
-  Discretisation_base::discretiser_champ(loc,domaine_vdf, ch_name ,"units_not_defined",nb_comp,ch_inco.temps(),champ);
+  Discretisation_base::discretiser_champ(loc,domaine_vdf, ch_name ,"units_not_defined",nb_comp,ch_inco->temps(),champ);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
   DoubleTab& tab=ch_fonc.valeurs();
   tab = -10000.0 ;

@@ -45,7 +45,7 @@ void Modele_turbulence_hyd_LES_Wale_VDF::set_param(Param& param)
 Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 {
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
-  const double temps = mon_equation_->inconnue().temps();
+  const double temps = mon_equation_->inconnue()->temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
 
   if (est_egal(cw_, 0., 1.e-15))
@@ -82,7 +82,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
 void Modele_turbulence_hyd_LES_Wale_VDF::calculer_OP1_OP2()
 {
   Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
-  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation_->inconnue()->valeurs();
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
   const int nb_elem = domaine_VDF.domaine().nb_elem_tot(), nb_elem_tot = domaine_VDF.nb_elem_tot();

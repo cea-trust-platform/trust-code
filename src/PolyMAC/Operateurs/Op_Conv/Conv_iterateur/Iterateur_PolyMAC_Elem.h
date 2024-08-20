@@ -1025,7 +1025,7 @@ template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) co
   const int impr_bord=(madomaine.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   double temps = sch.temps_courant();
-  const DoubleTab& inco = la_zcl->equation().inconnue().valeurs();
+  const DoubleTab& inco = la_zcl->equation().inconnue()->valeurs();
   DoubleTab& flux_bords=op_base->flux_bords();
   int ncomp=1;
   if (inco.nb_dim() == 2)

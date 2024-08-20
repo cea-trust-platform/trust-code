@@ -216,7 +216,7 @@ void Fluide_Quasi_Compressible::prepare_pressure_edo()
 
 void Fluide_Quasi_Compressible::write_mean_edo(double temps)
 {
-  double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
+  double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeur().valeurs());
   double rhom = eos_tools_->moyenne_vol(rho.valeurs());
 
   if(je_suis_maitre() && traitement_PTh != 2)

@@ -87,11 +87,11 @@ int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   double inv_time_step         = 1/time_step;
 
   //  Un
-  const DoubleTab& present = eqn.inconnue().valeurs();
+  const DoubleTab& present = eqn.inconnue()->valeurs();
   Debog::verifier("Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base, present",present);
 
   // Un+1
-  DoubleTab& futur   = eqn.inconnue().futur();
+  DoubleTab& futur   = eqn.inconnue()->futur();
 
   // sert pour la pression et les couplages
   eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());

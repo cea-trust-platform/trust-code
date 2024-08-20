@@ -148,7 +148,7 @@ double Loi_Etat_rhoT_GP_QC::inverser_Pth(double T, double rho)
  */
 void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
 {
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();

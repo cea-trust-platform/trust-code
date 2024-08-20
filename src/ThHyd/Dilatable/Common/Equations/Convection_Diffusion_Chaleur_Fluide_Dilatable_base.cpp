@@ -107,7 +107,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
     {
       Nom ident_Pth("pression_thermo");
       ident_Pth += probleme().domaine().le_nom();
-      double temps = inconnue().temps();
+      double temps = inconnue()->temps();
       ident_Pth += Nom(temps,"%e");
       os << ident_Pth<<finl;
       os << "constante"<<finl;

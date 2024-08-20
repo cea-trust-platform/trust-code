@@ -107,7 +107,7 @@ void Op_Dift_Multiphase_proto::completer_(const Operateur_Diff_base& op,const bo
   if (corr_.non_nul())
     corr_->completer();
 
-  const int N = op.equation().inconnue().valeurs().line_size();
+  const int N = op.equation().inconnue()->valeurs().line_size();
   nu_ou_lambda_turb_.resize(0, N);
   const Domaine_VF& dvf = ref_cast(Domaine_VF, op.equation().domaine_dis().valeur());
   dvf.domaine().creer_tableau_elements(nu_ou_lambda_turb_);

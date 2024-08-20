@@ -94,7 +94,7 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
 {
   const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine_poly.face_surfaces();
-  const DoubleTab& vit = equation().inconnue().valeurs();
+  const DoubleTab& vit = equation().inconnue()->valeurs();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 

@@ -222,7 +222,7 @@ void Traitement_particulier_NS_THI_new::msg_erreur_maillage(const char* methode_
 //       u_tot.resize(n1,n2);
 //     }
 
-//   u_av = inconnue().valeurs();
+//   u_av = inconnue()->valeurs();
 
 //   for(int i=0; i<nombre_d_operateurs(); i++)
 //     {
@@ -270,7 +270,7 @@ void Traitement_particulier_NS_THI_new::msg_erreur_maillage(const char* methode_
 //   if (le_traitement_particulier.non_nul())
 //     le_traitement_particulier.en_cours_de_resolution(2,u_press, u_av,dt);
 
-//   u_av = inconnue().valeurs();
+//   u_av = inconnue()->valeurs();
 //   u_tot = vpoint;
 //     if (le_traitement_particulier.non_nul())
 //       le_traitement_particulier.en_cours_de_resolution(3,u_tot, u_av,dt);

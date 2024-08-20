@@ -278,7 +278,7 @@ double Terme_Source_Canal_perio::compute_heat_flux() const
   // If flux_bords is not build (diffusion_implicit algorithm for example, we calculate it):
   if (flux_bords.size()==0)
     {
-      DoubleTab dummy(equation().inconnue().valeurs());
+      DoubleTab dummy(equation().inconnue()->valeurs());
       equation().operateur(0).ajouter(equation().inconnue(), dummy);
     }
   // Loop on boundaries to evaluate total heat flux:

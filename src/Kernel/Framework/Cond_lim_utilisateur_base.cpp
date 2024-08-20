@@ -239,7 +239,7 @@ void cl_timp::complement(Nom& ajout)
       if (rayo)
         ajout += Nrayo;
       Nom cl(" h_imp champ_front_uniforme ");
-      const int N = mon_equation->inconnue().valeurs().dimension(1);
+      const int N = mon_equation->inconnue()->valeurs().dimension(1);
       cl += N;
       for (int n = 0; n < N; n++) cl += " 1e10";
       cl += " t_ext";

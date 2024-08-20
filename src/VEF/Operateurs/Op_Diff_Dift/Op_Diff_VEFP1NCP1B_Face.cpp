@@ -961,7 +961,7 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
 
   DoubleVect& coeff=laplacien_p1_.get_set_coeff();
 
-  const DoubleTab& inconnue1=equation().inconnue().valeurs();
+  const DoubleTab& inconnue1=equation().inconnue()->valeurs();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
 
   assert(laplacien_p1_.nb_lignes()>2);
@@ -1073,7 +1073,7 @@ void Op_Diff_VEFP1NCP1B_Face::initialiser()
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
 
-  const DoubleTab& unknown = equation().inconnue().valeurs();
+  const DoubleTab& unknown = equation().inconnue()->valeurs();
   const int size = unknown.line_size();
 
   //Definition des gradients
@@ -3185,7 +3185,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const int firstFaceInt=domaine_VEF.premiere_face_int();
   const int nb_som_tot=dom.nb_som_tot();
 
-  const DoubleTab& unknown = equation().inconnue().valeurs();
+  const DoubleTab& unknown = equation().inconnue()->valeurs();
   const DoubleTab& xv=domaine_VEF.xv();
   const DoubleTab& xs=dom.les_sommets();
 

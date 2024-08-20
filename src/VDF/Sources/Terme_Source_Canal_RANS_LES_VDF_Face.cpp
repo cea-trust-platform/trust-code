@@ -166,7 +166,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::associer_pb(const Probleme_base& pb)
 
 void Terme_Source_Canal_RANS_LES_VDF_Face::init()
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   int nb_faces = domaine_VDF.nb_faces();
   const double tps = mon_equation->schema_temps().temps_courant();
@@ -267,7 +267,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
   // utiles au calcul des differentes moyennes
   // Initialisation de : Yu,Yv,Yw + compt_x,compt_y,compt_z
   // + corresp_u,corresp_v,corresp_w
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
   const DoubleTab& xv = domaine_VDF.xv();
@@ -612,7 +612,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
   //Cerr << "Je suis dans le mettre_a_jour" << finl;
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
 
-  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
@@ -650,7 +650,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
           pb_rans = ref_cast(Probleme_base, obj);
         }
 
-      U_RANS = pb_rans->equation(0).inconnue().valeurs();
+      U_RANS = pb_rans->equation(0).inconnue()->valeurs();
 
     }
   //***************************************************
@@ -1067,7 +1067,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ajouter_blocs(matrices_t matrices, Do
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
-  //  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+  //  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
 
   double vol=0;
   //SFichier fic_f("f.dat", ios::app);

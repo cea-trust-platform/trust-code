@@ -426,7 +426,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
         }
       else
         {
-          const DoubleTab& vitesse=equation().inconnue().valeurs();
+          const DoubleTab& vitesse=equation().inconnue()->valeurs();
           vitesse_elem=0;
           for (int s=0; s<nb_som_elem; s++)
             {
@@ -455,7 +455,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
   const DoubleTab& aire = champ_aire_.valeurs();
 
   int dim_esp = Objet_U::dimension ;
-  const DoubleTab& vitesse=equation().inconnue().valeurs();
+  const DoubleTab& vitesse=equation().inconnue()->valeurs();
   DoubleTab coeff(vitesse);
   IntTab contrib(nb_som_tot, dim_esp);
   contrib = 0;
@@ -701,7 +701,7 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
   const DoubleVect& volume_thilde=domaine_EF.volumes_thilde();
   int ncomp=dimension;
   ArrOfDouble tuvw(dimension);
-  // const DoubleTab& vitesse=equation().inconnue().valeurs();
+  // const DoubleTab& vitesse=equation().inconnue()->valeurs();
   const DoubleTab& rotation=champ_rotation_.valeurs();
   const DoubleTab& aire=champ_aire_.valeurs();
   //champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
@@ -1768,7 +1768,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           double temps=sch.temps_courant();
           double pdtps = sch.pas_de_temps();
           if (temps == pdtps) return 0;
-          const DoubleTab& vitesse=equation().inconnue().valeurs();
+          const DoubleTab& vitesse=equation().inconnue()->valeurs();
           int nb_som=le_dom_EF->domaine().nb_som();
           Nom espace=" \t";
 

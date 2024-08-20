@@ -62,9 +62,9 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir(), &xp = domaine.xp(), &xv = domaine.xv();
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = pbm.equation_masse().inconnue().passe(),
-                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
-                     &temp = pbm.equation_energie().inconnue().passe(),
+                   &alpha = pbm.equation_masse().inconnue()->passe(),
+                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
+                     &temp = pbm.equation_energie().inconnue()->passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());

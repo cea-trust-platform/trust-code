@@ -307,8 +307,8 @@ void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis& z, const Champ_Inc
       Noms nom(1), unites(1);
       nom[0] = ch_name;
       unites[0] = "units_not_defined";
-      int nb_comp = ch_inco.valeurs().line_size() * dimension;
-      discretiser_champ(loc, z.valeur(), vectoriel, nom, unites, nb_comp, ch_inco.temps(), champ);
+      int nb_comp = ch_inco->valeurs().line_size() * dimension;
+      discretiser_champ(loc, z.valeur(), vectoriel, nom, unites, nb_comp, ch_inco->temps(), champ);
     }
   else
     {
@@ -316,8 +316,8 @@ void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis& z, const Champ_Inc
       Noms nom(1), unites(1);
       nom[0] = ch_name;
       unites[0] = "units_not_defined";
-      int nb_comp = ch_inco.valeurs().line_size();
-      discretiser_champ(loc, z.valeur(), scalaire, nom, unites, nb_comp, ch_inco.temps(), champ);
+      int nb_comp = ch_inco->valeurs().line_size();
+      discretiser_champ(loc, z.valeur(), scalaire, nom, unites, nb_comp, ch_inco->temps(), champ);
     }
 
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, champ.valeur());

@@ -47,9 +47,9 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = pbm.equation_masse().inconnue().passe(),
-                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
-                     &temp = pbm.equation_energie().inconnue().passe(),
+                   &alpha = pbm.equation_masse().inconnue()->passe(),
+                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
+                     &temp = pbm.equation_energie().inconnue()->passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());

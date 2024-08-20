@@ -79,7 +79,7 @@ Entree& Traitement_particulier_NS_Pression_VDF::lire(Entree& is)
             case 0 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+                const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
                 const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = domaine_VDF.nb_elem() ;
@@ -141,13 +141,13 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_
   Operateur_Grad gradient = mon_equation->operateur_gradient();
   SolveurSys solveur_pression_ = mon_equation->solveur_pression();
 
-  DoubleTab& pression=la_pression.valeurs();
+  DoubleTab& pression=la_pression->valeurs();
   DoubleTrav inc_pre(pression);
   DoubleTrav secmem(pression);
-  gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
+  gradient.calculer(la_pression->valeurs(),gradient_P->valeurs());
 
   //on veut BM-1Bt(spi*Pression)
-  DoubleTab& grad=gradient_P.valeurs();
+  DoubleTab& grad=gradient_P->valeurs();
   mon_equation->solv_masse()->appliquer(grad);
   DoubleTab& grad_temp = grad;
   for(i=0; i<nb_face; i++)

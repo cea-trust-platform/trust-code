@@ -157,7 +157,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   // Dimensionnement de tab_dZ
   const Navier_Stokes_std& eqns = ref_cast(Navier_Stokes_std, eq);
-  const DoubleVect& pression = eqns.pression().valeurs();
+  const DoubleVect& pression = eqns.pression()->valeurs();
 
   DoubleTrav tab_dZ = pression;
   DoubleTrav tab_rhon_som(nb_som_tot);

@@ -184,7 +184,7 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
   // On calcule la force de Coriolis par element (maillage entrelace!)
   // On se ramenera aux faces dans le ajouter
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
-  const DoubleTab& vitesse = eq_hydraulique().inconnue().valeurs();
+  const DoubleTab& vitesse = eq_hydraulique().inconnue()->valeurs();
   //  int nb_faces = domaine_VDF.nb_faces();
   const int nb_elems = eq_hydraulique().domaine_dis()->domaine().nb_elem();
   const IntTab& elem_faces = domaine_VDF.elem_faces();

@@ -99,7 +99,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
   const double Kappa = 0.415;
   double Cmu = CMU;
 
-  double temps = mon_equation_->inconnue().temps();
+  double temps = mon_equation_->inconnue()->temps();
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   DoubleVect& k = energie_cinetique_turb_.valeurs();
@@ -206,7 +206,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
 
 void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_Sij2()
 {
-  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue()->valeurs();
   const Champ_P1NC& ch = ref_cast(Champ_P1NC, mon_equation_->inconnue().valeur());
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
@@ -298,7 +298,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
   const Fluide_base& le_fluide = ref_cast(Fluide_base, mon_equation_->milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ch_visco_cin->valeurs();
-  const DoubleTab& vit = mon_equation_->inconnue().valeurs();
+  const DoubleTab& vit = mon_equation_->inconnue()->valeurs();
 
   f_amortissement_.resize(nb_elem);
   f_amortissement_ = 1.;

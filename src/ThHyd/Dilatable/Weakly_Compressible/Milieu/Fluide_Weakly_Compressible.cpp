@@ -327,7 +327,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
   DoubleTab& tab_Phydro = pression_hydro_.valeurs();
-  const Domaine_dis_base& domaine_dis= pression_-> domaine_dis_base();
+  const Domaine_dis_base& domaine_dis= pression_->valeur().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   int is_VDF = domaine_dis.que_suis_je() == "Domaine_VDF" ? 1 : 0;
   const DoubleTab& centres_de_gravites = is_VDF ? domaine.xp() : domaine.xv();

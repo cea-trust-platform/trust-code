@@ -192,13 +192,13 @@ void Navier_Stokes_Turbulent_QC::assembler_avec_inertie(Matrice_Morse& mat_morse
 bool Navier_Stokes_Turbulent_QC::initTimeStep(double dt)
 {
 
-  DoubleTab& tab_vitesse = inconnue().valeurs();
+  DoubleTab& tab_vitesse = inconnue()->valeurs();
 
   Fluide_Quasi_Compressible& fluide_QC = ref_cast(Fluide_Quasi_Compressible, le_fluide.valeur());
 
   const DoubleTab& tab_rho = fluide_QC.rho_discvit();
 
-  DoubleTab& rhovitesse = rho_la_vitesse_.valeurs();
+  DoubleTab& rhovitesse = rho_la_vitesse_->valeurs();
   Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(tab_rho, tab_vitesse, rhovitesse);
 
   return Navier_Stokes_Turbulent::initTimeStep(dt);

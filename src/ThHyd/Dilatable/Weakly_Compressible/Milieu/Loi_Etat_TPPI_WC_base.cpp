@@ -36,7 +36,7 @@ Entree& Loi_Etat_TPPI_WC_base::readOn(Entree& is) { return Loi_Etat_TPPI_base::r
 void Loi_Etat_TPPI_WC_base::calculer_Cp()
 {
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& pres = FWC.pression_th_tab(), &tab_ICh = le_fluide->inco_chaleur().valeurs();
+  const DoubleTab& pres = FWC.pression_th_tab(), &tab_ICh = le_fluide->inco_chaleur()->valeurs();
   SpanD temp_span = tab_ICh.get_span(), p_span = pres.get_span();
 
   /* Step 2 : Mu */
@@ -64,7 +64,7 @@ void Loi_Etat_TPPI_WC_base::calculer_Cp()
       tab_alpha(i, 0) = tab_lambda(i, 0) / (tab_rho(i, 0) * Cp_);
   else
     {
-      const IntTab& elem_faces = ref_cast(Domaine_VF, le_fluide->vitesse().domaine_dis_base()).elem_faces();
+      const IntTab& elem_faces = ref_cast(Domaine_VF, le_fluide->vitesse()->domaine_dis_base()).elem_faces();
       const int nfe = elem_faces.line_size();
       for (int i = 0; i < tab_alpha.dimension(0); i++)
         {
@@ -81,7 +81,7 @@ void Loi_Etat_TPPI_WC_base::calculer_Cp()
 void Loi_Etat_TPPI_WC_base::calculer_masse_volumique()
 {
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& pres = FWC.pression_th_tab(), &tab_ICh = le_fluide->inco_chaleur().valeurs();
+  const DoubleTab& pres = FWC.pression_th_tab(), &tab_ICh = le_fluide->inco_chaleur()->valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   SpanD temp_span = tab_ICh.get_span(),  p_span = pres.get_span(), rho_span = tab_rho_np1.get_span();
   TPPI_->tppi_get_rho_pT(p_span, temp_span, rho_span);

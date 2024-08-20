@@ -117,14 +117,14 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
                                             opgrad.valeur());
   //grad.verifier();
   const Solveur_Masse& solvm=eqn.solv_masse();
-  const DoubleTab& pression=eqn.pression().valeurs();
+  const DoubleTab& pression=eqn.pression()->valeurs();
   DoubleTab tab(pression);
   DoubleTab resu(tab), resu2(tab);
 
   // On calcule un champ de pression quelconque
   exemple_champ_non_homogene(domaine_VEF, tab);
 
-  DoubleTab gradP(eqn.inconnue().valeurs());
+  DoubleTab gradP(eqn.inconnue()->valeurs());
   grad.calculer(tab, gradP);
   solvm->appliquer(gradP);
   div.calculer(gradP, resu);
@@ -151,12 +151,12 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
                                             opgrad.valeur());
   //grad.verifier();
   //  const Solveur_Masse& solvm=eqn.solv_masse();
-  const DoubleTab& pression=eqn.pression().valeurs();
+  const DoubleTab& pression=eqn.pression()->valeurs();
   int ko=0;
   ko=verifier_complet(ass, matrice, domaine_VEF);
   DoubleTab pre(pression);
   DoubleTab resu(pre), resu2(pre), erreur(pre);
-  DoubleTab gradP(eqn.inconnue().valeurs());
+  DoubleTab gradP(eqn.inconnue()->valeurs());
   const Domaine& domaine=domaine_VEF.domaine();
   int nb_elem=domaine.nb_elem();
   int nb_elem_tot=domaine.nb_elem_tot();

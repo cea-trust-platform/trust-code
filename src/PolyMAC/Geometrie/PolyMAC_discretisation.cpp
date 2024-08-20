@@ -528,7 +528,7 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& 
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_poly.nb_elem());
   ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse.temps());
+  ch_grad_u.changer_temps(ch_vitesse->temps());
 }
 
 void PolyMAC_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
@@ -549,7 +549,7 @@ void PolyMAC_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& 
   ch_gt.fixer_nb_comp(1);
   ch_gt.fixer_nb_valeurs_nodales(domaine_PolyMAC.nb_elem());
   ch_gt.fixer_unite("W/m2.K");
-  ch_gt.changer_temps(ch_temperature.temps());
+  ch_gt.changer_temps(ch_temperature->temps());
 #endif
 }
 void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const

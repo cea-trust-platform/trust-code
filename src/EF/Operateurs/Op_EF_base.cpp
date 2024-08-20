@@ -73,7 +73,7 @@ void Op_EF_base::dimensionner(const Domaine_EF& le_dom,
   // essai
   nb_som=nfin;
 
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
   int nb_comp = champ_inconnue.line_size();
 
   // on ne s'occupe pas dans un premier temps des composantes
@@ -261,7 +261,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
 
   // determination de la taille du champ inconnue.
   // Cerr << "dans modifier cl " << finl;
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
   int nb_comp = champ_inconnue.line_size();
 
   const IntTab& faces_sommets=le_dom.face_sommets();

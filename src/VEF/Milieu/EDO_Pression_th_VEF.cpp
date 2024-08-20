@@ -60,7 +60,7 @@ void EDO_Pression_th_VEF::completer()
       Cerr << "En VEF, la discretisation doit avoir le support P0. Donc utiliser P1Bulle ou P0P1." << finl;
       Process::exit();
     }
-  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
+  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur()->valeurs();
   double Pth=le_fluide_->pression_th();
   M0=masse_totale(Pth,tab_ICh);
   le_fluide_->checkTraitementPth(le_dom_Cl.valeur());

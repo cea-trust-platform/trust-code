@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ void Champ_Ostwald_VEF::calculer_dscald(DoubleTab& dscald)
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,domaine_vf());
   const Domaine_Cl_VEF& zcl_VEF = ref_cast(Domaine_Cl_VEF, eq_hydraulique->domaine_Cl_dis().valeur());
-  const DoubleTab& vit = eq_hydraulique->inconnue().valeurs();
+  const DoubleTab& vit = eq_hydraulique->inconnue()->valeurs();
   int nb_elem = domaine_VEF.nb_elem();
   int nb_elem_tot = domaine_VEF.nb_elem_tot();
 

@@ -93,7 +93,7 @@ template <typename Type_Double>
 void Eval_Darcy_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
-  for (int i = 0; i < size; i++) source[i] = -db_diffusivite_(num_face)/modK_->getK(porosite_)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse_->valeurs())(num_face,i); // -mu.vol.psi.U/K
+  for (int i = 0; i < size; i++) source[i] = -db_diffusivite_(num_face)/modK_->getK(porosite_)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse_->valeur().valeurs())(num_face,i); // -mu.vol.psi.U/K
 }
 
 #endif /* Eval_Darcy_VDF_Face_included */

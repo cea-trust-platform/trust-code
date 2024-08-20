@@ -58,7 +58,7 @@ void Traitement_particulier_Solide_canal_VDF::post_traitement_particulier()
   DoubleTrav Trms(N);
   Trms=0.;
 
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
 
   // Moyennes spatiales :
   calculer_moyennes_spatiales_thermo(Tmoy,Trms,Y,corresp,compt);
@@ -104,14 +104,14 @@ void Traitement_particulier_Solide_canal_VDF::post_traitement_particulier()
 void Traitement_particulier_Solide_canal_VDF::calculer_moyennes_spatiales_thermo(DoubleVect& tmoy, DoubleVect& trms,const DoubleVect& tabY, IntVect& tab_corresp, IntVect& tab_compt)
 {
 
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
   // Le nombre d'elements du domaine VDF.
   int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs de la temperature a partir de mon_equation_NRJ.
-  const DoubleTab& Temp = mon_equation->inconnue().valeurs();
+  const DoubleTab& Temp = mon_equation->inconnue()->valeurs();
 
   // t2moy correspond
   DoubleTrav t2moy(N);
@@ -201,7 +201,7 @@ void Traitement_particulier_Solide_canal_VDF::calculer_integrales_temporelles(Do
 void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_spat_thermo(const DoubleVect& Tmoy, const DoubleVect& Trms,const DoubleVect& tabY)
 {
   Nom nom_fic = "Solid_spat_";
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
   Nom temps = Nom(tps);
 
   nom_fic+= temps;
@@ -231,7 +231,7 @@ void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_spat_thermo(c
 void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_temp_thermo(const DoubleVect& Tmoy, const DoubleVect& Trms, const DoubleVect& tabY, const double dt)
 {
   Nom nom_fic = "Solid_temp_";
-  double tps = mon_equation->inconnue().temps();
+  double tps = mon_equation->inconnue()->temps();
   Nom temps = Nom(tps);
 
   nom_fic+= temps;
@@ -266,7 +266,7 @@ void Traitement_particulier_Solide_canal_VDF::init_calcul_stats(void)
 
 void Traitement_particulier_Solide_canal_VDF::init_calcul_moyenne(void)
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
   const DoubleTab& xp = domaine_VDF.xp();

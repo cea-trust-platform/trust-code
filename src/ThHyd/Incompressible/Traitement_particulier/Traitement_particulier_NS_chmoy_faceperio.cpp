@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ void Traitement_particulier_NS_chmoy_faceperio::preparer_calcul_particulier()
   if (oui_stat != 0)
     init_calcul_stats();
 
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation->inconnue()->temps();
   int Nbfaces,num_face;
 
   if (temps>temps_deb)
@@ -137,7 +137,7 @@ void Traitement_particulier_NS_chmoy_faceperio::preparer_calcul_particulier()
 
 void Traitement_particulier_NS_chmoy_faceperio::post_traitement_particulier()
 {
-  double temps = mon_equation->inconnue().temps();
+  double temps = mon_equation->inconnue()->temps();
   double dt = mon_equation->schema_temps().pas_de_temps();
   if (temps>temps_deb && temps<temps_fin)
     calcul_chmoy_faceperio(temps_deb,temps,dt);

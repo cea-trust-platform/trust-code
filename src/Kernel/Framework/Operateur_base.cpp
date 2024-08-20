@@ -257,7 +257,7 @@ void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Mors
   /* on tente ajouter_blocs() */
   if (has_interface_blocs())
     {
-      DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
+      DoubleTrav secmem(equation().inconnue()->valeurs()); //on va le jeter
       ajouter_blocs({{ "vitesse", &matrice }}, secmem);
     }
 }

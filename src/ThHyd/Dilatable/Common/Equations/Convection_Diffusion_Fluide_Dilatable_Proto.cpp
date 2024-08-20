@@ -144,7 +144,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   DoubleTrav convection(derivee);
 
   // Add Y div (rho*u) or T div (rho*u)
-  const DoubleTab& inco = eqn.inconnue().valeurs();
+  const DoubleTab& inco = eqn.inconnue()->valeurs();
   calculer_div_u_ou_div_rhou(convection);
 
   tab_multiply_any_shape(convection, inco);
@@ -167,7 +167,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   if (diffusion_implicite)
     {
-      const DoubleTab& Tfutur=eqn.inconnue().futur();
+      const DoubleTab& Tfutur=eqn.inconnue()->futur();
       DoubleTrav secmem(derivee);
       secmem=derivee;
       eqn.solv_masse()->appliquer(secmem);
@@ -383,7 +383,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
   // on a la matrice approchee on recalcule le residu;
   secmem=0;
   derivee_en_temps_inco_sans_solveur_masse_impl(eqn,secmem,false /* implicit */);
-  if(mat) mat->ajouter_multvect(eqn.inconnue().valeurs(),secmem);
+  if(mat) mat->ajouter_multvect(eqn.inconnue()->valeurs(),secmem);
 }
 
 

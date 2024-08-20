@@ -39,7 +39,7 @@ void Op_PolyMAC_Elem::dimensionner(const Domaine_PolyMAC& le_domaine, const Doma
   const Conds_lim& les_cl = le_domaine_cl.les_conditions_limites();
   int nb_comp = 1;
 
-  const DoubleTab& champ_inconnue = le_domaine_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_domaine_cl.equation().inconnue()->valeurs();
   if (champ_inconnue.nb_dim() == 2)
     nb_comp = champ_inconnue.dimension(1);
   //Cerr << "nb_compo de Op_PolyMAC_Elem::dimensionner" << nb_comp << finl;

@@ -71,13 +71,13 @@ void Schema_Adams_Bashforth_base::modifier_second_membre(const Equation_base& eq
       //Modification due to present time and past times
       secmem*=coefficients()[nb_valeurs_passees()]; //present time
 
-      DoubleTrav dudt(eqn.inconnue().valeurs());
+      DoubleTrav dudt(eqn.inconnue()->valeurs());
       DoubleTrav tmp(dudt);
       // Compute sum(coeff*dudt)
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset = nb_valeurs_passees()-i;
-          tmp = eqn.derivee_en_temps().passe(offset);
+          tmp = eqn.derivee_en_temps()->passe(offset);
           tmp *= coefficients()[i];
           dudt += tmp; //past time
         }

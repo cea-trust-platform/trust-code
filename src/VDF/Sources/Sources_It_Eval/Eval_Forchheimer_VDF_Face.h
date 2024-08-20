@@ -47,7 +47,7 @@ void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, Type_D
   const int size = source.size_array();
   for (int i = 0; i < size; i++)
     {
-      const double U = (vitesse_->valeurs())(num_face,i);
+      const double U = (vitesse_->valeur().valeurs())(num_face,i);
       source[i] = -Cf_/sqrt(modK_->getK(porosite_))*volumes_entrelaces(num_face)*porosite_surf(num_face)*std::fabs(U)*U;
     }
 }

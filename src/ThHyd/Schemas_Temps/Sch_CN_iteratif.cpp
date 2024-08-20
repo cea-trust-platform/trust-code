@@ -255,7 +255,7 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
       // On calcule une fois la derivee pour avoir les flux bord
       if (eqn.schema_temps().nb_pas_dt()==0)
         {
-          DoubleTab inconnue_valeurs(eqn.inconnue().valeurs());
+          DoubleTab inconnue_valeurs(eqn.inconnue()->valeurs());
           eqn.derivee_en_temps_inco(inconnue_valeurs);
         }
       converged=true;
@@ -266,7 +266,7 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
   double dt_intermediaire=temps_intermediaire-temps_courant();
   double dt_final=temps_final-temps_courant();
 
-  DoubleTab& present = eqn.inconnue().valeurs();
+  DoubleTab& present = eqn.inconnue()->valeurs();
   DoubleTab& intermediaire = eqn.inconnue()->valeurs(temps_intermediaire);
   DoubleTab& final = eqn.inconnue()->valeurs(temps_final);
 
@@ -288,9 +288,9 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
   // Bidouille : Comme les operateurs prennent par defaut le present,
   // on avance temporairement l'inconnue.
 
-  eqn.inconnue().avancer();
+  eqn.inconnue()->avancer();
   eqn.derivee_en_temps_inco(dudt);
-  eqn.inconnue().reculer();
+  eqn.inconnue()->reculer();
 
   // Mise a jour des valeurs de l'inconnue aux temps intermediaire et final
   // intermediaire = present + dt_intermediaire * dudt;

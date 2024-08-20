@@ -62,7 +62,7 @@ void Correction_Antal_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 {
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
+                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe(),
                     &rho   = equation().milieu().masse_volumique().passe(),
                      &d_bulles = equation().probleme().get_champ("diametre_bulles").valeurs();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());

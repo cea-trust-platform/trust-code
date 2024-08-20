@@ -91,7 +91,7 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
 void Source_Flux_interfacial_base::completer()
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
-  int N = equation().inconnue().valeurs().line_size();
+  int N = equation().inconnue()->valeurs().line_size();
   if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier().valeur()))
     Process::exit(que_suis_je() + " : Source_Flux_interfacial_base must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
 

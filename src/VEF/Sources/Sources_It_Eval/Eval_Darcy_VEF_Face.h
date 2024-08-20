@@ -103,7 +103,7 @@ inline void Eval_Darcy_VEF_Face::calculer_terme_source(int num_face, Type_Double
 {
   int size = source.size_array();
   for (int i = 0; i < size; i++)
-    source[i] = -db_diffusivite_(num_face) / modK_->getK(porosite_) * volumes[num_face] * porosite_surf[num_face] * (vitesse_->valeurs()(num_face, i));
+    source[i] = -db_diffusivite_(num_face) / modK_->getK(porosite_) * volumes[num_face] * porosite_surf[num_face] * (vitesse_->valeur().valeurs()(num_face, i));
 }
 
 #endif /* Eval_Darcy_VEF_Face_included */

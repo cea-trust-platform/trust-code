@@ -89,8 +89,8 @@ DoubleTab& Op_Diff_RotRot::ajouter(const DoubleTab& vitesse, DoubleTab& diffusio
   //Marche car Champ_Inc est mutable
   curl_.calculer(vitesse, curl);
   //curl=-1*curl;
-  calculer_vorticite(vorticite_.valeurs(), curl);
-  rot_.calculer(vorticite_.valeurs(), diffusion);
+  calculer_vorticite(vorticite_->valeurs(), curl);
+  rot_.calculer(vorticite_->valeurs(), diffusion);
 
   Cerr << "je sors de OpDiffRotRot" << finl;
 

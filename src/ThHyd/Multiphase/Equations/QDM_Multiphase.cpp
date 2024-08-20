@@ -143,15 +143,15 @@ void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab
 void QDM_Multiphase::mettre_a_jour(double temps)
 {
   Equation_base::mettre_a_jour(temps);  //on saute celui de Navier_Stokes_std
-  pression().mettre_a_jour(temps);
-  pression_pa().mettre_a_jour(temps);
+  pression()->mettre_a_jour(temps);
+  pression_pa()->mettre_a_jour(temps);
 
   int i, j, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases(), d, D = dimension;
   for (n = 0; n < N; n++)
     if (vit_phases_[n].non_nul())
       {
-        vit_phases_[n].mettre_a_jour(temps);
-        DoubleTab_parts psrc(inconnue().valeurs()), pdst(vit_phases_[n].valeurs());
+        vit_phases_[n]->mettre_a_jour(temps);
+        DoubleTab_parts psrc(inconnue()->valeurs()), pdst(vit_phases_[n]->valeurs());
         for (i = 0; i < std::min(psrc.size(), pdst.size()); i++)
           {
             DoubleTab& src = psrc[i], &dst = pdst[i];
@@ -403,8 +403,8 @@ int QDM_Multiphase::preparer_calcul()
 
   // XXX Elie Saikali : utile pour cas reprise !
   const double temps = schema_temps().temps_courant();
-  pression().changer_temps(temps);
-  pression_pa().changer_temps(temps);
+  pression()->changer_temps(temps);
+  pression_pa()->changer_temps(temps);
 
   return 1;
 }

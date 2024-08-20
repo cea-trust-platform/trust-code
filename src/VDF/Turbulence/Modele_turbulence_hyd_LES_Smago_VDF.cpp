@@ -41,7 +41,7 @@ void Modele_turbulence_hyd_LES_Smago_VDF::set_param(Param& param)
 Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
 {
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
-  double temps = mon_equation_->inconnue().temps();
+  double temps = mon_equation_->inconnue()->temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
   int nb_elem = domaine_VDF.domaine().nb_elem();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
@@ -68,7 +68,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
 void Modele_turbulence_hyd_LES_Smago_VDF::calculer_S_barre()
 {
   Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
-  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  const DoubleTab& vitesse = mon_equation_->inconnue()->valeurs();
   const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();

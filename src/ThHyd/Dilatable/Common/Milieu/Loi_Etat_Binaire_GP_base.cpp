@@ -56,7 +56,7 @@ void Loi_Etat_Binaire_GP_base::calculer_lambda()
  */
 void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
 {
-  const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
+  const DoubleTab& tab_Y1 = le_fluide->inco_chaleur()->valeurs();
   DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
 
   int i, n=tab_mu.size();

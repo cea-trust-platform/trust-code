@@ -75,7 +75,7 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
         for (e = 0; e < ne; e++)
           for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);
         Matrice_Morse mat;
-        Matrix_tools::allocate_morse_matrix(N *  solv_mass_->equation().inconnue().valeurs().dimension_tot(0), M * col.dimension_tot(0), stencil, mat);
+        Matrix_tools::allocate_morse_matrix(N *  solv_mass_->equation().inconnue()->valeurs().dimension_tot(0), M * col.dimension_tot(0), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
 }

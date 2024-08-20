@@ -61,7 +61,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vfd = domaine.volumes_entrelaces_dir(), *alp =
-                                                       sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+                                                       sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   int i, e, f, n, N = vit.line_size();
   DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
@@ -98,7 +98,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, k, e, eb, f, fb, fc, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), m, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  int i, j, k, e, eb, f, fb, fc, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), m, n, N = equation().inconnue()->valeurs().line_size(), d, D = dimension;
 
   IntTab stencil(0, 2);
 
@@ -152,7 +152,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs(),
                    *a_r = !pbm ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(),
-                    *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, &rho = equation().milieu().masse_volumique().passe();
+                    *alp = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr, &rho = equation().milieu().masse_volumique().passe();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   int i, j, k, e, eb, f, fb, fc, fd, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;

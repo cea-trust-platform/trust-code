@@ -465,7 +465,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       /**************************/
       /* Recuperation de Gpoint */
       /**************************/
-      DoubleTrav Gpoint(equation().inconnue().valeurs());
+      DoubleTrav Gpoint(equation().inconnue()->valeurs());
       //Gpoint=0.; Un DoubleTrav initialise a 0
       int Gpoint_nul = 1; // Drapeau pour economiser potentiellement un echange_espace_virtuel
       for (int cond_lim=0; cond_lim<nb_cond_lim; cond_lim++)
@@ -741,7 +741,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
             }
         }
     }
-  DoubleVect& post=ref_cast(Navier_Stokes_std,mon_equation.valeur()).div().valeurs();
+  DoubleVect& post=ref_cast(Navier_Stokes_std,mon_equation.valeur()).div()->valeurs();
   post=0;
   for (int elem=0; elem<Faces_de_Dirichlet.size_array(); elem++)
     {

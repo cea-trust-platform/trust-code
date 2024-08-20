@@ -34,7 +34,7 @@ double Source_Neutronique_VDF::calculer_Tmoyenne()
 {
   double T = 0.;
   const int nb_elem = le_dom->nb_elem();
-  const DoubleTab& temp = equation().inconnue().valeurs();
+  const DoubleTab& temp = equation().inconnue()->valeurs();
   for (int i = 0; i < nb_elem; i++) T += temp(i);
 
   T = T / nb_elem;

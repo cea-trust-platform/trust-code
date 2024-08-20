@@ -432,7 +432,7 @@ void Modele_turbulence_hyd_base::a_faire(Sortie& os) const
     {
       Nom mon_ident(que_suis_je());
       mon_ident += equation().probleme().domaine().le_nom();
-      double temps = equation().inconnue().temps();
+      double temps = equation().inconnue()->temps();
       mon_ident += Nom(temps, "%e");
       os << mon_ident << finl;
       os << que_suis_je() << finl;
@@ -478,7 +478,7 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
       corr_visco_turb(elem) = 1.;
   }, Kokkos::Sum<int>(compt));
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-  corr_visco_turb_.changer_temps(mon_equation_->inconnue().temps());
+  corr_visco_turb_.changer_temps(mon_equation_->inconnue()->temps());
   la_viscosite_turbulente_.valeurs().echange_espace_virtuel();
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_.valeurs());
 

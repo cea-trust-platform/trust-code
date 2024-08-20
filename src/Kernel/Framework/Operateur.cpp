@@ -235,10 +235,10 @@ DoubleTab& Operateur::ajouter(const Champ_Inc& ch, DoubleTab& resu) const
   double dt=equation().schema_temps().pas_de_temps();
   dt/=nstep;
   if(nstep==1)
-    return ajouter(ch.valeurs(), resu);
+    return ajouter(ch->valeurs(), resu);
   DoubleTrav derivee(resu);
-  DoubleTrav inco(ch.valeurs());
-  inco=ch.valeurs();
+  DoubleTrav inco(ch->valeurs());
+  inco=ch->valeurs();
   const Solveur_Masse& solveur_masse=equation().solv_masse();
   double dt_inv=1./(double(nstep));
   for (i=0; i<nstep; i++)
@@ -270,7 +270,7 @@ const Nom& Operateur::type() const
  */
 DoubleTab& Operateur::calculer(const Champ_Inc& ch,DoubleTab& resu) const
 {
-  return calculer(ch.valeurs(), resu);
+  return calculer(ch->valeurs(), resu);
 }
 
 /*! @brief Ajoute la contribution de l'operateur au tableau passe en parametre.
@@ -282,7 +282,7 @@ DoubleTab& Operateur::calculer(const Champ_Inc& ch,DoubleTab& resu) const
  */
 DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 {
-  return ajouter(le_champ_inco->valeurs(), resu);
+  return ajouter(le_champ_inco->valeur().valeurs(), resu);
 }
 
 /*! @brief Applique l'operateur au champ inconnu et renvoie le resultat.
@@ -295,7 +295,7 @@ DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 DoubleTab& Operateur::calculer(DoubleTab& resu) const
 {
   resu=0.;
-  return ajouter(le_champ_inco->valeurs(), resu);
+  return ajouter(le_champ_inco->valeur().valeurs(), resu);
 }
 
 void Operateur::set_fichier(const Nom& nom)

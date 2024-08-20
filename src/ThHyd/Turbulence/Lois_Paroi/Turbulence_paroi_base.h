@@ -112,7 +112,7 @@ inline void Turbulence_paroi_base::associer_modele(const Modele_turbulence_hyd_b
  */
 inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc& ch)
 {
-  return calculer_hyd(ch.valeurs());
+  return calculer_hyd(ch->valeurs());
 }
 
 /*! @brief Simple appel a int calculer_hyd(DoubleTab&, DoubleTab&).

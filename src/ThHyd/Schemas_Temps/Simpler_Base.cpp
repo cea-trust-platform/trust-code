@@ -225,7 +225,7 @@ void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,co
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn_NS);
   const IntVect& tab1 = matrice.get_tab1();
   const DoubleVect& coeff = matrice.get_coeff();
-  const DoubleTab& present = eqn_NS.inconnue().valeurs();
+  const DoubleTab& present = eqn_NS.inconnue()->valeurs();
   int nb_comp = 1;
   int deux_entrees = 0;
 

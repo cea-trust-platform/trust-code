@@ -121,7 +121,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
       const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
       const DoubleTab& tab_visco = ch_visco_cin->valeurs();
-      const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
+      const DoubleTab& vit = eqn_hydr.inconnue()->valeurs();
 
       if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
         {
@@ -257,7 +257,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
               CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
               CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
               CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
-              CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();
+              CDoubleTabView vit = eqn_hydr.inconnue()->valeurs().view_ro();
               CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
               DoubleArrView tab_u_star = tab_u_star_.view_rw();
               Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)

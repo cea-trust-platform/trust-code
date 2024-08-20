@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,14 +39,14 @@ inline void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Inc& tc, con
   this->h_ = dh;
   T = tc;
   T_voisin = tv;
-  Tcourant.ref(T->valeurs());
+  Tcourant.ref(T->valeur().valeurs());
   mettre_a_jour();
 }
 
 inline void Eval_Echange_Himp_VDF_Elem::mettre_a_jour()
 {
-  Tcourant.ref(T->valeurs());
-  Tvois.ref(T_voisin->valeurs());
+  Tcourant.ref(T->valeur().valeurs());
+  Tvois.ref(T_voisin->valeur().valeurs());
 }
 
 template <typename Type_Double>

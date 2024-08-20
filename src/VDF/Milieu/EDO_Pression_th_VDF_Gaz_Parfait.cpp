@@ -58,7 +58,7 @@ Entree& EDO_Pression_th_VDF_Gaz_Parfait::readOn(Entree& is)
 double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 {
   int traitPth = le_fluide_->getTraitementPth();
-  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
+  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
   if (traitPth==0)
     {
       Cerr<<"on choisit le traitement "<<finl;
@@ -100,7 +100,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       else
       {
       */
-      const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();
+      const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();
       double cn1=0,cn=0,v;
       int elem, nb_elem=le_dom->nb_elem();
       for (elem=0 ; elem<nb_elem ; elem++)
@@ -171,7 +171,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   assert(0);
   exit();
   const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
-  const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();        //passe
+  const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
 
 
@@ -280,8 +280,8 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 
   int n_bord ;
   const DoubleTab& tab_vit_CN = le_fluide_->vitesse().valeurs();
-  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
-  const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();        //passe
+  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
+  const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
   const Loi_Etat_GP_QC& loi_ = ref_cast(Loi_Etat_GP_QC,le_fluide_->loi_etat().valeur());
 

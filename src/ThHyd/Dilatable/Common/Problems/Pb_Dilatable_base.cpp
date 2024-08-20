@@ -108,7 +108,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
       sch.faire_un_pas_de_temps_eqn_base(equation(i));
       statistiques().begin_count(mettre_a_jour_counter_);
       equation(i).milieu().mettre_a_jour(temps_futur);
-      equation(i).inconnue().mettre_a_jour(temps_futur);
+      equation(i).inconnue()->mettre_a_jour(temps_futur);
       statistiques().end_count(mettre_a_jour_counter_);
     }
 
@@ -131,7 +131,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
   sch.faire_un_pas_de_temps_eqn_base(equation(0));
   statistiques().begin_count(mettre_a_jour_counter_);
   equation(0).milieu().mettre_a_jour(temps_futur);
-  equation(0).inconnue().mettre_a_jour(temps_futur);
+  equation(0).inconnue()->mettre_a_jour(temps_futur);
   statistiques().end_count(mettre_a_jour_counter_);
 
   // Update pressure fields (total/thermo/hydro) if necessary
@@ -139,7 +139,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
 
   // on recule les inconnues (le pb mettra a jour les equations)
   for (int i=0; i<nombre_d_equations(); i++)
-    equation(i).inconnue().reculer();
+    equation(i).inconnue()->reculer();
 
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps=schema_temps().temps_defaut();

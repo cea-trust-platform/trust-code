@@ -60,10 +60,10 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue().passe(),
+  const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue()->passe(),
                    &rho = equation().milieu().masse_volumique().passe(),
-                    &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
-                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
+                    &temp_ou_enth  = pbm.equation_energie().inconnue()->passe(),
+                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                         *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
@@ -188,7 +188,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_elem(DoubleTab& gr
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
-  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe();
+  const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
@@ -238,7 +238,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
-  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe();
+  const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe();
   const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();

@@ -530,7 +530,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
           int nbsom_tot = domaine_vef.nb_som_tot();
           DoubleTrav tab_surf_loc(nbsom_tot);
           tab_surf_loc = 0;
-          DoubleTab& tab_pression = ref_cast(Navier_Stokes_std,ch->equation()).pression().valeurs();
+          DoubleTab& tab_pression = ref_cast(Navier_Stokes_std,ch->equation()).pression()->valeurs();
           int nb_cond_lims = nb_cond_lim();
           // On boucle une premiere fois pour mettre a zero la pression aux sommets
           for (int i = 0; i < nb_cond_lims; i++)

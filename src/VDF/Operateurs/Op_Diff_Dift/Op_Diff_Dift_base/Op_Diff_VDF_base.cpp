@@ -161,7 +161,7 @@ double Op_Diff_VDF_base::calculer_dt_stab_(const Domaine_VDF& zone_VDF) const
   //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
   double dt_stab = DMAXFLOAT;
   const Champ_base& ch_diffu = has_champ_masse_volumique() ? diffusivite() : diffusivite_pour_pas_de_temps();
-  const DoubleTab& diffu = ch_diffu.valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const DoubleTab& diffu = ch_diffu.valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
   const bool Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
 
   // Si la diffusivite est variable, ce doit etre un champ aux elements.

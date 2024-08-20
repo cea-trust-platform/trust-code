@@ -107,7 +107,7 @@ void DP_Impose_VEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   IntTrav sten(0, 2);
 
 
-  int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, nf_tot = dom.nb_faces_tot();
+  int i, f, d, db, D = dimension, n, N = equation().inconnue()->valeurs().line_size() / D, nf_tot = dom.nb_faces_tot();
   for (i = 0; i < num_faces.size(); i++)
     if ((f = num_faces(i)) < dom.nb_faces())
       for (d = 0; d < D; d++)
@@ -124,7 +124,7 @@ void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
 {
   const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces();
-  const DoubleTab& vit = equation().inconnue().valeurs(), &nf = dom.face_normales();
+  const DoubleTab& vit = equation().inconnue()->valeurs(), &nf = dom.face_normales();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int D = dimension, N = vit.line_size() / D;

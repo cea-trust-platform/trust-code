@@ -238,7 +238,7 @@ void Echange_contact_Correlation_VEF::completer()
 
   DoubleTab& Tparoi =champ_front()->valeurs();
   Tparoi.resize(nb_faces_bord,nb_comp);
-  const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
+  const DoubleTab& Ts = mon_eqn.inconnue()->valeurs();
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const IntTab& face_voisins = zvef.face_voisins();
   const int ndeb = ma_front_vf.num_premiere_face();
@@ -735,7 +735,7 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
   const int taille = h_solide.dimension(0);
   DoubleTab& Tparoi = champ_front()->valeurs();
   const Equation_base& mon_eqn = domaine_Cl_dis().equation();
-  const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
+  const DoubleTab& Ts = mon_eqn.inconnue()->valeurs();
   Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zvef.face_voisins();

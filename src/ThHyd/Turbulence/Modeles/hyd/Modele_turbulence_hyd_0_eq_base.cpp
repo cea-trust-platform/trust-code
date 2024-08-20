@@ -171,7 +171,7 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
 
         //  calcul de K_eps
 
-        DoubleTab& K_Eps = K_eps_sortie_.valeurs();
+        DoubleTab& K_Eps = K_eps_sortie_->valeurs();
         const DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
         const DoubleTab& wall_length = wall_length_.valeurs();
         const int nb_elem = K_Eps.dimension(0);
@@ -208,9 +208,9 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
 
         const Nom& nom_post = K_eps_sortie_.le_nom();
         const Nom& type_elem = dom.type_elem()->que_suis_je();
-        assert(K_eps_sortie_.valeurs().dimension(0) == dom.nb_elem());
+        assert(K_eps_sortie_->valeurs().dimension(0) == dom.nb_elem());
         Ecrire_MED ecr_med(fic, dom);
-        ecr_med.ecrire_champ("CHAMPMAILLE", nom_post, K_eps_sortie_.valeurs(), K_eps_sortie_->unites(), K_eps_sortie_->noms_compo(), type_elem, temps);
+        ecr_med.ecrire_champ("CHAMPMAILLE", nom_post, K_eps_sortie_->valeurs(), K_eps_sortie_->unites(), K_eps_sortie_->noms_compo(), type_elem, temps);
       }
   return Modele_turbulence_hyd_base::imprimer(os);
 }

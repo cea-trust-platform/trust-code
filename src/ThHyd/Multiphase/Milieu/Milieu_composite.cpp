@@ -392,8 +392,8 @@ void Milieu_composite::mettre_a_jour_tabs()
   DoubleTab& trm = rho_m_.valeurs(), &thm = h_m_.valeurs();
   trm = 0, thm = 0;
 
-  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho.valeurs(),
-                   &ent = res_en_T_ ? h_ou_T.valeurs() : equation("enthalpie").inconnue().valeurs();
+  const DoubleTab& a = equation("alpha").inconnue()->valeurs(), &r = rho.valeurs(),
+                   &ent = res_en_T_ ? h_ou_T.valeurs() : equation("enthalpie").inconnue()->valeurs();
 
   const int Nl = rho_m_.valeurs().dimension_tot(0);
 

@@ -138,7 +138,7 @@ bool Schema_Temps_base::iterateTimeStep(bool& converged)
           // On calcule une fois la derivee pour avoir les flux bord
           if (equation.schema_temps().nb_pas_dt()==0)
             {
-              DoubleTab inconnue_valeurs(equation.inconnue().valeurs());
+              DoubleTab inconnue_valeurs(equation.inconnue()->valeurs());
               equation.derivee_en_temps_inco(inconnue_valeurs);
             }
         }
@@ -878,7 +878,7 @@ void Schema_Temps_base::ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secme
   // dirichlet , symetrie
   int pen=0;
   eqn.solv_masse()->ajouter_masse(dt,mat_morse,pen); //ordre important pour PolyMAC_P0
-  eqn.solv_masse()->ajouter_masse(dt,secmem,eqn.inconnue().passe(),pen);
+  eqn.solv_masse()->ajouter_masse(dt,secmem,eqn.inconnue()->passe(),pen);
 }
 
 void Schema_Temps_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const Equation_base& eqn, const tabs_t& semi_impl) const
@@ -953,8 +953,8 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     }
   else if (seuil_statio_relatif_deconseille_ == 2)
     {
-      const double max_var = mp_max_abs_vect(equation.inconnue().futur());
-      const double min_var = mp_min_abs_vect(equation.inconnue().futur());
+      const double max_var = mp_max_abs_vect(equation.inconnue()->futur());
+      const double min_var = mp_min_abs_vect(equation.inconnue()->futur());
       residu_equation /= max_var - min_var + 1e-2;
     }
   if (!equation.disable_equation_residual())

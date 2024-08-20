@@ -66,7 +66,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  int N = eq.inconnue()->valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
 
   if (N_nu == N)
     nu_.resize(0, N); //isotrope
@@ -226,7 +226,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_nu() const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
-  int e, i, m, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
+  int e, i, m, n, N = equation().inconnue()->valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
@@ -249,7 +249,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_nu() const
     abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
-  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)
@@ -284,7 +284,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_aux(double t) const
   /* inconnue / second membre */
   std::deque<ConstDoubleTab_parts> v_part;
   for (i = 0; i < n_ext; i++)
-    v_part.emplace_back(op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeurs() : op_ext[i]->equation().inconnue().valeurs());
+    v_part.emplace_back(op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue()->valeurs() : op_ext[i]->equation().inconnue()->valeurs());
   MD_Vector_composite mdc; //MD_Vector composite : a partir de tous les seconds blocs
   for (i = 0; i < n_ext; i++)
     mdc.add_part(v_part[i][1].get_md_vector(), v_part[i][1].line_size());

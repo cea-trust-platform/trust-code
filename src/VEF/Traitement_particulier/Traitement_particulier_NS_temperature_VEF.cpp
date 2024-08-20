@@ -51,7 +51,7 @@ Entree& Traitement_particulier_NS_temperature_VEF::readOn(Entree& is)
 
 void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
   //  const DoubleTab& xv = domaine_VEF.xv();    // centre de gravite des faces
@@ -83,13 +83,13 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
       exit();
     }
 
-  const DoubleTab& tab_temperature = mon_equation_NRJ->inconnue().valeurs();
+  const DoubleTab& tab_temperature = mon_equation_NRJ->inconnue()->valeurs();
 
   const DoubleTab& vitesse = pb.get_champ(Motcle("vitesse")).valeurs();
   const Champ_base& rho_ = pb.milieu().masse_volumique().valeur();
   const DoubleTab& rho = rho_.valeurs();
   int taille_rho=rho.dimension(0);
-  const double temps = mon_equation->inconnue().temps();
+  const double temps = mon_equation->inconnue()->temps();
 
 
   for (int n_bord=0; n_bord<nb_front; n_bord++)

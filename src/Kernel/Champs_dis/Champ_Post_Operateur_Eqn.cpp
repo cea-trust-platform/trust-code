@@ -133,7 +133,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
 
   int ok=0;
   const Equation_base& eqn=ref_eq_.valeur();
-  const MD_Vector& mdf = eqn.inconnue().valeurs().get_md_vector(),
+  const MD_Vector& mdf = eqn.inconnue()->valeurs().get_md_vector(),
                    md = sub_type(MD_Vector_composite, mdf.valeur()) ? ref_cast(MD_Vector_composite, mdf.valeur()).get_desc_part(0) : mdf;
   const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_->domaine_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
@@ -211,7 +211,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
       {
         // certains calculer  sont faux !!!! il faudrait tous les recoder en res =0 ajouter();
         es=0;
-        Operateur().ajouter(ref_eq_->operateur(numero_op_).mon_inconnue().valeurs(),es);
+        Operateur().ajouter(ref_eq_->operateur(numero_op_).mon_inconnue()->valeurs(),es);
       }
     else if (numero_source_!=-1)
       ref_eq_->sources()(numero_source_).calculer(es);
