@@ -471,7 +471,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
-
+          ToDo_Kokkos("critrical cause velocity copy");
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
 
@@ -848,70 +848,67 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& 
           int ndeb = la_front_dis.num_premiere_face();
           int nfin = ndeb + la_front_dis.nb_faces();
           int dim = Objet_U::dimension;
-          ToDo_Kokkos("critical");
-
           // Boucle sur les faces
-          const DoubleTab& face_normale = domaine_VEF.face_normales();
-          const IntTab& face_voisins = domaine_VEF.face_voisins();
-          const DoubleVect& porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face();
+          CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+          CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+          CDoubleArrView porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face().view_ro();
+          CDoubleTabView tau_tan = tab_tau_tan.view_ro();
+          CDoubleArrView nu = static_cast<const ArrOfDouble&>(tab_nu).view_ro();
+          CDoubleArrView nu_turb = static_cast<const ArrOfDouble&>(tab_nu_turb).view_ro();
+          DoubleTabView3 gij = tab_gij.view3_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int fac)
+          {
+            double P[3][3] {};
+            int num1 = face_voisins(fac, 0);
+            // definition des vecteurs unitaires constituant le repere local
+            // stockes dans la matrice de passage P
+            // vecteur tangentiel (porte par la vitesse tangentielle)
+            double sum = 0.;
+            for (int i = 0; i < dim; i++)
+              sum += tau_tan(fac, i) * tau_tan(fac, i);
+            double norme_tau_tan = sqrt(sum);
+            for (int i = 0; i < dim; i++)
+              P[i][0] = tau_tan(fac, i) / (norme_tau_tan + DMINFLOAT);
 
-          // face_voisins = domaine_VEF.face_voisins().view_ro();
-          // face_normale = domaine_VEF.face_normales().view_ro();
-          // porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face().view_ro();
-          const DoubleTab& tau_tan = tab_tau_tan;
-          const DoubleTab& nu = tab_nu;
-          const DoubleTab& nu_turb = tab_nu_turb;
-          DoubleTab& gij = tab_gij;
+            // vecteur normal a la paroi
+            sum = 0.;
+            for (int i = 0; i < dim; i++)
+              sum += face_normale(fac, i) * face_normale(fac, i);
+            double norme = sqrt(sum);
 
-          for (int fac = ndeb; fac < nfin; fac++)
-            {
-              double P[dim][dim];
-              int num1 = face_voisins(fac, 0);
-              // definition des vecteurs unitaires constituant le repere local
-              // stockes dans la matrice de passage P
-              // vecteur tangentiel (porte par la vitesse tangentielle)
-              double norme2_tau_tan = 0.;
-              for (int i = 0; i < dim; i++)
-                norme2_tau_tan += tau_tan(fac, i) * tau_tan(fac, i);
-              double norme_tau_tan = sqrt(norme2_tau_tan);
-              for (int i = 0; i < dim; i++)
-                P[i][0] = tau_tan(fac, i) / (norme_tau_tan + DMINFLOAT);
+            int signe = -oriente_normale(fac, num1, face_voisins); // orientation vers l'interieur
+            for (int i = 0; i < dim; i++)
+              P[i][1] = signe * face_normale(fac, i) / norme;
 
-              // vecteur normal a la paroi
-              double norme2_n = 0.;
-              for (int i = 0; i < dim; i++)
-                norme2_n += face_normale(fac, i) * face_normale(fac, i);
-              double norme_n = sqrt(norme2_n);
-
-              int signe = -domaine_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
-              for (int i = 0; i < dim; i++)
-                P[i][1] = signe * face_normale(fac, i) / norme_n;
-
-              // (3D) on complete la base par le deuxieme vecteur tangentiel
-              if (dim == 3)
+            // (3D) on complete la base par le deuxieme vecteur tangentiel
+            if (dim == 3)
+              {
+                P[0][2] = P[1][0] * P[2][1] - P[2][0] * P[1][1];
+                P[1][2] = P[2][0] * P[0][1] - P[0][0] * P[2][1];
+                P[2][2] = P[0][0] * P[1][1] - P[1][0] * P[0][1];
+              }
+            //         determination du terme d(u_t)/dn a enlever
+            //                                                       -1
+            //         terme identifie a l'aide du produit : F =  P . G . P
+            //
+            double dutdn_old = 0.;
+            for (int i = 0; i < dim; i++)
+              for (int j = 0; j < dim; j++)
                 {
-                  P[0][2] = P[1][0] * P[2][1] - P[2][0] * P[1][1];
-                  P[1][2] = P[2][0] * P[0][1] - P[0][0] * P[2][1];
-                  P[2][2] = P[0][0] * P[1][1] - P[1][0] * P[0][1];
+                  double gij_value = Kokkos::atomic_fetch_add(&gij(num1, i, j), 0.0);
+                  dutdn_old += gij_value * P[j][1] * P[i][0];
                 }
-              //         determination du terme d(u_t)/dn a enlever
-              //                                                       -1
-              //         terme identifie a l'aide du produit : F =  P . G . P
-              //
-              double dutdn_old = 0.;
-              for (int i = 0; i < dim; i++)
-                for (int j = 0; j < dim; j++)
-                  dutdn_old += gij(num1, i, j) * P[j][1] * P[i][0];
 
-              //         Correction finale apportee a la matrice G
-              double C = -dutdn_old + sqrt(norme2_tau_tan) / (nu[num1] + nu_turb[num1]) * porosite_face(fac);
+            //         Correction finale apportee a la matrice G
+            double C = -dutdn_old + norme_tau_tan / (nu[num1] + nu_turb[num1]) * porosite_face(fac);
 
-              // la division par (nu[num1]+nu_turb[num1]) s'impose du fait que l'operateur de diffusion
-              // fait intervenir le produit : (nu[num1]+nu_turb[num1])*g(i,j)
-              for (int i = 0; i < dim; i++)
-                for (int j = 0; j < dim; j++)
-                  gij(num1, i, j) += C * P[j][1] * P[i][0];
-            }
+            // la division par (nu[num1]+nu_turb[num1]) s'impose du fait que l'operateur de diffusion
+            // fait intervenir le produit : (nu[num1]+nu_turb[num1])*g(i,j)
+            for (int i = 0; i < dim; i++)
+              for (int j = 0; j < dim; j++)
+                Kokkos::atomic_add(&gij(num1, i, j), C * P[j][1] * P[i][0]);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
     }
 
