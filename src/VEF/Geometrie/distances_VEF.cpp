@@ -256,39 +256,38 @@ double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
 {
   // fac numero de la face a paroi fixe
   double r[3] {};
-  for (int i=0; i<dim; i++)
-    r[i] = face_normale(fac,i);
   double norme = 0;
   for (int i=0; i<dim; i++)
-    norme += r[i] * r[i];
-  for (int i=0; i<dim; i++)
-    r[i] /= sqrt(norme);
+    {
+      r[i] = face_normale(fac, i);
+      norme += r[i] * r[i];
+    }
+  norme = sqrt(norme);
+  for(int i = 0; i < dim; i++)
+    r[i] /= norme;
 
   double v[3] {};
   for (int i=0; i<dim; i++)
     {
       v[i] = 0;
       for (int j = 0; j < dim; j++)
-        {
-          v[i] += vit(num[j], i);
-        }
+        v[i] += vit(num[j], i);
       v[i] /= nfac;
     }
+
   double sum_carre=0;
-  double ps=0;
+  double psc=0;
   for (int i=0; i<dim; i++)
     {
       sum_carre += carre(v[i]);
-      ps += v[i] * r[i];
+      psc += v[i] * r[i];
     }
-  double norm_vit = sqrt(std::fabs(sum_carre-carre(ps)));
+  double norm_vit = sqrt(std::fabs(sum_carre-carre(psc)));
 
   // val1,val2 val3 sont les vitesses tangentielles
-  double psc = 0;
   for (int i=0; i<dim; i++)
-    psc+=r[i]*v[i];
-  for (int i=0; i<dim; i++)
-    val[i]=(v[i]-psc*r[i])/(norm_vit+DMINFLOAT);
+    val[i]=(v[i] - psc*r[i])/(norm_vit + DMINFLOAT);
+
   return norm_vit;
 }
 

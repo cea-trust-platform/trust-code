@@ -789,16 +789,9 @@ DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, c
 
 }
 
-DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const Domaine_Cl_VEF& domaine_Cl_VEF)
+DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& tab_nu, const DoubleTab& tab_nu_turb, const DoubleTab& tab_tau_tan, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
-
   const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_vef();
-  const DoubleTab& face_normale = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-
-  const DoubleVect& porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face();
-
-  int i, j, fac, num1;
 
   // On va modifier Sij pour les faces de Dirichlet (Paroi_fixe) si nous n utilisons pas Paroi_negligeable!!!!
   // On aura : (grad u)_f = (grad u) - (grad u . n) x n + (grad u . n)_lp x n
@@ -840,107 +833,89 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
 
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_cl = les_cl.size();
-  // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
-  //        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
-  DoubleTab P(dimension, dimension);
 
-  // tau_tan could be uninitialized at this point. In such a case,
+  // tab_tau_tan could be uninitialized at this point. In such a case,
   // we can skip the function because the value of gij won't change
-  if (tau_tan.dimension_tot(0) == 0)
-    {
-      return gij;
-    }
-  ToDo_Kokkos("boundary");
+  if (tab_tau_tan.dimension_tot(0) == 0) return tab_gij;
+
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
       //Boucle sur les bords
       const Cond_lim& la_cl = les_cl[num_cl];
-      const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
-      int ndeb = la_front_dis.num_premiere_face();
-      int nfin = ndeb + la_front_dis.nb_faces();
-
       if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl->que_suis_je() == "Frontiere_ouverte_vitesse_imposee_ALE")
         {
+          const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          int ndeb = la_front_dis.num_premiere_face();
+          int nfin = ndeb + la_front_dis.nb_faces();
+          int dim = Objet_U::dimension;
+          ToDo_Kokkos("critical");
 
-          for (fac = ndeb; fac < nfin; fac++)
+          // Boucle sur les faces
+          const DoubleTab& face_normale = domaine_VEF.face_normales();
+          const IntTab& face_voisins = domaine_VEF.face_voisins();
+          const DoubleVect& porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face();
+
+          // face_voisins = domaine_VEF.face_voisins().view_ro();
+          // face_normale = domaine_VEF.face_normales().view_ro();
+          // porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face().view_ro();
+          const DoubleTab& tau_tan = tab_tau_tan;
+          const DoubleTab& nu = tab_nu;
+          const DoubleTab& nu_turb = tab_nu_turb;
+          DoubleTab& gij = tab_gij;
+
+          for (int fac = ndeb; fac < nfin; fac++)
             {
-              // Boucle sur les faces
-
-              num1 = face_voisins(fac, 0);
-
-              /////////////////////////////////////////////////////////////////
+              double P[dim][dim];
+              int num1 = face_voisins(fac, 0);
               // definition des vecteurs unitaires constituant le repere local
               // stockes dans la matrice de passage P
-              /////////////////////////////////////////////////////////////////
-
               // vecteur tangentiel (porte par la vitesse tangentielle)
-
               double norme2_tau_tan = 0.;
-
-              for (i = 0; i < Objet_U::dimension; i++)
+              for (int i = 0; i < dim; i++)
                 norme2_tau_tan += tau_tan(fac, i) * tau_tan(fac, i);
-
               double norme_tau_tan = sqrt(norme2_tau_tan);
-
-              for (i = 0; i < Objet_U::dimension; i++)
-                P(i, 0) = tau_tan(fac, i) / (norme_tau_tan + DMINFLOAT);
+              for (int i = 0; i < dim; i++)
+                P[i][0] = tau_tan(fac, i) / (norme_tau_tan + DMINFLOAT);
 
               // vecteur normal a la paroi
-
               double norme2_n = 0.;
-              int signe = -domaine_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
-
-              for (i = 0; i < Objet_U::dimension; i++)
+              for (int i = 0; i < dim; i++)
                 norme2_n += face_normale(fac, i) * face_normale(fac, i);
-
               double norme_n = sqrt(norme2_n);
 
-              for (i = 0; i < Objet_U::dimension; i++)
-                P(i, 1) = signe * face_normale(fac, i) / norme_n;
+              int signe = -domaine_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
+              for (int i = 0; i < dim; i++)
+                P[i][1] = signe * face_normale(fac, i) / norme_n;
 
               // (3D) on complete la base par le deuxieme vecteur tangentiel
-
-              if (Objet_U::dimension == 3)
+              if (dim == 3)
                 {
-                  P(0, 2) = P(1, 0) * P(2, 1) - P(2, 0) * P(1, 1);
-                  P(1, 2) = P(2, 0) * P(0, 1) - P(0, 0) * P(2, 1);
-                  P(2, 2) = P(0, 0) * P(1, 1) - P(1, 0) * P(0, 1);
+                  P[0][2] = P[1][0] * P[2][1] - P[2][0] * P[1][1];
+                  P[1][2] = P[2][0] * P[0][1] - P[0][0] * P[2][1];
+                  P[2][2] = P[0][0] * P[1][1] - P[1][0] * P[0][1];
                 }
-
-              /////////////////////////////////////////////////////////////////
               //         determination du terme d(u_t)/dn a enlever
               //                                                       -1
               //         terme identifie a l'aide du produit : F =  P . G . P
               //
-              /////////////////////////////////////////////////////////////////
-
               double dutdn_old = 0.;
+              for (int i = 0; i < dim; i++)
+                for (int j = 0; j < dim; j++)
+                  dutdn_old += gij(num1, i, j) * P[j][1] * P[i][0];
 
-              for (i = 0; i < Objet_U::dimension; i++)
-                for (j = 0; j < Objet_U::dimension; j++)
-                  {
-                    dutdn_old += gij(num1, i, j) * P(j, 1) * P(i, 0);
-                  }
-
-              /////////////////////////////////////////////////////////////////
               //         Correction finale apportee a la matrice G
-              /////////////////////////////////////////////////////////////////
-
               double C = -dutdn_old + sqrt(norme2_tau_tan) / (nu[num1] + nu_turb[num1]) * porosite_face(fac);
 
               // la division par (nu[num1]+nu_turb[num1]) s'impose du fait que l'operateur de diffusion
               // fait intervenir le produit : (nu[num1]+nu_turb[num1])*g(i,j)
-
-              for (i = 0; i < Objet_U::dimension; i++)
-                for (j = 0; j < Objet_U::dimension; j++)
-                  {
-                    gij(num1, i, j) += C * P(j, 1) * P(i, 0);
-                  }
+              for (int i = 0; i < dim; i++)
+                for (int j = 0; j < dim; j++)
+                  gij(num1, i, j) += C * P[j][1] * P[i][0];
             }
         }
     }
 
-  return gij;
+  return tab_gij;
 }
 
 ////////////////////
