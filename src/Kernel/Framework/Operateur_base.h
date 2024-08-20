@@ -21,12 +21,12 @@
 #include <Domaine_dis.h>
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
+#include <Champ_Inc.h>
 #include <Matrice.h>
 
 class Frontiere_dis_base;
 class Matrice_Morse;
 class EcrFicPartage;
-class Champ_Inc;
 class Conds_lim;
 class SFichier;
 

@@ -18,9 +18,8 @@
 
 #include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
+#include <Champ_Inc.h>
 #include <TRUSTTab.h>
-
-class Champ_Inc;
 
 /*! @brief Classe Opnegligeable Cette classe definit l'interface d'un operateur negligeable
  *

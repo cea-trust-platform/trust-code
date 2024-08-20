@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,10 +17,9 @@
 #define Debog_included
 
 #include <TRUSTTabs_forward.h>
+#include <Champ_Inc.h>
 
-class Champ_Inc_base;
 class Matrice_Base;
-class Champ_Inc;
 class MD_Vector;
 class Nom;
 

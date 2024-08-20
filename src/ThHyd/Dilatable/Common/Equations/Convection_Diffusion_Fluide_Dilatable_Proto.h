@@ -18,15 +18,14 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Champ_Inc.h>
+
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Convection_Diffusion_std;
 class Fluide_Dilatable_base;
 class Probleme_base;
 class Matrice_Morse;
-class Champ_Inc;
 class Sortie;
 class Entree;
-#include <Interface_blocs.h>
 
 class Convection_Diffusion_Fluide_Dilatable_Proto
 {

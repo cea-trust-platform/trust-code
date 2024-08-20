@@ -21,10 +21,10 @@
 #include <Champ_Uniforme.h>
 #include <Domaine_VDF.h>
 #include <Champ_Don.h>
+#include <Champ_Inc.h>
 #include <TRUST_Ref.h>
 
 class Champ_Don_base;
-class Champ_Inc;
 
 class Eval_Darcy_VDF_Face: public Evaluateur_Source_Face
 {

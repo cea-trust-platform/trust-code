@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Diff_VEF_Face_included
 #define Op_Diff_VEF_Face_included
 
@@ -21,8 +20,7 @@
 #include <Matrice_Morse.h>
 #include <Champ_base.h>
 #include <TRUST_Ref.h>
-
-class Champ_Inc;
+#include <Champ_Inc.h>
 
 /*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
  *
@@ -33,9 +31,7 @@ class Champ_Inc;
 class Op_Diff_VEF_Face : public Op_Diff_VEF_base
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VEF_Face);
-
 public:
-
   Op_Diff_VEF_Face();
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;

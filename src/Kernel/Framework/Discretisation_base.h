@@ -16,10 +16,12 @@
 #ifndef Discretisation_base_included
 #define Discretisation_base_included
 
+#include <Domaine_forward.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <Champ_base.h> // Pour Nature_du_champ
 #include <TRUST_Ref.h>
+#include <Champ_Inc.h>
 
 class Champ_Fonc_Tabule;
 class Schema_Temps_base;
@@ -31,8 +33,6 @@ class Equation_base;
 class Champ_base;
 class Champ_Fonc;
 class Champ_Don;
-class Champ_Inc;
-#include <Domaine_forward.h>
 class Motcle;
 
 /*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui

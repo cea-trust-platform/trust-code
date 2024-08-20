@@ -22,7 +22,6 @@
 #include <Op_VDF_Face.h>
 
 class Eval_VDF_Face;
-class Champ_Inc;
 
 class Op_Diff_VDF_Face_base : public Op_Diff_VDF_base, public Op_VDF_Face
 {

@@ -19,9 +19,6 @@
 #include <Champ_Inc_base.h>
 #include <TRUST_Deriv.h>
 
-class Champ_Inc : public DERIV(Champ_Inc_base)
-{
-  Declare_instanciable(Champ_Inc);
-};
+using Champ_Inc = OWN_PTR(Champ_Inc_base);
 
-#endif
+#endif /* Champ_Inc_included */

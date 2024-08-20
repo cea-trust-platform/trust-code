@@ -19,8 +19,7 @@
 #include <Domaine_dis.h>
 #include <Conds_lim.h>
 #include <TRUST_Ref.h>
-
-class Champ_Inc;
+#include <Champ_Inc.h>
 
 /*! @brief classe Domaine_Cl_dis_base Les objets Domaine_Cl_dis_base representent les conditions aux limites
  *

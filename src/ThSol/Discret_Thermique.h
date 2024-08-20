@@ -18,10 +18,10 @@
 
 #include <Discretisation_base.h>
 #include <Domaine_dis.h>
+#include <Champ_Inc.h>
 
 class Schema_Temps_base;
 class Milieu_base;
-class Champ_Inc;
 
 /*! @brief Class Discret_Thermique Cette classe est la classe de base representant une discretisation
  *

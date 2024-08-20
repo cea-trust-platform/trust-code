@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 #include <TRUST_Ref.h>
 
 class Domaine_PolyMAC_P0P1NC;
-class Champ_Inc;
 class Front_VF;
 #include <Domaine_forward.h>
 

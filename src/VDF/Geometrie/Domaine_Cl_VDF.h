@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,9 @@
 #define Domaine_Cl_VDF_included
 
 #include <Domaine_Cl_dis_base.h>
+#include <Champ_Inc.h>
 
 class Domaine_VDF;
-class Champ_Inc;
 
 namespace TypeAreteBordVDF
 {

@@ -19,8 +19,7 @@
 #include <Modele_Permeabilite_base.h>
 #include <Evaluateur_Source_Face.h>
 #include <TRUST_Ref.h>
-
-class Champ_Inc;
+#include <Champ_Inc.h>
 
 class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_Face
 {

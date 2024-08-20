@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,9 +20,9 @@
 //  les condition aux limites dans la formulation PolyMAC
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_Don.h>
+#include <Champ_Inc.h>
 
 class Domaine_VF;
-class Champ_Inc;
 
 class Domaine_Cl_PolyMAC : public Domaine_Cl_dis_base
 {

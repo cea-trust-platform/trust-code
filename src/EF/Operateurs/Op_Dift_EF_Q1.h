@@ -22,10 +22,9 @@
 #include <Champ_Don.h>
 
 class Champ_Uniforme;
+class Matrice_Morse;
 class Domaine_Cl_EF;
 class Domaine_EF;
-class Champ_Inc;
-class Matrice_Morse;
 
 /*! @brief class Op_Dift_EF_Q1 Cette classe represente l'operateur de diffusion
  *

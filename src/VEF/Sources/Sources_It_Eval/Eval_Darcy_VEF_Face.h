@@ -22,9 +22,9 @@
 #include <Domaine_VEF.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
+#include <Champ_Inc.h>
 
 class Champ_Don_base;
-class Champ_Inc;
 
 class Eval_Darcy_VEF_Face: public Evaluateur_Source_VEF_Face
 {
