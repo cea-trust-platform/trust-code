@@ -397,7 +397,7 @@ typename Domaine_32_64<_SZ_>::SmallArrOfTID_t& Domaine_32_64<_SZ_>::chercher_ele
     }
   const OctreeRoot_t& octree = construit_octree(reel);
   int sz = positions.dimension(0);
-  const int dim = (int)positions.dimension(1);
+  const int dim = positions.dimension_int(1);
   // resize_tab est virtuelle, si c'est un Vect ou un Tab elle appelle le
   // resize de la classe derivee:
   elements.resize_tab(sz, RESIZE_OPTIONS::NOCOPY_NOINIT);
@@ -868,7 +868,7 @@ void Domaine_32_64<_SZ_>::ajouter(const DoubleTab_t& soms)
 {
   int_t oldsz=sommets_.dimension(0);
   int_t ajoutsz=soms.dimension(0);
-  int dim = (int)soms.dimension(1);
+  int dim = soms.dimension_int(1);
   sommets_.resize(oldsz+ajoutsz,dim);
   for(int_t i=0; i<ajoutsz; i++)
     for(int k=0; k<dim; k++)
@@ -888,7 +888,7 @@ void Domaine_32_64<_SZ_>::ajouter(const DoubleTab_t& soms, IntVect_t& nums)
 {
   int_t oldsz = sommets_.dimension(0);
   int_t ajoutsz = soms.dimension(0);
-  int dim = (int)soms.dimension(1);
+  int dim = soms.dimension_int(1);
   nums.resize(ajoutsz);
   nums=-1;
   if(oldsz!=0)
@@ -1197,11 +1197,11 @@ void Domaine_32_64<_SZ_>::merge_wo_vertices_with(Domaine_32_64<_SZ_>& dom2)
 
   // Prepare correct initial elem size if first merge
   if (nb_elem() == 0)
-    les_elems().resize(0, (int)dom2.les_elems().dimension(1));
+    les_elems().resize(0, dom2.les_elems().dimension_int(1));
 
   int_t sz1 = les_elems().dimension(0);
   int_t sz2 = dom2.les_elems().dimension(0);
-  int nb_ccord = (int)les_elems().dimension(1);
+  int nb_ccord = les_elems().dimension_int(1);
   IntTab_t& elems1 = les_elems();
   IntTab_t& elems2 = dom2.les_elems();
   elems1.resize(sz1+sz2, nb_ccord);
@@ -1301,7 +1301,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
   // Connectivity
   //
   int_t ncells = mes_elems_.dimension(0);
-  int nverts = (int)mes_elems_.dimension(1);
+  int nverts = mes_elems_.dimension_int(1);
 
   // Connectivite TRUST -> MED
   IntTab_t les_elems2(mes_elems_);
@@ -2127,7 +2127,7 @@ template <>
 void Domaine_32_64<int>::renum(const IntVect& Les_Nums)
 {
   int dim0 = mes_elems_.dimension(0);
-  int dim1 = (int)mes_elems_.dimension(1);
+  int dim1 = mes_elems_.dimension_int(1);
 
   for (int i = 0; i < dim0; i++)
     for (int j = 0; j < dim1; j++)
@@ -2202,7 +2202,7 @@ void Domaine_32_64<int>::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_
   MCAuto<MEDCouplingUMesh> faces_tmp = mc_face_mesh_->deepCopyConnectivityOnly();
   const IntTab& faces_sommets = ref_cast(Domaine_VF, domaine_dis_base).face_sommets();
   int nb_fac = faces_sommets.dimension(0);
-  int max_som_fac = (int)faces_sommets.dimension(1);
+  int max_som_fac = faces_sommets.dimension_int(1);
   assert((int)mc_face_mesh_->getNumberOfCells() == nb_fac);
   DAId c(DataArrayIdType::New()), cI(DataArrayIdType::New());
   c->alloc(0,1);

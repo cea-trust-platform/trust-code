@@ -60,7 +60,7 @@ void Octree_Double_32_64<_SIZE_>::build_nodes(const DoubleTab_t& coords, const b
   const int_t nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
   if (nb_som == 0)
     return; // octree vide
-  const int dim = (int)coords.dimension(1);
+  const int dim = coords.dimension_int(1);
   if (epsilon < 0.)
     {
       Cerr << "Internal error in Octree_Double_32_64<_SIZE_>::build_nodes: negative epsilon" << finl;
@@ -159,7 +159,7 @@ typename Octree_Double_32_64<_SIZE_>::int_t  Octree_Double_32_64<_SIZE_>::search
   const int_t n = node_list.size_array();
   double eps2 = epsilon * epsilon;
   int_t count = 0;
-  const int dim = (int)coords.dimension(1);
+  const int dim = coords.dimension_int(1);
   double dmin = eps2;
   int_t nearest = -1;
   for (int_t i = 0; i < n; i++)

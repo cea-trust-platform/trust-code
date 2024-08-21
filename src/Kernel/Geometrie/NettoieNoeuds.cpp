@@ -71,7 +71,7 @@ void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
   IntTab_t& les_elems=dom.les_elems();
   int_t nb_som_init=coord_sommets.dimension(0);
   int_t nb_elem=les_elems.dimension(0);
-  int nb_som_elem=(int)les_elems.dimension(1);
+  int nb_som_elem=les_elems.dimension_int(1);
   ArrOfInt_t renum_som_old2new(nb_som_init);
 
   int_t compteur=0;
@@ -99,7 +99,7 @@ void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
         const Faces_t& faces=front.faces();
         const IntTab_t& faces_sommets=faces.les_sommets();
         int_t nb_faces=faces_sommets.dimension(0);
-        int nb_som_face=(int)faces_sommets.dimension(1);
+        int nb_som_face=faces_sommets.dimension_int(1);
         for(int_t i=0; i<nb_faces; i++)
           for(int j=0; j<nb_som_face; j++)
             {
@@ -154,7 +154,7 @@ void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
           IntTab_t& faces_sommets = faces.les_sommets();
           IntTab_t old_faces_sommets(faces.les_sommets());
           int_t nb_faces = faces_sommets.dimension(0);
-          int nb_som_face = (int)faces_sommets.dimension(1);
+          int nb_som_face = faces_sommets.dimension_int(1);
           for (int_t i = 0; i < nb_faces; i++)
             for (int j = 0; j < nb_som_face; j++)
               {
@@ -174,7 +174,7 @@ void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
         IntTab_t& faces_sommets = faces.les_sommets();
         IntTab_t old_faces_sommets(faces.les_sommets());
         int_t nb_faces = faces_sommets.dimension(0);
-        int nb_som_face = (int)faces_sommets.dimension(1);
+        int nb_som_face = faces_sommets.dimension_int(1);
         for (int_t i = 0; i < nb_faces; i++)
           for (int j = 0; j < nb_som_face; j++)
             faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];

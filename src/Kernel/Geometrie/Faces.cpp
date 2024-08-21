@@ -721,7 +721,7 @@ void Faces_32_64<_SIZE_>::calculer_surfaces(DoubleVect_t& surfaces) const
     case Type_Face::polygone_3D:
       {
         const DoubleTab_t& coord=dom.coord_sommets();
-        int nmax=(int)les_sommets().dimension(1);
+        int nmax=les_sommets().dimension_int(1);
         for(int_t face=0; face <nb_faces_tot(); face++)
           {
             double n0=0,n1=0,n2=0;
@@ -769,14 +769,14 @@ template <typename _SIZE_>
 void Faces_32_64<_SIZE_>::Calculer_centres_gravite(DoubleTab_t& xv, Type_Face type_face_, const DoubleTab_t& coord,  const IntTab_t& sommet)
 {
   int_t nb_faces_tot = sommet.dimension_tot(0);
-  int dim = (int)coord.dimension(1);
+  int dim = coord.dimension_int(1);
   xv.resize(nb_faces_tot, dim);
   // Copie le descripteur parallele du tableau sommet:
   xv.set_md_vector(sommet.get_md_vector());
 
   if(nb_faces_tot!=0)
     {
-      int nb_som_faces=(int)sommet.dimension(1);
+      int nb_som_faces=sommet.dimension_int(1);
       double inv=1./nb_som_faces;
       xv = 0;
       if(Objet_U::axi)

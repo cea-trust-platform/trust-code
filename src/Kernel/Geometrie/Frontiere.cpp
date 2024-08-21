@@ -184,7 +184,7 @@ void Frontiere_32_64<_SIZE_>::add(const Frontiere_32_64& front)
   if(a_ajouter.voisins().nb_dim() == 1)
     return;
 
-  int nb_voisins = (int)a_ajouter.voisins().dimension(1);
+  int nb_voisins = a_ajouter.voisins().dimension_int(1);
   les_faces.voisins().resize(nbf1+nbf2, nb_voisins);
   for(face=0; face<nbf2; face++)
     for(int voisin=0; voisin<nb_voisins; voisin++)
@@ -238,7 +238,7 @@ void Frontiere_32_64<int>::trace_som_local(const DoubleTab& y, DoubleTab& x) con
   const IntTab& som_face = les_sommets_des_faces();
   const int size = nb_faces();
   int nb_compo_ = y.line_size();
-  const int nsomfa = (int)som_face.dimension(1);
+  const int nsomfa = som_face.dimension_int(1);
 
   // On dimensionne x si ce n'est pas fait
   if (x.size_array() == 0 && size != 0)

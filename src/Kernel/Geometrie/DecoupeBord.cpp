@@ -111,7 +111,7 @@ void Impl_32_64<_SIZE_>::create_listb_from_domaine2(const Domaine_t& dom1, const
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
           ArrOfDouble xg2(Objet_U::dimension); // centre de gravite face de fr2
 
-          int nb_som_face=(int)sommets_face1.dimension(1);
+          int nb_som_face=sommets_face1.dimension_int(1);
 
           for (int_t face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
             {
@@ -211,7 +211,7 @@ void Impl_32_64<_SIZE_>::create_listb_from_xyz(const Domaine_t& dom, const Noms&
 
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
 
-          int nb_som_face=(int)sommets_face1.dimension(1);
+          int nb_som_face=sommets_face1.dimension_int(1);
           int nb=0;
 
           for (int face1=0; face1<nbfaces1; face1++) // Generation de Liste_faces_associees
@@ -351,7 +351,7 @@ void Impl_32_64<_SIZE_>::create_listb_geom(const Domaine_t& dom, const Noms& nom
           if (nbfaces!=0)
             {
               const IntTab_t& sommets_face = (ref_cast(Frontiere_t,fr)).les_sommets_des_faces();
-              int nb_som_face = (int)dom.les_sommets().dimension(1);
+              int nb_som_face = dom.les_sommets().dimension_int(1);
 
               ArrOfDouble coord_min(3);
               coord_min=1e6;

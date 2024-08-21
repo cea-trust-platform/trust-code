@@ -35,8 +35,8 @@ void Octree_Double_32_64<_SIZE_>::build_elements(const _TAB_TYPE_& coords, const
   compute_origin_factors(coords, epsilon, include_virtual);
 
   const int_t nb_elems = include_virtual ? elements.dimension_tot(0) : elements.dimension(0);
-  const int nb_som_elem = (int)elements.dimension(1);
-  const int dim = (int)coords.dimension(1);
+  const int nb_som_elem = elements.dimension_int(1);
+  const int dim = coords.dimension_int(1);
   IntTab_t elements_boxes;
   elements_boxes.resize(nb_elems, dim * 2, RESIZE_OPTIONS::NOCOPY_NOINIT);
   for (int_t i = 0; i < nb_elems; i++)
@@ -82,7 +82,7 @@ void Octree_Double_32_64<_SIZE_>::compute_origin_factors(const _TAB_TYPE_& coord
   const int_t nb_som = include_virtual ? coords.dimension_tot(0) : coords.dimension(0);
   if (nb_som == 0) return; // octree vide
 
-  dim_ = (int)coords.dimension(1);
+  dim_ = coords.dimension_int(1);
   origin_.resize_array(3);
   factor_.resize_array(3);
   ArrOfDouble_t xmin(dim_);

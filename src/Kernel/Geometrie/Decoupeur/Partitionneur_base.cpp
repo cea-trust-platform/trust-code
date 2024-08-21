@@ -98,7 +98,7 @@ void chercher_elems_voisins_faces(const Static_Int_Lists_32_64<_SIZE_>& som_elem
   elements.resize_array(nb_faces);
   if (nb_faces == 0)
     return;
-  const int nb_som_faces = (int)faces.dimension(1);
+  const int nb_som_faces = faces.dimension_int(1);
   SmallArrOfTID_t une_face(nb_som_faces);
   SmallArrOfTID_t voisins;
   for (int_t i = 0; i < nb_faces; i++)
@@ -269,7 +269,7 @@ Partitionneur_base_32_64<_SIZE_>::corriger_sommets_bord(const Domaine_t& domaine
       const Bord_t& bord = domaine.bord(i_bord);
       const IntTab_t& faces_sommets = bord.faces().les_sommets();
       const int_t nb_faces_bord = faces_sommets.dimension(0);
-      const int nb_som_face = (int)faces_sommets.dimension(1);
+      const int nb_som_face = faces_sommets.dimension_int(1);
       ArrOfInt_t elems_voisins;
       const bool is_perio = (liste_bords_perio.contient_(bord.le_nom()));
 
@@ -310,7 +310,7 @@ Partitionneur_base_32_64<_SIZE_>::corriger_sommets_bord(const Domaine_t& domaine
     BigArrOfInt_ parties_autorisees, tmp;
 
     const IntTab_t& elements = domaine.les_elems();
-    const int nb_som_elem = (int)elements.dimension(1);
+    const int nb_som_elem = elements.dimension_int(1);
     for (int_t elem = 0; elem < nb_elem; elem++)
       {
         // L'element a-t-il un sommet periodique ?
@@ -423,7 +423,7 @@ Partitionneur_base_32_64<_SIZE_>::corriger_multiperiodique(const Domaine_t& doma
       const Bord_t& bord = domaine.bord(itr);
       const IntTab_t& faces_sommets = bord.faces().les_sommets();
       const int_t nb_faces_bord = faces_sommets.dimension(0);
-      const int nb_som_face = (int)faces_sommets.dimension(1);
+      const int nb_som_face = faces_sommets.dimension_int(1);
       ArrOfInt_t elems_voisins;
       chercher_elems_voisins_faces<_SIZE_>(som_elem, faces_sommets, bord.le_nom(), elems_voisins);
       for (int_t i_face = 0; i_face < nb_faces_bord; i_face++)
@@ -467,7 +467,7 @@ Partitionneur_base_32_64<_SIZE_>::corriger_multiperiodique(const Domaine_t& doma
   // Deuxieme etape: affecter les elements adjacents a un sommet multiperiodique
   // a la partie associee au sommet renum_som_perio de ce sommet.
   const IntTab_t& les_elems = domaine.les_elems();
-  const int nb_som_elem = (int)les_elems.dimension(1);
+  const int nb_som_elem = les_elems.dimension_int(1);
   int_t count = 0;
   for (int_t elem = 0; elem < nb_elem; elem++)
     {

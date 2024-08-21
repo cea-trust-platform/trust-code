@@ -124,7 +124,7 @@ int Polygone_32_64<_SIZE_>::get_nb_som_elem_max() const
   if (nb_som_elem_max_>-1)
     return nb_som_elem_max_ ;
   else
-    return (int)mon_dom->les_elems().dimension(1);
+    return mon_dom->les_elems().dimension_int(1);
 }
 
 /*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.

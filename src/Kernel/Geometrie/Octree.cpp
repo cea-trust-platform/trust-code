@@ -640,7 +640,7 @@ void OctreeRoot_32_64<_SIZE_>::construire(int reel_prec)
     //  tot sinon bouding box trop petite
     //  peut etre teste reel_ ...
     const int_t n = tab.dimension_tot(0);
-    const int dim = (int)tab.dimension(1);
+    const int dim = tab.dimension_int(1);
     assert(dim <= 3);
     for (int_t i = 0; i < n; i++)
       {
@@ -769,7 +769,7 @@ typename OctreeRoot_32_64<_SIZE_>::int_t OctreeRoot_32_64<_SIZE_>::rang_arete(do
       double epsilon=this->get_epsilon();
       const IntTab_t& aretes_som=domaine().aretes_som();
       const DoubleTab_t& coord=domaine().coord_sommets();
-      int nb_aretes_elem = (int)elem_aretes.dimension(1);
+      int nb_aretes_elem = elem_aretes.dimension_int(1);
       for(int i=0; i<nb_aretes_elem; i++)
         {
           // On boucle sur les aretes de l'element pour trouver celle

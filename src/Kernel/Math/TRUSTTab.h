@@ -185,7 +185,11 @@ public:
   inline void append_line(_TYPE_, _TYPE_);
   inline void append_line(_TYPE_, _TYPE_, _TYPE_);
   inline void append_line(_TYPE_, _TYPE_, _TYPE_, _TYPE_);
-  inline _SIZE_ dimension(int) const;
+
+  // See doc in .tpp file!
+  _SIZE_ dimension(int d) const;
+  int dimension_int(int d) const;
+
   inline _SIZE_ dimension_tot(int) const;
   inline int nb_dim() const { return nb_dim_; }
 

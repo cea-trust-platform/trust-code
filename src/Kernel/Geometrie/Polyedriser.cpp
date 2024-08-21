@@ -94,7 +94,7 @@ template <typename _SIZE_>
 static void reorder_vertices(Faces_32_64<_SIZE_>& faces, const DoubleTab_T<_SIZE_>& coords)
 {
   using int_t = _SIZE_;
-  int nb_sommets = (int)faces.les_sommets().dimension(1);
+  int nb_sommets = faces.les_sommets().dimension_int(1);
   int_t nb_faces = faces.nb_faces();
   for(int_t face = 0; face < nb_faces; face++)
     {

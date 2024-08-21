@@ -137,7 +137,7 @@ void Octree_Int_32_64<_SIZE_>::build(const int dimension, const IntTab_t& elemen
 template <typename _SIZE_>
 typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_elements(int x, int y, int z, int_t& index) const
 {
-  const int nb_octrees = (int)octree_structure_.dimension(1);
+  const int nb_octrees = octree_structure_.dimension_int(1);
   if (nb_octrees == 2)
     y = 0; // important pour ne pas tomber sur des cubes inexistants
   if (nb_octrees <= 4)
@@ -186,7 +186,7 @@ typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_elemen
                                                                                        int xmax, int ymax, int zmax,
                                                                                        ArrOfInt_t& elements) const
 {
-  const int nb_octrees = (int)octree_structure_.dimension(1);
+  const int nb_octrees = octree_structure_.dimension_int(1);
   if (nb_octrees == 2)
     ymin = ymax = 0; // important pour ne pas tomber sur des cubes inexistants
   if (nb_octrees <= 4)
@@ -368,9 +368,9 @@ typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::build_octree_
   AOFlag_& elem_flags = tmp_elem_flags[level];
   elem_flags.resize_array(nb_elems, RESIZE_OPTIONS::NOCOPY_NOINIT);
 
-  const int nb_octrees = (int)octree_structure_.dimension(1);
+  const int nb_octrees = octree_structure_.dimension_int(1);
   assert(nb_octrees == 2 || nb_octrees == 4 || nb_octrees == 8);
-  const int elem_box_dim = (int)elements_boxes.dimension(1);
+  const int elem_box_dim = elements_boxes.dimension_int(1);
   // Soit elements_boxes contient dimension colonnes, soit dimension*2
   const int box_delta = (elem_box_dim > 3) ? (elem_box_dim >> 1) : 0;
   // Nombre d'elements stockes en double dans l'octree (a cause des elements a cheval

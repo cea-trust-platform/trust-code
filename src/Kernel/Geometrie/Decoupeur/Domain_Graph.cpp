@@ -41,7 +41,7 @@ void construire_connectivite_real_som_virtual_elem(const _SIZE_       nb_sommets
   const int_t nb_elem = les_elems.dimension_tot(0);
   const int_t local_nb_elem = les_elems.dimension(0);
   // Nombre de sommets par element
-  const int nb_sommets_par_element = (int)les_elems.dimension(1);
+  const int nb_sommets_par_element = les_elems.dimension_int(1);
 
   // Construction d'un tableau initialise a zero : pour chaque sommet,
   // nombre d'elements voisins de ce sommet

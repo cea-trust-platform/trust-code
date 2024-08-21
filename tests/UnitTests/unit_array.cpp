@@ -34,12 +34,12 @@ public:
   void test_ref_data();
   void test_trav();
   void test_conversion();
+  void test_dim_64();
 };
 
 
 void TestTRUSTArray::test_ctor()
 {
-  // Int ctor
   ArrOfInt a1;
   assert(a1.storage_type_ == STORAGE::STANDARD);
   assert(a1.mem_ == nullptr);
@@ -261,6 +261,24 @@ void TestTRUSTArray::test_conversion()
 
 }
 
+void TestTRUSTArray::test_dim_64()
+{
+  BigIntTab toto(2,3);
+  trustIdType d0 = toto.dimension(0);
+  // Below is the nice way to get an int for higher dimensions on BigTabs:
+  // it is cleaner than doing a wild cast like
+  //    int d1 = (int)toto.dimension(1);
+  // and it will check for overflow with an assert.
+  int d1 = toto.dimension_int(1);
+
+  assert(d0==2 && d1==3);
+
+  IntTab toto2(2,3);
+  int d0_ = toto2.dimension(0);
+  int d1_ = toto2.dimension(1);
+  assert(d0_==2 && d1_==3);
+}
+
 /*! Not great, we just rely on 'assert' for now ... one day Google Test or something
  * similar ...
  */
@@ -278,6 +296,7 @@ int main(int argc, char ** argv)
   tta.test_ref_data();
   tta.test_trav();
   tta.test_conversion();
+  tta.test_dim_64();
 
 #ifdef _OPENMP
   Kokkos::finalize();

@@ -121,6 +121,13 @@ inline const _TYPE_& TRUSTTab<_TYPE_,_SIZE_>::operator()(_SIZE_ i1, int i2, int 
  *  If TRUSTVect<_TYPE_,_SIZE_>::size_reelle_ok() returns 0, it is invalid to ask for dimension(0). You can only ask for dimension_tot(0) (see TRUSTVect<_TYPE_,_SIZE_>::size_reelle_ok())
  *
  *  In 64 bits, dimensions higher than 1 can always safely be casted down to an int, only the first dimension might be big.
+ *  To help with this, the _RET_TYPE_ parameter can be used. One can write:
+ *        int d1 = toto.dimension<int>(1);
+ *  which is cleaner than doing a wild cast like
+ *        int d1 = (int)toto.dimension(1);
+ *  and it will also check for potential overflow (with an assert).
+ *  This type of pattern is used in the 64b part of the code (before Scatter) when retreiving higher dimensions of arrays.
+ *  See arch.h.in for more explanations on 64b.
  */
 template<typename _TYPE_, typename _SIZE_>
 inline _SIZE_ TRUSTTab<_TYPE_,_SIZE_>::dimension(int i) const
@@ -130,6 +137,22 @@ inline _SIZE_ TRUSTTab<_TYPE_,_SIZE_>::dimension(int i) const
   assert(dimensions_[i] >= 0);
   assert(i == 0 || dimensions_[i] < std::numeric_limits<int>::max());
   return dimensions_[i];
+}
+
+/*! In 64 bits, dimensions higher than 1 can always safely be casted down to an int, only the first dimension might be big.
+*  To help with this, the _RET_TYPE_ parameter can be used. One can write:
+*        int d1 = toto.dimension<int>(1);
+*  which is cleaner than doing a wild cast like
+*        int d1 = (int)toto.dimension(1);
+*  and it will also check for potential overflow (with an assert).
+*  This type of pattern is used in the 64b part of the code (before Scatter) when retreiving higher dimensions of arrays.
+*  See arch.h.in for more explanations on 64b.
+*/
+template<typename _TYPE_, typename _SIZE_>
+inline int TRUSTTab<_TYPE_,_SIZE_>::dimension_int(int i) const
+{
+  assert(i > 0);
+  return static_cast<int>(dimension(i));  // overflow check down above
 }
 
 //  Returns the total dimensions of the multi-dimensionnal array, including virtual items (used in parallel distributed arrays)

@@ -33,8 +33,8 @@ inline void calculer_vecteur_2faces(const DoubleTab_T<_SIZE_>& coord,
                                     const _SIZE_ i_face2,
                                     ArrOfDouble& vect)
 {
-  const int nb_som_faces = (int)faces.dimension(1);
-  const int dim = (int)coord.dimension(1);
+  const int nb_som_faces = faces.dimension_int(1);
+  const int dim = coord.dimension_int(1);
   assert(vect.size_array() == dim);
   vect = 0.;
   // Calcul du vecteur entre le centre de la face i et le centre de la face i+n
@@ -105,7 +105,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   ArrOfDouble vect(dim);
   for (i = 1; i < nb_faces; i++)
     {
-      calculer_vecteur_2faces(sommets, faces, 0, i, vect);
+      calculer_vecteur_2faces(sommets, faces, (int)0, i, vect);
       double x = 0.;
       for (int j = 0; j < dim; j++)
         x += vect[j] * normale(0,j);
@@ -324,7 +324,7 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& 
     renum[i] = renum_som_perio[i];
 
   const DoubleTab_t coord = domaine.coord_sommets();
-  const int dim = (int)coord.dimension(1);
+  const int dim = coord.dimension_int(1);
 
   // Etape 1: pour chaque sommet reel, trouver un sommet associe (si plusieurs directions
   //  de periodicite, un sommet peut etre associe a plusieurs autres).
@@ -340,7 +340,7 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& 
       // Tableau pointant vers tous les sommets de toutes les faces
       // (on cast le IntTab en ArrOfInt)
       const IntTab_t& faces_sommets = front.les_sommets_des_faces();
-      const int nb_som_face = (int)faces_sommets.dimension(1);
+      const int nb_som_face = faces_sommets.dimension_int(1);
       const int_t nb_faces = faces_sommets.dimension(0) / 2;
       // Boucle sur les faces d'un cote du domaine (premiere moitie des faces)
       for (int_t i_face = 0; i_face < nb_faces; i_face++)

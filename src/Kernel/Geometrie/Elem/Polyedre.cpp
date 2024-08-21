@@ -80,7 +80,7 @@ void Polyedre_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& xp) const
     {
       double volume=0;
       Vecteur3 xg(0,0,0);
-      int nb_som_max=(int)elem.dimension(1);
+      int nb_som_max=elem.dimension_int(1);
       int nb_som_reel;
       for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
         {
@@ -189,7 +189,7 @@ int Polyedre_32_64<_SIZE_>::contient(const ArrOfDouble& pos, int_t num_poly ) co
   const DoubleTab_t& coord=domaine.coord_sommets();
   Vecteur3 P(pos[0],pos[1],pos[2]);
   Vecteur3 xg(0,0,0);
-  int nb_som_max= (int)elem.dimension(1); // yes, cast, this is a higher dimension.
+  int nb_som_max= elem.dimension_int(1); // yes, cast, this is a higher dimension.
   int nb_som_reel;
   for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
     {
@@ -271,7 +271,7 @@ void Polyedre_32_64<_SIZE_>::calculer_volumes(DoubleVect_t& volumes) const
     {
       double volume=0;
       Vecteur3 xg(0,0,0);
-      int nb_som_max = (int)elem.dimension(1);
+      int nb_som_max = elem.dimension_int(1);
       int nb_som_reel;
       for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
         {
@@ -455,8 +455,8 @@ void Polyedre_32_64<_SIZE_>::ajouter_elements(const Elem_geom_base_32_64<_SIZE_>
   // On a joute les new_elems a les_elems
   int_t nb_old_elem=les_elems.dimension(0);
   int_t nb_new_elem=new_elems.dimension(0);
-  int nb_som_old_elem=(int)les_elems.dimension(1);
-  int nb_som_new_elem=(int)new_elems.dimension(1);
+  int nb_som_old_elem=les_elems.dimension_int(1);
+  int nb_som_new_elem=new_elems.dimension_int(1);
   nb_som_elem_max_ = std::max(nb_som_old_elem,nb_som_new_elem);
 
   les_elems.resize(nb_old_elem+nb_new_elem,nb_som_elem_max_, RESIZE_OPTIONS::COPY_NOINIT);

@@ -668,7 +668,7 @@ void Impl_32_64<_SIZE_>::build_nodes(const DoubleTab_t& nodes_src, const IntTab_
 
   nodes_dest = nodes_src;
   nodes_dest.resize(nb_nodes_dest,Objet_U::dimension);
-  int nb_node_per_edge_max= (int)nodes_of_edges_src.dimension(1);
+  int nb_node_per_edge_max= nodes_of_edges_src.dimension_int(1);
   if (nb_node_per_edge_max==20)
     for (int_t edge=0; edge<nb_edges_src; ++edge)
       {
@@ -722,7 +722,7 @@ void Impl_32_64<_SIZE_>:: build_cells(const IntTab_t& nodes_of_cells_src, const 
   assert( &(nodes_of_cells_src) != &(nodes_of_cells_dest) );
 
   const int_t nb_cells_src              = nodes_of_cells_src.dimension(0);
-  const int nb_nodes_per_cell         = (int)nodes_of_cells_src.dimension(1);
+  const int nb_nodes_per_cell         = nodes_of_cells_src.dimension_int(1);
   const int nb_refined_cells_per_cell = pattern.dimension(0);
 
   nodes_of_cells_dest.resize(nb_cells_src * nb_refined_cells_per_cell, nb_nodes_per_cell);
@@ -761,8 +761,8 @@ void Impl_32_64<_SIZE_>::build_frontier(const Frontiere_t& src,
 
   const IntTab_t& nodes_of_faces_src         = src.les_sommets_des_faces();
   int_t         nb_faces_src               = nodes_of_faces_src.dimension(0);
-  int         nb_nodes_per_face          = (int) nodes_of_faces_src.dimension(1);
-  int         nb_faces_dest_per_face_src = (int)faces_refinement_pattern.dimension(1);
+  int         nb_nodes_per_face          =  nodes_of_faces_src.dimension_int(1);
+  int         nb_faces_dest_per_face_src = faces_refinement_pattern.dimension_int(1);
   int_t         nb_nodes_src               = cells_of_nodes_src.get_nb_lists();
 
   IntTab_t nodes_of_faces_dest(nb_faces_src*nb_faces_dest_per_face_src,nb_nodes_per_face);
@@ -1008,7 +1008,7 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
                       for (int ne=0; ne<incident_cells.size_array(); ne++)
                         {
                           int_t elem=incident_cells[ne];
-                          int nb_nodes_per_cells = (int)nodes_of_cells_src.dimension(1);
+                          int nb_nodes_per_cells = nodes_of_cells_src.dimension_int(1);
                           int_t local0=-1,local1=-1;
                           for (int i=0; i<nb_nodes_per_cells; i++)
                             {

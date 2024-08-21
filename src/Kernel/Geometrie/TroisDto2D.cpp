@@ -114,7 +114,7 @@ void TroisDto2D_32_64<_SIZE_>::extraire_2D(const Domaine_t& dom3D, Domaine_t& do
   Cerr << "number of 3D nodes :" << nb_som3D << finl;
   int_t nb_faces3D=les_faces3D.dimension(0);
   Cerr << "number of 3D faces of " << nom_bord << " :" << nb_faces3D << finl;
-  int nb_som_fac3D=(int)les_faces3D.dimension(1);
+  int nb_som_fac3D=les_faces3D.dimension_int(1);
   Cerr << "number of nodes per faces in 3D :" << nb_som_fac3D << finl;
 
   // Construction de renum_som3D2D

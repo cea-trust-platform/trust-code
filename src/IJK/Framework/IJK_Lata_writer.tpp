@@ -321,10 +321,10 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
                   const long long start = ((long long) global_k * input_nj_tot + global_j) * input_ni_tot;
                   const long long n = number_of_j_this_batch * input_ni_tot;
                   lata_db.read_data(*db_field, tmp_read, start, n);
-                  if ((int)tmp_read.dimension(1) <= i_compo)
+                  if (tmp_read.dimension_int(1) <= i_compo)
                     {
                       Cerr << "Error in read_lata_parallel_template: requested component " << i_compo
-                           << " but only " << tmp_read.dimension(1) << " components are available" << finl;
+                           << " but only " << tmp_read.dimension_int(1) << " components are available" << finl;
                       Process::exit();
                     }
                   // Send some data to other processors:

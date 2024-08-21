@@ -63,7 +63,7 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
       if(dim1_tmp >= std::numeric_limits<int>::max())
         Process::exit("LATA file is too big and does not fit into 32bits!!");
       int dim1 = (int)dim1_tmp;
-      int dim2 = (int)geom.nodes_.dimension(1);
+      int dim2 = geom.nodes_.dimension_int(1);
       som.resize(dim1, dim2);
       for (int i1 = 0; i1 < dim1; i1++)
         for (int i2 = 0; i2 < dim2; i2++)
@@ -289,7 +289,7 @@ Entree& Lata_2_Other::interpreter(Entree& is)
                           const BigFloatTab& values_lata = field.data_;
                           assert(values_lata.size_array() < std::numeric_limits<int>::max());
                           int dim1 = (int)values_lata.dimension(0);
-                          int dim2 = (int)values_lata.dimension(1);
+                          int dim2 = values_lata.dimension_int(1);
                           values.resize(dim1, dim2);
                           for (int i1 = 0; i1 < dim1; i1++)
                             for (int i2 = 0; i2 < dim2; i2++)

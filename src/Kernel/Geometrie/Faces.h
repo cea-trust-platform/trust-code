@@ -151,7 +151,7 @@ inline int Faces_32_64<_SIZE_>::nb_som_faces() const
   if (nb_som_face!=-1)
     return nb_som_face;
   else
-    return (int)sommets.dimension(1);
+    return sommets.dimension_int(1);
 }
 
 

@@ -415,7 +415,7 @@ void conn_trust_to_med(IntTab_T<_SIZE_>& les_elems, const Nom& type_elem, bool t
     case MED_POLYGON:
     case MED_POLYHEDRON:
       {
-        int nb_som_max=(int)les_elems.dimension(1);
+        int nb_som_max=les_elems.dimension_int(1);
         filter.resize_array(nb_som_max);
         std::iota(filter.addr(), filter.addr()+nb_som_max, 0);
         break ;
