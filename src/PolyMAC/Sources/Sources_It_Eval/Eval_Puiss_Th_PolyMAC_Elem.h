@@ -40,7 +40,7 @@ protected:
 inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q.valeurs());
+  puissance.ref(Q->valeurs());
 }
 
 template <typename Type_Double>

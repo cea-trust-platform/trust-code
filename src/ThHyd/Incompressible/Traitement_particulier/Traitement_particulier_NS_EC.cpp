@@ -282,9 +282,9 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
               // eventuellement rotation
               if (terme_source_acceleration.champ_vitesse().non_nul())
                 {
-                  translation=terme_source_acceleration.champ_vitesse().valeurs();
+                  translation=terme_source_acceleration.champ_vitesse()->valeurs();
                   if (terme_source_acceleration.omega().non_nul())
-                    rotation=terme_source_acceleration.omega().valeurs();
+                    rotation=terme_source_acceleration.omega()->valeurs();
                   else
                     rotation=rotation_nulle;
                   ok=1;

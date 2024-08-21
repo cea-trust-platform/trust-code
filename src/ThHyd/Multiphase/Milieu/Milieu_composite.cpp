@@ -318,8 +318,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* viscosite dynamique */
   {
-    DoubleTab& tab = mu.valeurs();
-    const int Nl = mu.valeurs().dimension_tot(0);
+    DoubleTab& tab = mu->valeurs();
+    const int Nl = mu->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->viscosite_dynamique();
@@ -330,8 +330,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* viscosite cinematique */
   {
-    DoubleTab& tab = nu.valeurs();
-    const int Nl = nu.valeurs().dimension_tot(0);
+    DoubleTab& tab = nu->valeurs();
+    const int Nl = nu->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->viscosite_cinematique();
@@ -342,8 +342,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* diffusivite */
   {
-    DoubleTab& tab = alpha.valeurs();
-    const int Nl = alpha.valeurs().dimension_tot(0);
+    DoubleTab& tab = alpha->valeurs();
+    const int Nl = alpha->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->diffusivite();
@@ -354,8 +354,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* alpha fois rho */
   {
-    DoubleTab& tab = alpha_fois_rho.valeurs();
-    const int Nl = alpha_fois_rho.valeurs().dimension_tot(0);
+    DoubleTab& tab = alpha_fois_rho->valeurs();
+    const int Nl = alpha_fois_rho->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->diffusivite_fois_rho();
@@ -366,8 +366,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* conductivite */
   {
-    DoubleTab& tab = lambda.valeurs();
-    const int Nl = lambda.valeurs().dimension_tot(0);
+    DoubleTab& tab = lambda->valeurs();
+    const int Nl = lambda->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->conductivite();
@@ -378,8 +378,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* capacite calorifique */
   {
-    DoubleTab& tab = Cp.valeurs();
-    const int Nl = Cp.valeurs().dimension_tot(0);
+    DoubleTab& tab = Cp->valeurs();
+    const int Nl = Cp->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->capacite_calorifique();
@@ -389,13 +389,13 @@ void Milieu_composite::mettre_a_jour_tabs()
   }
 
   /* calcul des quantites melange */
-  DoubleTab& trm = rho_m_.valeurs(), &thm = h_m_.valeurs();
+  DoubleTab& trm = rho_m_->valeurs(), &thm = h_m_->valeurs();
   trm = 0, thm = 0;
 
   const DoubleTab& a = equation("alpha").inconnue()->valeurs(), &r = rho.valeurs(),
                    &ent = res_en_T_ ? h_ou_T.valeurs() : equation("enthalpie").inconnue()->valeurs();
 
-  const int Nl = rho_m_.valeurs().dimension_tot(0);
+  const int Nl = rho_m_->valeurs().dimension_tot(0);
 
   // masse volumique
   for (int n = 0; n < N; n++)

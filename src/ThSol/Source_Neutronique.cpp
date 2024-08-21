@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -329,26 +329,21 @@ int Source_Neutronique::limpr(double le_temps_courant,double ddt) const
     }
 }
 
-
 void Source_Neutronique::mettre_a_jour(double temps)
 {
-
   if (init)
     {
       init = 0;
       Tmoy = calculer_Tmoyenne();
       temps_courant = temps;
       mettre_a_jour_matA(temps);
-      la_puissance(0) = Un(0);
+      la_puissance->valeurs()(0) = Un(0);
     }
   else
     {
       Tmoy = calculer_Tmoyenne();
       aller_au_temps(temps);
       temps_courant = temps;
-      la_puissance(0) = Un(0);
+      la_puissance->valeurs()(0) = Un(0);
     }
-
-
 }
-

@@ -118,7 +118,7 @@ double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_fron
       const Champ_base& rho=mil.masse_volumique().valeur();
       const Champ_Don& Cp=mil.capacite_calorifique();
       double d_rho = sub_type(Champ_Uniforme,rho) ? rho(0,0) : rho(i);
-      double d_Cp = sub_type(Champ_Uniforme,Cp.valeur()) ? Cp(0,0) : Cp.valeur()(i);
+      double d_Cp = sub_type(Champ_Uniforme,Cp.valeur()) ? Cp->valeurs()(0,0) : Cp.valeur()(i);
       if (champ_ext->valeurs().dimension(0)==1)
         return champ_ext->valeurs()(0,j)/(d_rho*d_Cp);
       else

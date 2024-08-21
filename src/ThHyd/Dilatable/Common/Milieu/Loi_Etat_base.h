@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ public :
 
   // Methodes inlines
   inline Champs_compris& champs_compris() { return champs_compris_; }
-  inline const DoubleTab& temperature() const { return ch_temperature().valeurs(); }
+  inline const DoubleTab& temperature() const { return ch_temperature()->valeurs(); }
   inline const DoubleTab& rho_n() const { return tab_rho_n; }
   inline const DoubleTab& rho_np1() const { return tab_rho_np1; }
   inline double Prandt() const { return Pr_; }

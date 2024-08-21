@@ -78,7 +78,7 @@ void Loi_Etat_GP_base::initialiser()
 void Loi_Etat_GP_base::remplir_T()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur()->valeurs();
-  temperature_.valeurs() = tab_Temp;
+  temperature_->valeurs() = tab_Temp;
 }
 
 /*! @brief Calcule le Cp NE FAIT RIEN : le Cp est constant
@@ -95,9 +95,9 @@ void Loi_Etat_GP_base::calculer_Cp()
 void Loi_Etat_GP_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu.valeurs();
+  const DoubleTab& tab_mu = mu->valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda =lambda.valeurs();
+  DoubleTab& tab_lambda =lambda->valeurs();
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
@@ -121,7 +121,7 @@ void Loi_Etat_GP_base::calculer_lambda()
     {
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
-          tab_lambda(0,0) = mu(0,0) * Cp_ / Pr_;
+          tab_lambda(0,0) = mu->valeurs()(0,0) * Cp_ / Pr_;
         }
       else
         {
@@ -141,9 +141,9 @@ void Loi_Etat_GP_base::calculer_lambda()
 void Loi_Etat_GP_base::calculer_alpha()
 {
   const Champ_Don& champ_lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = champ_lambda.valeurs();
+  const DoubleTab& tab_lambda = champ_lambda->valeurs();
   Champ_Don& champ_alpha = le_fluide->diffusivite();
-  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
+  DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   int isVDF=0;

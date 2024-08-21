@@ -151,13 +151,13 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
                   if (sub_type(Champ_Uniforme, conductivite.valeur()))
-                    lambda = conductivite(0, 0);
+                    lambda = conductivite->valeurs()(0, 0);
                   else
                     {
                       if (conductivite->nb_comp() == 1)
-                        lambda = conductivite(elem);
+                        lambda = conductivite->valeurs()(elem);
                       else
-                        lambda = conductivite(elem, 0);
+                        lambda = conductivite->valeurs()(elem, 0);
                     }
 
                   if (dimension == 2)
@@ -219,13 +219,13 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
                   if (sub_type(Champ_Uniforme, conductivite.valeur()))
-                    lambda = conductivite(0, 0);
+                    lambda = conductivite->valeurs()(0, 0);
                   else
                     {
                       if (conductivite->nb_comp() == 1)
-                        lambda = conductivite(elem);
+                        lambda = conductivite->valeurs()(elem);
                       else
-                        lambda = conductivite(elem, 0);
+                        lambda = conductivite->valeurs()(elem, 0);
                     }
 
                   if (dimension == 2)

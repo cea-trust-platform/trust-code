@@ -170,7 +170,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   if (transpose_rotation_)
     {
 
-      DoubleTab& val=champ_rotation_.valeurs();
+      DoubleTab& val=champ_rotation_->valeurs();
 
       int nb_case=val.dimension_tot(0);
       int nb_dim=dimension;
@@ -246,7 +246,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
 
 void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
 {
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   int nb_nodes=domaine_EF.domaine().nb_som_tot();
@@ -285,7 +285,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
             }
           for (int j = 0; j < dim; j++)
             {
-              modele_lu_.vitesse_imposee_(i,j) = modele_lu_.get_vitesse_imposee(x,j);
+              modele_lu_.vitesse_imposee_->valeurs()(i,j) = modele_lu_.get_vitesse_imposee(x,j);
             }
         }
       else
@@ -296,7 +296,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
             }
           for (int j = 0; j < dim; j++)
             {
-              modele_lu_.vitesse_imposee_(i,j) = modele_lu_.get_vitesse_imposee(x,j);
+              modele_lu_.vitesse_imposee_->valeurs()(i,j) = modele_lu_.get_vitesse_imposee(x,j);
             }
         }
     }
@@ -308,7 +308,7 @@ void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
   const IntTab& elems= domaine_EF.domaine().les_elems();
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elem_tot=domaine_EF.domaine().nb_elem_tot();
-  DoubleTab& rotation = champ_rotation_.valeurs();
+  DoubleTab& rotation = champ_rotation_->valeurs();
   int nb_som_tot=domaine_EF.domaine().nb_som_tot();
 
 
@@ -400,8 +400,8 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   ArrOfDouble vitesse_elem(dimension);
-  const DoubleTab& rotation=champ_rotation_.valeurs();
-  const DoubleTab& aire = champ_aire_.valeurs();
+  const DoubleTab& rotation=champ_rotation_->valeurs();
+  const DoubleTab& aire = champ_aire_->valeurs();
 
   int dim_esp = Objet_U::dimension ;
   DoubleTab coeff(nb_elems, dim_esp);
@@ -409,7 +409,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
   const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
   const double dt_min = equation().probleme().schema_temps().pas_temps_min();
   double dt = std::max(dt_ref,dt_min);
-  const DoubleTab& rho_m=champ_rho_.valeurs();
+  const DoubleTab& rho_m=champ_rho_->valeurs();
   if (equation().probleme().schema_temps().temps_courant()==0)
     {
       dt = 1.0;
@@ -451,8 +451,8 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   int nb_som_tot=domaine_EF.domaine().nb_som_tot();
   ArrOfDouble vitesse_elem(dimension);
-  const DoubleTab& rotation=champ_rotation_.valeurs();
-  const DoubleTab& aire = champ_aire_.valeurs();
+  const DoubleTab& rotation=champ_rotation_->valeurs();
+  const DoubleTab& aire = champ_aire_->valeurs();
 
   int dim_esp = Objet_U::dimension ;
   const DoubleTab& vitesse=equation().inconnue()->valeurs();
@@ -464,7 +464,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
   const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
   const double dt_min = equation().probleme().schema_temps().pas_temps_min();
   double dt = std::max(dt_ref,dt_min);
-  const DoubleTab& rho_m=champ_rho_.valeurs();
+  const DoubleTab& rho_m=champ_rho_->valeurs();
   if (equation().probleme().schema_temps().temps_courant()==0)
     {
       dt = 1.0;
@@ -605,11 +605,11 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   const DoubleVect& volume_thilde=domaine_EF.volumes_thilde();
   int ncomp=dimension;
   ArrOfDouble tuvw(dimension);
-  const DoubleTab& rotation=champ_rotation_.valeurs();
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& rotation=champ_rotation_->valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
   //Champ_Don rho_test;
   //champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
-  const DoubleTab& rho_m=champ_rho_.valeurs();
+  const DoubleTab& rho_m=champ_rho_->valeurs();
   DoubleTab pond;
 
   pond = compute_pond(rho_m, aire, volume_thilde, nb_som_elem, nb_elems);
@@ -702,10 +702,10 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
   int ncomp=dimension;
   ArrOfDouble tuvw(dimension);
   // const DoubleTab& vitesse=equation().inconnue()->valeurs();
-  const DoubleTab& rotation=champ_rotation_.valeurs();
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& rotation=champ_rotation_->valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
   //champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
-  const DoubleTab& rho_m=champ_rho_.valeurs();
+  const DoubleTab& rho_m=champ_rho_->valeurs();
   DoubleTab pond ;
 
   pond = compute_pond(rho_m, aire, volume_thilde, nb_som_elem, nb_elems);
@@ -751,7 +751,7 @@ void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Mor
   const IntTab& elems= domaine_EF.domaine().les_elems() ;
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
 
   DoubleTrav force(vitesse);
   ajouter_(vitesse,force);
@@ -1607,7 +1607,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
 
 void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
 {
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
   int nb_elem = correction_en_pression.size();
 
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
@@ -1667,7 +1667,7 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
 }
 void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pression, const DoubleTab& correction_en_pression) const
 {
-  const DoubleTab& aire=champ_aire_.valeurs();
+  const DoubleTab& aire=champ_aire_->valeurs();
   int nb_elem = pression.size();
 
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
@@ -1791,7 +1791,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           bilan_ = 0.0;
           for (int i=0; i<dimension; i++)
             {
-              source_term[i] = champ_nodal_.valeurs();
+              source_term[i] = champ_nodal_->valeurs();
               source_term[i] = 0.;
               for (int j=0; j<nb_som; j++)
                 {

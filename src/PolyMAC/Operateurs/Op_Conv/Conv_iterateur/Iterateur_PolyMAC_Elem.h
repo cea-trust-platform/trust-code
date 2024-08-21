@@ -1000,20 +1000,28 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
         }
       double Cp_=0,rho_=0;
       const int nb_faces_bords=le_domaine_vdf.nb_faces_bord();
-      for (int face=0; face<nb_faces_bords; face++)
+      for (int face = 0; face < nb_faces_bords; face++)
         {
-          int num_elem=face_voisins(face,0);
-          if (num_elem == -1) num_elem = face_voisins(face,1);
-          if (cp_uniforme) Cp_=Cp(0,0);
-          else if (Cp->nb_comp()==1) Cp_=Cp(num_elem);
-          else Cp_=Cp(num_elem,0);
-          if (rho_uniforme) rho_=rho(0,0);
-          else if (rho.nb_comp()==1) rho_=rho(num_elem);
-          else rho_=rho(num_elem,0);
+          int num_elem = face_voisins(face, 0);
+          if (num_elem == -1)
+            num_elem = face_voisins(face, 1);
+          if (cp_uniforme)
+            Cp_ = Cp->valeurs()(0, 0);
+          else if (Cp->nb_comp() == 1)
+            Cp_ = Cp->valeurs()(num_elem);
+          else
+            Cp_ = Cp->valeurs()(num_elem, 0);
+          if (rho_uniforme)
+            rho_ = rho(0, 0);
+          else if (rho.nb_comp() == 1)
+            rho_ = rho(num_elem);
+          else
+            rho_ = rho(num_elem, 0);
           /* si on est en QC temperature on a calcule div(rhou * T) */
           /* il ne faut pas remultiplier par rho */
-          if (is_rho_u) rho_=1;
-          flux_bords(face,0) *= (rho_*Cp_);
+          if (is_rho_u)
+            rho_ = 1;
+          flux_bords(face, 0) *= (rho_ * Cp_);
         }
     }
 }

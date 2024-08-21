@@ -103,12 +103,12 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 double valeur_a_la_face(const Champ_Don& le_ch, const IntTab& f_e, int f)
 {
-  assert(le_ch.valeurs().line_size() == 1);
+  assert(le_ch->valeurs().line_size() == 1);
   double s = 0.0, val = 0.0;
   for (int i = 0, e; i < 2; i++)
     if ((e = f_e(f, i)) > -1)
       {
-        val += le_ch.valeurs()(e, 0);
+        val += le_ch->valeurs()(e, 0);
         s += 1.0;
       }
   val /= s;
@@ -160,8 +160,8 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
           for (int i=0; i<dimension; i++)
             pos[i]=xv(la_face,i);
 
-          const double nu_valeur = nu_constant ? nu(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
-          const double dh_valeur = dh_constant ? diam_hydr(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
+          const double nu_valeur = nu_constant ? nu->valeurs()(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
+          const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
 
           // Calcul du reynolds
           double reynolds=norme_u*dh_valeur/nu_valeur;
@@ -254,8 +254,8 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
       for (int i=0; i<dimension; i++)
         pos[i]=xv(la_face,i);
 
-      const double nu_valeur = nu_constant ? nu(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
-      const double dh_valeur = dh_constant ? diam_hydr(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
+      const double nu_valeur = nu_constant ? nu->valeurs()(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
+      const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
 
       // Calcul du reynolds
       reynolds=norme_u*dh_valeur/nu_valeur;

@@ -57,7 +57,7 @@ void Loi_Etat_Binaire_GP_base::calculer_lambda()
 void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur()->valeurs();
-  DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
+  DoubleTab& tab_mu = le_fluide->viscosite_dynamique()->valeurs();
 
   int i, n=tab_mu.size();
   for (i=0 ; i<n ; i++)
@@ -129,7 +129,7 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
 
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
   const Champ_base& rho = le_fluide->masse_volumique().valeur();
-  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
+  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n=tab_mu_sur_Sc.size();
 
@@ -167,7 +167,7 @@ void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
    */
 
   Champ_Don& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
-  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc.valeurs();
+  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc->valeurs();
   const int n=tab_nu_sur_Sc.size();
 
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = diff_coeff_;

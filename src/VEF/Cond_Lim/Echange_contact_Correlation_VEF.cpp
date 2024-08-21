@@ -169,7 +169,7 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
 
   if(!sub_type(Champ_Uniforme,mon_milieu.conductivite().valeur()))
     {
-      const DoubleTab& tab_lambda = mon_milieu.conductivite().valeurs();
+      const DoubleTab& tab_lambda = mon_milieu.conductivite()->valeurs();
 
       for (int face=ndeb; face<nfin; face++)
         {
@@ -183,7 +183,7 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
     }
   else  // la conductivite est un Champ uniforme
     {
-      const DoubleTab& tab_lambda = mon_milieu.conductivite().valeurs();
+      const DoubleTab& tab_lambda = mon_milieu.conductivite()->valeurs();
 
       for (int face=ndeb; face<nfin; face++)
         {

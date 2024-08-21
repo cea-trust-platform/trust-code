@@ -63,7 +63,7 @@ void Loi_Etat_Multi_GP_base::associer_inconnue(const Champ_Inc_base& inconnue)
 void Loi_Etat_Multi_GP_base::calculer_Cp()
 {
   Champ_Don& Cp = le_fluide->capacite_calorifique();
-  DoubleTab& tab_Cp = Cp.valeurs();
+  DoubleTab& tab_Cp = Cp->valeurs();
   calculer_tab_Cp(tab_Cp);
   tab_Cp.echange_espace_virtuel();
   Debog::verifier("tab_Cp",tab_Cp);
@@ -75,10 +75,10 @@ void Loi_Etat_Multi_GP_base::calculer_Cp()
 void Loi_Etat_Multi_GP_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu.valeurs();
+  const DoubleTab& tab_mu = mu->valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda.valeurs();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
+  DoubleTab& tab_lambda = lambda->valeurs();
+  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique()->valeurs();
   int i, n = tab_lambda.size();
 
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
@@ -107,11 +107,11 @@ void Loi_Etat_Multi_GP_base::calculer_lambda()
 void Loi_Etat_Multi_GP_base::calculer_alpha()
 {
   const Champ_Don& lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = lambda.valeurs();
+  const DoubleTab& tab_lambda = lambda->valeurs();
   Champ_Don& alpha=le_fluide->diffusivite();
-  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
+  DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
+  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique()->valeurs();
   int i, n = tab_alpha.size(), isVDF = 0;
   if (alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
 
@@ -205,7 +205,7 @@ void Loi_Etat_Multi_GP_base::calculer_mu()
 void Loi_Etat_Multi_GP_base::calculer_tab_mu(const DoubleTab& mu, int size)
 {
   // Dynamic viscosity is on elem
-  DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
+  DoubleTab& tab_mu = le_fluide->viscosite_dynamique()->valeurs();
   const int nb_elem = tab_mu.size();
   if (nb_elem==size) // VDF
     {

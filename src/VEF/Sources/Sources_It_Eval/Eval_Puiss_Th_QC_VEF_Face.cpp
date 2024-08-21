@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,5 +27,5 @@ void Eval_Puiss_Th_QC_VEF_Face::completer()
 void Eval_Puiss_Th_QC_VEF_Face::associer_puissance(const Champ_Don& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q.valeurs());
+  puissance.ref(Q->valeurs());
 }

@@ -29,22 +29,8 @@ Implemente_instanciable(Solide,"Solide",Milieu_base);
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
 // XD attr user_field field_base user_field 1 user defined field.
 
-/*! @brief Ecrit les caracteristiques du milieu su run flot de sortie.
- *
- * Simple appel a: Milieu_base::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Solide::printOn(Sortie& os) const { return Milieu_base::printOn(os); }
 
-/*! @brief Lit les caracteristiques du milieu a partir d'un flot d'entree.
- *
- *  cf Milieu_base::readOn
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree& is) le flot d'entree modifie
- */
 Entree& Solide::readOn(Entree& is)
 {
   champs_don_.add(mon_champ_);
@@ -72,7 +58,7 @@ void Solide::verifier_coherence_champs(int& err,Nom& msg)
   msg="";
   if (sub_type(Champ_Uniforme,lambda.valeur()))
     {
-      if (lambda(0,0) <= 0)
+      if (lambda->valeurs()(0,0) <= 0)
         {
           msg += "The conductivity lambda is not striclty positive. \n";
           err = 1;
@@ -112,7 +98,7 @@ void Solide::discretiser(const Probleme_base& pb, const Discretisation_base& dis
           Cerr<<"Convert Champ_fonc_MED " << nom_champ_ << " to a Champ_Don ..."<<finl;
           Champ_Don tmp_fld;
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,tmp_fld);
-          tmp_fld.affecter_(mon_champ_.valeur()); // interpolate ...
+          tmp_fld->affecter(mon_champ_.valeur()); // interpolate ...
           mon_champ_.detach();
           dis.discretiser_champ("champ_elem",domaine_dis,nom_champ_,"neant",1,temps,mon_champ_);
           mon_champ_->valeurs() = tmp_fld->valeurs();

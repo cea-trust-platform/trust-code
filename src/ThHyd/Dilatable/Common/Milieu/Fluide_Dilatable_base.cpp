@@ -188,7 +188,7 @@ void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
     {
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
-          if (mu(0,0) <= 0)
+          if (mu->valeurs()(0,0) <= 0)
             {
               msg += "The dynamical viscosity mu is not striclty positive. \n";
               err = 1;
@@ -225,7 +225,7 @@ void Fluide_Dilatable_base::set_Cp(double Cp_)
   Cp.typer("Champ_Uniforme");
   Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,Cp.valeur());
   ch_Cp.dimensionner(1,1);
-  DoubleTab& tab_Cp = Cp.valeurs();
+  DoubleTab& tab_Cp = Cp->valeurs();
   tab_Cp(0,0) = Cp_;
 }
 
@@ -251,9 +251,9 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
       tab_multiply_any_shape(rho_cp, rho.valeurs());
     }
   if (sub_type(Champ_Uniforme, Cp.valeur()))
-    rho_cp *= Cp.valeurs()(0, 0);
+    rho_cp *= Cp->valeurs()(0, 0);
   else
-    tab_multiply_any_shape(rho_cp,Cp.valeurs());
+    tab_multiply_any_shape(rho_cp,Cp->valeurs());
 }
 
 /*! @brief Renvoie le tableau des valeurs de le temperature
@@ -261,7 +261,7 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
  */
 const DoubleTab& Fluide_Dilatable_base::temperature() const
 {
-  return ch_temperature().valeurs();
+  return ch_temperature()->valeurs();
 }
 
 /*! @brief Renvoie le champ de le temperature
@@ -307,12 +307,12 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
                 // Si mu uniforme et si la loi d'etat est celle d'un gaz parfait
                 double lold=-1;
                 if (lambda.non_nul())
-                  lold=lambda.valeurs()(0,0);
+                  lold=lambda->valeurs()(0,0);
                 lambda.typer(mu->le_type());
                 lambda=mu;
 
                 loi_etat_->calculer_lambda();
-                double lo=lambda.valeurs()(0,0);
+                double lo=lambda->valeurs()(0,0);
                 if (lold!=-1)
                   {
                     if (!est_egal(lold,lo))
@@ -341,7 +341,7 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
               Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
               const double mu0 = mu_suth.get_A();
               Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
-              double lambda0 = mu0/loi_etat_->Prandt()*Cp(0,0);
+              double lambda0 = mu0/loi_etat_->Prandt()*Cp->valeurs()(0,0);
               lambda_suth.set_A(lambda0);
               lambda_suth.lire_expression();
             }
@@ -384,12 +384,12 @@ void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
   indice_refraction_->initialiser(temps);
   longueur_rayo_->initialiser(temps);
   if (sub_type(Champ_Uniforme,kappa().valeur()))
-    longueur_rayo()->valeurs()(0,0)=1/(3*kappa()(0,0));
+    longueur_rayo()->valeurs()(0,0)=1/(3*kappa()->valeurs()(0,0));
   else
     {
-      DoubleTab& l_rayo = longueur_rayo_.valeurs();
-      const DoubleTab& K = kappa().valeurs();
-      for (int i=0; i<kappa().nb_valeurs_nodales(); i++)
+      DoubleTab& l_rayo = longueur_rayo_->valeurs();
+      const DoubleTab& K = kappa()->valeurs();
+      for (int i=0; i<kappa()->nb_valeurs_nodales(); i++)
         l_rayo[i] = 1/(3*K[i]);
     }
 }
@@ -399,7 +399,7 @@ void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
  */
 void Fluide_Dilatable_base::calculer_pression_tot()
 {
-  DoubleTab& tab_Ptot = pression_tot_.valeurs();
+  DoubleTab& tab_Ptot = pression_tot_->valeurs();
   const int n = tab_Ptot.dimension_tot(0);
   DoubleTrav tab_PHyd(n, 1);
   if( n != pression_->valeur().valeurs().dimension_tot(0) )

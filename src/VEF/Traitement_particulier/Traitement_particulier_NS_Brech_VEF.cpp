@@ -396,7 +396,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
   const DoubleTab&  vitesse = mon_equation->inconnue()->valeurs();
   const DoubleVect& gravite = mon_equation->fluide().gravite().valeurs();
-  const DoubleVect& beta     = mon_equation->fluide().beta_t().valeurs();
+  const DoubleVect& beta     = mon_equation->fluide().beta_t()->valeurs();
 
   const int nb_faces = domaine_VEF.nb_faces();
 

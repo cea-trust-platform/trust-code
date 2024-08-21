@@ -80,7 +80,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
   DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
   lambda_t = diffusivite_turbulente_.valeurs();
   const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
-  const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique().valeurs();
+  const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique()->valeurs();
   const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique().valeurs();
   if (sub_type(Pb_Thermohydraulique_Turbulent_QC, mon_pb))
     {
@@ -144,14 +144,14 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
       int is_alpha_unif = sub_type(Champ_Uniforme, alpha.valeur());
       if (is_alpha_unif)
         {
-          d_alpha = alpha(0, 0);
+          d_alpha = alpha->valeurs()(0, 0);
           fonction_.setVar("alpha", d_alpha);
         }
       ToDo_Kokkos("Critical");
       for (int i = 0; i < n; i++)
         {
           if (!is_alpha_unif)
-            fonction_.setVar("alpha", alpha(i));
+            fonction_.setVar("alpha", alpha->valeurs()(i));
           fonction_.setVar("nu_t", tab_nu_t[i]);
 
           tab_alpha_t[i] = fonction_.eval();

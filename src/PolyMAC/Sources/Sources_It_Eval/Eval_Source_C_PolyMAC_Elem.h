@@ -40,7 +40,7 @@ protected:
 inline void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
 {
   la_source_constituant = Q;
-  source_constituant.ref(Q.valeurs());
+  source_constituant.ref(Q->valeurs());
 }
 
 template <typename Type_Double>

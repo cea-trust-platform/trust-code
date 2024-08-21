@@ -101,7 +101,7 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
   for (int i=0; i<liste_Y.size(); i++)
     {
       const DoubleTab& Y_i=liste_Y(i)->valeurs();
-      const double cp_i=liste_especes(i)->capacite_calorifique().valeurs()(0,0);
+      const double cp_i=liste_especes(i)->capacite_calorifique()->valeurs()(0,0);
       assert(cp_i>0);
       for (int elem=0; elem<Y_i.size(); elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
     }
@@ -248,13 +248,13 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
     {
       phi = 0.;
       const double M_i = liste_especes(i)->masse_molaire();
-      const double mu_i = liste_especes(i)->viscosite_dynamique().valeurs()(0, 0);
+      const double mu_i = liste_especes(i)->viscosite_dynamique()->valeurs()(0, 0);
 
       for (int j = 0; j < list_size; j++)
         if (j != i) // sinon phi_ii = 1
           {
             const double M_j = liste_especes(j)->masse_molaire();
-            const double mu_j = liste_especes(j)->viscosite_dynamique().valeurs()(0, 0);
+            const double mu_j = liste_especes(j)->viscosite_dynamique()->valeurs()(0, 0);
 
             double a = 1. + sqrt(mu_i / mu_j) * pow(M_j / M_i, 0.25);
             double b = sqrt(8. * (1. + (M_i / M_j)));
@@ -278,9 +278,9 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 void Loi_Etat_Multi_GP_QC::calculer_mu_sur_Sc()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu.valeurs();
+  const DoubleTab& tab_mu = mu->valeurs();
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
+  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
 
   if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
     {

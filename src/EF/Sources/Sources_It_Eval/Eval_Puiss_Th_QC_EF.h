@@ -40,7 +40,7 @@ protected:
 inline void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q.valeurs());
+  puissance.ref(Q->valeurs());
 }
 
 template <typename Type_Double>

@@ -42,12 +42,12 @@ protected:
 inline void Eval_Dirac_VDF_Elem::associer_champs(const Champ_Don& Q)
 {
   la_puissance = Q;
-  puissance = Q(0);
+  puissance = Q->valeurs()(0);
 }
 
 inline void Eval_Dirac_VDF_Elem::mettre_a_jour()
 {
-  puissance = la_puissance.valeur()(0);
+  puissance = la_puissance.valeur()->valeurs()(0);
   mon_dom = le_dom->domaine();
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ Entree& Transport_turbulent_SGDH::readOn(Entree& is)
 // Modifier_nu modifie mu : alpha et rho font partie du terme
 void Transport_turbulent_SGDH::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
-  const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(),
+  const DoubleTab& mu0 = eq.diffusivite_pour_transport()->passe(),
                    &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
                     *alp = (sub_type(Pb_Multiphase, pb_.valeur()) && !no_alpha_) ? &pb_->get_champ("alpha").passe() : nullptr; //produit par alpha si Pb_Multiphase
   int i, nl = nu.dimension(0), n, N = nu.dimension(1), d, D = dimension;

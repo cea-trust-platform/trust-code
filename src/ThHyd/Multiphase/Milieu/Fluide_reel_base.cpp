@@ -164,12 +164,12 @@ void Fluide_reel_base::mettre_a_jour(double t)
 
   const DoubleTab& temp_ou_enthalp = ch_T_ou_h.valeurs(), &pres = ch_p.valeurs();
 
-  DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_alpha_fois_rho = alpha_fois_rho.valeurs(),
-             &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs(), &tab_beta = beta_th.valeurs(), &tab_rCp = rho_cp_comme_T_.valeurs();
+  DoubleTab& tab_Cp = Cp->valeurs(), &tab_mu = mu->valeurs(), &tab_lambda = lambda->valeurs(), &tab_alpha_fois_rho = alpha_fois_rho->valeurs(),
+             &tab_nu = nu->valeurs(), &tab_alpha = alpha->valeurs(), &tab_beta = beta_th->valeurs(), &tab_rCp = rho_cp_comme_T_->valeurs();
 
   const DoubleTab& tab_rho = masse_volumique().valeurs();
 
-  int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
+  int Ni = mu->valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
     {
       MLoiSpanD spans_interne;

@@ -72,7 +72,7 @@ void Loi_Etat_rhoT_GP_QC::initialiser_rho()
   int isVDF = 0;
   if (le_fluide->masse_volumique()->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
-  int nb_elems = le_fluide->viscosite_dynamique().valeurs().size();
+  int nb_elems = le_fluide->viscosite_dynamique()->valeurs().size();
   // The Champ_Don rho_xyz_ is evaluated on elements
   assert (rho_xyz_->valeurs().size() == nb_elems);
 

@@ -45,7 +45,6 @@ public:
   DoubleTab& valeurs() override;
   const DoubleTab& valeurs() const override;
 
-  Champ_base& affecter_(const Champ_base&) override;
   Champ_base& affecter_compo(const Champ_base&, int) override;
 
   virtual int initialiser(const double temps);
@@ -62,6 +61,10 @@ public:
 
 protected :
   DoubleTab valeurs_;
+
+  /* XXX Elie Saikali : je rendre cette methode protected ! Interdit de l'appeler en public */
+  Champ_base& affecter_(const Champ_base&) override;
+
 private:
   bool instationnaire_ = false; // Par defaut champ stationnaire
 };

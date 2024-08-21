@@ -407,7 +407,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
 
 double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  return domaine_dis()->nb_elem() ? milieu().capacite_calorifique().valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
+  return domaine_dis()->nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
 }
 
 // ajoute les contributions des operateurs et des sources
@@ -1240,7 +1240,7 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
   const Champ_base& ch_rho = fl.masse_volumique().valeur();
   assert(sub_type(Champ_Uniforme, ch_rho));
   const Champ_Don& ch_cp = fl.capacite_calorifique();
-  const DoubleTab& cp = fl.capacite_calorifique().valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();
+  const DoubleTab& cp = fl.capacite_calorifique()->valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();
 
   /* valeurs du champ */
   const int N = val.line_size(), Nl = val.dimension_tot(0), cCp = sub_type(Champ_Uniforme, ch_cp.valeur());

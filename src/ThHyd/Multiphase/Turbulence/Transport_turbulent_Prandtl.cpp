@@ -40,7 +40,7 @@ Entree& Transport_turbulent_Prandtl::readOn(Entree& is)
 // Modifier_nu modifie mu : alpha et rho font partie du terme
 void Transport_turbulent_Prandtl::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
-  const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(), &nu0 = eq.diffusivite_pour_pas_de_temps().passe(); //viscosites moleculaires
+  const DoubleTab& mu0 = eq.diffusivite_pour_transport()->passe(), &nu0 = eq.diffusivite_pour_pas_de_temps().passe(); //viscosites moleculaires
 
   int nl = nu.dimension(0), N = nu.dimension(1), D = dimension;
 

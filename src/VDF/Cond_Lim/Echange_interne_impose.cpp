@@ -148,7 +148,7 @@ void Echange_interne_impose::update_inv_lambda()
 
   if (isVDF)
     {
-      DoubleTab& lambdas = lambda_ref_->valeurs();
+      DoubleTab& lambdas = lambda_ref_->valeur().valeurs();
 
       const Domaine_VDF& zon = ref_cast(Domaine_VDF, frontiere_dis().domaine_dis());
       for (int numf=0; numf < fvf.nb_faces(); numf++)

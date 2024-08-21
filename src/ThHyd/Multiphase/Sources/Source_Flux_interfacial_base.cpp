@@ -151,7 +151,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
 
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &temp_p  = ch_temp.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : nullptr, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : nullptr,
-                    &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
+                    &lambda = milc.conductivite()->passe(), &mu = milc.viscosite_dynamique()->passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique()->passe(),
                      &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi(),
                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                        *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr;

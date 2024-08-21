@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
 {
   la_puissance = ref_cast(Champ_Uniforme,Q.valeur());
-  puissance = Q(0,0);
+  puissance = Q->valeurs()(0,0);
 }
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& nom_ssz)

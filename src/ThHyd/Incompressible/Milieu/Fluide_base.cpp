@@ -104,7 +104,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const Discretisation_base
         Cerr << " on convertit le champ_fonc_med en champ_don" << finl;
         Champ_Don mu_prov;
         dis.discretiser_champ("champ_elem", domaine_dis, "neant", "neant", 1, temps, mu_prov);
-        mu_prov.affecter_(mu.valeur());
+        mu_prov->affecter(mu.valeur());
         mu.detach();
         nu.detach();
         dis.discretiser_champ("champ_elem", domaine_dis, "neant", "neant", 1, temps, mu);
@@ -173,7 +173,7 @@ void Fluide_base::verifier_coherence_champs(int& err, Nom& msg)
     {
       if (sub_type(Champ_Uniforme, Cp.valeur()))
         {
-          if (Cp(0, 0) <= 0)
+          if (Cp->valeurs()(0, 0) <= 0)
             {
               msg += "The heat capacity Cp is not striclty positive. \n";
               err = 1;
@@ -186,7 +186,7 @@ void Fluide_base::verifier_coherence_champs(int& err, Nom& msg)
         }
       if (sub_type(Champ_Uniforme, lambda.valeur()))
         {
-          if (lambda(0, 0) < 0)
+          if (lambda->valeurs()(0, 0) < 0)
             {
               msg += "The conductivity lambda is not positive. \n";
               err = 1;
@@ -232,7 +232,7 @@ void Fluide_base::verifier_coherence_champs(int& err, Nom& msg)
     {
       if (sub_type(Champ_Uniforme, coeff_absorption_.valeur()))
         {
-          if (coeff_absorption_(0, 0) <= 0)
+          if (coeff_absorption_->valeurs()(0, 0) <= 0)
             {
               msg += "The absorption coefficient kappa is not striclty positive. \n";
               err = 1;
@@ -254,15 +254,15 @@ void Fluide_base::creer_nu()
   assert(rho.non_nul());
   nu = mu;
   if (sub_type(Champ_Uniforme, mu.valeur()) && !sub_type(Champ_Uniforme, rho.valeur()))
-    nu.valeurs().resize(rho.valeurs().dimension_tot(0), rho.valeurs().line_size());
+    nu->valeurs().resize(rho.valeurs().dimension_tot(0), rho.valeurs().line_size());
   nu->nommer("nu");
 }
 
 void Fluide_base::calculer_nu()
 {
-  const DoubleTab& tabmu = mu.valeurs();
+  const DoubleTab& tabmu = mu->valeurs();
   const DoubleTab& tabrho = rho.valeurs();
-  DoubleTab& tabnu = nu.valeurs();
+  DoubleTab& tabnu = nu->valeurs();
 
   int cRho = sub_type(Champ_Uniforme, rho.valeur()), cMu = sub_type(Champ_Uniforme, mu.valeur()), i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();
   /* valeurs : mu / rho */
@@ -314,14 +314,14 @@ void Fluide_base::mettre_a_jour(double temps)
 
       if (sub_type(Champ_Uniforme, kappa().valeur()))
         {
-          longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()(0, 0));
+          longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()->valeurs()(0, 0));
           longueur_rayo()->valeurs().echange_espace_virtuel();
         }
       else
         {
-          DoubleTab& l_rayo = longueur_rayo_.valeurs();
-          const DoubleTab& K = kappa().valeurs();
-          for (int i = 0; i < kappa().nb_valeurs_nodales(); i++)
+          DoubleTab& l_rayo = longueur_rayo_->valeurs();
+          const DoubleTab& K = kappa()->valeurs();
+          for (int i = 0; i < kappa()->nb_valeurs_nodales(); i++)
             l_rayo[i] = 1 / (3 * K[i]);
           l_rayo.echange_espace_virtuel();
         }
@@ -355,12 +355,12 @@ int Fluide_base::initialiser(const double temps)
       // Initialisation de longueur_rayo
       longueur_rayo_->initialiser(temps);
       if (sub_type(Champ_Uniforme, kappa().valeur()))
-        longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()(0, 0));
+        longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()->valeurs()(0, 0));
       else
         {
-          DoubleTab& l_rayo = longueur_rayo_.valeurs();
-          const DoubleTab& K = kappa().valeurs();
-          for (int i = 0; i < kappa().nb_valeurs_nodales(); i++)
+          DoubleTab& l_rayo = longueur_rayo_->valeurs();
+          const DoubleTab& K = kappa()->valeurs();
+          for (int i = 0; i < kappa()->nb_valeurs_nodales(); i++)
             l_rayo[i] = 1 / (3 * K[i]);
         }
     }

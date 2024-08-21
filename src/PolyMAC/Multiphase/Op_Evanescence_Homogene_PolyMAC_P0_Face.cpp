@@ -64,7 +64,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
                    &rho = equation().milieu().masse_volumique().passe(),
                     &temp_ou_enth  = pbm.equation_energie().inconnue()->passe(),
                      &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
-                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
+                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique()->passe(),
                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                         *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
                          *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;

@@ -118,22 +118,20 @@ void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl
 
   if (int_P_bord_.non_nul())
     {
-      resu+= int_P_bord_.valeurs();
+      resu+= int_P_bord_->valeurs();
     }
   else
-
     {
       const DoubleVect& porosite_sommet = domaine_EF.porosite_sommet();
 
       if (face_sommets.dimension(1)==4)
         {
           ArrOfInt filter(4) ;
-
-
           filter[0] = 0 ;
           filter[1] = 2 ;
           filter[2] = 3 ;
           filter[3] = 1 ;
+
           interface_INITGAUSS init_gauss;
           int npgau=9;
           int nbnn=4;

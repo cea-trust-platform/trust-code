@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ Entree& Champ_Input_P0_Composite::readOn(Entree& is)
         {
           Champ_Don tmp_fld;
           disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp ,0.,tmp_fld);
-          tmp_fld.affecter_(champ_initial_.valeur()); // interpolate ...
+          tmp_fld->affecter(champ_initial_.valeur()); // interpolate ...
           champ_initial_.detach();
           disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp,0.,champ_initial_);
           champ_initial_->valeurs() = tmp_fld->valeurs();

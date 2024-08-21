@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,5 +27,5 @@ void Eval_Source_C_VEF_Face::completer()
 void Eval_Source_C_VEF_Face::associer_champs(const Champ_Don& Q)
 {
   la_source_constituant = Q;
-  source_constituant.ref(Q.valeurs());
+  source_constituant.ref(Q->valeurs());
 }

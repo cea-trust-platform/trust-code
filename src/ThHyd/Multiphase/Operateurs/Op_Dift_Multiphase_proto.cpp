@@ -147,7 +147,7 @@ void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_
             }
           else
             {
-              const DoubleTab& cp = pbm_->milieu().capacite_calorifique().passe();
+              const DoubleTab& cp = pbm_->milieu().capacite_calorifique()->passe();
               const int cCp = (cp.dimension(0) == 1);
               for (int i = 0; i < nl; i++)
                 val(i, 0) = nu_ou_lambda_turb_(i, n) / (rho(!cR * i, n) * cp(!cCp * i, n));

@@ -295,7 +295,7 @@ void  Chimie::mettre_a_jour(double temps)
 
               const DoubleTab& visc_turb=liste_C_[0]->equation().probleme().get_champ("viscosite_turbulente").valeurs();
               tau_mel=visc_turb;
-              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0]->equation()).constituant().diffusivite_constituant().valeurs();
+              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0]->equation()).constituant().diffusivite_constituant()->valeurs();
               double D_mol=0.;
               if (D_moleculaire.dimension(0) == 1)
                 D_mol = D_moleculaire(0, 0);

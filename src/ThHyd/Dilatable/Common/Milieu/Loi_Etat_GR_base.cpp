@@ -54,7 +54,7 @@ void Loi_Etat_GR_base::initialiser()
   const DoubleTab& tab_H = le_fluide->inco_chaleur()->valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   int i, n = tab_H.dimension(0);
-  DoubleTab& tab_T = temperature_.valeurs();
+  DoubleTab& tab_T = temperature_->valeurs();
   tab_TempC.resize(n);
   double Pth = le_fluide->pression_th();
   for (i=0 ; i<n ; i++)
@@ -63,7 +63,7 @@ void Loi_Etat_GR_base::initialiser()
       tab_TempC(i) = calculer_temperature(Pth,tab_H(i,0));
       tab_T(i) = tab_TempC(i);
     }
-  tab_Cp.ref(le_fluide->capacite_calorifique().valeurs());
+  tab_Cp.ref(le_fluide->capacite_calorifique()->valeurs());
   calculer_Cp();
 }
 
@@ -111,7 +111,7 @@ void Loi_Etat_GR_base::remplir_T()
 {
   const DoubleTab& tab_H = le_fluide->inco_chaleur()->valeurs();
   int i, n = tab_TempC.dimension(0);
-  DoubleTab& tab_T = temperature_.valeurs();
+  DoubleTab& tab_T = temperature_->valeurs();
   double Pth = le_fluide->pression_th();
   for (i=0 ; i<n ; i++)
     {
@@ -149,9 +149,9 @@ void Loi_Etat_GR_base::calculer_Cp()
 void Loi_Etat_GR_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu.valeurs();
+  const DoubleTab& tab_mu = mu->valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda.valeurs();
+  DoubleTab& tab_lambda = lambda->valeurs();
 
   int i, n=tab_lambda.size();
   if (!sub_type(Champ_Uniforme,lambda.valeur()))

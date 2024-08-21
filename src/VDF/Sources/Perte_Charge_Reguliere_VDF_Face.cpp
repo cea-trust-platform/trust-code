@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -152,7 +152,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
     int nb_faces,numfa;
 
     double Cf,CK,U,U_abs,Reynolds;
-    const DoubleTab& visco = nu.valeurs();
+    const DoubleTab& visco = nu->valeurs();
     {
       nb_faces = num_faces.size();
       for (int i=0; i<nb_faces; i++)

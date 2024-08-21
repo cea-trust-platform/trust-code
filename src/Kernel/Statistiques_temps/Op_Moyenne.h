@@ -54,7 +54,7 @@ inline void Op_Moyenne::mettre_a_jour(double tps)
     {
       //const Champ_Fonc_reprise& ch_moy = ref_cast(Champ_Fonc_reprise,ch_moyenne_convergee_.valeur());
       DoubleTab& valeurs_integrale = valeurs();
-      valeurs_integrale = ch_moyenne_convergee_.valeurs();
+      valeurs_integrale = ch_moyenne_convergee_->valeurs();
       valeurs_integrale *= dt_integration();
     }
 }

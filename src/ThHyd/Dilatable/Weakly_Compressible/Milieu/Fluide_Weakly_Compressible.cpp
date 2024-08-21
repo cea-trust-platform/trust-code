@@ -152,7 +152,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 
   // XXX : On l'a besoin pour initialiser rho ...
   if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // soit a initialiser
-  else pression_eos_.valeurs() = Pth_tab_; // soit a reprendre
+  else pression_eos_->valeurs() = Pth_tab_; // soit a reprendre
 
 
   Fluide_Dilatable_base::completer(pb);
@@ -177,7 +177,7 @@ void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb
   if (use_pth_xyz()) initialiser_pth_xyz(pb);
   else initialiser_pth();
 
-  pression_eos_.valeurs() = Pth_tab_;
+  pression_eos_->valeurs() = Pth_tab_;
 }
 
 void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
@@ -187,7 +187,7 @@ void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
   if (pb.equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
 
   // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
-  assert (Pth_xyz_->valeurs().size() == viscosite_dynamique().valeurs().size());
+  assert (Pth_xyz_->valeurs().size() == viscosite_dynamique()->valeurs().size());
 
   if (isVDF)
     {
@@ -299,7 +299,7 @@ void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
       pression_hydro_->mettre_a_jour(temps);
     }
   // for post-processing
-  pression_eos_.valeurs() = Pth_tab_;
+  pression_eos_->valeurs() = Pth_tab_;
   pression_eos_->mettre_a_jour(temps);
 }
 
@@ -326,7 +326,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
  */
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
-  DoubleTab& tab_Phydro = pression_hydro_.valeurs();
+  DoubleTab& tab_Phydro = pression_hydro_->valeurs();
   const Domaine_dis_base& domaine_dis= pression_->valeur().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   int is_VDF = domaine_dis.que_suis_je() == "Domaine_VDF" ? 1 : 0;
@@ -387,7 +387,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
       if ( le_probleme_->schema_temps().nb_pas_dt() ==0 && use_saved_data() ) { /* do nothing &  use saved data */ }
       else
         {
-          Pth_tab_ = pression_hydro_.valeurs();
+          Pth_tab_ = pression_hydro_->valeurs();
           const int n = Pth_tab_.dimension_tot(0);
           for (int i=0 ; i<n ; i++) Pth_tab_(i) += Pth_; // present dt
         }

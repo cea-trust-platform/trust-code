@@ -133,7 +133,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
   int numfa,n0,n1;
 
   const Champ_Don& nu = le_fluide->viscosite_cinematique();
-  const DoubleTab& visco = nu.valeurs();
+  const DoubleTab& visco = nu->valeurs();
   double d_visco=-1;
   int l_visco_unif=0;
 
@@ -214,7 +214,7 @@ void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matri
   int numfa,n0,n1;
 
   const Champ_Don& nu = le_fluide->viscosite_cinematique();
-  const DoubleTab& visco = nu.valeurs();
+  const DoubleTab& visco = nu->valeurs();
   double d_visco=-1;
   int l_visco_unif=0;
 

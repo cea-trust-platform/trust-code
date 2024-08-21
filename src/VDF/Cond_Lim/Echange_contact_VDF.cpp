@@ -146,7 +146,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
   // Calcul de tab = 1/(e/lambda + 1/h_paroi) =1/(e/lambda+invhparoi)
   if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
     {
-      const DoubleTab& lambda = le_milieu.conductivite().valeurs();
+      const DoubleTab& lambda = le_milieu.conductivite()->valeurs();
       for (int face=ndeb; face<nfin; face++)
         {
           int elem = face_voisins(face,0);
@@ -154,7 +154,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
             elem = face_voisins(face,1);
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()(elem,i)!=0.);
+              assert(le_milieu.conductivite()->valeurs()(elem,i)!=0.);
               tab(face-ndeb,i) = 1./(e(face-ndeb)/lambda(elem,i)+invhparoi);
             }
         }
@@ -165,8 +165,8 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
         {
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()(0,i)!=0.);
-              tab(face-ndeb,i) = 1./(e(face-ndeb)/le_milieu.conductivite()(0,i)+invhparoi);
+              assert(le_milieu.conductivite()->valeurs()(0,i)!=0.);
+              tab(face-ndeb,i) = 1./(e(face-ndeb)/le_milieu.conductivite()->valeurs()(0,i)+invhparoi);
             }
         }
     }
@@ -208,7 +208,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
   if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
     {
       DoubleTab lambda;
-      front_vf.frontiere().trace_elem_distant(le_milieu.conductivite().valeurs(),lambda);
+      front_vf.frontiere().trace_elem_distant(le_milieu.conductivite()->valeurs(),lambda);
       for (int face=0; face<nb_faces_raccord1; face++)
         for(i=0; i<nb_comp; i++)
           {
@@ -218,7 +218,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
     }
   else  // la conductivite est un Champ uniforme
     {
-      const DoubleTab& lambda = le_milieu.conductivite().valeurs();
+      const DoubleTab& lambda = le_milieu.conductivite()->valeurs();
       for (int face=0; face<nb_faces_raccord1; face++)
         for(i=0; i<nb_comp; i++)
           {

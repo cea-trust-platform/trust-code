@@ -147,7 +147,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
           Champ_Don ch_lambda_prov;
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
-          ch_lambda_prov.affecter_(ch_lambda.valeur());
+          ch_lambda_prov->affecter(ch_lambda.valeur());
           ch_lambda.detach();
           ch_alpha.detach();
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
@@ -267,7 +267,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
           Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..."<<finl;
           Champ_Don tmp_fld;
           dis.discretiser_champ("champ_elem",zdb_.valeur(),"neant",fld_unit,1,temps,tmp_fld);
-          tmp_fld.affecter_(porosites_champ.valeur()); // interpolate ...
+          tmp_fld->affecter(porosites_champ.valeur()); // interpolate ...
           porosites_champ.detach();
           dis.discretiser_champ("champ_elem",zdb_.valeur(),fld_name,fld_unit,1,temps,porosites_champ);
           porosites_champ->valeurs() = tmp_fld->valeurs();
@@ -342,7 +342,7 @@ void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Disc
           Cerr << "Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..." << finl;
           Champ_Don tmp_fld;
           dis.discretiser_champ("champ_elem", zdb_.valeur(), "neant", fld_unit, 1, temps, tmp_fld);
-          tmp_fld.affecter_(diametre_hyd_champ.valeur()); // interpolate ...
+          tmp_fld->affecter(diametre_hyd_champ.valeur()); // interpolate ...
           diametre_hyd_champ.detach();
           dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, diametre_hyd_champ);
           diametre_hyd_champ->valeurs() = tmp_fld->valeurs();
@@ -541,10 +541,10 @@ void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
     {
-      DoubleTab& tabalpha = alpha.valeurs(), &tab_lambda_sur_cp = alpha_fois_rho.valeurs();
+      DoubleTab& tabalpha = alpha->valeurs(), &tab_lambda_sur_cp = alpha_fois_rho->valeurs();
 
-      tabalpha = lambda.valeurs();
-      tab_lambda_sur_cp = lambda.valeurs();
+      tabalpha = lambda->valeurs();
+      tab_lambda_sur_cp = lambda->valeurs();
 
       // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
       if (sub_type(Champ_Uniforme,rho.valeur()))
@@ -554,13 +554,13 @@ void Milieu_base::calculer_alpha()
 
       if (sub_type(Champ_Uniforme,Cp.valeur()))
         {
-          tabalpha /= Cp.valeurs()(0,0);
-          tab_lambda_sur_cp /= Cp.valeurs()(0,0);
+          tabalpha /= Cp->valeurs()(0,0);
+          tab_lambda_sur_cp /= Cp->valeurs()(0,0);
         }
       else
         {
-          tab_divide_any_shape(tabalpha,Cp.valeurs());
-          tab_divide_any_shape(tab_lambda_sur_cp,Cp.valeurs());
+          tab_divide_any_shape(tabalpha,Cp->valeurs());
+          tab_divide_any_shape(tab_lambda_sur_cp,Cp->valeurs());
         }
     }
   else
@@ -657,9 +657,9 @@ void Milieu_base::update_rho_cp(double temps)
       tab_multiply_any_shape(rho_cp, rho.valeurs());
     }
   if (sub_type(Champ_Uniforme,Cp.valeur()))
-    rho_cp*=Cp.valeurs()(0,0);
+    rho_cp*=Cp->valeurs()(0,0);
   else
-    tab_multiply_any_shape(rho_cp,Cp.valeurs());
+    tab_multiply_any_shape(rho_cp,Cp->valeurs());
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_->changer_temps(temps);
   const MD_Vector& md_som = rho_cp_elem_.domaine_dis_base().domaine().md_vector_sommets(),

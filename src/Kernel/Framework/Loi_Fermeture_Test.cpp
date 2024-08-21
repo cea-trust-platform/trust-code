@@ -39,7 +39,7 @@ void Loi_Fermeture_Test::set_param(Param& param)
 void Loi_Fermeture_Test::mettre_a_jour(double temps)
 {
   assert(status_ == COMPLET);
-  champ_test_.valeurs()=temps*coef_;
+  champ_test_->valeurs()=temps*coef_;
   champ_test_->changer_temps(temps);
 }
 void Loi_Fermeture_Test::discretiser(const Discretisation_base& dis)

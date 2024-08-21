@@ -32,8 +32,7 @@ Loi_Etat_base::Loi_Etat_base() : Pr_(-1.), debug(0) { }
 
 Sortie& Loi_Etat_base::printOn(Sortie& os) const
 {
-  os << que_suis_je() << finl;
-  return os;
+  return os << que_suis_je() << finl;
 }
 
 Entree& Loi_Etat_base::readOn(Entree& is)
@@ -136,10 +135,10 @@ void Loi_Etat_base::calculer_mu()
 void Loi_Etat_base::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
-  const DoubleTab& tab_mu = mu.valeurs();
+  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique()->valeurs();
+  const DoubleTab& tab_mu = mu->valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda.valeurs();
+  DoubleTab& tab_lambda = lambda->valeurs();
   ToDo_Kokkos("critical");
   int i, n = tab_lambda.size();
   // La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
@@ -166,9 +165,9 @@ void Loi_Etat_base::calculer_nu()
   const Champ_Don& viscosite_dynamique = le_fluide->viscosite_dynamique();
   bool uniforme = sub_type(Champ_Uniforme,viscosite_dynamique.valeur());
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  const DoubleTab& tab_mu = viscosite_dynamique.valeurs();
+  const DoubleTab& tab_mu = viscosite_dynamique->valeurs();
   Champ_Don& viscosite_cinematique = le_fluide->viscosite_cinematique();
-  DoubleTab& tab_nu = viscosite_cinematique.valeurs();
+  DoubleTab& tab_nu = viscosite_cinematique->valeurs();
   int n = tab_nu.size();
 
   if (viscosite_cinematique->que_suis_je()=="Champ_Fonc_P0_VDF")
@@ -204,12 +203,12 @@ void Loi_Etat_base::calculer_nu()
  */
 void Loi_Etat_base::calculer_alpha()
 {
-  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
+  DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
   const Champ_Don& conductivite = le_fluide->conductivite();
   bool uniforme = sub_type(Champ_Uniforme,conductivite.valeur());
   int n = tab_alpha.size();
-  CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite.valeurs()).view_ro();
-  CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique().valeurs()).view_ro();
+  CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite->valeurs()).view_ro();
+  CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique()->valeurs()).view_ro();
   CDoubleArrView rho = static_cast<const DoubleVect&>(le_fluide->masse_volumique().valeurs()).view_ro();
   DoubleArrView alpha = static_cast<DoubleVect&>(tab_alpha).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)

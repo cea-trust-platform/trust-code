@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ void Reynolds_maille_Champ_Face::mettre_a_jour(double tps)
   for (int face = 0; face < nb_faces; face++)
     {
       // Calcul de la viscosite face
-      double nu_face = valeur(nu_->valeurs(), face, 0, domaine_vdf());
+      double nu_face = valeur(nu_->valeur().valeurs(), face, 0, domaine_vdf());
       // Calcul de la taille de maille entourant la face
       double taille_maille = domaine_vdf().volumes_entrelaces()(face) / domaine_vdf().face_surfaces(face);
       // Calcul du Reynolds de maille

@@ -82,7 +82,7 @@ void Loi_Etat_Multi_GP_WC::initialiser_inco_ch()
 
 void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don& Yn, double temps)
 {
-  DoubleTab& tab_Yn = Yn.valeurs();
+  DoubleTab& tab_Yn = Yn->valeurs();
   Yn->mettre_a_jour(temps);
   tab_Yn = 1.0;// re-initialize as 1
   const int size = liste_Y(0)->valeurs().size();
@@ -119,7 +119,7 @@ void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
   ArrOfDouble inv_M(size);
 
   const Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
+  const DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
 
   for (int i=0; i < num_espece_; i++)
     {
@@ -143,7 +143,7 @@ void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
   const int size =liste_Y(0)->valeurs().size();
 
   const Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
+  const DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
 
   for (int i=0; i<num_espece_; i++)
     {
@@ -243,7 +243,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
   phi = 0.;
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
+  DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
 
   for (int i=0; i < num_espece_ ; i++)
     {
@@ -287,7 +287,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
    */
 
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
+  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
   const Champ_base& rho = le_fluide->masse_volumique().valeur();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n = tab_mu_sur_Sc.size();
@@ -332,7 +332,7 @@ void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
    */
 
   Champ_Don& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
-  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc.valeurs();
+  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc->valeurs();
   const int n = tab_nu_sur_Sc.size();
 
   // TODO : FIXME : On a tab_nu_sur_Sc.line_size() = 1 :( :/ :(

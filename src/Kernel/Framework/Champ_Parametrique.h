@@ -38,9 +38,9 @@ public:
   const DoubleTab& valeurs() const override { return champ()->valeurs(); }
   DoubleTab& valeurs(double temps) override { return champ()->valeurs(temps); }
   const DoubleTab& valeurs(double temps) const override { return champ()->valeurs(temps); }
-  Champ_base& affecter_(const Champ_base& ch) override { return champ().affecter_(ch); }
-  Champ_base& affecter_compo(const Champ_base& ch, int i) override { return champ().affecter_compo(ch, i); }
-  inline int nb_valeurs_nodales() const override { return champ().valeurs().dimension(0); }
+  Champ_base& affecter_(const Champ_base& ch) override { return champ()->affecter(ch); }
+  Champ_base& affecter_compo(const Champ_base& ch, int i) override { return champ()->affecter_compo(ch, i); }
+  inline int nb_valeurs_nodales() const override { return champ()->valeurs().dimension(0); }
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override { return champ()->valeur_aux(positions, valeurs); }
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override { return champ()->valeur_aux_elems(positions, les_polys, valeurs); };
   bool instationnaire() const override { return champ()->instationnaire(); }
