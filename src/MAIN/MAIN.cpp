@@ -36,9 +36,6 @@ static const char directory_separator = '/';
 #include <Schema_Comm_Vecteurs.h>
 #include <MD_Vector_tools.h>
 
-#include <paraconf.h>
-#include <pdi.h>
-
 extern void desalloue_pwd();
 void usage()
 {
@@ -403,30 +400,10 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
             Cerr<<" code : "<< argv[0] << finl;
             Cerr<<" version : " << TRUST_VERSION << " " << finl;
           }
-<<<<<<< HEAD
 
-	    // initialize PDI
-	    Nom IO_config = data_file + ".yml";
-	    PC_tree_t conf = PC_parse_path(IO_config.getChar());
-	    PDI_init(PC_get(conf, ".pdi"));
         main_process->dowork(data_file);
       }
 
-=======
-        data_file.prefix(".data");
-      }
-
-    if (master)
-      {
-        Cerr<<"Localisation etude: " << ::pwd() << finl;
-        Cerr<<"Nom du cas " << data_file << finl;
-        Cerr<<" code : "<< argv[0] << finl;
-        Cerr<<" version : " << TRUST_VERSION << " " << finl;
-      }
-
-
-    main_process->dowork(data_file);
->>>>>>> c4daa494f8 ([PDI] creating an MPI communicator based on numa node)
 
     if (master)
       {

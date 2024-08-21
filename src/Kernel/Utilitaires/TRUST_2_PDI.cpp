@@ -19,6 +19,7 @@
 
 int TRUST_2_PDI::PDI_checkpoint_=0;
 int TRUST_2_PDI::PDI_restart_=0;
+int TRUST_2_PDI::PDI_initialized_=0;
 std::vector<std::string> TRUST_2_PDI::shared_data_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)

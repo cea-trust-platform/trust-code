@@ -34,9 +34,6 @@
 
 #include <kokkos++.h>
 
-#include <paraconf.h>
-#include <pdi.h>
-
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
 extern void end_stat_counters();
@@ -233,9 +230,6 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 
 void mon_main::finalize()
 {
-  // finalize PDI
-  PDI_finalize();
-
   // Clear all things that were registered by Register_clearable() method (typically the Domaine_dis_cache instance
   // to make sure all Kokkos views are freed before doing Kokkos finalize):
   TClearable::Clear_all();

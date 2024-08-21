@@ -17,6 +17,7 @@
 #define TRUST_2_PDI_included
 
 #include <pdi.h>
+#include <paraconf.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -30,6 +31,30 @@ public:
 
   static int PDI_checkpoint_;
   static int PDI_restart_;
+  static int PDI_initialized_;
+
+  static void init(std::string IO_config)
+  {
+    if(!PDI_initialized_)
+      {
+        // initialize PDI
+        PC_tree_t conf = PC_parse_path(IO_config.c_str());
+        PDI_init(PC_get(conf, ".pdi"));
+        PDI_initialized_ = 1;
+      }
+  }
+
+  static void finalize()
+  {
+    assert(PDI_initialized_);
+    assert(shared_data_.size() == 0);
+    PDI_initialized_ = 0;
+    PDI_checkpoint_ = 0;
+    PDI_restart_ = 0;
+
+    // finalize PDI
+    PDI_finalize();
+  }
 
   void read(const std::string& name, void *data)
   {
