@@ -1,0 +1,68 @@
+pdi:
+  metadata: # small values for which PDI keeps a copy
+    # unknowns dimensions
+    dim_vitesse : { type: array, subtype: int, size: 2 }
+    glob_dim_vitesse : int
+
+    dim_pression : { type: array, subtype: int, size: 2 }
+    glob_dim_pression : int
+
+    # scheme information
+    last_iteration : int # last saved iteration
+
+    # information on format
+    version : int
+    simple_sauvegarde : int
+
+    # >
+  data: #data we want to save/recover (fields of unknown) and timesteps
+    vitesse : { type: array, subtype: double, size: [ '$dim_vitesse[0]', '$dim_vitesse[1]' ]  }
+    pression : { type: array, subtype: double, size: [ '$dim_pression[0]', '$dim_pression[1]' ]  }
+    temps : { type: array, subtype: double, size: [ '$last_iteration + 1' ]  }
+  plugins:
+    trace:
+    decl_hdf5:
+    # >>> READING DATA
+    # Every proc from a group collectively reads their data into their assigned file
+    - file: canal.sauv
+      read:
+        last_iteration:
+          dataset: time/last_iteration
+    - file: canal.sauv
+      read:
+        temps:
+          dataset: time/t
+    - file: canal.sauv
+      read:
+        version: 
+          dataset: format_sauvegarde/version
+    - file: canal.sauv
+      read:
+        simple_sauvegarde: 
+          dataset: format_sauvegarde/simple_sauvegarde
+    - file: canal.sauv
+      on_event: restart_from_complete_checkpoint    
+      read:
+        vitesse:
+          dataset: 'iter_$last_iteration/vitesse'
+          dataset_selection:
+            size: ['$dim_vitesse[0]', '$dim_vitesse[1]']
+            start: [0, 0]
+        pression:
+          dataset: 'iter_$last_iteration/pression'
+          dataset_selection:
+            size: ['$dim_pression[0]', '$dim_pression[1]']
+            start: [0, 0]
+    - file: canal.sauv
+      on_event: restart_from_simple_checkpoint
+      read:
+        vitesse:
+          dataset: vitesse
+          dataset_selection:
+            size: ['$dim_vitesse[0]', '$dim_vitesse[1]']
+            start: [0, 0]
+        pression:
+          dataset: pression
+          dataset_selection:
+            size: ['$dim_pression[0]', '$dim_pression[1]']
+            start: [0, 0]

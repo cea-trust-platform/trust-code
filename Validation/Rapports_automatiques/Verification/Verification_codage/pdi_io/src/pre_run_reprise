@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# to correctly generate test cases, easier to copy useful files directly into the current directory
+cp ../CHECKPOINT_FILES/reprise_Channel_Flow_Rate_repr_pb_periox .
+cp ../CHECKPOINT_FILES/canal.sauv .
+
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+    cp ../CHECKPOINT_FILES/PAR_* .
+fi
+
+
