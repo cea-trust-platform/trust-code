@@ -42,6 +42,11 @@ class Champ_Generique_base : public Objet_U
 {
   Declare_base(Champ_Generique_base);
 public:
+
+  /* XXX Elie Saikali : re-mets ici et pas dans Objet_U */
+  int sauvegarder(Sortie& os) const override { return 0; }
+  int reprendre(Entree& is) override { return 1; }
+
   virtual void set_param(Param& param)=0;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int  get_dimension() const;

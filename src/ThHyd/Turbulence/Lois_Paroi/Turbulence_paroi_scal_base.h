@@ -47,6 +47,11 @@ class Turbulence_paroi_scal_base: public Champs_compris_interface, public Objet_
 
 public:
   Turbulence_paroi_scal_base() : nb_impr_(0), calcul_ldp_en_flux_impose_(0), Prdt_sur_kappa_(2.12) { }
+
+  /* XXX Elie Saikali : re-mets ici et pas dans Objet_U */
+  int sauvegarder(Sortie& os) const override { return 0; }
+  int reprendre(Entree& is) override { return 1; }
+
   inline void associer_modele(const Modele_turbulence_scal_base&);
   virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
   virtual void completer() { }
