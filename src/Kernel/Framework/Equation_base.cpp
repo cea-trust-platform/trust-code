@@ -430,7 +430,7 @@ Entree& Equation_base::lire_cl(Entree& is)
  */
 int Equation_base::sauvegarder(Sortie& os) const
 {
-  return inconnue().sauvegarder(os);
+  return inconnue()->sauvegarder(os);
 }
 
 /*! @brief On reprend l'inconnue a partir d'un flot d'entree.
@@ -446,7 +446,7 @@ int Equation_base::sauvegarder(Sortie& os) const
 int Equation_base::reprendre(Entree& fich)
 {
   double temps = schema_temps().temps_courant();
-  Nom field_tag(inconnue().le_nom());
+  Nom field_tag(inconnue()->le_nom());
   field_tag += inconnue()->que_suis_je();
   field_tag += probleme().domaine().le_nom();
   field_tag += Nom(temps,probleme().reprise_format_temps());
