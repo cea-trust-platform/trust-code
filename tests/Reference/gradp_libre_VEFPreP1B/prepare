@@ -1,0 +1,1 @@
+gunzip -c obst_P1B.geom.gz > obst_P1B.geom

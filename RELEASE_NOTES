@@ -1,3 +1,6 @@
+XX/XX/24 (TRUST) GPU          : A1000, A2000, H100 GPUs and Cuda 12.x supported. Add ./configure -kokkos_hip option to build on AMD with HIP Kokkos backend (still buggy) so default is still OpenMP-target backend (with performance issue on MI250)
+XX/XX/24 (TRUST) GPU          : VEF convection schemes muscl_new and EF_stab available
+XX/XX/24 (TRUST) GPU          : Complete porting for VEF dicretization of Quasi-compressible module and wall laws for turbulence models. Optimization with a lot H2D&D2H copies suppressed
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------

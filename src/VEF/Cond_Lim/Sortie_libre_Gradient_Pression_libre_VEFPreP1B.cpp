@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -227,12 +227,7 @@ double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int face) con
 
 double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int face, int ncomp) const
 {
-  if (ncomp == 0) return flux_impose(face);
-
-  Cerr << "Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int  , int )" << finl;
-  Cerr << "On ne sait imposer que la composante normale du gradient" << finl;
-  Process::exit();
-  return 0.;
+  return flux_impose(face);
 }
 
 double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B(int face) const
