@@ -30,6 +30,7 @@
 #include <Device.h>
 #include <Echange_couplage_thermique.h>
 #include <Champ_front_calc_interne.h>
+#include <Robin_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face,"Op_Diff_VEF_P1NC",Op_Diff_VEF_base);
 
@@ -447,6 +448,10 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             tab_flux_bords(face,0) = 0.;
+        }
+      if (sub_type(Robin_VEF, la_cl.valeur()))
+        {
+          Cerr << "### \n \n  passage par ici pour la condition de Robin OP_diff_vef_face - ajouter cas vectoriel \n\n ########" << finl;
         }
     }
 }

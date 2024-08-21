@@ -29,6 +29,7 @@
 #include <Domaine.h>
 #include <Device.h>
 #include <Debog.h>
+#include <Robin_VEF.h>
 
 Implemente_instanciable(Op_Grad_VEF_P1B_Face, "Op_Grad_VEFPreP1B_P1NC|Op_Grad_VEF_P1NC", Operateur_Grad_base);
 
@@ -227,6 +228,17 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
                   {
                     for (int comp = 0; comp < dimension; comp++)
                       grad(face, comp) = 0;
+                  }
+              }
+            else if (sub_type(Robin_VEF, la_cl.valeur()))
+              {
+                Cerr << "\n \n ################# \n\n OP_GRAD_VEF_P1B_face.cpp  MODIIFICATION DU ROBIN A FAIRE ICI \n \n #################""" << finl;
+                for (int face = num1 ; face < num2; face++) // loop on edges with Robin bc
+                  {
+                    for (int comp = 0; comp<dimension; comp++)
+                      {
+                        grad(face, comp)-= 0; // TODOO HERE
+                      }
                   }
               }
           }

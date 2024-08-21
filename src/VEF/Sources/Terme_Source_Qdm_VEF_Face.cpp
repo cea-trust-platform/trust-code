@@ -28,6 +28,7 @@
 #include <Operateur_base.h>
 #include <VEF_discretisation.h>
 #include <Discretisation_base.h>
+#include <Robin_VEF.h>
 
 extern double calculer_coef_som(True_int rang_elem, True_int dimension, True_int& nb_face_diri, True_int *indice_diri);
 Implemente_instanciable(Terme_Source_Qdm_VEF_Face,"Source_Qdm_VEF_P1NC",Source_base);
@@ -360,6 +361,10 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
                   }// if fait
               }// for face
           }// sub_type Perio
+        if (sub_type(Robin_VEF, la_cl.valeur()))
+          {
+            Cerr << " ## \n \n Implementation des conditions de Robin pour le second membre ici !! \n \n ## " << finl;
+          }
       }
   }
   ArrOfDouble tab_bilan(nb_comp);
