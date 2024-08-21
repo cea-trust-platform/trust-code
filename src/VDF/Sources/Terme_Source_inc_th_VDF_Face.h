@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,12 +20,12 @@
 #include <TRUSTTabs_forward.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
 class Probleme_base;
 class Domaine_Cl_VDF;
-class Champ_Don;
 class Domaine_VDF;
 
 /*! @brief class Terme_Source_inc_th_VDF_Face Cette classe permet de conserver le debit dans une simulation
@@ -69,9 +69,11 @@ protected :
 
 
 };
-#endif
+
 inline const Champ_Don& Terme_Source_inc_th_VDF_Face::beta() const
 {
   return beta_t_.valeur();
 }
+
+#endif
 

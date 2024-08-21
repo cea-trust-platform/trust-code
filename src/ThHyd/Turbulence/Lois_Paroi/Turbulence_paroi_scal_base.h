@@ -28,7 +28,6 @@
 class Modele_turbulence_scal_base;
 class Probleme_base;
 class EcrFicPartage;
-class Champ_Don;
 class Domaine_VF;
 
 /*! @brief Classe Turbulence_paroi_scal_base Classe de base pour la hierarchie des classes representant les modeles

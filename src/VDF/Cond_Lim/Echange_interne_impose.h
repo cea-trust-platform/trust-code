@@ -18,8 +18,7 @@
 
 #include <Echange_externe_impose.h>
 #include <TRUST_Ref.h>
-
-class Champ_Don;
+#include <Champ_Don.h>
 
 /*! @brief Classe Echange_interne_impose: Cette classe represente le cas particulier de la classe
  *

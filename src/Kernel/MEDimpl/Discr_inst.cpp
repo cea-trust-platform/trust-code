@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,12 +92,12 @@ void Discr_inst::discretiser_champ_fonc_don(
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc,
   // suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = 0;
-  Champ_Don * champ_don = 0;
+  Champ_Fonc * champ_fonc = nullptr;
+  Champ_Don * champ_don = nullptr;
   if (sub_type(Champ_Fonc, champ))
     champ_fonc = & ref_cast(Champ_Fonc, champ);
   else
-    champ_don  = & ref_cast(Champ_Don, champ);
+    champ_don  = dynamic_cast<Champ_Don*>(&champ);
 
   Motcles motcles(2);
   motcles[0] = "champ_elem";  // Creer un champ aux elements (de type P0)

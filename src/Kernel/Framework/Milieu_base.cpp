@@ -500,7 +500,7 @@ int Milieu_base::associer_(Objet_U& ob)
     {
       warn_old_syntax();
       via_associer_ = true;
-      associer_gravite(ref_cast(Champ_Don, ob).valeur());
+      associer_gravite(dynamic_cast<Champ_Don&>(ob).valeur());
       return 1;
     }
   return 0;

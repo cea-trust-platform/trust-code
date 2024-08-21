@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,15 +32,14 @@
  * @sa Discret_Thyd_Turb
  */
 
-
 #include <Discret_Thyd.h>
+#include <Champ_Don.h>
 
-class Champ_Don;
-class Navier_Stokes_std;
-class Fluide_base;
-class Fluide_Ostwald;
 class Convection_Diffusion_Temperature;
+class Navier_Stokes_std;
 class Schema_Temps_base;
+class Fluide_Ostwald;
+class Fluide_base;
 
 class VDF_discretisation : public Discret_Thyd
 {

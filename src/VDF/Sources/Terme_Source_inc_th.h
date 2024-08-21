@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,18 +17,17 @@
 #define Terme_Source_inc_th_included
 
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
 class Champ_Don_base;
 class Probleme_base;
 class Domaine_VF;
-class Champ_Don;
 class Entree;
 
 class Terme_Source_inc_th
 {
-
 public:
   void associer_eqn(const Navier_Stokes_std&) ;
   void associer_eqn(const Convection_Diffusion_Temperature&) ;

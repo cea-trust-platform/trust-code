@@ -19,8 +19,6 @@
 #include <Echange_global_impose.h>
 #include <TRUST_Ref.h>
 
-class Champ_Don;
-
 /*! @brief Classe Echange_interne_global_impose: Cette classe represente le cas particulier de la classe
  *
  *     Echange_global_impose ou la paroi d'echange est interne au domaine.
@@ -40,16 +38,9 @@ public:
   virtual void init();   // != initialiser()
   void verifie_ch_init_nb_comp() const override;
 
+  const DoubleVect surface_gap() const { return surface_gap_; }
 
-  const DoubleVect surface_gap() const
-  {
-    return surface_gap_;
-  }
-
-  const DoubleVect surface_gap()
-  {
-    return surface_gap_;
-  }
+  const DoubleVect surface_gap() { return surface_gap_; }
 
 protected:
 

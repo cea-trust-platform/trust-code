@@ -22,9 +22,9 @@
 #include <Equation_base.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
 class Milieu_base;
-class Champ_Don;
 class Solide;
 
 /*! @brief Classe Conduction Cette classe represente l'equation d'evolution

@@ -19,8 +19,8 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Evaluateur_Source_Elem.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
-class Champ_Don;
 
 class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_Elem
 {

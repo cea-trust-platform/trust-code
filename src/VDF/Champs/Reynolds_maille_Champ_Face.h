@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 
 #include <Champ_Fonc_Face_VDF.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
 class Champ_Face_VDF;
-class Champ_Don;
 
 class Reynolds_maille_Champ_Face: public Champ_Fonc_Face_VDF
 {

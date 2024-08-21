@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,12 +18,12 @@
 
 #include <Discret_Thermique.h>
 #include <Champ_Don.h>
+
+class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
-class Fluide_base;
 class Fluide_Ostwald;
 class Equation_base;
-class Champ_Don;
-class Convection_Diffusion_Temperature;
+class Fluide_base;
 
 /*! @brief classe Discret_Thyd Cette classe est la classe de base representant une discretisation
  *

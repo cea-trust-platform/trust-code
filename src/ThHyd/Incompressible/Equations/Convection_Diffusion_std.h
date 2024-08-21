@@ -21,9 +21,9 @@
 #include <Operateur_Diff.h>
 #include <Equation_base.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don.h>
 
 class Champ_Inc_base;
-class Champ_Don;
 
 /*! @brief classe Convection_Diffusion_std Cette classe est la base des equations modelisant le transport
  *
