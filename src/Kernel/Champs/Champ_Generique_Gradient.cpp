@@ -61,8 +61,8 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
               while (i<nb_eq)
                 {
                   const Equation_base& eq_test = Pb.equation(i);
-                  if ((eq_test.inconnue().le_nom() == mon_champ_inc.le_nom()) || ((i==0) && (mon_champ_inc.le_nom()=="pression") &&
-                                                                                  (eq_test.le_nom()!="Conduction")))
+                  if ((eq_test.inconnue()->le_nom() == mon_champ_inc.le_nom()) || ((i==0) && (mon_champ_inc.le_nom()=="pression") &&
+                                                                                   (eq_test.le_nom()!="Conduction")))
                     break;
                   i++;
                 }

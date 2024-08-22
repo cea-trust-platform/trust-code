@@ -41,7 +41,7 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
   if (terme_convectif.op_non_nul())
     {
       Nom nom="Convection_";
-      nom+=inconnue().le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
+      nom+=inconnue()->le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
       terme_convectif.set_fichier(nom);
       terme_convectif.set_description((Nom)"Convective mass transfer rate=Integral(-C*u*ndS)[m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
     }
@@ -53,7 +53,7 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
   if (terme_diffusif.op_non_nul())
     {
       Nom nom="Diffusion_";
-      nom+=inconnue().le_nom();
+      nom+=inconnue()->le_nom();
       terme_diffusif.set_fichier(nom);
       terme_diffusif.set_description((Nom)"Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
     }

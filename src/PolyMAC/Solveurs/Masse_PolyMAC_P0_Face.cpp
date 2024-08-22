@@ -79,7 +79,7 @@ void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
   Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices, semi_impl, false /* dont allocate */, sten);
 
   // elems
-  const std::string& nom_inc = equation().inconnue().le_nom().getString();
+  const std::string& nom_inc = equation().inconnue()->le_nom().getString();
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
 
   const DoubleTab& inco = equation().inconnue()->valeurs();
@@ -101,7 +101,7 @@ void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
 void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
   const DoubleTab& inco = equation().inconnue()->valeurs(), &passe = equation().inconnue()->passe();
-  Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
+  Matrice_Morse *mat = matrices[equation().inconnue()->le_nom().getString()]; //facultatif
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();

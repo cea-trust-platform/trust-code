@@ -187,7 +187,7 @@ public :
   /* renvoie le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
-    return { inconnue().le_nom().getString(), calculer_champ_conserve};
+    return { inconnue()->le_nom().getString(), calculer_champ_conserve};
   }
 
   //par defaut le champ conserve

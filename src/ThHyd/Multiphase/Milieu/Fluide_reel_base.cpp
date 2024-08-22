@@ -140,9 +140,9 @@ void Fluide_reel_base::preparer_calcul() { mettre_a_jour(t_init_); }
 void Fluide_reel_base::mettre_a_jour(double t)
 {
   double tp = ref_cast(Champ_Inc_base, e_int.valeur()).temps(); //pour savoir si on va tourner la roue
-  rho.mettre_a_jour(t);
-  e_int.mettre_a_jour(t);
-  h_ou_T.mettre_a_jour(t);
+  rho->mettre_a_jour(t);
+  e_int->mettre_a_jour(t);
+  h_ou_T->mettre_a_jour(t);
 
   // on calcule les props (EOS)
   if (res_en_T_)

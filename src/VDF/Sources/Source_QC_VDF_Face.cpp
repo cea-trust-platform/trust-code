@@ -21,7 +21,7 @@ Entree& Acceleration_QC_VDF_Face::readOn(Entree& is) { return Terme_Source_Accel
 DoubleTab& Acceleration_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Terme_Source_Acceleration_VDF_Face::ajouter_blocs({},resu, {}); return resu; }
 void Acceleration_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
@@ -34,7 +34,7 @@ Entree& Source_qdm_QC_VDF_Face::readOn(Entree& is) { return Terme_Source_Qdm_VDF
 DoubleTab& Source_qdm_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Terme_Source_Qdm_VDF_Face::ajouter_blocs({},resu, {}); return resu;  }
 void Source_qdm_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
@@ -47,7 +47,7 @@ DoubleTab& Perte_Charge_Reguliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) con
 #pragma clang optimize off
 void Perte_Charge_Reguliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
@@ -61,7 +61,7 @@ DoubleTab& Perte_Charge_Singuliere_QC_VDF_Face::ajouter_mere(DoubleTab& resu) co
 #pragma clang optimize off
 void Perte_Charge_Singuliere_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
@@ -76,7 +76,7 @@ DoubleTab& Darcy_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source_Darcy
 #pragma clang optimize off
 void Darcy_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);
@@ -91,7 +91,7 @@ DoubleTab& Forchheimer_QC_VDF_Face::ajouter_mere(DoubleTab& resu) const { Source
 #pragma clang optimize off
 void Forchheimer_QC_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   contribuer_a_avec_impl(secmem,*mat);
   ajouter_impl(secmem);

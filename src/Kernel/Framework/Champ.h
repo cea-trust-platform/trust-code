@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,13 +26,6 @@ class Champ : public DERIV(Champ_base), public Champ_Proto
 {
   Declare_instanciable(Champ);
 public :
-  inline int nb_comp() const { return valeur().nb_comp(); }
-  inline double changer_temps(const double t) { return valeur().changer_temps(t); }
-  inline double temps() const { return valeur().temps(); }
-  inline void nommer(const Nom& un_nom) override { valeur().nommer(un_nom); }
-  inline void fixer_nb_comp(int i) { valeur().fixer_nb_comp(i); }
-  inline void mettre_a_jour(double un_temps) { valeur().mettre_a_jour(un_temps); }
-  inline const Nom& le_nom() const override { return valeur().le_nom(); }
 
   inline const Noms& fixer_unites(const Noms& les_unites) { return valeur().fixer_unites(les_unites); }
   inline const Nom& fixer_unite(const Nom& lunite) { return valeur().fixer_unite(lunite); }

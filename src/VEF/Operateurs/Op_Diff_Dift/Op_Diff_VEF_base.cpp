@@ -44,7 +44,7 @@ Entree& Op_Diff_VEF_base::readOn(Entree& s )
  */
 int Op_Diff_VEF_base::phi_psi_diffuse(const Equation_base& eq) const
 {
-  if (eq.inconnue().le_nom()=="vitesse")
+  if (eq.inconnue()->le_nom()=="vitesse")
     return 1;
   return 0;
 }

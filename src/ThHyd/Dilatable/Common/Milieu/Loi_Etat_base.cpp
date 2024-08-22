@@ -107,7 +107,7 @@ void Loi_Etat_base::mettre_a_jour(double temps)
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   tab_rho_n = tab_rho_np1;
   tab_rho = tab_rho_np1;
-  le_fluide->masse_volumique().mettre_a_jour(temps);
+  le_fluide->masse_volumique()->mettre_a_jour(temps);
 }
 
 /*! @brief Calcule la viscosite

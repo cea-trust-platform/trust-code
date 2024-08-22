@@ -294,7 +294,7 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
   for (const auto& itr : champs_fonc_post)
     {
       Champ_Fonc_MED& ch_med = ref_cast_non_const(Champ_Fonc_MED,itr.valeur());
-      nom_champ = Motcle(itr.le_nom());
+      nom_champ = Motcle(itr->le_nom());
       if ((nom_champ==un_nom) && (ok_post==1))
         {
           ref_champ = itr;

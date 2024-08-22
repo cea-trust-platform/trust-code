@@ -178,7 +178,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
       Nom nom_probleme = ref_cast(Postraitement,post).probleme().le_nom();
       const Objet_U& ob = interprete().objet(nom_probleme);
       const Probleme_base& pb = ref_cast(Probleme_base,ob);
-      const Nom& nom_champ = pb.equation(0).inconnue().le_nom();
+      const Nom& nom_champ = pb.equation(0).inconnue()->le_nom();
       Entree s_bidon;
       Nom ajout("");
       ajout += " Champ_Post_refChamp { Pb_champ ";

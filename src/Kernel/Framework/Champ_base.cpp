@@ -667,7 +667,7 @@ void Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom
       const Equation_base& eqn=chi.equation();
       // GF on ne veut pas prendre en compte les CL en EF
       if (eqn.discretisation().que_suis_je()!="EF")
-        if((eqn.inconnue().le_nom() == le_nom())
+        if((eqn.inconnue()->le_nom() == le_nom())
             && (sub_type(Champ_Inc_base, *this))
             && (dom==(ref_cast(Champ_Inc_base, *this).equation().probleme().domaine() ) ) )
           {
@@ -845,7 +845,7 @@ void Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncom
         {
           const Champ_Inc_base& chi=ref_cast(Champ_Inc_base, *this);
           const Equation_base& eqn=chi.equation();
-          if((eqn.inconnue().le_nom() == le_nom())
+          if((eqn.inconnue()->le_nom() == le_nom())
               && (sub_type(Champ_Inc_base, *this))
               && (dom==(ref_cast(Champ_Inc_base, *this).equation().probleme().domaine() ) ) )
             {

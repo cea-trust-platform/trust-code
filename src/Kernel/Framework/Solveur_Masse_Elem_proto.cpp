@@ -40,7 +40,7 @@ DoubleTab& Solveur_Masse_Elem_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
   const Domaine_VF& domaine = le_dom_.valeur();
   const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem();
-  const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue().le_nom().getString());
+  const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue()->le_nom().getString());
 
   int e, ne_tot = domaine.nb_elem_tot(), n, N = sm.line_size();
   assert(sm.dimension_tot(0) >= ne_tot && N == der.line_size());

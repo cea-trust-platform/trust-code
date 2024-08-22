@@ -199,7 +199,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (rho.non_nul() && Cp.non_nul())
     {
-      assert (rho.nb_comp() == Cp->nb_comp());
+      assert (rho->nb_comp() == Cp->nb_comp());
       if(!rho_cp_comme_T_.non_nul())
         {
           const double temps = pb.schema_temps().temps_courant();
@@ -593,7 +593,7 @@ void Milieu_base::calculate_face_porosity()
 void Milieu_base::mettre_a_jour(double temps)
 {
   //Cerr << que_suis_je() << "Milieu_base::mettre_a_jour" << finl;
-  if (rho.non_nul()) rho.mettre_a_jour(temps);
+  if (rho.non_nul()) rho->mettre_a_jour(temps);
 
   if (g.non_nul()) g->mettre_a_jour(temps);
 
@@ -956,12 +956,12 @@ int Milieu_base::est_deja_associe()
 
 void Milieu_base::associer_equation(const Equation_base *eqn) const
 {
-  std::string nom_inco(eqn->inconnue().le_nom().getString());
+  std::string nom_inco(eqn->inconnue()->le_nom().getString());
   // E. Saikali
   // At the initialization step, FT problem can have several equations with same unknown name "concentration"
   if (equation_.count(nom_inco) && eqn->probleme().que_suis_je() != "Probleme_FT_Disc_gen")
     {
-      Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl;
+      Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue()->le_nom() << " !" << finl;
       Process::exit();
     }
   equation_[nom_inco] = eqn;

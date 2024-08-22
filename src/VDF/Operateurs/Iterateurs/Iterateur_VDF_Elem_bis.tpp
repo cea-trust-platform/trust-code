@@ -19,7 +19,7 @@
 template <class _TYPE_>
 void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
 {
-  if (op_base->equation().inconnue().le_nom().debute_par("temperature")
+  if (op_base->equation().inconnue()->le_nom().debute_par("temperature")
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
     {
       DoubleTab& flux_bords=op_base->flux_bords();

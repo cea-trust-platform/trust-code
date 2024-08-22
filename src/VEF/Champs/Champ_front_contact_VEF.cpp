@@ -153,7 +153,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1, const No
   Probleme_base& pb1 = ref_cast(Probleme_base, Interprete::objet(nompb1));
 
   if (!sub_type(Pb_Conduction, pb1))
-    if (pb1.equation(1).inconnue().le_nom() != "temperature")
+    if (pb1.equation(1).inconnue()->le_nom() != "temperature")
       nom_inco1 = "concentration";
 
   rch1 = pb1.get_champ(nom_inco1);
@@ -163,7 +163,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1, const No
   Probleme_base& pb2 = ref_cast(Probleme_base, Interprete::objet(nompb2));
 
   if (!sub_type(Pb_Conduction, pb2))
-    if (pb2.equation(1).inconnue().le_nom() != "temperature")
+    if (pb2.equation(1).inconnue()->le_nom() != "temperature")
       nom_inco2 = "concentration";
 
   rch2 = pb2.get_champ(nom_inco2);

@@ -169,7 +169,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(diffusion_counter_);
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : nullptr; //facultatif
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : equation().inconnue()->valeurs();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());

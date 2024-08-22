@@ -627,7 +627,7 @@ ICoCo::MEDDoubleField ProblemTrio::getDirectAccessToUnknown(const std::string& u
         {
           Champ_Inc& ci = pb_base.equation(i).inconnue();
           assert(ci->valeurs().nb_dim() == 2);
-          if (Motcle(ci.le_nom()) == Motcle(unk_name))
+          if (Motcle(ci->le_nom()) == Motcle(unk_name))
             {
               DoubleTab& t = isFuture ? ci->futur() : ci->valeurs() ;
               ptr = t.addr();

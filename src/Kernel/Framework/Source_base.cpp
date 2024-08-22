@@ -212,7 +212,7 @@ int Source_base::impr(Sortie& os) const
  */
 void Source_base::dimensionner(Matrice_Morse& mat) const
 {
-  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
+  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue()->le_nom().getString(), &mat }});
 }
 
 void Source_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
@@ -240,7 +240,7 @@ void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
 {
   if (!has_interface_blocs()) return;
   DoubleTrav secmem(equation().inconnue()->valeurs()); //sera jete
-  ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
+  ajouter_blocs({{ equation().inconnue()->le_nom().getString(), &mat}}, secmem, {});
 }
 
 /*! @brief contribution au second membres des termes sources en implicite par defaut erreur

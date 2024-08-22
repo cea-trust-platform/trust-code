@@ -275,7 +275,7 @@ void paroi_contact::complement(Nom& ajout)
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";
-      ajout += mon_equation->inconnue().le_nom() + " 1.e10";
+      ajout += mon_equation->inconnue()->le_nom() + " 1.e10";
     }
   else
     {
@@ -321,7 +321,7 @@ void paroi_contact_rayo::complement(Nom& ajout)
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";
-      ajout += mon_equation->inconnue().le_nom() + " 1.e10";
+      ajout += mon_equation->inconnue()->le_nom() + " 1.e10";
     }
   else
     {

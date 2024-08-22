@@ -1066,7 +1066,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
       for (const auto& itr : list_champ_combi)
         {
           const Champ_Fonc& ch = itr;
-          if (ch.le_nom()==nom && ch.temps()!=inconnue()->temps())
+          if (ch->le_nom()==nom && ch.temps()!=inconnue()->temps())
             ref_cast_non_const( Champ_Fonc,ch).mettre_a_jour(inconnue()->temps());
         }
     }
@@ -2014,7 +2014,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   statistiques().begin_count(assemblage_sys_counter_);
   if (!(discretisation().is_polymac_family() || probleme().que_suis_je().debute_par("Pb_Multiphase")))
     {
-      const std::string& nom_inco = inconnue().le_nom().getString();
+      const std::string& nom_inco = inconnue()->le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
       if(mat) mat->ajouter_multvect(inconnue()->valeurs(), secmem);
     }
@@ -2029,7 +2029,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 
   if (!discretisation().is_polymac_family())
     {
-      const std::string& nom_inco = inconnue().le_nom().getString();
+      const std::string& nom_inco = inconnue()->le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
       modifier_pour_Cl(*mat,secmem);
     }
@@ -2094,7 +2094,7 @@ void Equation_base::imprime_residu(SFichier& fic)
     {
       double vmax = mp_max_vect(inconnue()->valeurs());
       double vmin = mp_min_vect(inconnue()->valeurs());
-      Cout << finl << inconnue().le_nom() << " field [min/max]: ";
+      Cout << finl << inconnue()->le_nom() << " field [min/max]: ";
       if (je_suis_maitre()) printf("[ %.2e / %.2e ]",vmin,vmax);
       Cout << finl;
     }
@@ -2123,7 +2123,7 @@ Nom Equation_base::expression_residu()
       if (size==1)
         {
           // Champ scalaire
-          tmp+=(Motcle)inconnue().le_nom()[0];
+          tmp+=(Motcle)inconnue()->le_nom()[0];
         }
       else
         {
@@ -2136,7 +2136,7 @@ Nom Equation_base::expression_residu()
           else
             {
               // Exemple, champ concentration
-              tmp+=(Motcle)inconnue().le_nom()[0];
+              tmp+=(Motcle)inconnue()->le_nom()[0];
               tmp+=(Nom)i;
             }
         }

@@ -27,7 +27,7 @@ Sortie& Convection_Diffusion_Espece_Multi_base::printOn(Sortie& is) const
 
 Entree& Convection_Diffusion_Espece_Multi_base::readOn(Entree& is)
 {
-  alias_=inconnue().le_nom();
+  alias_=inconnue()->le_nom();
   Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(is);
   Nom conv = "Convection_", diff = "Diffusion_";
   conv += alias_;

@@ -254,7 +254,7 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
     }
 
   /* cas restant : equation thermique d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
-  const std::string& nom_inco = eqn.inconnue().le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
+  const std::string& nom_inco = eqn.inconnue()->le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
   if (!sets_)
@@ -307,7 +307,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
   std::map<std::string, Equation_base*> eqs; //eqs[inconnue] = equation
   std::vector<std::string> noms; //ordre des inconnues : le meme que les equations, puis la pression
   for (i = 0; i < n_eq; i++)
-    noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
+    noms.push_back(eq_list[i]->inconnue()->le_nom().getString()), eqs[noms[i]] = eq_list[i];
   noms.push_back("pression"); //pas d'equation associee a la pression!
 
   std::map<std::string, Champ_Inc_base*> inco; //tous les Champ_Inc
@@ -559,7 +559,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       for (i = 0; i < pb.nombre_d_equations(); i++)
         if (pb.equation(i).positive_unkown() == 1)
           {
-            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString();
+            std::string nom_inco = pb.equation(i).inconnue()->le_nom().getString();
             unknown_positivation(inco[nom_inco]->valeurs(), *incr[nom_inco]);
           }
 

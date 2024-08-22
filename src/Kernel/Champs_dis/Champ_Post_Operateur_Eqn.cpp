@@ -113,7 +113,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
             while (i<nb_eq)
               {
                 const Equation_base& eq_test = Pb.equation(i);
-                if ((eq_test.inconnue().le_nom() == mon_champ_inc.le_nom()))
+                if ((eq_test.inconnue()->le_nom() == mon_champ_inc.le_nom()))
                   {
                     numero_eq_=i;
                     break;

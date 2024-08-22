@@ -224,7 +224,7 @@ void Convection_Diffusion_Espece_Multi_QC::assembler(Matrice_Morse& matrice, con
 void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   statistiques().begin_count(assemblage_sys_counter_);
-  const std::string& nom_inco = inconnue().le_nom().getString();
+  const std::string& nom_inco = inconnue()->le_nom().getString();
   const DoubleTab& inco = inconnue()->valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 

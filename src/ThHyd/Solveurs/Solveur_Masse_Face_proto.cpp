@@ -55,7 +55,7 @@ DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
 
 void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl, const bool allocate, IntTrav& sten) const
 {
-  const std::string& nom_inc = solv_mass_->equation().inconnue().le_nom().getString();
+  const std::string& nom_inc = solv_mass_->equation().inconnue()->le_nom().getString();
   if (!matrices.count(nom_inc)) return; //rien a faire
 
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
@@ -81,7 +81,7 @@ void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, con
 void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
   const DoubleTab& inco = solv_mass_->equation().inconnue()->valeurs(), &passe = solv_mass_->equation().inconnue()->passe();
-  Matrice_Morse *mat = matrices[solv_mass_->equation().inconnue().le_nom().getString()]; //facultatif
+  Matrice_Morse *mat = matrices[solv_mass_->equation().inconnue()->le_nom().getString()]; //facultatif
   const Domaine_VF& domaine = le_dom_.valeur();
   const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();

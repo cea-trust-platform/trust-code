@@ -130,7 +130,7 @@ double Op_Diff_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
 void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl) const
 {
   init_op_ext();
-  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
+  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue())->le_nom().getString();
   int i, j, k, l, e, o_e, f, o_f, fb, m, n, M, n_ext = (int) op_ext.size(), n_sten = 0, semi = (int) semi_impl.count(nom_inco);
   long p;
   std::vector<Matrice_Morse*> mat(n_ext); //matrices
@@ -234,7 +234,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
 {
   statistiques().begin_count(diffusion_counter_);
   init_op_ext();
-  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
+  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue())->le_nom().getString();
   int i, j, k1, k2, e, f, fb, n, M, n_ext = (int) op_ext.size(), semi = (int) semi_impl.count(nom_inco), d, D = dimension;
   std::vector<Matrice_Morse*> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes

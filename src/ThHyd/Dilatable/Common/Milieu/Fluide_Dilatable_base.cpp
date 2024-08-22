@@ -442,7 +442,7 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
-  rho.mettre_a_jour(temps);
+  rho->mettre_a_jour(temps);
   ch_temperature()->mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
   rho->changer_temps(temps);
   ch_temperature()->changer_temps(temps);

@@ -130,7 +130,7 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
     {
       penalisation_flag_ = penalisation;
       DoubleTrav inco(equation().inconnue()->valeurs());
-      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
+      ajouter_blocs({{ equation().inconnue()->le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
       return matrice;
     }
 
@@ -176,7 +176,7 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
   if (has_interface_blocs())
     {
       penalisation_flag_ = penalisation;
-      const std::string& nom_inco = equation().inconnue().le_nom().getString();
+      const std::string& nom_inco = equation().inconnue()->le_nom().getString();
       ajouter_blocs({}, x, dt, {{nom_inco,y}}, 0); //on tente ajouter_blocs()
       return x;
     }
@@ -360,7 +360,7 @@ void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
 {
   if (has_interface_blocs())
     {
-      dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &matrix }}, {}); //on tente dimensionner_blocs
+      dimensionner_blocs({{ equation().inconnue()->le_nom().getString(), &matrix }}, {}); //on tente dimensionner_blocs
       return;
     }
   const DoubleTab& champ_inconnue = equation().inconnue()->valeurs();

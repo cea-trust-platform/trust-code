@@ -296,7 +296,7 @@ Nom PolyMAC_P0P1NC_discretisation::get_name_of_type_for(const Nom& class_operate
 
 void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const
 {
-  Nom ch_name(ch_inco.le_nom());
+  Nom ch_name(ch_inco->le_nom());
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 

@@ -271,13 +271,13 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         {
           if (eqn.discretisation().is_polymac_family())
             {
-              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue()->le_nom().getString(), &matrice }}, resu_temp, { });
               resu = resu_temp;
               matrice.ajouter_multvect(current, resu);
             }
           else
             {
-              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu, { });
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue()->le_nom().getString(), &matrice }}, resu, { });
               resu_temp = 0;
               matrice.ajouter_multvect(current,resu_temp);
               resu_temp -= resu;
@@ -389,7 +389,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   for (i = 0; i < eqs.size(); i++)
     for (j = 0; j < eqs.size(); j++)
       {
-        Nom nom_i = eqs[j]->inconnue().le_nom();
+        Nom nom_i = eqs[j]->inconnue()->le_nom();
         // champ d'un autre probleme : on ajoute un suffixe
         if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString()) nom_i += Nom("/") + eqs[j]->probleme().le_nom();
         mats[i][nom_i.getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
@@ -450,7 +450,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
             {
               for (j = 0; j < eqs.size(); j++)
                 {
-                  Nom nom_j = eqs[j]->inconnue().le_nom();
+                  Nom nom_j = eqs[j]->inconnue()->le_nom();
                   if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString())
                     {
                       nom_j += Nom("/") + eqs[j]->probleme().le_nom();

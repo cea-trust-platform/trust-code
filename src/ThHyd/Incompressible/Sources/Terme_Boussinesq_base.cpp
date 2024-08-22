@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
   for (int eq=0; eq<n_eq; eq++)
     {
       const Equation_base& eqn=pb.equation(eq);
-      if (eqn.inconnue().le_nom()==NomScalaire_)
+      if (eqn.inconnue()->le_nom()==NomScalaire_)
         {
           ok=1;
           equation_scalaire_ = ref_cast(Convection_Diffusion_std,eqn);

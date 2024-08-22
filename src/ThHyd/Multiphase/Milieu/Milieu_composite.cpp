@@ -199,7 +199,9 @@ int Milieu_composite::initialiser(const double temps)
   t_init_ = temps;
 
   // XXX Elie Saikali : utile pour cas reprise !
-  rho.changer_temps(temps), e_int.changer_temps(temps), h_ou_T.changer_temps(temps);
+  rho->changer_temps(temps);
+  e_int->changer_temps(temps);
+  h_ou_T->changer_temps(temps);
 
   return Milieu_base::initialiser_porosite(temps);
 }
@@ -258,7 +260,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
       for (int k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
           {
-            int phase = fluides_[k].le_nom().debute_par("gaz");
+            int phase = fluides_[k]->le_nom().debute_par("gaz");
             Nom espece = phase ? fluides_[k].le_nom().getSuffix("gaz_") : fluides_[k].le_nom().getSuffix("liquide_");
             if (has_interface(k, l)) // OK si interf/saturation
               {
@@ -290,9 +292,9 @@ void Milieu_composite::mettre_a_jour(double temps)
 {
   for (auto& itr : fluides_) itr->mettre_a_jour(temps);
 
-  rho.mettre_a_jour(temps);
-  e_int.mettre_a_jour(temps);
-  h_ou_T.mettre_a_jour(temps);
+  rho->mettre_a_jour(temps);
+  e_int->mettre_a_jour(temps);
+  h_ou_T->mettre_a_jour(temps);
 
   std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m_, &h_m_};
   for (auto && f: fields) (*f)->mettre_a_jour(temps);

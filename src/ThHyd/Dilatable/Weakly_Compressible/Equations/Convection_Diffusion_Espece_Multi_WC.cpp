@@ -80,7 +80,7 @@ void Convection_Diffusion_Espece_Multi_WC::assembler_blocs_avec_inertie(matrices
 
   if (!discretisation().is_polymac_family())
     {
-      const std::string& nom_inco = inconnue().le_nom().getString();
+      const std::string& nom_inco = inconnue()->le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
       modifier_pour_Cl(*mat,secmem);
     }

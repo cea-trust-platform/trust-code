@@ -67,7 +67,7 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matr
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
   const DoubleTab& inco = equation().inconnue()->valeurs();
   const int ne = domaine.nb_elem(), N = inco.line_size();
-  std::string nom_inco = equation().inconnue().le_nom().getString();
+  std::string nom_inco = equation().inconnue()->le_nom().getString();
 
   for (auto &&n_m : matrices)
     if (n_m.first == nom_inco)
@@ -89,7 +89,7 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
   const DoubleTab& c = equation().inconnue()->valeurs();
-  std::string nom_inco = equation().inconnue().le_nom().getString();
+  std::string nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse *Mc = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int N = c.line_size();
 

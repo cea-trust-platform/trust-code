@@ -404,7 +404,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (le_dom_EF.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (le_dom_EF.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue()->le_nom()=="vitesse")
     impr_mom=1;
 
   const int impr_sum=(le_dom_EF.domaine().bords_a_imprimer_sum().est_vide() ? 0:1);

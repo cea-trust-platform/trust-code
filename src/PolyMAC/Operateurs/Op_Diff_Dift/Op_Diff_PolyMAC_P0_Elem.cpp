@@ -232,7 +232,7 @@ double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   init_op_ext(), update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet
-  const std::string nom_inco = equation().inconnue().le_nom().getString();
+  const std::string nom_inco = equation().inconnue()->le_nom().getString();
   if (semi_impl.count(nom_inco))
     return; //semi-implicite -> rien a dimensionner
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
@@ -297,7 +297,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 #else
   statistiques().begin_count(diffusion_counter_);
   init_op_ext(), update_phif();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int) op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it,
                                                                                cv, nonlinear;
   std::vector<Matrice_Morse*> mat(n_ext); //matrices

@@ -124,7 +124,7 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_base::ajouter_blocs(matrices_
   const DoubleTab& Text = Text_->valeurs();
   const DoubleTab& T = equation().inconnue()->valeurs();
   int nb_elem = le_dom->nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   for (int e = 0; e < nb_elem; e++)

@@ -151,7 +151,7 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
 
 void PolyMAC_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
 {
-  Nom ch_name(ch_inco.le_nom());
+  Nom ch_name(ch_inco->le_nom());
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 

@@ -318,7 +318,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
 
 void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Diffusion_Fluide_Dilatable_base& eqn,matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
-  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
+  const std::string& nom_inco = eqn.inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();

@@ -101,7 +101,7 @@ void DP_Impose_VEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 {
   const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
 
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
   IntTrav sten(0, 2);
@@ -125,7 +125,7 @@ void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces();
   const DoubleTab& vit = equation().inconnue()->valeurs(), &nf = dom.face_normales();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int D = dimension, N = vit.line_size() / D;
 

@@ -101,7 +101,7 @@ void TRUSTProblem_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MED
           op_diff->associer_diffusivite_pour_pas_de_temps(eqn.diffusivite_pour_pas_de_temps());
 
           Nom nom_fich = "Diffusion_";
-          nom_fich += eqn.inconnue().le_nom();
+          nom_fich += eqn.inconnue()->le_nom();
           op_diff.set_fichier(nom_fich);
           op_diff.set_description((Nom) "Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m" + (Nom) (Objet_U::dimension + Objet_U::bidim_axi) + ".Mol.s-1]");
 

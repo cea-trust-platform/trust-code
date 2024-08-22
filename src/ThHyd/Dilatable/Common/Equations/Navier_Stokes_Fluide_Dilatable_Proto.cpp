@@ -249,7 +249,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
 void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Navier_Stokes_std& eqn, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   statistiques().begin_count(assemblage_sys_counter_);
-  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
+  const std::string& nom_inco = eqn.inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
   const DoubleTab& present = eqn.inconnue()->valeurs();
 

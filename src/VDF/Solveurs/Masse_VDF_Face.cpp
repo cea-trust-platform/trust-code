@@ -117,7 +117,7 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
   if (sub_type(Pb_Multiphase, equation().probleme()))
     {
       const DoubleTab& inco = equation().inconnue()->valeurs(), &passe = equation().inconnue()->passe();
-      Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
+      Matrice_Morse *mat = matrices[equation().inconnue()->le_nom().getString()]; //facultatif
       const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
       const Conds_lim& cls = ref_cast(Domaine_Cl_dis_base, equation().domaine_Cl_dis().valeur()).les_conditions_limites();
       const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();

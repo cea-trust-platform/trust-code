@@ -819,7 +819,7 @@ void VEF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_d
 
 void VEF_discretisation::residu(const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const
 {
-  Nom ch_name(ch_inco.le_nom());
+  Nom ch_name(ch_inco->le_nom());
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 

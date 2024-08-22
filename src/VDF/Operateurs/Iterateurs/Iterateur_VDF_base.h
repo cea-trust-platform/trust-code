@@ -96,14 +96,14 @@ public:
 
   virtual DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const final
   {
-    ajouter_blocs({}, secmem, {{ op_base->equation().inconnue().le_nom().getString(), inco }});
+    ajouter_blocs({}, secmem, {{ op_base->equation().inconnue()->le_nom().getString(), inco }});
     return secmem;
   }
 
   virtual void ajouter_contribution(const DoubleTab& inco, Matrice_Morse& m) const final
   {
     DoubleTrav secmem(inco); //on va le jeter
-    ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
+    ajouter_blocs({{ op_base->equation().inconnue()->le_nom().getString(), &m }}, secmem, {});
   }
 
 protected:

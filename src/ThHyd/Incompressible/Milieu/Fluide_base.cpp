@@ -300,7 +300,7 @@ void Fluide_base::mettre_a_jour(double temps)
   nu->changer_temps(temps);
   nu->valeurs().echange_espace_virtuel();
   if (e_int_auto_)
-    e_int.mettre_a_jour(temps);
+    e_int->mettre_a_jour(temps);
 
   // Mise a jour des proprietes radiatives du fluide incompressible
   // (Pour un fluide incompressible semi transparent).
@@ -408,7 +408,7 @@ void Fluide_base::creer_e_int() const
   eq.discretisation().discretiser_champ("champ_elem", eq.domaine_dis(), "energie_interne", "J/kg", 1, eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
   e_int_inc->associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
   e_int = e_int_inc;
-  e_int.mettre_a_jour(eq.inconnue()->temps());
+  e_int->mettre_a_jour(eq.inconnue()->temps());
   e_int_auto_ = 1;
 }
 

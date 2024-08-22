@@ -49,7 +49,7 @@ Entree& Op_Conv_EF_base::readOn(Entree& s )
  */
 int  Op_Conv_EF_base::phi_u_transportant(const Equation_base& eq) const
 {
-  if (eq.inconnue().le_nom()=="vitesse")
+  if (eq.inconnue()->le_nom()=="vitesse")
     return 0;
   return 1;
 }

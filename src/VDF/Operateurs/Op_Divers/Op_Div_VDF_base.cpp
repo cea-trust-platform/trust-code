@@ -26,7 +26,7 @@ void Op_Div_VDF_base::completer()
   Operateur_base::completer();
   iter_->completer_();
   iter_->associer_champ_convecte_ou_inc(equation().inconnue(), nullptr);
-  iter_->set_name_champ_inco(equation().inconnue().le_nom().getString());
+  iter_->set_name_champ_inco(equation().inconnue()->le_nom().getString());
   iter_->set_convective_op_pb_type(false /* div op */, sub_type(Pb_Multiphase, equation().probleme()));
 }
 

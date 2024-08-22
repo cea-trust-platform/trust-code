@@ -68,7 +68,7 @@ Entree& Convection_Diffusion_Temperature::readOn(Entree& is)
   //Nom unite;
   //if (dimension+bidim_axi==2) unite="[W/m]";
   //else unite="[W]";
-  Nom num=inconnue().le_nom(); // On prevoir le cas d'equation de scalaires passifs
+  Nom num=inconnue()->le_nom(); // On prevoir le cas d'equation de scalaires passifs
   num.suffix("temperature");
   Nom nom="Convection_chaleur";
   nom+=num;
@@ -547,7 +547,7 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
 
   statistiques().begin_count(assemblage_sys_counter_);
 
-  const std::string& nom_inco = inconnue().le_nom().getString();
+  const std::string& nom_inco = inconnue()->le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
   if(mat) mat->ajouter_multvect(inconnue()->valeurs(), secmem);
 
