@@ -14,6 +14,7 @@ from typing import ClassVar, Any
 import trustpy.misc_utilities as mutil
 from trustpy.trust_parser import TRUSTTokens
 from pydantic import BaseModel
+from pydantic_core import core_schema
 
 ########################################################
 # Utilities TRUST methods
@@ -78,7 +79,7 @@ class Base_common:
   #                       # correctly displaying debug information of the parent attribute
 
   def __init__(self, *arg, **kwarg):
-    pydantic.BaseModel.__init__(self, *arg, **kwarg)
+    # pydantic.BaseModel.__init__(self, *arg, **kwarg)
     self._tokens = {}     # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
                           # in ConstrainBase for a more comprehensive explanation.
 
@@ -1065,6 +1066,16 @@ class Chaine(str, AbstractChaine):
   """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
   See ReadFromTokens below ..
   """
+
+  @classmethod
+  def __get_pydantic_core_schema__(cls, source, handler):
+      return core_schema.no_info_after_validator_function(cls.cast, core_schema.str_schema())
+  
+  @classmethod
+  def cast(cls, value):        
+      if not isinstance(value, cls):
+          return cls(value) # cast str to MyStr
+      return value
 
   # def __init__(self, *arg, **kwarg):
   #   _val = "??"

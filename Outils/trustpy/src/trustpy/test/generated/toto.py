@@ -16,7 +16,7 @@ from trustpy.base import *
 #     tutu = 0
 
 
-class Objet_u(Base_common, BaseModel):
+class Objet_u(BaseModel, Base_common):
     __braces:int = 1
     __description: str = r""
     __synonyms: str = []
@@ -107,16 +107,33 @@ class Nom(Objet_u):
     __braces:int = 0
     __description: str = r"Class to name the TRUST objects."
     __synonyms: str = ['nom']
-    mot: Chaine = Field(description=r"Chain of characters.", default="??")
+    mot: Chaine = Field(description=r"Chain of characters.", default="foo", validate_default=True, max_length=3)
 
 ################################################################
 
 
 if __name__ == "__main__":
-    from pydantic import ValidationError
-    c = Chaine("toto")
+    
+    # type Chaine car validate_default=True
     a = Nom()
-    print(a.mot)
-    a.mot = Chaine("rtr")
-    print(a.mot)
-    a.model_validate(a.model_dump())
+    print('a = Nom()                                ', a.mot, type(a.mot))
+
+    # type Chaine car la validation est faite à l'instantiation
+    a = Nom(mot="bar")    
+    print('a = Nom(mot="bar")                       ', a.mot, type(a.mot))
+    
+    # pas de type Chaine car pas de validation sur setter
+    a.mot = "str"
+    print('a.mot = "str"                            ', a.mot, type(a.mot))
+
+    # type Chaine car validation du modèle (penser à récupérer la sortie de validation)
+    a = a.model_validate(a.model_dump())
+    print('a = a.model_validate(a.model_dump())     ', a.mot, type(a.mot))
+
+    # exemple erreur de validation 
+    from pydantic import ValidationError
+    print('-'*16)
+    a.mot = "more than max_length"
+    try: a.model_validate(a.model_dump())
+    except ValidationError as e: print(e)
+
