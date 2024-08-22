@@ -163,13 +163,13 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   nom_pour_post+=nom_a+"_"+nom_b;
   integrale_tps_ab_->nommer(nom_pour_post);
 
-  integrale_tps_ab_.associer_domaine_dis_base(domaine);
+  integrale_tps_ab_->associer_domaine_dis_base(domaine);
   integrale_tps_ab_->fixer_nb_comp(nb_comp);
 
   // BM: le parametre de fixer_nb_valeurs_nodales est inutile,
   //  le champ sait determiner tout seul combien de ddl il a, mais
   //  il y a un test sur le parametre: il faut que la valeur soit la bonne.
-  integrale_tps_ab_.fixer_nb_valeurs_nodales(nb_valeurs_nodales);
+  integrale_tps_ab_->fixer_nb_valeurs_nodales(nb_valeurs_nodales);
 
   // On fixe les unites
   Nom unite(unites_a[0]);
@@ -186,7 +186,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
       integrale_tps_ab_->fixer_noms_compo(noms_composantes);
       integrale_tps_ab_->fixer_unites(unites);
     }
-  integrale_tps_ab_.changer_temps(Pb.schema_temps().temps_courant());
+  integrale_tps_ab_->changer_temps(Pb.schema_temps().temps_courant());
 }
 
 DoubleTab Op_Correlation::calculer_valeurs() const

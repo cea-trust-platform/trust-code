@@ -74,7 +74,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VDF::calculer_viscosite_turbulente()
         }
     }
 
-  la_viscosite_turbulente_.changer_temps(temps);
+  la_viscosite_turbulente_->changer_temps(temps);
 
   return la_viscosite_turbulente_;
 }

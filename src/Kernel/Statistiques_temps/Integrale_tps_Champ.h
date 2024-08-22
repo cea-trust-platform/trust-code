@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ inline void Integrale_tps_Champ::mettre_a_jour(double )
   mettre_a_jour_integrale();
   //Champ espace_stockage_source;
   double le_temps = mon_champ->get_time();
-  changer_temps(le_temps);
+  valeur().changer_temps(le_temps);
 }
 
 #endif

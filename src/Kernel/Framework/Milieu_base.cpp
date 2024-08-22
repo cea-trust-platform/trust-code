@@ -645,7 +645,7 @@ void Milieu_base::update_rho_cp(double temps)
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }
-  rho_cp_elem_.changer_temps(temps);
+  rho_cp_elem_->changer_temps(temps);
   rho_cp_elem_->changer_temps(temps);
   DoubleTab& rho_cp=rho_cp_elem_.valeurs();
   if (sub_type(Champ_Uniforme,rho.valeur()))
@@ -660,11 +660,11 @@ void Milieu_base::update_rho_cp(double temps)
     rho_cp*=Cp->valeurs()(0,0);
   else
     tab_multiply_any_shape(rho_cp,Cp->valeurs());
-  rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_->changer_temps(temps);
-  const MD_Vector& md_som = rho_cp_elem_.domaine_dis_base().domaine().md_vector_sommets(),
-                   &md_faces = ref_cast(Domaine_VF,rho_cp_elem_.domaine_dis_base()).md_vector_faces();
-  if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
+  rho_cp_comme_T_->changer_temps(temps);
+  const MD_Vector& md_som = rho_cp_elem_->domaine_dis_base().domaine().md_vector_sommets(),
+                   &md_faces = ref_cast(Domaine_VF,rho_cp_elem_->domaine_dis_base()).md_vector_faces();
+  if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_->valeurs().get_md_vector())
     rho_cp_comme_T_.valeurs() = rho_cp;
   else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
     Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);

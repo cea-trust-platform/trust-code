@@ -112,9 +112,9 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
  */
 Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 {
-  DoubleTab& tab_alpha_t = diffusivite_turbulente_.valeurs();
+  DoubleTab& tab_alpha_t = diffusivite_turbulente_->valeurs();
   const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeurs();
-  double temps = la_viscosite_turbulente_->temps();
+  double temps = la_viscosite_turbulente_->valeur().temps();
   const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis().valeur()).xp();
 
   int n = tab_alpha_t.size();
@@ -195,7 +195,7 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
         }
     }
 
-  diffusivite_turbulente_.changer_temps(temps);
+  diffusivite_turbulente_->changer_temps(temps);
 
   if (equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());

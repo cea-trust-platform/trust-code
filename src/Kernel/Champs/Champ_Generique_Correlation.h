@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ public:
 
   inline double temps() const override
   {
-    return Op_Correlation_.integrale().temps();
+    return Op_Correlation_.integrale()->temps();
   };
   inline const Integrale_tps_Champ& integrale() const override
   {

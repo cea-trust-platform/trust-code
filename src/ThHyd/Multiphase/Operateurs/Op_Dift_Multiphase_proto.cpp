@@ -129,7 +129,7 @@ void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_
           for (int i = 0; i < nl; i++)
             val(i, 0) = nu_ou_lambda_turb_(i, n);
 
-          nu_ou_lambda_turb_post_[n].mettre_a_jour(temps);
+          nu_ou_lambda_turb_post_[n]->mettre_a_jour(temps);
         }
 
       /*
@@ -153,7 +153,7 @@ void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_
                 val(i, 0) = nu_ou_lambda_turb_(i, n) / (rho(!cR * i, n) * cp(!cCp * i, n));
             }
 
-          mu_ou_alpha_turb_post_[n].mettre_a_jour(temps);
+          mu_ou_alpha_turb_post_[n]->mettre_a_jour(temps);
         }
     }
 }

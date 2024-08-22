@@ -153,9 +153,9 @@ void Aire_interfaciale::mettre_a_jour(double temps)
   int i, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases();
 
   const DoubleTab& alpha = probleme().get_champ("alpha").passe(), &a_i = inconnue()->passe();
-  DoubleTab& d_b = diametre_bulles_.valeurs();
+  DoubleTab& d_b = diametre_bulles_->valeurs();
 
-  diametre_bulles_.mettre_a_jour(temps);
+  diametre_bulles_->mettre_a_jour(temps);
 
   for (n = 0; n < N; n++)
     for (i = 0; i < d_b.dimension_tot(0); i++)

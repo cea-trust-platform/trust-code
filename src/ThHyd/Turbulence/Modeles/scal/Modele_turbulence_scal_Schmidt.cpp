@@ -100,7 +100,7 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
 {
   DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
   const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
-  double temps = la_viscosite_turbulente_->temps();
+  double temps = la_viscosite_turbulente_->valeur().temps();
   int n = alpha_t.size();
   if (nu_t.size() != n)
     {
@@ -111,7 +111,7 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
 
   for (int i = 0; i < n; i++)
     alpha_t[i] = nu_t[i] / LeScturb_;
-  diffusivite_turbulente_.changer_temps(temps);
+  diffusivite_turbulente_->changer_temps(temps);
   if (equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
   return diffusivite_turbulente_;

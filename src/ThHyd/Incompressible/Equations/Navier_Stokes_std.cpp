@@ -1099,11 +1099,11 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : pression", la_pression->valeurs());
   Debog::verifier("Navier_Stokes_std::mettre_a_jour : vitesse", la_vitesse->valeurs());
 
-  if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
-  if (critere_Q.non_nul()) critere_Q.mettre_a_jour(temps);
-  if (Reynolds_maille.non_nul()) Reynolds_maille.mettre_a_jour(temps);
-  if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
-  if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
+  if (la_vorticite.non_nul()) la_vorticite->mettre_a_jour(temps);
+  if (critere_Q.non_nul()) critere_Q->mettre_a_jour(temps);
+  if (Reynolds_maille.non_nul()) Reynolds_maille->mettre_a_jour(temps);
+  if (Taux_cisaillement.non_nul()) Taux_cisaillement->mettre_a_jour(temps);
+  if (grad_u.non_nul()) grad_u->mettre_a_jour(temps);
 }
 
 double Navier_Stokes_std::LocalFlowRateRelativeError() const

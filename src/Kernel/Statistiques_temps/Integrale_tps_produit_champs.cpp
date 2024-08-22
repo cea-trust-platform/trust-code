@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,7 +84,7 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
   if (support_different_)
     {
       // On ramene au centre des elements
-      const DoubleTab& xp = ref_cast(Domaine_VF,domaine_dis_base()).xp();
+      const DoubleTab& xp = ref_cast(Domaine_VF,valeur().domaine_dis_base()).xp();
       int nb_elem_tot = xp.dimension_tot(0);
       DoubleTab val_a,val_b;
       // Le jour ou les champs seront mieux foutus, on n'aura

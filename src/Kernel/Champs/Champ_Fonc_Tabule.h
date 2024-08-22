@@ -39,49 +39,49 @@ public:
 
   inline const Champ_Fonc& le_champ_tabule_discretise() const;
 
-  inline const DoubleTab& valeurs() const override { return le_champ_tabule_discretise().valeurs(); }
-  inline const Domaine_dis_base& domaine_dis_base() const override { return le_champ_tabule_discretise().domaine_dis_base(); }
+  inline const DoubleTab& valeurs() const override { return le_champ_tabule_discretise()->valeurs(); }
+  inline const Domaine_dis_base& domaine_dis_base() const override { return le_champ_tabule_discretise()->domaine_dis_base(); }
   inline const Domaine_VF& domaine_vf() const override { return le_champ_tabule_discretise()->domaine_vf(); }
   inline Champ_Fonc& le_champ_tabule_discretise() { return le_champ_tabule_dis; }
   inline const Table& table() const { return la_table; }
   inline Table& table() { return la_table; }
-  inline DoubleTab& valeurs() override { return le_champ_tabule_discretise().valeurs(); }
+  inline DoubleTab& valeurs() override { return le_champ_tabule_discretise()->valeurs(); }
 
   inline int initialiser(const double un_temps) override
   {
-    le_champ_tabule_discretise().initialiser(un_temps);
+    le_champ_tabule_discretise()->initialiser(un_temps);
     return 1;
   }
 
   inline void mettre_a_jour(double un_temps) override
   {
-    le_champ_tabule_discretise().mettre_a_jour(un_temps);
+    le_champ_tabule_discretise()->mettre_a_jour(un_temps);
     Champ_Fonc_base::mettre_a_jour(un_temps);
   }
 
   inline void associer_domaine_dis_base(const Domaine_dis_base& domaine_dis) override
   {
-    le_champ_tabule_discretise().associer_domaine_dis_base(domaine_dis);
+    le_champ_tabule_discretise()->associer_domaine_dis_base(domaine_dis);
   }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const override
   {
-    return le_champ_tabule_discretise().valeur_a_elem(position, les_valeurs, le_poly);
+    return le_champ_tabule_discretise()->valeur_a_elem(position, les_valeurs, le_poly);
   }
 
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const override
   {
-    return le_champ_tabule_discretise().valeur_aux_sommets_compo(dom, les_valeurs, compo);
+    return le_champ_tabule_discretise()->valeur_aux_sommets_compo(dom, les_valeurs, compo);
   }
 
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const override
   {
-    return le_champ_tabule_discretise().valeur_aux_elems(positions, les_polys, les_valeurs);
+    return le_champ_tabule_discretise()->valeur_aux_elems(positions, les_polys, les_valeurs);
   }
 
   inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const override
   {
-    return le_champ_tabule_discretise().valeur_aux_sommets(dom, les_valeurs);
+    return le_champ_tabule_discretise()->valeur_aux_sommets(dom, les_valeurs);
   }
 
   inline Noms& noms_champs_parametre() { return noms_champs_parametre_; };
@@ -89,7 +89,7 @@ public:
 
   inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const override
   {
-    return le_champ_tabule_discretise().valeur_a_elem_compo(position, le_poly, ncomp);
+    return le_champ_tabule_discretise()->valeur_a_elem_compo(position, le_poly, ncomp);
   }
 
   // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe

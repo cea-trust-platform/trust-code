@@ -106,7 +106,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
         }
       valeurs.echange_espace_virtuel();
       // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_u_star_ibm_);
-      champ_u_star_ibm_.mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      champ_u_star_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
       return champs_compris_.get_champ(nom);
     }
   else if (nom=="y_plus_ibm")
@@ -124,7 +124,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
         }
       valeurs.echange_espace_virtuel();
       // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_y_plus_ibm_);
-      champ_y_plus_ibm_.mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      champ_y_plus_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
       return champs_compris_.get_champ(nom);
     }
   else

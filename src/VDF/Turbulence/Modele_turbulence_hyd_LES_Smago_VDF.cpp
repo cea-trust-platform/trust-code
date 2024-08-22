@@ -61,7 +61,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
 
   Debog::verifier("Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente visco_turb 1", visco_turb);
 
-  la_viscosite_turbulente_.changer_temps(temps);
+  la_viscosite_turbulente_->changer_temps(temps);
   return la_viscosite_turbulente_;
 }
 

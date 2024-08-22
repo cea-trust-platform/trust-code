@@ -134,6 +134,6 @@ void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue()->temps();
-  energie_cinetique_turb_.changer_temps(temps);
+  energie_cinetique_turb_->changer_temps(temps);
 }
 

@@ -125,7 +125,7 @@ int Fluide_reel_base::initialiser(const double temps)
   alpha_fois_rho->initialiser(temps);
   lambda->initialiser(temps);
   beta_th->initialiser(temps);
-  rho_cp_comme_T_.initialiser(temps);
+  rho_cp_comme_T_->initialiser(temps);
 
   t_init_ = temps;
 

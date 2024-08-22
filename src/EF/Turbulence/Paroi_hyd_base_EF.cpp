@@ -83,7 +83,7 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
         }
       valeurs.echange_espace_virtuel();
       // Met a jour le temps du champ:
-      champ_u_star_.mettre_a_jour(my_eqn.schema_temps().temps_courant());
+      champ_u_star_->mettre_a_jour(my_eqn.schema_temps().temps_courant());
       return champs_compris_.get_champ(nom);
     }
   else

@@ -165,9 +165,9 @@ void QDM_Multiphase::mettre_a_jour(double temps)
           }
       }
 
-  if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
-  if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
-  if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
+  if (grad_u.non_nul()) grad_u->mettre_a_jour(temps);
+  if (la_vorticite.non_nul()) la_vorticite->mettre_a_jour(temps);
+  if (Taux_cisaillement.non_nul()) Taux_cisaillement->mettre_a_jour(temps);
 
   const bool is_poly = discretisation().is_polymac_family();
   for (n = 0; n < N; n++)
@@ -175,7 +175,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
       {
         if (is_poly)
           {
-            DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n].valeurs());
+            DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n]->valeurs());
             for (i = 0; i < psrc.size(); i++)
               for (j = 0; j < pdst.size(); j++)
                 {
@@ -196,7 +196,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
                 for (j = 0; j < D; j++)
                   grad_vit_phases_[n].valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;
           }
-        grad_vit_phases_[n].mettre_a_jour(temps);
+        grad_vit_phases_[n]->mettre_a_jour(temps);
       }
   if (gradient_P.non_nul())
     {

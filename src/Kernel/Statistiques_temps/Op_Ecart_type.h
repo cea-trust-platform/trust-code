@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@ class Op_Ecart_type : public Operateur_Statistique_tps_base
   Declare_instanciable(Op_Ecart_type);
 public:
   inline const Nom& le_nom() const override { return integrale_carre_champ.le_nom(); }
-  inline double temps() const override { return integrale_carre_champ.temps(); }
+  inline double temps() const override { return integrale_carre_champ->temps(); }
   inline const Integrale_tps_Champ& integrale() const override { return integrale_carre_champ; }
   inline const Op_Moyenne& moyenne() const { return la_moyenne.valeur(); }
   inline DoubleTab& valeurs() { return integrale_champ->valeurs(); }
@@ -90,18 +90,18 @@ inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis,const Champ
     type = type_le_champ;
 
   integrale_carre_champ.typer(type);
-  integrale_carre_champ.associer_domaine_dis_base(une_zdis);
+  integrale_carre_champ->associer_domaine_dis_base(une_zdis);
   integrale_carre_champ.associer(le_champ,2,t1,t2);
 }
 
 inline int Op_Ecart_type::sauvegarder(Sortie& os) const
 {
-  return integrale_carre_champ.sauvegarder(os);
+  return integrale_carre_champ->sauvegarder(os);
 }
 
 inline int Op_Ecart_type::reprendre(Entree& is)
 {
-  return integrale_carre_champ.reprendre(is);
+  return integrale_carre_champ->reprendre(is);
 }
 
 inline void Op_Ecart_type::fixer_tstat_deb(double tdeb,double tps)

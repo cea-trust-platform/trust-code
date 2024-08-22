@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ void Marqueur_Lagrange_base::discretiser(const Probleme_base& pb, const  Discret
 void Marqueur_Lagrange_base::mettre_a_jour(double temps)
 {
   calculer_valeurs_champs();
-  densite_particules_.changer_temps(temps);
+  densite_particules_->changer_temps(temps);
 }
 
 void Marqueur_Lagrange_base::creer_champ(const Motcle& motlu)

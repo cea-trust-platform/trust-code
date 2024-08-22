@@ -25,11 +25,11 @@ class Op_Moyenne: public Operateur_Statistique_tps_base
   Declare_instanciable(Op_Moyenne);
 public:
   inline const Nom& le_nom() const override { return integrale_champ.le_nom(); }
-  inline double temps() const override { return integrale_champ.temps(); }
+  inline double temps() const override { return integrale_champ->temps(); }
   inline Champ_Don& moyenne_convergee() { return ch_moyenne_convergee_; }
   inline const Integrale_tps_Champ& integrale() const override { return integrale_champ; }
-  inline const DoubleTab& valeurs() const { return integrale_champ.valeurs(); }
-  inline DoubleTab& valeurs() { return integrale_champ.valeurs(); }
+  inline const DoubleTab& valeurs() const { return integrale_champ->valeurs(); }
+  inline DoubleTab& valeurs() { return integrale_champ->valeurs(); }
   inline double dt_integration() const { return integrale_champ.dt_integration(); }
 
   inline void mettre_a_jour(double temps) override;
@@ -84,18 +84,18 @@ inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_G
     type = type_le_champ;
 
   integrale_champ.typer(type);
-  integrale_champ.associer_domaine_dis_base(une_zdis);
+  integrale_champ->associer_domaine_dis_base(une_zdis);
   integrale_champ.associer(le_champ,1,t1,t2);
 }
 
 inline int Op_Moyenne::sauvegarder(Sortie& os) const
 {
-  return integrale_champ.sauvegarder(os);
+  return integrale_champ->sauvegarder(os);
 }
 
 inline int Op_Moyenne::reprendre(Entree& is)
 {
-  return integrale_champ.reprendre(is);
+  return integrale_champ->reprendre(is);
 }
 
 inline void Op_Moyenne::fixer_tstat_deb(double tdeb, double tps)

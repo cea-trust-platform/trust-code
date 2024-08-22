@@ -239,7 +239,7 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }
-  rho_cp_comme_T_.changer_temps(temps);
+  rho_cp_comme_T_->changer_temps(temps);
   rho_cp_comme_T_->changer_temps(temps);
   DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
   if (sub_type(Champ_Uniforme,rho))

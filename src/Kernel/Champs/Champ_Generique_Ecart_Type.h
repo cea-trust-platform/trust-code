@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,10 +44,10 @@ class Champ_Generique_Ecart_Type : public Champ_Generique_Statistiques_base
 public:
   const Noms get_property(const Motcle& query) const override;
 
-  inline double temps() const override { return Op_Ecart_Type_.integrale().temps(); }
+  inline double temps() const override { return Op_Ecart_Type_.integrale()->temps(); }
   inline const Integrale_tps_Champ& integrale() const override { return Op_Ecart_Type_.integrale(); }
   inline const DoubleTab& valeurs() const { return Op_Ecart_Type_.moyenne().integrale()->valeurs(); }
-  inline const DoubleTab& valeurs_carre() const { return Op_Ecart_Type_.integrale().valeurs(); }
+  inline const DoubleTab& valeurs_carre() const { return Op_Ecart_Type_.integrale()->valeurs(); }
   inline double dt_integration() const { return Op_Ecart_Type_.moyenne().dt_integration(); }
   inline double dt_integration_carre() const { return Op_Ecart_Type_.dt_integration_carre(); }
   inline Operateur_Statistique_tps_base& Operateur_Statistique() override { return Op_Ecart_Type_; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ class Op_Correlation : public Operateur_Statistique_tps_base
   Declare_instanciable(Op_Correlation);
 public:
   inline const Nom& le_nom() const override { return integrale_tps_ab_.le_nom(); }
-  inline double temps() const override { return integrale_tps_ab_.temps(); }
+  inline double temps() const override { return integrale_tps_ab_->temps(); }
   inline const Integrale_tps_produit_champs& integrale() const override { return integrale_tps_ab_; }
   inline const Op_Moyenne& la_moyenne_a() const { return la_moyenne_a_.valeur(); }
   inline const Op_Moyenne& la_moyenne_b() const { return la_moyenne_b_.valeur(); }
@@ -116,18 +116,18 @@ inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Cha
     type = type_le_champ;
 
   integrale_tps_ab_.typer(type);
-  integrale_tps_ab_.associer_domaine_dis_base(une_zdis);
+  integrale_tps_ab_->associer_domaine_dis_base(une_zdis);
   integrale_tps_ab_.associer(le_champ_a,le_champ_b,1,1,t1,t2);
 }
 
 inline int Op_Correlation::sauvegarder(Sortie& os) const
 {
-  return integrale_tps_ab_.sauvegarder(os);
+  return integrale_tps_ab_->sauvegarder(os);
 }
 
 inline int Op_Correlation::reprendre(Entree& is)
 {
-  return integrale_tps_ab_.reprendre(is);
+  return integrale_tps_ab_->reprendre(is);
 }
 
 inline void Op_Correlation::fixer_tstat_deb(double tdeb,double tps)

@@ -76,7 +76,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue()->temps();
-  la_viscosite_turbulente_.changer_temps(temps);
+  la_viscosite_turbulente_->changer_temps(temps);
   return la_viscosite_turbulente_;
 }
 

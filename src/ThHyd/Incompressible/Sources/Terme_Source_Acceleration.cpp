@@ -394,7 +394,7 @@ void Terme_Source_Acceleration::mettre_a_jour(double temps)
       domegadt_->mettre_a_jour(temps);
       centre_rotation_->mettre_a_jour(temps);
     }
-  get_set_terme_source_post().mettre_a_jour(temps);
+  get_set_terme_source_post()->mettre_a_jour(temps);
 }
 
 /*! @brief Methode surchargee de Source_base.
