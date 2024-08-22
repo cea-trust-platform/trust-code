@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Equation_base.h>
 #include <MorEqn.h>
 #include <Motcle.h>
-#include <Equation_base.h>
 
 // XD mor_eqn objet_u mor_eqn -1 Class of equation pieces (morceaux d\'equation).
 /*! @brief Associe une equation a l'objet.

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 
 #include <TRUST_Ref.h>
 #include <Motcle.h>
+#include <Champ.h>
 
 class Equation_base;
-class Champ;
 
 /*! @brief classe MorEqn Classe qui regroupe les fonctionnalites de liaison avec une
  *

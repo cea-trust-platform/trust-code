@@ -19,18 +19,6 @@
 #include <TRUST_Deriv.h>
 #include <Champ_base.h>
 
-/*! @brief class Champ Cette classe sert a representer n'importe quelle classe derivee de la classe Champ_base
- *
- */
-class Champ : public DERIV(Champ_base)
-{
-  Declare_instanciable(Champ);
-public :
-  inline const Champ_base& operator=(const Champ_base& ch)
-  {
-    DERIV(Champ_base)::operator=(ch);
-    return this->valeur();
-  }
-};
+using Champ = OWN_PTR(Champ_base);
 
 #endif /* Champ_included */
