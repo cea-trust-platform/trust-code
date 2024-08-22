@@ -172,7 +172,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   exit();
   const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
   const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();        //passe
-  const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
+  const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();    //actuel
 
 
   Cerr<<"---EDO : Tnp1="<<tempnp1(0)<<" Tn="<<tempn(0)<<finl;
@@ -282,7 +282,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   const DoubleTab& tab_vit_CN = le_fluide_->vitesse().valeurs();
   const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
   const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();        //passe
-  const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
+  const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();    //actuel
   const Loi_Etat_GP_QC& loi_ = ref_cast(Loi_Etat_GP_QC,le_fluide_->loi_etat().valeur());
 
 

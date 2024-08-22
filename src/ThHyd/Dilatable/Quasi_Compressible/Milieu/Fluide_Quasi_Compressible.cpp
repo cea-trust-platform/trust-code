@@ -115,7 +115,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       is>>Pth_;
       Pth_n = Pth_;
       rho.typer("Champ_Uniforme");
-      DoubleTab& tab_rho=rho.valeurs();
+      DoubleTab& tab_rho=rho->valeurs();
       tab_rho.resize(1,1);
       tab_rho(0,0) = 1.;
       return 1;
@@ -217,7 +217,7 @@ void Fluide_Quasi_Compressible::prepare_pressure_edo()
 void Fluide_Quasi_Compressible::write_mean_edo(double temps)
 {
   double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeur().valeurs());
-  double rhom = eos_tools_->moyenne_vol(rho.valeurs());
+  double rhom = eos_tools_->moyenne_vol(rho->valeurs());
 
   if(je_suis_maitre() && traitement_PTh != 2)
     {

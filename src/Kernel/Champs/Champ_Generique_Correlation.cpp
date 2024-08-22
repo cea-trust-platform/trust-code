@@ -100,7 +100,7 @@ const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage)
   Champ_Fonc es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
-  DoubleTab& tab_correlation = espace_stockage.valeurs();
+  DoubleTab& tab_correlation = espace_stockage->valeurs();
   tab_correlation = Op_Correlation_.calculer_valeurs();
   tab_correlation.echange_espace_virtuel();
   return espace_stockage.valeur();

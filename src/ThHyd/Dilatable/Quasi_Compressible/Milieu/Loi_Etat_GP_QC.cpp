@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ Entree& Loi_Etat_GP_QC::readOn(Entree& is)
 
 double Loi_Etat_GP_QC::calculer_masse_volumique(double P, double T) const
 {
-  return rho_constant_pour_debug_.non_nul() ? rho_constant_pour_debug_(0,0) :
+  return rho_constant_pour_debug_.non_nul() ? rho_constant_pour_debug_->valeurs()(0,0) :
          Loi_Etat_Mono_GP_base::calculer_masse_volumique(P,T);
 }
 

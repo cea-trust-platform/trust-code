@@ -952,7 +952,7 @@ int Navier_Stokes_std::preparer_calcul()
       else
         {
           Cerr<<"Assembling for quasi-compressible"<<finl;
-          assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(),matrice_pression_);
+          assembleur_pression_->assembler_QC(fluide().masse_volumique()->valeurs(),matrice_pression_);
         }
     }
 

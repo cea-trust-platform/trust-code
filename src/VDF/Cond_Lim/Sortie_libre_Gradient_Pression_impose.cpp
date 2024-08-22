@@ -123,7 +123,7 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
   else
     {
       //quasi compressible
-      const DoubleTab& tab_rho = mil.masse_volumique().valeurs();
+      const DoubleTab& tab_rho = mil.masse_volumique()->valeurs();
       int elem = le_dom_VDF->face_voisins(face, 0);
       if (elem == -1)
         elem = le_dom_VDF->face_voisins(face, 1);

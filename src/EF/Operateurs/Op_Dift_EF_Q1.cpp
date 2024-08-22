@@ -961,7 +961,7 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
   DoubleTab diffu(nu_);
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
+      double rhocp = mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique()->valeurs()(0, 0);
       diffu_turb /= rhocp;
       diffu /= rhocp;
     }

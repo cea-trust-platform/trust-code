@@ -130,7 +130,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   // On divise derivee par rho si espece ou gaz reel... sinon par rho*Cp !
   bool flag = is_thermal() && fluide_dil.type_fluide()=="Gaz_Parfait";
   if (flag) fluide_dil.update_rho_cp(sch.temps_courant());
-  const DoubleTab& array = flag ? eqn.get_champ("rho_cp_comme_T").valeurs() : fluide_dil.masse_volumique().valeurs();
+  const DoubleTab& array = flag ? eqn.get_champ("rho_cp_comme_T").valeurs() : fluide_dil.masse_volumique()->valeurs();
   tab_divide_any_shape(derivee, array);
   derivee.echange_espace_virtuel();
 
@@ -156,7 +156,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   // Divide by rho if necessary
   if (is_generic())
     {
-      const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
+      const DoubleTab& tab_rho = fluide_dil.masse_volumique()->valeurs();
       tab_divide_any_shape(convection, tab_rho);
     }
 
@@ -215,7 +215,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
   }
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();
-  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
+  const DoubleTab& tab_rho = fluide_dil.masse_volumique()->valeurs();
   const int n = tab_rho.dimension(0);
 
   // ajout diffusion (avec rho, D et Y / ou lambda et T)
@@ -322,7 +322,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();
-  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
+  const DoubleTab& tab_rho = fluide_dil.masse_volumique()->valeurs();
   const int n = tab_rho.dimension(0);
 
   Matrice_Morse mat_diff(*mat);

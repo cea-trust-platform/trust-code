@@ -120,11 +120,11 @@ const Champ_base& Champ_Generique_Gradient::get_champ(Champ& espace_stockage) co
       Champ_Fonc es_tmp;
       espace_stockage = creer_espace_stockage(vectoriel,dimension,es_tmp);
 
-      Op_Grad_.calculer(source.valeurs(),espace_stockage.valeurs());
+      Op_Grad_.calculer(source.valeurs(),espace_stockage->valeurs());
 
       Nom type_op = Op_Grad_->que_suis_je();
       if ((type_op!="Op_Grad_P1NC_to_P0") && (type_op!="Op_Grad_P0_to_Face"))
-        Op_Grad_.equation().solv_masse()->appliquer(espace_stockage.valeurs());
+        Op_Grad_.equation().solv_masse()->appliquer(espace_stockage->valeurs());
     }
   else
     {

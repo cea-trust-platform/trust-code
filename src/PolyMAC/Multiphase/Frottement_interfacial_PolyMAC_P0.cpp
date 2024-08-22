@@ -53,7 +53,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
                    &alpha = pbm.equation_masse().inconnue()->passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression()->passe(),
                      &temp = pbm.equation_energie().inconnue()->passe(),
-                      &rho   = equation().milieu().masse_volumique().passe(),
+                      &rho   = equation().milieu().masse_volumique()->passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 

@@ -203,7 +203,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
   // On commence par construire le champ vectoriel complet
   Champ espace_stockage_complet;
   espace_stockage_complet = get_champ_without_evaluation(espace_stockage_complet);
-  DoubleTab& es = (espace_stockage_complet.valeurs());
+  DoubleTab& es = (espace_stockage_complet->valeurs());
 
   //if (ref_eq_->schema_temps().temps_courant()!=0)
   {
@@ -235,7 +235,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
       // on prepare l'espace de stockage pour une composante
       Champ espace_stockage_compo;
       espace_stockage_compo = get_champ_compo_without_evaluation(espace_stockage_compo);
-      DoubleTab& es_compo = (espace_stockage_compo.valeurs());
+      DoubleTab& es_compo = (espace_stockage_compo->valeurs());
       int nb_pos = es.dimension(0);
       for (int i=0; i<nb_pos; i++)
         {

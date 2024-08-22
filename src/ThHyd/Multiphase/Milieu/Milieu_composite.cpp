@@ -394,8 +394,8 @@ void Milieu_composite::mettre_a_jour_tabs()
   DoubleTab& trm = rho_m_->valeurs(), &thm = h_m_->valeurs();
   trm = 0, thm = 0;
 
-  const DoubleTab& a = equation("alpha").inconnue()->valeurs(), &r = rho.valeurs(),
-                   &ent = res_en_T_ ? h_ou_T.valeurs() : equation("enthalpie").inconnue()->valeurs();
+  const DoubleTab& a = equation("alpha").inconnue()->valeurs(), &r = rho->valeurs(),
+                   &ent = res_en_T_ ? h_ou_T->valeurs() : equation("enthalpie").inconnue()->valeurs();
 
   const int Nl = rho_m_->valeurs().dimension_tot(0);
 
@@ -429,7 +429,7 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   const Domaine_VF& zvf = ref_cast(Domaine_VF, mil.equation_.begin()->second->domaine_dis().valeur());
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides_.size();
   std::vector<const DoubleTab *> split(N);
-  for (n = 0; n < N; n++) split[n] = &mil.fluides_[n]->masse_volumique().valeurs();
+  for (n = 0; n < N; n++) split[n] = &mil.fluides_[n]->masse_volumique()->valeurs();
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 

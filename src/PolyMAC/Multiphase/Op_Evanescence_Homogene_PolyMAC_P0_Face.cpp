@@ -61,7 +61,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue()->passe(),
-                   &rho = equation().milieu().masse_volumique().passe(),
+                   &rho = equation().milieu().masse_volumique()->passe(),
                     &temp_ou_enth  = pbm.equation_energie().inconnue()->passe(),
                      &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique()->passe(),

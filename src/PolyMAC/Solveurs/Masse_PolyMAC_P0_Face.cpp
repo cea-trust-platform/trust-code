@@ -107,7 +107,7 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &fs = domaine.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
-  const DoubleTab& nf = domaine.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
+  const DoubleTab& nf = domaine.face_normales(), &rho = equation().milieu().masse_volumique()->passe(),
                    *alpha = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = domaine.volumes_entrelaces_dir();
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   int i, e, f, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;

@@ -548,9 +548,9 @@ void Milieu_base::calculer_alpha()
 
       // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
       if (sub_type(Champ_Uniforme,rho.valeur()))
-        tabalpha /= rho.valeurs()(0,0);
+        tabalpha /= rho->valeurs()(0,0);
       else
-        tab_divide_any_shape(tabalpha,rho.valeurs());
+        tab_divide_any_shape(tabalpha,rho->valeurs());
 
       if (sub_type(Champ_Uniforme,Cp.valeur()))
         {
@@ -649,12 +649,12 @@ void Milieu_base::update_rho_cp(double temps)
   rho_cp_elem_->changer_temps(temps);
   DoubleTab& rho_cp=rho_cp_elem_.valeurs();
   if (sub_type(Champ_Uniforme,rho.valeur()))
-    rho_cp=rho.valeurs()(0,0);
+    rho_cp=rho->valeurs()(0,0);
   else
     {
-      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
+      // AB: rho_cp = rho->valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
       rho_cp = 1.;
-      tab_multiply_any_shape(rho_cp, rho.valeurs());
+      tab_multiply_any_shape(rho_cp, rho->valeurs());
     }
   if (sub_type(Champ_Uniforme,Cp.valeur()))
     rho_cp*=Cp->valeurs()(0,0);

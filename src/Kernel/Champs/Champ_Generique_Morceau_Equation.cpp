@@ -169,7 +169,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
 
   espace_stockage = creer_espace_stockage(nature,nb_comp,es_tmp);
   morceau().calculer_pour_post(espace_stockage,option_,compo_);
-  DoubleTab& es_val = espace_stockage.valeurs();
+  DoubleTab& es_val = espace_stockage->valeurs();
   es_val.echange_espace_virtuel();
   return espace_stockage.valeur();
 }

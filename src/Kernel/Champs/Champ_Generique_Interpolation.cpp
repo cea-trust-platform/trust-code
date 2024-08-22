@@ -276,10 +276,10 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   int decal=10;
   if (optimisation_sous_maillage_==-1)
     {
-      espace_stockage.valeurs()=0;
+      espace_stockage->valeurs()=0;
       // premier appel avec maillage different (ou on a force) , on essaye de voir si on peut optimiser
       // on champ la source on y met val(i)=i, pour recuperer le numero de la maille apres
-      DoubleTab& val=source_bis.valeurs();
+      DoubleTab& val=source_bis->valeurs();
 
       int dim0 = val.dimension_tot(0);
       for (int i=0; i<dim0; i++)
@@ -353,7 +353,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       // PL: mise a jour de l'espace virtuel de la source:
       Champ copie_source;
       copie_source = source;
-      copie_source.valeurs().echange_espace_virtuel();
+      copie_source->valeurs().echange_espace_virtuel();
       if (ncomp==-1)
         {
           DoubleTrav val_temp;
@@ -431,8 +431,8 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           get_champ_with_calculer_champ_post(espace_stockage_test);
           ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
           get_champ_with_calculer_champ_post(espace_stockage);
-          espace_stockage_test.valeurs()-=espace_stockage.valeurs();
-          double dmax= mp_max_abs_vect(espace_stockage_test.valeurs());
+          espace_stockage_test->valeurs()-=espace_stockage->valeurs();
+          double dmax= mp_max_abs_vect(espace_stockage_test->valeurs());
           if (dmax > 1e-7)
             {
               Cerr<<nom_champ[0]<<" optimisation ko "<< dmax<<finl;
@@ -462,7 +462,7 @@ const DoubleTab& Champ_Generique_Interpolation::get_ref_values() const
 {
   Champ champ_a_ecrire;
   get_champ(champ_a_ecrire);
-  return champ_a_ecrire.valeurs();
+  return champ_a_ecrire->valeurs();
 }
 
 void Champ_Generique_Interpolation::get_copy_values(DoubleTab& values) const

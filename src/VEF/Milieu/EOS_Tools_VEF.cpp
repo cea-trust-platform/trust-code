@@ -63,7 +63,7 @@ void  EOS_Tools_VEF::associer_domaines(const Domaine_dis& domaine, const Domaine
  */
 const DoubleTab& EOS_Tools_VEF::rho_discvit() const
 {
-  return le_fluide_->masse_volumique().valeurs();
+  return le_fluide_->masse_volumique()->valeurs();
 }
 
 const DoubleTab& EOS_Tools_VEF::rho_face_n() const

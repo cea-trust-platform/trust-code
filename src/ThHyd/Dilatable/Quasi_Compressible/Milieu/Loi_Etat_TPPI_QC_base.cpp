@@ -70,7 +70,7 @@ void Loi_Etat_TPPI_QC_base::calculer_Cp()
   /* Step 4 : Alpha */
   Champ_Don& alpha = le_fluide->diffusivite();
   DoubleTab& tab_alpha = alpha->valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
 
   const bool isVDF = (alpha->que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
 
@@ -97,7 +97,7 @@ void Loi_Etat_TPPI_QC_base::calculer_masse_volumique()
 {
   if (!vec_press_filled_) init_vec_press();
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   SpanD temp_span = tab_ICh.get_span(),  p_span = SpanD(vec_press_), rho_span = tab_rho_np1.get_span();
   TPPI_->tppi_get_rho_pT(p_span, temp_span, rho_span);
 

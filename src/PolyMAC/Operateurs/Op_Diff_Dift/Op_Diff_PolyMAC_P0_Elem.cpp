@@ -647,7 +647,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                                               &vit = pbm.equation_qdm().inconnue()->passe(),
                                                &lambda = pbm.milieu().conductivite()->passe(),
                                                 &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique()->passe(),
-                                                 &rho = pbm.milieu().masse_volumique().passe(),
+                                                 &rho = pbm.milieu().masse_volumique()->passe(),
                                                   &Cp = pbm.milieu().capacite_calorifique()->passe();
 
                             Flux_parietal_base::input_t in;

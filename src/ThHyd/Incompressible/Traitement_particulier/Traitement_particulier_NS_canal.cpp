@@ -786,7 +786,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
           if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
             {
-              rho = fluide.masse_volumique().valeurs()(0,0);
+              rho = fluide.masse_volumique()->valeurs()(0,0);
             }
           if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
             {
@@ -820,7 +820,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                           if (elem == -1)
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                            rho += fluide.masse_volumique().valeurs()[elem];
+                            rho += fluide.masse_volumique()->valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                             mu += fluide.viscosite_dynamique()->valeurs()[elem];
                         }
@@ -836,7 +836,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                           if (elem == -1)
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                            rho += fluide.masse_volumique().valeurs()[elem];
+                            rho += fluide.masse_volumique()->valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                             mu += fluide.viscosite_dynamique()->valeurs()[elem];
                         }
@@ -909,7 +909,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
           if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
             {
-              rho = fluide.masse_volumique().valeurs()(0,0);
+              rho = fluide.masse_volumique()->valeurs()(0,0);
             }
           if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
             {
@@ -943,7 +943,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                           if (elem == -1)
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                            rho+=fluide.masse_volumique().valeurs()[elem];
+                            rho+=fluide.masse_volumique()->valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                             mu+=fluide.viscosite_dynamique()->valeurs()[elem];
                         }
@@ -959,7 +959,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                           if (elem == -1)
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                            rho+=fluide.masse_volumique().valeurs()[elem];
+                            rho+=fluide.masse_volumique()->valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
                             mu+=fluide.viscosite_dynamique()->valeurs()[elem];
                         }

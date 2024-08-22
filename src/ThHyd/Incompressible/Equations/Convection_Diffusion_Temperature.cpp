@@ -407,7 +407,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
 
 double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  return domaine_dis()->nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
+  return domaine_dis()->nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
 }
 
 // ajoute les contributions des operateurs et des sources
@@ -1121,7 +1121,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
       const DoubleVect& vol_maille = domaine_vf.volumes();
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
-      const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
+      const DoubleTab& tab_rho = fluide_inc.masse_volumique()->valeurs();
       const double rho = tab_rho(0,0);
       const DoubleTab& tab_cp = fluide_inc.capacite_calorifique()->valeurs();
       const double cp = tab_cp(0,0);

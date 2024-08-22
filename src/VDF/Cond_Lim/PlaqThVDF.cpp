@@ -45,7 +45,7 @@ void PlaqThVDF::mettre_a_jour(double )
   const Front_VF& front= ref_cast(Front_VF,frontiere_dis());
 
   const Milieu_base& le_milieu=eqn.probleme().milieu();
-  h/=(le_milieu.masse_volumique()(0,0)*le_milieu.capacite_calorifique()->valeurs()(0,0));
+  h/=(le_milieu.masse_volumique()->valeurs()(0,0)*le_milieu.capacite_calorifique()->valeurs()(0,0));
 
   // Calcul de himp :
   const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);

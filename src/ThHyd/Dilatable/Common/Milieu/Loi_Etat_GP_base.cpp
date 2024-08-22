@@ -62,7 +62,7 @@ void Loi_Etat_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
 void Loi_Etat_GP_base::initialiser()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur()->valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   int ntot=tab_Temp.size_totale();
   tab_rho_n=tab_Temp;
   for (int i=0 ; i<ntot ; i++)
@@ -144,7 +144,7 @@ void Loi_Etat_GP_base::calculer_alpha()
   const DoubleTab& tab_lambda = champ_lambda->valeurs();
   Champ_Don& champ_alpha = le_fluide->diffusivite();
   DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
 
   int isVDF=0;
   if (champ_alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;

@@ -207,7 +207,7 @@ void Fluide_Weakly_Compressible::initialiser_pth()
 {
   Cerr<<"Initializing the thermo-dynamic pressure ..." << finl;
   // Pth_tab_ doit avoir meme dimensions que rho (elem en VDF et faces en VEF)
-  Pth_tab_ = masse_volumique().valeurs();
+  Pth_tab_ = masse_volumique()->valeurs();
   const int n = Pth_tab_.dimension_tot(0);
   for (int i=0; i<n; i++) Pth_tab_(i) = Pth_;
   Pth_n_tab_ = Pth_tab_;

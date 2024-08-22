@@ -81,7 +81,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
   lambda_t = diffusivite_turbulente_.valeurs();
   const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
   const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique()->valeurs();
-  const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique().valeurs();
+  const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique()->valeurs();
   if (sub_type(Pb_Thermohydraulique_Turbulent_QC, mon_pb))
     {
       CDoubleArrView Cp = static_cast<const DoubleVect&>(tab_Cp).view_ro();

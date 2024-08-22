@@ -160,7 +160,7 @@ void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 void Loi_Etat_Multi_GP_WC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   Champ_Don& Yn = FWC.fraction_massique_nonresolue();

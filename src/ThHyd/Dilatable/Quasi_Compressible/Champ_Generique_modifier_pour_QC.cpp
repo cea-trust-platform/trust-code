@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ const Champ_base& Champ_Generique_modifier_pour_QC::get_champ(Champ& espace_stoc
   Champ_Fonc es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
-  DoubleTab& val = espace_stockage.valeurs();
+  DoubleTab& val = espace_stockage->valeurs();
   val = source.valeurs();
   const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,mon_milieu_.valeur());
   multiplier_diviser_rho(val,fluide,diviser_);

@@ -244,7 +244,7 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
   if(pb.is_dilatable())
     {
       const Fluide_Dilatable_base& le_fluide = ref_cast(Fluide_Dilatable_base,eq_hydraulique().milieu());
-      const DoubleTab& tab_rho_elem = le_fluide.masse_volumique().valeurs();
+      const DoubleTab& tab_rho_elem = le_fluide.masse_volumique()->valeurs();
       double rhoelem;
       for (num_elem=0; num_elem <nb_elems; num_elem++)
         {

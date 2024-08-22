@@ -54,7 +54,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
   const DoubleTab& tab_hnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
   const DoubleTab& tab_hn = le_fluide_->inco_chaleur()->passe();        //passe
-  const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
+  const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();    //actuel
   const OWN_PTR(Loi_Etat_base)& loi_ = le_fluide_->loi_etat();
   //const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 

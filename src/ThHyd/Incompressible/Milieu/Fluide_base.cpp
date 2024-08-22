@@ -158,7 +158,7 @@ void Fluide_base::verifier_coherence_champs(int& err, Nom& msg)
   msg = "";
   if (rho.non_nul())
     {
-      if (mp_min_vect(rho.valeurs()) <= 0)
+      if (mp_min_vect(rho->valeurs()) <= 0)
         {
           msg += "The density rho is not striclty positive. \n";
           err = 1;
@@ -254,14 +254,14 @@ void Fluide_base::creer_nu()
   assert(rho.non_nul());
   nu = mu;
   if (sub_type(Champ_Uniforme, mu.valeur()) && !sub_type(Champ_Uniforme, rho.valeur()))
-    nu->valeurs().resize(rho.valeurs().dimension_tot(0), rho.valeurs().line_size());
+    nu->valeurs().resize(rho->valeurs().dimension_tot(0), rho->valeurs().line_size());
   nu->nommer("nu");
 }
 
 void Fluide_base::calculer_nu()
 {
   const DoubleTab& tabmu = mu->valeurs();
-  const DoubleTab& tabrho = rho.valeurs();
+  const DoubleTab& tabrho = rho->valeurs();
   DoubleTab& tabnu = nu->valeurs();
 
   int cRho = sub_type(Champ_Uniforme, rho.valeur()), cMu = sub_type(Champ_Uniforme, mu.valeur()), i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();

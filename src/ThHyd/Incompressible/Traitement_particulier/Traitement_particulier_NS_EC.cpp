@@ -316,7 +316,7 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
     }
   else
     {
-      rho = mon_equation->milieu().masse_volumique().valeurs();
+      rho = mon_equation->milieu().masse_volumique()->valeurs();
     }
   const int nb_front = domaine_VF.nb_front_Cl();
   const ArrOfInt& faces_doubles = domaine_VF.faces_doubles();

@@ -66,7 +66,7 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
   if (traitPth == 0)   // EDO
     {
 
-      const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();       // n+1/2
+      const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();       // n+1/2
 
       const double rho_moy = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tab_rho, FAUX_EN_PERIO);
       DoubleVect tmp(tab_rho); // copie de rho

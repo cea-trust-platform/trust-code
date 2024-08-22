@@ -235,7 +235,7 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(rho.valeurs(), "rho");
+      mapToDevice(rho->valeurs(), "rho");
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }
@@ -243,12 +243,12 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
   rho_cp_comme_T_->changer_temps(temps);
   DoubleTab& rho_cp = rho_cp_comme_T_.valeurs();
   if (sub_type(Champ_Uniforme,rho))
-    rho_cp = rho.valeurs()(0, 0);
+    rho_cp = rho->valeurs()(0, 0);
   else
     {
-      // AB: rho_cp = rho.valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
+      // AB: rho_cp = rho->valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
       rho_cp = 1.;
-      tab_multiply_any_shape(rho_cp, rho.valeurs());
+      tab_multiply_any_shape(rho_cp, rho->valeurs());
     }
   if (sub_type(Champ_Uniforme, Cp.valeur()))
     rho_cp *= Cp->valeurs()(0, 0);
@@ -369,7 +369,7 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(rho.valeurs(), "rho");
+      mapToDevice(rho->valeurs(), "rho");
       mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
     }

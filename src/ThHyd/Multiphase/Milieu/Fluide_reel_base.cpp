@@ -167,7 +167,7 @@ void Fluide_reel_base::mettre_a_jour(double t)
   DoubleTab& tab_Cp = Cp->valeurs(), &tab_mu = mu->valeurs(), &tab_lambda = lambda->valeurs(), &tab_alpha_fois_rho = alpha_fois_rho->valeurs(),
              &tab_nu = nu->valeurs(), &tab_alpha = alpha->valeurs(), &tab_beta = beta_th->valeurs(), &tab_rCp = rho_cp_comme_T_->valeurs();
 
-  const DoubleTab& tab_rho = masse_volumique().valeurs();
+  const DoubleTab& tab_rho = masse_volumique()->valeurs();
 
   int Ni = mu->valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
@@ -220,7 +220,7 @@ int Fluide_reel_base::check_unknown_range() const
 {
   if (is_incompressible()) return 1;
 
-  int ok = 1, zero = 0, nl = e_int.valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC_P0P1NC)
+  int ok = 1, zero = 0, nl = e_int->valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC_P0P1NC)
   for (auto &&i_r : res_en_T_ ? unknown_range() : unknown_range_h())
     {
       const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression()->valeurs() : equation(i_r.first).inconnue()->valeurs();

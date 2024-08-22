@@ -76,7 +76,7 @@ Champ_Don& Loi_Etat_base::ch_temperature()
  */
 void Loi_Etat_base::initialiser_inco_ch()
 {
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   tab_rho_n=tab_rho;
   tab_rho_np1=tab_rho;
   calculer_masse_volumique();
@@ -104,7 +104,7 @@ void Loi_Etat_base::preparer_calcul()
 void Loi_Etat_base::mettre_a_jour(double temps)
 {
   //remplissage de rho avec rho(n+1)
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   tab_rho_n = tab_rho_np1;
   tab_rho = tab_rho_np1;
   le_fluide->masse_volumique()->mettre_a_jour(temps);
@@ -164,7 +164,7 @@ void Loi_Etat_base::calculer_nu()
 {
   const Champ_Don& viscosite_dynamique = le_fluide->viscosite_dynamique();
   bool uniforme = sub_type(Champ_Uniforme,viscosite_dynamique.valeur());
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   const DoubleTab& tab_mu = viscosite_dynamique->valeurs();
   Champ_Don& viscosite_cinematique = le_fluide->viscosite_cinematique();
   DoubleTab& tab_nu = viscosite_cinematique->valeurs();
@@ -209,7 +209,7 @@ void Loi_Etat_base::calculer_alpha()
   int n = tab_alpha.size();
   CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite->valeurs()).view_ro();
   CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique()->valeurs()).view_ro();
-  CDoubleArrView rho = static_cast<const DoubleVect&>(le_fluide->masse_volumique().valeurs()).view_ro();
+  CDoubleArrView rho = static_cast<const DoubleVect&>(le_fluide->masse_volumique()->valeurs()).view_ro();
   DoubleArrView alpha = static_cast<DoubleVect&>(tab_alpha).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
   {
@@ -243,7 +243,7 @@ void Loi_Etat_base::calculer_nu_sur_Sc()
 void Loi_Etat_base::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
   ToDo_Kokkos("critical, not easy cause virtual function");

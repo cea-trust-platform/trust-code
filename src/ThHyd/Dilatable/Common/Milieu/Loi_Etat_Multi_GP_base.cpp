@@ -110,7 +110,7 @@ void Loi_Etat_Multi_GP_base::calculer_alpha()
   const DoubleTab& tab_lambda = lambda->valeurs();
   Champ_Don& alpha=le_fluide->diffusivite();
   DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   const DoubleTab& tab_Cp = le_fluide->capacite_calorifique()->valeurs();
   int i, n = tab_alpha.size(), isVDF = 0;
   if (alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
