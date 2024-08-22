@@ -9,10 +9,11 @@ This module is a bit long, but its logic can be well understood by reading first
 Authors: A Bruneton, C Van Wambeke, G Sutra
 """
 
-import pprint as PP
-
+import pydantic
+from typing import ClassVar, Any
 import trustpy.misc_utilities as mutil
 from trustpy.trust_parser import TRUSTTokens
+from pydantic import BaseModel
 
 ########################################################
 # Utilities TRUST methods
@@ -58,25 +59,26 @@ def check_append_dict(classname, dict1, dict2):
 # tree for all the other generated classes.
 ########################################################
 
-class Base_common(object):
+class Base_common:
   """ Abstract base class containing all the methods relevant to TRUST data model
   logic.
   By far the two most important methods are:
     ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
     toDatasetTokens() - which does the inverse operation and serializes the content of the instance as a stream of tokens
   """
-  _braces = 1         # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
-  _read_type = False  # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
+  _braces: ClassVar[int]     = 1         # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+  _read_type: ClassVar[bool] = False  # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
                       # In the Python code generation this attribute is overloaded when hitting _base or _deriv.
-  _synonyms = []   # a list of synonyms for the name of implemented class
-  _infoMain = []   # a tuple giving the source file and the line # where the type was defined
-  _infoAttr = {}   # same thing for class attributes (dictionnary indexed by main attr name)
-  _attributesSynonyms = {}   # synonyms for the current class (read_med -> lire_med)
-  _optionals = set([])  # set of optional attibutes for a keyword
-  _plainType = False    # whether the class is a basic type (like an int, etc ...) -> used for
-                        # correctly displaying debug information of the parent attribute
+  _synonyms: ClassVar[Any] = []   # a list of synonyms for the name of implemented class
+  # _infoMain = []   # a tuple giving the source file and the line # where the type was defined
+  # _infoAttr = {}   # same thing for class attributes (dictionnary indexed by main attr name)
+  # _attributesSynonyms = {}   # synonyms for the current class (read_med -> lire_med)
+  _optionals: ClassVar[Any] = set([])  # set of optional attibutes for a keyword
+  _plainType: ClassVar[bool] = False    # whether the class is a basic type (like an int, etc ...) -> used for
+  #                       # correctly displaying debug information of the parent attribute
 
-  def __init__(self):
+  def __init__(self, *arg, **kwarg):
+    pydantic.BaseModel.__init__(self, *arg, **kwarg)
     self._tokens = {}     # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
                           # in ConstrainBase for a more comprehensive explanation.
 
@@ -92,8 +94,8 @@ class Base_common(object):
       - the point in the source code (or in the TRAD2.org) where the concerned grammar element
       was defined.
     """
-    err = "\n" + mut.RED + msg + mut.END + "\n"
-    ctx = mut.YELLOW
+    err = "\n" + mutil.RED + msg + mutil.END + "\n"
+    ctx = mutil.YELLOW
     ctx +=  "=> This error was triggered in the following context:\n"
     ctx += "   Dataset: line %d  in file  '%s'\n" % (stream.currentLine(), stream.fileName())
 
@@ -103,7 +105,7 @@ class Base_common(object):
     if not attr is None:
       fnam, lineno = cls._infoAttr[attr]
       s = f"   Model:   line {lineno}  in file  '{fnam}'\n"
-    ctx += s + mut.END
+    ctx += s + mutil.END
     return err + ctx
 
   def _checkToken(self, key, expec, typ=str):
@@ -155,6 +157,19 @@ class Base_common(object):
     raise NotImplementedError
 
   @classmethod
+  def GetAllTrustNames(cls):
+    """ Returns all possible names (incl. synonyms) for a keyword as a nicely formatted string """
+    res = [cls.__name__]
+    res.extend(cls._synonyms)
+    res2 = []
+    for r in res:
+      # if r.endswith(_TRIOU_SUFFIX):
+      #   res2.append(r[0:-_LEN_TRIOU_SUFFIX])
+      # else:
+        res2.append(r)
+    return "|".join(res2)
+
+  @classmethod
   def IsOptional(cls, attr_nam):
     """ Returns True if an attribute is optional """
     return attr_nam in cls._optionals
@@ -178,9 +193,9 @@ class Base_common(object):
     reading point.
     @return a new instance of the same class correctly initialized with the values parsed
     """
-    inh = cls().getInheritage()
+    # inh = cls().getInheritage()
     msg = "Internal error - ReadFromTokens() not implemented in class '%s'" % cls.__name__
-    msg += "\n  (=> Inheritage of this class is " + str(inh) + ")"
+    # msg += "\n  (=> Inheritage of this class is " + str(inh) + ")"
     raise Exception(msg)
 
   @classmethod
@@ -206,7 +221,7 @@ class Base_common(object):
   def _Dbg(cls, msg):
     """ Handy debug printing """
     # The 'inspect' module is very costly - so skip if not in highest logging level:
-    if mut._log_level <= 3:
+    if mutil._log_level <= 3:
       return
     import inspect
     curframe = inspect.currentframe()
@@ -216,30 +231,38 @@ class Base_common(object):
       return s + " "*(max(55-len(s), 0))
     s = f"[{cls.__name__}.{cal_nam}] --"
     m = msg.replace("@FUNC@", s)
-    mut.log_debug(m)
+    mutil.log_debug(m)
 
 ###########################
 class ConstrainBase(Base_common):
   """
   Class representing any type/keyword for which the attribute types are to be checked.
   """
-  _rootNamesForSyno = {} # See method _ReadClassName and trust_hacks.py
+  _rootNamesForSyno: ClassVar[Any] = {}   # See method _ReadClassName and trust_hacks.py
 
-  def __init__(self):
-    super(ConstrainBase, self).__init__()
+  def __init__(self, *args, **kwargs):
+    super(ConstrainBase, self).__init__(*args, **kwargs)
     opbr  = TRUSTTokens(low=["{"], orig=[" {\n"])
     clobr = TRUSTTokens(low=["}"], orig=[" \n}\n"])
-    clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__[:-_LEN_TRIOU_SUFFIX]])
+    clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__])
     self._tokens = {"{": opbr,           # For a ConstrainBase we might need opening and closing brace. By default those
                     "}": clobr,          # are simple '{' and '}' followed by a line return. If ReadFromTokens() was
                     "cls_nam": clsnam }  # invoked to build the object this will respect the initial input (with potentially more spaces)
     self._attrInOrder = []               # Just to save the order in which the attributes were read ...
 
-  def __setattr__(self, name, value):
-    """ 'lambda' is a reserved Python keyword ... and is everywhere a medium attribute """
-    if name == "lambda":
-      name = "Lambda"
-    _XyzConstrainBase.__setattr__(self, name, value)
+
+  @classmethod
+  def _AttributesList(cls):
+    ret = []
+    for k, fld_nfo in cls.model_fields.items():
+      ret.append((k, fld_nfo.annotation.__name__))  # annotation should be a class or a plain type
+    return ret
+
+  # def __setattr__(self, name, value):
+  #   """ 'lambda' is a reserved Python keyword ... and is everywhere a medium attribute """
+  #   if name == "lambda":
+  #     name = "Lambda"
+  #   _XyzConstrainBase.__setattr__(self, name, value)
 
   def isHidden(self, nameAttr):
     """
@@ -267,16 +290,16 @@ class ConstrainBase(Base_common):
     the real underlying attribute name and the corresponding class name
     """
     invert_syno = {}
-    for nam, attr_cls_name in cls._attributesList:
-      invert_syno[nam] = (nam, attr_cls_name)
+    for nam, attr_cls in cls._AttributesList():
+      invert_syno[nam] = (nam, attr_cls)
       # 'Lambda' is the only attribute which won't be full lower case (because 'lambda' is not
       # allowed as a Python attribute in a class). So register "lambda" as a syno for "Lambda".
       if nam == "Lambda":
-        invert_syno["lambda"] = (nam, attr_cls_name)
-      if nam in cls._attributesSynonyms:
-        for syno in cls._attributesSynonyms[nam]:
-          if syno.strip() != "":
-            invert_syno[syno] = (nam, attr_cls_name)
+        invert_syno["lambda"] = (nam, attr_cls)
+      # if nam in cls._attributesSynonyms:
+      #   for syno in cls._attributesSynonyms[nam]:
+      #     if syno.strip() != "":
+      #       invert_syno[syno] = (nam, fld_nfo)
     return invert_syno
 
   @classmethod
@@ -340,11 +363,11 @@ class ConstrainBase(Base_common):
 
   @classmethod
   def _ReadFromTokens_no_braces(cls, stream):
-    """ Read from a stream of tokens, in the order dictated by cls._attributeList 
+    """ Read from a stream of tokens, in the order dictated by cls.model_fields 
     Used for TRUST keywords which are **not** expecting opening/closing braces. This is **painful**.
     """
     ret = cls()
-    invert_syno, ca, nams = cls._InvertSyno(), cls._attributesList, cls.GetAllTrustNames()
+    invert_syno, ca, nams = cls._InvertSyno(), cls._AttributesList(), cls.GetAllTrustNames()
     attr_idx = 0
     while attr_idx < len(ca):
       # On a given token, try as much as possible to match it against the attribute list:
@@ -375,9 +398,9 @@ class ConstrainBase(Base_common):
         # No optional match - must match current mandatory attr
         cur_attr, cur_cls_nam = ca[attr_idx]
         cls._Dbg(f"@FUNC@ mandatory attr -> cur_attr '{cur_attr}' cur_cls_nam '{cur_cls_nam}'")
-        attr_cls = CLFX.getXyzClassFromName(cur_cls_nam)
+        attr_cls, plainType = mutil.getXyzClassFromName(cur_cls_nam)
         # See explanation in ReadFromTokens_withBrace for this:
-        if attr_cls._plainType: attr_cls._infoMain = cls._infoAttr[cur_attr]
+        if plainType: attr_cls._infoMain = cls._infoAttr[cur_attr]
         # Parse child attribute:
         val = attr_cls.ReadFromTokens(stream)
         # Potentially reset debug info:
@@ -830,7 +853,7 @@ class Declaration(ConstrainBase):
   def toDatasetTokens(self):
     """ Override - see Base_common """
     s = []
-    if self._checkToken("cls_nam", self.cls_nam[:-_LEN_TRIOU_SUFFIX]):
+    if self._checkToken("cls_nam", self.cls_nam):
       cn = self._tokens["cls_nam"].orig()
     else:
       cn = [" " + self.cls_nam]
@@ -883,7 +906,7 @@ class DataSet(ListOfBase):
     # strip the '' that will be added again by ConstrainBase.ReadFromTokens:
     decl, _ = ret._declarations[identif]
     ze_cls = decl._cls_obj
-    cls_nam = ze_cls.__name__[:-_LEN_TRIOU_SUFFIX]  # Use the native root class name
+    cls_nam = ze_cls.__name__  # Use the native root class name
     # Make a fake stream where we replace the identifier token by the class name (if it expects to read it)
     # and then proceed as usual:
     s2 = stream.clone()
@@ -993,10 +1016,10 @@ class DataSet(ListOfBase):
 ######################################################
 class AbstractChaine(Base_common):
   """ Base class for all (constrained or not) strings """
-  _plainType = True
+  _plainType: ClassVar[bool] = True
 
-  def __init__(self):
-    Base_common.__init__(self)
+  # def __init__(self):
+  #   Base_common.__init__(self)
 
   @classmethod
   def _ValidateValue(cls, value, stream):
@@ -1037,16 +1060,24 @@ class AbstractChaine(Base_common):
 
 ##############################################
 # class chaine(StrVerbatimXyz, AbstractChaine):
-class Chaine(AbstractChaine):
+# class Chaine(AbstractChaine):
+class Chaine(str, AbstractChaine):
   """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
   See ReadFromTokens below ..
   """
-  _defaultValue = "??"
 
-  def __init__(self, value=None):
-    # StrVerbatimXyz.__init__(self, value)
-    Base_common.__init__(self)
-    self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self._braces!!
+  # def __init__(self, *arg, **kwarg):
+  #   _val = "??"
+  #   if len(arg):
+  #     _val = str(arg[0])
+  #     print(arg)
+  #     arg = arg[1:]
+  #     print(arg)
+  #   AbstractChaine.__init__(self, *arg, **kwarg)
+  #   self._val = _val
+  #   # StrVerbatimXyz.__init__(self, value)
+  #   Base_common.__init__(self)
+  #   self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self.__class__._braces!!
 
   @classmethod
   def ReadFromTokens(cls, stream):

@@ -1,8 +1,8 @@
 import pathlib
 import textwrap
 import datetime
-from trustpy.trad2_utilities import TRAD2Content, TRAD2Block, TRAD2Attr, TRAD2BlockList
-
+from .trad2_utilities import TRAD2Content, TRAD2Block, TRAD2Attr, TRAD2BlockList
+from .misc_utilities import change_class_name
 
 ################################################################
 # LOGGER
@@ -40,11 +40,6 @@ def valid_variable_name(s):
         s += '_'
 
     return s
-
-
-def change_class_name(s):
-    return s.capitalize()
-
 
 def write_block(block, file, all_blocks):
     """ Write a TRAD2Block as pydantic class. """
@@ -200,7 +195,7 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         # {datetime.datetime.now().strftime(r"%y-%m-%d at %H:%M:%S")}
         ################################################################
 
-        import sys        
+        import sys
         from typing_extensions import Annotated, Literal
         from typing import ClassVar, List
         from pydantic import BaseModel, Field

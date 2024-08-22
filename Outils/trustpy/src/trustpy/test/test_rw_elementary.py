@@ -26,6 +26,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     """ Generic test method taking the string representing the arguments of a class and parse it. """
     # Generate if needed
     self.generate_python_and_import_simple()
+    self.mod = self._TRUG[0]
 
     # Parse the TRUST data set provided in arg
     if simplify:
@@ -37,7 +38,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     stream = TRUSTStream(tp)
     mutil.log_debug("Token list: %s" % stream.tokLow)
     mutil.log_debug("Token list has %d items" % len(stream))
-    ze_cls = CLFX.getXyzClassFromName(cls_nam)
+    ze_cls = self.getClassFromName(cls_nam)
     return stream, ze_cls.ReadFromTokens(stream)
 
   def generic_test(self, data_ex_orig, simplify=True):
@@ -47,6 +48,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     """
     # Generate if needed
     self.generate_python_and_import_simple()
+    self.mod = self._TRUG[0]
 
     # Parse the TRUST data set provided in arg
     if simplify:
@@ -63,12 +65,20 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
     # Mimick (in a minimal fashion) what is done in DataSet.ReadFromTokens():
     cls_nam = stream.probeNextLow()
-    ze_cls = CLFX.getXyzClassFromName(cls_nam + BTRU._TRIOU_SUFFIX)
+    ze_cls = self.getClassFromName(mutil.change_class_name(cls_nam))
 
     val = ze_cls.ReadFromTokens(stream)
     return stream, val
 
   #########################################################
+
+  def test_simple_nom(self):
+    data_ex = """
+      # with many comments
+        before
+      #
+      toto"""
+    stream, inst = self.string_test("nom", data_ex, simplify=False)
 
   def test_simple_str(self):
     """ Test parsing simple string """
@@ -78,7 +88,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       #
       toto"""
     stream, inst = self.string_test("chaine", data_ex, simplify=False)
-    BC = self._TRUG[0].chaine
+    BC = self.mod.chaine
     expec = BC("toto")
     self.assertEqual(expec, inst)
     self.assertTrue(stream.eof())
@@ -123,7 +133,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     # Correct list
     data_ex = "3 48.5 89.2 18"
     stream, inst = self.string_test("list", data_ex)
-    LT, BF = self._TRUG[0].list, self._TRUG[0].BaseFloattant
+    mod = self._TRUG[0]
+    LT, BF = self.mod.list, self.mod.BaseFloattant
     expec = LT()
     expec.extend([BF(48.5), BF(89.2), BF(18.0)])
     self.assertTrue(expec.equal(inst))
@@ -184,8 +195,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          convertAllToPoly
       }"""
     for simplify in [True, False]:
-      stream, res = self.generic_test_504(data_ex, simplify=simplify)
-      exp = buildCurlyExpec(self._TRUG[0])
+      stream, res = self.generic_test(data_ex, simplify=simplify)
+      exp = buildCurlyExpec(mod)
       self.assertTrue(exp.equal(res))
       self.assertTrue(stream.eof())
       if not simplify:
@@ -217,8 +228,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          exclude_groups 2 toto titi
          convertAllToPoly
       }"""
-    # self.generic_test_504(data_ex)
-    self.assertRaises(ValueError, self.generic_test_504, data_ex)
+    # self.generic_test(data_ex)
+    self.assertRaises(ValueError, self.generic_test, data_ex)
     # Ill-formed dataset - missing brace
     data_ex = """
     # Some stupid test #
@@ -228,13 +239,13 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          file a/complicated/path/to.med
          exclude_groups 2 toto titi
          convertAllToPoly"""
-    self.assertRaises(TRUSTEndOfStreamException, self.generic_test_504, data_ex)
+    self.assertRaises(TRUSTEndOfStreamException, self.generic_test, data_ex)
 
   def test_parser_stress(self):
     """ Basic test - stressing parser """
     data_ex = """read_MED_bidon { mesh ze_mesh_name file a/complicated/path/to.med exclude_groups 2 toto titi convertAllToPoly }"""
-    stream, res = self.generic_test_504(data_ex, simplify=False)
-    exp = buildCurlyExpec(self._TRUG[0])
+    stream, res = self.generic_test(data_ex, simplify=False)
+    exp = buildCurlyExpec(mod)
     self.assertTrue(exp.equal(res))
     self.assertTrue(stream.eof())
     # Test writing out:
@@ -242,7 +253,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     self.assertTrue(self.check_str_equality(s, data_ex).ok)
 
     data_ex += " toto"  # should still parse, 'toto' being the next keyword in the stream
-    stream, res = self.generic_test_504(data_ex, simplify=False)
+    stream, res = self.generic_test(data_ex, simplify=False)
     self.assertTrue(exp.equal(res))
     self.assertFalse(stream.eof())  # but not end of stream
 
@@ -259,12 +270,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       }
     """
     # Should fail since mandatory attribue 'file' is missing:
-    self.assertRaises(ValueError, self.generic_test_504, data_ex)
+    self.assertRaises(ValueError, self.generic_test, data_ex)
 
     # Keyword with all optionals should accept no attributes at all:
     data_ex = """coucou { }"""
-    stream, res = self.generic_test_504(data_ex)
-    MB = self._TRUG[0].coucou
+    stream, res = self.generic_test(data_ex)
+    MB = self.mod.coucou
     expec = MB()
     self.assertTrue(expec.equal(res))
     self.assertTrue(stream.eof())
@@ -284,8 +295,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          convertAllToPoly
       }"""
     for simplify in [True, False]:
-      stream, res = self.generic_test_504(data_ex, simplify=simplify)
-      exp = buildCurlyExpec(self._TRUG[0])
+      stream, res = self.generic_test(data_ex, simplify=simplify)
+      exp = buildCurlyExpec(mod)
       self.assertTrue(exp.equal(res))
       self.assertTrue(stream.eof())
       if not simplify:
@@ -297,8 +308,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     """ Testing keywords with no curly braces """
     # Standard case
     data_ex = """uniform_field 3 34.6 12.8 90.9"""
-    stream, res = self.generic_test_504(data_ex)
-    UF, LT, BF = self._TRUG[0].uniform_field, self._TRUG[0].list, self._TRUG[0].BaseFloattant
+    stream, res = self.generic_test(data_ex)
+    UF, LT, BF = self.mod.uniform_field, self.mod.list, self.mod.BaseFloattant
     # Build expected value
     exp, l = UF(), LT()
     l.extend([BF(34.6), BF(12.8), BF(90.9)])
@@ -311,7 +322,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
     # The below should parse - 'toto' can be considered the next keyword in the stream
     data_ex2 = data_ex + " toto "
-    stream, res = self.generic_test_504(data_ex2)
+    stream, res = self.generic_test(data_ex2)
     self.assertTrue(res.equal(exp))
     #   here we re not at EOF, since 'toto' is there
     self.assertFalse(stream.eof())
@@ -321,7 +332,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     uniform_field   flag_bidon  3   34.6  12.8 90.9 
        flag_bidon2  2 15   29"""
     for simplify in [True, False]:
-      stream, res = self.generic_test_504(data_ex, simplify=simplify)
+      stream, res = self.generic_test(data_ex, simplify=simplify)
       exp, l, l2 = UF(), LT(), LT()
       l.extend([BF(34.6), BF(12.8), BF(90.9)])
       l2.extend([BF(15), BF(29)])
@@ -336,7 +347,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
     # Same story with next keyword:
     data_ex2 = data_ex + " toto "
-    stream, res = self.generic_test_504(data_ex2)
+    stream, res = self.generic_test(data_ex2)
     self.assertTrue(res.equal(exp))
     self.assertFalse(stream.eof())
 
@@ -345,15 +356,15 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     # Ill-formed #
     uniform_field flag_bidon
     """
-    # self.generic_test_504(data_ex)
-    self.assertRaises(TRUSTEndOfStreamException, self.generic_test_504, data_ex)
+    # self.generic_test(data_ex)
+    self.assertRaises(TRUSTEndOfStreamException, self.generic_test, data_ex)
     # Ill-formed dataset (missing values)
     data_ex = """
     # Ill-formed #
     uniform_field 3 34.6 12.8
     """
-    # self.generic_test_504(data_ex)
-    self.assertRaises(TRUSTEndOfStreamException, self.generic_test_504, data_ex)
+    # self.generic_test(data_ex)
+    self.assertRaises(TRUSTEndOfStreamException, self.generic_test, data_ex)
 
   def test_complex_attr(self):
     """ Testing complex attributes (with a prescribed type) """
@@ -362,9 +373,9 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         attr_bidon champ_uniforme 2 0 9.8
       }"""
     for simplify in [True, False]:
-      stream, res = self.generic_test_504(data_ex, simplify=simplify)
-      MB = self._TRUG[0].coucou
-      UF, LT, BF = self._TRUG[0].uniform_field, self._TRUG[0].list, self._TRUG[0].BaseFloattant
+      stream, res = self.generic_test(data_ex, simplify=simplify)
+      MB = self.mod.coucou
+      UF, LT, BF = self.mod.uniform_field, self.mod.list, self.mod.BaseFloattant
       # Build expected value
       exp, uf, l = MB(), UF(), LT()
       l.extend([BF(0), BF(9.8)])
@@ -390,8 +401,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          convertAllToPoly
       }"""
 
-    stream, res = self.generic_test_504(data_ex, simplify=False)
-    exp = buildCurlyExpec(self._TRUG[0])
+    stream, res = self.generic_test(data_ex, simplify=False)
+    exp = buildCurlyExpec(mod)
     self.assertTrue(exp.equal(res))
     self.assertTrue(stream.eof())
     # Adding a (valid) attribute
@@ -418,9 +429,9 @@ no_family_names_from_group_names
         gravite champ_uniforme 2 0 9.8
       }"""
     for simplify in [True, False]:
-      stream, res = self.generic_test_504(data_ex, simplify=simplify)
-      MB = self._TRUG[0].coucou
-      UF, LT, BF = self._TRUG[0].uniform_field, self._TRUG[0].list, self._TRUG[0].BaseFloattant
+      stream, res = self.generic_test(data_ex, simplify=simplify)
+      MB = self.mod.coucou
+      UF, LT, BF = self.mod.uniform_field, self.mod.list, self.mod.BaseFloattant
       # Build expected value
       exp, uf, l = MB(), UF(), LT()
       l.extend([BF(0), BF(9.8)])
@@ -435,7 +446,7 @@ no_family_names_from_group_names
         self.assertTrue(self.check_str_equality(s, data_ex).ok)
 
     # Changing inherited attribute should change output:
-    FB = self._TRUG[0].field_base
+    FB = self.mod.field_base
     res.gravite = FB()
     s = ''.join(res.toDatasetTokens())
     new_s = """
@@ -450,8 +461,8 @@ no_family_names_from_group_names
         gravite coucou { }
       }
     """
-    # offset, res = self.generic_test_504(data_ex)
-    self.assertRaises(Exception, self.generic_test_504, data_ex)
+    # offset, res = self.generic_test(data_ex)
+    self.assertRaises(Exception, self.generic_test, data_ex)
 
   def test_forward_decl(self):
     """ Testing forward declaration and 'read' keyword.
@@ -469,7 +480,7 @@ no_family_names_from_group_names
     read    cb {   }"""
     # Generate if needed
     self.generate_python_and_import_simple()
-    tds_cls = CLFX.getXyzClassFromName("DataSet" + BTRU._TRIOU_SUFFIX)
+    tds_cls = self.getClassFromName("DataSet")
     # Parse the TRUST data set provided in arg
     tp = TRUSTParser()
 
@@ -485,7 +496,7 @@ no_family_names_from_group_names
       res = tds_cls.ReadFromTokens(stream)
       self.assertEqual(len(res), 4)
       self.assertTrue(stream.eof())
-      exp0, exp1, exp2, exp3 = buildForwardExpec(self._TRUG[0])
+      exp0, exp1, exp2, exp3 = buildForwardExpec(mod)
       self.assertTrue(exp0.equal(res[0])) # Forward decl
       self.assertTrue(exp1.equal(res[1])) # Coucou cb
       self.assertTrue(exp2.equal(res[2])) # read rmed
@@ -502,14 +513,14 @@ no_family_names_from_group_names
     data_ex = """champ_uniforme gravite
                  read gravite 2 0.0 9.8"""
     self.generate_python_and_import_simple()
-    tds_cls = CLFX.getXyzClassFromName("DataSet" + BTRU._TRIOU_SUFFIX)
+    tds_cls = self.getClassFromName("DataSet")
     tp = TRUSTParser()
     tp.tokenize(data_ex)
     stream = TRUSTStream(tp)
     res = tds_cls.ReadFromTokens(stream)
     self.assertEqual(len(res), 2)
     self.assertTrue(stream.eof())
-    UF, D, LF = self._TRUG[0].uniform_field, self._TRUG[0].Declaration, self._TRUG[0].ListOfFloat
+    UF, D, LF = self.mod.uniform_field, self.mod.Declaration, self.mod.ListOfFloat
     decl = D()
     decl.identifier, decl.cls_nam = "gravite", "champ_uniforme"
     f, l = UF(), LF([0,9.8])
@@ -554,7 +565,7 @@ no_family_names_from_group_names
 
     # Generate if needed
     self.generate_python_and_import_simple()
-    tds_cls = CLFX.getXyzClassFromName("DataSet" + BTRU._TRIOU_SUFFIX)
+    tds_cls = self.getClassFromName("DataSet")
     # Parse the TRUST data set provided in arg
     tp = TRUSTParser()
 
@@ -571,7 +582,7 @@ no_family_names_from_group_names
       self.assertEqual(len(res), 5)
       self.assertTrue(stream.eof())
 
-      exp = buildMinimalExpec(self._TRUG[0])
+      exp = buildMinimalExpec(mod)
       for i in range(5):
         self.assertTrue(exp[i].equal(res[i]))
       if not simplify:
@@ -581,5 +592,5 @@ no_family_names_from_group_names
 
 if __name__ == '__main__':
   verbose = True  # verbose if in main
-  mutil._log_debug = False
+  mutil._log_level = 4
   unittest.main()
