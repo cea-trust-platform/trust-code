@@ -180,7 +180,7 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   True_int indice_diri[4];
   int modif_traitement_diri=0;
   if (sub_type(Domaine_VEF,domaine_VEF))
-    modif_traitement_diri=ref_cast(Domaine_VEF, domaine_VEF).get_modif_div_face_dirichlet();
+    modif_traitement_diri=ref_cast(Domaine_VEF, domaine_VEF).get_modif_div_face_dirichlet(); //  (see P.Emonot thesis p31)
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
       True_int rang_elem = (True_int)domaine_VEF.rang_elem_non_std()(elem);
@@ -364,6 +364,32 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
         if (sub_type(Robin_VEF, la_cl.valeur()))
           {
             Cerr << " ## \n \n Implementation des conditions de Robin pour le second membre ici !! \n \n ## " << finl;
+            const Robin_VEF& la_cl_robin = ref_cast(Robin_VEF,la_cl.valeur());
+            const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+            int nb_faces_bord=le_bord.nb_faces();
+            double inv_alpha = 1./la_cl_robin.get_alpha_cl() ;
+            double inv_beta = 1./la_cl_robin.get_beta_cl();
+
+            Cerr << " la valeur de alpha robin vaut " << la_cl_robin.get_alpha_cl() << finl;
+            Cerr << " la valeur de beta robin vaut " << la_cl_robin.get_beta_cl() << finl;
+            for (int ind_face=0; ind_face<nb_faces_bord; ind_face++)
+              {
+                int face = le_bord.num_face(ind_face);
+                double contribution_normale = 0. ; // eval g
+                double contribution_tangentielle = 0.; // if dimension == 2 eval xi
+                for (int comp=0; comp<nb_comp; comp++)
+                  {
+                    contribution_normale *=inv_alpha*face_normales(ind_face, comp);
+                    if (dimension==3)
+                      {
+                        contribution_tangentielle = 0.; // eval xi(comp)
+                      }
+                    contribution_tangentielle *= inv_beta*face_normales(ind_face, comp) ;
+                    resu(face, comp) += contribution_normale;
+                  }
+              }
+
+
           }
       }
   }

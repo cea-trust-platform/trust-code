@@ -439,7 +439,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 
   const int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
-    {// Update flux_bords on symmetry:
+    {
+      // Update flux_bords on symmetry:
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Symetrie,la_cl.valeur()))
         {
@@ -452,40 +453,40 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
       if (sub_type(Robin_VEF, la_cl.valeur()))
         {
           Cerr << "### \n \n  passage par ici pour la condition de Robin OP_diff_vef_face - ajouter cas vectoriel \n\n ########" << finl;
-          const Robin_VEF &la_cl_robin = ref_cast(Robin_VEF,la_cl.valeur());
-		  double inv_alpha_minus_inv_beta = 1./la_cl_robin.get_alpha_cl() - 1./la_cl_robin.get_beta_cl();
-		  double inv_beta  = 1./la_cl_robin.get_beta_cl();
-		  double scale_factor_is_one = 1. ;
-		  DoubleTab normal_vector ;
+          const Robin_VEF& la_cl_robin = ref_cast(Robin_VEF,la_cl.valeur());
+          double inv_alpha_minus_inv_beta = 1./la_cl_robin.get_alpha_cl() - 1./la_cl_robin.get_beta_cl();
+          double inv_beta  = 1./la_cl_robin.get_beta_cl();
+          double scale_factor_is_one = 1. ;
+          DoubleTab normal_vector ;
 
-		  Cerr << " #### \n Lecture des conditions de Robin dans le fichier OP_DIFF_VEF_FACE_Q1 \n #### " << finl;
-		  Cerr << " Nouvelle implementation : verification des valeurs des coefficient de Robin " << finl;
-		  Cerr << " la valeur de inv beta et inv alpha valent " << inv_beta << " et " << inv_alpha_minus_inv_beta << finl;
+          Cerr << " #### \n Lecture des conditions de Robin dans le fichier OP_DIFF_VEF_FACE \n #### " << finl;
+          Cerr << " Nouvelle implementation : verification des valeurs des coefficient de Robin " << finl;
+          Cerr << " la valeur de inv beta et inv alpha valent " << inv_beta << " et " << inv_alpha_minus_inv_beta << finl;
 
-		  // boucle sur toutes les faces du bord
-		  for (int num_face = 0; num_face < nb_faces; num_face++)
-		  {
-			  DoubleTab coeff_robin(dimension) ;
-			  // calcul du coefficient de contribution de la face Robin sur elle meme
-			  double face_surface = domaine_VEF.face_surfaces(num_face);
-			  normal_vector = domaine_VEF.normalized_boundaries_outward_vector(num_face, scale_factor_is_one);
-			  for (int i = 0; i<dimension; i++)
-				{
-				  double val_robin = 0;
-				  for (int j = 0; j<dimension; j++ )
-					{
-					  val_robin += inv_alpha_minus_inv_beta*normal_vector(i)*normal_vector(j);
-					}
-				  coeff_robin[i]= (val_robin+inv_beta)*face_surface;
-				}
-			  // contribution genenrale
-			  // for i allant de 0 a dimension
-			  // flux = coeff_robin[i]
-			  // resu_addr[num_face * nb_comp + i] -= flux;
-			  // resu(face)
-			  // tab_flux_bords(face, 0 ) ???
+          // boucle sur toutes les faces du bord
+          for (int num_face = 0; num_face < nb_faces; num_face++)
+            {
+              DoubleTab coeff_robin(dimension) ;
+              // calcul du coefficient de contribution de la face Robin sur elle meme
+              double face_surface = domaine_VEF.face_surfaces(num_face);
+              normal_vector = domaine_VEF.normalized_boundaries_outward_vector(num_face, scale_factor_is_one);
+              for (int i = 0; i<dimension; i++)
+                {
+                  double val_robin = 0;
+                  for (int j = 0; j<dimension; j++ )
+                    {
+                      val_robin += inv_alpha_minus_inv_beta*normal_vector(i)*normal_vector(j);
+                    }
+                  coeff_robin[i]= (val_robin+inv_beta)*face_surface;
+                }
+              // contribution genenrale
+              // for i allant de 0 a dimension
+              // flux = coeff_robin[i]
+              // resu_addr[num_face * nb_comp + i] -= flux;
+              // resu(face)
+              // tab_flux_bords(face, 0 ) ???
 
-		  } // end for num face
+            } // end for num face
         }// end if subtype robin_cl
     } // end for n_bord
 }
@@ -828,12 +829,12 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                           Kokkos::atomic_add(&matrice(n0,j0), -coeff_face2);
                           Kokkos::atomic_add(&matrice(j0,n1), -coeff_face1);
                           Kokkos::atomic_add(&matrice(j0,j0), +coeff_face2);
-                        }
-                    }
-              }
-          });
+                        } //if j
+                    } // if elem2
+              } // for i
+          }// parallel for);
           end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_contribution CL periodique");
-        }
+        } // subtype Perio
       else
         {
           Kokkos::parallel_for("Op_Diff_VEF_Face::ajouter_contribution CL autre",
@@ -974,6 +975,10 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                || sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
         }
+      else if (sub_type(Robin_VEF, la_cl.valeur()))
+      {
+    	  Cerr << " Modification des coefficients de la matrice de rigidite ici  dans le cas de conditions de type Robin !! " << finl;
+      }
     }
   modifier_matrice_pour_periodique_apres_contribuer(matrice_morse,equation());
 }

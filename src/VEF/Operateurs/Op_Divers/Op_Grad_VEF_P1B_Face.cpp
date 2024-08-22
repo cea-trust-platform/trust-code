@@ -230,17 +230,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
                       grad(face, comp) = 0;
                   }
               }
-            else if (sub_type(Robin_VEF, la_cl.valeur()))
-              {
-                Cerr << "\n \n ################# \n\n OP_GRAD_VEF_P1B_face.cpp  MODIIFICATION DU ROBIN A FAIRE ICI \n \n #################""" << finl;
-                for (int face = num1 ; face < num2; face++) // loop on edges with Robin bc
-                  {
-                    for (int comp = 0; comp<dimension; comp++)
-                      {
-                        grad(face, comp)-= 0; // TODOO HERE
-                      }
-                  }
-              }
           }
       }
     }
@@ -260,6 +249,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   int nfe = domaine.nb_faces_elem();
   int nb_elem_tot = domaine.nb_elem_tot();
   // Si pas de support P1, on impose Neumann sur P0
+  // et on traite les conditions aux limites Robin
   if (domaine_VEF.get_alphaS() == 0)
     {
       const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
@@ -309,12 +299,17 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 signe = -1;
               for (int comp = 0; comp < dimension; comp++)
                 {
+                  // if robin pas de contribution a ajouter autre que pour la face elle meme
                   #pragma omp atomic
                   grad_addr[dimension * face + comp] -=
                     pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];
                 }
             }
         }
+
+
+
+
       end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
   else

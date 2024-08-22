@@ -304,7 +304,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
                     }
                 }
             }
-        }
+        } // end subtype periodique
     }
 
   tab1RR(0)=1;
