@@ -941,10 +941,6 @@ void LireMED_32_64<_SIZE_>::lire_geom(bool subDom)
 
   Scatter::init_sequential_domain(dom);
 
-  // We might have created several boundaries with the same name
-  RegroupeBord r;
-  r.rassemble_bords(dom);
-
   // MCUMesh object will be rebuilt next time it is retreived:
   dom.set_mc_mesh_ready(false);
 
