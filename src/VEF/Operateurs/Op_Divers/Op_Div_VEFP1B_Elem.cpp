@@ -330,7 +330,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
   CIntTabView som_v = som_.view_ro();
   DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot),
+                       range_1D(0, nb_elem_tot),
                        KOKKOS_LAMBDA (const int elem)
   {
     double sigma[3] = {0, 0, 0};
@@ -404,7 +404,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
 
           // On boucle sur les faces de bord reelles et virtuelles
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
+                               range_1D(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
                                  const int ind_face)
           {
             int face = num_face(ind_face);
@@ -430,7 +430,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
           CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
           // On boucle sur les faces de bord reelles et virtuelles
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
+                               range_1D(0, nb_faces_bord_tot), KOKKOS_LAMBDA(
                                  const int ind_face)
           {
             int face = num_face(ind_face);
@@ -612,7 +612,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
               CIntTabView faces_sommets = domaine_VEF.face_sommets().view_ro();
               DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_wo();
               Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                                   Kokkos::RangePolicy<>(0, nb_faces), KOKKOS_LAMBDA(
+                                   range_1D(0, nb_faces), KOKKOS_LAMBDA(
                                      const int ind_face)
               {
                 int face = num_face(ind_face);

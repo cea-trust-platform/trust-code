@@ -105,8 +105,8 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
           (sub_type(Dirichlet_homogene,la_cl.valeur())))
         // Pour les faces de Dirichlet on met sm a 0
         Kokkos::parallel_for(__KERNEL_NAME__,
-                             Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
-                               const int face)
+                             range_1D(num1, num2),
+                             KOKKOS_LAMBDA(const int face)
         {
           for (int comp = 0; comp < nbcomp; comp++)
             sm(face, comp) = 0;
@@ -114,8 +114,8 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
       else if ((sub_type(Symetrie,la_cl.valeur())) && (domaine_Cl_VEF.equation().inconnue().nature_du_champ()==vectoriel))
         {
           Kokkos::parallel_for(__KERNEL_NAME__,
-                               Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
-                                 const int face)
+                               range_1D(num1, num2),
+                               KOKKOS_LAMBDA(const int face)
           {
             double psc = 0;
             double surf = 0;
@@ -135,8 +135,8 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
         }
       else
         Kokkos::parallel_for(__KERNEL_NAME__,
-                             Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
-                               const int face)
+                             range_1D(num1, num2),
+                             KOKKOS_LAMBDA(const int face)
         {
           int elem = face_voisins(face,0);
           if (elem == -1) elem = face_voisins(face,1);
@@ -147,7 +147,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::MDRangePolicy<Kokkos::Rank<2>>({num_int,0}, {num_std,nbcomp}),
+                       range_2D({num_int,0}, {num_std,nbcomp}),
                        KOKKOS_LAMBDA(int face, int comp)
   {
     sm(face,comp) /= (volumes_entrelaces_Cl(face) * porosite_face(face));

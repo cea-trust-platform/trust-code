@@ -123,13 +123,14 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
   DoubleTabView gradient_elem = tab_gradient_elem.view_rw();
 
+  int dimension = Objet_U::dimension;
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
 
-  int dimension = Objet_U::dimension;
-  auto range2D = [](int a, int b) { return Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {a,b}); };
-
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(
+    start_gpu_timer(__KERNEL_NAME__),
+    nb_faces_tot,
+    KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 
@@ -178,7 +179,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   {
     gradient_elem(elem, i) *= inverse_volumes(elem);
   };
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range2D(nb_elem, dimension), vol_div);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {nb_elem,dimension}), vol_div);
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
@@ -202,7 +203,10 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   int dimension = Objet_U::dimension;
   const int nb_comp = tab_variable.line_size();
 
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(
+    start_gpu_timer(__KERNEL_NAME__),
+    nb_faces_tot,
+    KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 
@@ -249,11 +253,9 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  auto range3D = [](int a, int b, int c) { return Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {a,b,c}); };
-
   // Division par le volume de l'élément
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       range3D(nb_elem, nb_comp, dimension),
+                       range_3D({0,0,0}, {nb_elem,nb_comp,dimension}),
                        KOKKOS_LAMBDA (int elem, int icomp, int i)
   {
     gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
@@ -392,7 +394,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& tab_Critere_Q) const
   CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
   DoubleArrView Critere_Q = tab_Critere_Q.view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                       range_1D(0, nb_elem), KOKKOS_LAMBDA(
                          const int num_elem)
   {
     double crit = 0.;

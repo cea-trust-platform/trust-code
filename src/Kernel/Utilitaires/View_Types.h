@@ -35,6 +35,11 @@ using DualViewTab4 = Kokkos::DualView<T ****, Kokkos::LayoutRight>;
 // The execution space (=where code is run): on the device if compiled for GPU, else CPU.
 using execution_space = DualViewArr<double>::execution_space;
 
+// Typedefs for range policies in kernels
+using range_1D = Kokkos::RangePolicy<execution_space>;
+using range_2D = Kokkos::MDRangePolicy<execution_space, Kokkos::Rank<2>>;
+using range_3D = Kokkos::MDRangePolicy<execution_space, Kokkos::Rank<3>>;
+
 // The memory space (=where data is stored): on the device if compiled for GPU, or on CPU otherwise:
 typedef std::conditional< \
 std::is_same<execution_space, Kokkos::DefaultExecutionSpace>::value , \

@@ -167,7 +167,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       CDoubleArrView valeurs_rho   = static_cast<const DoubleVect&>(champ_rho.valeurs()).view_ro();
       start_gpu_timer();
       Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
-                              Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
+                              range_1D(0, nb_elem), KOKKOS_LAMBDA(
                                 const int elem, double& dtstab)
       {
         const double h_carre = carre_pas_maille(elem);
@@ -268,8 +268,8 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& tab_nu) const
       CDoubleArrView diffu = static_cast<const DoubleVect&>(tab_diffu).view_ro();
       DoubleTabView nu = tab_nu.view_rw();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-        Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0, 0}, {n, nb_comp}),
-        KOKKOS_LAMBDA(const int i, const int j)
+                           range_2D({0, 0}, {n, nb_comp}),
+                           KOKKOS_LAMBDA(const int i, const int j)
       {
         nu(i, j) = diffu(j);
       });
