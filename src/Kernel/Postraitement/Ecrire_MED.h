@@ -22,6 +22,7 @@
 #include <med++.h>
 #include <Nom.h>
 #include <map>
+#include <Domaine_forward.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
@@ -33,20 +34,25 @@ class Nom;
 class Noms;
 class Champ_Inc_base;
 class Domaine_dis_base;
-#include <Domaine_forward.h>
 
 /*! @brief Classe Ecrire_MED Ecrit un fichier MED.
  *
- *     Structure du jeu de donnee :
- *     Write_MED dom medfile.med
+ * Warning: fields and everything related to discretised domains can only be invoked with the 32 bit version.
  */
-class Ecrire_MED : public Interprete
+template <typename _SIZE_>
+class Ecrire_MED_32_64 : public Interprete
 {
-  Declare_instanciable(Ecrire_MED);
-public :
-  Ecrire_MED(const Nom& file_name, const Domaine& dom);
+  Declare_instanciable_32_64(Ecrire_MED_32_64);
 
-  void set_file_name_and_dom(const Nom& file_name, const Domaine& dom);
+public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  Ecrire_MED_32_64(const Nom& file_name, const Domaine_t& dom);
+
+  void set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom);
 
   ///! Set major mode for MED file writing. See major_mode member below.
   void set_major_mode(bool majorMod) { major_mode_ = majorMod; }
@@ -60,6 +66,7 @@ public :
 
   Entree& interpreter(Entree&) override;
 
+  // This method can be called in both 32 and 64b:
   void ecrire_domaine(bool append=true);
   void ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append=true);
 
@@ -67,13 +74,12 @@ public :
   void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,const Champ_Inc_base& le_champ);
 
 protected:
-
-  void get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const;
+  void get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt_t& sz_bords_and_jnts) const;
   void fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base);
 
   bool major_mode_ = false;   ///< False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
   Nom nom_fichier_;           ///< Name of the MED file to write
-  OBS_PTR(Domaine) dom_;          ///< Domain that will be written
+  OBS_PTR(Domaine_t) dom_;          ///< Domain that will be written
   std::map<std::string, int> timestep_;
   int mesh_dimension_ = -1;
 
@@ -82,5 +88,8 @@ protected:
   MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! Ecrire_MED is the owner
 #endif
 };
+
+using Ecrire_MED = Ecrire_MED_32_64<int>;
+using Ecrire_MED_64 = Ecrire_MED_32_64<trustIdType>;
 
 #endif /* Ecrire_MED_included */

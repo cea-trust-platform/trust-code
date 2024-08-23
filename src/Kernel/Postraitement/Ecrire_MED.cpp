@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,55 +22,49 @@
 #include <medcoupling++.h>
 #include <ctime>
 #include <TRUST_2_MED.h>
+#include <Sortie_Fichier_base.h>
+#include <Synonyme_info.h>
+
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDFileMesh.hxx>
 #include <MEDCouplingFieldDouble.hxx>
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
-using MEDCoupling::MCAuto;
-using MEDCoupling::MEDCouplingUMesh;
-using MEDCoupling::DataArrayDouble;
-using MEDCoupling::DataArrayInt;
-using MEDCoupling::MEDFileField1TS;
-using MEDCoupling::MEDFileUMesh;
-using MEDCoupling::MEDCouplingFieldDouble;
-using MEDCoupling::GetAllFieldNames;
-using MEDCoupling::GetAllFieldIterations;
-using MEDCoupling::MEDFileMesh;
+using namespace MEDCoupling;
 #endif
-#include <Sortie_Fichier_base.h>
 
-Implemente_instanciable(Ecrire_MED,"Write_MED|ecrire_med",Interprete);
+Implemente_instanciable_32_64(Ecrire_MED_32_64,"Write_MED",Interprete);
+Add_synonym(Ecrire_MED,"Ecrire_MED");
 
 // Anonymous namespace for local functions:
 namespace
 {
 
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-
 /*! @brief Loop on bords,raccords,joints
  */
-const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
+template <typename _SIZE_>
+const Frontiere_32_64<_SIZE_>& mes_faces_fr(const Domaine_32_64<_SIZE_>& domaine, int i)
 {
   int nb_std = domaine.nb_front_Cl() + domaine.nb_groupes_faces();
   return i<nb_std ? domaine.frontiere(i) : domaine.joint(i-nb_std);
 }
 
-#endif
 } // namespace
-
-Sortie& Ecrire_MED::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Ecrire_MED_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Ecrire_MED::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Ecrire_MED_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Ecrire_MED::Ecrire_MED(const Nom& file_name, const Domaine& dom):
+template <typename _SIZE_>
+Ecrire_MED_32_64<_SIZE_>::Ecrire_MED_32_64(const Nom& file_name, const Domaine_t& dom):
   major_mode_(false),
   dom_(dom)
 #ifdef MEDCOUPLING_
@@ -82,7 +76,8 @@ Ecrire_MED::Ecrire_MED(const Nom& file_name, const Domaine& dom):
   nom_fichier_ += file_name;
 }
 
-void Ecrire_MED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom)
 {
   nom_fichier_ = Sortie_Fichier_base::root;
   if (nom_fichier_!="") nom_fichier_+="/";
@@ -90,10 +85,11 @@ void Ecrire_MED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
   dom_ = dom;
 }
 
-// XD Ecrire_MED interprete Write_MED -1 Write a domain to MED format into a file.
+// XD Ecrire_MED_32_64 interprete Write_MED -1 Write a domain to MED format into a file.
 // XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
 // XD attr file chaine file 0 Name of file.
-Entree& Ecrire_MED::interpreter(Entree& is)
+template <typename _SIZE_>
+Entree& Ecrire_MED_32_64<_SIZE_>::interpreter(Entree& is)
 {
   Cerr<<"syntax : Write_MED [ append ] nom_dom nom_fic "<<finl;
   bool append=false;
@@ -107,27 +103,32 @@ Entree& Ecrire_MED::interpreter(Entree& is)
       Cerr<<" Adding "<<nom_dom<<finl;
     }
   is >> nom_fichier_;
-  if(! sub_type(Domaine, objet(nom_dom)))
+  if(! sub_type(Domaine_t, objet(nom_dom)))
     {
       Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
       Cerr << "Only Domaine type objects can be meshed" << finl;
       exit();
     }
-  dom_ = ref_cast(Domaine, objet(nom_dom));
+  dom_ = ref_cast(Domaine_t, objet(nom_dom));
   ecrire_domaine(append);
   return is;
 }
 
 #ifndef MED_
-void Ecrire_MED::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time)
 {
   med_non_installe();
 }
-void Ecrire_MED::ecrire_domaine(bool m)
+
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool m)
 {
   med_non_installe();
 }
-void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   med_non_installe();
 }
@@ -136,9 +137,10 @@ void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis
 /*! @brief For each bord get starting and ending index (by construction in TRUST, face indices at the
  * boundary are grouped)
  */
-void Ecrire_MED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt_t& sz_bords_and_jnts) const
 {
-  const Domaine& dom = dom_.valeur();
+  const Domaine_t& dom = dom_.valeur();
   int nb_bords = dom.nb_front_Cl(), nb_faces_int = dom.nb_groupes_faces();
 
   // [ABN] TODO handle joints properly - they could be written too
@@ -151,13 +153,13 @@ void Ecrire_MED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_a
   // Get border names and nb of faces:
   for(int i=0; i<nb_bords + nb_faces_int; i++)
     {
-      const Frontiere& front = dom.frontiere(i);
-      if (sub_type(Raccord_base,front))
+      const Frontiere_32_64<_SIZE_>& front = dom.frontiere(i);
+      if (sub_type(Raccord_base_32_64<_SIZE_>,front))
         {
           noms_bords_and_jnts[i] = "type_raccord_";
           noms_bords_and_jnts[i] += front.le_nom();
         }
-      else if (sub_type(Groupe_Faces,front))
+      else if (sub_type(Groupe_Faces_32_64<_SIZE_>,front))
         {
           noms_bords_and_jnts[i] = "groupes_faces_";
           noms_bords_and_jnts[i] += front.le_nom();
@@ -174,7 +176,8 @@ void Ecrire_MED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_a
 //    }
 }
 
-void Ecrire_MED::ecrire_domaine(bool append)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool append)
 {
   if (Process::nproc()>Process::multiple_files)
     {
@@ -209,27 +212,29 @@ void Ecrire_MED::ecrire_domaine(bool append)
  * - or, we only write boundary faces. In this case we can still preserve face numbering for all 'classical' borders (i.e. not
  * joints) since by construction TRUST places those faces first, but faces of **joints** are renumbered.
  */
-void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base)
 {
-#if !defined(INT_is_64_) || INT_is_64_ == 1
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
 
   // Fill arrays all_faces_bords and noms_bords
   Noms noms_bords_and_jnts;
-  ArrOfInt sz_bords_and_jnts;
+  ArrOfInt_t sz_bords_and_jnts;
   get_bords_infos(noms_bords_and_jnts, sz_bords_and_jnts);
 
-  int nfaces = 0;
+  int_t nfaces = 0;
   bool full_face_mesh = domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0;
   // If the domain has faces (eg:domain computation), we can create a face mesh (all faces, incl internal ones), else only a boundary mesh
   if (full_face_mesh)
     {
+      assert((std::is_same<_SIZE_, int>::value));  // we have a Domaine_dis, so we discretized already, so we are 32bits ...
       // Faces mesh - by construction (see build_mc_face_mesh) it will have the same face numbering as in TRUST.
       dom_->build_mc_face_mesh(domaine_dis_base.valeur());
       const MEDCouplingUMesh *faces_mesh = dom_->get_mc_face_mesh();
       MCAuto<MEDCouplingUMesh> face_mesh2 = faces_mesh->clone(false); // perform a super light copy, no data array copied
       face_mesh2->setName(mfumesh_->getName());  // names have to be aligned ...
       mfumesh_->setMeshAtLevel(-1, face_mesh2, false);
-      nfaces = faces_mesh->getNumberOfCells();
+      nfaces = static_cast<int>(faces_mesh->getNumberOfCells());
     }
   else // Boundary mesh only
     {
@@ -241,9 +246,10 @@ void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& doma
 
       for (int b=0; b < noms_bords_and_jnts.size(); b++)
         {
-          const Frontiere& front = ::mes_faces_fr(dom_.valeur(),b);
-          const IntTab& som_fac = front.les_sommets_des_faces();
-          int nb_fac = som_fac.dimension(0), nb_som_fac = som_fac.dimension(1);
+          const Frontiere_t& front = ::mes_faces_fr(dom_.valeur(),b);
+          const IntTab_t& som_fac = front.les_sommets_des_faces();
+          int_t nb_fac = som_fac.dimension(0);
+          int nb_som_fac = som_fac.dimension_int(1);
           const Nom& typ_f_trust = front.faces().type(front.faces().type_face());
 
           int boundary_mesh_dimension = -1;
@@ -251,15 +257,26 @@ void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& doma
           assert(boundary_mesh_dimension == mesh_dimension_ - 1);
 
           // Convert connectivity from TRUST to MED:
-          IntTab som_fac_cpy = som_fac; // a deep copy since next method modify this in place:
+          IntTab_t som_fac_cpy = som_fac; // a deep copy since next method modify this in place:
           conn_trust_to_med(som_fac_cpy, typ_f_trust, true);
           // Insert it in the MC mesh, **always as a polygon/segment**:
-          for (int face_idx=0; face_idx < nb_fac; face_idx++)
+          for (int_t face_idx=0; face_idx < nb_fac; face_idx++)
             {
               int nvertices = nb_som_fac;
               for (int k = 0; k < nb_som_fac; k++)
                 if (som_fac_cpy(face_idx, k) < 0) nvertices--; // Non constant number of vertices (polygons)
-              boundary_mesh->insertNextCell(typ_fac_mc, nvertices, som_fac_cpy.addr() + face_idx*nb_som_fac);
+              if(std::is_same<_SIZE_, mcIdType>::value)
+                {
+                  // Wild cast just for compiler (when _SIZE_!=mcIdType) - the test above ensures pointer types are aligned:
+                  const mcIdType* where = (mcIdType *)(som_fac_cpy.addr() + face_idx*nb_som_fac);
+                  boundary_mesh->insertNextCell(typ_fac_mc, nvertices, where);
+                }
+              else
+                {
+                  auto ptr = som_fac_cpy.addr() + face_idx*nb_som_fac;
+                  std::vector<mcIdType> tmp(ptr, ptr+nvertices); // will copy and downcast
+                  boundary_mesh->insertNextCell(typ_fac_mc, nvertices, tmp.data());
+                }
             }
         }
       mfumesh_->setMeshAtLevel(-1, boundary_mesh, false);
@@ -269,7 +286,8 @@ void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& doma
   std::vector<const DataArrayIdType *> grps;
   std::vector<MCAuto<DataArrayIdType>> grps_mem;  // just for memory management -> will ensure proper array deletion when destroyed
 
-  int face_idx = 0, start, end, nb_bords = dom_->nb_front_Cl() + dom_->nb_groupes_faces();
+  int_t face_idx = 0, start, end;
+  int nb_bords = dom_->nb_front_Cl() + dom_->nb_groupes_faces();
   for (int b=0; b < nb_bords; b++, face_idx=end)  // not joints
     {
       MCAuto<DataArrayIdType> g(DataArrayIdType::New());
@@ -303,16 +321,14 @@ void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& doma
 //    }
   // Save all this:
   mfumesh_->setGroupsAtLevel(-1, grps);
-#else
-  Process::exit("EcrierMED todo 64b");
-#endif
 }
 
 /*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
  *
  * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
  */
-void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   if (Objet_U::dimension==0)
     Process::exit("Dimension is not defined. Check your data file.");
@@ -349,6 +365,14 @@ void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis
 #endif
 }
 
+#if INT_is_64_ == 2
+template <>
+void Ecrire_MED_32_64<trustIdType>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+{
+  Process::exit("Ecrire_MED_32_64<trustIdType>::ecrire_domaine_dis() -- Not allowed with a 64b object!");
+}
+#endif
+
 /*! @brief Permet d'ecrire le tableau de valeurs val comme un champ dans le fichier med de nom nom_fichier_, avec pour support le domaine de nom nom_dom.
  *
  *   @param type: CHAMPPOINT,CHAMPMAILLE,CHAMPFACES
@@ -357,8 +381,9 @@ void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis
  *   @param type_elem le type des elems du domaine
  *   @param time le temps
  */
-void Ecrire_MED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
-                              const Noms& noms_compo, const Nom& type_elem, double time)
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+                                            const Noms& noms_compo, const Nom& type_elem, double time)
 {
   if (Process::nproc()>Process::multiple_files)
     {
@@ -468,4 +493,22 @@ void Ecrire_MED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const Double
 #endif
 }
 
+#if INT_is_64_ == 2
+template <>
+void Ecrire_MED_32_64<trustIdType>::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+                                                 const Noms& noms_compo, const Nom& type_elem, double time)
+{
+  Process::exit("Ecrire_MED_32_64<trustIdType>::ecrire_champ() -- Not allowed with a 64b object!");
+}
 #endif
+
+
+#endif
+
+
+template class Ecrire_MED_32_64<int>;
+#if INT_is_64_ == 2
+template class Ecrire_MED_32_64<trustIdType>;
+#endif
+
+

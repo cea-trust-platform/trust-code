@@ -23,6 +23,7 @@
  */
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
+#include <Domaine_forward.h>
 #include <med++.h>
 #include <medcoupling++.h>
 
@@ -32,14 +33,23 @@
 #endif
 
 class Nom;
-#include <Domaine_forward.h>
 
-class LireMED : public Interprete_geometrique_base
+template <typename _SIZE_>
+class LireMED_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(LireMED);
+  Declare_instanciable_32_64(LireMED_32_64);
 public :
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using BigArrOfInt_ = TRUSTArray<int, _SIZE_>; // Always int stored inside (family numbers typically)
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
-  LireMED(const Nom& file_name, const Nom& mesh_name);
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Elem_geom_t = OWN_PTR(Elem_geom_base_32_64<_SIZE_>);
+
+  LireMED_32_64(const Nom& file_name, const Nom& mesh_name);
   Entree& interpreter_(Entree&) override;
   void lire_geom(bool subDom=true);
   void retrieve_MC_objects();
@@ -59,7 +69,7 @@ protected:
   bool convertAllToPoly_ = false;///< Should the mesh be converted to polygons/polyedrons
   bool isVEFForce_ = false;      ///< Should we force element type to be VEF compatible
   int space_dim_ = -1;           ///< Space dimension read in the MED file
-  Elem_geom type_elem_;          ///< Highest dimension element type
+  Elem_geom_t type_elem_;          ///< Highest dimension element type
   Nom type_face_;                ///< Boundary element type
   Noms noms_bords_;              ///< Names of the boundaries
   Noms exclude_grps_;            ///< Names of the (face) groups to skip when reading the file
@@ -71,12 +81,14 @@ protected:
 #endif
 
   Nom type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_boundary) const;
-  void prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2);
-  void finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) const;
+  void prepare_som_and_elem(DoubleTab_t& sommets, IntTab_t& les_elems);
+  void finalize_sommets(const DoubleTab_t& sommets2, DoubleTab_t& sommets) const;
   void write_sub_dom_datasets() const;
-  void read_boundaries(ArrOfInt& familles, IntTab& all_faces_bords);
-  void fill_frontieres(const ArrOfInt& familles, const IntTab& all_faces_bords);
-
+  void read_boundaries(BigArrOfInt_& familles, IntTab_t& all_faces_bords);
+  void fill_frontieres(const BigArrOfInt_& familles, const IntTab_t& all_faces_bords);
 };
+
+using LireMED = LireMED_32_64<int>;
+using LireMED_64 = LireMED_32_64<trustIdType>;
 
 #endif
