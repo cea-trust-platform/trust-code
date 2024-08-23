@@ -21,7 +21,7 @@
 #ifdef HAS_CGNS
 
 #ifdef MPI_
-#ifdef INT_is_64_
+#if INT_is_64_ == 1
 #define MPI_ENTIER MPI_LONG
 #else
 #define MPI_ENTIER MPI_INT

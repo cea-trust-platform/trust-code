@@ -27,7 +27,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI,"Comm_Gr
 
 
 #ifdef MPI_
-#ifdef INT_is_64_
+#if INT_is_64_ == 1
 #define MPI_ENTIER MPI_LONG
 #else
 #define MPI_ENTIER MPI_INT

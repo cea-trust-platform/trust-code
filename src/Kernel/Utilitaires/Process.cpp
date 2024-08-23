@@ -272,7 +272,7 @@ void Process::exit(const Nom& message ,int i)
     {
       int abort=0;
 #ifdef MPI_
-#ifdef INT_is_64_
+#if INT_is_64_ == 1
 #define MPI_ENTIER MPI_LONG
 #else
 #define MPI_ENTIER MPI_INT
