@@ -17,33 +17,27 @@
 #include <Probleme_base.h>
 #include <Op_Moyenne.h>
 
-Implemente_instanciable(Op_Moyenne,"Op_Moyenne",Operateur_Statistique_tps_base);
+Implemente_instanciable(Op_Moyenne, "Op_Moyenne", Operateur_Statistique_tps_base);
 
-Sortie& Op_Moyenne::printOn(Sortie& s ) const
+Sortie& Op_Moyenne::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Op_Moyenne::readOn(Entree& s )
+Entree& Op_Moyenne::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
-
-///////////////////////////////////////////////////////////////////
-//
-//    Implementation de fonctions de la classe Op_Moyenne
-//
-///////////////////////////////////////////////////////////////////
 
 void Op_Moyenne::completer(const Probleme_base& Pb)
 {
   Nom nom_pour_post("Moyenne_");
 
-  const REF(Champ_Generique_base)& mon_champ=integrale_champ.le_champ();
+  const REF(Champ_Generique_base) &mon_champ = integrale_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 
-  integrale_champ->nommer(nom_pour_post);
+  integrale_champ_.le_champ_calcule().nommer(nom_pour_post);
   // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
 
   Champ espace_stockage_source;
@@ -58,13 +52,14 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
   if (!ch_moyenne_convergee_.non_nul())
     valeurs() = 0.;
   int nb_comp = source.nb_comp();
-  integrale_champ->associer_domaine_dis_base(Pb.domaine_dis().valeur());
-  integrale_champ->fixer_nb_comp(nb_comp);
+  integrale_champ_.le_champ_calcule().associer_domaine_dis_base(Pb.domaine_dis().valeur());
+  integrale_champ_.le_champ_calcule().fixer_nb_comp(nb_comp);
   if (nb_comp == 1)
-    integrale_champ->fixer_unite(source.unite());
+    integrale_champ_.le_champ_calcule().fixer_unite(source.unite());
   else
-    integrale_champ->fixer_unites(source.unites());
-  integrale_champ->changer_temps(Pb.schema_temps().temps_courant());
+    integrale_champ_.le_champ_calcule().fixer_unites(source.unites());
+
+  integrale_champ_.le_champ_calcule().changer_temps(Pb.schema_temps().temps_courant());
 }
 
 DoubleTab Op_Moyenne::calculer_valeurs() const

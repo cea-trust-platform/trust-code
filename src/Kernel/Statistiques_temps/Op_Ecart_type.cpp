@@ -17,34 +17,28 @@
 #include <Op_Ecart_type.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable(Op_Ecart_type,"Op_Ecart_type",Operateur_Statistique_tps_base);
+Implemente_instanciable(Op_Ecart_type, "Op_Ecart_type", Operateur_Statistique_tps_base);
 
-Sortie& Op_Ecart_type::printOn(Sortie& s ) const
+Sortie& Op_Ecart_type::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Op_Ecart_type::readOn(Entree& s )
+Entree& Op_Ecart_type::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
-
-//////////////////////////////////////////////////////////////////
-//
-//         Fonctions de la classe Op_Ecart_type
-//
-/////////////////////////////////////////////////////////////////
 
 void Op_Ecart_type::completer(const Probleme_base& Pb)
 {
   Nom nom_pour_post("Ecart_type_");
-  const REF(Champ_Generique_base)& mon_champ=integrale_carre_champ.le_champ();
+  const REF(Champ_Generique_base) &mon_champ = integrale_carre_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 
-  integrale_carre_champ->nommer(nom_pour_post);
-  if (la_moyenne.non_nul())
-    integrale_champ = moyenne().integrale();
+  integrale_carre_champ_.le_champ_calcule().nommer(nom_pour_post);
+  if (la_moyenne_.non_nul())
+    integrale_champ_ = moyenne().integrale();
 
   // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
   Champ espace_stockage_source;
@@ -53,35 +47,36 @@ void Op_Ecart_type::completer(const Probleme_base& Pb)
 
   // Initialisation de la structure du tableau val.
   //  Est-bien le bon endroit pour faire ca ? (plutot dans integrale_carre_champ ?)
-  integrale_carre_champ->associer_domaine_dis_base(Pb.domaine_dis().valeur());
+  integrale_carre_champ_.le_champ_calcule().associer_domaine_dis_base(Pb.domaine_dis().valeur());
   int nb_comp = source.nb_comp();
-  integrale_carre_champ->fixer_nb_comp(nb_comp);
+  integrale_carre_champ_.le_champ_calcule().fixer_nb_comp(nb_comp);
   DoubleTab& val = valeurs_carre();
   val.reset();
   val = tab1;
   val = 0.;
 
   if (nb_comp == 1)
-    integrale_carre_champ->fixer_unite(source.unite());
+    integrale_carre_champ_.le_champ_calcule().fixer_unite(source.unite());
   else
-    integrale_carre_champ->fixer_unites(source.unites());
-  integrale_carre_champ->changer_temps(Pb.schema_temps().temps_courant());
+    integrale_carre_champ_.le_champ_calcule().fixer_unites(source.unites());
+
+  integrale_carre_champ_.le_champ_calcule().changer_temps(Pb.schema_temps().temps_courant());
 }
 
 DoubleTab Op_Ecart_type::calculer_valeurs() const
 {
   double dt = dt_integration();
-  if (!est_egal(dt,dt_integration_carre()))
+  if (!est_egal(dt, dt_integration_carre()))
     {
       Cerr << "Not implemented yet in Op_Ecart_type::calculer_valeurs()" << finl;
       exit();
     }
   DoubleTab ecart_type(valeurs_carre());
-  if ( dt > 0 )
+  if (dt > 0)
     {
       ecart_type *= dt;                      // sum(I^2)*dt
-      ecart_type.ajoute_carre(-1,valeurs()); // sum(I^2)*dt-sum(I)^2
-      ecart_type /= (dt*dt);                 // sum(I^2)/dt-(sum(I)/dt)^2)
+      ecart_type.ajoute_carre(-1, valeurs()); // sum(I^2)*dt-sum(I)^2
+      ecart_type /= (dt * dt);                 // sum(I^2)/dt-(sum(I)/dt)^2)
       ecart_type.abs();                      // To avoid negative number ?
       ecart_type.racine_carree();            // sqrt(mean(I^2)-mean(I)^2)
     }

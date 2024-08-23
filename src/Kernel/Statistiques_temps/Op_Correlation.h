@@ -27,29 +27,29 @@ class Op_Correlation : public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Correlation);
 public:
-  inline const Nom& le_nom() const override { return integrale_tps_ab_.le_nom(); }
-  inline double temps() const override { return integrale_tps_ab_->temps(); }
+  inline const Nom& le_nom() const override { return integrale_tps_ab_.le_champ_calcule().le_nom(); }
+  inline double temps() const override { return integrale_tps_ab_.le_champ_calcule().temps(); }
   inline const Integrale_tps_produit_champs& integrale() const override { return integrale_tps_ab_; }
   inline const Op_Moyenne& la_moyenne_a() const { return la_moyenne_a_.valeur(); }
   inline const Op_Moyenne& la_moyenne_b() const { return la_moyenne_b_.valeur(); }
-  inline const DoubleTab& valeurs_a() const { return integrale_tps_a_.valeur()->valeurs(); }
-  inline const DoubleTab& valeurs_b() const { return integrale_tps_b_.valeur()->valeurs(); }
-  inline DoubleTab& valeurs_ab() { return integrale_tps_ab_->valeurs(); }
+  inline const DoubleTab& valeurs_a() const { return integrale_tps_a_->le_champ_calcule().valeurs(); }
+  inline const DoubleTab& valeurs_b() const { return integrale_tps_b_->le_champ_calcule().valeurs(); }
+  inline DoubleTab& valeurs_ab() { return integrale_tps_ab_.le_champ_calcule().valeurs(); }
   inline double dt_integration_a() const { return integrale_tps_a_->dt_integration(); }
   inline double dt_integration_b() const { return integrale_tps_b_->dt_integration(); }
   inline double dt_integration_ab() const { return integrale_tps_ab_.dt_integration(); }
   inline void mettre_a_jour(double tps) override;
   inline void initialiser(double val) override;
-  inline void associer(const Domaine_dis_base& , const Champ_base& , double t1, double t2 );
-  inline void associer(const Domaine_dis_base& , const Champ_Generique_base& , double t1, double t2 ) override;
-  inline void associer(const Domaine_dis_base& ,const Champ_Generique_base& ,const Champ_Generique_base& , double t1, double t2 );
-  inline void fixer_tstat_deb(double, double ) override;
-  inline void fixer_tstat_fin(double ) override;
-  int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format) override;
+  inline void associer(const Domaine_dis_base&, const Champ_base&, double t1, double t2);
+  inline void associer(const Domaine_dis_base&, const Champ_Generique_base&, double t1, double t2) override;
+  inline void associer(const Domaine_dis_base&, const Champ_Generique_base&, const Champ_Generique_base&, double t1, double t2);
+  inline void fixer_tstat_deb(double, double) override;
+  inline void fixer_tstat_fin(double) override;
+  int completer_post_statistiques(const Domaine& dom, const int is_axi, Format_Post_base& format) override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
-  void completer(const Probleme_base& ) override;
+  void completer(const Probleme_base&) override;
   DoubleTab calculer_valeurs() const override;
 
 protected:
@@ -63,9 +63,9 @@ protected:
 inline void Op_Correlation::associer_op_stat(const Operateur_Statistique_tps_base& un_op_stat)
 {
   if (!la_moyenne_a_.non_nul())
-    la_moyenne_a_ = ref_cast(Op_Moyenne,un_op_stat);
+    la_moyenne_a_ = ref_cast(Op_Moyenne, un_op_stat);
   else if (!la_moyenne_b_.non_nul())
-    la_moyenne_b_ = ref_cast(Op_Moyenne,un_op_stat);
+    la_moyenne_b_ = ref_cast(Op_Moyenne, un_op_stat);
   else
     {
       Cerr << "Op_Correlation::associer_op_stat : Two operators of type Moyenne have already been associated." << finl;
@@ -80,61 +80,60 @@ inline void Op_Correlation::mettre_a_jour(double tps)
 
 inline void Op_Correlation::initialiser(double val_init)
 {
-  integrale_tps_ab_->valeurs()= val_init;
+  integrale_tps_ab_.le_champ_calcule().valeurs() = val_init;
 }
 
-inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_base& le_champ, double t1,double t2)
+inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_base& le_champ, double t1, double t2)
 {
   Cerr << "Exactly two fields must be associated to Correlation operator." << finl;
   exit();
 }
 
-inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1,double t2)
+inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2)
 {
   Cerr << "Exactly two fields must be associated to Correlation operator." << finl;
   exit();
 }
 
-inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ_a, const
-                                     Champ_Generique_base& le_champ_b, double t1,double t2)
+inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ_a, const Champ_Generique_base& le_champ_b, double t1, double t2)
 {
   Champ espace_stockage_source;
   const Champ_base& source = le_champ_a.get_champ(espace_stockage_source);
   Nom type_le_champ = source.que_suis_je();
 
   int renomme;
-  renomme=0;
+  renomme = 0;
   if (type_le_champ.debute_par("Champ"))
-    renomme=1;
+    renomme = 1;
 
   type_le_champ.suffix("Champ_");
   type_le_champ.suffix("Fonc_");
   Nom type("Champ_Fonc_");
-  if (renomme==1)
-    type+=type_le_champ;
+  if (renomme == 1)
+    type += type_le_champ;
   else
     type = type_le_champ;
 
-  integrale_tps_ab_.typer(type);
-  integrale_tps_ab_->associer_domaine_dis_base(une_zdis);
-  integrale_tps_ab_.associer(le_champ_a,le_champ_b,1,1,t1,t2);
+  integrale_tps_ab_.typer_champ(type);
+  integrale_tps_ab_.le_champ_calcule().associer_domaine_dis_base(une_zdis);
+  integrale_tps_ab_.associer(le_champ_a, le_champ_b, 1, 1, t1, t2);
 }
 
 inline int Op_Correlation::sauvegarder(Sortie& os) const
 {
-  return integrale_tps_ab_->sauvegarder(os);
+  return integrale_tps_ab_.le_champ_calcule().sauvegarder(os);
 }
 
 inline int Op_Correlation::reprendre(Entree& is)
 {
-  return integrale_tps_ab_->reprendre(is);
+  return integrale_tps_ab_.le_champ_calcule().reprendre(is);
 }
 
-inline void Op_Correlation::fixer_tstat_deb(double tdeb,double tps)
+inline void Op_Correlation::fixer_tstat_deb(double tdeb, double tps)
 {
   integrale_tps_ab_.fixer_t_debut(tdeb);
   integrale_tps_ab_.fixer_tps_integrale(tps);
-  integrale_tps_ab_.fixer_dt_integr(tps-tdeb);
+  integrale_tps_ab_.fixer_dt_integr(tps - tdeb);
 }
 
 inline void Op_Correlation::fixer_tstat_fin(double tps)

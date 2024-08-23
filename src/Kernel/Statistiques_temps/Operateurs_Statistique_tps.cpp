@@ -47,8 +47,8 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
   if (a_faire)
     {
       Nom mon_ident(que_suis_je());
-      mon_ident += mon_post->probleme().domaine().le_nom();
-      double temps = mon_post->probleme().schema_temps().temps_courant();
+      mon_ident += mon_post_->probleme().domaine().le_nom();
+      double temps = mon_post_->probleme().schema_temps().temps_courant();
       mon_ident += Nom(temps, "%e");
       os << mon_ident << finl;
       os << que_suis_je() << finl;
@@ -69,7 +69,7 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
 int Operateurs_Statistique_tps::reprendre(Entree& is)
 {
   //Cerr << "Operateurs_Statistique_tps::reprendre" << finl;
-  if (mon_post.non_nul())
+  if (mon_post_.non_nul())
     {
       Nom bidon;
       is >> bidon;
@@ -90,7 +90,7 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
       is >> tstat_deb_sauv;
       is >> temps_derniere_mise_a_jour_stats;
       //Cerr << "temps_derniere_mise_a_jour_stats" << temps_derniere_mise_a_jour_stats << finl;
-      double tinit = mon_post->probleme().schema_temps().temps_courant();
+      double tinit = mon_post_->probleme().schema_temps().temps_courant();
 
       // Plusieurs cas possibles:
       if (inf_strict(tinit,temps_derniere_mise_a_jour_stats,1.e-5))

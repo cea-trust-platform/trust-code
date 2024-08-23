@@ -31,8 +31,8 @@ class Integrale_tps_produit_champs: public Integrale_tps_Champ
   Declare_instanciable(Integrale_tps_produit_champs);
 public:
 
-  inline const REF(Champ_Generique_base)& mon_premier_champ() const { return mon_champ_; }
-  inline const REF(Champ_Generique_base)& mon_second_champ() const { return mon_second_champ_; }
+  inline const REF(Champ_Generique_base)& mon_premier_champ() const { return le_champ_ref_; }
+  inline const REF(Champ_Generique_base)& mon_second_champ() const { return le_second_champ_ref_; }
   inline int premiere_puissance() const { return puissance_; }
   inline int seconde_puissance() const { return seconde_puissance_; }
   inline const int& get_support_different() const { return support_different_; }
@@ -41,7 +41,7 @@ public:
   inline void associer(const Champ_Generique_base& ch1, const Champ_Generique_base& ch2, int n1, int n2, double t0, double t1)
   {
     Integrale_tps_Champ::associer(ch1, n1, t0, t1);
-    mon_second_champ_ = ch2;
+    le_second_champ_ref_ = ch2;
     seconde_puissance_ = n2;
   }
 
@@ -49,15 +49,15 @@ public:
   {
     mettre_a_jour_integrale();
     Champ espace_stockage_source;
-    const Champ_base& source = mon_champ_->get_champ(espace_stockage_source);
-    valeur().changer_temps(source.temps());
+    const Champ_base& source = le_champ_ref_->get_champ(espace_stockage_source);
+    le_champ_->changer_temps(source.temps());
   }
 
   void mettre_a_jour_integrale() override;
   void ajoute_produit_tensoriel(double, const Champ_base&, const Champ_base&);
 
 protected:
-  REF(Champ_Generique_base) mon_second_champ_;
+  REF(Champ_Generique_base) le_second_champ_ref_;
   int seconde_puissance_ = -10, support_different_ = -10;
 };
 

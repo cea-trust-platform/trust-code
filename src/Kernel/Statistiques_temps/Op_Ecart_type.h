@@ -26,94 +26,94 @@ class Op_Ecart_type : public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Ecart_type);
 public:
-  inline const Nom& le_nom() const override { return integrale_carre_champ.le_nom(); }
-  inline double temps() const override { return integrale_carre_champ->temps(); }
-  inline const Integrale_tps_Champ& integrale() const override { return integrale_carre_champ; }
-  inline const Op_Moyenne& moyenne() const { return la_moyenne.valeur(); }
-  inline DoubleTab& valeurs() { return integrale_champ.valeur()->valeurs(); }
-  inline const DoubleTab& valeurs() const { return integrale_champ.valeur()->valeurs(); }
+  inline const Nom& le_nom() const override { return integrale_carre_champ_.le_champ_calcule().le_nom(); }
+  inline double temps() const override { return integrale_carre_champ_.le_champ_calcule().temps(); }
+  inline const Integrale_tps_Champ& integrale() const override { return integrale_carre_champ_; }
+  inline const Op_Moyenne& moyenne() const { return la_moyenne_.valeur(); }
+  inline DoubleTab& valeurs() { return integrale_champ_->le_champ_calcule().valeurs(); }
+  inline const DoubleTab& valeurs() const { return integrale_champ_->le_champ_calcule().valeurs(); }
 
-  inline DoubleTab& valeurs_carre() { return integrale_carre_champ->valeurs(); }
-  inline const DoubleTab& valeurs_carre() const { return integrale_carre_champ->valeurs(); }
-  inline double dt_integration() const { return integrale_champ->dt_integration(); }
-  inline double dt_integration_carre() const { return integrale_carre_champ.dt_integration(); }
+  inline DoubleTab& valeurs_carre() { return integrale_carre_champ_.le_champ_calcule().valeurs(); }
+  inline const DoubleTab& valeurs_carre() const { return integrale_carre_champ_.le_champ_calcule().valeurs(); }
+  inline double dt_integration() const { return integrale_champ_->dt_integration(); }
+  inline double dt_integration_carre() const { return integrale_carre_champ_.dt_integration(); }
   inline void mettre_a_jour(double tps) override;
   inline void initialiser(double val) override;
-  inline void associer(const Domaine_dis_base& , const Champ_Generique_base& ,double t1, double t2 ) override;
-  inline void fixer_tstat_deb(double, double ) override;
-  inline void fixer_tstat_fin(double ) override;
-  inline void associer_op_stat(const Operateur_Statistique_tps_base& ) override;
-  void completer(const Probleme_base& ) override;
+  inline void associer(const Domaine_dis_base&, const Champ_Generique_base&, double t1, double t2) override;
+  inline void fixer_tstat_deb(double, double) override;
+  inline void fixer_tstat_fin(double) override;
+  inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
+  void completer(const Probleme_base&) override;
   DoubleTab calculer_valeurs() const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
 
 protected:
-  REF(Op_Moyenne) la_moyenne;
-  REF(Integrale_tps_Champ) integrale_champ;
-  Integrale_tps_Champ integrale_carre_champ;
+  REF(Op_Moyenne) la_moyenne_;
+  REF(Integrale_tps_Champ) integrale_champ_;
+  Integrale_tps_Champ integrale_carre_champ_;
 };
 
 inline void Op_Ecart_type::associer_op_stat(const Operateur_Statistique_tps_base& un_op_stat)
 {
-  la_moyenne = ref_cast(Op_Moyenne,un_op_stat);
+  la_moyenne_ = ref_cast(Op_Moyenne, un_op_stat);
 }
 
 inline void Op_Ecart_type::mettre_a_jour(double tps)
 {
-  integrale_carre_champ.mettre_a_jour(tps);
+  integrale_carre_champ_.mettre_a_jour(tps);
 }
 
 inline void Op_Ecart_type::initialiser(double val_init)
 {
-  integrale_carre_champ->valeurs()= val_init;
+  integrale_carre_champ_.le_champ_calcule().valeurs() = val_init;
 }
 
-inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis,const Champ_Generique_base& le_champ,double t1,double t2)
+inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2)
 {
   Champ espace_stockage_source;
   const Champ_base& source = le_champ.get_champ(espace_stockage_source);
   Nom type_le_champ = source.que_suis_je();
 
   int renomme;
-  renomme=0;
+  renomme = 0;
   if (type_le_champ.debute_par("Champ"))
-    renomme=1;
+    renomme = 1;
 
   type_le_champ.suffix("Champ_");
   type_le_champ.suffix("Fonc_");
   Nom type("Champ_Fonc_");
 
-  if (renomme==1)
-    type+=type_le_champ;
+  if (renomme == 1)
+    type += type_le_champ;
   else
     type = type_le_champ;
 
-  integrale_carre_champ.typer(type);
-  integrale_carre_champ->associer_domaine_dis_base(une_zdis);
-  integrale_carre_champ.associer(le_champ,2,t1,t2);
+  integrale_carre_champ_.typer_champ(type);
+  integrale_carre_champ_.le_champ_calcule().associer_domaine_dis_base(une_zdis);
+  integrale_carre_champ_.associer(le_champ, 2, t1, t2);
 }
 
 inline int Op_Ecart_type::sauvegarder(Sortie& os) const
 {
-  return integrale_carre_champ->sauvegarder(os);
+  return integrale_carre_champ_.le_champ_calcule().sauvegarder(os);
 }
 
 inline int Op_Ecart_type::reprendre(Entree& is)
 {
-  return integrale_carre_champ->reprendre(is);
+  return integrale_carre_champ_.le_champ_calcule().reprendre(is);
 }
 
-inline void Op_Ecart_type::fixer_tstat_deb(double tdeb,double tps)
+inline void Op_Ecart_type::fixer_tstat_deb(double tdeb, double tps)
 {
-  integrale_carre_champ.fixer_t_debut(tdeb);
-  integrale_carre_champ.fixer_tps_integrale(tps);
-  integrale_carre_champ.fixer_dt_integr(tps-tdeb);
+  integrale_carre_champ_.fixer_t_debut(tdeb);
+  integrale_carre_champ_.fixer_tps_integrale(tps);
+  integrale_carre_champ_.fixer_dt_integr(tps - tdeb);
 }
 
 inline void Op_Ecart_type::fixer_tstat_fin(double tps)
 {
-  integrale_carre_champ.fixer_t_fin(tps);
+  integrale_carre_champ_.fixer_t_fin(tps);
 }
 
 #endif

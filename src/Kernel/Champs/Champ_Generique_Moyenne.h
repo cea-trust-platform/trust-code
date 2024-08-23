@@ -50,7 +50,7 @@ public:
 
   inline double temps() const override
   {
-    return Op_Moyenne_.integrale()->temps();
+    return Op_Moyenne_.integrale().le_champ_calcule().temps();
   };
   inline const Integrale_tps_Champ& integrale() const override
   {

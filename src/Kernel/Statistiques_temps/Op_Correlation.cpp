@@ -18,23 +18,17 @@
 #include <Schema_Temps_base.h>
 #include <Op_Correlation.h>
 
-Implemente_instanciable(Op_Correlation,"Op_Correlation",Operateur_Statistique_tps_base);
+Implemente_instanciable(Op_Correlation, "Op_Correlation", Operateur_Statistique_tps_base);
 
-Sortie& Op_Correlation::printOn(Sortie& s ) const
+Sortie& Op_Correlation::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Op_Correlation::readOn(Entree& s )
+Entree& Op_Correlation::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
-
-//////////////////////////////////////////////////////////////////
-//
-//         Fonctions de la classe Ecart_type_Champ_Face
-//
-/////////////////////////////////////////////////////////////////
 
 void Op_Correlation::completer(const Probleme_base& Pb)
 {
@@ -61,7 +55,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   //pour pouvoir reproduire le nom des variables dans le lml
   Noms noms_a, noms_b;
 
-  if (!(sub_type(Champ_Generique_refChamp,a.valeur()) && (sub_type(Champ_Generique_refChamp,b.valeur()))))
+  if (!(sub_type(Champ_Generique_refChamp,a.valeur()) && (sub_type(Champ_Generique_refChamp, b.valeur()))))
     {
       noms_a = a->get_property("nom");
       noms_b = b->get_property("nom");
@@ -79,7 +73,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   //pour pouvoir reproduire le nom des variables dans le lml
   Noms compo_a, compo_b;
 
-  if (!(sub_type(Champ_Generique_refChamp,a.valeur()) && (sub_type(Champ_Generique_refChamp,b.valeur()))))
+  if (!(sub_type(Champ_Generique_refChamp,a.valeur()) && (sub_type(Champ_Generique_refChamp, b.valeur()))))
     {
       compo_a = a->get_property("composantes");
       compo_b = b->get_property("composantes");
@@ -98,29 +92,29 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   // Note B.M.: integrale_tps_ab_ est deja type dans Correlation::associer
   // En revanche fixer_nb_valeurs_nodales n'est pas fait.
 
-  if ( ( tab_a.get_md_vector() != tab_b.get_md_vector() ) ||
-       ( tab_a.dimension_tot(0) != tab_b.dimension_tot(0) ) ||
-       ( nb_compo_a > 1 && ( tab_a.nb_dim() == 1 || tab_a.dimension(1) != nb_compo_a ) ) ||
-       ( nb_compo_b > 1 && ( tab_b.nb_dim() == 1 || tab_b.dimension(1) != nb_compo_b ) ) )
+  if ((tab_a.get_md_vector() != tab_b.get_md_vector())
+      || (tab_a.dimension_tot(0) != tab_b.dimension_tot(0))
+      || (nb_compo_a > 1 && (tab_a.nb_dim() == 1 || tab_a.dimension(1) != nb_compo_a))
+      || (nb_compo_b > 1 && (tab_b.nb_dim() == 1 || tab_b.dimension(1) != nb_compo_b)))
     {
       // Support different pour les champs a et b ou pour leurs composantes
       // Alors on ramene aux elements en creant un Champ_Fonc_PO_VDF ou VEF
-      integrale_tps_ab_.support_different()=1;
-      Nom Champ_Fonc_P0="Champ_Fonc_P0_";
-      Champ_Fonc_P0+=Pb.discretisation().que_suis_je().substr_old(1,3);
-      integrale_tps_ab_.typer(Champ_Fonc_P0);
+      integrale_tps_ab_.support_different() = 1;
+      Nom Champ_Fonc_P0 = "Champ_Fonc_P0_";
+      Champ_Fonc_P0 += Pb.discretisation().que_suis_je().substr_old(1, 3);
+      integrale_tps_ab_.typer_champ(Champ_Fonc_P0);
       nb_valeurs_nodales = domaine.nb_elem();
     }
   else
     {
       // Meme support pour les champs a et b
-      integrale_tps_ab_.support_different()=0;
+      integrale_tps_ab_.support_different() = 0;
       if (tab_a.size_reelle_ok())
         nb_valeurs_nodales = tab_a.dimension(0);
       else
         nb_valeurs_nodales = -1; // B.M.: quoi donner a fixer_nb_valeurs_nodales ???
     }
-  int nb_comp= nb_compo_a * nb_compo_b;
+  int nb_comp = nb_compo_a * nb_compo_b;
   DoubleTab& val = valeurs_ab();
   Noms noms_composantes;
   if (nb_compo_a == 1)
@@ -133,80 +127,80 @@ void Op_Correlation::completer(const Probleme_base& Pb)
         // A champ scalaire, B champ vectoriel
         noms_composantes.dimensionner(nb_comp);
         Nom debut("Correlation_");
-        debut += nom_a+"_";
-        for (int i=0; i<nb_comp; i++)
-          noms_composantes[i]=debut+compo_b[i];
+        debut += nom_a + "_";
+        for (int i = 0; i < nb_comp; i++)
+          noms_composantes[i] = debut + compo_b[i];
       }
   else if (nb_compo_b == 1)
     {
       // A champ vectoriel, B champ scalaire
       noms_composantes.dimensionner(nb_comp);
       Nom debut("Correlation_");
-      debut+=nom_b+"_";
-      for (int i=0; i<nb_comp; i++)
-        noms_composantes[i]=debut+compo_a[i];
+      debut += nom_b + "_";
+      for (int i = 0; i < nb_comp; i++)
+        noms_composantes[i] = debut + compo_a[i];
     }
   else
     {
       // A et B champs vectoriels
       noms_composantes.dimensionner(nb_comp);
       Nom debut("Correlation_");
-      for (int i=0; i<nb_compo_a; i++)
-        for (int j=0; j<nb_compo_b; j++)
-          noms_composantes[i*nb_compo_b+j]=debut+compo_a[i]+"_"+compo_b[j];
+      for (int i = 0; i < nb_compo_a; i++)
+        for (int j = 0; j < nb_compo_b; j++)
+          noms_composantes[i * nb_compo_b + j] = debut + compo_a[i] + "_" + compo_b[j];
     }
 
   if (nb_comp > 1)
     val.resize(0, nb_comp);
 
   Nom nom_pour_post("Correlation_");
-  nom_pour_post+=nom_a+"_"+nom_b;
-  integrale_tps_ab_->nommer(nom_pour_post);
+  nom_pour_post += nom_a + "_" + nom_b;
+  integrale_tps_ab_.le_champ_calcule().nommer(nom_pour_post);
 
-  integrale_tps_ab_->associer_domaine_dis_base(domaine);
-  integrale_tps_ab_->fixer_nb_comp(nb_comp);
+  integrale_tps_ab_.le_champ_calcule().associer_domaine_dis_base(domaine);
+  integrale_tps_ab_.le_champ_calcule().fixer_nb_comp(nb_comp);
 
   // BM: le parametre de fixer_nb_valeurs_nodales est inutile,
   //  le champ sait determiner tout seul combien de ddl il a, mais
   //  il y a un test sur le parametre: il faut que la valeur soit la bonne.
-  integrale_tps_ab_->fixer_nb_valeurs_nodales(nb_valeurs_nodales);
+  integrale_tps_ab_.le_champ_calcule().fixer_nb_valeurs_nodales(nb_valeurs_nodales);
 
   // On fixe les unites
   Nom unite(unites_a[0]);
-  unite+=".";
-  unite+=unites_b[0];
+  unite += ".";
+  unite += unites_b[0];
 
   if (nb_comp == 1)
-    integrale_tps_ab_->fixer_unite(unite);
+    integrale_tps_ab_.le_champ_calcule().fixer_unite(unite);
   else
     {
       Noms unites(nb_comp);
-      for (int i=0; i<unites.size(); i++)
-        unites[i]=unite;
-      integrale_tps_ab_->fixer_noms_compo(noms_composantes);
-      integrale_tps_ab_->fixer_unites(unites);
+      for (int i = 0; i < unites.size(); i++)
+        unites[i] = unite;
+      integrale_tps_ab_.le_champ_calcule().fixer_noms_compo(noms_composantes);
+      integrale_tps_ab_.le_champ_calcule().fixer_unites(unites);
     }
-  integrale_tps_ab_->changer_temps(Pb.schema_temps().temps_courant());
+  integrale_tps_ab_.le_champ_calcule().changer_temps(Pb.schema_temps().temps_courant());
 }
 
 DoubleTab Op_Correlation::calculer_valeurs() const
 {
   Integrale_tps_produit_champs correlation(integrale_tps_ab_);
   const double dt_ab = dt_integration_ab();
-  if ( dt_ab > 0 )
+  if (dt_ab > 0)
     {
       // On calcule Moyenne(a'b')=Moyenne(ab)-Moyenne(a)*Moyenne(b)
-      correlation->valeurs() /= dt_ab;
+      correlation.le_champ_calcule().valeurs() /= dt_ab;
       const double dt_a = dt_integration_a();
       const double dt_b = dt_integration_b();
-      assert(est_egal(dt_a,dt_ab));
-      assert(est_egal(dt_b,dt_ab));
-      correlation.ajoute_produit_tensoriel(-1/(dt_a*dt_b),integrale_tps_a_->valeur(),integrale_tps_b_->valeur());
+      assert(est_egal(dt_a, dt_ab));
+      assert(est_egal(dt_b, dt_ab));
+      correlation.ajoute_produit_tensoriel(-1 / (dt_a * dt_b), integrale_tps_a_->le_champ_calcule(), integrale_tps_b_->le_champ_calcule());
     }
-  return correlation->valeurs();
+  return correlation.le_champ_calcule().valeurs();
 }
 
-int Op_Correlation::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
+int Op_Correlation::completer_post_statistiques(const Domaine& dom, const int is_axi, Format_Post_base& format)
 {
   return 1;
 }

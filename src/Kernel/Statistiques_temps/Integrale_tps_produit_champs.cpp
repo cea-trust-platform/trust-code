@@ -83,7 +83,7 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
   if (support_different_)
     {
       // On ramene au centre des elements
-      const DoubleTab& xp = ref_cast(Domaine_VF,valeur().domaine_dis_base()).xp();
+      const DoubleTab& xp = ref_cast(Domaine_VF,le_champ_->domaine_dis_base()).xp();
       int nb_elem_tot = xp.dimension_tot(0);
       DoubleTab val_a, val_b;
       // Le jour ou les champs seront mieux foutus, on n'aura
@@ -92,13 +92,12 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
       val_b.resize(nb_elem_tot, b.nb_comp());
       a.valeur_aux(xp, val_a);
       b.valeur_aux(xp, val_b);
-      valeur().valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
-      valeur().valeurs().echange_espace_virtuel();
+      le_champ_->valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
+      le_champ_->valeurs().echange_espace_virtuel();
     }
   else
     {
-      const DoubleTab& val_a = a.valeurs();
-      const DoubleTab& val_b = b.valeurs();
-      valeur().valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
+      const DoubleTab& val_a = a.valeurs(), &val_b = b.valeurs();
+      le_champ_->valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
     }
 }

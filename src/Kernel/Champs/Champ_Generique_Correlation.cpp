@@ -92,7 +92,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
 
 const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage) const
 {
-  int nb_comp = integrale()->nb_comp();
+  int nb_comp = integrale().le_champ_calcule().nb_comp();
   //Nature_du_champ nature_source = source.nature_du_champ();
   //Pas completement exact car il y a le cas de la correlation vecteur-vecteur et dans
   //ce cas c est un tenseur qui est manipule (la nature n est pas scalaire ou vectorielle)
@@ -118,7 +118,7 @@ const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const
     {
     case 0:
       {
-        const Noms noms_unites = integrale()->unites();
+        const Noms noms_unites = integrale().le_champ_calcule().unites();
         return noms_unites;
       }
     case 1:
@@ -152,7 +152,7 @@ const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const
           }
         */
 
-        const Noms noms_compo = integrale()->noms_compo();
+        const Noms noms_compo = integrale().le_champ_calcule().noms_compo();
         return noms_compo;
       }
     }

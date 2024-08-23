@@ -29,33 +29,21 @@ class Motcle;
  *
  * @sa Postraitement
  */
-class Operateurs_Statistique_tps : public LIST(DERIV(Operateur_Statistique_tps_base))
+class Operateurs_Statistique_tps: public LIST(DERIV(Operateur_Statistique_tps_base))
 {
   Declare_instanciable(Operateurs_Statistique_tps);
 
 public:
+  inline int lserie() const { return lserie_; }
+  inline double dt_integr_serie() const { return dt_integr_serie_; }
 
-  inline int lserie() const;
-  inline double dt_integr_serie() const;
-  int sauvegarder(Sortie& os) const override;
-  int reprendre(Entree& is) override;
+  int sauvegarder(Sortie &os) const override;
+  int reprendre(Entree &is) override;
 
 protected:
-
-  REF(Postraitement) mon_post;
-  int lserie_=-123;
-  double dt_integr_serie_=123.;
-
+  REF(Postraitement) mon_post_;
+  int lserie_ = -123;
+  double dt_integr_serie_ = 123.;
 };
 
-inline int Operateurs_Statistique_tps::lserie() const
-{
-  return lserie_;
-}
-
-inline double Operateurs_Statistique_tps::dt_integr_serie() const
-{
-  return dt_integr_serie_;
-}
-
-#endif
+#endif /* Operateurs_Statistique_tps_included */

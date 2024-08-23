@@ -18,17 +18,21 @@
 
 #include <Champ_Generique_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 
 class Domaine_dis_base;
 class Champ_base;
 
-class Integrale_tps_Champ : public Champ_Fonc
+class Integrale_tps_Champ : public Objet_U
 {
   Declare_instanciable(Integrale_tps_Champ);
 public:
-  inline const REF(Champ_Generique_base)& le_champ() const { return mon_champ_; }
+  inline const Champ_Fonc_base& le_champ_calcule() const { return le_champ_.valeur(); }
+  inline Champ_Fonc_base& le_champ_calcule() { return le_champ_.valeur(); }
+  inline const REF(Champ_Generique_base)& le_champ() const { return le_champ_ref_; }
+
   inline double temps_integrale() const { return tps_integrale_; } // le temps courant de l'integrale
   inline double t_debut() const { return t_debut_; } // le temps de debut d'integration
   inline double t_fin() const { return t_fin_; } //  le temps de fin d'integration
@@ -41,28 +45,31 @@ public:
   inline void associer(const Champ_Generique_base&, int, double, double);
   virtual void mettre_a_jour_integrale();
 
-  virtual inline void mettre_a_jour(double )
+  virtual inline void mettre_a_jour(double)
   {
     mettre_a_jour_integrale();
-    double le_temps = mon_champ_->get_time();
-    valeur().changer_temps(le_temps);
+    double le_temps = le_champ_ref_->get_time();
+    le_champ_->changer_temps(le_temps);
   }
 
-protected :
-  REF(Champ_Generique_base) mon_champ_;
+  void typer_champ(const Nom&);
+
+protected:
+  OWN_PTR(Champ_Fonc_base) le_champ_;
+  REF(Champ_Generique_base) le_champ_ref_;
   int puissance_ = -10;
-  double t_debut_ = -100., t_fin_= -100.;
-  double tps_integrale_= -100., dt_integr_calcul_= -100.;
+  double t_debut_ = -100., t_fin_ = -100.;
+  double tps_integrale_ = -100., dt_integr_calcul_ = -100.;
 };
 
 inline void Integrale_tps_Champ::associer(const Champ_Generique_base& le_ch, int n, double t0, double t1)
 {
-  mon_champ_= le_ch;
+  le_champ_ref_ = le_ch;
   puissance_ = n;
   t_debut_ = t0;
   t_fin_ = t1;
-  tps_integrale_ =t_debut_;
-  dt_integr_calcul_=0;
+  tps_integrale_ = t_debut_;
+  dt_integr_calcul_ = 0;
 }
 
 #endif /* Integrale_tps_Champ_included */

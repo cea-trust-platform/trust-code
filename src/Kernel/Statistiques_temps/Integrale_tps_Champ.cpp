@@ -15,7 +15,7 @@
 
 #include <Integrale_tps_Champ.h>
 
-Implemente_instanciable(Integrale_tps_Champ, "Integrale_tps_Champ", Champ_Fonc);
+Implemente_instanciable(Integrale_tps_Champ, "Integrale_tps_Champ", Objet_U);
 
 Sortie& Integrale_tps_Champ::printOn(Sortie& s) const
 {
@@ -36,8 +36,8 @@ Entree& Integrale_tps_Champ::readOn(Entree& s)
 void Integrale_tps_Champ::mettre_a_jour_integrale()
 {
   Champ espace_stockage_source;
-  const Champ_base& source = mon_champ_->get_champ(espace_stockage_source);
-  double t_courant = mon_champ_->get_time();
+  const Champ_base& source = le_champ_ref_->get_champ(espace_stockage_source);
+  double t_courant = le_champ_ref_->get_time();
 
   if (t_fin_ < t_debut_)
     {
@@ -51,7 +51,7 @@ void Integrale_tps_Champ::mettre_a_jour_integrale()
       if (dt > 0)
         {
           const DoubleTab& val = source.valeurs();
-          DoubleTab& mes_val = valeur().valeurs();
+          DoubleTab& mes_val = le_champ_->valeurs();
           if (puissance_ == 1)
             mes_val.ajoute(dt, val);
           else if (puissance_ == 2)
@@ -63,4 +63,9 @@ void Integrale_tps_Champ::mettre_a_jour_integrale()
           dt_integr_calcul_ += dt;
         }
     }
+}
+
+void Integrale_tps_Champ::typer_champ(const Nom& typ)
+{
+  le_champ_.typer(typ);
 }

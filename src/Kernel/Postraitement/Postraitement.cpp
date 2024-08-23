@@ -219,7 +219,7 @@ int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF
       if (sub_type(Champ_Generique_Statistiques_base,champ.valeur()))
         {
           const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ.valeur());
-          mon_champ = champ_stat.integrale();
+          mon_champ = champ_stat.integrale().le_champ_calcule();
           operateur_statistique = champ_stat.Operateur_Statistique();
           return 1;
         }
@@ -2148,7 +2148,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
           Champ_Generique_Interpolation& champ_post_corr = ref_cast(Champ_Generique_Interpolation,champ_a_completer.valeur());
           const Champ_Generique_Correlation& champ_corr = ref_cast(Champ_Generique_Correlation,champ_post_corr.get_source(0));
 
-          const Noms& source_compos_corr = champ_corr.integrale()->noms_compo();
+          const Noms& source_compos_corr = champ_corr.integrale().le_champ_calcule().noms_compo();
           // const Nom& nom_dom = champ_post.get_ref_domain().le_nom();
           int nb_comp_corr = source_compos_corr.size();
           Noms compo_corr(nb_comp_corr);
