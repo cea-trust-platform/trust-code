@@ -249,8 +249,8 @@ inline void TRUSTVect<_TYPE_,_SIZE_>::echange_espace_virtuel()
 #ifndef LATATOOLS
   if(Process::is_sequential()) return;
 #if INT_is_64_ == 2
-  // echange_espace_virtuel() should not be called on big array or array of TID:
-  assert( (!std::is_same<_TYPE_, trustIdType>::value && !std::is_same<_SIZE_, trustIdType>::value) );
+  // echange_espace_virtuel() should not be called on big array (but can be called on small arrays of TIDs, in SolvPetsc for example):
+  assert( (!std::is_same<_SIZE_, trustIdType>::value) );
 #endif
   MD_Vector_tools::echange_espace_virtuel(*this);
 #endif
@@ -259,11 +259,6 @@ inline void TRUSTVect<_TYPE_,_SIZE_>::echange_espace_virtuel()
 #if INT_is_64_ == 2
 // We should never have to do MPI on big arrays:
 // [ABN] do not know why, constexpr test in generic version not working ...
-template<> inline void TRUSTVect<trustIdType, int>::echange_espace_virtuel()
-{
-  assert(false);
-  Process::exit("echange_espace_virtuel() called on big array or array of TID!");
-}
 template<> inline void TRUSTVect<int, trustIdType>::echange_espace_virtuel()
 {
   assert(false);

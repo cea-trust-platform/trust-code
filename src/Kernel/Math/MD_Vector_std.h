@@ -43,16 +43,23 @@ public:
                 const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv);
 
   inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, DoubleVect& v) const override { initialize_comm_template<double>(opt,sc,v); }
-  inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, FloatVect& v) const override { initialize_comm_template<float>(opt,sc,v); }
-  inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { initialize_comm_template<int>(opt,sc,v); }
-
   inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, DoubleVect& v) const override { prepare_send_data_template<double>(opt,sc,v); }
-  inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, FloatVect& v) const override { prepare_send_data_template<float>(opt,sc,v); }
-  inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { prepare_send_data_template<int>(opt,sc,v); }
-
   inline void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, DoubleVect& v) const override { process_recv_data_template<double>(opt,sc,v); }
+
+  inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, FloatVect& v) const override { initialize_comm_template<float>(opt,sc,v); }
+  inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, FloatVect& v) const override { prepare_send_data_template<float>(opt,sc,v); }
   inline void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, FloatVect& v) const override { process_recv_data_template<float>(opt,sc,v); }
+
+  inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { initialize_comm_template<int>(opt,sc,v); }
+  inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { prepare_send_data_template<int>(opt,sc,v); }
   inline void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { process_recv_data_template<int>(opt,sc,v); }
+
+#if INT_is_64_ == 2
+  inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, TIDVect& v) const override { initialize_comm_template<trustIdType>(opt,sc,v); }
+  inline void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, TIDVect& v) const override { prepare_send_data_template<trustIdType>(opt,sc,v); }
+  inline void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, TIDVect& v) const override { process_recv_data_template<trustIdType>(opt,sc,v); }
+#endif
+
 
   // Numeros des processeurs voisins avec qui j'echange des donnees (meme taille que les VECT suivants)
   ArrOfInt pe_voisins_;

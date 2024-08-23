@@ -51,9 +51,9 @@ int MD_Vector_seq::nb_items_seq_local() const
 
 int MD_Vector_seq::get_seq_flags_(ArrOfBit& flags, int line_size) const
 {
-  assert(nb_items_ < std::numeric_limits<int>::max());
+  assert(nb_items_*line_size < std::numeric_limits<int>::max());
 
-  const int sz = (int)nb_items_;
+  const int sz = (int)nb_items_ * line_size;
   flags.resize_array(sz);
   flags = 1;  // everything is present and must be included in sequential
   return sz;

@@ -192,13 +192,9 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
   const Elem_geom_base_32_64<_SIZE_>& type_elem = dom.type_elem().valeur();
   IntTab faces_element_reference;
   const int is_regular = type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
+  // Invoke proper method if Polygon or Polyedron ...:
   if (! is_regular)
-    {
-      Cerr << "Error in Domain_Graph::construire_graph_elem_elem\n"
-           << " The type of element is not supported" << finl;
-      ref_cast(Poly_geom_base_t, type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
-      Process::exit();
-    }
+    ref_cast(Poly_geom_base_t, type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
   int nb_faces_par_element = faces_element_reference.dimension(0);
   const int nb_sommets_par_face = faces_element_reference.dimension(1);
 

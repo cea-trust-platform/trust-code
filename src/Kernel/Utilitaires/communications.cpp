@@ -215,10 +215,12 @@ int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TR
   return envoyer_all_to_all_(src, dest);
 }
 
+#if INT_is_64_ == 2
 int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
+#endif
 
 /*! @brief On suppose que les tableaux en entree et en sortie sont de taille nproc() .
  *

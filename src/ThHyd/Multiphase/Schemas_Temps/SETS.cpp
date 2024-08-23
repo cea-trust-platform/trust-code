@@ -213,7 +213,7 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
       VecSetOption(ctx->v, VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
     }
   KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
-  VecGetValues(resi, ctx->obj->ix.size_array(), (PetscInt*)ctx->obj->ix.addr(), ctx->obj->residu.addr());
+  VecGetValues(resi, ctx->obj->ix.size_array(), ctx->obj->ix.addr(), ctx->obj->residu.addr());
   bool ok = true;
   for (int i = 0; ok && i < ctx->obj->norm.size(); i++)
     if (ctx->obj->ix[i] >= 0)

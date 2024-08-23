@@ -19,9 +19,15 @@
 #include <SolveurSys_base.h>
 #include <ArrOfBit.h>
 #include <TRUSTTab.h>
+
 class Matrice_Morse;
 class Matrice_Morse_Sym;
 
+/*! Common stuff for several external solvers.
+ *
+ * Note: here we use trustIdType for potentially big identifiers, this maps to PetscInt type in Solv_Petsc class
+ * (type equality between the both is checked when creating the solver).
+ */
 class Solv_Externe : public SolveurSys_base
 {
   Declare_base_sans_constructeur_ni_destructeur(Solv_Externe);
@@ -33,6 +39,7 @@ public:
     secmem_sz_(-1)
   {}
   ~Solv_Externe() {}
+
 protected:
   void construit_matrice_morse_intermediaire(const Matrice_Base&, Matrice_Morse& );
   void construit_renum(const DoubleVect&);
@@ -42,14 +49,15 @@ protected:
   void Update_lhs_rhs(const DoubleVect& b, DoubleVect& x);
   template<typename ExecSpace>
   void Update_solution(DoubleVect& x);
-  IntTab renum_;                // Tableau de renumerotation globale lignes matrice TRUST -> matrice CSR
+
+  TIDTab renum_;                // Tableau de renumerotation globale lignes matrice TRUST -> matrice CSR
   IntTab index_;                // Tableau de renumerotation locale
   ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice CSR la ligne item de la matrice TRUST ?
-  ArrOfInt ix;                  // Tableau de travail pour remplissage Vec plus rapide
+  ArrOfTID ix;                  // Tableau de travail pour remplissage Vec plus rapide
   int nb_items_to_keep_;        // Nombre local d'items a conserver
   int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST
-  int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
-  int decalage_local_global_;   // Decalage numerotation local/global pour matrice CSR et vecteur
+  trustIdType nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
+  trustIdType decalage_local_global_;   // Decalage numerotation local/global pour matrice CSR et vecteur
   int matrice_symetrique_;      // Drapeau sur la symetrie de la matrice
   int secmem_sz_;               // (Local) second member size
   ArrOfDouble lhs_;             // Premier membre sans les items communs

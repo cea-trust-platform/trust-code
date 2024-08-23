@@ -40,11 +40,14 @@ public:
   //   dans la colonne1, envoie toute la ligne au processeur qui possede la ligne.
   enum Operations_echange { ECHANGE_EV, EV_SOMME, EV_SOMME_ECHANGE, EV_MAX, EV_MINCOL1 };
 
-  static void creer_tableau_distribue(const MD_Vector&, Array_base&, RESIZE_OPTIONS opt = RESIZE_OPTIONS::COPY_INIT);
+  static void creer_tableau_distribue(const MD_Vector&, Array_base&, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-  static void echange_espace_virtuel(IntVect&, Operations_echange opt = ECHANGE_EV);
-  static void echange_espace_virtuel(DoubleVect&, Operations_echange opt = ECHANGE_EV);
-  static void echange_espace_virtuel(FloatVect&, Operations_echange opt = ECHANGE_EV);
+  static void echange_espace_virtuel(IntVect&, Operations_echange opt=ECHANGE_EV);
+#if INT_is_64_ == 2
+  static void echange_espace_virtuel(TIDVect& v, Operations_echange opt=ECHANGE_EV);
+#endif
+  static void echange_espace_virtuel(DoubleVect&, Operations_echange opt=ECHANGE_EV);
+  static void echange_espace_virtuel(FloatVect&, Operations_echange opt=ECHANGE_EV);
 
   // valeur de retour: nombre d'items sequentiels sur ce proc (nombre de flags a un dans le tableau)
   static void compute_sequential_items_index(const MD_Vector&, MD_Vector_renumber&, int line_size = 1);

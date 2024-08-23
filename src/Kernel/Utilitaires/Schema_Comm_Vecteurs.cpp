@@ -24,6 +24,9 @@ int Schema_Comm_Vecteurs::buffer_locked_;
 ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
 ArrOfFloat Schema_Comm_Vecteurs::tmp_area_float_;
 ArrOfInt Schema_Comm_Vecteurs::tmp_area_int_;
+#if INT_is_64_ == 2
+ArrOfTID Schema_Comm_Vecteurs::tmp_area_tid_;
+#endif
 Schema_Comm_Vecteurs_Static_Data Schema_Comm_Vecteurs::sdata_;
 bool check_comm_vector = false;
 

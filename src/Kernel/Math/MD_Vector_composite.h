@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@ public:
   void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, TIDVect& v) const override  { global_md_.prepare_send_data(opt, c, v); }
   void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& c, TIDVect& v) const override  { global_md_.process_recv_data(opt, c, v); }
 #endif
+
 
   inline int nb_parts() const { return data_.size(); }
   inline int get_shape(int i) const { return shapes_[i]; }

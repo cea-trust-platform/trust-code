@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,6 +96,10 @@ protected:
   static ArrOfDouble tmp_area_double_;
   static ArrOfFloat tmp_area_float_;
   static ArrOfInt tmp_area_int_;
+#if INT_is_64_ == 2
+  static ArrOfTID tmp_area_tid_;
+#endif
+
   // Classe contenant des tableaux malloc (pour destruction automatique en fin d'execution)
   static Schema_Comm_Vecteurs_Static_Data sdata_;
 };
@@ -121,9 +125,14 @@ public:
 
 // Taille en bytes d'un bloc de sz ints, arrondi aux 8 octets superieurs
 #ifdef INT_is_64_
-#define BLOCSIZE_INT(sz) (sz<<3)
+#if INT_is_64_ == 1
+#define BLOCSIZE_INT(sz) (sz<<3)   // == sz*8
 #else
-#define BLOCSIZE_INT(sz) (sz<<2)
+#define BLOCSIZE_INT(sz) (sz<<2)   // == sz*4
+#define BLOCSIZE_TID(sz) (sz<<3)   // == sz*8
+#endif
+#else
+#define BLOCSIZE_INT(sz) (sz<<2)   // == sz*4
 #endif
 
 #define BLOCSIZE_DOUBLE(sz) (sz<<3)
@@ -181,6 +190,20 @@ inline void Schema_Comm_Vecteurs::add_recv_area_template<float>(int pe, int size
   add(pe, BLOCSIZE_FLOAT(size), recv_procs_, recv_buf_sizes_, sizeof(float));
 }
 
+#if INT_is_64_ == 2
+template<>
+inline void Schema_Comm_Vecteurs::add_send_area_template<trustIdType>(int pe, int size)
+{
+  add(pe, BLOCSIZE_TID(size), send_procs_, send_buf_sizes_, sizeof(trustIdType));
+}
+
+template<>
+inline void Schema_Comm_Vecteurs::add_recv_area_template<trustIdType>(int pe, int size)
+{
+  add(pe, BLOCSIZE_TID(size), recv_procs_, recv_buf_sizes_, sizeof(trustIdType));
+}
+#endif
+
 /*! @brief renvoie un tableau contenant les "size" valeurs suivantes recues du processeur pe lors de la communication en cours.
  *
  *   Attention:
@@ -199,6 +222,20 @@ inline ArrOfInt& Schema_Comm_Vecteurs::get_next_area_template<int>(int pe, int s
   tmp_area_int_.ref_data(bufptr, size);
   return tmp_area_int_;
 }
+
+#if INT_is_64_ == 2
+template<>
+inline ArrOfTID& Schema_Comm_Vecteurs::get_next_area_template<trustIdType>(int pe, int size)
+{
+  ALIGN_SIZE(sdata_.buf_pointers_[pe], sizeof(trustIdType));
+  assert(check_next_area(pe, BLOCSIZE_TID(size)));
+  trustIdType *bufptr = (trustIdType *) (sdata_.buf_pointers_[pe]);
+  // attention a l'arithmetique de pointeurs, ajout d'une taille en octets
+  sdata_.buf_pointers_[pe] += BLOCSIZE_TID(size);
+  tmp_area_tid_.ref_data(bufptr, size);
+  return tmp_area_tid_;
+}
+#endif
 
 template<>
 inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_template<double>(int pe, int size)

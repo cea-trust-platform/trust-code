@@ -114,8 +114,11 @@ public :
 #endif
   static int instance;               // Nombre d'instances en cours de la classe
   static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
+
 protected :
 #ifdef PETSCKSP_H
+  using ArrOfPetscInt = TRUSTArray<PetscInt, PetscInt>;
+
   bool isViennaCLVector();
   void check_aij(const Matrice_Morse&);
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
@@ -139,7 +142,7 @@ protected :
   void add_amgx_option(const Nom& key_value);
   void SaveObjectsToFile(const DoubleVect& b, DoubleVect& x);
   void RestoreMatrixFromFile();
-  int compute_nb_rows_petsc(int);
+  PetscInt compute_nb_rows_petsc(PetscInt);
 
   // Attributes
   double seuil_;
@@ -176,6 +179,8 @@ protected :
   Vec LocalSolutionPetsc_;	// Local solution in case of petsc_decide_=1
   VecScatter VecScatter_;	// Scatter context needed when petsc_decide_=1 to gather values of global to local solution
 #endif
+
+
   int solveur_direct_ = no;          // Pour savoir si l'on manipule un solveur direct et non iteratif
   int read_matrix_;		// Read constant matrix in a file
   bool gpu_ = false;                    // Utilisation des solveurs GPU de PETSc

@@ -59,15 +59,14 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
   int cpt=0;
   int size=items_to_keep_.size_array();
   renum_ = INT_MAX; //pour crasher si le MD_Vector est incoherent
-  ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
+  ArrOfTID& renum_array = renum_;  // tableau vu comme lineaire
   for(int i=0; i<size; i++)
-    {
-      if(items_to_keep_[i])
-        {
-          renum_array[i]=cpt+decalage_local_global_;
-          cpt++;
-        }
-    }
+    if(items_to_keep_[i])
+      {
+        renum_array[i]=cpt+decalage_local_global_;
+        cpt++;
+      }
+
   renum_.echange_espace_virtuel();
   // Construction de index_
   index_.resize(size);
@@ -85,7 +84,7 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
     }
   // Construction de ix
   size=b.size_array();
-  int colonne_globale=decalage_local_global_;
+  trustIdType colonne_globale=decalage_local_global_;
   ix.resize(size);
   for (int i=0; i<size; i++)
     if (items_to_keep_[i])
@@ -131,14 +130,14 @@ void Solv_Externe::construit_matrice_morse_intermediaire(const Matrice_Base& la_
   else if (sub_type(Matrice_Morse, la_matrice))
     {
       // Exemple : matrice implicite
-      matrice_symetrique_ = 0;
+      matrice_symetrique_ = false;
     }
   else if (sub_type(Matrice_Bloc, la_matrice))
     {
       // Exemple : matrice de pression en VDF
       const Matrice_Bloc& matrice_bloc = ref_cast(Matrice_Bloc, la_matrice);
       if (!sub_type(Matrice_Morse_Sym, matrice_bloc.get_bloc(0, 0).valeur()))
-        matrice_symetrique_ = 0;
+        matrice_symetrique_ = false;
       else
         {
           // Pour un solveur direct, operation si la matrice n'est pas definie (en incompressible VDF, rien n'etait fait...)

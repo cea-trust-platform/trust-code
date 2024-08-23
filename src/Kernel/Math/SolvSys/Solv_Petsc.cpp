@@ -207,6 +207,10 @@ void Solv_Petsc::create_solver(Entree& entree)
 {
   if (amgx_ || std::getenv("TRUST_PETSC_VERBOSE")) verbose = true;
 #ifdef PETSCKSP_H
+
+  if(!std::is_same<PetscInt, trustIdType>::value)
+    Process::exit("Type mismatch!!! PetscInt and trustIdType should be equal!!! PETSc not compiled in 64b??");
+
   lecture(entree);
   EChaine is(get_chaine_lue());
 
@@ -1925,7 +1929,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
             DMDestroy(&dm_);
         }
 
-      matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
+      matrice_symetrique_ = true;      // On suppose que la matrice est symetrique
 
       // Construction de la numerotation globale:
       if (MatricePetsc_==nullptr)
@@ -2230,9 +2234,9 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
       PetscInt size=ix.size_array();
       if (gpu_) statistiques().begin_count(gpu_copytodevice_counter_);
       VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-      VecSetValues(SecondMembrePetsc_, size, (PetscInt*)ix.addr(), secmem.addr(), INSERT_VALUES);
+      VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
       VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-      VecSetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr(), INSERT_VALUES);
+      VecSetValues(SolutionPetsc_, size, ix.addr(), solution.addr(), INSERT_VALUES);
       VecAssemblyBegin(SecondMembrePetsc_);
       VecAssemblyEnd(SecondMembrePetsc_);
       VecAssemblyBegin(SolutionPetsc_);
@@ -2282,7 +2286,7 @@ void Solv_Petsc::Update_solution(DoubleVect& solution)
       // ToDo un seul VecGetValues comme VecSetValues
       if (different_partition_)
         {
-          // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
+          // TRUST and PETSc have different partitions, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
           VecScatterBegin(VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
           VecScatterEnd  (VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
           // Use the local vector to get the solution:
@@ -2299,7 +2303,7 @@ void Solv_Petsc::Update_solution(DoubleVect& solution)
         {
           // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
           if (gpu_) statistiques().begin_count(gpu_copyfromdevice_counter_);
-          VecGetValues(SolutionPetsc_, size, (PetscInt*)ix.addr(), solution.addr());
+          VecGetValues(SolutionPetsc_, size, ix.addr(), solution.addr());
           if (gpu_) statistiques().end_count(gpu_copyfromdevice_counter_);
         }
     }
@@ -2351,13 +2355,13 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
       // Ajout d'un test de verification de la symetrie supposee de la matrice PETSc
       // Ce test a permis de trouver un defaut de parallelisme sur le remplissage
       // de la matrice en pression lors de l'introduction de l'option volume etendu
-      int check_matrice_symetrique_ = matrice_symetrique_;
+      bool check_matrice_symetrique_ = matrice_symetrique_;
       // Check cancelled for:
 #ifdef PETSC_HAVE_CUDA
-      if (!amgx_) check_matrice_symetrique_=0; // Bug with CUDA ?
+      if (!amgx_) check_matrice_symetrique_=false; // Bug with CUDA ?
 #endif
 #ifdef NDEBUG
-      check_matrice_symetrique_=0; // Not done in production
+      check_matrice_symetrique_=false; // Not done in production
 #endif
       if (mataij_ == 0)
         {
@@ -2678,7 +2682,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
     VecSetSizes(SecondMembrePetsc_, PETSC_DECIDE, nb_rows_tot_);
   else if (petsc_cpus_selection_)
     {
-      int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
+      PetscInt nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
       VecSetSizes(SecondMembrePetsc_, nb_rows_petsc, PETSC_DECIDE);
     }
   else
@@ -2712,11 +2716,11 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
       // Create the local vector of length nb_rows_:
       VecCreateSeq(PETSC_COMM_SELF, nb_rows_, &LocalSolutionPetsc_);
       // Create the Scatter context to gather from the global solution to the local solution
-      ArrOfInt from(nb_rows_);
+      ArrOfPetscInt from(nb_rows_);
       for (int i=0; i<nb_rows_; i++)
         from[i]=decalage_local_global_+i; // Global indices in SolutionPetsc_
       IS fromis;
-      ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), (PetscInt*)from.addr(), PETSC_COPY_VALUES, &fromis);
+      ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), from.addr(), PETSC_COPY_VALUES, &fromis);
       VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, PETSC_NULLPTR, &VecScatter_);
       ISDestroy(&fromis);
       // Will permit later with VecScatterBegin/VecScatterEnd something like:
@@ -2730,7 +2734,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
   /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()))
     {
-      std::map<std::string, std::vector<int>> champ;
+      std::map<std::string, std::vector<PetscInt>> champ;
       //liste (MD_Vector_composite, offset de ses elements, multiplicateur (nb d'items du tableau par item du MD_Vector) prefixe des noms de ses champs)
       std::vector<std::tuple<const MD_Vector_composite *, int, int, std::string>>
                                                                                mdc_list =
@@ -2753,7 +2757,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
                                                    prefix + std::to_string((long long) i)));
               else
                 {
-                  std::vector<int> indices;
+                  std::vector<PetscInt> indices;
                   for (int j = 0; j < nb_seq; j++) indices.push_back(decalage_local_global_ + idx + j);
                   if (mdc.get_name(i)!="")
                     champ[mdc.get_name(i).getString()] = indices;
@@ -2790,10 +2794,10 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur())) PCSetDM(PreconditionneurPetsc_, dm_);
 }
 
-int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)
+PetscInt Solv_Petsc::compute_nb_rows_petsc(PetscInt nb_rows_tot)
 {
   // Case the user specifies a number of CPUs:
-  int nb_rows_petsc = nb_rows_tot / petsc_nb_cpus_;
+  PetscInt nb_rows_petsc = nb_rows_tot / petsc_nb_cpus_;
   // Process 0 takes the possible rows in excess:
   if (je_suis_maitre()) nb_rows_petsc = nb_rows_tot - (petsc_nb_cpus_ - 1) * nb_rows_petsc;
   //
@@ -2842,7 +2846,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
     MatSetSizes(MatricePetsc, PETSC_DECIDE, PETSC_DECIDE, nb_rows_tot_, nb_rows_tot_);
   else if (petsc_cpus_selection_)
     {
-      int nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
+      PetscInt nb_rows_petsc = compute_nb_rows_petsc(nb_rows_tot_);
       Journal() << "Process " << Process::me() << " has " << nb_rows_petsc << " rows of the matrix PETSc." << finl;
       MatSetSizes(MatricePetsc, nb_rows_petsc, nb_rows_petsc, PETSC_DECIDE, PETSC_DECIDE);
     }
@@ -2852,15 +2856,15 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   //////////////////////////////////////////////
   // Determination du nombre d'elements non nuls
   //////////////////////////////////////////////
-  ArrOfInt nnz(nb_rows_);
-  ArrOfInt d_nnz(nb_rows_);
-  ArrOfInt o_nnz(nb_rows_);
+  ArrOfPetscInt nnz(nb_rows_);
+  ArrOfPetscInt d_nnz(nb_rows_);
+  ArrOfPetscInt o_nnz(nb_rows_);
   //nnz = 0;
   //d_nnz = 0;
   //o_nnz = 0;
-  ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
-  const int premiere_colonne_globale = decalage_local_global_;
-  const int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
+  ArrOfTID& renum_array = renum_;  // tableau vu comme lineaire
+  const PetscInt premiere_colonne_globale = decalage_local_global_;
+  const PetscInt derniere_colonne_globale = nb_rows_ + decalage_local_global_;
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
   //const ArrOfDouble& coeff = mat_morse.get_coeff();
@@ -2876,7 +2880,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
           for (int k = k0; k < k1; k++)
             {
               const int colonne_locale = tab2[k] - 1;
-              const int colonne_globale = renum_array[colonne_locale];
+              const PetscInt colonne_globale = renum_array[colonne_locale];
               if (colonne_globale >= premiere_colonne_globale && colonne_globale < derniere_colonne_globale)
                 d_nnz[cpt]++;
               else
@@ -2939,16 +2943,16 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
         {
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
-          PetscInt nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
+          int nz = Process::mp_max((nnz.size_array() == 0 ? 0 : (int)max_array(nnz)));  // max_array always an int: max numb of zeros on a line
           MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULLPTR);
           MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULLPTR, nz, PETSC_NULLPTR);
         }
       else
         {
-          MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, PETSC_DEFAULT, (PetscInt*)nnz.addr());
+          MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, PETSC_DEFAULT, nnz.addr());
           // Test on nb_rows==0 is to avoid PAR_docond_anisoproc hangs
-          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), (PetscInt*)d_nnz.addr(),
-                                      (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), (PetscInt*)o_nnz.addr());
+          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), d_nnz.addr(),
+                                      (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), o_nnz.addr());
         }
     }
   else
@@ -2957,16 +2961,16 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
         {
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
-          PetscInt nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
+          int nz = Process::mp_max((nnz.size_array() == 0 ? 0 : (int)max_array(nnz)));   // max_array always an int: max numb of zeros on a line
           MatSeqAIJSetPreallocation(MatricePetsc, nz, PETSC_NULLPTR);
           MatMPIAIJSetPreallocation(MatricePetsc, nz, PETSC_NULLPTR, nz, PETSC_NULLPTR);
         }
       else
         {
-          MatSeqAIJSetPreallocation(MatricePetsc, PETSC_DEFAULT, (PetscInt*)nnz.addr());
+          MatSeqAIJSetPreallocation(MatricePetsc, PETSC_DEFAULT, nnz.addr());
           // Test on nb_rows==0 is to avoid PAR_docond_anisoproc hangs
-          MatMPIAIJSetPreallocation(MatricePetsc, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), (PetscInt*)d_nnz.addr(),
-                                    (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), (PetscInt*)o_nnz.addr());
+          MatMPIAIJSetPreallocation(MatricePetsc, (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), d_nnz.addr(),
+                                    (nb_rows_ == 0 ? 0 : PETSC_DEFAULT), o_nnz.addr());
         }
     }
 
@@ -3032,7 +3036,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
   // ToDo : recalcul de nnz utile ?
   ArrOfInt nnz(nb_rows_);
   nnz = 0;
-  ArrOfInt& renum_array = renum_;  // tableau vu comme lineaire
+  ArrOfTID& renum_array = renum_;  // tab seen as a flat array (can't use ArrOfPetscInt& because of C++ ref cast...)
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
   int cpt = 0;
@@ -3043,8 +3047,8 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
         cpt++;
       }
   int size = (nb_rows_ == 0 ? 0 : max_array(nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
-  ArrOfDouble coeff_(size);
-  ArrOfInt tab2_(size);
+  ArrOfDouble coeff_tmp(size);
+  ArrOfPetscInt tab2_tmp(size);
   const ArrOfDouble& coeff = mat_morse.get_coeff();
   cpt = 0;
   const int n = tab1.size_array() - 1;
@@ -3058,20 +3062,20 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
           const int k1 = tab1[i + 1] - 1;
           for (int k = k0; k < k1; k++)
             {
-              coeff_[ncol] = coeff[k];
-              tab2_[ncol] = renum_array[tab2[k] - 1];
+              coeff_tmp[ncol] = coeff[k];
+              tab2_tmp[ncol] = renum_array[tab2[k] - 1];
               ncol++;
             }
           assert(ncol == nnz[cpt]);
           if (journal)
             {
               Journal() << (int)ligne_globale << " ";
-              for (int j = 0; j < ncol; j++) Journal() << coeff_[j] << " ";
+              for (int j = 0; j < ncol; j++) Journal() << coeff_tmp[j] << " ";
               Journal() << finl;
             }
           try
             {
-              MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, (PetscInt*)tab2_.addr(), coeff_.addr(), INSERT_VALUES);
+              MatSetValues(MatricePetsc, 1, &ligne_globale, ncol, tab2_tmp.addr(), coeff_tmp.addr(), INSERT_VALUES);
             }
           catch(...)
             {
@@ -3145,7 +3149,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       const ArrOfInt& tab1 = mat_morse.get_tab1();
       const ArrOfInt& tab2 = mat_morse.get_tab2();
       const ArrOfDouble& coeff = mat_morse.get_coeff();
-      const ArrOfInt& renum_array = renum_;
+      const ArrOfTID& renum_array = renum_;
       int RowLocal = 0;
       //Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
       const int n = tab1.size_array() - 1;
@@ -3173,8 +3177,8 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
                       if (coeff[k] != 0)
                         {
                           bool found = false;
-                          const int col = renum_array[tab2[k] - 1];
-                          const int RowGlobal = decalage_local_global_+RowLocal;
+                          const PetscInt col = renum_array[tab2[k] - 1];
+                          const PetscInt RowGlobal = decalage_local_global_+RowLocal;
                           for (PetscInt kk = kk0; kk < kk1; kk++)
                             {
                               if (colIndices[kk] == col)

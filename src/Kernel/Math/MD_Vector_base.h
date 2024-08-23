@@ -65,6 +65,7 @@ public:
   virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const = 0;
 #endif
 
+
   static void append_item_to_blocs(ArrOfInt& blocs, int item);
 
   // [ABN] All the below members should be protected, but then need to fix all utils in MD_Vector_tools that access

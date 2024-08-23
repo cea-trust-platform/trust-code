@@ -151,6 +151,9 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
     }
 
   IntVect* intV = dynamic_cast<IntVect*>(&v);
+#if INT_is_64_ == 2
+  TIDVect* tidV = dynamic_cast<TIDVect*>(&v);
+#endif
   DoubleVect* doubleV = dynamic_cast<DoubleVect*>(&v);
   FloatVect* floatV = dynamic_cast<FloatVect*>(&v);
 
@@ -159,6 +162,9 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
       assert(Process::is_sequential());
 
       if (intV) creer_tableau_seq_<int, int>(md, *intV, opt);
+#if INT_is_64_ == 2
+      else if (tidV) creer_tableau_seq_<trustIdType, int>(md, *tidV, opt);
+#endif
       else if (doubleV) creer_tableau_seq_<double, int>(md, *doubleV, opt);
       else if (floatV) creer_tableau_seq_<float, int>(md, *floatV, opt);
       else
@@ -172,6 +178,9 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
   else  // parallel computation **or** composite descriptor (MD_Vector_composite)
     {
       if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
+#if INT_is_64_ == 2
+      else if (tidV) creer_tableau_distribue_<TIDVect, TIDTab>(md, *tidV, opt);
+#endif
       else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
       else if (floatV) creer_tableau_distribue_<FloatVect, FloatTab>(md, *floatV, opt);
       else
@@ -250,6 +259,9 @@ inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::O
 }
 
 void MD_Vector_tools::echange_espace_virtuel(IntVect& v, Operations_echange opt) { call_echange_espace_virtuel<int>(v,opt); }
+#if INT_is_64_ == 2
+void MD_Vector_tools::echange_espace_virtuel(TIDVect& v, Operations_echange opt) { call_echange_espace_virtuel<trustIdType>(v,opt); }
+#endif
 void MD_Vector_tools::echange_espace_virtuel(DoubleVect& v, Operations_echange opt) { call_echange_espace_virtuel<double>(v,opt); }
 void MD_Vector_tools::echange_espace_virtuel(FloatVect& v, Operations_echange opt) { call_echange_espace_virtuel<float>(v,opt); }
 
