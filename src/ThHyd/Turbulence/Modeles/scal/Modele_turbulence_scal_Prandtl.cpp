@@ -77,8 +77,8 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
     loipar_->calculer_scal(diffusivite_turbulente_);
 
   const Probleme_base& mon_pb = mon_equation_->probleme();
-  DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
-  lambda_t = diffusivite_turbulente_.valeurs();
+  DoubleTab& lambda_t = conductivite_turbulente_->valeurs();
+  lambda_t = diffusivite_turbulente_->valeurs();
   const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
   const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique()->valeurs();
   const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique()->valeurs();
@@ -113,7 +113,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
 Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 {
   DoubleTab& tab_alpha_t = diffusivite_turbulente_->valeurs();
-  const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeurs();
+  const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeur().valeurs();
   double temps = la_viscosite_turbulente_->valeur().temps();
   const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis().valeur()).xp();
 
@@ -198,7 +198,7 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
   diffusivite_turbulente_->changer_temps(temps);
 
   if (equation().probleme().is_dilatable())
-    diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
+    diviser_par_rho_si_dilatable(diffusivite_turbulente_->valeurs(), equation().probleme().milieu());
   return diffusivite_turbulente_;
 }
 

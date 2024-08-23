@@ -45,7 +45,7 @@ Entree& Gravite_Multiphase::readOn(Entree& is)
 
   gravite_->affecter(gravite_don_.valeur());
 
-  gravite_.valeurs().echange_espace_virtuel();
+  gravite_->valeurs().echange_espace_virtuel();
 
   return is;
 }

@@ -110,8 +110,8 @@ void Modele_turbulence_hyd_LES_base::completer()
 
 void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
 {
-  DoubleVect& k = energie_cinetique_turb_.valeurs();
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+  DoubleVect& k = energie_cinetique_turb_->valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
   double Cq = 0.094;
 
   // PQ : 10/08/06 : on utilise ici la formule de Schuman : q_sm = (nu_t)^2 / (Cq.l)^2

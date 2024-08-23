@@ -123,7 +123,7 @@ inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc& ch)
  */
 inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1, Champ_Fonc& ch2)
 {
-  return calculer_hyd(ch1.valeurs(), ch2.valeurs());
+  return calculer_hyd(ch1->valeurs(), ch2->valeurs());
 }
 
 inline const DoubleTab& Turbulence_paroi_base::Cisaillement_paroi() const

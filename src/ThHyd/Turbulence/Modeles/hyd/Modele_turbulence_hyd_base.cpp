@@ -203,7 +203,7 @@ void Modele_turbulence_hyd_base::associer_eqn(const Equation_base& eqn)
 void Modele_turbulence_hyd_base::lire_distance_paroi()
 {
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
-  DoubleTab& wall_length = wall_length_.valeurs();
+  DoubleTab& wall_length = wall_length_->valeurs();
   wall_length = -1.;
 
   LecFicDiffuse fic;
@@ -443,9 +443,9 @@ void Modele_turbulence_hyd_base::a_faire(Sortie& os) const
 void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
 {
   // On initial
-  int size = viscosite_turbulente().valeurs().size();
+  int size = viscosite_turbulente()->valeurs().size();
   if (borne_visco_turb_.size() == 0)
-    borne_visco_turb_ = la_viscosite_turbulente_.valeurs();
+    borne_visco_turb_ = la_viscosite_turbulente_->valeurs();
   borne_visco_turb_ = XNUTM_;
   if (calcul_borne_locale_visco_turb_ && (equation().schema_temps().nb_pas_dt() != 0 || equation().probleme().reprise_effectuee()))
     {
@@ -458,11 +458,11 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   int nb_elem = equation().domaine_dis()->domaine().nb_elem();
   assert(nb_elem == size);
   int compt = 0;
-  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_.valeurs());
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente_->valeurs());
 
   CDoubleArrView borne_visco_turb = borne_visco_turb_.view_ro();
-  DoubleArrView corr_visco_turb = static_cast<DoubleVect&>(corr_visco_turb_.valeurs()).view_wo();
-  DoubleArrView visco_turb = static_cast<DoubleVect&>(la_viscosite_turbulente_.valeurs()).view_rw();
+  DoubleArrView corr_visco_turb = static_cast<DoubleVect&>(corr_visco_turb_->valeurs()).view_wo();
+  DoubleArrView visco_turb = static_cast<DoubleVect&>(la_viscosite_turbulente_->valeurs()).view_rw();
   // Remplissage des tableaux de travail:
   Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
                           Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
@@ -479,8 +479,8 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   }, Kokkos::Sum<int>(compt));
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   corr_visco_turb_->changer_temps(mon_equation_->inconnue()->temps());
-  la_viscosite_turbulente_.valeurs().echange_espace_virtuel();
-  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_.valeurs());
+  la_viscosite_turbulente_->valeurs().echange_espace_virtuel();
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_->valeurs());
 
   // On imprime
   int imprimer_compt = 0;

@@ -42,7 +42,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VDF::calculer_viscosite_turbulente()
 {
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   double temps = mon_equation_->inconnue()->temps();
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
   int nb_elem = domaine_VDF.domaine().nb_elem();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 

@@ -93,14 +93,14 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
       val_b.resize(nb_elem_tot,b.nb_comp());
       a.valeur_aux(xp, val_a);
       b.valeur_aux(xp, val_b);
-      valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
-      valeurs().echange_espace_virtuel();
+      valeur().valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
+      valeur().valeurs().echange_espace_virtuel();
     }
   else
     {
       const DoubleTab& val_a = a.valeurs();
       const DoubleTab& val_b = b.valeurs();
-      valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
+      valeur().valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
     }
 }
 

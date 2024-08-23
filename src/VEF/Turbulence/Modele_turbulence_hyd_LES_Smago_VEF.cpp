@@ -44,7 +44,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbulente()
 
   calculer_S_barre();
 
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
   if (visco_turb.size() != nb_elem)
     {
       Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;

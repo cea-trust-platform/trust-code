@@ -80,8 +80,8 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
   if (lp.non_nul())
     loipar_->calculer_scal(diffusivite_turbulente_);
 
-  DoubleTab& lambda_t = conductivite_turbulente_.valeurs();
-  lambda_t = diffusivite_turbulente_.valeurs();
+  DoubleTab& lambda_t = conductivite_turbulente_->valeurs();
+  lambda_t = diffusivite_turbulente_->valeurs();
   if (equation().probleme().is_dilatable())
     multiplier_par_rho_si_dilatable(lambda_t, mil);
   conductivite_turbulente_->valeurs().echange_espace_virtuel();
@@ -98,8 +98,8 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
  */
 Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
 {
-  DoubleTab& alpha_t = diffusivite_turbulente_.valeurs();
-  const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
+  DoubleTab& alpha_t = diffusivite_turbulente_->valeurs();
+  const DoubleTab& nu_t = la_viscosite_turbulente_->valeur().valeurs();
   double temps = la_viscosite_turbulente_->valeur().temps();
   int n = alpha_t.size();
   if (nu_t.size() != n)
@@ -113,6 +113,6 @@ Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
     alpha_t[i] = nu_t[i] / LeScturb_;
   diffusivite_turbulente_->changer_temps(temps);
   if (equation().probleme().is_dilatable())
-    diviser_par_rho_si_dilatable(diffusivite_turbulente_.valeurs(), equation().probleme().milieu());
+    diviser_par_rho_si_dilatable(diffusivite_turbulente_->valeurs(), equation().probleme().milieu());
   return diffusivite_turbulente_;
 }

@@ -153,8 +153,8 @@ void Modele_turbulence_hyd_0_eq_base::mettre_a_jour(double)
   limiter_viscosite_turbulente();
   if (mon_equation_->probleme().is_dilatable())
     correction_nut_et_cisaillement_paroi_si_qc(*this);
-  energie_cinetique_turb_.valeurs().echange_espace_virtuel();
-  la_viscosite_turbulente_.valeurs().echange_espace_virtuel();
+  energie_cinetique_turb_->valeurs().echange_espace_virtuel();
+  la_viscosite_turbulente_->valeurs().echange_espace_virtuel();
   statistiques().end_count(nut_counter_);
 }
 
@@ -172,8 +172,8 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
         //  calcul de K_eps
 
         DoubleTab& K_Eps = K_eps_sortie_->valeurs();
-        const DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
-        const DoubleTab& wall_length = wall_length_.valeurs();
+        const DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
+        const DoubleTab& wall_length = wall_length_->valeurs();
         const int nb_elem = K_Eps.dimension(0);
 
         const double Kappa = 0.415;

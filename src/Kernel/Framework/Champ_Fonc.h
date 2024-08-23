@@ -28,28 +28,14 @@
  *
  * @sa Champ_Fonc_base
  */
-class Champ_Fonc : public DERIV(Champ_Fonc_base), public Champ_Proto
+class Champ_Fonc : public DERIV(Champ_Fonc_base)
 {
   Declare_instanciable(Champ_Fonc);
 public :
   Champ_Fonc(const Champ_Fonc&) = default;
   inline Champ_Fonc& operator=(const Champ_Fonc_base& ) ;
   inline Champ_Fonc& operator=(const Champ_Fonc& ) ;
-
-  using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs() override ;
-  inline const DoubleTab& valeurs() const override ;
 };
-
-inline DoubleTab& Champ_Fonc::valeurs()
-{
-  return valeur().valeurs();
-}
-
-inline const DoubleTab& Champ_Fonc::valeurs() const
-{
-  return valeur().valeurs();
-}
 
 inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc_base& ch_fonc_base)
 {

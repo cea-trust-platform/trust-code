@@ -84,7 +84,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
             {
               const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
               const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-              const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
+              const DoubleVect& diffusivite_turb = ch_diff_turb->valeurs();
 
               for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[!cM*i] + diffusivite_turb[i];
             }

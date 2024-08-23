@@ -60,8 +60,8 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
 
   double temps = mon_equation_->inconnue()->temps();
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
-  DoubleVect& k = energie_cinetique_turb_.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
+  DoubleVect& k = energie_cinetique_turb_->valeurs();
   const int nb_elem = domaine_VDF.nb_elem();
   const int nb_elem_tot = domaine_VDF.nb_elem_tot();
   const DoubleTab& xp = domaine_VDF.xp();

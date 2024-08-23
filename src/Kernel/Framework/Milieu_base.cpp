@@ -642,12 +642,12 @@ void Milieu_base::update_rho_cp(double temps)
   // Si l'inconnue est sur le device, on copie les donnees aussi:
   if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
     {
-      mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
-      mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
+      mapToDevice(rho_cp_elem_->valeurs(), "rho_cp_elem_");
+      mapToDevice(rho_cp_comme_T_->valeurs(), "rho_cp_comme_T_");
     }
   rho_cp_elem_->changer_temps(temps);
   rho_cp_elem_->changer_temps(temps);
-  DoubleTab& rho_cp=rho_cp_elem_.valeurs();
+  DoubleTab& rho_cp=rho_cp_elem_->valeurs();
   if (sub_type(Champ_Uniforme,rho.valeur()))
     rho_cp=rho->valeurs()(0,0);
   else
@@ -664,11 +664,11 @@ void Milieu_base::update_rho_cp(double temps)
   rho_cp_comme_T_->changer_temps(temps);
   const MD_Vector& md_som = rho_cp_elem_->domaine_dis_base().domaine().md_vector_sommets(),
                    &md_faces = ref_cast(Domaine_VF,rho_cp_elem_->domaine_dis_base()).md_vector_faces();
-  if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_->valeurs().get_md_vector())
-    rho_cp_comme_T_.valeurs() = rho_cp;
-  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
+  if (rho_cp_comme_T_->valeurs().get_md_vector() == rho_cp_elem_->valeurs().get_md_vector())
+    rho_cp_comme_T_->valeurs() = rho_cp;
+  else if (rho_cp_comme_T_->valeurs().get_md_vector() == md_som)
     Discretisation_tools::cells_to_nodes(rho_cp_elem_,rho_cp_comme_T_);
-  else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_faces)
+  else if (rho_cp_comme_T_->valeurs().get_md_vector() == md_faces)
     Discretisation_tools::cells_to_faces(rho_cp_elem_,rho_cp_comme_T_);
   else
     {

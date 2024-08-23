@@ -30,11 +30,11 @@ public:
   inline double temps() const override { return integrale_carre_champ->temps(); }
   inline const Integrale_tps_Champ& integrale() const override { return integrale_carre_champ; }
   inline const Op_Moyenne& moyenne() const { return la_moyenne.valeur(); }
-  inline DoubleTab& valeurs() { return integrale_champ->valeurs(); }
-  inline const DoubleTab& valeurs() const { return integrale_champ->valeurs(); }
+  inline DoubleTab& valeurs() { return integrale_champ.valeur()->valeurs(); }
+  inline const DoubleTab& valeurs() const { return integrale_champ.valeur()->valeurs(); }
 
-  inline DoubleTab& valeurs_carre() { return integrale_carre_champ.valeurs(); }
-  inline const DoubleTab& valeurs_carre() const { return integrale_carre_champ.valeurs(); }
+  inline DoubleTab& valeurs_carre() { return integrale_carre_champ->valeurs(); }
+  inline const DoubleTab& valeurs_carre() const { return integrale_carre_champ->valeurs(); }
   inline double dt_integration() const { return integrale_champ->dt_integration(); }
   inline double dt_integration_carre() const { return integrale_carre_champ.dt_integration(); }
   inline void mettre_a_jour(double tps) override;
@@ -66,7 +66,7 @@ inline void Op_Ecart_type::mettre_a_jour(double tps)
 
 inline void Op_Ecart_type::initialiser(double val_init)
 {
-  integrale_carre_champ.valeurs()= val_init;
+  integrale_carre_champ->valeurs()= val_init;
 }
 
 inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis,const Champ_Generique_base& le_champ,double t1,double t2)

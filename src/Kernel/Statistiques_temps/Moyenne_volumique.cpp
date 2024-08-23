@@ -258,7 +258,7 @@ int Moyenne_volumique::get_champ(const Nom& nom_pb,
               if (tmp == mc_nom_champ)
                 {
                   Operateur_Statistique_tps_base& stat = stats[i_stat].valeur();
-                  ref_cast_non_const(DoubleTab, stat.integrale().valeurs()) = stat.calculer_valeurs();
+                  ref_cast_non_const(DoubleTab, stat.integrale()->valeurs()) = stat.calculer_valeurs();
                   ref_champ = stat.integrale();
                   return 1;
                 }

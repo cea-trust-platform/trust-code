@@ -93,8 +93,8 @@ public:
   inline void associer_diff_turb(const Champ_Fonc& diff_turb)
   {
     ref_diffusivite_turbulente_ = diff_turb;
-    tab_diffusivite_turbulente.ref(diff_turb.valeurs());
-    is_multi_ = (diff_turb.valeurs().dimension(1) > 1) ? 1 : 0;
+    tab_diffusivite_turbulente.ref(diff_turb->valeurs());
+    is_multi_ = (diff_turb->valeurs().dimension(1) > 1) ? 1 : 0;
   }
 
   inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }

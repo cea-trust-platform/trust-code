@@ -196,14 +196,14 @@ DoubleTab Op_Correlation::calculer_valeurs() const
   if ( dt_ab > 0 )
     {
       // On calcule Moyenne(a'b')=Moyenne(ab)-Moyenne(a)*Moyenne(b)
-      correlation.valeurs() /= dt_ab;
+      correlation->valeurs() /= dt_ab;
       const double dt_a = dt_integration_a();
       const double dt_b = dt_integration_b();
       assert(est_egal(dt_a,dt_ab));
       assert(est_egal(dt_b,dt_ab));
       correlation.ajoute_produit_tensoriel(-1/(dt_a*dt_b),integrale_tps_a_->valeur(),integrale_tps_b_->valeur());
     }
-  return correlation.valeurs();
+  return correlation->valeurs();
 }
 
 int Op_Correlation::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)

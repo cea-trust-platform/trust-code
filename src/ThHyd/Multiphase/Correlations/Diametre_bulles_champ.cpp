@@ -45,7 +45,7 @@ Entree& Diametre_bulles_champ::readOn(Entree& is)
 
   diametres_->affecter(diametres_don_.valeur());
 
-  diametres_.valeurs().echange_espace_virtuel();
+  diametres_->valeurs().echange_espace_virtuel();
 
   return is;
 }

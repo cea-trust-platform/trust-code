@@ -287,7 +287,7 @@ void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Dom
   // Vivement VTK pour eviter cette passerelle entre TRUST et VisIt/Paraview/Tecplot
   discretiser_champ("champ_elem", domaine_VF, multi_scalaire, noms, unit, 3, sch.temps_courant(), ch);
   ch->nommer("mesh_numbering");
-  DoubleTab& tab = ch.valeurs();
+  DoubleTab& tab = ch->valeurs();
   tab=0;
   const IntTab& les_elems = z->domaine().les_elems();
   const IntTab& elem_faces = domaine_VF.elem_faces();

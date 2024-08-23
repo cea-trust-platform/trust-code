@@ -101,8 +101,8 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
 
   double temps = mon_equation_->inconnue()->temps();
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
-  DoubleTab& visco_turb = la_viscosite_turbulente_.valeurs();
-  DoubleVect& k = energie_cinetique_turb_.valeurs();
+  DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
+  DoubleVect& k = energie_cinetique_turb_->valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const DoubleTab& xp = domaine_VEF.xp();
@@ -177,7 +177,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbu
       {
         calculer_f_amortissement();
 
-        const DoubleTab& wall_length = wall_length_.valeurs();
+        const DoubleTab& wall_length = wall_length_->valeurs();
 
         for (int elem = 0; elem < nb_elem; elem++)
           {
@@ -241,7 +241,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::lire_distance_paroi()
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
 
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
-  DoubleTab& wall_length = wall_length_.valeurs();
+  DoubleTab& wall_length = wall_length_->valeurs();
   wall_length = -1.;
 
   LecFicDiffuse fic;
@@ -291,7 +291,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
 
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VEF.nb_elem();
-  DoubleTab& wall_length = wall_length_.valeurs();
+  DoubleTab& wall_length = wall_length_->valeurs();
   int nb_face_elem = domaine_VEF.domaine().nb_faces_elem();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
 

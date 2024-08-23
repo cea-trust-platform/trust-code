@@ -32,9 +32,9 @@ public:
   inline const Integrale_tps_produit_champs& integrale() const override { return integrale_tps_ab_; }
   inline const Op_Moyenne& la_moyenne_a() const { return la_moyenne_a_.valeur(); }
   inline const Op_Moyenne& la_moyenne_b() const { return la_moyenne_b_.valeur(); }
-  inline const DoubleTab& valeurs_a() const { return integrale_tps_a_->valeurs(); }
-  inline const DoubleTab& valeurs_b() const { return integrale_tps_b_->valeurs(); }
-  inline DoubleTab& valeurs_ab() { return integrale_tps_ab_.valeurs(); }
+  inline const DoubleTab& valeurs_a() const { return integrale_tps_a_.valeur()->valeurs(); }
+  inline const DoubleTab& valeurs_b() const { return integrale_tps_b_.valeur()->valeurs(); }
+  inline DoubleTab& valeurs_ab() { return integrale_tps_ab_->valeurs(); }
   inline double dt_integration_a() const { return integrale_tps_a_->dt_integration(); }
   inline double dt_integration_b() const { return integrale_tps_b_->dt_integration(); }
   inline double dt_integration_ab() const { return integrale_tps_ab_.dt_integration(); }
@@ -80,7 +80,7 @@ inline void Op_Correlation::mettre_a_jour(double tps)
 
 inline void Op_Correlation::initialiser(double val_init)
 {
-  integrale_tps_ab_.valeurs()= val_init;
+  integrale_tps_ab_->valeurs()= val_init;
 }
 
 inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_base& le_champ, double t1,double t2)

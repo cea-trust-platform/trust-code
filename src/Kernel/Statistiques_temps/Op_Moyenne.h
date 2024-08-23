@@ -61,7 +61,7 @@ inline void Op_Moyenne::mettre_a_jour(double tps)
 
 inline void Op_Moyenne::initialiser(double val_init)
 {
-  integrale_champ.valeurs()= val_init;
+  integrale_champ->valeurs()= val_init;
 }
 
 inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ,double t1,double t2)

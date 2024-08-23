@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ void Integrale_tps_Champ::mettre_a_jour_integrale()
       if (dt > 0)
         {
           const DoubleTab& val = source.valeurs();
-          DoubleTab& mes_val = valeurs();
+          DoubleTab& mes_val = valeur().valeurs();
           if (puissance == 1)
             mes_val.ajoute(dt,val);
           else if (puissance == 2)
