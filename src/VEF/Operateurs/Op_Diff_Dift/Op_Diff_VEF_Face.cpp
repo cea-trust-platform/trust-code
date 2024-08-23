@@ -832,7 +832,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                         } //if j
                     } // if elem2
               } // for i
-          }// parallel for);
+          });// parallel for
           end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Op_Diff_VEF_Face::ajouter_contribution CL periodique");
         } // subtype Perio
       else
@@ -976,9 +976,11 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
         {
         }
       else if (sub_type(Robin_VEF, la_cl.valeur()))
-      {
-    	  Cerr << " Modification des coefficients de la matrice de rigidite ici  dans le cas de conditions de type Robin !! " << finl;
-      }
+        {
+          Cerr << " Modification des coefficients de la matrice de rigidite ici  dans le cas de conditions de type Robin !! " << finl;
+          Cerr << " Dans le cas explicite diffusion implicite, le calcul ici est utilise en guise en preconditionner uniquement " << finl;
+          Cerr << " Dans ajouter_contribution de OP_diff_VEF_face.cpp  " << finl;
+        }
     }
   modifier_matrice_pour_periodique_apres_contribuer(matrice_morse,equation());
 }

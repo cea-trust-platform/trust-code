@@ -248,6 +248,8 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = domaine.nb_faces_elem();
   int nb_elem_tot = domaine.nb_elem_tot();
+
+
   // Si pas de support P1, on impose Neumann sur P0
   // et on traite les conditions aux limites Robin
   if (domaine_VEF.get_alphaS() == 0)
@@ -272,6 +274,21 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                   double diff = P_imp;
                   for (int comp = 0; comp < dimension; comp++)
                     grad(face, comp) += diff * face_normales(face, comp) * porosite_face(face);
+                }
+            }
+          if (sub_type(Robin_VEF, la_cl.valeur()))
+            {
+              Cerr << " Adding OP_grad_VEF_P1B_Face : ajouter elem just here for ROBIN BC \n \n  " << finl;
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              int num1 = le_bord.num_premiere_face();
+              int num2 = num1 + le_bord.nb_faces();
+              for (int face = num1 ; face < num2; face++) // loop on edges with Robin bc
+                {
+                  for (int comp = 0; comp<dimension; comp++)
+                    {
+                      grad(face, comp)-= 0; // TODO HERE
+                      // retirer la contribution que l'on est cense avoir des autres faces sur celle de Robin
+                    }
                 }
             }
         }
@@ -299,7 +316,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 signe = -1;
               for (int comp = 0; comp < dimension; comp++)
                 {
-                  // if robin pas de contribution a ajouter autre que pour la face elle meme
                   #pragma omp atomic
                   grad_addr[dimension * face + comp] -=
                     pe * signe * face_normales_addr[dimension * face + comp] * porosite_face_addr[face];

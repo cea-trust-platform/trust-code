@@ -1471,7 +1471,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       // Le nombre maximal d'iteration peut etre desormais borne par niter_max_diff_impl
       int nmax = le_schema_en_temps->niter_max_diffusion_implicite();
 
-      DoubleTab p(solution);
+      DoubleTab p(solution); // just for the size
       p = 0;
       DoubleTab phiB(p); // la partie Bord de l'operateur.
       DoubleTab resu(p);
@@ -1572,8 +1572,11 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           }
         }
       // On utilise p pour calculer phiB :
-      operateur(0).ajouter(p, phiB);
-      if (marq_tot)
+      operateur(0).ajouter(p, phiB); //
+     //
+     // V.K. : p_old = 0, we added BC independant of U_new here
+     //
+    if (marq_tot)
         {
           for (int i = 0; i < size_s; i++)
             if (marq[i])
@@ -1581,6 +1584,9 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         }
       statistiques().begin_count(diffusion_implicite_counter_);
       solveur_masse.appliquer(phiB);
+      //
+      // V.K. apply M-1 HERE
+      //
       // phiB *= aCKN;  // Crank - Nicholson
       // fait maintenant avant l'appel
       //solveur_masse.appliquer(secmem);
@@ -1598,7 +1604,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       else
         sol.ref(solution);
 
-      secmem.ajoute(1. / dt, sol, VECT_REAL_ITEMS);
+      secmem.ajoute(1. / dt, sol, VECT_REAL_ITEMS); // add 1./dt for U BC ??!!?
 
       // Stop the counter because operator diffusion is also counted
       statistiques().end_count(diffusion_implicite_counter_, 0, 0);
@@ -1609,6 +1615,11 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             if (marq[i])
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(solution, resu);
         }
+
+      //
+      // BEGIN GCP HERE
+      //
+
       statistiques().begin_count(diffusion_implicite_counter_);
       solveur_masse.appliquer(resu);
       resu.echange_espace_virtuel();

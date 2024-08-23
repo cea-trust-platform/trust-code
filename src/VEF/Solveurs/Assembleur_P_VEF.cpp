@@ -20,6 +20,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Matrice_Bloc.h>
 #include <Milieu_base.h>
+#include <Robin_VEF.h>
 
 Implemente_instanciable(Assembleur_P_VEF,"Assembleur_P_VEF",Assembleur_base);
 
@@ -557,8 +558,13 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
                     }
                 }
             }
+        } // else if (sub_type(Periodique,la_cl.valeur()) )
+      else if (sub_type(Robin_VEF, la_cl.valeur()))
+        {
+          Cerr <<  " ##  \n\n Ajout des conditions de Robin dans Assembleur_P_VEF.cpp  \n\n ##  " << finl ;
         }
-    }
+    } // for (i=0; i<les_cl.size(); i++)
+
   has_P_ref = (int)mp_max(has_P_ref);
   return 1;
 }
