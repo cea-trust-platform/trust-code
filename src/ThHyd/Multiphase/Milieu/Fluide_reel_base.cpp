@@ -450,12 +450,12 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie()
   // energie_interne
   for (int i = 0; i < Ni; i++) /* interne */
     {
-      val_e(i) = enth(i,m) - p(i, m) / val_rho(i);
+      val_e(i) = enth(i, n) - p(i, m) / val_rho(i);
       dp_e(i) =  - 1. / val_rho(i) + p(i, m) * dp_rho(i) / std::pow(val_rho(i) , 2);
       dh_e(i) = 1.0 + p(i, m) * dh_rho(i) / std::pow(val_rho(i) , 2);
     }
 
-  for (int i = 0; i < Nb; i++) bval_e(i) = benth(i,m) -  bp(i, m) / bval_rho(i); /* bord */
+  for (int i = 0; i < Nb; i++) bval_e(i) = benth(i, n) -  bp(i, m) / bval_rho(i); /* bord */
 }
 
 /*
