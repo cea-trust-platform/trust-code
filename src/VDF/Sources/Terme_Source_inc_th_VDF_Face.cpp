@@ -160,7 +160,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   for (element_number=0 ; element_number<nb_elem ; element_number ++)
     {
       //       Cerr << me() << " " << element_number << finl;
-      cell_cent_temp(element_number)*=ch_beta(0,0);
+      cell_cent_temp(element_number)*=ch_beta.valeurs()(0,0);
       temp1_t(element_number)=0.;
       temp2_t(element_number)=0.;
       filt_temp(element_number)=0.;
@@ -1053,7 +1053,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
     }
 
   // Boucle sur les faces internes
-  Cerr << me() << " faces internes thermique" << ch_beta(0,0) << finl;
+  Cerr << me() << " faces internes thermique" << ch_beta.valeurs()(0,0) << finl;
 
   double min_inc=1.e6, max_inc=-1.e6;
   int num_e1=-1, n_comp1=-1;

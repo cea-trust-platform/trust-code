@@ -41,7 +41,7 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
         for(int k = 0; k < flux_bords.dimension(1); k++)
           {
             int e = (face_voisins(face, 0) != -1) ? face_voisins(face, 0) : face_voisins(face, 1);
-            const double rho_ = (is_rho_u) ? 1.0 : rho(!rho_uniforme * e, k);
+            const double rho_ = (is_rho_u) ? 1.0 : rho.valeurs()(!rho_uniforme * e, k);
             flux_bords(face, k) *= rho_ * Cp->valeurs()(!cp_uniforme * e, k);
           }
     }

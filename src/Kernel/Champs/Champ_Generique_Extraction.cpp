@@ -188,7 +188,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
         {
           for (int j = 0; j < N; j++)
             for (int i=0; i<nb_ddl; i++)
-              espace_valeurs(i,j) = champ_fr.valeur()(0,j);
+              espace_valeurs(i,j) = champ_fr->valeurs()(0,j);
         }
       else
         espace_valeurs = champ_fr->valeurs();

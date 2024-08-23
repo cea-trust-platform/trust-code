@@ -242,7 +242,7 @@ int Champ_Face_VDF::compo_normale_sortante(int num_face) const
   // signe vaut  1 si face_voisins(num_face,1) est a l'exterieur
   if (domaine_vdf().face_voisins(num_face, 0) == -1)
     signe = -1;
-  vit_norm = (*this)(num_face) * signe;
+  vit_norm = valeurs()(num_face) * signe;
   return (vit_norm > 0);
 }
 

@@ -60,7 +60,7 @@ inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab
       const Champ_base& rho = la_zcl->equation().milieu().masse_volumique().valeur();
       if (sub_type(Champ_Uniforme, rho))
         {
-          const double coef = rho(0, 0);
+          const double coef = rho.valeurs()(0, 0);
           const int nb_faces_bord = le_dom->nb_faces_bord();
           for (int face = 0; face < nb_faces_bord; face++)
             for (int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face, k) *= coef;

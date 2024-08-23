@@ -235,7 +235,7 @@ double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B(int 
 {
   const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
-  double d_rho = rho(0, 0);
+  double d_rho = rho.valeurs()(0, 0);
   if (le_champ_front->valeurs().size() == 1)
     return le_champ_front->valeurs()(0, 0) / d_rho;
   else if (le_champ_front->valeurs().dimension(1) == 1)

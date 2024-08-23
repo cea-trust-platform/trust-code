@@ -140,7 +140,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
   if (sub_type(Champ_Uniforme,nu.valeur()))
     {
       const Champ_Uniforme& ch_nu = ref_cast(Champ_Uniforme,nu.valeur());
-      d_visco = ch_nu(0,0);
+      d_visco = ch_nu.valeurs()(0,0);
       l_visco_unif = 1;
     }
 
@@ -221,7 +221,7 @@ void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matri
   if (sub_type(Champ_Uniforme,nu.valeur()))
     {
       const Champ_Uniforme& ch_nu = ref_cast(Champ_Uniforme,nu.valeur());
-      d_visco = ch_nu(0,0);
+      d_visco = ch_nu.valeurs()(0,0);
       l_visco_unif = 1;
     }
 

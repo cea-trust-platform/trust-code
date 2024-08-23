@@ -142,9 +142,9 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
           const Champ_Don& Cp =mil.capacite_calorifique();
 
           if (sub_type(Champ_Uniforme,rho))
-            d_rho= rho(0,0);
+            d_rho= rho.valeurs()(0,0);
           else
-            d_rho= rho(i);
+            d_rho= rho.valeurs()(i);
 
           if (sub_type(Champ_Uniforme,Cp.valeur()))
             d_Cp= Cp->valeurs()(0,0);
@@ -196,9 +196,9 @@ double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front& ch
           const Champ_Don& Cp =mil.capacite_calorifique();
 
           if (sub_type(Champ_Uniforme,rho))
-            d_rho= rho(0,0);
+            d_rho= rho.valeurs()(0,0);
           else
-            d_rho= rho(i);
+            d_rho= rho.valeurs()(i);
 
           if (sub_type(Champ_Uniforme,Cp.valeur()))
             d_Cp= Cp->valeurs()(0,0);

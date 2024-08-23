@@ -68,7 +68,7 @@ inline void Eval_Darcy_VEF_Face::mettre_a_jour()
 {
   int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   if (sub_type(Champ_Uniforme, diffusivite_.valeur()))
-    db_diffusivite_ = diffusivite_.valeur()(0, 0);
+    db_diffusivite_ = diffusivite_->valeurs()(0, 0);
   else
     {
       const DoubleTab& val_diff = diffusivite_->valeurs();

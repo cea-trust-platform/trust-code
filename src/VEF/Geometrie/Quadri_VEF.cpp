@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -524,29 +524,29 @@ void Quadri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
   //   case 1: // une Face de Dirichlet : Face 3
   //     {
-  //       vc[0] = vitesse(Face[3],0);
-  //       vc[1] = vitesse(Face[3],1);
+  //       vc[0] = vitesse.valeurs()(Face[3],0);
+  //       vc[1] = vitesse.valeurs()(Face[3],1);
   //       break;
   //     }
 
   //   case 3: // une Face de Dirichlet : Face 2
   //     {
-  //       vc[0] = vitesse(Face[2],0);
-  //       vc[1] = vitesse(Face[2],1);
+  //       vc[0] = vitesse.valeurs()(Face[2],0);
+  //       vc[1] = vitesse.valeurs()(Face[2],1);
   //       break;
   //     }
 
   //   case 9: // une Face de Dirichlet : Face 1
   //     {
-  //       vc[0] = vitesse(Face[1],0);
-  //       vc[1] = vitesse(Face[1],1);
+  //       vc[0] = vitesse.valeurs()(Face[1],0);
+  //       vc[1] = vitesse.valeurs()(Face[1],1);
   //       break;
   //     }
 
   //   case 27: // une Faces de Dirichlet :Face 0
   //     {
-  //       vc[0] = vitesse(Face[0],0);
-  //       vc[1] = vitesse(Face[0],1);
+  //       vc[0] = vitesse.valeurs()(Face[0],0);
+  //       vc[1] = vitesse.valeurs()(Face[0],1);
   //       break;
   //     }
 
@@ -595,29 +595,29 @@ void Quadri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
   //   case 13: //trois Faces de Dirichlet : Faces 3,2,1
   //     {
-  //       vc[0]= vitesse(Face[2],0);
-  //       vc[1]= vitesse(Face[2],1);
+  //       vc[0]= vitesse.valeurs()(Face[2],0);
+  //       vc[1]= vitesse.valeurs()(Face[2],1);
   //       break;
   //     }
 
   //   case 31: //trois Faces de Dirichlet : Faces 0,3,2
   //     {
-  //       vc[0]= vitesse(Face[3],0);
-  //       vc[1]= vitesse(Face[3],1);
+  //       vc[0]= vitesse.valeurs()(Face[3],0);
+  //       vc[1]= vitesse.valeurs()(Face[3],1);
   //       break;
   //     }
 
   //   case 37: //trois Faces de Dirichlet : Faces 1,0,3
   //     {
-  //       vc[0]= vitesse(Face[0],0);
-  //       vc[1]= vitesse(Face[0],1);
+  //       vc[0]= vitesse.valeurs()(Face[0],0);
+  //       vc[1]= vitesse.valeurs()(Face[0],1);
   //       break;
   //     }
 
   //   case 39: //trois Faces de Dirichlet : Faces 2,1,0
   //     {
-  //       vc[0]= vitesse(Face[1],0);
-  //       vc[1]= vitesse(Face[1],1);
+  //       vc[0]= vitesse.valeurs()(Face[1],0);
+  //       vc[1]= vitesse.valeurs()(Face[1],1);
   //       break;
   //     }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -573,8 +573,10 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
               {
-                if (est_egal(inconnue.valeur()(fac1),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur());
-                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur());
+                if (est_egal(inconnue->valeurs()(fac1), 0))
+                  vit_imp = Champ_Face_get_val_imp_face_bord(tps, rang2, ori3, la_zcl_vdf.valeur());
+                else
+                  vit_imp = Champ_Face_get_val_imp_face_bord(tps, rang1, ori3, la_zcl_vdf.valeur());
               }
             else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur()));
 

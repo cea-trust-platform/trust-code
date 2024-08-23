@@ -67,7 +67,7 @@ int Champ_P1NC::compo_normale_sortante(int num_face) const
 {
   double vit_norm = 0;
   for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
+    vit_norm += valeurs()(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 
@@ -643,7 +643,7 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
               int elem = face_voisins(num_face, 0);
-              double rho_cp = (rho_uniforme ? rho(0, 0) : (rho.nb_comp() == 1 ? rho(num_face) : rho(num_face, 0)));
+              double rho_cp = (rho_uniforme ? rho.valeurs()(0, 0) : (rho.nb_comp() == 1 ? rho.valeurs()(num_face) : rho.valeurs()(num_face, 0)));
               rho_cp *= (cp_uniforme ? Cp->valeurs()(0, 0) : (Cp->nb_comp() == 1 ? Cp->valeurs()(num_face) : Cp->valeurs()(num_face, 0)));
               h_conv(elem) = ref_cast(Echange_externe_impose,la_cl.valeur()).h_imp(num_face) * rho_cp;
               h_moy += h_conv(elem);

@@ -112,7 +112,7 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
   if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
     {
       const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
-      double d_rho = rho(0, 0);
+      double d_rho = rho.valeurs()(0, 0);
       if (le_champ_front->valeurs().size() == 1)
         return le_champ_front->valeurs()(0, 0) / d_rho;
       else if (le_champ_front->valeurs().line_size() == 1)

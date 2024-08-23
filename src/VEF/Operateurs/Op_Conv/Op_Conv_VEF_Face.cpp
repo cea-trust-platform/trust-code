@@ -1776,7 +1776,7 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
             {
               psc =0;
               for (i=0; i<dimension; i++)
-                psc += la_vitesse(num_face,i)*face_normales(num_face,i);
+                psc += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i);
               if (psc>0)
                 if (ncomp == 1)
                   resu(num_face) += 0;

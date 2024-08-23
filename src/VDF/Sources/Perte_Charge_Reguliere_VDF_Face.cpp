@@ -144,7 +144,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
   if (sub_type(Champ_Uniforme,nu.valeur()))
     {
       const Champ_Uniforme& ch_nu = ref_cast(Champ_Uniforme,nu.valeur());
-      d_visco = ch_nu(0,0);
+      d_visco = ch_nu.valeurs()(0,0);
       l_visco_unif = 1;
     }
 

@@ -47,7 +47,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
   if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
     {
       const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
-      d_rho = rho(0, 0);
+      d_rho = rho.valeurs()(0, 0);
     }
   else
     d_rho = -1;
@@ -128,7 +128,7 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
   double rho_;
   assert(!est_egal(d_rho, -123.));
   if (d_rho == -1)
-    rho_ = rho(i);
+    rho_ = rho.valeurs()(i);
   else
     rho_ = d_rho;
 
@@ -158,7 +158,7 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i, int j) const
   double rho_;
   assert(!est_egal(d_rho, -123.));
   if (d_rho == -1)
-    rho_ = rho(i);
+    rho_ = rho.valeurs()(i);
   else
     rho_ = d_rho;
 

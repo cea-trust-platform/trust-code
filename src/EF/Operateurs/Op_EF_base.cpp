@@ -371,7 +371,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
       const Champ_base& rho = op.equation().milieu().masse_volumique().valeur();
       if (sub_type(Champ_Uniforme,rho))
         {
-          double coef = rho(0,0);
+          double coef = rho.valeurs()(0,0);
           int nb_faces_bord=le_dom_EF.nb_faces_bord();
           for (int face=0; face<nb_faces_bord; face++)
             for(int k=0; k<nb_compo; k++)

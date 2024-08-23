@@ -549,13 +549,13 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
       // calcul de la vitesse aux sommets des polyedres
       for (j=0; j<dimension; j++)
         {
-          vs[j] = la_vitesse(face[0],j);
+          vs[j] = la_vitesse.valeurs()(face[0],j);
           for (i=1; i<nfac; i++)
-            vs[j]+= la_vitesse(face[i],j);
+            vs[j]+= la_vitesse.valeurs()(face[i],j);
         }
       for (i=0; i<nsom; i++)
         for (j=0; j<dimension; j++)
-          vsom(i,j) = vs[j] - dimension*la_vitesse(face[i],j);
+          vsom(i,j) = vs[j] - dimension*la_vitesse.valeurs()(face[i],j);
 
       // calcul de vc
       domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),
@@ -674,7 +674,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
             {
               psc =0;
               for (i=0; i<dimension; i++)
-                psc += la_vitesse(num_face,i)*face_normales(num_face,i);
+                psc += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i);
               if (psc>0)
                 if (ncomp_ch_transporte == 1)
                   {
@@ -809,7 +809,7 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_2d(DoubleTab& derive ,int poly,
   coor_trans(1,0) = 0. ;
   coor_trans(1,1) = 1. ;
 
-  for (i=0; i<dimension; i++) vs(i)= (la_vitesse(num1,i)+la_vitesse(num2,i)) / 2.;
+  for (i=0; i<dimension; i++) vs(i)= (la_vitesse.valeurs()(num1,i)+la_vitesse.valeurs()(num2,i)) / 2.;
 
   dist = 0. ;
 
@@ -1039,10 +1039,10 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_3d(DoubleTab& derive, int poly,
           face_glob = elem_faces(poly, face_adj );
           face(face_adj) = face_glob ;
           for (i=0; i<dimension; i++)
-            vs(i) -= la_vitesse(face_glob,i)/double(nfac) ;
+            vs(i) -= la_vitesse.valeurs()(face_glob,i)/double(nfac) ;
 
         }
-      for (i=0; i<dimension; i++) vs(i) += la_vitesse(num1,i) + la_vitesse(num2,i) ;
+      for (i=0; i<dimension; i++) vs(i) += la_vitesse.valeurs()(num1,i) + la_vitesse.valeurs()(num2,i) ;
 
       dist = 0. ;
 

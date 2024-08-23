@@ -244,7 +244,7 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
               psc[i] = 0.;
               for (j=0; j<dimension; j++)
                 {
-                  psc[i]+= la_vitesse(face[i],j)*cc[j];
+                  psc[i]+= la_vitesse.valeurs()(face[i],j)*cc[j];
                 }
             }
 
@@ -272,7 +272,7 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
 
           flux = 0.;
           for (comp0=0; comp0<dimension; comp0++)
-            flux += la_vitesse(num_calc,comp0)*la_vitesse(num_calc,comp0);
+            flux += la_vitesse.valeurs()(num_calc,comp0)*la_vitesse.valeurs()(num_calc,comp0);
 
           for (comp0=0; comp0<dimension; comp0++)
             {
@@ -394,8 +394,8 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
           assert(vol1>0);
           inter  = vorticite[elem0]*vol0/3.+vorticite[elem1]*vol1/3.;
 
-          resu(num_face,0) -= -inter*la_vitesse(num_face,1);
-          resu(num_face,1) -= inter*la_vitesse(num_face,0);
+          resu(num_face,0) -= -inter*la_vitesse.valeurs()(num_face,1);
+          resu(num_face,1) -= inter*la_vitesse.valeurs()(num_face,0);
 
           // signe - car on est dans le second membre
 
@@ -414,9 +414,9 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
           a1 = vorticite(elem0,1)*vol0/4. + vorticite(elem1,1)*vol1/4.;
           a2 = vorticite(elem0,2)*vol0/4. + vorticite(elem1,2)*vol1/4.;
 
-          resu(num_face,0) -= a1*la_vitesse(num_face,2)-a2*la_vitesse(num_face,1) ;
-          resu(num_face,1) -= a2*la_vitesse(num_face,0)-a0*la_vitesse(num_face,2) ;
-          resu(num_face,2) -= a0*la_vitesse(num_face,1)-a1*la_vitesse(num_face,0) ;
+          resu(num_face,0) -= a1*la_vitesse.valeurs()(num_face,2)-a2*la_vitesse.valeurs()(num_face,1) ;
+          resu(num_face,1) -= a2*la_vitesse.valeurs()(num_face,0)-a0*la_vitesse.valeurs()(num_face,2) ;
+          resu(num_face,2) -= a0*la_vitesse.valeurs()(num_face,1)-a1*la_vitesse.valeurs()(num_face,0) ;
 
           // signe - car on est dans le second membre
 

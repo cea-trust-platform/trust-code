@@ -229,9 +229,9 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
       // on conserve cette partie
       for (j=0; j<dimension; j++)
         {
-          vs[j] = la_vitesse(face[0],j)*porosite_face(face[0]);
+          vs[j] = la_vitesse.valeurs()(face[0],j)*porosite_face(face[0]);
           for (i=1; i<nfac; i++)
-            vs[j]+= la_vitesse(face[i],j)*porosite_face(face[i]);
+            vs[j]+= la_vitesse.valeurs()(face[i],j)*porosite_face(face[i]);
         }
 
       // calcul de la vitesse aux sommets des polyedres
@@ -240,7 +240,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
         {
           for (j=0; j<nsom; j++)
             for (int ncomp=0; ncomp<Objet_U::dimension; ncomp++)
-              vsom(j,ncomp) =vs[ncomp] - Objet_U::dimension*la_vitesse(face[j],ncomp)*porosite_face(face[j]);
+              vsom(j,ncomp) =vs[ncomp] - Objet_U::dimension*la_vitesse.valeurs()(face[j],ncomp)*porosite_face(face[j]);
         }
       else
         {
@@ -330,7 +330,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
             {
               psc =0;
               for (i=0; i<dimension; i++)
-                psc += la_vitesse(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
+                psc += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
               if (psc>0)
                 {
                   for (i=0; i<ncomp_ch_transporte; i++)
@@ -486,9 +486,9 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
       // calcul de la vitesse aux sommets des polyedres
       for (j=0; j<dimension; j++)
         {
-          vs[j] = la_vitesse(face[0],j);
+          vs[j] = la_vitesse.valeurs()(face[0],j);
           for (i=1; i<nfac; i++)
-            vs[j]+= la_vitesse(face[i],j);
+            vs[j]+= la_vitesse.valeurs()(face[i],j);
         }
 
       // calcul de la vitesse aux sommets des polyedres
@@ -567,7 +567,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
             {
               psc =0;
               for (i=0; i<dimension; i++)
-                psc += la_vitesse(num_face,i)*face_normales(num_face,i);
+                psc += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i);
               if (psc>0)
                 {
                   for (j=0; j<ncomp_ch_transporte; j++)
@@ -694,7 +694,7 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
             {
               psc =0;
               for (i=0; i<dimension; i++)
-                psc += la_vitesse(num_face,i)*face_normales(num_face,i);
+                psc += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i);
               if (psc>0)
                 for (i=0; i<ncomp; i++)
                   resu(num_face,i) += 0;

@@ -1220,7 +1220,7 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
     }
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
-    Pa *= rho(0,0);
+    Pa *= rho.valeurs()(0,0);
   la_pression_en_pa->mettre_a_jour(pression()->temps());
 }
 

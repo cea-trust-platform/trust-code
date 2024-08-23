@@ -1012,11 +1012,11 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
           else
             Cp_ = Cp->valeurs()(num_elem, 0);
           if (rho_uniforme)
-            rho_ = rho(0, 0);
+            rho_ = rho.valeurs()(0, 0);
           else if (rho.nb_comp() == 1)
-            rho_ = rho(num_elem);
+            rho_ = rho.valeurs()(num_elem);
           else
-            rho_ = rho(num_elem, 0);
+            rho_ = rho.valeurs()(num_elem, 0);
           /* si on est en QC temperature on a calcule div(rhou * T) */
           /* il ne faut pas remultiplier par rho */
           if (is_rho_u)

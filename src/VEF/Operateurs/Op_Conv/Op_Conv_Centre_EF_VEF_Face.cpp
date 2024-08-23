@@ -241,9 +241,9 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
               for (j=0; j<dimension; j++)
                 {
                   //                   Cerr << "cc[j]=" << cc[j] << finl;
-                  //                   Cerr << "la_vitesse(face[i],j)=" << la_vitesse(face[i],j) << finl;
+                  //                   Cerr << "la_vitesse.valeurs()(face[i],j)=" << la_vitesse.valeurs()(face[i],j) << finl;
 
-                  psc[i]+= la_vitesse(face[i],j)*cc[j]*porosite_face(face[i]);
+                  psc[i]+= la_vitesse.valeurs()(face[i],j)*cc[j]*porosite_face(face[i]);
                 }
               //            Cerr << "psc[" << i << "]=" <<  psc[i] << finl;
             }
@@ -481,7 +481,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
                         //                           Cerr << "transporte(autre_num_face(1),comp)=" << transporte(autre_num_face(1),comp) << finl;
                         //                           Cerr << "flux=" << flux << finl;
                         //************Calcul de fluent pour le pas de temps
-                        // f_int = 0.5*cc[comp]*(la_vitesse(num1,comp)+la_vitesse(num2,comp));
+                        // f_int = 0.5*cc[comp]*(la_vitesse.valeurs()(num1,comp)+la_vitesse.valeurs()(num2,comp));
 
                         //  if (f_int>=0.)
                         //                             fluent_[num2] += f_int ;
@@ -606,7 +606,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
             {
               pscav =0;
               for (i=0; i<dimension; i++)
-                pscav += la_vitesse(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
+                pscav += la_vitesse.valeurs()(num_face,i)*face_normales(num_face,i)*porosite_face(num_face);
               if (pscav>0)
                 if (ncomp_ch_transporte == 1)
                   {

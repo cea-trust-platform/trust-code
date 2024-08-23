@@ -73,7 +73,7 @@ int Champ_Q1NC::compo_normale_sortante(int num_face) const
 {
   double vit_norm = 0;
   for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
+    vit_norm += valeurs()(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 

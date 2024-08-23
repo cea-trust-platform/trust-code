@@ -463,7 +463,7 @@ double Op_Conv_EF::calculer_dt_stab() const
   min_dx_=mp_min(min_dx_);
   max_ue_=mp_max(max_ue_);
   coefficient_correcteur_supg_.dimensionner(1,1);
-  coefficient_correcteur_supg_(0,0)=min_dx_/max_ue_;
+  coefficient_correcteur_supg_.valeurs()(0,0)=min_dx_/max_ue_;
   double dt_stab=dt_l;
   dt_stab = Process::mp_min(dt_stab);
   // astuce pour contourner le type const de la methode

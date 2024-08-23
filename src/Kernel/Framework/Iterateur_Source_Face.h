@@ -83,7 +83,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
       const Milieu_base& milieu = la_zcl->equation().milieu();
       const Champ_base& rho = milieu.masse_volumique().valeur();
       if (sub_type(Champ_Uniforme, rho))
-        coef = rho(0, 0);
+        coef = rho.valeurs()(0, 0);
       else
         {
           const DoubleTab& val_rho = rho.valeurs();

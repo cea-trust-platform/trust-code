@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,21 +43,21 @@ public:
   /* par defaut, ces methodes renvoient valeurs() */
   virtual DoubleTab& valeurs(double temps) { return valeurs(); }
   virtual const DoubleTab& valeurs(double temps) const { return valeurs(); }
+
   virtual DoubleTab& futur(int i = 1) { return valeurs(); }
   virtual const DoubleTab& futur(int i = 1) const { return valeurs(); }
+
   virtual DoubleTab& passe(int i = 1) { return valeurs(); }
   virtual const DoubleTab& passe(int i = 1) const { return valeurs(); }
 
   int lire_dimension(Entree&, const Nom&);
   int lire_dimension(int dim, const Nom& le_nom_);
 
-  // Attention : ces operateurs sont tres couteux car ils
-  // utilisent la methode virtuelle valeurs(). Conseil:
-  // ne pas les utiliser
-  double operator()(int i, int j) const;
-  double& operator()(int i, int j);
-  double operator()(int i) const;
-  double& operator()(int i);
+  // XXX : Elie Saikali : ca c'est interdit !! c'est tout
+  double operator()(int i, int j) const = delete;
+  double& operator()(int i, int j) = delete;
+  double operator()(int i) const = delete;
+  double& operator()(int i) = delete;
 };
 
-#endif
+#endif /* Champ_Proto_included */

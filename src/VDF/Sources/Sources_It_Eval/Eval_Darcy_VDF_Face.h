@@ -61,7 +61,8 @@ inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
 inline void Eval_Darcy_VDF_Face::mettre_a_jour()
 {
   const int nb_faces_tot = ref_cast(Domaine_VDF,le_dom.valeur()).nb_faces_tot();
-  if (sub_type(Champ_Uniforme,diffusivite_.valeur())) db_diffusivite_ = diffusivite_.valeur()(0,0);
+  if (sub_type(Champ_Uniforme,diffusivite_.valeur()))
+    db_diffusivite_ = diffusivite_->valeurs()(0,0);
   else
     {
       const DoubleTab& val_diff = diffusivite_->valeurs();
