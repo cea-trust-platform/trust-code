@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Integrale_tps_produit_champs.h>
-#include <TRUSTTab.h>
 #include <Domaine_VF.h>
+#include <TRUSTTab.h>
 
-Implemente_instanciable(Integrale_tps_produit_champs,"Integrale_tps_produit_champs",Integrale_tps_Champ);
+Implemente_instanciable(Integrale_tps_produit_champs, "Integrale_tps_produit_champs", Integrale_tps_Champ);
 
 Sortie& Integrale_tps_produit_champs::printOn(Sortie& s) const
 {
@@ -26,18 +26,18 @@ Sortie& Integrale_tps_produit_champs::printOn(Sortie& s) const
 
 Entree& Integrale_tps_produit_champs::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
+
 /*! @brief Mets a jour l'integrale.
  *
- * Verifie que le temps de l'integrale est inferieur a celui du
- *     champ associe et poursuit l'integration jusqu'au temps courant.
+ * Verifie que le temps de l'integrale est inferieur a celui du champ associe et poursuit l'integration jusqu'au temps courant.
  *     si la borne superieure de l'integrale n'est pas depassee.
  *
  */
 void Integrale_tps_produit_champs::mettre_a_jour_integrale()
 {
-  Champ espace_stockage_source,espace_stockage_source2;
+  Champ espace_stockage_source, espace_stockage_source2;
   const Champ_base& source = mon_premier_champ()->get_champ(espace_stockage_source);
   const Champ_base& source2 = mon_second_champ()->get_champ(espace_stockage_source2);
   const Noms nom = mon_premier_champ()->get_property("nom");
@@ -48,7 +48,7 @@ void Integrale_tps_produit_champs::mettre_a_jour_integrale()
     {
       Cerr << "Integrale_tps_produit_champs::mettre_a_jour_integrale()" << finl;
       Cerr << "the current time of the field named " << nom[0] << " =" << t_courant << finl;
-      Cerr << "is different of the second field current time " << nom2[0] << " =" <<  source2.temps() << finl;
+      Cerr << "is different of the second field current time " << nom2[0] << " =" << source2.temps() << finl;
       exit();
     }
   if (t_fin_ < t_debut_)
@@ -57,9 +57,9 @@ void Integrale_tps_produit_champs::mettre_a_jour_integrale()
       Cerr << " t_fin_=" << t_fin_ << " < t_debut_=" << t_debut_ << finl;
       exit();
     }
-  if ( inf_ou_egal(t_debut_ ,t_courant) &&  inf_ou_egal(t_courant,t_fin_) )
+  if (inf_ou_egal(t_debut_, t_courant) && inf_ou_egal(t_courant, t_fin_))
     {
-      double dt = t_courant - tps_integrale;
+      double dt = t_courant - tps_integrale_;
       if (dt > 0)
         {
           //DoubleTab& mes_val = valeurs();
@@ -72,11 +72,10 @@ void Integrale_tps_produit_champs::mettre_a_jour_integrale()
             {
               Cerr << "Integrale_tps_produit_champs::mettre_a_jour_integrale() : case not coded." << finl;
             }
-          tps_integrale = t_courant;
-          dt_integr_calcul += dt;
+          tps_integrale_ = t_courant;
+          dt_integr_calcul_ += dt;
         }
     }
-
 }
 
 void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const Champ_base& a, const Champ_base& b)
@@ -86,22 +85,20 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
       // On ramene au centre des elements
       const DoubleTab& xp = ref_cast(Domaine_VF,valeur().domaine_dis_base()).xp();
       int nb_elem_tot = xp.dimension_tot(0);
-      DoubleTab val_a,val_b;
+      DoubleTab val_a, val_b;
       // Le jour ou les champs seront mieux foutus, on n'aura
       // pas a faire ca:
-      val_a.resize(nb_elem_tot,a.nb_comp());
-      val_b.resize(nb_elem_tot,b.nb_comp());
+      val_a.resize(nb_elem_tot, a.nb_comp());
+      val_b.resize(nb_elem_tot, b.nb_comp());
       a.valeur_aux(xp, val_a);
       b.valeur_aux(xp, val_b);
-      valeur().valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
+      valeur().valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
       valeur().valeurs().echange_espace_virtuel();
     }
   else
     {
       const DoubleTab& val_a = a.valeurs();
       const DoubleTab& val_b = b.valeurs();
-      valeur().valeurs().ajoute_produit_tensoriel(alpha,val_a,val_b);
+      valeur().valeurs().ajoute_produit_tensoriel(alpha, val_a, val_b);
     }
 }
-
-

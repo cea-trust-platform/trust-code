@@ -15,38 +15,29 @@
 
 #include <Integrale_tps_Champ.h>
 
-Implemente_instanciable(Integrale_tps_Champ,"Integrale_tps_Champ",Champ_Fonc);
-
-
-// printOn
+Implemente_instanciable(Integrale_tps_Champ, "Integrale_tps_Champ", Champ_Fonc);
 
 Sortie& Integrale_tps_Champ::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-// readOn
-
 Entree& Integrale_tps_Champ::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
 
 /*! @brief Mets a jour l'integrale.
  *
- * Verifie que le temps de l'integrale est inferieur a celui du
- *     champ associe et poursuit l'integration jusqu'au temps courant.
+ * Verifie que le temps de l'integrale est inferieur a celui du champ associe et poursuit l'integration jusqu'au temps courant.
  *     si la borne superieure de l'integrale n'est pas depassee.
  *
  */
 void Integrale_tps_Champ::mettre_a_jour_integrale()
 {
-
-
   Champ espace_stockage_source;
-  const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
-  double t_courant = mon_champ->get_time();
+  const Champ_base& source = mon_champ_->get_champ(espace_stockage_source);
+  double t_courant = mon_champ_->get_time();
 
   if (t_fin_ < t_debut_)
     {
@@ -54,22 +45,22 @@ void Integrale_tps_Champ::mettre_a_jour_integrale()
       Cerr << " t_fin_=" << t_fin_ << " < t_debut_=" << t_debut_ << finl;
       exit();
     }
-  if ( inf_ou_egal(t_debut_ ,t_courant) &&  inf_ou_egal(t_courant,t_fin_) )
+  if (inf_ou_egal(t_debut_, t_courant) && inf_ou_egal(t_courant, t_fin_))
     {
-      double dt = t_courant - tps_integrale;
+      double dt = t_courant - tps_integrale_;
       if (dt > 0)
         {
           const DoubleTab& val = source.valeurs();
           DoubleTab& mes_val = valeur().valeurs();
-          if (puissance == 1)
-            mes_val.ajoute(dt,val);
-          else if (puissance == 2)
-            mes_val.ajoute_carre(dt,val);
+          if (puissance_ == 1)
+            mes_val.ajoute(dt, val);
+          else if (puissance_ == 2)
+            mes_val.ajoute_carre(dt, val);
           else
-            for (int i=0; i<val.size(); i++)
-              mes_val[i] += dt*pow(val[i],puissance);
-          tps_integrale = t_courant;
-          dt_integr_calcul += dt;
+            for (int i = 0; i < val.size(); i++)
+              mes_val[i] += dt * pow(val[i], puissance_);
+          tps_integrale_ = t_courant;
+          dt_integr_calcul_ += dt;
         }
     }
 }
