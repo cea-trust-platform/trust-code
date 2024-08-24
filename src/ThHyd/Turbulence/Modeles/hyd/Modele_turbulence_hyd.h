@@ -19,9 +19,6 @@
 #include <Modele_turbulence_hyd_base.h>
 #include <TRUST_Deriv.h>
 
-class Modele_turbulence_hyd: public MorEqn, public DERIV(Modele_turbulence_hyd_base)
-{
-  Declare_instanciable(Modele_turbulence_hyd);
-};
+using Modele_turbulence_hyd = OWN_PTR(Modele_turbulence_hyd_base);
 
 #endif /* Modele_turbulence_hyd_included */

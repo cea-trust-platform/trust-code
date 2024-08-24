@@ -19,9 +19,6 @@
 #include <Modele_turbulence_scal_base.h>
 #include <TRUST_Deriv.h>
 
-class Modele_turbulence_scal: public MorEqn, public DERIV(Modele_turbulence_scal_base)
-{
-  Declare_instanciable(Modele_turbulence_scal);
-};
+using Modele_turbulence_scal = OWN_PTR(Modele_turbulence_scal_base);
 
 #endif /* Modele_turbulence_scal_included */

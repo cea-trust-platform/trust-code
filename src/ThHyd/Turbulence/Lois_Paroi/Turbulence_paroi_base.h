@@ -25,7 +25,6 @@
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_hyd_base;
-class Modele_turbulence_hyd;
 class Probleme_base;
 class EcrFicPartage;
 class Param;

@@ -26,10 +26,31 @@
 
 Entree& Convection_Diffusion_Turbulent::lire_modele(Entree& is, const Equation_base& eqn)
 {
-  Cerr << "Reading and typing of the turbulence model : " << finl;
-  le_modele_turbulence.associer_eqn(eqn);
-  is >> le_modele_turbulence;
+  Cerr << "Reading and typing of the turbulence model : ";
+
+  Motcle typ;
+  is >> typ;
+
+  Motcle nom1("Modele_turbulence_scal_");
+  nom1 += typ;
+
+  if (typ == "sous_maille_dyn")
+    {
+      nom1 += "_";
+      Nom disc = eqn.discretisation().que_suis_je();
+      if (disc == "VEFPreP1B") disc = "VEF";
+      nom1 += disc;
+    }
+  Cerr << nom1 << finl;
+
+  le_modele_turbulence.typer(nom1);
+  le_modele_turbulence->associer_eqn(eqn);
+  le_modele_turbulence->associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
+
+  is >> le_modele_turbulence.valeur(); // On lit :-)
+
   le_modele_turbulence->discretiser();
+
   return is;
 }
 

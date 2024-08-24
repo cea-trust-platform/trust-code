@@ -58,6 +58,9 @@ public:
 protected:
   Entree& lire_op_diff_turbulent(Entree& is);
   Modele_turbulence_hyd le_modele_turbulence;
+
+private:
+  int typer_lire_mod_turb_hyd(Entree& s);
 };
 
 #endif /* Navier_Stokes_Turbulent_included */

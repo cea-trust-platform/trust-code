@@ -51,18 +51,54 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
       return 1;
     }
   else if (mot == "modele_turbulence")
-    {
-      Cerr << "Reading and typing of the turbulence model :";
-      le_modele_turbulence.associer_eqn(*this);
-      is >> le_modele_turbulence;
-      le_modele_turbulence->discretiser();
-      RefObjU le_modele;
-      le_modele = le_modele_turbulence.valeur();
-      liste_modeles_.add_if_not(le_modele);
-      return 1;
-    }
+    return typer_lire_mod_turb_hyd(is);
   else
     return Navier_Stokes_std::lire_motcle_non_standard(mot, is);
+}
+
+int Navier_Stokes_Turbulent::typer_lire_mod_turb_hyd(Entree& s)
+{
+  Cerr << "Reading and typing of the turbulence model : ";
+
+  Motcle typ;
+  s >> typ;
+  Motcle nom1("Modele_turbulence_hyd_");
+  nom1 += typ;
+  Nom discr = discretisation().que_suis_je();
+
+  if (typ.debute_par("SOUS_MAILLE") || discr == "VDF_Hyper" || typ.debute_par("LONGUEUR_MELANGE") || (typ == "K_Epsilon_V2"))
+    {
+      if (dimension == 2 && discr != "VDF_Hyper")
+        {
+          Cerr << "Vous traitez un cas turbulent en dimension 2 avec un modele sous maille" << finl;
+          Cerr << "Attention a l'interpretation des resultats !!" << finl;
+        }
+
+      nom1 += "_";
+      // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
+      if (discr == "VEFPreP1B") discr = "VEF";
+      nom1 += discr;
+    }
+  if (nom1 == "MODELE_TURBULENCE_HYD_SOUS_MAILLE_LM_VEF")
+    {
+      Cerr << "Le mot cle Sous_maille_LM s'appelle desormais Longueur_Melange pour etre coherent en VDF et VEF." << finl;
+      Cerr << "Changer votre jeu de donnees." << finl;
+      Process::exit();
+    }
+
+  Cerr << nom1 << finl;
+
+  le_modele_turbulence.typer(nom1);
+  le_modele_turbulence->associer_eqn(*this);
+  le_modele_turbulence->associer(domaine_dis(), domaine_Cl_dis());
+  s >> le_modele_turbulence.valeur(); // on lit !
+
+  le_modele_turbulence->discretiser();
+  RefObjU le_modele;
+  le_modele = le_modele_turbulence.valeur();
+  liste_modeles_.add_if_not(le_modele);
+
+  return 1;
 }
 
 const Champ_Don& Navier_Stokes_Turbulent::diffusivite_pour_transport() const
@@ -188,7 +224,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 
 /*! @brief Prepare le calcul.
  *
- * Simple appe a Modele_turbulence_hyd::preparer_caclul() sur
+ * Simple appe a Modele_turbulence_hyd->preparer_caclul() sur
  *     le membre reprresentant la turbulence.
  *
  * @return (int) renvoie toujours 1
