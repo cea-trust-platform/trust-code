@@ -760,7 +760,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
       //                 2eme condition de Dirichlet = paroi haute
       //                 maillage regulier suivant x
       const Fluide_base& fluide = ref_cast(Fluide_base,mon_equation->probleme().equation(0).milieu());
-      const Turbulence_paroi& loipar           = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur()).loi_paroi();
+      const Turbulence_paroi& loipar = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur()).loi_paroi();
       DoubleTab tau_tan;
       tau_tan.ref(loipar->Cisaillement_paroi());
 

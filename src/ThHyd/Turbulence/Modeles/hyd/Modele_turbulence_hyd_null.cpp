@@ -35,7 +35,7 @@ Entree& Modele_turbulence_hyd_null::readOn(Entree& is)
   // Creation d'une loi de paroi nulle:
   const Equation_base& eqn = equation();
   const Nom& discr = eqn.discretisation().que_suis_je();
-  loipar_.associer_modele(*this);
+
   if (discr == "VEF" || discr == "VEFPreP1B") loipar_.typer("negligeable_VEF");
   else if (discr == "VDF") loipar_.typer("negligeable_VDF");
   else if (discr == "EF") loipar_.typer("negligeable_EF");

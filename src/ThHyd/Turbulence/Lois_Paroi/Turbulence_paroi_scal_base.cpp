@@ -88,7 +88,7 @@ void Turbulence_paroi_scal_base::typer_lire_turbulence_paroi_scal(OWN_PTR(Turbul
       exit();
     }
 
-  Cerr << "et typage :" << typ << finl;
+  Cerr << "et typage : " << typ << finl;
   turb_par.typer(typ);
   turb_par->associer_modele(mod_turb_scal);
   turb_par->associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());

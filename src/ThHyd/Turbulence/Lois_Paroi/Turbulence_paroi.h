@@ -17,29 +17,8 @@
 #define Turbulence_paroi_included
 
 #include <Turbulence_paroi_base.h>
-#include <TRUST_Vector.h>
 #include <TRUST_Deriv.h>
 
-class Pb_Hydraulique;
-class Probleme_base;
+using Turbulence_paroi = OWN_PTR(Turbulence_paroi_base);
 
-/*! @brief Classe Turbulence_paroi Classe generique de la hierarchie des turbulences au niveau de la
- *
- *     paroi, un objet Turbulence_paroi peut referencer n'importe quel
- *     objet derivant Turbulence_paroi_base.
- *     La plupart des methodes appellent les methodes de l'objet Probleme
- *     sous-jacent via la methode valeur() declaree grace a la macro
- *
- * @sa Turbulence_paroi_base
- */
-class Turbulence_paroi: public DERIV(Turbulence_paroi_base)
-{
-  Declare_instanciable(Turbulence_paroi);
-public:
-  void associer_modele(const Modele_turbulence_hyd_base&);
-
-protected:
-  REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
-};
-
-#endif
+#endif /* Turbulence_paroi_included */

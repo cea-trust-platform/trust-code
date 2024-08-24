@@ -13,10 +13,10 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd_base.h>
 #include <Turbulence_paroi_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Modele_turbulence_hyd_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <EcrFicPartage.h>
@@ -25,18 +25,11 @@
 #include <Param.h>
 #include <Noms.h>
 
-Implemente_base_sans_constructeur(Turbulence_paroi_base, "Turbulence_paroi_base", Objet_U);
+Implemente_base(Turbulence_paroi_base, "Turbulence_paroi_base", Objet_U);
 // XD turbulence_paroi_base objet_u turbulence_paroi_base -1 Basic class for wall laws for Navier-Stokes equations.
-
 
 // XD negligeable turbulence_paroi_base negligeable 0 Keyword to suppress the calculation of a law of the wall with a turbulence model. The wall stress is directly calculated with the derivative of the velocity, in the direction perpendicular to the wall (tau_tan /rho= nu dU/dy). NL2 Warning: This keyword is not available for k-epsilon models. In that case you must choose a wall law.
 // XD negligeable_scalaire turbulence_paroi_scalaire_base negligeable_scalaire 0 Keyword to suppress the calculation of a law of the wall with a turbulence model for thermohydraulic problems. The wall stress is directly calculated with the derivative of the velocity, in the direction perpendicular to the wall.
-
-Turbulence_paroi_base::Turbulence_paroi_base()
-{
-  nb_impr0_ = 0;
-  nb_impr_ = 0;
-}
 
 Sortie& Turbulence_paroi_base::printOn(Sortie& s) const
 {
@@ -48,17 +41,43 @@ Entree& Turbulence_paroi_base::readOn(Entree& is)
   return is;
 }
 
-void Turbulence_paroi_base::set_param(Param& param)
-{
-}
-
-/*! @brief Give a boolean indicating if we need to use shear by default we consider that we use the shear
+/*! @brief Lit les caracteristques de la loi de parois a partir d'un flot d'entree.
  *
- * @return (boolean)
+ *     Format:
+ *       type_de_loi_de_paroi
+ *     Les valeurs possibles du type de loi de paroi sont:
+ *       - "loi_standard_hydr"
+ *       - "negligeable"
+ *       - "loi_VanDriest"
+ *
  */
-bool Turbulence_paroi_base::use_shear() const
+void Turbulence_paroi_base::typer_lire_turbulence_paroi(OWN_PTR(Turbulence_paroi_base) &loi_par, const Modele_turbulence_hyd_base& mod_turb_hyd, Entree& s)
 {
-  return true;
+  Cerr << "Lecture du type de loi de parois " << finl;
+  Motcle typ;
+  s >> typ;
+
+  const Equation_base& eqn = mod_turb_hyd.equation();
+  if (typ == "loi_standard_hydr_scalaire" || typ == "loi_paroi_2_couches_scalaire" || typ == "negligeable_scal")
+    {
+      Cerr << "Le format du jeu de donnees a change:" << finl;
+      Cerr << "Chaque modele de turbulence doit avoir sa loi de paroi specifiee." << finl;
+      Cerr << "Ainsi par exemple, loi_standard_hydr sera pour le modele de turbulence de l'equation de qdm" << finl;
+      Cerr << "et loi_standard_hydr_scalaire pour le modele de turbulence de l'equation d'energie." << typ << finl;
+      Process::exit();
+    }
+  typ += "_";
+
+  Nom discr = eqn.discretisation().que_suis_je();
+
+  //  les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
+  if (discr == "VEFPreP1B") discr = "VEF";
+  typ += discr;
+
+  Cerr << "et typage : " << typ << finl;
+  loi_par.typer(typ);
+  loi_par->associer_modele(mod_turb_hyd);
+  loi_par->associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
 }
 
 void Turbulence_paroi_base::creer_champ(const Motcle& motlu)

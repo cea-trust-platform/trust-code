@@ -20,8 +20,6 @@
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
-class Turbulence_paroi;
-
 /*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
  *
  * @sa Operateur_Diff_base

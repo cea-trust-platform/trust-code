@@ -18,6 +18,7 @@
 
 #include <Iterateur_VDF_Face.h>
 #include <Op_Dift_VDF_base.h>
+#include <Turbulence_paroi.h>
 #include <Op_VDF_Face.h>
 
 class Modele_turbulence_hyd_base;

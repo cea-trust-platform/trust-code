@@ -25,9 +25,9 @@
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_hyd_base;
+class Modele_turbulence_hyd;
 class Probleme_base;
 class EcrFicPartage;
-class Modele_turbulence_hyd;
 class Param;
 
 /*! @brief Classe Turbulence_paroi_base Classe de base pour la hierarchie des classes representant les modeles
@@ -39,13 +39,12 @@ class Param;
  */
 class Turbulence_paroi_base: public Champs_compris_interface, public Objet_U
 {
-
-  Declare_base_sans_constructeur(Turbulence_paroi_base);
-
+  Declare_base(Turbulence_paroi_base);
 public:
 
-  Turbulence_paroi_base();
-  virtual void set_param(Param& param);
+  static void typer_lire_turbulence_paroi(OWN_PTR(Turbulence_paroi_base)&, const Modele_turbulence_hyd_base&, Entree& );
+
+  virtual void set_param(Param& param) { /* Do nothing */ }
   inline void associer_modele(const Modele_turbulence_hyd_base&);
   virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
   virtual void completer() { }
@@ -59,8 +58,7 @@ public:
   inline virtual void imprimer_ustar(Sortie&) const { }
   inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { }
   inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const { }
-  // rajout pour prendre en compte Cisaillement_paroi dans la classe
-  // de base
+  // rajout pour prendre en compte Cisaillement_paroi dans la classe de base
 
   inline const DoubleTab& Cisaillement_paroi() const;
   inline const DoubleVect& tab_u_star() const;
@@ -80,7 +78,7 @@ public:
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&) const;
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const Nom&) const;
   // indique si on utilise le cisaillement ou non
-  virtual bool use_shear() const; // Generalement true sauf par exemple pour loi paroi_negligeable_XXX
+  virtual bool use_shear() const { return true; } // Generalement true sauf par exemple pour loi paroi_negligeable_XXX
 
 protected:
   REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
@@ -89,8 +87,7 @@ protected:
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement
   DoubleVect tab_d_plus_;                // valeurs des d+ calculees localement
   mutable Champ_Fonc champ_u_star_;                                // Champ pour postraitement
-  mutable int nb_impr_;                        // Compteur d'impression
-  mutable int nb_impr0_;                        // Compteur d'impression
+  mutable int nb_impr_ = 0, nb_impr0_ = 0;                        // Compteur d'impression
 
 protected:
   Champs_compris champs_compris_;
