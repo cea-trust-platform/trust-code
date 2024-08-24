@@ -22,7 +22,7 @@ gunzip -f -c $TRUST_ROOT/externalpackages/SKIT/SPARSKIT2.tar.gz | tar -xf -
 cp patch/inout.f SPARSKIT2/INOUT/inout.f && echo SPARSKIT2/INOUT/inout.f patche
 # modification du makefile pour les options de compile
 cp patch/makefile SPARSKIT2/makefile && echo SPARSKIT2/makefile modifie
-[ "$TRUST_INT64" = "1" ] && cp  patch/64b/color.f ./SPARSKIT2/ORDERINGS/color.f   && echo "SPARSKIT2/color.f was patched for 64b"
+[ "$TRUST_INT64_NEW" = "0" ] && cp  patch/64b/color.f ./SPARSKIT2/ORDERINGS/color.f   && echo "SPARSKIT2/color.f was patched for 64b (old mode)"
 
 # recuperation d'une modif de parms sur csort
 # a priori integre donc on ne le fait plus

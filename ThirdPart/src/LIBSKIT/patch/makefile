@@ -24,6 +24,10 @@ AR = ar rc
 
 # Cray options
 F77 = $(TRUST_F77)
+F77_flags = $(F77Flags)
+ifeq ($(TRUST_INT64_NEW),1)
+F77_flags = $(F77Flags_32b)
+endif
 #AR = bld rv
 #OPT = -c -Wf"-dp" 
 
@@ -93,54 +97,54 @@ tarit:
 all: $(OBJ) $(OBJ2) libskit.a
 
 BLASSM/blassm.o: BLASSM/blassm.f
-	(cd BLASSM ; $(F77)  $(F77Flags) -c blassm.f)
+	(cd BLASSM ; $(F77)  $(F77_flags) -c blassm.f)
 BLASSM/matvec.o: BLASSM/matvec.f
-	(cd BLASSM ; $(F77)  $(F77Flags) -c matvec.f)
+	(cd BLASSM ; $(F77)  $(F77_flags) -c matvec.f)
 FORMATS/formats.o: FORMATS/formats.f
-	(cd FORMATS ; $(F77)  $(F77Flags) -c formats.f)
+	(cd FORMATS ; $(F77)  $(F77_flags) -c formats.f)
 FORMATS/unary.o: FORMATS/unary.f
-	(cd FORMATS ; $(F77)  $(F77Flags) -c unary.f)
+	(cd FORMATS ; $(F77)  $(F77_flags) -c unary.f)
 INFO/infofun.o: INFO/infofun.f
-	(cd INFO ; $(F77)  $(F77Flags) -c infofun.f)
+	(cd INFO ; $(F77)  $(F77_flags) -c infofun.f)
 INOUT/inout.o: INOUT/inout.f
-	(cd INOUT; $(F77)  $(F77Flags) -c inout.f)
+	(cd INOUT; $(F77)  $(F77_flags) -c inout.f)
 ITSOL/ilut.o: ITSOL/ilut.f
-	(cd ITSOL; $(F77)  $(F77Flags) -D$(TRUST_ARCH) -c ilut.f)
+	(cd ITSOL; $(F77)  $(F77_flags) -D$(TRUST_ARCH) -c ilut.f)
 ITSOL/iters.o: ITSOL/iters.f
-	(cd ITSOL; $(F77)  $(F77Flags) -c iters.f)
+	(cd ITSOL; $(F77)  $(F77_flags) -c iters.f)
 ITSOL/itaux.o: ITSOL/itaux.f
-	(cd ITSOL; $(F77)  $(F77Flags) -c itaux.f)
+	(cd ITSOL; $(F77)  $(F77_flags) -c itaux.f)
 MATGEN/FDIF/genmat.o: MATGEN/FDIF/genmat.f
-	(cd MATGEN/FDIF ; $(F77)  $(F77Flags) -c genmat.f)
+	(cd MATGEN/FDIF ; $(F77)  $(F77_flags) -c genmat.f)
 MATGEN/FDIF/functns.o: MATGEN/FDIF/functns.f
-	(cd MATGEN/FDIF ; $(F77)  $(F77Flags) -c functns.f)
+	(cd MATGEN/FDIF ; $(F77)  $(F77_flags) -c functns.f)
 MATGEN/FEM/elmtlib2.o: MATGEN/FEM/elmtlib2.f
-	(cd MATGEN/FEM ; $(F77)  $(F77Flags) -c elmtlib2.f)
+	(cd MATGEN/FEM ; $(F77)  $(F77_flags) -c elmtlib2.f)
 MATGEN/FEM/femgen.o: MATGEN/FEM/femgen.f
-	(cd MATGEN/FEM ; $(F77)  $(F77Flags) -c femgen.f)
+	(cd MATGEN/FEM ; $(F77)  $(F77_flags) -c femgen.f)
 MATGEN/FEM/functns2.o : MATGEN/FEM/functns2.f 
-	(cd MATGEN/FEM ; $(F77)  $(F77Flags) -c functns2.f)
+	(cd MATGEN/FEM ; $(F77)  $(F77_flags) -c functns2.f)
 MATGEN/FEM/meshes.o: MATGEN/FEM/meshes.f
-	(cd MATGEN/FEM ; $(F77)  $(F77Flags) -c meshes.f)
+	(cd MATGEN/FEM ; $(F77)  $(F77_flags) -c meshes.f)
 MATGEN/MISC/sobel.o: MATGEN/MISC/sobel.f
-	(cd MATGEN/MISC ; $(F77)  $(F77Flags) -c sobel.f)
+	(cd MATGEN/MISC ; $(F77)  $(F77_flags) -c sobel.f)
 MATGEN/MISC/zlatev.o: MATGEN/MISC/zlatev.f
-	(cd MATGEN/MISC ; $(F77)  $(F77Flags) -c zlatev.f)
+	(cd MATGEN/MISC ; $(F77)  $(F77_flags) -c zlatev.f)
 ORDERINGS/ccn.o: ORDERINGS/ccn.f
-	(cd ORDERINGS ; $(F77)  $(F77Flags) -c ccn.f)
+	(cd ORDERINGS ; $(F77)  $(F77_flags) -c ccn.f)
 ORDERINGS/color.o: ORDERINGS/color.f
-	(cd ORDERINGS ; $(F77)  $(F77Flags) -c color.f)
+	(cd ORDERINGS ; $(F77)  $(F77_flags) -c color.f)
 ORDERINGS/dsepart.o: ORDERINGS/dsepart.f
-	(cd ORDERINGS ; $(F77)  $(F77Flags) -c dsepart.f)
+	(cd ORDERINGS ; $(F77)  $(F77_flags) -c dsepart.f)
 UNSUPP/BLAS1/blas1.o: UNSUPP/BLAS1/blas1.f
-	(cd UNSUPP/BLAS1 ; $(F77)  $(F77Flags) -c blas1.f)
+	(cd UNSUPP/BLAS1 ; $(F77)  $(F77_flags) -c blas1.f)
 UNSUPP/MATEXP/exppro.o: UNSUPP/MATEXP/exppro.f
-	(cd UNSUPP/MATEXP ; $(F77)  $(F77Flags) -c exppro.f)
+	(cd UNSUPP/MATEXP ; $(F77)  $(F77_flags) -c exppro.f)
 UNSUPP/MATEXP/phipro.o: UNSUPP/MATEXP/phipro.f
-	(cd UNSUPP/MATEXP ; $(F77)  $(F77Flags) -c phipro.f)
+	(cd UNSUPP/MATEXP ; $(F77)  $(F77_flags) -c phipro.f)
 UNSUPP/PLOTS/psgrd.o : UNSUPP/PLOTS/psgrd.f 
-	(cd UNSUPP/PLOTS ; $(F77) $(F77Flags) -c psgrd.f)
+	(cd UNSUPP/PLOTS ; $(F77) $(F77_flags) -c psgrd.f)
 UNSUPP/PLOTS/texgrid1.o : UNSUPP/PLOTS/texgrid1.f 
-	(cd UNSUPP/PLOTS ; $(F77) $(F77Flags) -c texgrid1.f)
+	(cd UNSUPP/PLOTS ; $(F77) $(F77_flags) -c texgrid1.f)
 UNSUPP/PLOTS/texplt1.o : UNSUPP/PLOTS/texplt1.f 
-	(cd UNSUPP/PLOTS ; $(F77) $(F77Flags) -c texplt1.f)
+	(cd UNSUPP/PLOTS ; $(F77) $(F77_flags) -c texplt1.f)
