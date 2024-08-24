@@ -26,7 +26,6 @@ class Op_Dift_VDF_Elem_leaves
 { };
 /// \endcond
 
-class Turbulence_paroi_scal;
 class Champ_base;
 
 class Op_Dift_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Elem>

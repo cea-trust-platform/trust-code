@@ -24,7 +24,6 @@
 #include <TRUST_Deriv.h>
 #include <type_traits>
 
-class Turbulence_paroi_scal;
 class Champ_base;
 
 template <typename OP_TYPE>

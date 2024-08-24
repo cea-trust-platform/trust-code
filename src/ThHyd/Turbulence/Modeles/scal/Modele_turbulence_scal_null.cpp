@@ -44,7 +44,6 @@ Entree& Modele_turbulence_scal_null::readOn(Entree& is)
       Process::exit();
     }
 
-  loipar_.associer_modele(*this);
   if (discr == "VEF" || discr == "VEFPreP1B") loipar_.typer("negligeable_scalaire_VEF");
   else if (discr == "VDF") loipar_.typer("negligeable_scalaire_VDF");
   else if (discr == "EF") loipar_.typer("negligeable_scalaire_EF");

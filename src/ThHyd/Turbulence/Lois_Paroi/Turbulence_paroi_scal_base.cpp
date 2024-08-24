@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,18 @@
 *
 *****************************************************************************/
 
-#include <Turbulence_paroi_scal_base.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Probleme_base.h>
+#include <Modele_turbulence_hyd_base.h>
+#include <Turbulence_paroi_scal_base.h>
 #include <Convection_Diffusion_std.h>
+#include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <EcrFicPartage.h>
-#include <SFichier.h>
-#include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <EcrFicPartage.h>
+#include <Domaine_VF.h>
 #include <Champ_Don.h>
+#include <SFichier.h>
 
 Implemente_base_sans_constructeur(Turbulence_paroi_scal_base, "Turbulence_paroi_scal_base", Objet_U);
 
@@ -35,8 +37,61 @@ Entree& Turbulence_paroi_scal_base::readOn(Entree& is)
 {
   return is;
 }
+
 void Turbulence_paroi_scal_base::creer_champ(const Motcle& motlu)
 {
+}
+
+/*! @brief Lit les caracteristques de la loi de parois a partir d'un flot d'entree.
+ *
+ *     Format: type_de_loi_de_paroi
+ *     Les valeurs possibles du type de loi de paroi sont:
+ *       - "loi_standard_hydr"
+ *       - "negligeable"
+ *       - "loi_VanDriest"
+ *       - "loi_standard_hydr_scalaire"
+ *
+ */
+void Turbulence_paroi_scal_base::typer_lire_turbulence_paroi_scal(OWN_PTR(Turbulence_paroi_scal_base)& turb_par, const Modele_turbulence_scal_base& mod_turb_scal, Entree& s)
+{
+  Cerr << "Lecture du type de loi de parois " << finl;
+  Motcle typ;
+  s >> typ;
+
+  const Equation_base& eqn = mod_turb_scal.equation().probleme().equation(0); // equation hydraulique
+  const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);
+  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
+  const Turbulence_paroi& loi = mod_turb_hydr.loi_paroi();
+
+  if (typ != "negligeable_scalaire")
+    if ((loi->que_suis_je() == "negligeable_VDF") || (loi->que_suis_je() == "negligeable_VEF"))
+      {
+        Cerr << "La loi de paroi de type " << typ << " choisie pour le scalaire n'est pas compatible avec" << finl;
+        Cerr << "la loi de type " << loi->que_suis_je() << " choisie pour l'hydraulique" << finl;
+        Cerr << "Utiliser le type 'negligeable_scalaire' pour le scalaire ou utiliser une loi de paroi" << finl;
+        Cerr << "non negligeable pour l hydraulique" << finl;
+        exit();
+      }
+  typ += "_";
+
+  Nom discr = eqn.discretisation().que_suis_je();
+
+  //  les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
+  if (discr == "VEFPreP1B")
+    discr = "VEF";
+  typ += discr;
+
+  if (typ == "loi_analytique_scalaire_VDF")
+    {
+      Cerr << "La loi de paroi scalaire de type loi_analytique_scalaire" << finl;
+      Cerr << "n est utilisable qu avec une discretisation de type VEF" << finl;
+      exit();
+    }
+
+  Cerr << "et typage :" << typ << finl;
+  turb_par.typer(typ);
+  turb_par->associer_modele(mod_turb_scal);
+  turb_par->associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
 }
 
 const Champ_base& Turbulence_paroi_scal_base::get_champ(const Motcle& nom) const
@@ -64,14 +119,9 @@ void Turbulence_paroi_scal_base::ouvrir_fichier_partage(EcrFicPartage& Nusselt, 
 
   // On cree le fichier au premier pas de temps si il n'y a pas reprise
   if (nb_impr_ == 0 && !pb.reprise_effectuee())
-    {
-      Nusselt.ouvrir(fichier);
-    }
-  // Sinon on l'ouvre
-  else
-    {
-      Nusselt.ouvrir(fichier, ios::app);
-    }
+    Nusselt.ouvrir(fichier);
+  else // Sinon on l'ouvre
+    Nusselt.ouvrir(fichier, ios::app);
 
   if (je_suis_maitre())
     {

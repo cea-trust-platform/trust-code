@@ -20,8 +20,6 @@
 #include <Op_Dift_VDF_base.h>
 #include <Op_VDF_Elem.h>
 
-class Turbulence_paroi_scal;
-
 class Op_Dift_VDF_Elem_base : public Op_Dift_VDF_base, public Op_VDF_Elem
 {
   Declare_base(Op_Dift_VDF_Elem_base);

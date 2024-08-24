@@ -65,8 +65,8 @@ int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, E
   Motcle mot = "turbulence_paroi";
   if (motlu == mot)
     {
-      loipar_.associer_modele(*this);
-      is >> loipar_;
+      Turbulence_paroi_scal_base::typer_lire_turbulence_paroi_scal(loipar_, *this, is);
+
       is >> loipar_.valeur();
       return 1;
     }
