@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,6 @@
 #include <Convection_Diffusion_Concentration_Turbulent.h>
 #include <Navier_Stokes_Turbulent.h>
 #include <Pb_Fluide_base.h>
-
-class Champ_Fonc;
 
 /*! @brief classe Pb_Hydraulique_Concentration_Turbulent Cette classe represente un probleme d'hydraulique avec transport
  *

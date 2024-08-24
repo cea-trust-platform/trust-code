@@ -19,9 +19,8 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
+#include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
-
-class Champ_Fonc;
 
 /*! @brief Classe Mod_Turb_scal_diffuturb_base Cette classe represente la classe de base pour le modele de calcul suivant
  *

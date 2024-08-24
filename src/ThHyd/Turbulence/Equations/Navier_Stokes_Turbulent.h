@@ -16,10 +16,9 @@
 #ifndef Navier_Stokes_Turbulent_included
 #define Navier_Stokes_Turbulent_included
 
-#include <Navier_Stokes_std.h>
 #include <Modele_turbulence_hyd.h>
-
-class Champ_Fonc;
+#include <Navier_Stokes_std.h>
+#include <Champ_Fonc.h>
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
  *

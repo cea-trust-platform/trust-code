@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Op_Dift_VDF_Elem_base.h>
 #include <Eval_Dift_VDF_leaves.h>
 #include <Op_Diff_Dift_VDF.h>
+#include <Champ_Fonc.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Op_Dift_VDF_Elem_leaves
@@ -26,7 +27,6 @@ class Op_Dift_VDF_Elem_leaves
 /// \endcond
 
 class Turbulence_paroi_scal;
-class Champ_Fonc;
 class Champ_base;
 
 class Op_Dift_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Elem>

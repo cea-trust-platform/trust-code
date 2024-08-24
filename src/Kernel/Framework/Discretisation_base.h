@@ -20,6 +20,7 @@
 #include <Domaine_Cl_dis.h>
 #include <Domaine_dis.h>
 #include <Champ_base.h> // Pour Nature_du_champ
+#include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
 #include <Champ_Don.h>
@@ -32,7 +33,6 @@ class Champ_Inc_base;
 class Probleme_base;
 class Equation_base;
 class Champ_base;
-class Champ_Fonc;
 class Motcle;
 
 /*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui

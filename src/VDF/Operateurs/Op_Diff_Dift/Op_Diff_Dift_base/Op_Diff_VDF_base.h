@@ -20,8 +20,6 @@
 #include <Iterateur_VDF_base.h>
 #include <TRUST_Deriv.h>
 
-class Champ_Fonc;
-
 /*! @brief class Op_Diff_VDF_base Classe de base des operateurs de diffusion VDF
  *
  */

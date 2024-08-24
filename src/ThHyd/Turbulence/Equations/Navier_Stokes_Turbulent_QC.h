@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,6 @@
 
 #include <Navier_Stokes_Fluide_Dilatable_Proto.h>
 #include <Navier_Stokes_Turbulent.h>
-
-class Champ_Fonc;
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
  *

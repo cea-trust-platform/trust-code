@@ -19,34 +19,6 @@
 #include <Champ_Fonc_base.h>
 #include <TRUST_Deriv.h>
 
-/*! @brief classe Champ_Fonc Classe generique de la hierarchie des champs fontions du temps,
- *
- *      un objet Champ_Fonc peut referencer n'importe quel objet derivant de
- *      Champ_Fonc_base.
- *      La plupart des methodes appellent les methodes de l'objet Champ_Fonc
- *      sous-jacent via la methode valeur() declaree grace a la macro
- *
- * @sa Champ_Fonc_base
- */
-class Champ_Fonc : public DERIV(Champ_Fonc_base)
-{
-  Declare_instanciable(Champ_Fonc);
-public :
-  Champ_Fonc(const Champ_Fonc&) = default;
-  inline Champ_Fonc& operator=(const Champ_Fonc_base& ) ;
-  inline Champ_Fonc& operator=(const Champ_Fonc& ) ;
-};
+using Champ_Fonc = OWN_PTR(Champ_Fonc_base);
 
-inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc_base& ch_fonc_base)
-{
-  DERIV(Champ_Fonc_base)::operator=(ch_fonc_base);
-  return *this;
-}
-
-inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc& ch_fonc)
-{
-  if (ch_fonc.non_nul()) DERIV(Champ_Fonc_base)::operator=(ch_fonc.valeur());
-  return *this;
-}
-
-#endif
+#endif /* Champ_Fonc_included */

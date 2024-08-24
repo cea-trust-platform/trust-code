@@ -22,7 +22,6 @@
 
 class Modele_turbulence_hyd_base;
 class Eval_VDF_Face;
-class Champ_Fonc;
 
 class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
 {

@@ -496,7 +496,7 @@ int Milieu_base::associer_(Objet_U& ob)
       associer_gravite(ref_cast(Champ_Don_base, ob));
       return 1;
     }
-  if (sub_type(Champ_Don,ob))
+  if (dynamic_cast <Champ_Don*>(&ob) != nullptr)
     {
       warn_old_syntax();
       via_associer_ = true;

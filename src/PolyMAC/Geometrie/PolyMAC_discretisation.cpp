@@ -157,14 +157,9 @@ void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Do
 void PolyMAC_discretisation::discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
                                                         Objet_U& champ) const
 {
-  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc,
-  // suivant le type de l'objet champ.
-  Champ_Fonc *champ_fonc = nullptr;
-  Champ_Don *champ_don = nullptr;
-  if (sub_type(Champ_Fonc, champ))
-    champ_fonc = &ref_cast(Champ_Fonc, champ);
-  else
-    champ_don = dynamic_cast<Champ_Don*>(&champ);
+  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
+  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
+  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
 

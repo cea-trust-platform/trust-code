@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 
 #include <Modele_turbulence_scal.h>
 #include <Equation_base.h>
-class Champ_Fonc;
+
 class Operateur_Diff;
 
 /*! @brief classe Convection_Diffusion_Turbulent Cette classe represente la convection-diffusion d'une ou plusieurs

@@ -37,7 +37,6 @@ class EcrFicPartageBin;
 class Equation_base;
 class Postraitement;
 class Field_base;
-class Champ_Fonc;
 
 /*! @brief classe Probleme_base C'est un Probleme_U qui n'est pas un couplage.
  *

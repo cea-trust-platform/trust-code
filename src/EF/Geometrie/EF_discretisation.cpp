@@ -229,14 +229,9 @@ void EF_discretisation::discretiser_champ_fonc_don(
   int nb_comp, double temps,
   Objet_U& champ) const
 {
-  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc,
-  // suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = nullptr;
-  Champ_Don * champ_don = nullptr;
-  if (sub_type(Champ_Fonc, champ))
-    champ_fonc = & ref_cast(Champ_Fonc, champ);
-  else
-    champ_don  = dynamic_cast<Champ_Don*>(&champ);
+  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
+  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
+  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 

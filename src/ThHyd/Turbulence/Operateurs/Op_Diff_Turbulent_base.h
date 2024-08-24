@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,11 @@
 #ifndef Op_Diff_Turbulent_base_included
 #define Op_Diff_Turbulent_base_included
 
+#include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
 class Turbulence_paroi;
-class Champ_Fonc;
 
 /*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
  *

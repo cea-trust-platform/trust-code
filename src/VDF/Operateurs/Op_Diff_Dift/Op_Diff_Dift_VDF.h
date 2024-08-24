@@ -25,7 +25,6 @@
 #include <type_traits>
 
 class Turbulence_paroi_scal;
-class Champ_Fonc;
 class Champ_base;
 
 template <typename OP_TYPE>
