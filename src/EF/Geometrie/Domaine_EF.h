@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,10 @@
 #ifndef Domaine_EF_included
 #define Domaine_EF_included
 
-
-
+#include <Elem_EF_base.h>
+#include <TRUST_Deriv.h>
 #include <Domaine_VF.h>
-#include <Elem_EF.h>
+
 class Geometrie;
 
 /*! @brief class Domaine_EF
@@ -53,89 +53,62 @@ class Geometrie;
  *       rang_elem_non_std pour acceder de maniere selective a l'un ou
  *       l'autre des types d'elements
  *
- *
- *
  */
 
-
-class Domaine_EF : public Domaine_VF
+class Domaine_EF: public Domaine_VF
 {
-
   Declare_instanciable(Domaine_EF);
-
-public :
+public:
   void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
   void swap(int, int, int);
   void reordonner(Faces&) override;
-  void modifier_pour_Cl(const Conds_lim& ) override;
+  void modifier_pour_Cl(const Conds_lim&) override;
 
-  inline const Elem_EF& type_elem() const;
-  inline int nb_elem_Cl() const;
-  inline int nb_faces_joint() const;
-  inline int nb_faces_std() const;
-  inline int nb_elem_std() const;
-  inline double carre_pas_du_maillage() const;
+  inline const Elem_EF_base& type_elem() const { return type_elem_.valeur(); }
+  inline int nb_elem_Cl() const { return nb_elem() - nb_elem_std_; }
+  inline int nb_faces_joint() const { return 0; /*    return nb_faces_joint_;    A FAIRE */ }
+  inline int nb_faces_std() const { return nb_faces_std_; }
+  inline int nb_elem_std() const { return nb_elem_std_; }
+  inline double carre_pas_du_maillage() const { return h_carre; }
   inline double carre_pas_maille(int i) const { return h_carre_(i); }
-  inline IntVect& rang_elem_non_std();
-  inline const IntVect& rang_elem_non_std() const;
-  inline int oriente_normale(int face_opp, int elem2)const;
-  inline const ArrOfInt& ind_faces_virt_non_std() const;
+  inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
+
+  inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
+  inline int oriente_normale(int face_opp, int elem2) const;
+  inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
   void calculer_volumes_entrelaces();
   void calculer_volumes_sommets(const Domaine_Cl_dis_base& zcl);
   virtual void calculer_IPhi(const Domaine_Cl_dis_base& zcl);
-  virtual void calculer_Bij(DoubleTab& bij_) ;
+  virtual void calculer_Bij(DoubleTab& bij_);
   virtual void calculer_Bij_gen(DoubleTab& bij);
 
   //  inline const DoubleVect& volumes_sommets() const { return volumes_sommets_; }
-  inline const DoubleVect& volumes_thilde() const
-  {
-    return volumes_thilde_;
-  }
-  inline const DoubleVect& volumes_sommets_thilde() const
-  {
-    return volumes_sommets_thilde_;
-  }
-  inline const DoubleVect& porosite_sommet() const
-  {
-    return porosite_sommets_;
-  }
-  inline DoubleVect& set_porosite_sommet()
-  {
-    return porosite_sommets_;
-  }
+  inline const DoubleVect& volumes_thilde() const { return volumes_thilde_; }
+  inline const DoubleVect& volumes_sommets_thilde() const { return volumes_sommets_thilde_; }
+  inline const DoubleVect& porosite_sommet() const { return porosite_sommets_; }
+  inline DoubleVect& set_porosite_sommet() { return porosite_sommets_; }
 
   void calculer_h_carre();
   void calculer_porosites_sommets();
-  inline const DoubleTab& Bij() const
-  {
-    return Bij_ ;
-  };
-  inline const DoubleTab& Bij_thilde() const
-  {
-    return Bij_thilde_ ;
-  };
-  inline const DoubleTab& IPhi() const
-  {
-    return IPhi_ ;
-  };
-  inline const DoubleTab& IPhi_thilde() const
-  {
-    return IPhi_thilde_ ;
-  };
+  inline const DoubleTab& Bij() const { return Bij_; }
+  inline const DoubleTab& Bij_thilde() const { return Bij_thilde_; }
+  inline const DoubleTab& IPhi() const { return IPhi_; }
+  inline const DoubleTab& IPhi_thilde() const { return IPhi_thilde_; }
 
   virtual void verifie_compatibilite_domaine();
 
 protected:
-  DoubleTab IPhi_,IPhi_thilde_;
-private:
-  DoubleVect porosite_sommets_ ,volumes_sommets_thilde_,volumes_thilde_;
-  //  Champ_Don champ_porosite_sommets_,champ_porosite_lu_;
-  DoubleTab Bij_,Bij_thilde_;                         // stockage des matrice Bije
+  DoubleTab IPhi_, IPhi_thilde_;
 
-  double h_carre= 1.e30;			 // carre du pas du maillage
+private:
+  DoubleVect porosite_sommets_, volumes_sommets_thilde_, volumes_thilde_;
+  //  Champ_Don champ_porosite_sommets_,champ_porosite_lu_;
+  DoubleTab Bij_, Bij_thilde_;                         // stockage des matrice Bije
+
+  double h_carre = 1.e30;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
-  Elem_EF type_elem_;                  // type de l'element de discretisation
+  OWN_PTR(Elem_EF_base) type_elem_;                  // type de l'element de discretisation
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
   void remplir_elem_faces() override;
@@ -144,80 +117,12 @@ private:
   IntVect orientation_;
 };
 
-// Fonctions inline
-
-// Decription:
-// renvoie le type d'element utilise.
-inline const Elem_EF& Domaine_EF::type_elem() const
-{
-  return type_elem_;
-}
-
-// Decription:
-inline IntVect& Domaine_EF::rang_elem_non_std()
-{
-  return rang_elem_non_std_;
-}
-
-// Decription:
-inline const IntVect& Domaine_EF::rang_elem_non_std() const
-{
-  return rang_elem_non_std_;
-}
-
-
-// Decription:
-inline int Domaine_EF::nb_faces_joint() const
-{
-  return 0;
-  //    return nb_faces_joint_;    A FAIRE
-}
-
-// Decription:
-inline int Domaine_EF::nb_faces_std() const
-{
-  return nb_faces_std_;
-}
-
-// Decription:
-inline int  Domaine_EF::nb_elem_std() const
-{
-  return nb_elem_std_;
-}
-
-// Decription:
-inline int Domaine_EF::nb_elem_Cl() const
-{
-  return nb_elem() - nb_elem_std_;
-}
-
-
-// Decription:
-inline double Domaine_EF::carre_pas_du_maillage() const
-{
-  return h_carre;
-}
-
-// Decription:
 inline int Domaine_EF::oriente_normale(int face_opp, int elem2) const
 {
-  if(face_voisins(face_opp,0)==elem2)
+  if (face_voisins(face_opp, 0) == elem2)
     return 1;
-  else return -1;
+  else
+    return -1;
 }
 
-
-// Decription:
-// Renvoie le tableau des indices des faces virtuelles non standard
-//inline const ArrsOfInt& Domaine_EF::faces_virt_non_std() const
-//{
-//  return faces_virt_non_std_;
-//}
-
-// Decription:
-// Renvoie le tableau des indices des faces distantes non standard
-inline const ArrOfInt& Domaine_EF::ind_faces_virt_non_std() const
-{
-  return ind_faces_virt_non_std_;
-}
-#endif
+#endif /* Domaine_EF_included */

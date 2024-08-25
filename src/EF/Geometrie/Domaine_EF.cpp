@@ -13,37 +13,31 @@
 *
 *****************************************************************************/
 
-#include <Domaine_EF.h>
+#include <interface_INITGAUSS.h>
+#include <interface_CALCULBIJ.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Quadrangle_VEF.h>
 #include <Domaine_Cl_EF.h>
+#include <Equation_base.h>
+#include <Hexaedre_VEF.h>
+#include <Milieu_base.h>
+#include <Domaine_EF.h>
+#include <Periodique.h>
+#include <Segment_EF.h>
 #include <Rectangle.h>
+#include <Tetraedre.h>
+#include <Quadri_EF.h>
 #include <Hexaedre.h>
 #include <Triangle.h>
-#include <Segment.h>
-#include <Tetraedre.h>
-#include <Quadrangle_VEF.h>
-#include <Hexaedre_VEF.h>
-#include <Periodique.h>
-#include <Tri_EF.h>
-#include <Segment_EF.h>
 #include <Tetra_EF.h>
-#include <Quadri_EF.h>
+#include <EFichier.h>
+#include <Segment.h>
 #include <Hexa_EF.h>
 #include <Domaine.h>
 #include <Scatter.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Scatter.h>
-#include <EFichier.h>
+#include <Tri_EF.h>
 
-#include <interface_INITGAUSS.h>
-#include <interface_CALCULBIJ.h>
-
-Implemente_instanciable(Domaine_EF,"Domaine_EF",Domaine_VF);
-
-
-//// printOn
-//
+Implemente_instanciable(Domaine_EF, "Domaine_EF", Domaine_VF);
 
 Sortie& Domaine_EF::ecrit(Sortie& os) const
 {
@@ -51,7 +45,7 @@ Sortie& Domaine_EF::ecrit(Sortie& os) const
   os << "____ h_carre "<<finl;
   os << h_carre << finl;
   os << "____ type_elem_ "<<finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << "____ nb_elem_std_ "<<finl;
   os << nb_elem_std_ << finl;
   os << "____ volumes_entrelaces_ "<<finl;
@@ -65,15 +59,12 @@ Sortie& Domaine_EF::ecrit(Sortie& os) const
   return os;
 }
 
-//// printOn
-//
-
 Sortie& Domaine_EF::printOn(Sortie& os) const
 {
   Domaine_VF::printOn(os);
 
   os << h_carre << finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << nb_elem_std_ << finl;
   os << volumes_entrelaces_ << finl;
   os << face_normales_ << finl;
@@ -84,14 +75,30 @@ Sortie& Domaine_EF::printOn(Sortie& os) const
   return os;
 }
 
-//// readOn
-//
-
 Entree& Domaine_EF::readOn(Entree& is)
 {
   Domaine_VF::readOn(is);
   is >> h_carre;
-  is >> type_elem_;
+
+  /* read type_elem */
+  {
+    Nom type;
+    is >> type;
+    if (type == "Tri_EF")
+      type_elem_ = Tri_EF();
+    else if (type == "Tetra_EF")
+      type_elem_ = Tetra_EF();
+    else if (type == "Quadri_EF")
+      type_elem_ = Quadri_EF();
+    else if (type == "Hexa_EF")
+      type_elem_ = Hexa_EF();
+    else
+      {
+        Cerr << type << " n'est pas un Elem_EF" << finl;
+        Process::exit();
+      }
+  }
+
   is >> nb_elem_std_ ;
   is >> volumes_entrelaces_ ;
   is >> face_normales_ ;
@@ -281,17 +288,35 @@ void Domaine_EF::reordonner(Faces& les_faces)
 
 void Domaine_EF::typer_elem(Domaine& domaine_geom)
 {
-  const Elem_geom_base& type_elem_geom = domaine_geom.type_elem().valeur();
-
-  if (sub_type(Rectangle,type_elem_geom))
-    {
-      domaine_geom.typer("Quadrangle");
-    }
-  else if (sub_type(Hexaedre,type_elem_geom))
+  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
+  if (sub_type(Rectangle, elem_geom))
+    domaine_geom.typer("Quadrangle");
+  else if (sub_type(Hexaedre, elem_geom))
     domaine_geom.typer("Hexaedre_VEF");
 
-  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  type_elem_.typer(elem_geom.que_suis_je());
+  const Nom& type_elem_geom = domaine_geom.type_elem()->que_suis_je();
+  Nom type;
+
+  if (type_elem_geom == "Triangle")
+    type = "Tri_EF";
+  else if (type_elem_geom == "Tetraedre")
+    type = "Tetra_EF";
+  else if (type_elem_geom == "Quadrangle")
+    type = "Quadri_EF";
+  else if (type_elem_geom == "Hexaedre_VEF")
+    type = "Hexa_EF";
+  else if (type_elem_geom == "Segment")
+    type = "Segment_EF";
+  else if (type_elem_geom == "Segment_axi")
+    type = "Segment_EF_axi";
+  else if (type_elem_geom == "Point")
+    type = "Point_EF";
+  else
+    {
+      Cerr << "probleme de typage dans Domaine_EF::typer_elem => type geometrique : " << type_elem_geom << finl;
+      Process::exit();
+    }
+  type_elem_.typer(type);
 }
 
 void Domaine_EF::verifie_compatibilite_domaine()
@@ -843,4 +868,3 @@ void Domaine_EF::creer_faces_virtuelles_non_std()
     }
 #endif
 }
-
