@@ -22,7 +22,6 @@
 #include <Domaine_Poly_base.h>
 #include <Matrice_Morse_Sym.h>
 #include <Neumann_homogene.h>
-#include <Elem_poly.h>
 #include <SolveurSys.h>
 #include <Periodique.h>
 #include <Dirichlet.h>

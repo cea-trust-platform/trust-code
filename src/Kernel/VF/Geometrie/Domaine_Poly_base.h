@@ -19,12 +19,13 @@
 #include <Domaine_Poly_tools.h>
 #include <Static_Int_Lists.h>
 #include <Elem_poly_base.h>
+#include <Elem_poly_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUSTLists.h>
 #include <Periodique.h>
 #include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <Conds_lim.h>
-#include <Elem_poly.h>
 #include <Domaine.h>
 #include <Lapack.h>
 #include <math.h>
@@ -84,22 +85,22 @@ public :
   void reordonner(Faces&) override;
   void modifier_pour_Cl(const Conds_lim& ) override { }
 
-  inline const Elem_poly& type_elem() const;
-  inline int nb_elem_Cl() const;
-  inline int nb_faces_joint() const;
-  inline int nb_faces_std() const;
-  inline int nb_elem_std() const;
-  inline double carre_pas_du_maillage() const;
+  inline const Elem_poly_base& type_elem() const { return type_elem_.valeur(); }
+  inline int nb_elem_Cl() const { return nb_elem() - nb_elem_std_; }
+  inline int nb_faces_joint() const { return 0; /* return nb_faces_joint_;    A FAIRE */ }
+  inline int nb_faces_std() const { return nb_faces_std_; }
+  inline int nb_elem_std() const { return nb_elem_std_; }
+  inline double carre_pas_du_maillage() const { return h_carre; }
   inline double carre_pas_maille(int i) const { return h_carre_(i); }
-  inline IntVect& rang_elem_non_std();
-  inline const IntVect& rang_elem_non_std() const;
+  inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
+  inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
   inline int oriente_normale(int face_opp, int elem2)const;
-  inline const ArrOfInt& ind_faces_virt_non_std() const;
+  inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; } // Renvoie le tableau des indices des faces distantes non standard
 
   void calculer_h_carre();
 
-  inline DoubleTab& volumes_entrelaces_dir();
-  inline const DoubleTab& volumes_entrelaces_dir() const;
+  inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
+  inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }
 
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
   inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
@@ -138,7 +139,7 @@ public :
 protected:
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
-  Elem_poly type_elem_;                  // type de l'element de discretisation
+  OWN_PTR(Elem_poly_base) type_elem_;                  // type de l'element de discretisation
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
   void remplir_elem_faces() override { }
@@ -152,85 +153,13 @@ protected:
 
   DoubleVect longueur_aretes_; //longueur des aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
-
 };
-
-// renvoie le type d'element utilise.
-inline const Elem_poly& Domaine_Poly_base::type_elem() const
-{
-  return type_elem_;
-}
-
-// renvoie le tableau des volumes entrelaces par cote.
-inline DoubleTab& Domaine_Poly_base::volumes_entrelaces_dir()
-{
-  return volumes_entrelaces_dir_;
-}
-
-// renvoie le tableau des surfaces normales.
-inline const DoubleTab& Domaine_Poly_base::volumes_entrelaces_dir() const
-{
-  return volumes_entrelaces_dir_;
-}
-
-
-inline IntVect& Domaine_Poly_base::rang_elem_non_std()
-{
-  return rang_elem_non_std_;
-}
-
-inline const IntVect& Domaine_Poly_base::rang_elem_non_std() const
-{
-  return rang_elem_non_std_;
-}
-
-
-inline int Domaine_Poly_base::nb_faces_joint() const
-{
-  return 0;
-  //    return nb_faces_joint_;    A FAIRE
-}
-
-inline int Domaine_Poly_base::nb_faces_std() const
-{
-  return nb_faces_std_;
-}
-
-inline int  Domaine_Poly_base::nb_elem_std() const
-{
-  return nb_elem_std_;
-}
-
-inline int Domaine_Poly_base::nb_elem_Cl() const
-{
-  return nb_elem() - nb_elem_std_;
-}
-
-
-inline double Domaine_Poly_base::carre_pas_du_maillage() const
-{
-  return h_carre;
-}
 
 inline int Domaine_Poly_base::oriente_normale(int face_opp, int elem2) const
 {
   if(face_voisins(face_opp,0)==elem2)
     return 1;
   else return -1;
-}
-
-
-// Decription:
-// Renvoie le tableau des indices des faces virtuelles non standard
-//inline const VECT(ArrOfInt)& Domaine_Poly_base::faces_virt_non_std() const
-//{
-//  return faces_virt_non_std_;
-//}
-
-// Renvoie le tableau des indices des faces distantes non standard
-inline const ArrOfInt& Domaine_Poly_base::ind_faces_virt_non_std() const
-{
-  return ind_faces_virt_non_std_;
 }
 
 /* equivalent du dist_norm_bord du VDF */

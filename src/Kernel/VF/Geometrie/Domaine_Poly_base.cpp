@@ -63,7 +63,7 @@ Sortie& Domaine_Poly_base::ecrit(Sortie& os) const
   os << "____ h_carre "<<finl;
   os << h_carre << finl;
   os << "____ type_elem_ "<<finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << "____ nb_elem_std_ "<<finl;
   os << nb_elem_std_ << finl;
   os << "____ volumes_entrelaces_ "<<finl;
@@ -82,7 +82,7 @@ Sortie& Domaine_Poly_base::printOn(Sortie& os) const
   Domaine_VF::printOn(os);
 
   os << h_carre << finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << nb_elem_std_ << finl;
   os << volumes_entrelaces_ << finl;
   os << face_normales_ << finl;
@@ -97,7 +97,26 @@ Entree& Domaine_Poly_base::readOn(Entree& is)
 {
   Domaine_VF::readOn(is);
   is >> h_carre;
-  is >> type_elem_;
+
+  /* read type_elem */
+  {
+    Nom type;
+    is >> type;
+    if (type == "Tri_poly")
+      type_elem_ = Tri_poly();
+    else if (type == "Tetra_poly")
+      type_elem_ = Tetra_poly();
+    else if (type == "Quadri_poly")
+      type_elem_ = Quadri_poly();
+    else if (type == "Hexa_poly")
+      type_elem_ = Hexa_poly();
+    else
+      {
+        Cerr << type << " is not an Elem_poly !" << finl;
+        Process::exit();
+      }
+  }
+
   is >> nb_elem_std_ ;
   is >> volumes_entrelaces_ ;
   is >> face_normales_ ;
@@ -166,22 +185,45 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
   }
 
   renumeroter(les_faces);
-
 }
 
 void Domaine_Poly_base::typer_elem(Domaine& domaine_geom)
 {
-  const Elem_geom_base& type_elem_geom = domaine_geom.type_elem().valeur();
+  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
 
-  if (sub_type(Rectangle,type_elem_geom))
+  if (sub_type(Rectangle, elem_geom))
     {
       domaine_geom.typer("Quadrangle");
     }
-  else if (sub_type(Hexaedre,type_elem_geom))
+  else if (sub_type(Hexaedre, elem_geom))
     domaine_geom.typer("Hexaedre_VEF");
 
-  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  type_elem_.typer(elem_geom.que_suis_je());
+  const Nom& type_elem_geom = domaine_geom.type_elem()->que_suis_je();
+
+  Cerr << "Elem_poly => type geometrique : " << type_elem_geom << finl;
+
+  Nom type;
+  if (type_elem_geom == "Triangle")
+    type = "Tri_poly";
+  else if (type_elem_geom == "Tetraedre")
+    type = "Tetra_poly";
+  else if (type_elem_geom == "Quadrangle")
+    type = "Quadri_poly";
+  else if (type_elem_geom == "Hexaedre_VEF")
+    type = "Hexa_poly";
+  else if (type_elem_geom == "Segment")
+    type = "Segment_poly";
+  else if (type_elem_geom == "Polygone")
+    type = "Polygone_poly";
+  else if (type_elem_geom == "Polyedre")
+    type = "Polyedre_poly";
+  else
+    {
+      Cerr << "problem in Elem_poly::typer" << finl;
+      Process::exit();
+    }
+  type_elem_.typer(type);
+  Cerr << "Elem_poly => type retenu : " << type_elem_->que_suis_je() << finl;
 }
 
 void Domaine_Poly_base::discretiser()

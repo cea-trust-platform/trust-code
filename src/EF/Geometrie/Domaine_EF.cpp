@@ -94,7 +94,7 @@ Entree& Domaine_EF::readOn(Entree& is)
       type_elem_ = Hexa_EF();
     else
       {
-        Cerr << type << " n'est pas un Elem_EF" << finl;
+        Cerr << type << " n'est pas un Elem_EF !" << finl;
         Process::exit();
       }
   }

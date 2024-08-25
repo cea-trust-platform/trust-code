@@ -50,7 +50,7 @@ Sortie& Domaine_VEF::ecrit(Sortie& os) const
   os << "____ h_carre " << finl;
   os << h_carre << finl;
   os << "____ type_elem_ " << finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << "____ nb_elem_std_ " << finl;
   os << nb_elem_std_ << finl;
   os << "____ volumes_entrelaces_ " << finl;
@@ -102,7 +102,7 @@ Entree& Domaine_VEF::readOn(Entree& is)
       type_elem_ = Hexa_VEF();
     else
       {
-        Cerr << type << " n'est pas un Elem_VEF" << finl;
+        Cerr << type << " n'est pas un Elem_VEF !" << finl;
         Process::exit();
       }
   }
