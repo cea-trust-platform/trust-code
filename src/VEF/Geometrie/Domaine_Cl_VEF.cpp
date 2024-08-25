@@ -71,8 +71,8 @@ Entree& Domaine_Cl_VEF::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(
 void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
 {
   int nb_faces_non_std = le_dom_VEF.nb_faces_non_std();
-  const Elem_VEF& type_elem = le_dom_VEF.type_elem();
-  int nb_fa7_elem = type_elem->nb_facette();
+  const Elem_VEF_base& type_elem = le_dom_VEF.type_elem();
+  int nb_fa7_elem = type_elem.nb_facette();
 
   {
     IntVect renum;
@@ -164,8 +164,8 @@ void Domaine_Cl_VEF::remplir_volumes_entrelaces_Cl(const Domaine_VEF& le_dom_VEF
                   if (!poly_fait[n_poly])
                     {
                       poly_fait[n_poly] = 1;
-                      const Elem_VEF& type_elem = le_dom_VEF.type_elem();
-                      type_elem->modif_volumes_entrelaces(j, elem, le_dom_VEF, volumes_entrelaces_Cl(), type_elem_Cl(n_poly));
+                      const Elem_VEF_base& type_elem = le_dom_VEF.type_elem();
+                      type_elem.modif_volumes_entrelaces(j, elem, le_dom_VEF, volumes_entrelaces_Cl(), type_elem_Cl(n_poly));
                     }
                 }
               // faces virtuelles de bord :
@@ -181,8 +181,8 @@ void Domaine_Cl_VEF::remplir_volumes_entrelaces_Cl(const Domaine_VEF& le_dom_VEF
                       if (!poly_fait[n_poly])
                         {
                           poly_fait[n_poly] = 1;
-                          const Elem_VEF& type_elem = le_dom_VEF.type_elem();
-                          type_elem->modif_volumes_entrelaces_faces_joints(num_face, elem, le_dom_VEF, volumes_entrelaces_Cl(), type_elem_Cl(n_poly));
+                          const Elem_VEF_base& type_elem = le_dom_VEF.type_elem();
+                          type_elem.modif_volumes_entrelaces_faces_joints(num_face, elem, le_dom_VEF, volumes_entrelaces_Cl(), type_elem_Cl(n_poly));
                         }
                     }
                 }
@@ -210,18 +210,18 @@ void Domaine_Cl_VEF::remplir_normales_facettes_Cl(const Domaine_VEF& le_dom_VEF)
   const Domaine& dom = z;
   const DoubleTab& les_coords = dom.coord_sommets();
   const IntTab& les_Polys = z.les_elems();
-  const Elem_VEF& elemvef = le_dom_VEF.type_elem();
+  const Elem_VEF_base& elemvef = le_dom_VEF.type_elem();
   const IntVect& rang_elem = le_dom_VEF.rang_elem_non_std();
   const IntTab& elem_faces = le_dom_VEF.elem_faces();
   const DoubleTab& xv = le_dom_VEF.xv();
-  const IntTab& KEL = elemvef->KEL();
+  const IntTab& KEL = elemvef.KEL();
 
   int num_elem, fa7;
   int isom, ncomp;
   int idirichlet = -1, n1 = -1, n2 = -1, n3 = -1;
   int nb_elem = z.nb_elem();
   int nsom = z.nb_som_elem();
-  int nfa7 = elemvef->nb_facette();
+  int nfa7 = elemvef.nb_facette();
   //int nb_som_facette = domaine().type_elem().nb_som_face();
   //if ( sub_type(Hexaedre_VEF,domaine().type_elem().valeur())) { nb_som_facette--; }
   int nb_som_facette = dimension;
@@ -256,14 +256,14 @@ void Domaine_Cl_VEF::remplir_normales_facettes_Cl(const Domaine_VEF& le_dom_VEF)
           // pour triangle si idirichlet=2, n1=sommet confondu avec G
           // pour quadrangle se reporter a Quadri_VEF.cpp
 
-          elemvef->calcul_xg(xg, x, type_elem_Cl_[num_elem], idirichlet, n1, n2, n3);
+          elemvef.calcul_xg(xg, x, type_elem_Cl_[num_elem], idirichlet, n1, n2, n3);
           // Calcul des valeurs du tableau normales_facettes_Cl:
 
           for (fa7 = 0; fa7 < nfa7; fa7++)
             {
-              elemvef->creer_normales_facettes_Cl(normales_facettes_Cl(), fa7, num_elem, x, xg, z);
+              elemvef.creer_normales_facettes_Cl(normales_facettes_Cl(), fa7, num_elem, x, xg, z);
               // Correction des valeurs du tableau normales_facettes_Cl:
-              elemvef->modif_normales_facettes_Cl(normales_facettes_Cl(), fa7, num_elem, idirichlet, n1, n2, n3);
+              elemvef.modif_normales_facettes_Cl(normales_facettes_Cl(), fa7, num_elem, idirichlet, n1, n2, n3);
               int num1 = elem_faces(elem, KEL(0, fa7));
               int num2 = elem_faces(elem, KEL(1, fa7));
               for (int dir = 0; dir < dimension; dir++)
@@ -338,9 +338,9 @@ void Domaine_Cl_VEF::remplir_type_elem_Cl(const Domaine_VEF& le_dom_VEF)
                 Cerr << "Domaine_Cl_VEF::creer_type_elem_Cl() PAS POSSIBLE!! " << finl;
               num_elem = rang_elem(elem);
               assert(num_elem != -1);
-              if (sub_type(Tri_VEF,le_dom_VEF.type_elem().valeur()) || sub_type(Tetra_VEF, le_dom_VEF.type_elem().valeur()))
+              if (sub_type(Tri_VEF,le_dom_VEF.type_elem()) || sub_type(Tetra_VEF, le_dom_VEF.type_elem()))
                 type_elem_Cl_[num_elem] += Deux_Puissance((int) (nfac - 1 - numero2));
-              else if (sub_type(Quadri_VEF,le_dom_VEF.type_elem().valeur()) || sub_type(Hexa_VEF, le_dom_VEF.type_elem().valeur()))
+              else if (sub_type(Quadri_VEF,le_dom_VEF.type_elem()) || sub_type(Hexa_VEF, le_dom_VEF.type_elem()))
                 type_elem_Cl_[num_elem] += trois_puissance((int) (nfac - 1 - numero2));
               else
                 {

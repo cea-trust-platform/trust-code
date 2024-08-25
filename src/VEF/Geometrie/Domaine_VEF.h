@@ -16,11 +16,12 @@
 #ifndef Domaine_VEF_included
 #define Domaine_VEF_included
 
-#include <Domaine_VF.h>
-#include <Elem_VEF.h>
-#include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
 #include <TRUSTTab_kokkos.tpp>
+#include <Elem_VEF_base.h>
+#include <TRUST_Deriv.h>
+#include <Domaine_VF.h>
+#include <kokkos++.h>
 
 class VEF_discretisation;
 class Geometrie;
@@ -73,7 +74,7 @@ public:
   void calculer_h_carre();
   DoubleTab& vecteur_face_facette();
 
-  inline const Elem_VEF& type_elem() const { return type_elem_; }
+  inline const Elem_VEF_base& type_elem() const { return type_elem_.valeur(); }
   inline int nb_elem_Cl() const { return nb_elem() - nb_elem_std_; }
   inline int nb_faces_joint() const { return 0; }
   inline int nb_faces_std() const { return nb_faces_std_; }
@@ -114,7 +115,7 @@ public:
 private:
   double h_carre = 1.e30;                         // carre du pas du maillage
   DoubleVect h_carre_;                        // carre du pas d'une maille
-  Elem_VEF type_elem_;                  // type de l'element de discretisation
+  OWN_PTR(Elem_VEF_base) type_elem_;                  // type de l'element de discretisation
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard

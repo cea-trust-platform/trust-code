@@ -184,14 +184,14 @@ void VEF_discretisation::discretiser_champ_(const Motcle& directive, const Domai
 
   // Le type de champ de vitesse depend du type d'element :
   Nom type_champ_vitesse;
-  if (sub_type(Tri_VEF, domaine_vef.type_elem().valeur()) || sub_type(Tetra_VEF, domaine_vef.type_elem().valeur()))
+  if (sub_type(Tri_VEF, domaine_vef.type_elem()) || sub_type(Tetra_VEF, domaine_vef.type_elem()))
     type_champ_vitesse = "Champ_P1NC";
-  else if (sub_type(Quadri_VEF,domaine_vef.type_elem().valeur()) || sub_type(Hexa_VEF, domaine_vef.type_elem().valeur()))
+  else if (sub_type(Quadri_VEF,domaine_vef.type_elem()) || sub_type(Hexa_VEF, domaine_vef.type_elem()))
     type_champ_vitesse = "Champ_Q1NC";
   else
     {
       Cerr << "VEF_discretisation::discretiser_champ :\n L'element geometrique ";
-      Cerr << domaine_vef.type_elem()->que_suis_je();
+      Cerr << domaine_vef.type_elem().que_suis_je();
       Cerr << " n'est pas supporte." << finl;
       exit();
     }
@@ -383,7 +383,7 @@ void VEF_discretisation::discretiser_champ_fonc_don_(const Motcle& directive, co
   Nom type_elem_domaine = domaine_vef.domaine().type_elem()->que_suis_je();
   if (Motcle(type_elem_domaine) != "Segment")
     {
-      const Elem_VEF_base& elem_vef = domaine_vef.type_elem().valeur();
+      const Elem_VEF_base& elem_vef = domaine_vef.type_elem();
       if (sub_type(Tri_VEF, elem_vef) || sub_type(Tetra_VEF, elem_vef))
         {
           type_champ_vitesse = "Champ_Fonc_P1NC";
@@ -520,7 +520,7 @@ void VEF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, 
   Cerr << "Discretisation de la vorticite " << finl;
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, z.valeur());
 
-  if (sub_type(Tri_VEF,domaine_VEF.type_elem().valeur()) || sub_type(Tetra_VEF, domaine_VEF.type_elem().valeur()))
+  if (sub_type(Tri_VEF,domaine_VEF.type_elem()) || sub_type(Tetra_VEF, domaine_VEF.type_elem()))
     {
       ch.typer("Rotationnel_Champ_P1NC");
       const Champ_P1NC& vit = ref_cast(Champ_P1NC, ch_vitesse.valeur());
@@ -541,7 +541,7 @@ void VEF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, 
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(ch_vitesse->temps());
     }
-  else if (sub_type(Quadri_VEF,domaine_VEF.type_elem().valeur()) || sub_type(Hexa_VEF, domaine_VEF.type_elem().valeur()))
+  else if (sub_type(Quadri_VEF,domaine_VEF.type_elem()) || sub_type(Hexa_VEF, domaine_VEF.type_elem()))
     {
       ch.typer("Rotationnel_Champ_Q1NC");
       const Champ_Q1NC& vit = ref_cast(Champ_Q1NC, ch_vitesse.valeur());

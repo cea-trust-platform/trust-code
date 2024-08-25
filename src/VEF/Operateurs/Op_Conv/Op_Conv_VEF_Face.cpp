@@ -181,7 +181,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& facenormales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
-  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -285,7 +285,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // En bref pour un polyedre le traitement de la convection depend
   // du type (triangle, tetraedre ...) et du nombre de faces de Dirichlet.
 
-  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
+  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem();
   int istetra=0;
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
@@ -1495,8 +1495,8 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
-  const Elem_VEF& type_elem = domaine_VEF.type_elem();
-  const int nfa7 = type_elem->nb_facette();
+  const Elem_VEF_base& type_elem = domaine_VEF.type_elem();
+  const int nfa7 = type_elem.nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const IntTab& les_elems=domaine.les_elems();
@@ -1543,7 +1543,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   DoubleTab vsom(nsom,dimension);
   ArrOfDouble cc(dimension);
   DoubleVect& coeff = matrice.get_set_coeff();
-  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
+  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem();
   int istetra=0;
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
@@ -1557,7 +1557,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=domaine_VEF.type_elem().KEL();
   int phi_u_transportant_yes=phi_u_transportant(equation());
   for (poly=0; poly<nb_elem_tot; poly++)
     {
@@ -1846,7 +1846,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
   const IntTab& les_elems=domaine.les_elems();
-  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
@@ -1865,7 +1865,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   // En bref pour un polyedre le traitement de la convection depend
   // du type (triangle, tetraedre ...) et du nombre de faces de Dirichlet.
 
-  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
+  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem();
   int istetra=0;
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))

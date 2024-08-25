@@ -71,7 +71,7 @@ Sortie& Domaine_VEF::printOn(Sortie& os) const
   Domaine_VF::printOn(os);
 
   os << h_carre << finl;
-  os << type_elem_ << finl;
+  os << type_elem_.valeur() << finl;
   os << nb_elem_std_ << finl;
   os << volumes_entrelaces_ << finl;
   os << face_normales_ << finl;
@@ -87,7 +87,26 @@ Entree& Domaine_VEF::readOn(Entree& is)
 {
   Domaine_VF::readOn(is);
   is >> h_carre;
-  is >> type_elem_;
+
+  /* read type_elem */
+  {
+    Nom type;
+    is >> type;
+    if (type == "Tri_VEF")
+      type_elem_ = Tri_VEF();
+    else if (type == "Tetra_VEF")
+      type_elem_ = Tetra_VEF();
+    else if (type == "Quadri_VEF")
+      type_elem_ = Quadri_VEF();
+    else if (type == "Hexa_VEF")
+      type_elem_ = Hexa_VEF();
+    else
+      {
+        Cerr << type << " n'est pas un Elem_VEF" << finl;
+        Process::exit();
+      }
+  }
+
   is >> nb_elem_std_;
   is >> volumes_entrelaces_;
   is >> face_normales_;
@@ -1181,16 +1200,32 @@ void Domaine_VEF::modifier_pour_Cl(const Conds_lim& conds_lim)
 
 void Domaine_VEF::typer_elem(Domaine& domaine_geom)
 {
-  const Elem_geom_base& type_elem_geom = domaine_geom.type_elem().valeur();
-  if (sub_type(Rectangle, type_elem_geom))
-    {
-      domaine_geom.typer("Quadrangle");
-    }
-  else if (sub_type(Hexaedre, type_elem_geom))
+  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
+  if (sub_type(Rectangle, elem_geom))
+    domaine_geom.typer("Quadrangle");
+  else if (sub_type(Hexaedre, elem_geom))
     domaine_geom.typer("Hexaedre_VEF");
 
-  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  type_elem_.typer(elem_geom.que_suis_je());
+  const Nom& type_elem_geom = domaine_geom.type_elem()->que_suis_je();
+
+  if (Motcle(type_elem_geom) != "Segment")
+    {
+      Nom type;
+      if (type_elem_geom == "Triangle")
+        type = "Tri_VEF";
+      else if (type_elem_geom == "Tetraedre")
+        type = "Tetra_VEF";
+      else if (type_elem_geom == "Quadrangle")
+        type = "Quadri_VEF";
+      else if (type_elem_geom == "Hexaedre_VEF")
+        type = "Hexa_VEF";
+      else
+        {
+          Cerr << "probleme de typage dans Elem_VEF::typer" << finl;
+          Process::exit();
+        }
+      type_elem_.typer(type);
+    }
 }
 
 /*! @brief creation de l'espace distant pour les faces virtuelles; creation du tableau des faces virtuelles de bord
@@ -1210,10 +1245,10 @@ DoubleTab& Domaine_VEF::vecteur_face_facette()
   if (vecteur_face_facette_.size() == 0 || domaine().deformable())
     {
       // Taille 8*n*4*3*2=192n
-      const int nfa7 = type_elem()->nb_facette();
+      const int nfa7 = type_elem().nb_facette();
       const int nb_poly_tot = nb_elem_tot();
       vecteur_face_facette_.resize(nb_poly_tot, nfa7, dimension, 2);
-      const IntTab& KEL = type_elem()->KEL();
+      const IntTab& KEL = type_elem().KEL();
       const IntTab& les_Polys = domaine().les_elems();
       const DoubleTab& coord = domaine().coord_sommets();
       const DoubleTab& xg = xp();

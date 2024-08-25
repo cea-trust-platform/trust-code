@@ -69,7 +69,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   //  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const Domaine& domaine = domaine_VEF.domaine();
   //  const int nb_faces = domaine_VEF.nb_faces();
-  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   //  const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -119,7 +119,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // trop couteux et pour le moment on n'etend pas les porosites aux hexa
 
   int istetra=0;
-  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
+  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem();
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
     istetra=1;
@@ -193,7 +193,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=domaine_VEF.type_elem().KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 
@@ -238,8 +238,8 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // calcul de vc
-      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),
-                                         itypcl,porosite_face);
+      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),
+                                        itypcl,porosite_face);
 
       // calcul du champ transporte aux sommets des polyedres ,tsom
       if(ncomp_ch_transporte == 1)

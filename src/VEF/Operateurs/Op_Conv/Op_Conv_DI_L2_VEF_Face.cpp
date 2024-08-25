@@ -413,7 +413,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
   //  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const Domaine& domaine = domaine_VEF.domaine();
   //  const int nb_faces = domaine_VEF.nb_faces();
-  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   //  const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -532,7 +532,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
   // boucle sur les polys
 
   int nlim = -1 ;
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=domaine_VEF.type_elem().KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 
@@ -558,8 +558,8 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
           vsom(i,j) = vs[j] - dimension*la_vitesse.valeurs()(face[i],j);
 
       // calcul de vc
-      domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse(),
-                                         itypcl,porosite_face);
+      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),
+                                        itypcl,porosite_face);
 
 
       /*    Cerr<<"premiere_face_int = "<<premiere_face_int<<", domaine_VEF.nb_faces_joint() = "<<domaine_VEF.nb_faces_joint()<<finl;
@@ -958,7 +958,7 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_3d(DoubleTab& derive, int poly,
   //  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   //  const int nb_faces = domaine_VEF.nb_faces();
-  //  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  //  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   //  const int nb_elem = domaine_VEF.nb_elem();
   //  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   //  int premiere_face_std = domaine_VEF.premiere_face_std();

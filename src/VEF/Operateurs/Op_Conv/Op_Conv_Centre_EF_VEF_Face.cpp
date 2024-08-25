@@ -66,7 +66,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
-  const int nfa7 = domaine_VEF.type_elem()->nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
 
@@ -172,7 +172,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=domaine_VEF.type_elem().KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 

@@ -112,8 +112,8 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const Domaine& domaine = domaine_VEF.domaine();
-  const Elem_VEF& type_elem=domaine_VEF.type_elem();
-  const int nfa7 = type_elem->nb_facette();
+  const Elem_VEF_base& type_elem=domaine_VEF.type_elem();
+  const int nfa7 = type_elem.nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
@@ -125,8 +125,6 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
     {
       nb_som_facette--;
     }
-
-  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
 
   // MODIF SB su 10/09/03
   // Pour les 3 elements suivants, il y a autant de sommets que de face
@@ -140,7 +138,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // trop couteux et pour le moment on n'etend pas les porosites aux hexa
   // ||(nom_elem=="Quadri_VEF")
   int istetra=0;
-  Nom nom_elem=type_elemvef.que_suis_je();
+  Nom nom_elem=type_elem.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
     istetra=1;
 
@@ -214,7 +212,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=type_elem.KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
       rang = rang_elem_non_std(poly);
@@ -255,7 +253,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
             }
         }
 
-      type_elem->calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
+      type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
       // Boucle sur les facettes du polyedre
       for (fa7=0; fa7<nfa7; fa7++)
@@ -394,8 +392,8 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
-  const Elem_VEF& type_elem = domaine_VEF.type_elem();
-  const int nfa7 = type_elem->nb_facette();
+  const Elem_VEF_base& type_elem = domaine_VEF.type_elem();
+  const int nfa7 = type_elem.nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
@@ -469,7 +467,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   // dans le domaine
 
   // boucle sur les polys
-  const IntTab& KEL=domaine_VEF.type_elem()->KEL();
+  const IntTab& KEL=type_elem.KEL();
   for (poly=0; poly<nb_elem_tot; poly++)
     {
 
@@ -504,7 +502,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
         }
 
       // calcul de vc
-      type_elem->calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
+      type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
       // Boucle sur les facettes du polyedre
 
