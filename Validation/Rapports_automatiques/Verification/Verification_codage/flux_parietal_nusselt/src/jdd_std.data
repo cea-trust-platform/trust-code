@@ -1,0 +1,146 @@
+# PARALLEL OK 8 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0 0 0
+        nombre_de_noeuds  2 $ny $nz
+        longueurs  $lx $ly $lz
+    }
+    {
+        Bord sym    X = $lx 0. <= Y <= $ly 0. <= Z <= $lz
+        Bord sym    X = 0   0. <= Y <= $ly 0. <= Z <= $lz
+        Bord wall1  Y = $ly 0. <= X <= $lx 0. <= Z <= $lz
+        Bord wall2  Y = 0   0. <= X <= $lx 0. <= Z <= $lz
+        Bord inlet  Z = 0.  0. <= X <= $lx 0. <= Y <= $ly
+        Bord outlet Z = $lz 0. <= X <= $lx 0. <= Y <= $ly
+    }
+}
+$poly
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    tmax $tmax
+    seuil_statio -1
+    dt_max 0.1
+    solveur implicite
+    {
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+pb_thermohydraulique pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible
+    {
+        rho     champ_uniforme 1 $rho
+        mu      champ_uniforme 1 $mu
+        lambda  champ_uniforme 1 $lambda
+        cp      champ_uniforme 1 $cp
+        beta_th champ_uniforme 1 0
+        Diametre_hyd_champ champ_uniforme 1 $dh
+    }
+
+    correlations
+    {
+        flux_parietal Nusselt { formula $nusselt }
+    }
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { quiet }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse champ_uniforme 3 0 0 $v }
+        boundary_conditions
+        {
+            inlet  frontiere_ouverte_vitesse_imposee_sortie champ_front_debit_massique champ_front_uniforme 1  $m
+            outlet frontiere_ouverte_vitesse_imposee_sortie champ_front_debit_massique champ_front_uniforme 1 -$m
+            # outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0 #
+            wall1  symetrie
+            wall2  symetrie
+            sym    symetrie
+        }
+    }
+    convection_diffusion_temperature
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature champ_uniforme 1 $Tin }
+        boundary_conditions
+        {
+            inlet   frontiere_ouverte T_ext  champ_front_uniforme 1 $Tin
+            outlet  frontiere_ouverte T_ext  champ_front_uniforme 1 $Tin
+            wall1  paroi_temperature_imposee champ_front_uniforme 1 $Tw
+            wall2  paroi_temperature_imposee champ_front_uniforme 1 $Tw
+            sym    paroi_temperature_imposee champ_front_uniforme 1 $Tw
+        }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            T_exact transformation
+            {
+                methode formule expression 1 $Tw-($Tw-$Tin)*exp(-$h*$P*z/$m/$cp) localisation elem source refChamp { Pb_champ pb pression }
+            }
+
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(T_trust-T_exact)
+                sources
+                {
+                    refChamp { Pb_champ pb temperature nom_source T_trust } ,
+                    transformation
+                    {
+                        methode formule expression 1 $Tw-($Tw-$Tin)*exp(-$h*$P*z/$m/$cp) localisation elem nom_source T_exact source refChamp { Pb_champ pb pression }
+                    }
+                }
+            }
+        }
+        probes
+        {
+            erreur_T grav erreur_T    periode 1e8 segment 1000 $xmid $ymid 0 $xmid $ymid $lz
+            T        grav temperature periode 1e8 segment 1000 $xmid $ymid 0 $xmid $ymid $lz
+            T_exact  grav T_exact     periode 1e8 segment 1000 $xmid $ymid 0 $xmid $ymid $lz
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            temperature elem
+            vitesse elem
+            t_exact elem
+        }
+    }
+}
+Solve pb
+End
