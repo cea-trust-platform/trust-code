@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Convection_Diffusion_Temperature.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC_P0P1NC.h>
 #include <Echange_externe_impose.h>
@@ -189,8 +190,8 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
       const Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue());
       scl_d.push_back(std::ref(ch.scl_d(0))), scl_c.push_back(std::ref(ch.scl_c(0)));
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
-      corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
-                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : nullptr);
+      corr.push_back((sub_type(Energie_Multiphase, op_ext[i]->equation()) || sub_type(Convection_Diffusion_Temperature, op_ext[i]->equation())) && op_ext[i]->equation().probleme().has_correlation("flux_parietal")
+                     ? &ref_cast(Flux_parietal_base, op_ext[i]->equation().probleme().get_correlation("flux_parietal")) : nullptr);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(dom[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 
