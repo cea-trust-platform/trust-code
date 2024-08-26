@@ -58,14 +58,22 @@ def write_block(block, file, all_blocks):
         if dependency:
             write_block(dependency, file, all_blocks)
 
+    docstring = f'r"""\n{block.desc}\n"""'
+    docstring = docstring.replace("NL1", "\n")
+    docstring = docstring.replace("NL2", "\n\n")
+    docstring = docstring.splitlines()
+    docstring = [textwrap.wrap(line, width=90) if line else [""] for line in docstring]
+    docstring = sum(docstring, [])
+    docstring = [f'    {line.lstrip()}' for line in docstring]
+
     lines = [
         f'#' * 64,
         f'',
         f'class {change_class_name(block.nam)}({change_class_name(block.name_base) or "BaseModel"}):',
-        f'    __braces:int = {block.mode}',
-        f'    __description: str = r"{block.desc}"',
-        f'    __synonyms: str = {block.synos}',
     ]
+    lines += docstring
+
+    attr_syno = {}
 
     for attribute in block.attrs:
 
@@ -73,7 +81,7 @@ def write_block(block, file, all_blocks):
 
         attr_name = attribute.nam
         attr_type = attribute.typ
-        attr_syno = attribute.synos
+        attr_syno[attr_name] = attribute.synos
         attr_mode = attribute.is_opt
         attr_desc = attribute.desc
 
@@ -156,6 +164,12 @@ def write_block(block, file, all_blocks):
             raise NotImplementedError(message)
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
+
+    lines += [
+        f'    __braces:int = {block.mode}',
+        f'    __class_synonyms: List = {block.synos}',
+        f'    __attr_synonyms: dict = {attr_syno}',
+    ]    
 
     lines.append('\n')
 
