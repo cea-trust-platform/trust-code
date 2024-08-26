@@ -58,20 +58,12 @@ def write_block(block, file, all_blocks):
         if dependency:
             write_block(dependency, file, all_blocks)
 
-    docstring = f'r"""\n{block.desc}\n"""'
-    docstring = docstring.replace("NL1", "\n")
-    docstring = docstring.replace("NL2", "\n\n")
-    docstring = docstring.splitlines()
-    docstring = [textwrap.wrap(line, width=90) if line else [""] for line in docstring]
-    docstring = sum(docstring, [])
-    docstring = [f'    {line.lstrip()}' for line in docstring]
-
     lines = [
         f'#' * 64,
         f'',
         f'class {change_class_name(block.nam)}({change_class_name(block.name_base) or "BaseModel"}):',
     ]
-    lines += docstring
+    lines += format_docstring(block.desc)
 
     synonyms = {None: block.synos}
     traces = {None: block.info}
@@ -183,6 +175,16 @@ def write_block(block, file, all_blocks):
 
     # mark this block as written
     block.written = True
+
+def format_docstring(description):
+    docstring = f'r"""\n{description}\n"""'
+    docstring = docstring.replace("NL1", "\n")
+    docstring = docstring.replace("NL2", "\n\n")
+    docstring = docstring.splitlines()
+    docstring = [textwrap.wrap(line, width=90) if line else [""] for line in docstring]
+    docstring = sum(docstring, [])
+    docstring = [f'    {line.lstrip()}' for line in docstring]
+    return docstring
 
 
 def generate_pydantic(trad2_filename, output_filename, testing=False):
