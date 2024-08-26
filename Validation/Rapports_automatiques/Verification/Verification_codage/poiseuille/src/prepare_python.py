@@ -20,8 +20,10 @@ if __name__ == "__main__":
     "VEFPreP1B" : "solveur implicite { solveur petsc cholesky { } }",
     "PolyMAC_P0" : "solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }",
     "PolyMAC_P0P1NC" : "solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }",
+    "PolyVEF_P0P1" : "solveur implicite { solveur petsc cholesky { } }",
+    "PolyVEF_P0" : "solveur implicite { solveur petsc cholesky { } }",
     }
-    dic_dis = {"cartesian" : ["VDF", "PolyMAC_P0P1NC", "PolyMAC_P0"], "triangle" : ["VEFPreP1B", "PolyMAC_P0P1NC", "PolyMAC_P0"], "NCa" : ["PolyMAC_P0P1NC", "PolyMAC_P0"], "NCr" : ["PolyMAC_P0P1NC", "PolyMAC_P0"]}
+    dic_dis = {"cartesian" : ["VDF", "PolyMAC_P0P1NC", "PolyMAC_P0", "PolyVEF_P0", "PolyVEF_P0P1"], "triangle" : ["VEFPreP1B", "PolyMAC_P0P1NC", "PolyMAC_P0"], "NCa" : ["PolyMAC_P0P1NC", "PolyMAC_P0"], "NCr" : ["PolyMAC_P0P1NC", "PolyMAC_P0"]}
     list_dis, list_meshes = [], []
     for k, v in dic_dis.items():
         for d in v:
