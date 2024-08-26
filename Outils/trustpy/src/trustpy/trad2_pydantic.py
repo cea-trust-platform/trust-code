@@ -73,17 +73,19 @@ def write_block(block, file, all_blocks):
     ]
     lines += docstring
 
-    attr_syno = {}
+    synonyms = {None: block.synos}
+    traces = {None: block.info}
 
     for attribute in block.attrs:
 
         assert isinstance(attribute, TRAD2Attr)
 
         attr_name = attribute.nam
-        attr_type = attribute.typ
-        attr_syno[attr_name] = attribute.synos
+        attr_type = attribute.typ        
         attr_mode = attribute.is_opt
         attr_desc = attribute.desc
+        synonyms[attr_name] = attribute.synos
+        traces[attr_name] = attribute.info
 
         attr_name = valid_variable_name(attr_name)
 
@@ -165,10 +167,13 @@ def write_block(block, file, all_blocks):
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
+    for key, (filename, lineno) in traces.items():        
+        traces[key] = (str(filename), lineno)
+
     lines += [
-        f'    __braces:int = {block.mode}',
-        f'    __class_synonyms: List = {block.synos}',
-        f'    __attr_synonyms: dict = {attr_syno}',
+        f'    __braces:int = {block.mode}',        
+        f'    __synonyms: dict = {synonyms}',
+        f'    __traces: dict = {traces}',
     ]    
 
     lines.append('\n')
