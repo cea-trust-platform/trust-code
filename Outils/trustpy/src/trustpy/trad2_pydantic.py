@@ -41,6 +41,19 @@ def valid_variable_name(s):
 
     return s
 
+__ENUM_COUNT__ = 0
+def create_enum(lines, cls, choices):
+    global __ENUM_COUNT__
+    __ENUM_COUNT__ += 1
+    name = f'Enum{__ENUM_COUNT__:04d}'
+    lines.insert(2, f'class {name}({cls.__name__}, Enum):')
+    for i, choice in enumerate(choices):
+        if cls is str and choice == "": choice = '""'
+        lines.insert(3+i, f'    _{i:02d} = {str(choice)}')
+    lines.insert(4+i, '')
+    return name
+
+
 def write_block(block, file, all_blocks):
     """ Write a TRAD2Block as pydantic class. """
 
@@ -123,13 +136,16 @@ def write_block(block, file, all_blocks):
 
         elif attr_type.startswith("chaine(into="):
             choices = attr_type[13:].split("]")[0]
-            attr_type= f'Literal[{choices}]'
-            args = f'default={choices.split(",")[0]}'
+            choices = choices.split(",")
+            choices = [x for x in choices if x] # remove empty strings
+            attr_type = create_enum(lines, str, choices)            
+            args = f'default={choices[0]}'
 
         elif attr_type.startswith("entier(into="):
             choices = attr_type[13:].split("]")[0]
-            choices = [int(x.strip('"').strip("'")) for x in choices.split(",")]
-            attr_type= f'Literal{choices}'
+            choices = choices.split(",")
+            choices = [int(x.strip('"').strip("'")) for x in choices]
+            attr_type = create_enum(lines, int, choices)
             args = f'default={choices[0]}'
 
         elif attr_type.startswith("entier(max="):
@@ -217,7 +233,8 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         ################################################################
 
         import sys
-        from typing_extensions import Annotated, Literal
+        from enum import Enum
+        from typing_extensions import Annotated
         from typing import ClassVar, List
         from pydantic import BaseModel, Field
     '''
