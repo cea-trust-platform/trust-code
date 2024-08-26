@@ -102,7 +102,7 @@ Read pb
             errV erreur_V_max periode 1e-6 Numero_elem_sur_maitre 0
         }
 
-        Format lml
+        Format lata
         fields dt_post 10
         {
             pression_pa elem
