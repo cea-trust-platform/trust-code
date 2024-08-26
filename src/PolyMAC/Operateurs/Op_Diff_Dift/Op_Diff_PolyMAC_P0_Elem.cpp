@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Convection_Diffusion_Temperature.h>
 #include <Flux_interfacial_PolyMAC_P0P1NC.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC_P0.h>
@@ -71,12 +72,10 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
     }
   flux_bords_.resize(domaine.premiere_face_int(), ch.valeurs().line_size());
 
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, eq.probleme()) ? &ref_cast(Pb_Multiphase, eq.probleme()) : nullptr;
-  if (sub_type(Energie_Multiphase, eq))
-    if (pbm)
-      if (pbm->has_correlation("Flux_parietal"))
-        if (ref_cast(Flux_parietal_base, pbm->get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
-          d_nuc_.resize(0, ch.valeurs().line_size()), domaine.domaine().creer_tableau_elements(d_nuc_);
+  if (sub_type(Energie_Multiphase, eq) || sub_type(Convection_Diffusion_Temperature, eq))
+    if (eq.probleme().has_correlation("Flux_parietal"))
+      if (ref_cast(Flux_parietal_base, eq.probleme().get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
+        d_nuc_.resize(0, ch.valeurs().line_size()), domaine.domaine().creer_tableau_elements(d_nuc_);
 }
 
 /* construction de s_dist : sommets du porbleme coincidant avec des sommets de problemes distants */
@@ -152,7 +151,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
   const Conds_lim& cls = equation().domaine_Cl_dis()->les_conditions_limites();
-  int has_flux = sub_type(Energie_Multiphase, equation()) && ref_cast(Pb_Multiphase, equation().probleme()).has_correlation("flux_parietal");
+  int has_flux = (sub_type(Energie_Multiphase, equation()) || sub_type(Convection_Diffusion_Temperature, equation())) && equation().probleme().has_correlation("flux_parietal");
   for (i = 0; i < cls.size(); i++)
     if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
       for (j = 0; j < ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces(); j++)
@@ -190,8 +189,8 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
             }
         int mix = 0; //melange-t-on les composantes autour de ce sommet? oui si une equation Energie_Multiphase avec correlation de flux parietal est presente autour
         for (auto &&pe : s_pe)
-          som_ext_pe.append_line(pe[0], pe[1]), mix |= sub_type(Energie_Multiphase, op_ext[pe[0]]->equation())
-                                                       && ref_cast(Pb_Multiphase, op_ext[pe[0]]->equation().probleme()).has_correlation("flux_parietal");
+          som_ext_pe.append_line(pe[0], pe[1]), mix |= (sub_type(Energie_Multiphase, op_ext[pe[0]]->equation()) || sub_type(Convection_Diffusion_Temperature, op_ext[pe[0]]->equation()))
+                                                       && op_ext[pe[0]]->equation().probleme().has_correlation("flux_parietal");
         for (auto &&pf : s_pf)
           som_ext_pf.append_line(pf[0], pf[1], pf[2], pf[3]);
         som_ext.append_line(s), som_mix.append_line(mix), som_ext_d.append_line(som_ext_pe.dimension(0), som_ext_pf.dimension(0)), s_pe.clear(), s_pf.clear();
@@ -383,7 +382,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       {
         const Milieu_composite& milc = ref_cast(Milieu_composite, op_ext[i]->equation().milieu());
         const int nbelem_tot = domaine[i].get().nb_elem_tot(), nb_max_sat = N[i] * (N[i] - 1) / 2; // oui !! suite arithmetique !!
-        if (ref_cast(Pb_Multiphase,op_ext[i]->equation().probleme()).has_correlation("flux_parietal"))
+        if (op_ext[i]->equation().probleme().has_correlation("flux_parietal"))
           {
             Ts_tab[i].resize(nbelem_tot, nb_max_sat), Sigma_tab[i].resize(nbelem_tot, nb_max_sat), Lvap_tab[i].resize(nbelem_tot, nb_max_sat);
             const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression()->passe();
@@ -482,7 +481,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 i_efs(i, j, n) = t_eq; //une temperature de paroi par phase
               //si face de bord d'un Pb_Multiphase (hors frontiere ouverte), une inconnue supplementaire : la Tparoi (dans ce cas, mix = 1)
               f = s_pf[k][0] == p && (e == f_e[p](s_pf[k][1], 0) || e == f_e[p](s_pf[k][1], 1)) ? s_pf[k][1] : m_pf.at(s_pf[k])[1]; //numero de face cote e
-              if (sub_type(Energie_Multiphase, op_ext[p]->equation()) && ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme()).has_correlation("flux_parietal") && fcl[p](f, 0)
+              if ((sub_type(Energie_Multiphase, op_ext[p]->equation()) || sub_type(Convection_Diffusion_Temperature, op_ext[p]->equation())) && op_ext[p]->equation().probleme().has_correlation("flux_parietal") && fcl[p](f, 0)
                   && fcl[p](f, 0) != 5)
                 i_efs(i, j, M) = t_eq++;
             }
@@ -497,8 +496,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
             f = s_pf[i][1], type_f[i] = fcl[p1](f, 0); //type de face
             if (type_f[i] && type_f[i] != 5)
               for (j = 0; j < 2; j++)
-                if (sub_type(Energie_Multiphase, op_ext[p12[j]]->equation()) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
-                    && ref_cast(Pb_Multiphase, op_ext[p12[j]]->equation().probleme()).has_correlation("flux_parietal"))
+                if ((sub_type(Energie_Multiphase, op_ext[p12[j]]->equation()) || sub_type(Convection_Diffusion_Temperature, op_ext[p12[j]]->equation())) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
+                    && op_ext[p12[j]]->equation().probleme().has_correlation("flux_parietal"))
                   n12[j] = 1;
             if (n12[0] != n12[1])
               {
@@ -640,21 +639,21 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             if ((i_eq = i_eq_cont(k, 0)) >= 0)
                               B(0, t_e, i_eq) += sgn * Tefs(0, i_efs(i, j, M)), A(0, i_efs(i, j, M), i_eq) -= sgn;
                             //equations sur les correlations
-                            const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme());
-                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal").valeur());
-                            const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
-                                             &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
-                                              &vit = pbm.equation_qdm().inconnue()->passe(),
-                                               &lambda = pbm.milieu().conductivite()->passe(),
-                                                &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique()->passe(),
-                                                 &rho = pbm.milieu().masse_volumique()->passe(),
-                                                  &Cp = pbm.milieu().capacite_calorifique()->passe();
-
+                            const Probleme_base& pbp = op_ext[p]->equation().probleme();
+                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbp.get_correlation("Flux_parietal").valeur());
+                            const DoubleTab* alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue()->passe() : nullptr,
+                                             &dh = pbp.milieu().diametre_hydraulique_elem(), &press = ref_cast(Navier_Stokes_std, pbp.equation(0)).pression()->passe(),
+                                              &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue()->passe(),
+                                               &lambda = pbp.milieu().conductivite()->passe(),
+                                                &mu = ref_cast(Fluide_base, pbp.milieu()).viscosite_dynamique()->passe(),
+                                                 &rho = pbp.milieu().masse_volumique()->passe(),
+                                                  &Cp = pbp.milieu().capacite_calorifique()->passe();
+                            const int Clambda = lambda.dimension(0) == 1, Cmu = mu.dimension(0) == 1, Crho = rho.dimension(0) == 1, Ccp = Cp.dimension(0) == 1;
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;
                             DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
                             in.N = N[p], in.f = f, in.y = (e == f_e[p](f, 0)) ? domaine[p].get().dist_face_elem0(f,e) : domaine[p].get().dist_face_elem1(f,e), in.D_h = dh(e), in.D_ch = dh(e),
-                               in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                               in.alpha = alpha ? &(*alpha)(e, 0) : nullptr, in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(!Clambda * e, 0), in.mu = &mu(!Cmu * e, 0), in.rho = &rho(!Crho * e, 0), in.Cp = &Cp(!Ccp * e, 0);
                             if (corr.needs_saturation()) in.Lvap = &Lvap_tab[p](e, 0), in.Sigma = &Sigma_tab[p](e, 0), in.Tsat = &Ts_tab[p](e, 0);
                             else                         in.Lvap = nullptr           , in.Sigma = nullptr            , in.Tsat = nullptr        ;
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
