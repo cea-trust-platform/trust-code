@@ -13,20 +13,28 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Masse_DG_base_included
+#define Masse_DG_base_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Solveur_Masse.h>
+#include <TRUST_Ref.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+class Domaine_Cl_DG;
+class Domaine_DG;
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Masse_DG_base : public Solveur_Masse_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Declare_base(Masse_DG_base);
+public:
 
-  return Dirichlet::readOn(s);
-}
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
+  void completer() override;
+  void appliquer_coef(DoubleVect& coef) const;
+
+protected:
+  REF(Domaine_DG) le_dom_DG;
+  REF(Domaine_Cl_DG) le_dom_Cl_DG;
+};
+
+#endif /* Masse_DG_base_included */

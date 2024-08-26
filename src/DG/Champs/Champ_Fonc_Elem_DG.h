@@ -13,20 +13,16 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Champ_Fonc_Elem_DG_included
+#define Champ_Fonc_Elem_DG_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Champ_Fonc_P0_base.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Champ_Fonc_Elem_DG: public Champ_Fonc_P0_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Declare_instanciable(Champ_Fonc_Elem_DG);
+public :
+  Champ_base& affecter_(const Champ_base& ch) override;
+};
 
-  return Dirichlet::readOn(s);
-}
+#endif /* Champ_Fonc_Elem_DG_included */

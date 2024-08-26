@@ -13,20 +13,28 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Op_Diff_DG_Elem_included
+#define Op_Diff_DG_Elem_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Op_Diff_DG_base.h>
+class Matrice_Morse;
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Op_Diff_DG_Elem: public Op_Diff_DG_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Declare_instanciable( Op_Diff_DG_Elem );
+public:
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  virtual void calculer_flux_bord(const DoubleTab& inco) const = delete;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { }
+  void completer() override;
 
-  return Dirichlet::readOn(s);
-}
+  void dimensionner(Matrice_Morse& mat) const override;
+
+  void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const override;
+  void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const override;
+  void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const override;
+};
+
+
+#endif /* Op_Diff_DG_Elem_included */

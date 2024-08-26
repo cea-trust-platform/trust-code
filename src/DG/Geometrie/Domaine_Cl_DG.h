@@ -13,20 +13,38 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Domaine_Cl_DG_included
+#define Domaine_Cl_DG_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+//  Cette classe porte les tableaux qui servent a mettre en oeuvre
+//  les condition aux limites dans la formulation DG
+#include <Domaine_Cl_dis_base.h>
+#include <Champ_Don.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+class Domaine_VF;
+class Champ_Inc;
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Domaine_Cl_DG : public Domaine_Cl_dis_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
 
-  return Dirichlet::readOn(s);
-}
+  Declare_instanciable(Domaine_Cl_DG);
+
+public :
+
+  void associer(const Domaine_VF& ) { }
+  void completer(const Domaine_dis& ) override;
+  int initialiser(double temps) override;
+  void imposer_cond_lim(Champ_Inc&, double) override;
+
+  int nb_faces_sortie_libre() const;
+
+  Domaine_VF& domaine_vf();
+  const Domaine_VF& domaine_vf() const;
+
+  int nb_bord_periodicite() const;
+protected:
+
+  int modif_perio_fait_ = 0;
+};
+
+#endif /* Domaine_Cl_DG_included */

@@ -13,20 +13,19 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Terme_Puissance_Thermique_DG_base_included
+#define Terme_Puissance_Thermique_DG_base_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Terme_Puissance_Thermique.h>
+#include <Terme_Source_DG_base.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Terme_Puissance_Thermique_DG_base: public Terme_Puissance_Thermique, public Terme_Source_DG_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Declare_base(Terme_Puissance_Thermique_DG_base);
+public:
+  Terme_Puissance_Thermique_DG_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_DG_base(iter_base) { }
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  int initialiser(double temps) override;
+};
 
-  return Dirichlet::readOn(s);
-}
+#endif /* Terme_Puissance_Thermique_DG_base_included */

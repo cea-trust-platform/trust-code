@@ -13,20 +13,66 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#include <Option_DG.h>
+#include <Motcle.h>
+#include <Param.h>
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+int Option_DG::DEFAULT_ORDER = 1;
+std::map<std::string, int> Option_DG::ORDER_OVERRIDE = {};
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Implemente_instanciable(Option_DG,"Option_DG",Interprete);
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+Sortie& Option_DG::printOn(Sortie& os) const { return Interprete::printOn(os); }
+
+Entree& Option_DG::readOn(Entree& is) { return Interprete::readOn(is); }
+
+Entree& Option_DG::interpreter(Entree& is)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Param param(que_suis_je());
+  param.ajouter("order",&DEFAULT_ORDER);
+  param.ajouter_non_std("velocity_order",(this));
+  param.ajouter_non_std("pressure_order",(this));
+  param.ajouter_non_std("temperature_order",(this));
+  param.lire_avec_accolades_depuis(is);
 
-  return Dirichlet::readOn(s);
+  return is;
+}
+
+int Option_DG::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="velocity_order")
+    {
+      int ord;
+      is >> ord;
+      ORDER_OVERRIDE["velocity"] = ord;
+    }
+  else if (mot=="pressure_order")
+    {
+      int ord;
+      is >> ord;
+      ORDER_OVERRIDE["pressure"] = ord;
+    }
+  else if (mot=="temperature_order")
+    {
+      int ord;
+      is >> ord;
+      ORDER_OVERRIDE["temperature"] = ord;
+    }
+  else return -1;
+  return 1;
+}
+
+/*! @return the number of columns necessary in the unknown vector for a given
+ * method order. For example order 1 and 2D means we deal with the basis {1, X, Y}, so 3 cols.
+ */
+int nb_col_from_order(int order)
+{
+  int nb_cols = -1;
+  // Order
+  if (Objet_U::dimension == 2)
+    nb_cols = (order + 1)*(order + 2) / 2;
+  else // 3D
+    nb_cols = (order + 1)*(order + 2)*(order + 3) / 6;
+
+  return nb_cols;
 }

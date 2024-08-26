@@ -13,20 +13,18 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#include <Champ_Fonc_Elem_DG.h>
+#include <Domaine_VF.h>
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+Implemente_instanciable(Champ_Fonc_Elem_DG, "Champ_Fonc_Elem_DG", Champ_Fonc_P0_base);
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Sortie& Champ_Fonc_Elem_DG::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+Entree& Champ_Fonc_Elem_DG::readOn(Entree& s) { return s; }
+
+Champ_base& Champ_Fonc_Elem_DG::affecter_(const Champ_base& ch)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
-
-  return Dirichlet::readOn(s);
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, le_dom_VF.valeur());
+  ch.valeur_aux(domaine.xp(), valeurs());
+  return *this;
 }

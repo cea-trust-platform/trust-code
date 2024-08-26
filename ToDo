@@ -1,2 +1,8 @@
 Version	Qui				Tache
 
+remplir_elem_face a enlever dans toutes les discretisations
+modifier_pour_Cl : to refactor
+Masse_DG_base::appliquer_coef ==> remonter
+Op_Diff_DG_base::calculer_dt_stab -> factoriser classe mère ?
+Terme_Source_DG_base:: * -> idem factoriser
+Eval_Puiss_Th_DG_Elem:: idem avec PolyMAC

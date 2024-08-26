@@ -13,20 +13,51 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Op_Diff_DG_base_included
+#define Op_Diff_DG_base_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Op_Diff_Turbulent_base.h>
+#include <Operateur_Diff_base.h>
+#include <Domaine_DG.h>
+#include <TRUST_Ref.h>
+#include <SFichier.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+class Domaine_Cl_DG;
+class Champ_Fonc;
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Op_Diff_DG_base: public Operateur_Diff_base, public Op_Diff_Turbulent_base
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Declare_base(Op_Diff_DG_base);
+public:
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
 
-  return Dirichlet::readOn(s);
-}
+  double calculer_dt_stab() const override;
+
+  void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
+  void completer() override;
+  const Champ_base& diffusivite() const override { return diffusivite_.valeur(); }
+  void mettre_a_jour(double t) override
+  {
+    Operateur_base::mettre_a_jour(t);
+    nu_a_jour_ = 0;
+  }
+
+  void update_nu() const; //met a jour nu et nu_fac
+  const DoubleTab& get_nu() const { return nu_; }
+  const DoubleTab& get_nu_fac() const { return nu_fac_; }
+
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
+  int impr(Sortie& os) const override;
+  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
+
+protected:
+  REF(Domaine_DG) le_dom_dg_;
+  REF(Domaine_Cl_DG) la_zcl_dg_;
+  REF(Champ_base) diffusivite_;
+  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+  mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
+  mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
+};
+
+
+#endif /* Op_Diff_DG_base_included */

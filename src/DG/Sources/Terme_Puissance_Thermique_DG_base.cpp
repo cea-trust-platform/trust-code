@@ -13,20 +13,37 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#include <Terme_Puissance_Thermique_DG_base.h>
+#include <Champ_val_tot_sur_vol_base.h>
+#include <Domaine_Cl_DG.h>
+#include <Domaine_DG.h>
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+Implemente_base(Terme_Puissance_Thermique_DG_base, "Terme_Puissance_Thermique_DG_base", Terme_Source_DG_base);
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Sortie& Terme_Puissance_Thermique_DG_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+Entree& Terme_Puissance_Thermique_DG_base::readOn(Entree& s)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  const Equation_base& eqn = equation();
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
+  champs_compris_.ajoute_champ(la_puissance);
+  Nom name_file("Puissance_Thermique");
+  modify_name_file(name_file);
+  set_fichier(name_file);
+  set_description("Heat power release = Integral(P*dv) [W]");
+  return s;
+}
 
-  return Dirichlet::readOn(s);
+void Terme_Puissance_Thermique_DG_base::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+{
+  const Domaine_DG& zvdf = ref_cast(Domaine_DG, domaine_dis.valeur());
+  const Domaine_Cl_DG& zclvdf = ref_cast(Domaine_Cl_DG, domaine_cl_dis.valeur());
+  iter->associer_domaines(zvdf, zclvdf);
+}
+
+int Terme_Puissance_Thermique_DG_base::initialiser(double temps)
+{
+  Terme_Source_DG_base::initialiser(temps);
+  initialiser_champ_puissance(equation());
+  return 1;
 }

@@ -13,20 +13,41 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Eval_Puiss_Th_DG_Elem_included
+#define Eval_Puiss_Th_DG_Elem_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Evaluateur_Source_Elem.h>
+#include <Champ_Uniforme.h>
+#include <Equation_base.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
+#include <TRUSTTab.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Eval_Puiss_Th_DG_Elem: public Evaluateur_Source_Elem
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+public:
+  void mettre_a_jour() override { }
+  inline void associer_champs(const Champ_Don&);
 
-  return Dirichlet::readOn(s);
+  template <typename Type_Double>
+  inline void calculer_terme_source(const int, Type_Double&) const;
+
+protected:
+  REF(Champ_Don) la_puissance;
+  DoubleTab puissance;
+};
+
+inline void Eval_Puiss_Th_DG_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
 }
+
+template <typename Type_Double>
+inline void Eval_Puiss_Th_DG_Elem::calculer_terme_source(const int e, Type_Double& S) const
+{
+  const int k = sub_type(Champ_Uniforme,la_puissance->valeur()) ? 0 : e, size = S.size_array();
+  for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
+}
+
+#endif /* Eval_Puiss_Th_DG_Elem_included */

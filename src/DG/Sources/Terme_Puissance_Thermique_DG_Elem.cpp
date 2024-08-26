@@ -13,20 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#include <Terme_Puissance_Thermique_DG_Elem.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
+#include <Synonyme_info.h>
+#include <Milieu_base.h>
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_DG_Elem, "Puissance_Thermique_Elem_DG", Terme_Puissance_Thermique_DG_base);
+Add_synonym(Terme_Puissance_Thermique_DG_Elem, "Puissance_Thermique_Elem_DG_P0");
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Sortie& Terme_Puissance_Thermique_DG_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_DG_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_DG_base::readOn(s); }
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+void Terme_Puissance_Thermique_DG_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"),
-                                               Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"),
-                                               Nom("DG")
-                                             };
+  Terme_Puissance_Thermique_DG_base::associer_domaines(domaine_dis, domaine_cl_dis);
+  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter->evaluateur());
+  eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
+}
 
-  return Dirichlet::readOn(s);
+void Terme_Puissance_Thermique_DG_Elem::associer_pb(const Probleme_base& pb)
+{
+  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter->evaluateur());
+  eval_puis.associer_champs(la_puissance);
 }
