@@ -1,0 +1,147 @@
+# PARALLEL OK 8 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0 0 0
+        nombre_de_noeuds  2 2 100
+        longueurs  0.1 0.005 1
+    }
+    {
+        Bord sym    X = 0.1 0. <= Y <= 0.005 0. <= Z <= 1
+        Bord sym    X = 0   0. <= Y <= 0.005 0. <= Z <= 1
+        Bord wall1  Y = 0.005 0. <= X <= 0.1 0. <= Z <= 1
+        Bord wall2  Y = 0   0. <= X <= 0.1 0. <= Z <= 1
+        Bord inlet  Z = 0.  0. <= X <= 0.1 0. <= Y <= 0.005
+        Bord outlet Z = 1 0. <= X <= 0.1 0. <= Y <= 0.005
+    }
+}
+Polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+PolyMAC_P0 dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    tmax 25.0
+    seuil_statio -1
+    dt_max 0.1
+    solveur implicite
+    {
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+pb_thermohydraulique pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible
+    {
+        rho     champ_uniforme 1 2500
+        mu      champ_uniforme 1 0.01
+        lambda  champ_uniforme 1 1
+        cp      champ_uniforme 1 500
+        beta_th champ_uniforme 1 0
+        Diametre_hyd_champ champ_uniforme 1 0.009523809523809523
+    }
+
+    correlations
+    {
+        flux_parietal Nusselt { formula 4 }
+    }
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { quiet }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse champ_uniforme 3 0 0 0.08 }
+        boundary_conditions
+        {
+            inlet  frontiere_ouverte_vitesse_imposee_sortie champ_front_debit_massique champ_front_uniforme 1  0.1
+            outlet frontiere_ouverte_vitesse_imposee_sortie champ_front_debit_massique champ_front_uniforme 1 -0.1
+            # outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0 #
+            wall1  symetrie
+            wall2  symetrie
+            sym    symetrie
+        }
+    }
+    convection_diffusion_temperature
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature champ_uniforme 1 0 }
+        boundary_conditions
+        {
+            inlet   frontiere_ouverte T_ext  champ_front_uniforme 1 0
+            outlet  frontiere_ouverte T_ext  champ_front_uniforme 1 0
+            wall1  paroi_temperature_imposee champ_front_uniforme 1 100
+            wall2  paroi_temperature_imposee champ_front_uniforme 1 100
+            sym    paroi_temperature_imposee champ_front_uniforme 1 100
+        }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            T_exact transformation
+            {
+                methode formule expression 1 100-(100-0)*exp(-420.00000000000006*0.21000000000000002*z/0.1/500) localisation elem source refChamp { Pb_champ pb pression }
+            }
+
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(T_trust-T_exact)
+                sources
+                {
+                    refChamp { Pb_champ pb temperature nom_source T_trust } ,
+                    transformation
+                    {
+                        methode formule expression 1 100-(100-0)*exp(-420.00000000000006*0.21000000000000002*z/0.1/500) localisation elem nom_source T_exact source refChamp { Pb_champ pb pression }
+                    }
+                }
+            }
+        }
+        probes
+        {
+            erreur_T grav erreur_T    periode 1e8 segment 1000 0.05 0.0025 0 0.05 0.0025 1
+            T        grav temperature periode 1e8 segment 1000 0.05 0.0025 0 0.05 0.0025 1
+            T_exact  grav T_exact     periode 1e8 segment 1000 0.05 0.0025 0 0.05 0.0025 1
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            temperature elem
+            vitesse elem
+            t_exact elem
+        }
+    }
+}
+Solve pb
+End
