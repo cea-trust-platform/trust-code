@@ -1,8 +1,8 @@
 import pathlib
 import textwrap
 import datetime
-from .trad2_utilities import TRAD2Content, TRAD2Block, TRAD2Attr, TRAD2BlockList
-from .misc_utilities import change_class_name
+from trustpy.trad2_utilities import TRAD2Content, TRAD2Block, TRAD2Attr, TRAD2BlockList
+from trustpy.misc_utilities import change_class_name
 
 ################################################################
 # LOGGER
