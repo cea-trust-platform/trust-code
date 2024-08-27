@@ -196,7 +196,7 @@ int Energie_Multiphase::impr(Sortie& os) const
 void Energie_Multiphase::verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int nb_comp, const Cond_lim_base& cl) const
 {
   //si on verifie une CL de type
-  if (ref_cast(Pb_Multiphase, probleme()).has_correlation("flux_parietal")
+  if (probleme().has_correlation("flux_parietal")
       && (sub_type(Neumann_paroi, cl) || sub_type(Scalaire_impose_paroi, cl) || sub_type(Echange_global_impose, cl)))
     {
       if (nb_comp == 1) return; //OK

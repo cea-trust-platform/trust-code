@@ -259,8 +259,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
       const Champ_Elem_PolyMAC_P0P1NC& ch = ref_cast(Champ_Elem_PolyMAC_P0P1NC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(
-        sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal") ?
-        &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : nullptr);
+        sub_type(Energie_Multiphase, op_ext[i]->equation()) && op_ext[i]->equation().probleme().has_correlation("flux_parietal") ?
+        &ref_cast(Flux_parietal_base, op_ext[i]->equation().probleme().get_correlation("flux_parietal").valeur()) : nullptr);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(domaine[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 
