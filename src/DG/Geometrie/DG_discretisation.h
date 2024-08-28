@@ -57,7 +57,7 @@ public:
   void grad_T(const Domaine_dis& z, const Domaine_Cl_dis&, const Champ_Inc& temperature, Champ_Fonc& ch) const override;
   void grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const override;
   void h_conv(const Domaine_dis& z, const Domaine_Cl_dis&, const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
-  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_AJOUTER; }
+  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_CONTRIBUER_AU_SECOND_MEMBRE; }
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const override;
 

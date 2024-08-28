@@ -20,7 +20,7 @@
 class Quadrature_Ord1_Triangle : public Quadrature
 {
 public:
-  Quadrature_Ord1_Triangle(Domaine_DG dom) : Quadrature(dom)
+  Quadrature_Ord1_Triangle(const Domaine_DG& dom) : Quadrature(dom)
   {
     compute_integ_points();
     compute_integ_points_on_facet();

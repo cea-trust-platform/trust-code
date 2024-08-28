@@ -127,7 +127,7 @@ double Op_Diff_DG_base::calculer_dt_stab() const
               for (int f = 0; f < deux_dim; f++)
                 {
                   int face = e_f(elem, f);
-                  const double d = le_dom_dg_->volumes(elem) / le_dom_dg_->surface(face);
+                  const double d = le_dom_dg_->volumes(elem) / le_dom_dg_->face_surfaces(face);
                   h += 0.5 / (d * d); // On multiplie par 0.5 car face comptee 2 fois
                   //Cerr << elem << " " << face << " " << le_dom_poly_->surface(face) << finl;
                 }

@@ -28,12 +28,12 @@ Entree& Masse_DG_base::readOn(Entree& s) { return s; }
 
 void Masse_DG_base::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_DG = ref_cast(Domaine_DG, le_dom_dis_base);
+  le_dom_dg_ = ref_cast(Domaine_DG, le_dom_dis_base);
 }
 
 void Masse_DG_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_DG = ref_cast(Domaine_Cl_DG, le_dom_Cl_dis_base);
+  le_dom_Cl_dg_ = ref_cast(Domaine_Cl_DG, le_dom_Cl_dis_base);
 }
 
 void Masse_DG_base::completer()

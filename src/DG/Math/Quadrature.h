@@ -22,13 +22,16 @@
 class Quadrature
 {
 public:
-  Quadrature(Domaine_DG dom) : dom_(dom)
+  Quadrature(const Domaine_DG& dom) : dom_(dom)
   { }
   virtual ~Quadrature() {}
 
   void register_quadrature();
-  DoubleTab get_integ_points();
-  DoubleTab get_integ_points_on_facet();
+  const DoubleTab& get_integ_points();
+  const DoubleTab& get_integ_points_facets();
+
+//  DoubleTab get_weights();
+//  DoubleTab get_weights_facets();
 
   virtual void compute_integ_points() = 0;
   virtual void compute_integ_points_on_facet() = 0;
@@ -56,12 +59,11 @@ public:
   double compute_integral_on_facet(int num_facet, DoubleTab& val_pts_integ) const ;
 
 protected:
-  REF(Domaine_DG)
-  dom_;
+  REF(Domaine_DG) dom_;
   Parser_U parser_; // why not?
 
   DoubleTab integ_points_; // number of cols (line size) will vary according to order of the method and element type
-  DoubleTab integ_points_facet_;
+  DoubleTab integ_points_facets_;
   DoubleTab weights_;
   DoubleTab weights_facets_;
 };

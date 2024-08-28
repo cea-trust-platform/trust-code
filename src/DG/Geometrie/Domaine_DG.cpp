@@ -23,6 +23,15 @@
 #include <TRUSTList.h>
 #include <Domaine.h>
 #include <Quadrature.h>
+#include <Hexa_poly.h>
+#include <Tri_poly.h>
+#include <Hexaedre.h>
+#include <Triangle.h>
+#include <Tetraedre.h>
+#include <Rectangle.h>
+#include <Quadri_poly.h>
+#include <Tetra_poly.h>
+#include <EChaine.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
 
@@ -33,41 +42,61 @@ Entree& Domaine_DG::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
-
   // fill dof_elem_ !!!
-//  calculer_h_carre();
-//  discretiser_aretes();
+  calculer_h_carre();
+  remplir_elem_voisins();
+
+  indices_glob_elem_.resize(nb_elem_tot()+1); // Besoin d'une structure parallele ? echange espace virtuel ne fonctionnera pas correctement ?
+  indices_glob_elem_(0) = 0;
+
+  for (int e = 1; e < domaine().nb_elem_tot()+1; e++)
+    indices_glob_elem_(e) = indices_glob_elem_(e-1) + 3; // Pour les triangles
 }
 
-void Domaine_DG::calculer_h_carre()
+void Domaine_DG::initialize_dof(const Nom& variable)
 {
-  // Calcul de h_carre
-  h_carre = 1.e30;
-  h_carre_.resize(nb_faces());
-  // Calcul des surfaces
-  Elem_geom_base& elem_geom = domaine().type_elem().valeur();
-  int is_polyedre = sub_type(Poly_geom_base, elem_geom) ? 1 : 0;
-  const ArrOfInt PolyIndex = is_polyedre ? ref_cast(Poly_geom_base, domaine().type_elem().valeur()).getElemIndex() : ArrOfInt(0);
-  const DoubleVect& surfaces=face_surfaces();
-  const int nbe=nb_elem();
-  for (int num_elem=0; num_elem<nbe; num_elem++)
-    {
-      double surf_max = 0;
-      const int nb_faces_elem = is_polyedre ? PolyIndex[num_elem+1] - PolyIndex[num_elem] : domaine().nb_faces_elem();
-      for (int i=0; i<nb_faces_elem; i++)
-        {
-          double surf = surfaces(elem_faces(num_elem,i));
-          surf_max = (surf > surf_max)? surf : surf_max;
-        }
-      double vol = volumes(num_elem)/surf_max;
-      vol *= vol;
-      h_carre_(num_elem) = vol;
-      h_carre = ( vol < h_carre )? vol : h_carre;
-    }
+//  EChaine is(Option_DG::OPTION_DG); //TODO DG recupere le texte de option DG
+
+//  int nb_inc = 1;
+//
+//  IntTab newTab;
+//
+//  newTab.resize(0); // TODO DG besoin de differencier selon le nombre d'inconnues (non connu ici ?)
+//
+//  domaine().creer_tableau_elements(newTab, RESIZE_OPTIONS::NOCOPY_NOINIT);
+//
+//  dof_elem_(0) = 1;
+//  newTab = 1; // TODO DG Pour le moment rempli avec 1 mais potentiellement rempli avec champ med !!!
+//
+//  newTab.echange_espace_virtuel();
+//
+//  dof_elem_.insert({variable,newTab});
 }
 
 void Domaine_DG::remplir_elem_faces()
 {
+}
+
+void Domaine_DG::remplir_elem_voisins()
+{
+  int max_nb_faces = elem_faces_.dimension(1);
+  elem_voisins_.resize(0, max_nb_faces);
+  domaine().creer_tableau_elements(elem_voisins_, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  elem_voisins_ = -1;
+  //elem_voisins_ = elem_faces_; //elem_faces_ a t'il une structure parallele ?
+  // elem_voisins a besoin de la structure parallele de elem_voisins_ donc md_vector de face avec une taille d'elements ??
+  // a voir pour le remplissage des matrices Petsc ??
+  for (int e = 0; e < domaine().nb_elem(); e++) // ou nb_elem_tot ?
+    for (int f = 0 ; f < max_nb_faces; f++)
+      {
+        if (elem_faces_(e,f) != -1)
+          {
+            elem_voisins_(e,f) = (face_voisins(elem_faces_(e,f),0) == e) ? face_voisins(elem_faces_(e,f),1) : face_voisins(elem_faces_(e,f),0);
+            if (elem_voisins_(e,f) == -1) elem_voisins_(e,f) = -2;
+          }
+      }
+
+  elem_voisins_.echange_espace_virtuel();
 }
 
 void Domaine_DG::modifier_pour_Cl(const Conds_lim& conds_lim)

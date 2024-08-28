@@ -33,8 +33,8 @@ public:
   void appliquer_coef(DoubleVect& coef) const;
 
 protected:
-  REF(Domaine_DG) le_dom_DG;
-  REF(Domaine_Cl_DG) le_dom_Cl_DG;
+  REF(Domaine_DG) le_dom_dg_;
+  REF(Domaine_Cl_DG) le_dom_Cl_dg_;
 };
 
 #endif /* Masse_DG_base_included */

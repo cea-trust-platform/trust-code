@@ -98,7 +98,7 @@ void Quadrature_Ord5_Triangle::compute_integ_points_on_facet()
   IntTab& face_sommets = dom_->face_sommets();
   int nb_pts_integ = NB_PTS_INTEG_FACETS;
 
-  integ_points_facet_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  integ_points_facets_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
   weights_facets_.resize(nb_pts_integ);
 
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
@@ -122,9 +122,9 @@ void Quadrature_Ord5_Triangle::compute_integ_points_on_facet()
         {
           for (int dim = 0; dim < ndim; dim++)
             {
-              integ_points_facet_(f, pts, dim) = 0.;
+              integ_points_facets_(f, pts, dim) = 0.;
               for (int loc_vert = 0; loc_vert < ndim + 1; loc_vert++)
-                integ_points_facet_(f, pts, dim) += xs(face_sommets(f, loc_vert), dim) * lambda_facets(pts, loc_vert);
+                integ_points_facets_(f, pts, dim) += xs(face_sommets(f, loc_vert), dim) * lambda_facets(pts, loc_vert);
             }
         }
     }

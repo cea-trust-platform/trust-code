@@ -10,7 +10,7 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 11 11
+        Nombre_de_Noeuds 4 4
         Longueurs 1. 1.
     }
     {
@@ -20,6 +20,8 @@ Mailler dom
         Bord Droit  X = 1. 0. <= Y <= 1.
     }
 }
+
+Trianguler dom
 
 
 # END MESH #
@@ -39,8 +41,14 @@ END SCATTER #
 
 DG dis
 
-Scheme_euler_explicit sch
-Read sch
+Option_DG 
+{
+	order 1
+}
+
+
+Scheme_euler_explicit sch_expl
+Read sch_expl
 {
     tinit 0
 		nb_pas_dt_max 2
@@ -51,8 +59,18 @@ Read sch
     seuil_statio 1.e-8
 }
 
+Schema_euler_implicite sch_impl
+Read sch_impl
+{
+    tinit   0
+    dt_max  0.5
+    facsec 1e30
+    seuil_statio 1e-6
+    solveur implicite { solveur petsc cholesky { } }
+}
+
 Associate pb dom
-Associate pb sch
+Associate pb sch_impl
 Discretize pb dis
 
 Read pb
@@ -86,5 +104,7 @@ Read pb
         }
     }
 }
+
+
 Solve pb
 End

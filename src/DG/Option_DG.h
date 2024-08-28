@@ -27,9 +27,10 @@ class Option_DG : public Interprete
   Declare_instanciable(Option_DG);
 public :
   Entree& interpreter(Entree&) override;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  static int nb_col_from_order(int order);
+  static int Get_order_for(const Nom& n);
+
+  static int Nb_col_from_order(const int order);
 
   static int DEFAULT_ORDER;
   static std::map<std::string, int> ORDER_OVERRIDE;

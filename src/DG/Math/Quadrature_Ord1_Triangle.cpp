@@ -60,13 +60,13 @@ void Quadrature_Ord1_Triangle::compute_integ_points_on_facet()
   int nb_pts_integ = ::ORDER;
 
   weights_.resize(nb_pts_integ);
-  integ_points_facet_.resize(nb_faces, ::ORDER * Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  integ_points_facets_.resize(nb_faces, ::ORDER * Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
   for (int pts = 0; pts < nb_pts_integ; pts++)
     {
       for (int f = 0; f < nb_faces; f++) // TODO : Utiliser plutôt la fonction copy
         {
           for (int dim = 0; dim < Objet_U::dimension; dim++)
-            integ_points_facet_(f, pts, dim) = xv(f, dim);
+            integ_points_facets_(f, pts, dim) = xv(f, dim);
         }
       weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
     }

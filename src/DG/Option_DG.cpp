@@ -16,6 +16,8 @@
 #include <Option_DG.h>
 #include <Motcle.h>
 #include <Param.h>
+#include <SChaine.h>
+
 
 int Option_DG::DEFAULT_ORDER = 1;
 std::map<std::string, int> Option_DG::ORDER_OVERRIDE = {};
@@ -24,48 +26,42 @@ Implemente_instanciable(Option_DG,"Option_DG",Interprete);
 
 Sortie& Option_DG::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-Entree& Option_DG::readOn(Entree& is) { return Interprete::readOn(is); }
+Entree& Option_DG::readOn(Entree& is) {  return is; }
 
 Entree& Option_DG::interpreter(Entree& is)
 {
+  int vo=-1, po=-1, to=-1;
+
   Param param(que_suis_je());
   param.ajouter("order",&DEFAULT_ORDER);
-  param.ajouter_non_std("velocity_order",(this));
-  param.ajouter_non_std("pressure_order",(this));
-  param.ajouter_non_std("temperature_order",(this));
+  param.ajouter("velocity_order",&vo);
+  param.ajouter("pressure_order",&po);
+  param.ajouter("temperature_order",&to);
   param.lire_avec_accolades_depuis(is);
+
+  if (vo != -1)
+    ORDER_OVERRIDE["velocity"] = vo;
+  if (to != -1)
+    ORDER_OVERRIDE["temperature"] = to;
+  if (po != -1)
+    ORDER_OVERRIDE["pressure"] = to;
 
   return is;
 }
 
-int Option_DG::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+
+int Option_DG::Get_order_for(const Nom& n)
 {
-  if (mot=="velocity_order")
-    {
-      int ord;
-      is >> ord;
-      ORDER_OVERRIDE["velocity"] = ord;
-    }
-  else if (mot=="pressure_order")
-    {
-      int ord;
-      is >> ord;
-      ORDER_OVERRIDE["pressure"] = ord;
-    }
-  else if (mot=="temperature_order")
-    {
-      int ord;
-      is >> ord;
-      ORDER_OVERRIDE["temperature"] = ord;
-    }
-  else return -1;
-  return 1;
+  const std::string& s = n.getString();
+  if(ORDER_OVERRIDE.count(s))
+    return ORDER_OVERRIDE.at(s);
+  return DEFAULT_ORDER;
 }
 
 /*! @return the number of columns necessary in the unknown vector for a given
  * method order. For example order 1 and 2D means we deal with the basis {1, X, Y}, so 3 cols.
  */
-int nb_col_from_order(int order)
+int Option_DG::Nb_col_from_order(const int order)
 {
   int nb_cols = -1;
   // Order

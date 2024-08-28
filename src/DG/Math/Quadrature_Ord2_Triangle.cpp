@@ -12,7 +12,6 @@
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************/
-
 #include <Quadrature_Ord2_Triangle.h>
 
 /****************************************************************/
@@ -48,6 +47,7 @@ void Quadrature_Ord2_Triangle::compute_integ_points()
 
   integ_points_.resize(nb_elem, nb_pts_integ, ndim); // three point per element, 2D -> 1*2 = 2 columns
   weights_.resize(nb_pts_integ);
+
   for (int e = 0; e < nb_elem; e++)
     {
       for (int pts = 0; pts < nb_pts_integ; pts++)
@@ -57,11 +57,11 @@ void Quadrature_Ord2_Triangle::compute_integ_points()
         }
     }
   // We ensure that sum(weights)=1;
-  weights_[nb_pts_integ] = 1;
+  weights_[nb_pts_integ-1] = 1;
   for (int pts = 0; pts < nb_pts_integ - 1; pts++)
     {
       weights_(pts) = ::WEIGHTS[pts];
-      weights_(nb_pts_integ) -= weights_(pts);
+      weights_(nb_pts_integ-1) -= weights_(pts);
     }
 }
 
@@ -75,7 +75,7 @@ void Quadrature_Ord2_Triangle::compute_integ_points_on_facet()
   IntTab& face_sommets = dom_->face_sommets();
   int nb_pts_integ = 2;
 
-  integ_points_facet_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  integ_points_facets_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
   weights_facets_.resize(nb_pts_integ);
 
   for (int pts = 0; pts < nb_pts_integ; pts++)
@@ -83,13 +83,13 @@ void Quadrature_Ord2_Triangle::compute_integ_points_on_facet()
       for (int f = 0; f < nb_faces; f++) // TODO : Utiliser plutôt la fonction copy
         {
           for (int dim = 0; dim < Objet_U::dimension; dim++)
-            integ_points_facet_(f, pts, dim) = xs(face_sommets(f, pts), dim);
+            integ_points_facets_(f, pts, dim) = xs(face_sommets(f, pts), dim);
         }
     }
-  weights_facets_[nb_pts_integ] = 1;
+  weights_facets_[nb_pts_integ-1] = 1;
   for (int pts = 0; pts < nb_pts_integ - 1; pts++)
     {
       weights_facets_[pts] = ::WEIGHTS_FACETS[pts];
-      weights_facets_[nb_pts_integ] -= weights_facets_[pts];
+      weights_facets_[nb_pts_integ-1] -= weights_facets_[pts];
     }
 }

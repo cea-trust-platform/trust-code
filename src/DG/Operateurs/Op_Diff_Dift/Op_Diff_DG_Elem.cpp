@@ -1,17 +1,17 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ * Copyright (c) 2024, CEA
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 
 #include <Modele_turbulence_scal_base.h>
 #include <Echange_externe_impose.h>
@@ -31,6 +31,8 @@
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <cmath>
+#include <Quadrature.h>
+#include <Quadrature_Ord2_Triangle.h> // TODO: Faire du Polymorphisme avec Quadrature.h pour remplacer cette bib -> see A. PEITA 
 
 Implemente_instanciable( Op_Diff_DG_Elem , "Op_Diff_DG_Elem|Op_Diff_DG_var_Elem" , Op_Diff_DG_base );
 
@@ -62,276 +64,472 @@ void Op_Diff_DG_Elem::completer()
 
 void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const
 {
-  throw;
-  // TODO TODO
 
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const IntTab& e_f = domaine.elem_faces();
-//  int i, j, k, l, e, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), n, N = ch.valeurs().line_size();
-//
-//  IntTab stencil(0, 2);
-//
-//  for (e = 0; e < domaine.nb_elem_tot(); e++)
-//    {
-//      //dependance en les Te : diagonale -> faces autour de chaque element
-//      if (e < domaine.nb_elem())
-//        for (n = 0; n < N; n++)
-//          stencil.append_line(N * e + n, N * e + n);
-//      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-//        for (n = 0; f < domaine.nb_faces() && n < N; n++)
-//          stencil.append_line(N * (ne_tot + f) + n, N * e + n);
-//
-//      //dependence en les Tf
-//      for (j = 0, k = domaine.m2d(e); k < domaine.m2d(e + 1); j++, k++)
-//        for (f = e_f(e, j), l = domaine.w2i(k); l < domaine.w2i(k + 1); l++)
-//          {
-//            //blocs superieurs : divergence
-//            for (n = 0; e < domaine.nb_elem() && n < N; n++)
-//              stencil.append_line(N * e + n, N * (ne_tot + e_f(e, domaine.w2j(l))) + n);
-//
-//            //blocs inferieurs : continuite
-//            for (n = 0; f < domaine.nb_faces() && n < N; n++)
-//              stencil.append_line(N * (ne_tot + f) + n, N * (ne_tot + e_f(e, domaine.w2j(l))) + n);
-//          }
-//    }
-//
-//  tableau_trier_retirer_doublons(stencil);
-//  Matrix_tools::allocate_morse_matrix(N * (ne_tot + nf_tot), N * (ne_tot + nf_tot), stencil, mat);
+  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  const IntTab& elem_voisins = domaine.elem_voisins();
+  const IntTab& ind_elem = domaine.indices_glob_elem();
+
+  const int max_nb_voisins = elem_voisins.dimension(1);
+
+  IntTab indice(0, 2);
+
+  //  const IntTab& dof_elem = domaine.dof_elem("temperature");
+  //  int nb_inc = dof_elem.size();
+
+  int current_indice = 0, nordre, nddl = 0;
+  //  //partie superieure : diagonale
+  //  for (int k = 0; k< nb_inc ; k++)
+  for (int e = 0; e < domaine.nb_elem(); e++)
+    {
+      current_indice=ind_elem(e);
+      // std::cout <<  e << " " << ind_elem(e) << std::endl;
+      nordre = Option_DG::Get_order_for("temperature") ; // dof_elem(e);
+      //          ind_elem(e+1)-ind_elem(e);
+      nddl = Option_DG::Nb_col_from_order(nordre);
+      for (int i = 0; i < nddl; i++ )
+        for (int j = 0; j < nddl; j++ )
+          indice.append_line( current_indice+i, current_indice+j); //0 pour l'ordre 1
+
+      for (int k = 0 ; k < max_nb_voisins ; k++)
+        {
+          int cell = elem_voisins(e,k);
+          if (cell == -1)
+            continue;
+          if (cell == -2)
+            continue;
+          int ind = ind_elem(cell);
+          int nordre2 = Option_DG::Get_order_for("temperature") ;
+          //          int nordre2 = dof_elem(cell); //TODO DG for map dof
+          int nddl2 = Option_DG::Nb_col_from_order(nordre2);
+          for (int i = 0; i < nddl; i++ )
+            for (int j = 0; j < nddl2; j++ )
+              indice.append_line( current_indice+i, ind+j);
+        }
+    }
+  tableau_trier_retirer_doublons(indice);
+  Matrix_tools::allocate_morse_matrix(current_indice+nddl, current_indice+nddl, indice, mat);
+
 }
 
-void Op_Diff_DG_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
-{
-  // TODO pour problemes croises
-
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
-//  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
-//
-//  IntTab stencil(0, 2);
-//
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      {
-//        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
-//        if (cl.nom_autre_pb() != autre_pb.le_nom())
-//          continue; //not our problem
-//
-//        /* stencil */
-//        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
-//        for (j = 0; j < cl.item.dimension(0); j++)
-//          for (k = 0, f = fvf.num_face(j); k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
-//            for (n = 0; n < N; n++)
-//              stencil.append_line(N * (ne_tot + f) + n, N * l + n);
-//      }
-//
-//  tableau_trier_retirer_doublons(stencil);
-//  Matrix_tools::allocate_morse_matrix(nl, nc, stencil, matrice);
-}
-
-void Op_Diff_DG_Elem::ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const
-{
-  throw;
-  // TODO idem above
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
-//  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
-//
-//  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
-//  update_nu(), update_delta();
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
-//
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      {
-//        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
-//        if (cl.nom_autre_pb() != autre_pb.le_nom())
-//          continue; //not our problem
-//        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
-//        for (j = 0; j < fvf.nb_faces(); j++)
-//          {
-//            f = fvf.num_face(j);
-//            for (n = 0; n < N; n++)
-//              resu(ne_tot + f, n) -= cl.coeff(j, 0, n) * inco(ne_tot + f, n); //terme de la face elle-meme
-//            for (k = 0; k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
-//              for (n = 0; n < N; n++)
-//                {
-//                  //operateur
-//                  resu(ne_tot + f, n) -= cl.coeff(j, k + 1, n) * autre_inco(l, n);
-//                  //correction non lineaire
-//                  if (stab_)
-//                    resu(ne_tot + f, n) -= std::max(delta_f(f, n), cl.delta(j, k, n)) * (inco(ne_tot + f, n) - autre_inco(l, n));
-//                }
-//          }
-//      }
-}
-
-void Op_Diff_DG_Elem::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
-{
-  // TODO idem above
-  throw;
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
-//  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
-//
-//  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
-//  update_nu(), update_delta();
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
-//
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      {
-//        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
-//        if (cl.nom_autre_pb() != autre_pb.le_nom())
-//          continue; //not our problem
-//        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
-//        for (j = 0; j < fvf.nb_faces(); j++) //on peut remplir tous les coeffs, sauf celui de la face elle-meme (rempli par contribuer_a_avec)
-//          for (k = 0, f = fvf.num_face(j); k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
-//            for (n = 0; n < N; n++)
-//              matrice(N * (ne_tot + f) + n, N * l + n) += cl.coeff(j, k + 1, n) - (stab_ ? std::max(delta_f(f, n), cl.delta(j, k, n)) : 0); //operateur + correction non lineaire
-//      }
-}
 
 DoubleTab& Op_Diff_DG_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   // TODO:
   throw;
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
-//  const IntTab& e_f = domaine.elem_faces();
-//  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
-//  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = inco.line_size();
-//  double fac;
-//
-//  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
-//  update_nu(), update_delta();
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
-//  flux_bords_ = 0;
-//
-//  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
-//  for (e = 0; e < ne_tot; e++)
-//    {
-//      /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
-//      int n_f = domaine.m2d(e + 1) - domaine.m2d(e); //nombre de faces de l'element e
-//      for (remplir_nu_ef(e, nu_ef), mee = 0, i = 0; i < n_f; i++, mee += mfe)
-//        {
-//          for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
-//            {
-//              for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++)
-//                mff(n) = fac * nu_ef(domaine.w2j(j), n);
-//              for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++)
-//                resu(ne_tot + f, n) -= mff(n) * inco(ne_tot + fb, n);
-//              for (n = 0; f < domaine.premiere_face_int() && n < N; n++)
-//                flux_bords_(f, n) -= mff(n) * inco(ne_tot + fb, n);
-//              for (n = 0; n < N; n++)
-//                resu(e, n) += mff(n) * inco(ne_tot + fb, n);
-//
-//              //correction non lineaire : partie "faces/faces"
-//              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++)
-//                resu(ne_tot + f, n) -= std::max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
-//            }
-//          for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++)
-//            resu(ne_tot + f, n) += mfe(n) * inco(e, n);
-//          for (n = 0; f < domaine.premiere_face_int() && n < N; n++)
-//            flux_bords_(f, n) += mfe(n) * inco(e, n);
-//
-//          //Echange_impose_base
-//          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
-//            for (n = 0; n < N; n++)
-//              resu(ne_tot + f, n) -= fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n)
-//                                     * (inco(ch.fcl()(f, 0) == 1 ? ne_tot + f : e, n) - ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).T_ext(ch.fcl()(f, 2), n));
-//
-//          //correction non lineaire : parties "elements/faces" et "faces/elements"
-//          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
-//            {
-//              double corr = std::max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
-//              resu(e, n) -= corr, resu(ne_tot + f, n) += corr;
-//            }
-//        }
-//      for (n = 0; n < N; n++)
-//        resu(e, n) -= mee(n) * inco(e, n);
-//    }
-//
+
+//  remplir_nu(nu_);
+
+//  const Domaine_DG& domaine_dg=ref_cast(Domaine_DG,equation().domaine_dis().valeur());
+
+//  const DoubleTab& Aij=domaine_dg.Aij();
+
+
+  //  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  //  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  //  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
+  //  const IntTab& e_f = domaine.elem_faces();
+  //  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  //  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = inco.line_size();
+  //  double fac;
+  //
+  //  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
+  //  update_nu(), update_delta();
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
+  //  flux_bords_ = 0;
+  //
+  //  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
+  //  for (e = 0; e < ne_tot; e++)
+  //    {
+  //      /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
+  //      int n_f = domaine.m2d(e + 1) - domaine.m2d(e); //nombre de faces de l'element e
+  //      for (remplir_nu_ef(e, nu_ef), mee = 0, i = 0; i < n_f; i++, mee += mfe)
+  //        {
+  //          for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
+  //            {
+  //              for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++)
+  //                mff(n) = fac * nu_ef(domaine.w2j(j), n);
+  //              for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++)
+  //                resu(ne_tot + f, n) -= mff(n) * inco(ne_tot + fb, n);
+  //              for (n = 0; f < domaine.premiere_face_int() && n < N; n++)
+  //                flux_bords_(f, n) -= mff(n) * inco(ne_tot + fb, n);
+  //              for (n = 0; n < N; n++)
+  //                resu(e, n) += mff(n) * inco(ne_tot + fb, n);
+  //
+  //              //correction non lineaire : partie "faces/faces"
+  //              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++)
+  //                resu(ne_tot + f, n) -= std::max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
+  //            }
+  //          for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++)
+  //            resu(ne_tot + f, n) += mfe(n) * inco(e, n);
+  //          for (n = 0; f < domaine.premiere_face_int() && n < N; n++)
+  //            flux_bords_(f, n) += mfe(n) * inco(e, n);
+  //
+  //          //Echange_impose_base
+  //          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
+  //            for (n = 0; n < N; n++)
+  //              resu(ne_tot + f, n) -= fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n)
+  //                                     * (inco(ch.fcl()(f, 0) == 1 ? ne_tot + f : e, n) - ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).T_ext(ch.fcl()(f, 2), n));
+  //
+  //          //correction non lineaire : parties "elements/faces" et "faces/elements"
+  //          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
+  //            {
+  //              double corr = std::max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
+  //              resu(e, n) -= corr, resu(ne_tot + f, n) += corr;
+  //            }
+  //        }
+  //      for (n = 0; n < N; n++)
+  //        resu(e, n) -= mee(n) * inco(e, n);
+  //    }
+  //
   return resu;
 }
 
 void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   // Idem above
-  throw;
+  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  const IntTab& indices_glob_elem = domaine.indices_glob_elem();
+  //  const IntTab& elem_voisins = domaine.elem_voisins();
+  //  const int max_nb_voisins = elem_voisins.dimension(1);
+  //  const IntTab& elem_faces = domaine.elem_faces();
+  const IntTab& face_voisins = domaine.face_voisins();
+  const DoubleTab& xp = domaine.xp();
+  const DoubleTab& xv = domaine.xv();
 
-//  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-//  const Domaine_DG& domaine = le_dom_dg_.valeur();
-//  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
-//  const IntTab& e_f = domaine.elem_faces();
-//  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
-//  int i, j, k, l, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = inco.line_size();
-//  double fac;
-//
-//  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
-//  update_nu(), update_delta();
-//  for (i = 0; i < cls.size(); i++)
-//    if (sub_type(Echange_contact_DG, cls[i].valeur()))
-//      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
-//
-//  /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
-//  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
-//  for (e = 0; e < ne_tot; e++)
-//    {
-//      int n_f = domaine.m2d(e + 1) - domaine.m2d(e); //nombre de faces de l'element e
-//      for (remplir_nu_ef(e, nu_ef), mee = 0, i = 0; i < n_f; i++, mee += mfe)
-//        {
-//          for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
-//            {
-//              for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++)
-//                mff(n) = fac * nu_ef(domaine.w2j(j), n);
-//              for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && ch.fcl()(fb, 0) < 6 && n < N; n++)
-//                matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
-//              for (n = 0; e < domaine.nb_elem() && ch.fcl()(fb, 0) < 6 && n < N; n++)
-//                matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
-//
-//              //correction non lineaire : partie "faces/faces"
-//              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && f < domaine.nb_faces() && n < N; n++)
-//                for (k = 0, fac = std::max(delta_f(f, n), delta_f(fb, n)); k < 2; k++)
-//                  matrice(N * (ne_tot + f) + n, N * (ne_tot + (k ? fb : f)) + n) += (k ? -1 : 1) * fac;
-//            }
-//          for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && n < N; n++)
-//            matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
-//
-//          //Echange_impose_base
-//          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
-//            for (n = 0; n < N; n++)
-//              matrice(N * (ne_tot + f) + n, N * (ch.fcl()(f, 0) == 1 ? ne_tot + f : e) + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n);
-//          else if (ch.fcl()(f, 0) == 3 && f < domaine.nb_faces()) //paroi_contact gere en monolithique -> ajout du coeff a la face issu de l'autre cote
-//            {
-//              const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[ch.fcl()(f, 1)].valeur());
-//              for (j = ch.fcl()(f, 2), n = 0; n < N; n++)
-//                matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += cl.coeff(j, 0, n); //coeff de la face elle-meme
-//              for (k = 0; stab_ && k < cl.item.dimension(1) && cl.item(j, k) >= 0; k++)
-//                for (n = 0; n < N; n++) //correction non lineaire
-//                  matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += std::max(delta_f(f, n), cl.delta(j, k, n));
-//            }
-//
-//          //correction non lineaire : parties "elements/faces" et "faces/elements"
-//          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
-//            {
-//              double corr = std::max(delta_e(e, n), delta_f(f, n));
-//              for (k = 0; k < 2; k++)
-//                for (l = 0; (k ? (f < domaine.nb_faces()) : (e < domaine.nb_elem())) && l < 2; l++)
-//                  matrice(N * (k ? ne_tot + f : e) + n, N * (l ? ne_tot + f : e) + n) += (k == l ? 1 : -1) * corr;
-//            }
-//        }
-//      for (n = 0; e < domaine.nb_elem() && n < N; n++)
-//        matrice(N * e + n, N * e + n) += mee(n);
-//    }
+  int premiere_face_int = domaine.premiere_face_int();
+
+  Quadrature_Ord2_Triangle quad(domaine); // = domaine.get_quadrature(2); // Todo: Replace by quadrature
+  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
+  int nb_pts_int_fac = integ_points_facets.dimension(1);
+  DoubleTab val_pts_integ(nb_pts_int_fac);
+  double integral;
+  //  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
+  //  DoubleTab& weights_facets = quad.get_weights_facets();
+
+  //  int nb_int_facets = weights_facets.dimension(0);
+
+  int elem0, elem1;
+  for (int f = premiere_face_int; f < domaine.nb_faces(); f++)
+    {
+      elem0 = face_voisins(f,0);
+      elem1 = face_voisins(f,1);
+
+      int ind_elem0 = indices_glob_elem(elem0);
+      int ind_elem1 = indices_glob_elem(elem1);
+
+      double sur_f = domaine.face_surfaces(f);
+
+      int nordre0 = Option_DG::Get_order_for("temperature") ;
+      //int nordre1 = Option_DG::Get_order_for("temperature") ; Useful if two cells does not have the same order.
+      /*
+              int ncol0 = Option_DG::Nb_col_from_order(nordre0);
+              int ncol1 = Option_DG::Nb_col_from_order(nordre1);
+       */
+      double invh0 = 1/domaine.carre_pas_maille(elem0);
+      double invh1 = 1/domaine.carre_pas_maille(elem1);
+      double invh[2]= {invh0, invh1};
+      double invh_carr[2]= {invh0*invh0, invh1*invh1} ;
+      double invh12=invh0*invh1;
+
+      const DoubleTab& face_normales = domaine.face_normales();
+
+      double eta_F=1; // TODO: Compute the penalisation coefficient
+
+      if (Objet_U::dimension == 2)
+        {
+          // Mass matrix for the facets : TODO: Use the symmetry to compute just the upper side of the matrix
+          // TODO: Attention, dans l'ordre actuel ne marche pas, il faut ordonner le remplissage par ordre pour que le break fonctionne !
+          for( int i_elem = 0; i_elem<2; i_elem++)
+            {
+              int elem=face_voisins(f,i_elem);
+              int ind_elem=indices_glob_elem(elem);
+
+              matrice(ind_elem, ind_elem) += sur_f;
+
+              if (nordre0 == 0) continue;
+
+              matrice(ind_elem, ind_elem+1) += eta_F*sur_f*invh[i_elem]*(xv(f,0) - xp(elem,0));
+              matrice(ind_elem, ind_elem+2) += eta_F*sur_f*invh[i_elem]*(xv(f,1) - xp(elem,1));
+
+              matrice(ind_elem+1, ind_elem) += matrice(ind_elem, ind_elem+1);
+              matrice(ind_elem+2, ind_elem) += matrice(ind_elem, ind_elem+2);
+
+
+              // x x
+              for (int pts=0; pts<nb_pts_int_fac; pts++ )
+                val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,0)-xp(elem,0));
+              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              matrice(ind_elem+1, ind_elem+1) += eta_F*integral;
+              // y y
+              for (int pts=0; pts<nb_pts_int_fac; pts++ )
+                val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,1)-xp(elem,1))*(integ_points_facets(f,pts,1)-xp(elem,1));
+              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              matrice(ind_elem+2, ind_elem+2) += eta_F*integral;
+              // x y
+              for (int pts=0; pts<nb_pts_int_fac; pts++ )
+                val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,1)-xp(elem,1));
+              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              matrice(ind_elem+1, ind_elem+2) += eta_F*integral;
+              matrice(ind_elem+2, ind_elem+1) += eta_F*integral;
+            }
+          // Cross terms
+          matrice(ind_elem0, ind_elem1) -= eta_F*sur_f;
+          matrice(ind_elem1, ind_elem0) += matrice(ind_elem0, ind_elem1);
+          if (nordre0 == 0) continue;
+          matrice(ind_elem0, ind_elem1+1) -= eta_F* sur_f*invh1*(xv(f,0) - xp(elem1,0)) ; // 1,x1
+          matrice(ind_elem0, ind_elem1+2) -= eta_F* sur_f*invh1*(xv(f,1) - xp(elem1,1)); // 1,y1
+          matrice(ind_elem1+1, ind_elem0) = matrice(ind_elem0, ind_elem1+1); // sym
+          matrice(ind_elem1+2, ind_elem0) = matrice(ind_elem0, ind_elem1+2); // sym
+
+          matrice(ind_elem1, ind_elem0+1) -= eta_F* sur_f*invh0*(xv(f,0) - xp(elem0,0)) ; // 1,x0
+          matrice(ind_elem1, ind_elem0+2) -= eta_F* sur_f*invh0*(xv(f,1) - xp(elem0,1)); // 1,y0
+          matrice(ind_elem0+1, ind_elem1) = matrice(ind_elem1, ind_elem1+1); // sym
+          matrice(ind_elem0+2, ind_elem1) = matrice(ind_elem1, ind_elem1+2); //sym
+
+          for (int pts=0; pts<nb_pts_int_fac; pts++ )
+            val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,0)-xp(elem1,0));
+          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem0+1, ind_elem1+1) -= eta_F*integral; // x0,x1
+          matrice(ind_elem1+1, ind_elem0+1) = eta_F*integral;//sym
+
+          for (int pts=0; pts<nb_pts_int_fac; pts++ )
+            val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,1)-xp(elem1,1));
+          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem0+1, ind_elem1+2) -= eta_F*integral; //x0,y1
+          matrice(ind_elem1+2, ind_elem0+1) = eta_F*integral;//sym
+
+          for (int pts=0; pts<nb_pts_int_fac; pts++ )
+            val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,0)-xp(elem1,0));
+          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem0+2, ind_elem1+1) -= eta_F*integral; //y0 x1
+          matrice(ind_elem1+1, ind_elem0+2) = eta_F*integral;//sym
+
+          for (int pts=0; pts<nb_pts_int_fac; pts++ )
+            val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,1)-xp(elem1,1));
+          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem0+2, ind_elem1+2) -= eta_F*integral; //y0 y1
+          matrice(ind_elem1+2, ind_elem0+2) = eta_F*integral;//sym
+
+          // Stiffness Matrix for facet terms part 1 consistency
+          matrice(ind_elem0+1,ind_elem1)=(-1/2)*sur_f*face_normales(f,0)*invh0;
+          matrice(ind_elem0+1,ind_elem1+1)=(-1/2)*sur_f*face_normales(f,0)*invh12*(xv(f,0) - xp(elem1,0));
+          matrice(ind_elem0+1,ind_elem1+2)=(-1/2)*sur_f*face_normales(f,0)*invh12*(xv(f,1) - xp(elem1,1));
+          matrice(ind_elem0+2,ind_elem1+1)=(-1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,0) - xp(elem1,0));
+          matrice(ind_elem0+2,ind_elem1+2)=(-1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,1) - xp(elem1,1));
+          //sym
+          matrice(ind_elem1,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1);
+          matrice(ind_elem1+1,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1+1);
+          matrice(ind_elem1+2,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1+2);
+          matrice(ind_elem1+1,ind_elem0+2)+=matrice(ind_elem0+2,ind_elem1+1);
+          matrice(ind_elem1+2,ind_elem0+2)+=matrice(ind_elem0+2,ind_elem1+2);
+          // Stiffness Matrix for facet terms  part 2 sym
+          matrice(ind_elem1+1,ind_elem0)=(+1/2)*sur_f*face_normales(f,0)*invh1;
+          matrice(ind_elem1+1,ind_elem0+1)=(+1/2)*sur_f*face_normales(f,0)*invh12*(xv(f,0) - xp(elem0,0));
+          matrice(ind_elem1+1,ind_elem0+2)=(+1/2)*sur_f*face_normales(f,0)*invh12*(xv(f,1) - xp(elem0,1));
+          matrice(ind_elem1+2,ind_elem0+1)=(+1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,0) - xp(elem0,0));
+          matrice(ind_elem1+2,ind_elem0+2)=(+1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,1) - xp(elem0,1));
+
+          // symmetry
+          matrice(ind_elem0,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0);
+          matrice(ind_elem0+1,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0+1);
+          matrice(ind_elem0+2,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0+2);
+          matrice(ind_elem0+1,ind_elem1+2)+=matrice(ind_elem1+2,ind_elem0+1);
+          matrice(ind_elem0+2,ind_elem1+2)+=matrice(ind_elem1+2,ind_elem0+2);
+
+        }
+
+    }
+
+
+  //  for (int e = 0; e < domaine.nb_elem(); e++)
+  //      {
+  //        int nordre = Option_DG::Get_order_for("temperature") ; // dof_elem(e);
+  //        int ncol = Option_DG::Nb_col_from_order(nordre);
+  //
+  //        for (int k = 0 ; k < max_nb_voisins ; k++)
+  //          {
+  //            int face = elem_faces(e,k);
+  //
+  //            if (face > )
+  //          }
+  //      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  //  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  //  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
+  //  const IntTab& e_f = domaine.elem_faces();
+  //  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  //  int i, j, k, l, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = inco.line_size();
+  //  double fac;
+  //
+  //  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
+  //  update_nu(), update_delta();
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
+  //
+  //  /* operateur : divergence pour les lignes aux elements, continuite pour les lignes aux faces */
+  //  DoubleTrav nu_ef(e_f.dimension(1), N), mff(N), mfe(N), mee(N);
+  //  for (e = 0; e < ne_tot; e++)
+  //    {
+  //      int n_f = domaine.m2d(e + 1) - domaine.m2d(e); //nombre de faces de l'element e
+  //      for (remplir_nu_ef(e, nu_ef), mee = 0, i = 0; i < n_f; i++, mee += mfe)
+  //        {
+  //          for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
+  //            {
+  //              for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++)
+  //                mff(n) = fac * nu_ef(domaine.w2j(j), n);
+  //              for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && ch.fcl()(fb, 0) < 6 && n < N; n++)
+  //                matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
+  //              for (n = 0; e < domaine.nb_elem() && ch.fcl()(fb, 0) < 6 && n < N; n++)
+  //                matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
+  //
+  //              //correction non lineaire : partie "faces/faces"
+  //              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && f < domaine.nb_faces() && n < N; n++)
+  //                for (k = 0, fac = std::max(delta_f(f, n), delta_f(fb, n)); k < 2; k++)
+  //                  matrice(N * (ne_tot + f) + n, N * (ne_tot + (k ? fb : f)) + n) += (k ? -1 : 1) * fac;
+  //            }
+  //          for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && n < N; n++)
+  //            matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
+  //
+  //          //Echange_impose_base
+  //          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
+  //            for (n = 0; n < N; n++)
+  //              matrice(N * (ne_tot + f) + n, N * (ch.fcl()(f, 0) == 1 ? ne_tot + f : e) + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n);
+  //          else if (ch.fcl()(f, 0) == 3 && f < domaine.nb_faces()) //paroi_contact gere en monolithique -> ajout du coeff a la face issu de l'autre cote
+  //            {
+  //              const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[ch.fcl()(f, 1)].valeur());
+  //              for (j = ch.fcl()(f, 2), n = 0; n < N; n++)
+  //                matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += cl.coeff(j, 0, n); //coeff de la face elle-meme
+  //              for (k = 0; stab_ && k < cl.item.dimension(1) && cl.item(j, k) >= 0; k++)
+  //                for (n = 0; n < N; n++) //correction non lineaire
+  //                  matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += std::max(delta_f(f, n), cl.delta(j, k, n));
+  //            }
+  //
+  //          //correction non lineaire : parties "elements/faces" et "faces/elements"
+  //          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
+  //            {
+  //              double corr = std::max(delta_e(e, n), delta_f(f, n));
+  //              for (k = 0; k < 2; k++)
+  //                for (l = 0; (k ? (f < domaine.nb_faces()) : (e < domaine.nb_elem())) && l < 2; l++)
+  //                  matrice(N * (k ? ne_tot + f : e) + n, N * (l ? ne_tot + f : e) + n) += (k == l ? 1 : -1) * corr;
+  //            }
+  //        }
+  //      for (n = 0; e < domaine.nb_elem() && n < N; n++)
+  //        matrice(N * e + n, N * e + n) += mee(n);
+  //    }
+}
+
+void Op_Diff_DG_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
+{
+  // TODO pour problemes croises
+
+  //  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  //  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  //  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
+  //  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
+  //
+  //  IntTab stencil(0, 2);
+  //
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      {
+  //        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
+  //        if (cl.nom_autre_pb() != autre_pb.le_nom())
+  //          continue; //not our problem
+  //
+  //        /* stencil */
+  //        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+  //        for (j = 0; j < cl.item.dimension(0); j++)
+  //          for (k = 0, f = fvf.num_face(j); k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
+  //            for (n = 0; n < N; n++)
+  //              stencil.append_line(N * (ne_tot + f) + n, N * l + n);
+  //      }
+  //
+  //  tableau_trier_retirer_doublons(stencil);
+  //  Matrix_tools::allocate_morse_matrix(nl, nc, stencil, matrice);
+}
+
+void Op_Diff_DG_Elem::ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const
+{
+  throw;
+  // TODO idem above
+  //  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  //  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  //  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
+  //  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
+  //
+  //  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
+  //  update_nu(), update_delta();
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
+  //
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      {
+  //        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
+  //        if (cl.nom_autre_pb() != autre_pb.le_nom())
+  //          continue; //not our problem
+  //        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+  //        for (j = 0; j < fvf.nb_faces(); j++)
+  //          {
+  //            f = fvf.num_face(j);
+  //            for (n = 0; n < N; n++)
+  //              resu(ne_tot + f, n) -= cl.coeff(j, 0, n) * inco(ne_tot + f, n); //terme de la face elle-meme
+  //            for (k = 0; k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
+  //              for (n = 0; n < N; n++)
+  //                {
+  //                  //operateur
+  //                  resu(ne_tot + f, n) -= cl.coeff(j, k + 1, n) * autre_inco(l, n);
+  //                  //correction non lineaire
+  //                  if (stab_)
+  //                    resu(ne_tot + f, n) -= std::max(delta_f(f, n), cl.delta(j, k, n)) * (inco(ne_tot + f, n) - autre_inco(l, n));
+  //                }
+  //          }
+  //      }
+}
+
+void Op_Diff_DG_Elem::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
+{
+  // TODO idem above
+  throw;
+  //  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  //  const Domaine_DG& domaine = le_dom_dg_.valeur();
+  //  const Conds_lim& cls = la_zcl_dg_->les_conditions_limites();
+  //  int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
+  //
+  //  //prerequis : nu, delta en interne + coeffs/delta dans les CL Echange_contact
+  //  update_nu(), update_delta();
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      ref_cast_non_const(Echange_contact_DG, cls[i].valeur()).update_coeffs(), ref_cast(Echange_contact_DG, cls[i].valeur()).update_delta();
+  //
+  //  for (i = 0; i < cls.size(); i++)
+  //    if (sub_type(Echange_contact_DG, cls[i].valeur()))
+  //      {
+  //        const Echange_contact_DG& cl = ref_cast(Echange_contact_DG, cls[i].valeur());
+  //        if (cl.nom_autre_pb() != autre_pb.le_nom())
+  //          continue; //not our problem
+  //        const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
+  //        for (j = 0; j < fvf.nb_faces(); j++) //on peut remplir tous les coeffs, sauf celui de la face elle-meme (rempli par contribuer_a_avec)
+  //          for (k = 0, f = fvf.num_face(j); k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++)
+  //            for (n = 0; n < N; n++)
+  //              matrice(N * (ne_tot + f) + n, N * l + n) += cl.coeff(j, k + 1, n) - (stab_ ? std::max(delta_f(f, n), cl.delta(j, k, n)) : 0); //operateur + correction non lineaire
+  //      }
 }
