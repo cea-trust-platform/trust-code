@@ -68,8 +68,11 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
-  // Remplissage de faces_entrelaces_Cl_ qui contient les faces de bord non Dirichlet et les faces internes non std pour lequelles on utilise le volumes_entrelaces_Cl
-  // Ce tableau temporaire a ete cree pour fusionner plusieurs kernels Kokkos en un seul
+  // Remplissage de faces_entrelaces_Cl_ qui contient les faces
+  // de bord non Dirichlet et les faces internes non std pour
+  // lequelles on utilise le volumes_entrelaces_Cl
+  // Ce tableau temporaire a ete cree pour fusionner plusieurs
+  // kernels Kokkos en un seul
   if (faces_entrelaces_Cl_.size_array()==0)
     {
       faces_entrelaces_Cl_.resize(domaine_VEF.premiere_face_std());
@@ -97,50 +100,43 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
       faces_entrelaces_Cl_.resize(ind_face+1);
     }
 
-  double dt_stab =1.e30;
+  double dt_stab = 1.e30;
   CIntArrView faces_entrelaces_Cl = faces_entrelaces_Cl_.view_ro();
   CDoubleArrView fluent = fluent_.view_ro();
   CDoubleArrView volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl().view_ro();
   start_gpu_timer(__KERNEL_NAME__);
   Kokkos::parallel_reduce(__KERNEL_NAME__,
-                          Kokkos::RangePolicy<>(0, faces_entrelaces_Cl_.size_array()), KOKKOS_LAMBDA(
-                            const int ind_face, double& dtstab)
+                          range_1D(0, faces_entrelaces_Cl_.size_array()),
+                          KOKKOS_LAMBDA(const int ind_face, double& dtstab)
   {
     int num_face = faces_entrelaces_Cl(ind_face);
-    double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
+    double dt_face = volumes_entrelaces_Cl(num_face)/(fluent(num_face)+DMINFLOAT);
     if (dt_face < dtstab) dtstab = dt_face;
   }, Kokkos::Min<double>(dt_stab));
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   // On traite les faces internes standard
-  // ToDo Kokkos
-  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   int ndeb = domaine_VEF.premiere_face_std();
   int nfin = domaine_VEF.nb_faces();
 
-  bool kernelOnDevice = fluent_.checkDataOnDevice();
-  const double* fluent_addr = mapToDevice(fluent_, "", kernelOnDevice);
-  const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
-  // ToDo bug nvc++ compiler recent bouh
-  start_gpu_timer();
-  if (kernelOnDevice)
-    {
-      #pragma omp target teams distribute parallel for reduction(min:dt_stab)
-      for (int num_face = ndeb; num_face < nfin; num_face++)
-        {
-          double dt_face = volumes_entrelaces_addr[num_face] / (fluent_addr[num_face] + DMINFLOAT);
-          dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
-        }
-    }
-  else
-    {
-      for (int num_face = ndeb; num_face < nfin; num_face++)
-        {
-          double dt_face = volumes_entrelaces_addr[num_face] / (fluent_addr[num_face] + DMINFLOAT);
-          dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
-        }
-    }
-  end_gpu_timer(kernelOnDevice, "Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
+  const DoubleVect& tab_volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  CDoubleArrView volumes_entrelaces = tab_volumes_entrelaces.view_ro();
+  // Nécessaire car Kokkos::parallel_reduce() réécrit dt_stab avec le
+  // résultat de la réduction quelle que soit la valeur de départ (en
+  // particulier, celle d'une réduction précédente, comme ici).
+  double dt_stab_2 = dt_stab;
+  Kokkos::parallel_reduce(
+    start_gpu_timer(__KERNEL_NAME__),
+    range_1D(ndeb, nfin),
+    KOKKOS_LAMBDA(const int num_face, double& dtstab)
+  {
+    double dt_face = volumes_entrelaces(num_face) / (fluent(num_face) + DMINFLOAT);
+    if (dt_face < dtstab) dtstab = dt_face;
+  }, Kokkos::Min<double>(dt_stab_2));
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  if (dt_stab_2 < dt_stab) dt_stab = dt_stab_2;
+
+  // Min sur l'ensemble des processeurs
   dt_stab = Process::mp_min(dt_stab);
   // astuce pour contourner le type const de la methode
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);
