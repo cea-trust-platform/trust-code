@@ -280,16 +280,18 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                     abort(); //cas non geres
                   const Echange_contact_PolyMAC_P0P1NC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[fcl[0](f, 1)].valeur()) : nullptr;
                   int o_p = ech ? ech->o_idx : -1, o_s = ech ? ech->s_dist[s] : -1, k1, k2, wall = corr[0]->T_at_wall();
-                  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-                  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
-                                   &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+                  const Probleme_base& pbm = equation().probleme();
+                  const DoubleTab* alpha = sub_type(Pb_Multiphase, pbm) ? &ref_cast(Pb_Multiphase, pbm).equation_masse().inconnue().passe() : nullptr, &dh = pbm.milieu().diametre_hydraulique_elem(),
+                                   &press = ref_cast(Navier_Stokes_std, pbm.equation(0)).pression().passe(), &vit = pbm.equation(0).inconnue().passe(),
                                     &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                                      &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+                  const int Clambda = lambda.dimension(0) == 1, Cmu = mu.dimension(0) == 1, Crho = rho.dimension(0) == 1, Ccp = Cp.dimension(0) == 1;
+
                   Flux_parietal_base::input_t in;
                   Flux_parietal_base::output_t out;
                   DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
-                  in.N = N[0], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = wall ? &v_aux[0](s, 0) : &inco[0](e, 0), in.p = press(e), in.v = nv.addr();
-                  in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                  in.N = N[0], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = alpha ? &(*alpha)(e, 0) : nullptr, in.T = wall ? &v_aux[0](s, 0) : &inco[0](e, 0), in.p = press(e), in.v = nv.addr();
+                  in.lambda = &lambda(!Clambda * e, 0), in.mu = &mu(!Cmu * e, 0), in.rho = &rho(!Crho * e, 0), in.Cp = &Cp(!Ccp * e, 0);
                   in.Tp = ech ? v_aux[o_p](o_s, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
                   out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi;
                   for (d = 0; d < D; d++)
@@ -318,11 +320,13 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                   int o_p = ech.o_idx, o_f = ech.f_dist(fcl[0](f, 2)), o_e = f_e[o_p](o_f, 0), o_s = ech.s_dist[s], k1, k2; //autre pb/face/elem
                   if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
                     {
-                      const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
-                      const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
-                                       &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
+                      const Probleme_base& pbm = op_ext[o_p]->equation().probleme();
+                      const DoubleTab* alpha = sub_type(Pb_Multiphase, pbm) ? &ref_cast(Pb_Multiphase, pbm).equation_masse().inconnue().passe() : nullptr, &dh = pbm.milieu().diametre_hydraulique_elem(),
+                                       &press = ref_cast(Navier_Stokes_std, pbm.equation(0)).pression().passe(), &vit = pbm.equation(0).inconnue().passe(),
                                         &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                                          &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+                      const int Clambda = lambda.dimension(0) == 1, Cmu = mu.dimension(0) == 1, Crho = rho.dimension(0) == 1, Ccp = Cp.dimension(0) == 1;
+
                       DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), nv(N[o_p]);
                       for (d = 0; d < D; d++)
                         for (n = 0; n < N[o_p]; n++)
@@ -331,8 +335,8 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                       Flux_parietal_base::input_t in;
                       Flux_parietal_base::output_t out;
                       int wall = corr[o_p]->T_at_wall();
-                      in.N = N[o_p], in.f = o_f, in.D_h = dh(o_e), in.D_ch = dh(o_e), in.alpha = &alpha(o_e, 0), in.T = wall ? &v_aux[o_p](o_s, 0) : &inco[o_p](o_e, 0), in.p = press(o_e), in.v = nv.addr();
-                      in.Tp = v_aux[0](s, 0), in.lambda = &lambda(o_e, 0), in.mu = &mu(o_e, 0), in.rho = &rho(o_e, 0), in.Cp = &Cp(o_e, 0);
+                      in.N = N[o_p], in.f = o_f, in.D_h = dh(o_e), in.D_ch = dh(o_e), in.alpha = alpha ? &(*alpha)(o_e, 0) : nullptr, in.T = wall ? &v_aux[o_p](o_s, 0) : &inco[o_p](o_e, 0), in.p = press(o_e), in.v = nv.addr();
+                      in.Tp = v_aux[0](s, 0), in.lambda = &lambda(!Clambda * o_e, 0), in.mu = &mu(!Cmu * o_e, 0), in.rho = &rho(!Crho * o_e, 0), in.Cp = &Cp(!Ccp * o_e, 0);
                       out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi, out.nonlinear = &j;
                       //appel : on n'est implicite qu'en les temperatures
                       corr[o_p]->qp(in, out);
