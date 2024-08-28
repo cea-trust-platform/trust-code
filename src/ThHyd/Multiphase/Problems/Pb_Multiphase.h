@@ -79,7 +79,6 @@ protected:
   QDM_Multiphase eq_qdm_;
   Energie_Multiphase eq_energie_;
   Masse_Multiphase eq_masse_;
-  LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)
 };
 
 #endif /* Pb_Multiphase_included */

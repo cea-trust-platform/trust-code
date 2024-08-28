@@ -94,25 +94,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
       is >> getset_equation_by_name(mot);
     }
 
-  /* lecture d'equations optionnelles */
-  Noms noms_eq, noms_eq_maj; //noms de toutes les equations possibles!
-  Type_info::les_sous_types(Nom("Equation_base"), noms_eq);
-  for (auto &itr : noms_eq)
-    noms_eq_maj.add(Motcle(itr)); //ha ha ha
-  for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
-    {
-      eq_opt_.add(OWN_PTR(Equation_base)()); //une autre equation optionelle
-      eq_opt_.dernier().typer(mot); //on lui donne le bon type
-      Equation_base& eq = eq_opt_.dernier().valeur();
-      //memes associations que pour les autres equations : probleme, milieu, schema en temps
-      eq.associer_pb_base(*this);
-      eq.associer_milieu_base(milieu());
-      eq.associer_sch_tps_base(le_schema_en_temps_);
-      eq.associer_domaine_dis(domaine_dis());
-      eq.discretiser(); //a faire avant de lire l'equation
-      is >> eq; //et c'est parti!
-      eq.associer_milieu_equation(); //remontee vers le milieu
-    }
+  read_optional_equations(is, mot);
   return is;
 }
 
