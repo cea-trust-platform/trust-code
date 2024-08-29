@@ -172,18 +172,22 @@ public:
     Nom type, base;
 
     if (strcmp(msg, "??") != 0)
-      Cerr << msg << finl;
+      Cerr << msg << " ";
 
     if (strcmp(b, "??") != 0)
       base = b;
 
-    is >> type;
+    is >> type; // On lit le type :-)
 
     if (base != "??")
       type = base + type;
 
     typer(type); // on type :-)
-    is >> valeur(); // et on lit :-)
+
+    if (strcmp(msg, "??") != 0)
+      Cerr << valeur().que_suis_je() << finl;
+
+    is >> valeur(); // et on lit la classe :-)
 
     return is;
   }
