@@ -12,58 +12,29 @@
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************/
-#ifndef Quadrature_included
-#define Quadrature_included
+#ifndef Quadrature_Ord1_Triangle_included
+#define Quadrature_Ord1_Triangle_included
 
-#include <TRUSTTabs_forward.h>
-#include <Parser_U.h>
-#include <Domaine_DG.h>
+#include <Quadrature.h>
 
-class Quadrature
+class Quadrature_Ord1_Triangle : public Quadrature
 {
 public:
-  Quadrature(Domaine_DG dom) : dom_(dom)
-  { }
-  virtual ~Quadrature() {}
+  Quadrature_Ord1_Triangle(Domaine_DG dom) : Quadrature(dom)
+  {
+    compute_integ_points();
+    compute_integ_points_on_facet();
+  }
 
-  void register_quadrature();
-  DoubleTab get_integ_points();
-  DoubleTab get_integ_points_on_facet();
+  int order() override { return 1; }
 
-  virtual void compute_integ_points() = 0;
-  virtual void compute_integ_points_on_facet() = 0;
-  virtual int order() = 0;
-
-  /*! Compute the integral of a function on the whole domain
+  /*! Compute for the whole domain the exact location of integration points per element
    */
-  double compute_integral(Parser_U& parser) const;
-  /*! Compute the integral of a function on the whole domain with its values on integration points
-   */
-  double compute_integral(DoubleTab& vals_pts_integ) const;
-  /*! Compute the integral of a function on one triangle
-   */
-  double compute_integral_on_elem(int num_elem, Parser_U& parser) const ;
+  void compute_integ_points() override;
 
-  /*! Compute the integral of a function on one triangle with its value on integration points
+  /*! Compute for the whole domain the exact location of integration points per facet
    */
-  double compute_integral_on_elem(int num_elem, DoubleTab& val_pts_integ) const ;
-
-  /*! Compute the integral of a function on one facet
-   */
-  double compute_integral_on_facet(int num_facet, Parser_U& parser) const ;
-  /*! Compute the integral of a function on one facet with its value on integration points
-   */
-  double compute_integral_on_facet(int num_facet, DoubleTab& val_pts_integ) const ;
-
-protected:
-  REF(Domaine_DG)
-  dom_;
-  Parser_U parser_; // why not?
-
-  DoubleTab integ_points_; // number of cols (line size) will vary according to order of the method and element type
-  DoubleTab integ_points_facet_;
-  DoubleTab weights_;
-  DoubleTab weights_facets_;
+  void compute_integ_points_on_facet() override;
 };
 
 #endif

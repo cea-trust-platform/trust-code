@@ -19,6 +19,8 @@
 
 #include <Domaine_Poly_base.h>
 
+class Quadrature;
+
 class Domaine_DG : public Domaine_Poly_base
 {
   Declare_instanciable(Domaine_DG);
@@ -28,12 +30,16 @@ public :
 
   void calculer_h_carre();
 
+  void set_quadrature(int order, const Quadrature* quad);
+  const Quadrature& get_quadrature(int order) const;
+
 private:
 
   DoubleTabs dof_elem_; // table of the degree of freedom for each unknown (velocity, pressure, temperature) within each cell
 
-  void remplir_elem_faces() override;
+  std::map<int, const Quadrature*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
 
+  void remplir_elem_faces() override;
 };
 
 

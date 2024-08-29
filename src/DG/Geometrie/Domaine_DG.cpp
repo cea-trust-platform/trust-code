@@ -22,6 +22,7 @@
 #include <TRUSTLists.h>
 #include <TRUSTList.h>
 #include <Domaine.h>
+#include <Quadrature.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
 
@@ -151,3 +152,15 @@ void Domaine_DG::modifier_pour_Cl(const Conds_lim& conds_lim)
   //		      afin de pouvoir beneficier de conds_lim.
   Domaine_VF::marquer_faces_double_contrib(conds_lim);
 }
+
+void Domaine_DG::set_quadrature(int order, const Quadrature* quad)
+{
+  assert(quad_map_.count(order) == 0); // fail if a quadrature is already registered for this order
+  quad_map_[order] = quad;
+}
+
+const Quadrature& Domaine_DG::get_quadrature(int order) const
+{
+  return *quad_map_.at(order);
+}
+
