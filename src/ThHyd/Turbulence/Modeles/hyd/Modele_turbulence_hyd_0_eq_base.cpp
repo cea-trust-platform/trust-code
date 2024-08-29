@@ -137,7 +137,6 @@ void Modele_turbulence_hyd_0_eq_base::completer()
       int nb_case_tempo = 1;
       double temps = mon_equation_->schema_temps().temps_courant();
       dis.discretiser_champ("CHAMP_ELEM", mon_equation_->domaine_dis().valeur(), scalaire, noms, unit, 2, nb_case_tempo, temps, K_eps_sortie_);
-      K_eps_sortie_.nommer("K_eps_from_nut");
       K_eps_sortie_->nommer("K_eps_from_nut");
       K_eps_sortie_->fixer_unites(unit);
       K_eps_sortie_->fixer_noms_compo(noms);

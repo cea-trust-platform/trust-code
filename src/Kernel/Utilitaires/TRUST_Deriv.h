@@ -88,6 +88,11 @@ protected:
 private:
   _CLASSE_ *pointeur_ = nullptr;
 
+  /* XXX Elie Saikali : interdit de l'appeler ! */
+  void nommer(const Nom&) override { /* NON PAS POSSIBLE */ }
+  int reprendre(Entree&) override { return -100; /* NON PAS POSSIBLE */ }
+  int sauvegarder(Sortie&) const override { return -100; /* NON PAS POSSIBLE */ }
+
 public:
   ~TRUST_Deriv() { detach(); }
   TRUST_Deriv() :  Objet_U_ptr(), pointeur_(nullptr) { }

@@ -83,6 +83,11 @@ public:
   virtual const Nom& le_nom() const;
   static double precision_geom;
 
+  virtual void       nommer(const Nom&);
+  virtual int    reprendre(Entree& ) ;
+  virtual int    sauvegarder(Sortie& ) const;
+
+
 #ifndef LATATOOLS            // All the below is not needed in lata_tools:
   int        get_object_id() const;
 
@@ -102,15 +107,12 @@ public:
   static const Type_info*  info();
 
   const Nom&         que_suis_je() const;
-  virtual void       nommer(const Nom&);
   const char*        le_type() const;
 
   friend int     operator ==(const Objet_U&, const Objet_U&);
   friend int     operator !=(const Objet_U&, const Objet_U&);
   virtual int    change_num(const int* const );
   virtual int lire_motcle_non_standard(const Motcle& motlu, Entree& is);
-  virtual int    reprendre(Entree& ) ;
-  virtual int    sauvegarder(Sortie& ) const;
   virtual int    associer_(Objet_U&) ;
   const Interprete& interprete() const;
   Interprete& interprete();

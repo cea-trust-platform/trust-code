@@ -120,30 +120,6 @@ int Objet_U::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
   return -1;
 }
 
-/*! @brief Reprise d'un Objet_U sur un flot d'entree Methode a surcharger
- *
- * @param (Entree&) flot d'entree a utiliser pour la reprise
- * @return (int) code de retour
- */
-int Objet_U::reprendre(Entree&)
-{
-  Cerr << "The method " << __func__ << " must be overloaded in " << que_suis_je() << " !!!!" << finl;
-  Process::exit();
-  return 1;
-}
-
-/*! @brief Sauvegarde d'un Objet_U sur un flot de sortie Methode a surcharger
- *
- * @param (Sortie&) flot de sortie a utiliser pour la sauvegarde
- * @return (int) code de retour
- */
-int Objet_U::sauvegarder(Sortie& ) const
-{
-  Cerr << "The method " << __func__ << " must be overloaded in " << que_suis_je() << " !!!!" << finl;
-  Process::exit();
-  return 0;
-}
-
 /*! @brief Donne des informations sur le type de l'Objet_U
  *
  * @return (const Type_info*) structure regroupant les informations sur le type de l'Objet_U
@@ -243,15 +219,6 @@ const Interprete& Objet_U::interprete() const
 Interprete& Objet_U::interprete()
 {
   return interprete_bidon();
-}
-
-
-/*! @brief Donne un nom a l'Objet_U Methode virtuelle a surcharger
- *
- * @param (const Nom&) le nom a affectuer a l'Objet_U
- */
-void Objet_U::nommer(const Nom&)
-{
 }
 
 /*! @brief retourne x.
@@ -354,4 +321,40 @@ const Nom& Objet_U::le_nom() const
 {
   static Nom inconnu="neant";
   return inconnu;
+}
+
+/*! @brief Donne un nom a l'Objet_U Methode virtuelle a surcharger
+ *
+ * @param (const Nom&) le nom a affectuer a l'Objet_U
+ */
+void Objet_U::nommer(const Nom&)
+{
+}
+
+/*! @brief Reprise d'un Objet_U sur un flot d'entree Methode a surcharger
+ *
+ * @param (Entree&) flot d'entree a utiliser pour la reprise
+ * @return (int) code de retour
+ */
+int Objet_U::reprendre(Entree&)
+{
+#ifndef LATATOOLS
+  Cerr << "The method " << __func__ << " must be overloaded in " << que_suis_je() << " !!!!" << finl;
+  Process::exit();
+#endif
+  return 1;
+}
+
+/*! @brief Sauvegarde d'un Objet_U sur un flot de sortie Methode a surcharger
+ *
+ * @param (Sortie&) flot de sortie a utiliser pour la sauvegarde
+ * @return (int) code de retour
+ */
+int Objet_U::sauvegarder(Sortie& ) const
+{
+#ifndef LATATOOLS
+  Cerr << "The method " << __func__ << " must be overloaded in " << que_suis_je() << " !!!!" << finl;
+  Process::exit();
+#endif
+  return 0;
 }

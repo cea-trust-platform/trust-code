@@ -59,7 +59,7 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
 
   int bytes = 0;
   for (const auto &itr : *this)
-    bytes += itr.sauvegarder(os);
+    bytes += itr->sauvegarder(os);
 
   if (a_faire) os.flush();
   return bytes;

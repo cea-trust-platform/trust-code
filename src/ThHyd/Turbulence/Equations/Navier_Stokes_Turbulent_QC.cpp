@@ -73,7 +73,6 @@ void Navier_Stokes_Turbulent_QC::discretiser()
   Navier_Stokes_Turbulent::discretiser();
   const Discret_Thyd& dis = ref_cast(Discret_Thyd, discretisation());
   dis.vitesse(schema_temps(), domaine_dis(), rho_la_vitesse_);
-  rho_la_vitesse_.nommer("rho_u");
   rho_la_vitesse_->nommer("rho_u");
 }
 
