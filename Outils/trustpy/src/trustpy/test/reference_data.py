@@ -16,13 +16,13 @@ def buildCurlyExpec(mod, bidon=True):
 
   """
   if bidon:
-    LM = mod.read_med_bidon_Tru
+    LM = mod.Read_med_bidon
   else:
-    LM = mod.read_med_Tru
-  BC = mod.BaseChaine_Tru
+    LM = mod.Read_med
+  BC = mod.Base_chaine
   exp = LM()
   exp.mesh, exp.file = "ze_mesh_name", "a/complicated/path/to.med"
-  exp.exclude_groups = mod.ListOfChaine_Tru()
+  exp.exclude_groups = mod.List_chaine()
   exp.exclude_groups.extend([BC("toto"), BC("titi")])
   exp.convertalltopoly = True
   return exp

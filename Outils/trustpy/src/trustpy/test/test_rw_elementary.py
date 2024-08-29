@@ -8,6 +8,7 @@ import unittest
 from reference_data import *
 import trustpy.base as BTRU
 import trustpy.misc_utilities as mutil
+from trustpy.misc_utilities import ClassFactory
 from trustpy.trust_parser import TRUSTParser, TRUSTStream, TRUSTEndOfStreamException
 
 verbose = False
@@ -36,9 +37,10 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     tp = TRUSTParser()
     tp.tokenize(data_ex)
     stream = TRUSTStream(tp)
-    mutil.log_debug("Token list: %s" % stream.tokLow)
+    mutil.log_debug("Token list (original)    : %s" % stream.tok)
+    mutil.log_debug("Token list (low stripped): %s" % stream.tokLow)
     mutil.log_debug("Token list has %d items" % len(stream))
-    ze_cls = self.getClassFromName(cls_nam)
+    ze_cls = ClassFactory.GetClassFromName(cls_nam)
     return stream, ze_cls.ReadFromTokens(stream)
 
   def generic_test(self, data_ex_orig, simplify=True):
@@ -65,20 +67,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
     # Mimick (in a minimal fashion) what is done in DataSet.ReadFromTokens():
     cls_nam = stream.probeNextLow()
-    ze_cls = self.getClassFromName(mutil.change_class_name(cls_nam))
+    ze_cls = ClassFactory.GetClassFromName(cls_nam)
 
     val = ze_cls.ReadFromTokens(stream)
     return stream, val
 
   #########################################################
-
-  def test_simple_nom(self):
-    data_ex = """
-      # with many comments
-        before
-      #
-      toto"""
-    stream, inst = self.string_test("nom", data_ex, simplify=False)
 
   def test_simple_str(self):
     """ Test parsing simple string """
@@ -88,13 +82,13 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       #
       toto"""
     stream, inst = self.string_test("chaine", data_ex, simplify=False)
-    BC = self.mod.chaine
+    BC = self.mod.Chaine
     expec = BC("toto")
     self.assertEqual(expec, inst)
     self.assertTrue(stream.eof())
     # Test writing out
     res = ''.join(inst.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(res, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
     # Test parsing quotes
     data_ex = """ system "rm -rf */toto.lml.gz" one two"""
     tp = TRUSTParser()
@@ -113,7 +107,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     self.assertTrue(stream.eof())
     # Test writing out
     res = ''.join(inst.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(res, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
     # Misformatted '{' should fail:
     data_ex = "} toto }"
     # stream, inst = self.string_test("chaine", data_ex, simplify=False)
@@ -125,24 +119,37 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
   def test_eof(self):
     """ Test EOF functionnality """
     data_ex = """ # with comment #   toto      """
-    stream, _ = self.string_test("BaseChaine", data_ex, simplify=False)
+    stream, _ = self.string_test("chaine", data_ex, simplify=False)
     self.assertTrue(stream.eof())
 
   def test_float_lst(self):
     """ Test parsing simple float list """
-    # Correct list
-    data_ex = "3 48.5 89.2 18"
-    stream, inst = self.string_test("list", data_ex)
     mod = self._TRUG[0]
-    LT, BF = self.mod.list, self.mod.BaseFloattant
+
+    # Simple float first
+    data_ex = """# comment #
+35.6"""
+    stream, inst = self.string_test("base_float", data_ex, simplify=False)
+    BF = self.mod.Base_float
+    expec = BF(35.6)
+    self.assertTrue(expec == inst)
+    self.assertTrue(stream.eof())
+    # Test writing out:
+    res = ''.join(inst.toDatasetTokens())
+    self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+
+    # List of floats now:
+    data_ex = "3 48.5 89.2 18"
+    stream, inst = self.string_test("list_float", data_ex)
+    LT, BF = self.mod.List_float, self.mod.Base_float
     expec = LT()
     expec.extend([BF(48.5), BF(89.2), BF(18.0)])
-    self.assertTrue(expec.equal(inst))
+    self.assertTrue(expec == inst)
     self.assertTrue(stream.eof())
 
     # Test writing out:
     res = ''.join(inst.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(res, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
 
     # Changing value on the model side should change output, and not reproduce initial tokens!!
     inst[1] = BF(39.3)
@@ -157,8 +164,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     # Same thing stressing parser:
     data_ex = """3   48.5
      89.2 # comment inside #  18"""
-    stream, inst = self.string_test("list", data_ex, simplify=False)  # warning: no simplification here
-    self.assertTrue(expec.equal(inst))
+    stream, inst = self.string_test("list_float", data_ex, simplify=False)  # warning: no simplification here
+    LT, BF = self.mod.List_float, self.mod.Base_float
+    expec = LT()
+    expec.extend([BF(48.5), BF(89.2), BF(18.0)])
+
+    self.assertTrue(expec == inst)
     self.assertTrue(stream.eof())
     s = ''.join(inst.toDatasetTokens())
     self.assertEqual(s, data_ex)
@@ -178,10 +189,10 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     # Ill formed lists
     data_ex = "3 48.5 89.2"
     #offset, inst = self.string_test("list", data_ex)
-    self.assertRaises(TRUSTEndOfStreamException, self.string_test, "list", data_ex)
+    self.assertRaises(TRUSTEndOfStreamException, self.string_test, "list_float", data_ex)
     data_ex = "3 48.5 89.2 sfsf"
     #offset, inst = self.string_test("list", data_ex)
-    self.assertRaises(ValueError, self.string_test, "list", data_ex)
+    self.assertRaises(ValueError, self.string_test, "list_float", data_ex)
 
   def test_curly_br(self):
     """ Test parsing and loading of a minimal TRUST dataset using curly braces """
@@ -196,13 +207,13 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       }"""
     for simplify in [True, False]:
       stream, res = self.generic_test(data_ex, simplify=simplify)
-      exp = buildCurlyExpec(mod)
-      self.assertTrue(exp.equal(res))
+      exp = buildCurlyExpec(self._TRUG[0])
+      self.assertTrue(exp == res)
       self.assertTrue(stream.eof())
       if not simplify:
         # Testing writing out
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     # Modifying data should change output!!
     res.convertalltopoly = False
@@ -216,7 +227,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          file new/file.med
          exclude_groups 2 toto titi
       }"""
-    self.assertTrue(self.check_str_equality(s, new_s).ok)
+    self.assertTrue(mutil.check_str_equality(s, new_s).ok)
 
     # Ill-formed dataset - missing brace
     data_ex = """
@@ -250,7 +261,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     self.assertTrue(stream.eof())
     # Test writing out:
     s = ''.join(res.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(s, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     data_ex += " toto"  # should still parse, 'toto' being the next keyword in the stream
     stream, res = self.generic_test(data_ex, simplify=False)
@@ -281,7 +292,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     self.assertTrue(stream.eof())
     # Test writing out:
     s = ''.join(res.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(s, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
   def test_synonyms(self):
     """ Test synonyms """
@@ -302,7 +313,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
   def test_no_curly_br(self):
     """ Testing keywords with no curly braces """
@@ -318,7 +329,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     self.assertTrue(stream.eof())
     # Test writing out:
     s = ''.join(res.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(s, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     # The below should parse - 'toto' can be considered the next keyword in the stream
     data_ex2 = data_ex + " toto "
@@ -343,7 +354,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     # Same story with next keyword:
     data_ex2 = data_ex + " toto "
@@ -387,7 +398,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
   def test_adding_attr(self):
     """ Testing adding an attribute to a keyword and checking output ok """
@@ -419,7 +430,7 @@ no_family_names_from_group_names
       }"""  # Yes I know this is poorly indented ...
     # Test writing out:
     s = ''.join(res.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(s, data_expected).ok)
+    self.assertTrue(mutil.check_str_equality(s, data_expected).ok)
 
   def test_inheritance(self):
     """ Testing inheritance - gravite expects a 'field_base' of which 'champ_uniform' is a child 
@@ -443,7 +454,7 @@ no_family_names_from_group_names
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     # Changing inherited attribute should change output:
     FB = self.mod.field_base
@@ -453,7 +464,7 @@ no_family_names_from_group_names
       coucou {
         gravite field_base
       }"""
-    self.assertTrue(self.check_str_equality(s, new_s).ok)
+    self.assertTrue(mutil.check_str_equality(s, new_s).ok)
 
     # Wrong inheritance should raise:
     data_ex = """
@@ -491,7 +502,8 @@ no_family_names_from_group_names
         data_ex_mod = data_ex
       tp.tokenize(data_ex_mod)
       stream = TRUSTStream(tp)
-      mutil.log_debug("Token list: %s" % stream.tokLow)
+      mutil.log_debug("Token list (original)           : %s" % stream.tok)
+      mutil.log_debug("Token list (lower case stripped): %s" % stream.tokLow)
       mutil.log_debug("Token list has %d items" % len(stream))
       res = tds_cls.ReadFromTokens(stream)
       self.assertEqual(len(res), 4)
@@ -504,7 +516,7 @@ no_family_names_from_group_names
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
   def test_forward_decl2(self):
     """ Forward declaration test. 
@@ -529,7 +541,7 @@ no_family_names_from_group_names
     self.assertTrue(res[1].equal(f))
     # Test writing out:
     s = ''.join(res.toDatasetTokens())
-    self.assertTrue(self.check_str_equality(s, data_ex).ok)
+    self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
     # Invalid datasets
     #    Misformatted fwd decl:
@@ -588,7 +600,7 @@ no_family_names_from_group_names
       if not simplify:
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(self.check_str_equality(s, data_ex).ok)
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
 if __name__ == '__main__':
   verbose = True  # verbose if in main

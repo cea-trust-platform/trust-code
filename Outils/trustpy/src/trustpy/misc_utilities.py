@@ -96,14 +96,17 @@ def prune_after_end(data_ex):
       stream.dropTail(len(stream) - j - 1)
   return ''.join(stream.tok)
 
+class BoolWithMsg:
+  def __init__(self, ok, why=""):
+    self.ok = ok
+    self.why = why
+
 def check_str_equality(s1, s2, print_on_diff=True):
   """
   Check equality between two (long) strings (with line returns) and produce a diff (as Linux 'diff') if not equal.
   @return a CheckBaseXyz object which has 'check.ok' attribute (boolean), and 'check.why' (string) as diff string. 
   """
-  raise NotImplementedError # TODO
   import difflib as DIFF
-  from xyzpy.baseXyz import CheckBaseXyz
   s1, s2 = str(s1), str(s2)
   if s1 != s2:
     why = ""
@@ -115,19 +118,47 @@ def check_str_equality(s1, s2, print_on_diff=True):
     why = "Diff between the two strings:\n%s" % res
     if print_on_diff:
       print("")
-      TRUU.log_error(why)
-    return CheckBaseXyz(False, why)
-  return CheckBaseXyz(True, "Strings are equal")
+      log_error(why)
+    return BoolWithMsg(False, why)
+  return BoolWithMsg(True, "Strings are equal")
 
 
 def change_class_name(s):
     return s.capitalize()
 
 ##################################################################
+## Class factory to register and get back all generated classes
+##################################################################
+class ClassFactory:
+  _ALL_CLASSES = {}
+
+  @classmethod
+  def RegisterClass(cls, cls_nam, cls_obj):
+    if cls_nam not in cls._ALL_CLASSES:
+      cls._ALL_CLASSES[cls_nam] = cls_obj
+
+  @classmethod
+  def GetClassFromName(cls, cls_nam):
+    """ Factory method. From a string (cls_nam) return the Python class object 
+    corresponding to the class found in the current module.
+    """
+    n = change_class_name(cls_nam)
+    cls = cls._ALL_CLASSES.get(n)
+    if cls is None:
+      raise Exception(f"Class '{cls_nam}' not found!")
+    return cls
+
+  @classmethod
+  def Exist(cls, cls_nam):
+    """ True if class with nam 'cls_nam' is registered """
+    n = change_class_name(cls_nam)
+    return (n in cls._ALL_CLASSES)
+
+##################################################################
 ## Various unit tests utils
 ##################################################################
 
-class UnitUtils():
+class UnitUtils:
   """
   Useful stuff for unit tests.
   """
@@ -142,7 +173,7 @@ class UnitUtils():
            "trustpy_generated_v192_beta",
            "trustpy_generated_GENEPI_V16"]
 
-  _do_not_regenerate = True   # useful for debugging - avoid regenerating each time (this is a bit long with full TRAD2)
+  _do_not_regenerate = False   # useful for debugging - avoid regenerating each time (this is a bit long with full TRAD2)
 
   def caller_method_name(self):
     import inspect
@@ -189,14 +220,3 @@ class UnitUtils():
     from GENEPI: TRAD_2_GENEPI_V16.
     """
     self._generate_python_and_import(2)
-
-  def getClassFromName(self, cls_nam, mod=None):
-    """ Factory method. From a Python module object and a string (cls_nam) return
-    the Python class object corresponding to the class found in the given module.
-    """
-    ze_mod = mod or self.mod
-    cls = ze_mod.__dict__.get(change_class_name(cls_nam))
-    if cls is None:
-      mod_file = ze_mod.__file__
-      raise Exception(f"Class '{cls_nam}' not found in module '{mod_file}'!")
-    return cls

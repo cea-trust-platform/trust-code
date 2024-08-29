@@ -53,6 +53,10 @@ def create_enum(lines, cls, choices):
     lines.insert(4+i, '')
     return name
 
+def isBaseOrDeriv(cls_nam):
+    if cls_nam.endswith("_deriv") or cls_nam.endswith("_base") or cls_nam == "class_generic":
+        return True
+    return False
 
 def write_block(block, file, all_blocks):
     """ Write a TRAD2Block as pydantic class. """
@@ -71,22 +75,30 @@ def write_block(block, file, all_blocks):
         if dependency:
             write_block(dependency, file, all_blocks)
 
+    # Get base class name. If void (like for Objet_U), inherit from pydantic.BaseModel and trustpy.base.ConstrainBase:
+    base_cls_n = change_class_name(block.name_base) or "pydantic.BaseModel, trustpy.base.ConstrainBase"
     lines = [
         f'#' * 64,
         f'',
-        f'class {change_class_name(block.nam)}({change_class_name(block.name_base) or "BaseModel"}):',
+        f'class {change_class_name(block.nam)}({base_cls_n}):',
+        f'    _braces: ClassVar[int] = {block.mode}',
+        f'    _description: str = r"{block.desc}"',
+        f'    _synonyms: str = {block.synos}',
     ]
     lines += format_docstring(block.desc)
 
     synonyms = {None: block.synos}
     traces = {None: block.info}
 
+    if isBaseOrDeriv(block.nam):
+        lines.append("    _read_type: ClassVar[bool] = True   # This class (and its children) needs to read their type when parsed in the dataset!")
+
     for attribute in block.attrs:
 
         assert isinstance(attribute, TRAD2Attr)
 
         attr_name = attribute.nam
-        attr_type = attribute.typ        
+        attr_type = attribute.typ
         attr_mode = attribute.is_opt
         attr_desc = attribute.desc
         synonyms[attr_name] = attribute.synos
@@ -114,31 +126,28 @@ def write_block(block, file, all_blocks):
             args = f'default=0.0'
 
         elif attr_type == "chaine":
-            # TODO create custom class str_trust to handle "{ how do you { do } }" ?
-            # SEE class chaine_Tru
-            attr_type = "str"
-            args = f'default=""'
+            attr_type = "Chaine"   # class Chaine defined in base.py
 
         elif attr_type in ["list", "listf"]:
             # TODO handle difference list vs listf ?
-            attr_type = "List[float]"
-            args = "default_factory=list"
+            attr_type = "List_float"  # class ListOfFloat defined in base.py
+            args = f'default_factory=lambda: eval("List_float()")'
 
         elif attr_type in ["listentier", "listentierf"]:
             # TODO handle difference listentier vs listentierf ?
-            attr_type = "List[int]"
-            args = "default_factory=list"
+            attr_type = "List_int"
+            args = f'default_factory=lambda: eval("List_int()")'
 
         elif attr_type in ["listchaine", "listchainef"]:
             # TODO handle difference listchaine vs listchainef ?
-            attr_type = "List[str]"
-            args = "default_factory=list"
+            attr_type = "List_chaine"
+            args = f'default_factory=lambda: eval("List_chaine()")'
 
         elif attr_type.startswith("chaine(into="):
             choices = attr_type[13:].split("]")[0]
             choices = choices.split(",")
             choices = [x for x in choices if x] # remove empty strings
-            attr_type = create_enum(lines, str, choices)            
+            attr_type = create_enum(lines, str, choices)
             args = f'default={choices[0]}'
 
         elif attr_type.startswith("entier(into="):
@@ -154,8 +163,8 @@ def write_block(block, file, all_blocks):
             args = f'default=0, le={max_val}'
 
         elif attr_type == "rien":
-            attr_type = "bool"
-            args = f'default=False'
+            attr_type = "Rien"
+            args = f'default_factory=lambda: eval("Rien(0)")'
 
         elif attr_type == "suppress_param":
             # NOTE tricky
@@ -175,14 +184,14 @@ def write_block(block, file, all_blocks):
 
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
-    for key, (filename, lineno) in traces.items():        
+    for key, (filename, lineno) in traces.items():
         traces[key] = (str(filename), lineno)
 
     lines += [
-        f'    __braces:int = {block.mode}',        
+        f'    __braces:int = {block.mode}',
         f'    __synonyms: dict = {synonyms}',
         f'    __traces: dict = {traces}',
-    ]    
+    ]
 
     lines.append('\n')
 
@@ -236,8 +245,23 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         from enum import Enum
         from typing_extensions import Annotated
         from typing import ClassVar, List
-        from pydantic import BaseModel, Field
+        import pydantic
+        from pydantic import Field
+        import trustpy.base
+        from trustpy.base import *
     '''
+
+    trailer = f'''
+#
+# Register all classes found so far:
+#
+from trustpy.misc_utilities import ClassFactory
+g = globals()
+for nam in list(g):
+  val = g[nam]
+  if isinstance(val, type) and issubclass(val, trustpy.base.Base_common):
+    ClassFactory.RegisterClass(nam, val)
+'''
 
     if output_filename is None:
         output_filename = trad2_filename.name + ".py"
@@ -247,6 +271,9 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         file.write("\n" * 3)
         for block in all_blocks.values():
             write_block(block, file, all_blocks)
+        file.write("\n")
+        file.write(trailer.strip())
+        file.write("\n")
 
     if testing:
         test_filename = output_filename.replace(".py", "_test.py")

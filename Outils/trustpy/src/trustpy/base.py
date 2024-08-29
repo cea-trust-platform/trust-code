@@ -10,10 +10,9 @@ Authors: A Bruneton, C Van Wambeke, G Sutra
 """
 
 import pydantic
-from typing import ClassVar, Any
 import trustpy.misc_utilities as mutil
+from trustpy.misc_utilities import ClassFactory
 from trustpy.trust_parser import TRUSTTokens
-from pydantic import BaseModel
 from pydantic_core import core_schema
 
 ########################################################
@@ -67,25 +66,30 @@ class Base_common:
     ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
     toDatasetTokens() - which does the inverse operation and serializes the content of the instance as a stream of tokens
   """
-  _braces: ClassVar[int]     = 1         # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
-  _read_type: ClassVar[bool] = False  # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
+  _braces = 1         # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+  _read_type = False  # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
                       # In the Python code generation this attribute is overloaded when hitting _base or _deriv.
-  _synonyms: ClassVar[Any] = []   # a list of synonyms for the name of implemented class
-  # _infoMain = []   # a tuple giving the source file and the line # where the type was defined
-  # _infoAttr = {}   # same thing for class attributes (dictionnary indexed by main attr name)
-  # _attributesSynonyms = {}   # synonyms for the current class (read_med -> lire_med)
-  _optionals: ClassVar[Any] = set([])  # set of optional attibutes for a keyword
-  _plainType: ClassVar[bool] = False    # whether the class is a basic type (like an int, etc ...) -> used for
-  #                       # correctly displaying debug information of the parent attribute
+  _synonyms = []   # a list of synonyms for the name of implemented class
+  _infoMain = []   # a tuple giving the source file and the line # where the type was defined
+  _infoAttr = {}   # same thing for class attributes (dictionnary indexed by main attr name)
+  _attributesSynonyms = {}   # synonyms for the current class (read_med -> lire_med)
+  _optionals = set([])  # set of optional attibutes for a keyword
+  _plainType = False    # whether the class is a basic type (like an int, etc ...) -> used for
+                        # correctly displaying debug information of the parent attribute
 
-  def __init__(self, *arg, **kwarg):
-    # pydantic.BaseModel.__init__(self, *arg, **kwarg)
-    self._tokens = {}     # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
-                          # in ConstrainBase for a more comprehensive explanation.
+  def __init__(self):
+    self._tokens = {}          # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
+                               # in ConstrainBase for a more comprehensive explanation.
 
   def toTrustData(self):
     """ Output current data (contained in self)"""
     return ''.join(self.toDatasetTokens(self))
+
+  @classmethod
+  def _Cast(cls, value):
+    if isinstance(value, cls):
+        return value
+    return cls(value)
 
   @classmethod
   def GenErr(cls, stream, msg, attr=None):
@@ -101,11 +105,12 @@ class Base_common:
     ctx += "   Dataset: line %d  in file  '%s'\n" % (stream.currentLine(), stream.fileName())
 
     s = ""
-    if len(cls._infoMain) > 0:  # automatic classes (like base types int, float...) do not have debug info
-      s =  "   Model:   line %d  in file  '%s'\n" % (cls._infoMain[1], cls._infoMain[0])
-    if not attr is None:
-      fnam, lineno = cls._infoAttr[attr]
-      s = f"   Model:   line {lineno}  in file  '{fnam}'\n"
+    # TODO - remettre:
+    # if len(cls._infoMain) > 0:  # automatic classes (like base types int, float...) do not have debug info
+    #   s =  "   Model:   line %d  in file  '%s'\n" % (cls._infoMain[1], cls._infoMain[0])
+    # if not attr is None:
+    #   fnam, lineno = cls._infoAttr[attr]
+    #   s = f"   Model:   line {lineno}  in file  '{fnam}'\n"
     ctx += s + mutil.END
     return err + ctx
 
@@ -131,10 +136,9 @@ class Base_common:
       cls = self.__class__
       expec = [cls.__name__] + cls._synonyms
       for e in expec:
-        v = no_low(e)
-        if self._checkToken("cls_nam", v):
+        if self._checkToken("cls_nam", e.lower()):
           return self._tokens["cls_nam"].orig()
-      return [" " + no_tru_low(cls.__name__)]
+      return [" " + cls.__name__.lower()]
     return []
 
   def _getBraceTokens(self, brace):
@@ -182,7 +186,7 @@ class Base_common:
     brac_nam = {'{':"opening", '}': "closing"}[brace]
     tok = stream.probeNextLow()
     if tok != brace:
-      err = cls.GenErr(stream, f"Keyword '{nams}' expected a {brac_nam} brace '{brace}'")
+      err = cls.GenErr(stream, f"Keyword '{nams}' expected a {brac_nam} brace '{brace}' (but we read: '{tok}')")
       raise ValueError(err)
     stream.validateNext()
 
@@ -239,17 +243,17 @@ class ConstrainBase(Base_common):
   """
   Class representing any type/keyword for which the attribute types are to be checked.
   """
-  _rootNamesForSyno: ClassVar[Any] = {}   # See method _ReadClassName and trust_hacks.py
+  _rootNamesForSyno = {}   # See method _ReadClassName and trust_hacks.py
+  _attrInOrder = []        # Just to save the order in which the attributes were read ...
 
-  def __init__(self, *args, **kwargs):
-    super(ConstrainBase, self).__init__(*args, **kwargs)
+  def __init__(self):
+    Base_common.__init__(self)
     opbr  = TRUSTTokens(low=["{"], orig=[" {\n"])
     clobr = TRUSTTokens(low=["}"], orig=[" \n}\n"])
     clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__])
     self._tokens = {"{": opbr,           # For a ConstrainBase we might need opening and closing brace. By default those
                     "}": clobr,          # are simple '{' and '}' followed by a line return. If ReadFromTokens() was
                     "cls_nam": clsnam }  # invoked to build the object this will respect the initial input (with potentially more spaces)
-    self._attrInOrder = []               # Just to save the order in which the attributes were read ...
 
 
   @classmethod
@@ -318,7 +322,7 @@ class ConstrainBase(Base_common):
 
     # Identify mandatory attributes:
     attr_ok = {}
-    for attr_nam, _ in cls._attributesList:
+    for attr_nam, _ in cls._AttributesList():
       if not cls.IsOptional(attr_nam):
         attr_ok[attr_nam] = False  # False="was not read yet"
     tok = stream.probeNextLow()
@@ -331,13 +335,14 @@ class ConstrainBase(Base_common):
         cls._Dbg(f"@FUNC@ attr_nam '{attr_nam}' attr_cls_nam '{attr_cls_nam}'")
         # Retrieve attribute's class (as given by the data file), and instanciate it
         nam = cls._GetBaseClassName(attr_cls_nam)
-        attr_cls = CLFX.getXyzClassFromName(nam)
+        attr_cls = ClassFactory.GetClassFromName(nam)
         assert not attr_cls is None  # Should never happen...
         # Temporarily load debug instruction from current class on the child attribute type.
         # This is useful for base types which are actually not defined anywhere in the
         # TRAD2 (like ints, floats, strings, etc...) and thus we can for example display an error message
-        # saying that '3.5' is not an int, and provide the actual TRAD2 entry for it.
-        if attr_cls._plainType: attr_cls._infoMain = cls._infoAttr[attr_nam]
+        # saying that '3.5' is not an int, and provide the actual TRAD2 entry for the attribute itself, not for float ....
+        # TODO remettre ca:
+        # if attr_cls._plainType: attr_cls._infoMain = cls._infoAttr[attr_nam]
         # Parse child attribute:
         val = attr_cls.ReadFromTokens(stream)
         # Potentially reset debug info:
@@ -379,7 +384,7 @@ class ConstrainBase(Base_common):
       while attr_idx < len(ca) and cls.IsOptional(ca[attr_idx][0]):
         cur_attr, cur_cls_nam = ca[attr_idx]
         cur_cls_nam = cls._GetBaseClassName(cur_cls_nam)
-        attr_cls = CLFX.getXyzClassFromName(cur_cls_nam)
+        attr_cls = ClassFactory.GetClassFromName(cur_cls_nam)
         cls._Dbg(f"@FUNC@ cur_attr '{cur_attr}' cur_cls_nam '{cur_cls_nam}'")
         stream.save("BEFORE_OPT")
         try:
@@ -428,9 +433,9 @@ class ConstrainBase(Base_common):
     Overriden in trust_hacks.py for convection/diffusion 'negligeable' for example. 
     """
     # Parse one token to identify real class being read:
-    kw = BaseChaine.ReadFromTokens(stream)
-    cls_nam = kw + _TRIOU_SUFFIX
-    if not CLFX.isValidClassName(cls_nam):
+    kw = Base_chaine.ReadFromTokens(stream)
+    cls_nam = mutil.change_class_name(kw)
+    if not ClassFactory.Exist(cls_nam):
       err = cls.GenErr(stream, f"Invalid TRUST keyword '{kw}'")
       raise ValueError(err)
     ###
@@ -441,10 +446,9 @@ class ConstrainBase(Base_common):
     # So give a preference to the class inheriting the current 'cls' (which is given by the TRAD2)
     root_names = cls._rootNamesForSyno.get(cls_nam, [])
     for r in root_names + [cls_nam]:
-      a_cls = CLFX.getXyzClassFromName(r)
-      if a_cls is None:
-        raise Exception(f"internal error - getXyzClassFromName class name '%s' not found" % r)
-
+      if not ClassFactory.Exist(r):
+        raise Exception(f"internal error - class name '{r}' not found!")
+      a_cls = ClassFactory.GetClassFromName(r)
       if issubclass(a_cls, cls):
         return a_cls.__name__
     cls._Dbg("@FUNC@ <== ERROR ")
@@ -460,7 +464,7 @@ class ConstrainBase(Base_common):
       cls_nam = cls._ReadClassName(stream)
       cls._Dbg(f"@FUNC@ parsed type: '{cls_nam}'")
       tok = stream.lastReadTokens()
-      ze_cls = CLFX.getXyzClassFromName(cls_nam)
+      ze_cls = ClassFactory.GetClassFromName(cls_nam)
       assert ze_cls is not None   # already checked in _ReadClassName()
     else:
       ze_cls = cls
@@ -542,14 +546,18 @@ class ConstrainBase(Base_common):
 ######################################################
 ## List-like types
 ######################################################
-# class ListOfBase(ListOfBaseXyz, Base_common):
-class ListOfBase(Base_common):
+class ListOfBase(list, Base_common):
   _plainType = True
   _allowedClasses = []
   _comma = 1   #  1: with comma to separate items, 0: without, -1: like parent
 
+  @classmethod
+  def __get_pydantic_core_schema__(cls, source, handler):
+    """ Pydantic validation schema - the same as 'list' for now """
+    return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema())
+
   def __init__(self, values=[]):
-    # ListOfBaseXyz.__init__(self)
+    list.__init__(self)
     Base_common.__init__(self)
     self._tokens = {}  # Expected keys: "nb_items"
     self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
@@ -558,26 +566,26 @@ class ListOfBase(Base_common):
       # Try auto-cast - this helps for example to initialize ListOfFloat without having to write
       # l = ListOfFloat([BaseFloattant(35), BaseFloattant(48.2)])
       # One can do: l = ListOfFloat([35, 48.2])
-      self._ze_cls = CLFX.getXyzClassFromName(cls._allowedClasses[0])
+      self._ze_cls = ClassFactory.GetClassFromName(cls._allowedClasses[0])
       newv = list(map(self._ze_cls, values))
     else:
       raise Exception("Implementation error: multi-type list can not be parsed yet ...")
     for val in newv:
       self.append(val)
 
-  def __setitem__(self, idx, val):
-    """ Override. Helps doing things like:
-        a_list = ListOfFloat()
-        ... append ... append ..
-        a_list[32] = 26.5  # avoids a_list[32] = BaseFloattant(26.5)
-    """
-    if not self._ze_cls is None:
-      # Try auto-cast - this helps assigning values
-      newv = self._ze_cls(val)
-    else:
-      newv = val
-    1/0
-    # ListOfBaseXyz.__setitem__(self, idx, newv)
+  # def __setitem__(self, idx, val):
+  #   """ Override. Helps doing things like:
+  #       a_list = ListOfFloat()
+  #       ... append ... append ..
+  #       a_list[32] = 26.5  # avoids a_list[32] = BaseFloattant(26.5)
+  #   """
+  #   if not self._ze_cls is None:
+  #     # Try auto-cast - this helps assigning values
+  #     newv = self._ze_cls(val)
+  #   else:
+  #     newv = val
+  #   1/0
+  #   # ListOfBaseXyz.__setitem__(self, idx, newv)
 
   @classmethod
   def MustReadSize(cls):
@@ -729,51 +737,56 @@ class AbstractSizeIsDim(object):
     """ Override. Do nothing. Here the size is the dimension and does not need to be output """
     pass
 
-class ListOfChaine(ListOfBase):
+class List_chaine(ListOfBase):
   """
   List of strings (with no blanks), in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseChaine"]
+  _allowedClasses = ["Base_chaine"]
   _braces = 0  # No braces for this simple list
   _comma = 0
 
   def __init__(self, values=[]):
     ListOfBase.__init__(self, values)
 
-class ListOfChaineDim(ListOfChaine, AbstractSizeIsDim):
+class List_chaine_dim(List_chaine, AbstractSizeIsDim):
   """
   List of strings, in the form 'val1 val2 ...'
   The number of expected strings is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfChaine.__init__(self, values)
+    List_chaine.__init__(self, values)
 
   _ReadListSize = AbstractSizeIsDim._ReadListSize
   _extendWithSize = AbstractSizeIsDim._extendWithSize
 
-class ListOfFloat(ListOfBase):
+class List_float(ListOfBase):
   """
   List of floats, in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseFloattant"]
+  _allowedClasses = ["Base_float"]
   _braces = 0  # No braces for this simple list
   _comma = 0
+
+  @classmethod
+  def __get_pydantic_core_schema__(cls, source, handler):
+    """ Pydantic validation schema - the same as 'list' for now """
+    return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema(core_schema.float_schema()))
 
   def __init__(self, values=[]):
     ListOfBase.__init__(self, values)
 
-class ListOfFloatDim(ListOfFloat, AbstractSizeIsDim):
+class List_float_dim(List_float, AbstractSizeIsDim):
   """
   List of floats, in the form 'val1 val2 ...'
   The number of expected floats is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfFloat.__init__(self, values)
+    List_float.__init__(self, values)
 
   _ReadListSize = AbstractSizeIsDim._ReadListSize
   _extendWithSize = AbstractSizeIsDim._extendWithSize
 
-class ListOfInt(ListOfBase):
+class List_int(ListOfBase):
   """
   List of ints, in the form 'N val1 val2 ...'
   """
@@ -784,13 +797,13 @@ class ListOfInt(ListOfBase):
   def __init__(self, values=[]):
     ListOfBase.__init__(self, values)
 
-class ListOfIntDim(ListOfInt, AbstractSizeIsDim):
+class List_int_dim(List_int, AbstractSizeIsDim):
   """
   List of ints, in the form 'N val1 val2 ...'
   The number of expected ints is given by the dimension of the problem.
   """
   def __init__(self, values=[]):
-    ListOfInt.__init__(self, values)
+    List_int.__init__(self, values)
 
   _ReadListSize = AbstractSizeIsDim._ReadListSize
   _extendWithSize = AbstractSizeIsDim._extendWithSize
@@ -799,7 +812,7 @@ class ListOfIntDim(ListOfInt, AbstractSizeIsDim):
 ######################################################
 # Class interprete
 ######################################################
-class interprete(ConstrainBase):
+class Interprete(ConstrainBase):
   """ Class 'interprete' has nothing special in itself, except that it needs
   to be known early, so that the Dataset class can test whether a given class
   is a child of 'interprete'
@@ -836,7 +849,7 @@ class Declaration(ConstrainBase):
     kw = BaseChaine.ReadFromTokens(stream)
     ret.cls_nam = kw + _TRIOU_SUFFIX
     # Check whether the class is valid:
-    ze_cls = CLFX.getXyzClassFromName(ret.cls_nam)
+    ze_cls = ClassFactory.GetClassFromName(ret.cls_nam)
     if ze_cls is None:
       err = cls.GenErr(stream, f"Keyword '{kw}' is not a valid TRUST keyword")
       raise ValueError(err)
@@ -987,7 +1000,7 @@ class DataSet(ListOfBase):
       if not CLFX.isValidClassName(cls_nam):
         err = cls.GenErr(stream, f"Keyword '{tok}' is not a valid TRUST keyword")
         raise ValueError(err)
-      ze_cls = CLFX.getXyzClassFromName(cls_nam)
+      ze_cls = ClassFactory.GetClassFromName(cls_nam)
 
       # 'interprete' are the highest level keywords in TRUST - they perform an action. They are only allowed at top level
       # in the dataset.
@@ -1017,10 +1030,16 @@ class DataSet(ListOfBase):
 ######################################################
 class AbstractChaine(Base_common):
   """ Base class for all (constrained or not) strings """
-  _plainType: ClassVar[bool] = True
+  _plainType = True
 
   # def __init__(self):
   #   Base_common.__init__(self)
+
+  # TODO for now all 'chaine' validate as strings:
+  @classmethod
+  def __get_pydantic_core_schema__(cls, source, handler):
+    """ Pydantic validation schema - the same as 'str' """
+    return core_schema.no_info_after_validator_function(cls._Cast, core_schema.str_schema())
 
   @classmethod
   def _ValidateValue(cls, value, stream):
@@ -1060,35 +1079,17 @@ class AbstractChaine(Base_common):
       return ret
 
 ##############################################
-# class chaine(StrVerbatimXyz, AbstractChaine):
-# class Chaine(AbstractChaine):
-class Chaine(str, AbstractChaine):
+class Chaine(AbstractChaine, str):
   """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
   See ReadFromTokens below ..
   """
 
-  @classmethod
-  def __get_pydantic_core_schema__(cls, source, handler):
-      return core_schema.no_info_after_validator_function(cls.cast, core_schema.str_schema())
-  
-  @classmethod
-  def cast(cls, value):        
-      if not isinstance(value, cls):
-          return cls(value) # cast str to MyStr
-      return value
+  def __new__(cls, *args, **kw):
+    return str.__new__(cls, *args, **kw)
 
-  # def __init__(self, *arg, **kwarg):
-  #   _val = "??"
-  #   if len(arg):
-  #     _val = str(arg[0])
-  #     print(arg)
-  #     arg = arg[1:]
-  #     print(arg)
-  #   AbstractChaine.__init__(self, *arg, **kwarg)
-  #   self._val = _val
-  #   # StrVerbatimXyz.__init__(self, value)
-  #   Base_common.__init__(self)
-  #   self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self.__class__._braces!!
+  def __init__(self, value=""):
+    AbstractChaine.__init__(self)
+    self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self.__class__._braces!!
 
   @classmethod
   def ReadFromTokens(cls, stream):
@@ -1139,18 +1140,23 @@ class Chaine(str, AbstractChaine):
       return AbstractChaine.toDatasetTokens(self)
 
 # class BaseChaine(StrNoBlankXyz, AbstractChaine):
-class BaseChaine(AbstractChaine):
+class Base_chaine(AbstractChaine, str):
   """A string with no blank in it."""
   _defaultValue = "??"
 
+  def __new__(cls, *args, **kw):
+    return str.__new__(cls, *args, **kw)
+
   def __init__(self, value=None):
-    # StrNoBlankXyz.__init__(self, value)
     AbstractChaine.__init__(self)
 
 # class BaseChaineInList(StrInListXyz, AbstractChaine):
-class BaseChaineInList(AbstractChaine):
+class Base_chaine_in_list(AbstractChaine, str):
   """ Same as BaseChaine, but with constrained string values """
   _allowedList = ["??"]
+
+  def __new__(cls, *args, **kw):
+    return str.__new__(cls, *args, **kw)
 
   def __init__(self, value=None):
     # StrInListXyz.__init__(self, value)
@@ -1162,7 +1168,7 @@ class BaseChaineInList(AbstractChaine):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
       raise ValueError(err)
 
-class fin(interprete):
+class Fin(Interprete):
   """ The 'end' keyword at the end of the dataset. It is an 'interprete'.
   It has its own class because the main parsing loop in DataSet needs to spot it specifically :-)
   """
@@ -1173,6 +1179,11 @@ class fin(interprete):
 class AbstractEntier(Base_common):
   """ Base class for all (constrained or not) integers """
   _plainType = True
+
+  # TODO for now all 'Entier' validate as int:
+  @classmethod
+  def __get_pydantic_core_schema__(cls, source, handler):
+    return core_schema.no_info_after_validator_function(cls._Cast, core_schema.int_schema())
 
   def __init__(self):
     Base_common.__init__(self)
@@ -1207,19 +1218,21 @@ class AbstractEntier(Base_common):
       ret = [" " + self_as_str]
     return ret
 
-# class BaseEntier(IntXyz, AbstractEntier):
-class BaseEntier(AbstractEntier):
+class Base_entier(int, AbstractEntier):
+  def __new__(cls, *args, **kw):
+    return int.__new__(cls, *args, **kw)
+
   def __init__(self, value=None):
-    # IntXyz.__init__(self, value)
     AbstractEntier.__init__(self)
 
-# class BaseEntierInList(IntInListXyz, AbstractEntier):
-class BaseEntierInList(AbstractEntier):
+class Base_entier_in_list(int, AbstractEntier):
   """ Integer in a constrained list """
   _allowedList = [0]
 
+  def __new__(cls, *args, **kw):
+    return int.__new__(cls, *args, **kw)
+
   def __init__(self, value=None):
-    # IntInListXyz.__init__(self, value)
     AbstractEntier.__init__(self)
 
   @classmethod
@@ -1233,32 +1246,33 @@ class BaseEntierInList(AbstractEntier):
       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
       raise ValueError(err)
 
-# class BaseEntierInRange(IntRangeXyz, AbstractEntier):
-class BaseEntierInRange(AbstractEntier):
-  """ integer in a constrained range """
-  _allowedRange = [0, 0]
+# # class BaseEntierInRange(IntRangeXyz, AbstractEntier):
+# class BaseEntierInRange(AbstractEntier):
+#   """ integer in a constrained range """
+#   _allowedRange = [0, 0]
+#
+#   def __init__(self, value=None):
+#     # IntRangeXyz.__init__(self, value)
+#     AbstractEntier.__init__(self)
+#
+#   @classmethod
+#   def _ValidateValue(cls, val, stream):
+#     ar = cls._allowedRange
+#     try:       i = int(val)
+#     except:
+#       err = cls.GenErr(stream, f"Invalid value: '{val}', could not be interpreted as an integer")
+#       raise ValueError(err)
+#     if i < ar[0] or i > ar[1]:
+#       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
+#       raise ValueError(err)
 
-  def __init__(self, value=None):
-    # IntRangeXyz.__init__(self, value)
-    AbstractEntier.__init__(self)
-
-  @classmethod
-  def _ValidateValue(cls, val, stream):
-    ar = cls._allowedRange
-    try:       i = int(val)
-    except:
-      err = cls.GenErr(stream, f"Invalid value: '{val}', could not be interpreted as an integer")
-      raise ValueError(err)
-    if i < ar[0] or i > ar[1]:
-      err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
-      raise ValueError(err)
-
-# class BaseFloattant(FloatXyz, Base_common):
-class BaseFloattant(Base_common):
+class Base_float(float, Base_common):
   _plainType = True
 
+  def __new__(cls, *args, **kw):
+    return float.__new__(cls, *args, **kw)
+
   def __init__(self, value=None):
-    # FloatXyz.__init__(self, value)
     Base_common.__init__(self)
 
   @classmethod
@@ -1285,10 +1299,15 @@ class BaseFloattant(Base_common):
       ret = [" " + self_as_str]
     return ret
 
-# class Rien(BoolXyz, Base_common):
-class Rien(Base_common):
+#
+# TODO bool is not inheritable in Python ...! Pour l'instant je fais un int pour avancer ... a revoir.
+#
+class Rien(Base_entier):
   """ Boolean flags are of type 'rien' in the TRAD_2 file."""
   _plainType = True
+
+  def __init__(self, value=None):
+    Base_entier.__init__(self, value)
 
   @classmethod
   def ReadFromTokens(cls, stream):

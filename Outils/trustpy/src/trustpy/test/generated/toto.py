@@ -28,6 +28,7 @@ class Interprete(Objet_u):
     __description: str = r"Basic class for interpreting a data file. Interpretors allow some operations to be carried out on objects."
     __synonyms: str = ['interprete']
 
+
 ################################################################
 
 class Read_med(Interprete):
