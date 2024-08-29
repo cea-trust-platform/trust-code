@@ -129,24 +129,6 @@ int Champ_Inc_base::nb_valeurs_nodales() const
   return n;
 }
 
-/*! @brief Renvoie le tableau des valeurs du champ au temps courant.
- *
- * @return (DoubleTab&) le tableau des valeurs du champ
- */
-DoubleTab& Champ_Inc_base::valeurs()
-{
-  return les_valeurs->valeurs();
-}
-
-/*! @brief Renvoie le tableau des valeurs du champ au temp courant (version const)
- *
- * @return (DoubleTab&) le tableau des valeurs du champ
- */
-const DoubleTab& Champ_Inc_base::valeurs() const
-{
-  return les_valeurs->valeurs();
-}
-
 /*! @brief Renvoie les valeurs du champs a l'instant temps.
  *
  * @param (double temps) le  temps  auquel on veut les valeurs du champ
@@ -230,49 +212,6 @@ const DoubleTab& Champ_Inc_base::valeurs(double tps) const
   Cerr << "Contact TRUST support." << finl;
   Process::exit();
   return valeurs();
-}
-/*! @brief Renvoie les valeurs du champs a l'instant t+i.
- *
- * @param (int i) le pas de temps futur auquel on veut les valeurs du champ
- * @return (DoubleTab&) les valeurs du champs a l'instant t+i
- */
-DoubleTab& Champ_Inc_base::futur(int i)
-{
-  return les_valeurs->futur(i).valeurs();
-}
-
-/*! @brief Renvoie les valeurs du champs a l'instant t+i.
- *
- * (version const)
- *
- * @param (int i) le pas de temps futur auquel on veut les valeurs du champ
- * @return (DoubleTab&) les valeurs du champs a l'instant t+i
- */
-const DoubleTab& Champ_Inc_base::futur(int i) const
-{
-  return les_valeurs->futur(i).valeurs();
-}
-
-/*! @brief Renvoie les valeurs du champs a l'instant t-i.
- *
- * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
- * @return (DoubleTab&) les valeurs du champs a l'instant t-i
- */
-DoubleTab& Champ_Inc_base::passe(int i)
-{
-  return les_valeurs->passe(i).valeurs();
-}
-
-/*! @brief Renvoie les valeurs du champs a l'instant t-i.
- *
- * (version const)
- *
- * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
- * @return (DoubleTab&) les valeurs du champs a l'instant t-i
- */
-const DoubleTab& Champ_Inc_base::passe(int i) const
-{
-  return les_valeurs->passe(i).valeurs();
 }
 
 /*! @brief Avance le pointeur courant de i pas de temps, dans la liste des valeurs temporelles conservees.

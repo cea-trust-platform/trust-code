@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,20 +110,6 @@ int Champ_Don_base::imprime(Sortie& os, int ncomp) const
   Cerr << que_suis_je() << "::imprime not coded." << finl;
   Process::exit();
   return 1;
-}
-
-/*! @brief Surcharge Champ_base::valeurs() Renvoie le tableau des valeurs
- *
- * @return (DoubleTab&) le tableau des valeurs du champs
- */
-DoubleTab& Champ_Don_base::valeurs()
-{
-  return valeurs_;
-}
-
-const DoubleTab& Champ_Don_base::valeurs() const
-{
-  return valeurs_;
 }
 
 /*! @brief Fixe le nombre de composantes et le nombre de valeurs nodales.

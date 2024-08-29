@@ -34,10 +34,10 @@ public:
   int reprendre(Entree& is) override { return champ()->reprendre(is); }
   int sauvegarder(Sortie& os) const override { return champ()->sauvegarder(os); }
   void resetTime(double time) override { champ()->resetTime(time); }
-  DoubleTab& valeurs() override { return champ()->valeurs(); }
-  const DoubleTab& valeurs() const override { return champ()->valeurs(); }
-  DoubleTab& valeurs(double temps) override { return champ()->valeurs(temps); }
-  const DoubleTab& valeurs(double temps) const override { return champ()->valeurs(temps); }
+  inline DoubleTab& valeurs() override { return champ()->valeurs(); }
+  inline const DoubleTab& valeurs() const override { return champ()->valeurs(); }
+  inline DoubleTab& valeurs(double temps) override { return champ()->valeurs(temps); }
+  inline const DoubleTab& valeurs(double temps) const override { return champ()->valeurs(temps); }
   Champ_base& affecter_(const Champ_base& ch) override { return champ()->affecter(ch); }
   Champ_base& affecter_compo(const Champ_base& ch, int i) override { return champ()->affecter_compo(ch, i); }
   inline int nb_valeurs_nodales() const override { return champ()->valeurs().dimension(0); }

@@ -67,8 +67,13 @@ public:
   // Methodes viruelles pures implementees ici
   Champ_base& affecter_(const Champ_base&) override;
   virtual void verifie_valeurs_cl();
-  DoubleTab& valeurs() override;
-  const DoubleTab& valeurs() const override;
+
+  /*! @brief Renvoie le tableau des valeurs du champ au temps courant.
+   *
+   * @return (DoubleTab&) le tableau des valeurs du champ
+   */
+  inline DoubleTab& valeurs() override { return les_valeurs->valeurs(); }
+  inline const DoubleTab& valeurs() const override { return les_valeurs->valeurs(); }
 
   DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
@@ -89,10 +94,22 @@ public:
   operator DoubleTab& () = delete;
   operator const DoubleTab& () const = delete;
 
-  DoubleTab& futur(int i = 1) override;
-  const DoubleTab& futur(int i = 1) const override;
-  DoubleTab& passe(int i = 1) override;
-  const DoubleTab& passe(int i = 1) const override;
+  /*! @brief Renvoie les valeurs du champs a l'instant t+i.
+   *
+   * @param (int i) le pas de temps futur auquel on veut les valeurs du champ
+   * @return (DoubleTab&) les valeurs du champs a l'instant t+i
+   */
+  inline DoubleTab& futur(int i = 1) override { return les_valeurs->futur(i).valeurs(); }
+  inline const DoubleTab& futur(int i = 1) const override { return les_valeurs->futur(i).valeurs(); }
+
+  /*! @brief Renvoie les valeurs du champs a l'instant t-i.
+   *
+   * @param (int i) le pas de temps passe auquel on veut les valeurs du champ
+   * @return (DoubleTab&) les valeurs du champs a l'instant t-i
+   */
+  inline DoubleTab& passe(int i = 1) override { return les_valeurs->passe(i).valeurs(); }
+  inline const DoubleTab& passe(int i = 1) const override { return les_valeurs->passe(i).valeurs(); }
+
   Champ_Inc_base& avancer(int i = 1);
   Champ_Inc_base& reculer(int i = 1);
 

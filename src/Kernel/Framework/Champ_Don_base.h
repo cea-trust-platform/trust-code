@@ -42,8 +42,12 @@ public:
   int sauvegarder(Sortie&) const override;
   void resetTime(double time) override;
 
-  DoubleTab& valeurs() override;
-  const DoubleTab& valeurs() const override;
+  /*! @brief Surcharge Champ_base::valeurs() Renvoie le tableau des valeurs
+   *
+   * @return (DoubleTab&) le tableau des valeurs du champs
+   */
+  inline DoubleTab& valeurs() override { return valeurs_; }
+  const inline DoubleTab& valeurs() const override { return valeurs_; }
 
   Champ_base& affecter_compo(const Champ_base&, int) override;
 
