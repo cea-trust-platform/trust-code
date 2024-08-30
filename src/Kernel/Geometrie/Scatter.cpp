@@ -729,7 +729,8 @@ void Scatter::trier_les_joints(Joints& joints)
     }
 }
 
-namespace {
+namespace
+{
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  * TODO SHOULD MERGE WITH Array_tools.cpp
  */

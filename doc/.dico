@@ -261,7 +261,7 @@
  Debog Debog_Pb_Wrapper Debog_Pb.h
  DebogIJK DebogIJK DebogIJK.h
  Debog_pb Debog_Pb Debog_Pb.h
- DecoupeBord_pour_rayonnement|DecoupeBord DecoupeBord DecoupeBord.h
+ DecoupeBord DecoupeBord_32_64 DecoupeBord.h
  Decouper_Bord_coincident Decouper_Bord_coincident Decouper_Bord_coincident.h
  Decouper_multi|Partition_multi Decouper_multi Decouper_multi.h
  Decouper|Partition Decouper Decouper.h
@@ -374,7 +374,7 @@
  Exp Exp StdFunction.h
  Extraction Champ_Generique_Extraction Champ_Generique_Extraction.h
  Extract_2Daxi_from_3D TroisDto2Daxi TroisDto2Daxi.h
- Extract_2D_from_3D TroisDto2D TroisDto2D.h
+ Extract_2D_from_3D TroisDto2D_32_64 TroisDto2D.h
  Extraire_Domaine Extraire_domaine Extraire_domaine.h
  Extraire_plan Extraire_plan Extraire_plan.h
  Extraire_surface Extraire_surface Extraire_surface.h
@@ -517,15 +517,15 @@
  Interpolation_IBM_power_law_tbl|IBM_power_law_tbl Interpolation_IBM_power_law_tbl Interpolation_IBM_power_law_tbl.h
  Interprete Interprete Interprete.h
  Interprete_bloc Interprete_bloc Interprete_bloc.h
- Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
+ Interprete_geometrique_base Interprete_geometrique_base_32_64 Interprete_geometrique_base.h
  Iterateur_PolyMAC Iterateur_PolyMAC Iterateur_PolyMAC_base.h
  Iterateur_PolyMAC_base Iterateur_PolyMAC_base Iterateur_PolyMAC_base.h
  Iterateur_Source Iterateur_Source Iterateur_Source.h
  Iterateur_Source_base Iterateur_Source_base Iterateur_Source_base.h
  Iterateur_VDF Iterateur_VDF Iterateur_VDF.h
  Iterateur_VDF_base Iterateur_VDF_base Iterateur_VDF_base.h
- Joint Joint Joint.h
- Joints Joints Joints.h
+ Joints Joints_32_64 Joints.h
+ Joint_32_64 Joint_32_64 Joint.h
  K_constant ModPerm_Cte Source_Permeabilite_VDF.h
  Lata_To_MED|Lata_2_MED Lata_2_MED Lata_2_MED.h
  lata_to_other|lata_2_other Lata_2_Other Lata_2_Other.h
@@ -669,7 +669,7 @@
  negligeable_scalaire_VEF Paroi_negligeable_scal_VEF Paroi_negligeable_scal_VEF.h
  negligeable_VDF Paroi_negligeable_VDF Paroi_negligeable_VDF.h
  negligeable_VEF Paroi_negligeable_VEF Paroi_negligeable_VEF.h
- NettoiePasNoeuds NettoieNoeuds NettoieNoeuds.h
+ NettoiePasNoeuds NettoieNoeuds_32_64 NettoieNoeuds.h
  Neumann Neumann Neumann.h
  Neumann_homogene Neumann_homogene Neumann_homogene.h
  Neumann_paroi Neumann_paroi Neumann_paroi.h
@@ -985,7 +985,7 @@
  Point_EF Point_EF Point_EF.h
  Polyedre Polyedre_32_64 Polyedre.h
  Polyedre_poly Polyedre_poly Polyedre_poly.h
- Polyedriser Polyedriser Polyedriser.h
+ Polyedriser Polyedriser_32_64 Polyedriser.h
  Polygone Polygone_32_64 Polygone.h
  Polygone_poly Polygone_poly Polygone_poly.h
  PolyMAC PolyMAC_discretisation PolyMAC_discretisation.h
@@ -1036,7 +1036,7 @@
  Raccord_local_homogene Raccord_local_homogene_32_64 Raccord_base.h
  Raffiner_anisotrope Raffiner_anisotrope Raffiner_anisotrope.h
  Raffiner_isotrope_parallele Raffiner_isotrope_parallele Raffiner_isotrope_parallele.h
- Raffiner_Simplexes Raffiner_Simplexes Raffiner_Simplexes.h
+ Raffiner_Simplexes Raffiner_Simplexes_32_64 Raffiner_Simplexes.h
  Reaction Reaction Reaction.h
  Read_MED_For_Testing_No_Verify_Option Read_MED_For_Testing_No_Verify_Option Read_MED_For_Testing_No_Verify_Option.h
  Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM.h
@@ -1051,9 +1051,9 @@
  RegroupeBord RegroupeBord RegroupeBord.h
  Remove_elem Remove_elem Remove_elem.h
  Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries.h
- Reordonner Reordonner Reordonner.h
- Reorienter_tetraedres Reorienter_tetraedres Reorienter_tetraedres.h
- Reorienter_triangles Reorienter_triangles Reorienter_triangles.h
+ Reordonner Reordonner_32_64 Reordonner.h
+ Reorienter_tetraedres Reorienter_tetraedres_32_64 Reorienter_tetraedres.h
+ Reorienter_triangles Reorienter_triangles_32_64 Reorienter_triangles.h
  Resoudre|Solve Resoudre Resoudre.h
  Reynolds_maille_Champ_Face Reynolds_maille_Champ_Face Reynolds_maille_Champ_Face.h
  Rnd Rnd StdFunction.h
@@ -1213,7 +1213,7 @@
  Stat_per_proc_perf_log Stat_per_proc_perf_log Stat_per_proc_perf_log.h
  StdFunction StdFunction StdFunction.h
  StiffenedGas Fluide_stiffened_gas Fluide_stiffened_gas.h
- Supprime_Bord SupprimeBord SupprimeBord.h
+ Supprime_Bord SupprimeBord_32_64 SupprimeBord.h
  Sutherland Sutherland Champ_Fonc_Fonction.h
  Symetrie Symetrie Symetrie.h
  System System System.h
@@ -1312,7 +1312,7 @@
  VEFPreP1B|VEF VEF_discretisation VEF_discretisation.h
  VerifierCoin VerifierCoin VerifierCoin.h
  Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements.h
- Verifier_Simplexes Verifier_Simplexes Verifier_Simplexes.h
+ Verifier_Simplexes Verifier_Simplexes_32_64 Verifier_Simplexes.h
  VF_inst Discr_inst Discr_inst.h
  Viscosite_turbulente_base Viscosite_turbulente_base Viscosite_turbulente_base.h
  Viscosite_turbulente_LES_base Viscosite_turbulente_LES_base Viscosite_turbulente_LES_base.h

@@ -19,8 +19,11 @@
 #include <Param.h>
 #include <SFichier.h>
 #include <Parser_U.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable_32_64(DecoupeBord_32_64,"DecoupeBord",Interprete_geometrique_base_32_64<_T_>);
+Add_synonym(DecoupeBord,"DecoupeBord_pour_rayonnement");
+
 // XD decoupebord_pour_rayonnement interprete decoupebord 1 To subdivide the external boundary of a domain into several parts (may be useful for better accuracy when using radiation model in transparent medium). To specify the boundaries of the fine_domain_name domain to be splitted. These boundaries will be cut according the coarse mesh defined by either the keyword domaine_grossier (each boundary face of the coarse mesh coarse_domain_name will be used to group boundary faces of the fine mesh to define a new boundary), either by the keyword nb_parts_naif (each boundary of the fine mesh is splitted into a partition with nx*ny*nz elements), either by a geometric condition given by a formulae with the keyword condition_geometrique. If used, the coarse_domain_name domain should have the same boundaries name of the fine_domain_name domain. NL2 A mesh file (ASCII format, except if binaire option is specified) named by default newgeom (or specified by the nom_fichier_sortie keyword) will be created and will contain the fine_domain_name domain with the splitted boundaries named boundary_name%I (where I is between from 0 and n-1). Furthermore, several files named boundary_name%I and boundary_name_xv will be created, containing the definition of the subdived boundaries. newgeom will be used to calculate view factors with geom2ansys script whereas only the boundary_name_xv files will be necessary for the radiation calculation. The file listb will contain the list of the boundaries boundary_name%I.
 
 template <typename _SIZE_>
@@ -512,7 +515,7 @@ Entree& DecoupeBord_32_64<_SIZE_>::interpreter_(Entree& is)
         }
 
     }
-  Nom nom_file(this->le_nom()+".boundary_list");
+  Nom nom_file(dom1.le_nom()+".boundary_list");
   decouper(dom1,nom_file);
 
   Cout <<"Writing of the new geometry in the file " << nom_fichier_sortie <<finl;
