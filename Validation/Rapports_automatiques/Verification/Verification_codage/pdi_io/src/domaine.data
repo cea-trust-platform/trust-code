@@ -1,0 +1,34 @@
+# Test parallel HDF5 with PDI library: single .zones file (per numa node) #
+
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 6.283185307 2.
+    }
+    {
+        Bord periox  X = 0.            0. <= Y <= 2.0
+        Bord periox  X = 6.283185307   0. <= Y <= 2.0
+        Bord bas     Y = 0.            0. <= X <= 6.283185307
+        Bord haut    Y = 2.            0. <= X <= 6.283185307
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION #
+Partition dom
+{
+    Partition_tool tranche { tranches 1 2 }
+    Larg_joint 1
+    zones_name DOM
+    Periodique 1 periox
+}
+End
+# END PARTITION #

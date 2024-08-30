@@ -67,23 +67,6 @@ void Ecrire_YAML::write_restart_file(Nom fname)
       restore_data_(fname, 1 /*in case of backup file with simple checkpoint*/, text);
       restore_data_(fname, 0 /*in case of backup file with complete checkpoint*/, text);
 
-      //      std::string simple_sauvegarde = "- file: " + fname.getString();
-      //      begin_bloc_(simple_sauvegarde, text);
-      //      begin_bloc_("read:", text);
-      //      begin_bloc_("simple_sauvegarde:", text);
-      //      add_line_("dataset: format_sauvegarde/simple_sauvegarde", text);
-      //      end_bloc_();
-      //      end_bloc_();
-      //      end_bloc_();
-
-//      std::string restart_from_simple_checkpoint = "- file: " + fname.getString();
-//      begin_bloc_(restart_from_simple_checkpoint, text);
-//      add_line_("on_event: restart_from_simple_checkpoint", text);
-//      begin_bloc_("read:", text);
-//      set_datasets_selection_("", "", text);
-//      end_bloc_();
-//      end_bloc_();
-
       SFichier fic("restart.yml");
       fic << text;
     }
@@ -144,23 +127,6 @@ void  Ecrire_YAML::write_data_(Nom fname, int simple_checkpoint, std::string& te
   end_bloc_();
 
   end_bloc_();
-
-//  std::string simple_checkpoint = "- file: " + fname.getString();
-//  begin_bloc_(simple_checkpoint, text);
-//  add_line_("on_event: simple_checkpoint", text);
-//  if(Process::is_parallel())
-//    {
-//      add_line_("communicator: $nodeComm", text);
-//      begin_bloc_("datasets:", text);
-//      std::string no_prefix = "";
-//      declare_datasets_dimensions_(no_prefix,text);
-//      end_bloc_();
-//    }
-//  begin_bloc_("write:", text);
-//  std::string empty = "";
-//  set_datasets_selection_(empty, empty, text);
-//  end_bloc_();
-//  end_bloc_();
 }
 
 
@@ -225,28 +191,6 @@ void  Ecrire_YAML::write_format_(Nom fname, std::string& text)
   end_bloc_();
   end_bloc_();
 }
-
-
-//void  Ecrire_YAML::write_complete_checkpoint_(Nom fname, std::string& text)
-//{
-//  int nb_iter = 4;  //ToDo::let the user chose the number of iterations he wants to save
-//  std::string complete_checkpoint = "- file: " + fname.getString();
-//  begin_bloc_(complete_checkpoint, text);
-//  add_line_("on_event: complete_checkpoint", text);
-//  if(Process::is_parallel())
-//    add_line_("communicator: $nodeComm", text);
-//  begin_bloc_("datasets:", text);
-//  for(int iter=0; iter<nb_iter; iter++)
-//    {
-//      std::string iteration = "iter_" + std::to_string(iter) + "/";
-//      declare_datasets_dimensions_(iteration, text);
-//    }
-//  end_bloc_();
-//  begin_bloc_("write:", text);
-//  set_datasets_selection_("\'iter_${iter}/",  "\'", text);
-//  end_bloc_();
-//  end_bloc_();
-//}
 
 
 void  Ecrire_YAML::declare_metadata_(int save, std::string& text)

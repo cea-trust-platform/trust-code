@@ -2,8 +2,9 @@
 
 #full computation for reference
 mkdir -p CHECKPOINT_RESTART/REF; cd CHECKPOINT_RESTART/REF
-cp ../../sauvegarde.data ref.data
-sed -i "s/tmax 0.08/tmax 0.12/g" ref.data
-sed -i '/$checkpoint_format /d' ref.data
+cp ../../sauvegarde_reprise.data ref.data
+sed -i "s/tinit.*/tinit 0.0/g" ref.data
+sed -i "s/tmax.*/tmax 0.12/g" ref.data
+sed -i '/$checkpoint_restart /d' ref.data
 
 trust ref.data 1>/dev/null 2>&1 || exit -1
