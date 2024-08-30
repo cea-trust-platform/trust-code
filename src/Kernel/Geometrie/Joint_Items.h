@@ -34,8 +34,8 @@ class Joint_Items_32_64
 public:
 
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
 
   Joint_Items_32_64();
   void reset();

@@ -27,7 +27,7 @@
  */
 template <typename _SIZE_>
 void construire_connectivite_som_elem(const _SIZE_       nb_sommets,
-                                      const ITab_T<_SIZE_>&      les_elems,
+                                      const IntTab_T<_SIZE_>&      les_elems,
                                       Static_Int_Lists_32_64<_SIZE_>& som_elem,
                                       bool       include_virtual)
 {
@@ -38,7 +38,7 @@ void construire_connectivite_som_elem(const _SIZE_       nb_sommets,
 
   // Construction d'un tableau initialise a zero : pour chaque sommet,
   // nombre d'elements voisins de ce sommet
-  AOInt_T<_SIZE_> nb_elements_voisins(nb_sommets);
+  ArrOfInt_T<_SIZE_> nb_elements_voisins(nb_sommets);
 
   // Premier passage : on calcule le nombre d'elements voisins de chaque
   // sommet pour creer la structure de donnees
@@ -89,8 +89,8 @@ void construire_connectivite_som_elem(const _SIZE_       nb_sommets,
  */
 template <typename _SIZE_>
 void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem,
-                            const SmallAOTID_T<_SIZE_>& sommets_to_find,
-                            SmallAOTID_T<_SIZE_>& elements)
+                            const SmallArrOfTID_T<_SIZE_>& sommets_to_find,
+                            SmallArrOfTID_T<_SIZE_>& elements)
 {
   int nb_som_to_find = sommets_to_find.size_array();
   // on retire les sommets valant -1 (cas ou plusieurs types de faces)
@@ -114,7 +114,7 @@ void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem,
     // Just need to start with the correct size because copy_list_to_array will resize otherwise:
     int sz = (int)som_elem.get_list_size(sommet);
     elements.resize_array(sz);
-    AOInt_T<_SIZE_> elem_as_big;
+    ArrOfInt_T<_SIZE_> elem_as_big;
     elements.ref_as_big(elem_as_big);
     som_elem.copy_list_to_array(sommet, elem_as_big);
   }
@@ -169,10 +169,10 @@ void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem,
   elements.resize_array(nb_elem_found);
 }
 
-template void construire_connectivite_som_elem(const int nb_sommets, const ITab_T<int>& les_elems, Static_Int_Lists_32_64<int>& som_elem, bool include_virtual);
-template void find_adjacent_elements(const Static_Int_Lists_32_64<int>& som_elem, const SmallAOTID_T<int>& sommets_to_find, SmallAOTID_T<int>& elements);
+template void construire_connectivite_som_elem(const int nb_sommets, const IntTab_T<int>& les_elems, Static_Int_Lists_32_64<int>& som_elem, bool include_virtual);
+template void find_adjacent_elements(const Static_Int_Lists_32_64<int>& som_elem, const SmallArrOfTID_T<int>& sommets_to_find, SmallArrOfTID_T<int>& elements);
 
 #if INT_is_64_ == 2
-template void construire_connectivite_som_elem(const trustIdType nb_sommets, const ITab_T<trustIdType>& les_elems, Static_Int_Lists_32_64<trustIdType>& som_elem, bool include_virtual);
-template void find_adjacent_elements(const Static_Int_Lists_32_64<trustIdType>& som_elem, const SmallAOTID_T<trustIdType>& sommets_to_find, SmallAOTID_T<trustIdType>& elements);
+template void construire_connectivite_som_elem(const trustIdType nb_sommets, const IntTab_T<trustIdType>& les_elems, Static_Int_Lists_32_64<trustIdType>& som_elem, bool include_virtual);
+template void find_adjacent_elements(const Static_Int_Lists_32_64<trustIdType>& som_elem, const SmallArrOfTID_T<trustIdType>& sommets_to_find, SmallArrOfTID_T<trustIdType>& elements);
 #endif

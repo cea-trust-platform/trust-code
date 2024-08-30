@@ -44,7 +44,7 @@ void traite_nom_fichier_med(Nom& nom_fic);
 void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temps_sauv);
 
 template <typename _SIZE_>
-void conn_trust_to_med(ITab_T<_SIZE_>& les_elems2, const Nom& type_elem, bool toMED);
+void conn_trust_to_med(IntTab_T<_SIZE_>& les_elems2, const Nom& type_elem, bool toMED);
 
 #ifdef MED_
 med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem);

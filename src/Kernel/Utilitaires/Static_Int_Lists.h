@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Static_Int_Lists_32_64
 {
 public:
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
   using ArrsOfInt_t = ArrsOfInt_T<_SIZE_>;
 
   void set_list_sizes(const ArrOfInt_t& sizes);

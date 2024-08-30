@@ -31,9 +31,9 @@ class TroisDto2D_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
   using Domaine_t = Domaine_32_64<_SIZE_>;
   using Bord_t = Bord_32_64<_SIZE_>;

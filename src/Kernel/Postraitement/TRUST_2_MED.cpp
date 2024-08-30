@@ -339,11 +339,11 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
 /*! @brief Passage de la connectivite TRUST a MED si toMED=true de MED a trio si toMED=false
  */
 template <typename _SIZE_>
-void conn_trust_to_med(ITab_T<_SIZE_>& les_elems, const Nom& type_elem, bool toMED)
+void conn_trust_to_med(IntTab_T<_SIZE_>& les_elems, const Nom& type_elem, bool toMED)
 {
 #ifdef MED_
   using int_t = _SIZE_;
-  using IntTab_t = ITab_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
 
   int_t nele=les_elems.dimension(0);
   // cas face_bord vide
@@ -447,7 +447,7 @@ void conn_trust_to_med(ITab_T<_SIZE_>& les_elems, const Nom& type_elem, bool toM
 }
 
 // Explicit instanciation
-template void conn_trust_to_med(ITab_T<int>& les_elems, const Nom& type_elem, bool toMED);
+template void conn_trust_to_med(IntTab_T<int>& les_elems, const Nom& type_elem, bool toMED);
 #if INT_is_64_ == 2
-template void conn_trust_to_med(ITab_T<trustIdType>& les_elems, const Nom& type_elem, bool toMED);
+template void conn_trust_to_med(IntTab_T<trustIdType>& les_elems, const Nom& type_elem, bool toMED);
 #endif

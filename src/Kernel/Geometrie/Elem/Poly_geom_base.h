@@ -41,7 +41,7 @@ class Poly_geom_base_32_64 : public Elem_geom_base_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
 
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override =0;
   const ArrOfInt_t& getFacesIndex() const { return FacesIndex_; }

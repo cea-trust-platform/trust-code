@@ -326,9 +326,9 @@ int Faces_builder::ajouter_une_face(const ArrOfInt& une_face,
 }
 
 template <typename _SIZE_>
-int Faces_builder::chercher_face_element(const ITab_T<_SIZE_>&    elem_som,
+int Faces_builder::chercher_face_element(const IntTab_T<_SIZE_>&    elem_som,
                                          const IntTab& faces_element_ref,
-                                         const SmallAOTID_T<_SIZE_>& une_face,
+                                         const SmallArrOfTID_T<_SIZE_>& une_face,
                                          const _SIZE_     elem)
 {
   const int nb_faces_element = faces_element_ref.dimension(0);
@@ -361,9 +361,9 @@ int Faces_builder::chercher_face_element(const ITab_T<_SIZE_>&    elem_som,
 }
 
 // Explicit instanciation
-template int Faces_builder::chercher_face_element(const ITab_T<int>& elem_som, const IntTab& faces_element_ref, const SmallAOTID_T<int>& une_face, const int elem);
+template int Faces_builder::chercher_face_element(const IntTab_T<int>& elem_som, const IntTab& faces_element_ref, const SmallArrOfTID_T<int>& une_face, const int elem);
 #if INT_is_64_ == 2
-template int Faces_builder::chercher_face_element(const ITab_T<trustIdType>& elem_som, const IntTab& faces_element_ref, const SmallAOTID_T<trustIdType>& une_face, const trustIdType elem);
+template int Faces_builder::chercher_face_element(const IntTab_T<trustIdType>& elem_som, const IntTab& faces_element_ref, const SmallArrOfTID_T<trustIdType>& une_face, const trustIdType elem);
 #endif
 
 const IntTab& Faces_builder::faces_element_reference(int elem) const

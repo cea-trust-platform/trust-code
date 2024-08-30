@@ -35,7 +35,7 @@ class DomaineAxi1d_32_64 : public Domaine_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
 
   const Champ& champ_origine() const {   return champ_orig; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ class Groupes_Faces_32_64 : public LIST(Groupe_Faces_32_64<_SIZE_>)
 
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
   using Domaine_t = Domaine_32_64<_SIZE_>;
 
   void associer_domaine(const Domaine_t&);

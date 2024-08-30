@@ -41,8 +41,8 @@ class Impl_32_64
 {
 public:
   using int_t = _SIZE_;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
   using Domaine_t = Domaine_32_64<_SIZE_>;
 

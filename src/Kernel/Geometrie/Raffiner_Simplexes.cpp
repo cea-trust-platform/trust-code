@@ -51,11 +51,11 @@ class Impl_32_64
 {
 public:
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntVect_t = IVect_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
-  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntVect_t = IntVect_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
 
   using Domaine_t = Domaine_32_64<_SIZE_>;
   using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
@@ -817,11 +817,11 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
 {
   using Impl_ = Impl_32_64<_SIZE_>;
 
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntVect_t = IVect_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
-  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntVect_t = IntVect_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
 
   using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
   using Bords_t = Bords_32_64<_SIZE_>;

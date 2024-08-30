@@ -30,7 +30,7 @@ namespace
  *
  */
 template <typename _SIZE_>
-_SIZE_ array_retirer_doublons(AOInt_T<_SIZE_>& array)
+_SIZE_ array_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
 {
   const _SIZE_ size = array.size_array();
   if (size == 0)
@@ -57,11 +57,11 @@ _SIZE_ array_retirer_doublons(AOInt_T<_SIZE_>& array)
  *
  */
 template <typename _SIZE_>
-void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array)
+void array_trier_retirer_doublons(ArrOfInt_T<_SIZE_>& array)
 {
   // IntVect n'est pas traite correctement car on ne
   //  fait pas un resize() mais un resize_array().
-  assert(typeid(array) != typeid(IVect_T<_SIZE_>));
+  assert(typeid(array) != typeid(IntVect_T<_SIZE_>));
   const _SIZE_ size = array.size_array();
   if (size == 0)
     return;
@@ -73,9 +73,9 @@ void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array)
 }
 
 // Explicit instanciation
-template void array_trier_retirer_doublons(AOInt_T<int>& array);
+template void array_trier_retirer_doublons(ArrOfInt_T<int>& array);
 #if INT_is_64_ == 2
-template void array_trier_retirer_doublons(AOInt_T<trustIdType>& array);
+template void array_trier_retirer_doublons(ArrOfInt_T<trustIdType>& array);
 #endif
 
 /*! @brief calcule l'intersection entre les deux listes d'entiers liste1 et liste2.
@@ -257,14 +257,14 @@ int tri_lexicographique_tableau(IntTab& tab)
 }
 
 template <typename _SIZE_>
-static const IVect_T<_SIZE_> *fct_qsort_tab_ptr = 0;
+static const IntVect_T<_SIZE_> *fct_qsort_tab_ptr = 0;
 
 template <typename _SIZE_>
 True_int fct_qsort_tableau_1_indirect(const void *ptr1, const void *ptr2)
 {
   const _SIZE_ t1 = *((const _SIZE_ *) ptr1);
   const _SIZE_ t2 = *((const _SIZE_ *) ptr2);
-  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  const IntVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
   _SIZE_ delta = tab[t1] - tab[t2];
   return my_sign(delta);
 }
@@ -274,7 +274,7 @@ True_int fct_qsort_tableau_2_indirect(const void *ptr1, const void *ptr2)
 {
   const _SIZE_ t1 = *((const _SIZE_ *) ptr1) * 2;
   const _SIZE_ t2 = *((const _SIZE_ *) ptr2) * 2;
-  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  const IntVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
   _SIZE_ delta = tab[t1] - tab[t2];
   _SIZE_ delta2 = tab[t1+1] - tab[t2+1];
   True_int s1 = my_sign(delta);
@@ -287,7 +287,7 @@ True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
   const _SIZE_ nc = (_SIZE_)fct_qsort_nbcolonnes;
   _SIZE_ t1 = *((const _SIZE_ *) ptr1) * nc;
   _SIZE_ t2 = *((const _SIZE_ *) ptr2) * nc;
-  const IVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
+  const IntVect_T<_SIZE_>& tab = *fct_qsort_tab_ptr<_SIZE_>;
   const _SIZE_ n = nc - 1;
   for (_SIZE_ i = 0; i < n; i++)
     {
@@ -308,7 +308,7 @@ True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
  *
  */
 template <typename _SIZE_>
-int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZE_>& index)
+int tri_lexicographique_tableau_indirect(const IntTab_T<_SIZE_>& tab, ArrOfInt_T<_SIZE_>& index)
 {
   using int_t = _SIZE_;
   // On verifie que le tableau n'est pas un tableau distribue:
@@ -350,12 +350,12 @@ int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZ
 }
 
 // Explicit instanciation
-template const IVect_T<int> *fct_qsort_tab_ptr<int>;
-template int tri_lexicographique_tableau_indirect(const ITab_T<int>& tab, AOInt_T<int>& index);
+template const IntVect_T<int> *fct_qsort_tab_ptr<int>;
+template int tri_lexicographique_tableau_indirect(const IntTab_T<int>& tab, ArrOfInt_T<int>& index);
 
 #if INT_is_64_ == 2
-template static const IVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
-template int tri_lexicographique_tableau_indirect(const ITab_T<trustIdType>& tab, AOInt_T<trustIdType>& index);
+template static const IntVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
+template int tri_lexicographique_tableau_indirect(const IntTab_T<trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
 #endif
 
 void resize_tab_lines(IntTab& tab, const int n)

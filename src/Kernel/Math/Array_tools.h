@@ -22,7 +22,7 @@
  *
  */
 template <typename _SIZE_>
-void array_trier_retirer_doublons(AOInt_T<_SIZE_>& array);
+void array_trier_retirer_doublons(ArrOfInt_T<_SIZE_>& array);
 
 /*! @brief Methode outil pour calculer l'intersection entre deux listes d'entiers.
  *
@@ -48,7 +48,7 @@ int tri_lexicographique_tableau(IntTab& tab);
  *
  */
 template <typename _SIZE_>
-int tri_lexicographique_tableau_indirect(const ITab_T<_SIZE_>& tab, AOInt_T<_SIZE_>& index);
+int tri_lexicographique_tableau_indirect(const IntTab_T<_SIZE_>& tab, ArrOfInt_T<_SIZE_>& index);
 
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *

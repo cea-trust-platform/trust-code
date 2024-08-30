@@ -91,7 +91,7 @@ static double computeAngleBetweenCoplanarVectors(std::vector<double> u, std::vec
 // reordering vertices inside the faces in trigonometric order
 // (or anti-trigonometric, depending on the orientation of the normal)
 template <typename _SIZE_>
-static void reorder_vertices(Faces_32_64<_SIZE_>& faces, const DTab_T<_SIZE_>& coords)
+static void reorder_vertices(Faces_32_64<_SIZE_>& faces, const DoubleTab_T<_SIZE_>& coords)
 {
   using int_t = _SIZE_;
   int nb_sommets = (int)faces.les_sommets().dimension(1);

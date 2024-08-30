@@ -65,7 +65,7 @@ void Static_Int_Lists_32_64<_SIZE_>::set_data(const ArrOfInt_t& data)
 #ifndef NDEBUG
 // Verifie la coherence du tableau index et data
 template <typename _SIZE_>
-static bool check_index_data(const AOInt_T<_SIZE_>& index, const AOInt_T<_SIZE_>& data)
+static bool check_index_data(const ArrOfInt_T<_SIZE_>& index, const ArrOfInt_T<_SIZE_>& data)
 {
   if (index.size_array() < 1)
     return false;

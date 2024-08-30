@@ -54,10 +54,10 @@ class Octree_32_64
 {
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using Vect_IntTab_t = TRUST_Vector<IntTab_t>;
 
   using Domaine_t = Domaine_32_64<_SIZE_>;
@@ -104,10 +104,10 @@ class OctreeRoot_32_64 :  public Objet_U, public Octree_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using Domaine_t = Domaine_32_64<_SIZE_>;
   using Octree_t = Octree_32_64<_SIZE_>;
 
@@ -165,7 +165,7 @@ class OctreeFloor_32_64 : public Octree_32_64<_SIZE_>
 public :
   using int_t = _SIZE_;
   using Octree_t = Octree_32_64<_SIZE_>;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
 
   OctreeFloor_32_64(Octree_t *mon_pere, const ArrOfInt_t& val, const OctreeLoc& loc)
   {

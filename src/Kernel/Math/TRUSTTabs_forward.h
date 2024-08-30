@@ -70,13 +70,13 @@ using IntTabs = TRUST_Vector<TRUSTTab<int, int>>; // remplace VECT(IntTab)
 //
 // Handy 'using' clauses used in all the class templatized on the 32/64b aspect (Domaine, Octree, Elem_geom, etc.)
 //
-template <typename _SIZE_> using AOInt_T = TRUSTArray<_SIZE_, _SIZE_>;      // either an ArrOfInt (32 bits) or a BigArrOfTID (64b)
-template <typename _SIZE_> using IVect_T = TRUSTVect<_SIZE_, _SIZE_>;       // either an IntVect (32 bits) or a BigTIDVect (64b)
-template <typename _SIZE_> using ITab_T = TRUSTTab<_SIZE_, _SIZE_>;         // either an IntTab (32 bits) or a BigTIDTab (64b)
-template <typename _TYPE_> using SmallAOTID_T = TRUSTArray<_TYPE_, int>;    // a small array of identifiers (small even in 64b)
-template <typename _SIZE_> using AODouble_T= TRUSTArray<double, _SIZE_>;
-template <typename _SIZE_> using DVect_T = TRUSTVect<double, _SIZE_>;
-template <typename _SIZE_> using DTab_T = TRUSTTab<double, _SIZE_>;         // either an DoubleTab (32 bits) or a BigDoubleTab (64b)
+template <typename _SIZE_> using ArrOfInt_T = TRUSTArray<_SIZE_, _SIZE_>;      // either an ArrOfInt (32 bits) or a BigArrOfTID (64b)
+template <typename _SIZE_> using IntVect_T = TRUSTVect<_SIZE_, _SIZE_>;       // either an IntVect (32 bits) or a BigTIDVect (64b)
+template <typename _SIZE_> using IntTab_T = TRUSTTab<_SIZE_, _SIZE_>;         // either an IntTab (32 bits) or a BigTIDTab (64b)
+template <typename _TYPE_> using SmallArrOfTID_T = TRUSTArray<_TYPE_, int>;    // a small array of identifiers (small even in 64b)
+template <typename _SIZE_> using ArrOfDouble_T= TRUSTArray<double, _SIZE_>;
+template <typename _SIZE_> using DoubleVect_T = TRUSTVect<double, _SIZE_>;
+template <typename _SIZE_> using DoubleTab_T = TRUSTTab<double, _SIZE_>;         // either an DoubleTab (32 bits) or a BigDoubleTab (64b)
 
 template <typename _SIZE_> using ArrsOfInt_T = TRUST_Vector<TRUSTArray<_SIZE_, _SIZE_>>;
 template <typename _SIZE_> using DoubleTabs_T = TRUST_Vector<TRUSTTab<double, _SIZE_>>;

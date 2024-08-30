@@ -40,10 +40,10 @@ class Octree_Double_32_64
 {
 public:
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using ArrOfDouble_t = AODouble_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
   void reset();
 

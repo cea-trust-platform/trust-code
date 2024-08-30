@@ -40,8 +40,8 @@ class Joint_32_64 : public Frontiere_32_64<_SIZE_>
 public:
 
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
 
   using Joint_Items_t = Joint_Items_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;

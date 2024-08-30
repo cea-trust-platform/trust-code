@@ -288,7 +288,7 @@ namespace // Anonymous namespace
 
 template <typename _SIZE_>
 inline void range2D(double x, double y, double xmil, double ymil,
-                    ArrOfInt& ok, TRUST_Vector<ITab_T<_SIZE_>>& SousTab, SmallAOTID_T<_SIZE_>& compteur, _SIZE_ i)
+                    ArrOfInt& ok, TRUST_Vector<IntTab_T<_SIZE_>>& SousTab, SmallArrOfTID_T<_SIZE_>& compteur, _SIZE_ i)
 {
   if(x<xmil)
     {
@@ -337,7 +337,7 @@ inline void range2D(double x, double y, double xmil, double ymil,
 template <typename _SIZE_>
 inline void range3D(double x, double y, double z,
                     double xmil, double ymil, double zmil,
-                    ArrOfInt& ok, TRUST_Vector<ITab_T<_SIZE_>>& SousTab, SmallAOTID_T<_SIZE_>& compteur, _SIZE_ i)
+                    ArrOfInt& ok, TRUST_Vector<IntTab_T<_SIZE_>>& SousTab, SmallArrOfTID_T<_SIZE_>& compteur, _SIZE_ i)
 {
   if(x<xmil)
     {

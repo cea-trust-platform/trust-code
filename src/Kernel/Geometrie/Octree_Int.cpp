@@ -160,7 +160,7 @@ typename Octree_Int_32_64<_SIZE_>::int_t Octree_Int_32_64<_SIZE_>::search_elemen
 template <typename _SIZE_>
 struct IntBoxData
 {
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
   using AOBit_ = ArrOfBit_32_64<_SIZE_>;
 
   IntBoxData(int xmin, int ymin, int zmin,

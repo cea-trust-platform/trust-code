@@ -32,11 +32,11 @@ class Polygone_32_64  : public Poly_geom_base_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using ArrOfInt_t = AOInt_T<_SIZE_>;
-  using IntTab_t = ITab_T<_SIZE_>;
-  using SmallArrOfTID_t = SmallAOTID_T<_SIZE_>;
-  using DoubleVect_t = DVect_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
+  using DoubleVect_t = DoubleVect_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using Domaine_t = Domaine_32_64<_SIZE_>;
 
 

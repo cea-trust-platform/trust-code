@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,9 +24,9 @@ class Static_Int_Lists_32_64;
 // We do not differentiate here _SIZE_ and _TYPE_ because those functions all work with entity indices.
 // So we are either manipulating IntTab or BigTIDTab, nothing in between.
 template <typename _SIZE_>
-void construire_connectivite_som_elem(const _SIZE_ nb_sommets, const ITab_T<_SIZE_>& les_elems, Static_Int_Lists_32_64<_SIZE_>& som_elem, bool include_virtual);
+void construire_connectivite_som_elem(const _SIZE_ nb_sommets, const IntTab_T<_SIZE_>& les_elems, Static_Int_Lists_32_64<_SIZE_>& som_elem, bool include_virtual);
 
 template <typename _SIZE_>
-void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem, const SmallAOTID_T<_SIZE_>& sommets_to_find, SmallAOTID_T<_SIZE_>& elements);
+void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem, const SmallArrOfTID_T<_SIZE_>& sommets_to_find, SmallArrOfTID_T<_SIZE_>& elements);
 
 #endif

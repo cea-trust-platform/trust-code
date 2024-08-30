@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,8 +34,8 @@ class Rectangle_2D_axi_32_64 : public Rectangle_32_64<_SIZE_>
 
 public :
   using int_t = _SIZE_;
-  using DoubleVect_t = DVect_T<_SIZE_>;
-  using DoubleTab_t = DTab_T<_SIZE_>;
+  using DoubleVect_t = DoubleVect_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using Domaine_t = Domaine_32_64<_SIZE_>;
 
 
