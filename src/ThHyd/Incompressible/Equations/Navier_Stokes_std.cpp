@@ -1190,6 +1190,13 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   la_pression_en_pa->mettre_a_jour(pression().temps());
 }
 
+const Champ_Inc& Navier_Stokes_std::champ_a_sauvegarder(int i) const
+{
+  assert(i==0 || i==1);
+  const Champ_Inc& ch = i == 0 ? inconnue() : la_pression;
+  return ch;
+}
+
 /*! @brief Appelle Equation_base::sauvegarder(Sortie&) et sauvegarde la pression sur un flot de sortie.
  *
  * @param (Sortie& os) un flot de sortie sur lequel sauvegarder

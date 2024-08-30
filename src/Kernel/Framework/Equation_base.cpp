@@ -434,6 +434,12 @@ int Equation_base::sauvegarder(Sortie& os) const
   return inconnue().sauvegarder(os);
 }
 
+const Champ_Inc& Equation_base::champ_a_sauvegarder(int i) const
+{
+  assert (i==0);
+  return inconnue();
+}
+
 /*! @brief On reprend l'inconnue a partir d'un flot d'entree.
  *
  * [ON CHERCHE L'INCONNUE PAR SON NOM]

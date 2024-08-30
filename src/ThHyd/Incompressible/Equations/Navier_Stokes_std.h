@@ -104,7 +104,8 @@ public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-
+  int nb_champs_a_sauvegarder() const override { return 2; }
+  const Champ_Inc& champ_a_sauvegarder(int i) const override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
 
