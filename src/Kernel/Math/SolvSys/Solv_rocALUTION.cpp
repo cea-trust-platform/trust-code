@@ -761,7 +761,20 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   const ArrOfInt& tab2 = csr.get_tab2();
   const ArrOfDouble& coeff = csr.get_coeff();
   const MD_Vector_base& mdv = renum_.get_md_vector().valeur();
-  const MD_Vector_std& md = sub_type(MD_Vector_composite, mdv) ? ref_cast(MD_Vector_composite, mdv).global_md_ : ref_cast(MD_Vector_std, mdv);
+
+  const MD_Vector_std *tmp_p = nullptr;
+  if (Process::is_parallel())
+    {
+      if (sub_type(MD_Vector_composite, mdv))
+        {
+          const MD_Vector_mono * pp = & ref_cast(MD_Vector_composite, mdv).global_md();
+          tmp_p = dynamic_cast<const MD_Vector_std *>(pp);
+          assert(tmp_p != nullptr); // always MD_Vector_std in parallel mode
+        }
+      else
+        tmp_p = &ref_cast(MD_Vector_std, mdv);
+    }
+
   if (local_renum_.size_array()==0) // ToDo OpenMP: bug a trouver sur ce tableau et son utilisation dans rocALUTION pour P1/P1Bulle
     {
       int size = items_to_keep_.size_array();
@@ -792,12 +805,16 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
       renum_.ecrit(Journal());
       Journal() << "Provisoire local_renum_=" << finl;
       local_renum_.ecrit(Journal());
-      Journal() << "Provisoire items_to_send_:" << finl;
-      md.items_to_send_.ecrire(Journal());
-      Journal() << "Provisoire items_to_recv_:" << finl;
-      md.items_to_recv_.ecrire(Journal());
-      Journal() << "Provisoire blocs_to_recv_:" << finl;
-      md.blocs_to_recv_.ecrire(Journal());
+      if (Process::is_parallel())
+        {
+          const MD_Vector_std& md = *tmp_p;
+          Journal() << "Provisoire items_to_send_:" << finl;
+          md.items_to_send().ecrire(Journal());
+          Journal() << "Provisoire items_to_recv_:" << finl;
+          md.items_to_recv().ecrire(Journal());
+          Journal() << "Provisoire blocs_to_recv_:" << finl;
+          md.blocs_to_recv().ecrire(Journal());
+        }
     }
   std::vector<int> tab1_c, ghost_tab1_c;
   std::vector<int> tab2_c, ghost_tab2_c;
@@ -850,42 +867,43 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
 
   if (Process::is_parallel())
     {
-      int boundary_nnz = md.items_to_send_.get_data().size_array();
+      const MD_Vector_std& md = *tmp_p;
+      int boundary_nnz = md.items_to_send().get_data().size_array();
 
       // Renum items_to_send et la tri:
       std::vector<True_int> renum_items_to_send_;
-      for (int pe = 0; pe < md.items_to_send_.get_nb_lists(); pe++)
+      for (int pe = 0; pe < md.items_to_send().get_nb_lists(); pe++)
         {
           ArrOfInt items_pe;
-          md.items_to_send_.copy_list_to_array(pe, items_pe);
+          md.items_to_send().copy_list_to_array(pe, items_pe);
           int size = items_pe.size_array();
           for (int i = 0; i < size; i++)
-            items_pe[i] = local_renum_[md.items_to_send_(pe, i)];
+            items_pe[i] = local_renum_[md.items_to_send()(pe, i)];
           items_pe.array_trier_retirer_doublons();
           // Argh, pas specifie dans la doc mais il fallait que BoundaryIndex soit triee (ToDo le dire au support rocALUTIION pour la doc...)
           for (True_int i=0; i<size; i++)
             renum_items_to_send_.push_back(items_pe[i]);
         }
       pm.SetBoundaryIndex(boundary_nnz, &renum_items_to_send_[0]);
-      int neighbors = md.pe_voisins_.size_array();
+      int neighbors = md.pe_voisins().size_array();
       std::vector<True_int> recv;
       for (int i=0; i<neighbors; i++)
-        recv.push_back(md.pe_voisins_[i]);
+        recv.push_back(md.pe_voisins()[i]);
       std::vector<True_int> recv_offset;
       True_int offset = 0;
       recv_offset.push_back(offset);
       // items virtuels communs:
-      assert(md.items_to_recv_.get_nb_lists() == neighbors);
-      assert(md.blocs_to_recv_.get_nb_lists() == neighbors);
+      assert(md.items_to_recv().get_nb_lists() == neighbors);
+      assert(md.blocs_to_recv().get_nb_lists() == neighbors);
       // Nb items recus:
-      for (int pe = 0; pe < md.blocs_to_recv_.get_nb_lists(); pe++)
+      for (int pe = 0; pe < md.blocs_to_recv().get_nb_lists(); pe++)
         {
-          offset += md.items_to_recv_.get_list_size(pe); // nb items virtuels communs
-          const int nblocs = md.blocs_to_recv_.get_list_size(pe) / 2;
+          offset += md.items_to_recv().get_list_size(pe); // nb items virtuels communs
+          const int nblocs = md.blocs_to_recv().get_list_size(pe) / 2;
           for (int ibloc = 0; ibloc < nblocs; ibloc++)
             {
-              const int jdeb = md.blocs_to_recv_(pe, ibloc * 2);
-              const int jfin = md.blocs_to_recv_(pe, ibloc * 2 + 1);
+              const int jdeb = md.blocs_to_recv()(pe, ibloc * 2);
+              const int jfin = md.blocs_to_recv()(pe, ibloc * 2 + 1);
               offset += jfin - jdeb; // nb items virtuels non communs
             }
           recv_offset.push_back(offset);
@@ -893,10 +911,10 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
       pm.SetReceivers(neighbors, &recv[0], &recv_offset[0]);
       std::vector<True_int> sender;
       std::vector<True_int> send_offset;
-      for (int i=0; i<md.pe_voisins_.size_array(); i++)
-        sender.push_back(md.pe_voisins_[i]);
-      for (int i=0; i<md.items_to_send_.get_index().size_array(); i++)
-        send_offset.push_back(md.items_to_send_.get_index()[i]);
+      for (int i=0; i<md.pe_voisins().size_array(); i++)
+        sender.push_back(md.pe_voisins()[i]);
+      for (int i=0; i<md.items_to_send().get_index().size_array(); i++)
+        send_offset.push_back(md.items_to_send().get_index()[i]);
       pm.SetSenders(neighbors, &sender[0], &send_offset[0]);
       if (debug) pm.WriteFileASCII("pm");
     }

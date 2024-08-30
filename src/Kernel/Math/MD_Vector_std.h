@@ -16,7 +16,9 @@
 #ifndef MD_Vector_std_included
 #define MD_Vector_std_included
 
+#include <MD_Vector_mono.h>
 #include <Schema_Comm_Vecteurs.h>
+#include <Schema_Comm.h>
 #include <Echange_EV_Options.h>
 #include <Static_Int_Lists.h>
 #include <communications.h>
@@ -34,7 +36,7 @@
  *   par exemple)
  *
  */
-class MD_Vector_std : public MD_Vector_base
+class MD_Vector_std : public MD_Vector_mono
 {
   Declare_instanciable(MD_Vector_std);
 
@@ -60,6 +62,17 @@ public:
   inline void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, TIDVect& v) const override { process_recv_data_template<trustIdType>(opt,sc,v); }
 #endif
 
+  inline const ArrOfInt& pe_voisins() const { return pe_voisins_; }
+  inline const Static_Int_Lists& items_to_send() const { return items_to_send_; }
+  inline const Static_Int_Lists& items_to_recv() const { return items_to_recv_; }
+  inline const Static_Int_Lists& blocs_to_recv() const { return blocs_to_recv_; }
+
+  void append_from_other_std(const MD_Vector_std& src, int offset, int multiplier) override;
+  void fill_md_vect_renum(const IntVect& renum, MD_Vector& md_vect) const override;
+
+  bool use_blocks() const override { return true; }
+
+protected:
 
   // Numeros des processeurs voisins avec qui j'echange des donnees (meme taille que les VECT suivants)
   ArrOfInt pe_voisins_;

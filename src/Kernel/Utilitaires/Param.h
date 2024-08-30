@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,9 @@ public:
   Param(const char *);
   // ajout d'argument
   void ajouter(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+#if INT_is_64_ == 2
+  void ajouter(const char *,trustIdType* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+#endif
   void ajouter(const char *,double* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   void ajouter(const char *, Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   void ajouter_arr_size_predefinie(const char *, ArrOfInt* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);

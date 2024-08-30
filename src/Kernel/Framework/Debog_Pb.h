@@ -23,6 +23,7 @@
 #include <MD_Vector_tools.h>
 #include <TRUSTTab_parts.h>
 #include <EcrFicCollecte.h>
+#include <MD_Vector_seq.h>
 #include <MD_Vector_std.h>
 #include <TRUSTVects.h>
 #include <TRUST_Ref.h>

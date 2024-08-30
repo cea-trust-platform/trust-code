@@ -488,7 +488,7 @@ static int lecture_special_part2(const Domaine_VF& zvf, Entree& fich, DoubleTab&
       for (int i = 0; i < n; i++)
         ntot += lecture_special_part2(zvf, fich, parts[i]);
     }
-  else if (sub_type(MD_Vector_std, md.valeur()))
+  else if (sub_type(MD_Vector_std, md.valeur()) || sub_type(MD_Vector_seq, md.valeur()))
     {
       const DoubleTab& coords = get_ref_coordinates_items(zvf, md);
       const double epsilon = zvf.domaine().epsilon();

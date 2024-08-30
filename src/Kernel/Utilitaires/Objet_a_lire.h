@@ -28,13 +28,14 @@ class Objet_a_lire :public Objet_U
 {
   Declare_instanciable(Objet_a_lire);
 public:
-  enum Type { INTEGER = 0, DOUBLE = 1, OBJECT = 2, FLAG = 3, NON_STD = 4, DERIV = 5, ArrOfInt_size_imp = 6,
-              ArrOfDouble_size_imp = 7, PARAM = 8
+  enum Type { INTEGER = 0, TRUSTID, DOUBLE, OBJECT, FLAG, NON_STD, DERIV, ArrOfInt_size_imp,
+              ArrOfDouble_size_imp, PARAM
             };
 
   enum Nature { OPTIONAL = 0, REQUIRED = 1 };
 
   void set_entier(int*);
+  void set_tid(trustIdType*);
   void set_double(double*);
   void set_objet(Objet_U*);
   void set_arrofint(ArrOfInt*);
@@ -69,6 +70,7 @@ protected:
   Objet_a_lire::Type type = INTEGER;
   Objet_a_lire::Nature nature = OPTIONAL;
   int *int_a_lire;
+  trustIdType *tid_a_lire;
   double *double_a_lire;
   Objet_U *obj_a_lire, *objet_lu;
   ArrOfInt *arrofint_a_lire;

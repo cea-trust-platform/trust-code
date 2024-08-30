@@ -584,12 +584,9 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::set_md_vector(const MD_Vector& md_vector)
 {
 #ifndef LATATOOLS
   _SIZE_ dim0 = dimension_tot_0_;
-  // md_vector is filled and we are not sequential (MD_Vector is not a MD_Vector_seq in which get_nb_items_reels() is non sensical):
-  if (md_vector.non_nul() && Process::is_parallel())
-    {
-      // renvoie -1 si l'appel est invalide ou si le MD_Vector est mix (cf doc MD_Vector_base2):
-      dim0 = md_vector->get_nb_items_reels();
-    }
+  if (md_vector.non_nul())
+    // renvoie -1 si l'appel est invalide ou si le MD_Vector est mix (cf doc MD_Vector_base):
+    dim0 = md_vector->get_nb_items_reels();
   dimensions_[0] = dim0;
   assert(verifie_LINE_SIZE());
   // a appeler meme pour un md_vector nul (pour remettre size_reelle_):
@@ -685,22 +682,28 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::ajoute_produit_tensoriel(_T_ alpha, const T
   assert(vx.size_totale() * line_size_xy == v.size_totale() * line_size_x);
   assert(vy.size_totale() * line_size_xy == v.size_totale() * line_size_y);
 
-  // blocs d'items a traiter (un bloc par defaut: tout le tableau)
-  _SIZE_ default_bloc[2];
-  default_bloc[0] = 0;
-  default_bloc[1] = (v.line_size() > 0) ? (v.size_totale() / v.line_size()) : 0;
-  const _SIZE_ *blocs = default_bloc;
-  _SIZE_ nb_blocs = 1;
-  if (v.get_md_vector().non_nul())
+  // Logic similar to what is done in TRUSTVect_Tools.cpp, with ::determine_blocks()
+  Block_Iter<_SIZE_> bloc_itr; // By default, nothing in the iterator
+  int nblocs_left = 0;
+  if (v.get_md_vector().non_nul() && v.get_md_vector()->use_blocks())
     {
-      const TRUSTArray<int,_SIZE_>& blk = v.get_md_vector()->get_items_to_compute();
-      blocs = blk.addr();
-      nb_blocs = blk.size_array() / 2;
+      const ArrOfInt& items_blocs = v.get_md_vector()->get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_itr = Block_Iter<_SIZE_>(items_blocs.addr());
+    }
+  else
+    {
+      if (v.size_totale() > 0)
+        {
+          nblocs_left = 1;
+          bloc_itr = Block_Iter<_SIZE_>(0, v.size_totale() / v.line_size());   // iterator on a single (big) block
+        }
     }
 
-  for (_SIZE_ i_bloc = 0; i_bloc < nb_blocs; i_bloc++)
+  for (; nblocs_left; nblocs_left--)
     {
-      const _SIZE_ debut = blocs[i_bloc*2], fin = blocs[i_bloc*2+1];
+      const _SIZE_ debut = (*(bloc_itr++)), fin = (*(bloc_itr++));
       _SIZE_ v_index = debut * line_size_xy;
       for (_SIZE_ i = debut; i < fin; i++)
         for (_SIZE_ j = 0; j < line_size_x; j++)

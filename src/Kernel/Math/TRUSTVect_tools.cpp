@@ -17,6 +17,7 @@
 #include <TRUSTVect_tools.tpp>
 #include <TRUSTTabs.h>
 #include <View_Types.h>
+#include <MD_Vector_seq.h>
 
 // Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
 #ifdef _OPENMP_TARGET
@@ -28,38 +29,6 @@ static bool timer=false;
 namespace
 {
 
-/*! Small iterator class to scan blocks of a MD vector (blocks described by integer indices) or scan a single big block (trustIdType).
- * The important point: the operator*() always returns a trustIdType (TID), whether internal data is int* or trustIdType* :
- *   - in sequential, we can scan a whole Big array from start to end,
- *   - in parallel, we can scan chunks of the arrays as defined by MD_Vector_base2::blocs_items_to_compute_ (stored as int, on purpose, it should never be too big
- *   after Scatter)
- */
-template<typename _SIZE_>
-struct Block_Iter
-{
-  Block_Iter() = default;
-  Block_Iter(const Block_Iter& other) = default;  // default copy ctor, will copy all members
-  Block_Iter(const int * p) : int_ptr(p) {}
-  Block_Iter(_SIZE_ s, _SIZE_ e) : start(s), end(e) {}
-
-  _SIZE_ operator*() const
-  {
-    return start == -1 ? (_SIZE_)*int_ptr : start;  // potentially casting!
-  }
-  Block_Iter operator++(True_int)   // Postfix operator
-  {
-    Block_Iter ret = *this;
-    if(int_ptr) int_ptr++;
-    else std::swap(start, end);
-    return ret;
-  }
-  bool empty() const { return int_ptr == nullptr && start == -1; }
-
-  const int * int_ptr=nullptr;
-  _SIZE_ start=-1;
-  _SIZE_ end=-1;
-};
-
 /*! Determine which blocks of indices should be used to perform an operation.
  */
 template <typename _SIZE_>
@@ -67,7 +36,15 @@ Block_Iter<_SIZE_> determine_blocks(Mp_vect_options opt, const MD_Vector& md, co
 {
   nblocs_left = 1;
 #ifndef LATATOOLS
-  if (opt != VECT_ALL_ITEMS && md.non_nul() && Process::is_parallel())
+  // Should we use the members bloc_items_to_* of the MD_Vector_* classes ?
+  // (this must be avoided when
+  //    - md.valeur() is not defined (md is nul)
+  //    - we want all items (VECT_SEQUENTIAL_ITEMS)
+  //    - md.valeur() is a MD_Vector_seq
+  //    - or md.valeur() is a MD_Vector_composite when it is an aggregation of several MD_Vector_seq)
+  const bool use_blocks = (opt != VECT_ALL_ITEMS && md.non_nul() && md->use_blocks());
+
+  if (use_blocks)
     {
       assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
 #if INT_is_64_ == 2

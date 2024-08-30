@@ -16,7 +16,7 @@
 #ifndef MD_Vector_seq_included
 #define MD_Vector_seq_included
 
-#include <MD_Vector_base.h>
+#include <MD_Vector_mono.h>
 #include <TRUSTArray.h>
 
 /*! @brief Dummy parallel descriptor used for sequential computations.
@@ -32,18 +32,21 @@
  * hence the creation of the current class.
  *
  * See arch.h.in for more explanations on 64b.
+ *
+ * In this class, members inherited from MD_Vector_mono are meaningless and their information is not updated.
+ * Algorithm like get_sequential_items_flags() are actually overriden not to use this.
  */
-class MD_Vector_seq : public MD_Vector_base
+class MD_Vector_seq : public MD_Vector_mono
 {
   Declare_instanciable_sans_constructeur(MD_Vector_seq);
 
 public:
 
   MD_Vector_seq() : MD_Vector_seq(-1) {  }
-  MD_Vector_seq(const trustIdType& nb) : MD_Vector_base(), nb_items_(nb)
+  MD_Vector_seq(const trustIdType& nb) : MD_Vector_mono(), nb_items_(nb)
   {
-    // We should never create a MD_Vector_seq when parallel:
-    assert(Process::is_sequential());
+    // We should never create a MD_Vector_seq when parallel ... but unfortunately we do in Scatter :-(
+    //    assert(Process::is_sequential());
   }
 
   trustIdType get_nb_items() const { return nb_items_; }
@@ -72,13 +75,18 @@ public:
   void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const override { throw; }
 
 #if INT_is_64_ == 2
-  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override { }
-  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override { }
-  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override { }
+  void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override   { throw; }
+  void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override { throw; }
+  void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const override { throw; }
 #endif
 
+  void append_from_other_seq(const MD_Vector_seq& src, int offset, int multiplier) override;
+  void fill_md_vect_renum(const IntVect& renum, MD_Vector& md_vect) const override;
+
+  bool use_blocks() const override { return false; }
+
 protected:
-  int get_seq_flags_(ArrOfBit& flags, int line_size) const override;
+  int get_seq_flags_impl(ArrOfBit& flags, int line_size) const override;
 
 private:
   /*! The number of items in the array - all real, no virtuals */

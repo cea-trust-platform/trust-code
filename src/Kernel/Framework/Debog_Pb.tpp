@@ -329,7 +329,7 @@ template<typename _TYPE_>
 void Debog_Pb::ecrire_partie(const TRUSTVect<_TYPE_>& arr)
 {
   const MD_Vector_base& md = arr.get_md_vector().valeur();
-  if (sub_type(MD_Vector_std, md))
+  if (sub_type(MD_Vector_std, md) || sub_type(MD_Vector_seq, md))
     {
       const int ls = arr.line_size();
       write_debog_data_file_.put(arr.addr(), arr.size_array(), ls);

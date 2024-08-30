@@ -18,6 +18,10 @@
 #include <TRUSTTab.h>
 #include <TRUSTTrav.h>
 
+#include <SChaine.h>
+#include <EChaine.h>
+#include <MD_Vector_seq.h>
+
 #include <assert.h>
 #include <numeric>
 
@@ -35,6 +39,7 @@ public:
   void test_trav();
   void test_conversion();
   void test_dim_64();
+  void test_md_vect();
 };
 
 
@@ -279,6 +284,27 @@ void TestTRUSTArray::test_dim_64()
   assert(d0_==2 && d1_==3);
 }
 
+void TestTRUSTArray::test_md_vect()
+{
+  MD_Vector md;
+  MD_Vector_seq mdvs(6);
+  md.copy(mdvs);
+
+  SChaine out;
+  DoubleVect arr(6);
+  arr.set_md_vector(md);
+
+  MD_Vector_tools::dump_vector_with_md(arr, out);
+
+  //  std::cout << out.get_str() << endl;
+
+  EChaine in(out.get_str());
+  DoubleVect arr2;
+  MD_Vector_tools::restore_vector_with_md(arr2, in);
+  assert(arr2.size_totale() == 6);
+  assert(arr2.get_md_vector()->get_nb_items_tot() == 6);
+}
+
 /*! Not great, we just rely on 'assert' for now ... one day Google Test or something
  * similar ...
  */
@@ -297,6 +323,7 @@ int main(int argc, char ** argv)
   tta.test_trav();
   tta.test_conversion();
   tta.test_dim_64();
+  tta.test_md_vect();
 
 #ifdef _OPENMP
   Kokkos::finalize();

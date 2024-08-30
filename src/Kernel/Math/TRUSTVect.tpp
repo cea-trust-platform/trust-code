@@ -235,9 +235,15 @@ inline void TRUSTVect<_TYPE_,_SIZE_>::set_md_vector(const MD_Vector& md_vector)
 {
 #ifndef LATATOOLS
   _SIZE_ size_r = TRUSTArray<_TYPE_,_SIZE_>::size_array();
-  if (md_vector.non_nul() && !Process::is_sequential())
-    // Will throw if there is a problem:
-    md_vector->validate(TRUSTArray<_TYPE_,_SIZE_>::size_array(), line_size_);
+  if (md_vector.non_nul())
+    {
+      size_r = md_vector->get_nb_items_reels();
+      if (size_r >= 0) size_r *= line_size_;
+      else size_r = -1; // Cas particulier ou la size_reelle ne veut rien dire
+
+      // Will throw if there is a problem:
+      md_vector->validate(TRUSTArray<_TYPE_,_SIZE_>::size_array(), line_size_);
+    }
   size_reelle_ = size_r;
   md_vector_ = md_vector;
 #endif

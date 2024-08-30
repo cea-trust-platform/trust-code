@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -367,6 +367,16 @@ void Param::ajouter(const char *mot, int *quoi, Param::Nature nat) //int opt)
   obj.set_nature(convert_nature(nat));
   obj.set_entier(quoi);
 }
+
+#if INT_is_64_ == 2
+void Param::ajouter(const char *mot, trustIdType *quoi, Param::Nature nat) //int opt)
+{
+  Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
+  obj.set_nature(convert_nature(nat));
+  obj.set_tid(quoi);
+}
+#endif
+
 void Param::ajouter(const char *mot, double *quoi, Param::Nature nat) //int opt)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);

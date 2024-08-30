@@ -22,6 +22,9 @@
 class Schema_Comm_Vecteurs;
 class Echange_EV_Options;
 class MD_Vector;
+class MD_Vector_seq;
+class MD_Vector_composite;
+class MD_Vector_std;
 
 /*! @brief Base class for distributed vectors parallel descriptors.
  *
@@ -39,8 +42,8 @@ public:
   virtual int nb_items_seq_tot() const { return nb_items_seq_tot_; }
   virtual int nb_items_seq_local() const { return nb_items_seq_local_; }
 
-  const ArrOfInt& get_items_to_compute() const { return blocs_items_to_compute_; }
-  const ArrOfInt& get_items_to_sum() const { return blocs_items_to_sum_; }
+  virtual const ArrOfInt& get_items_to_compute() const = 0;
+  virtual const ArrOfInt& get_items_to_sum() const = 0;
 
   int get_sequential_items_flags(ArrOfBit& flags, int line_size=1) const;
   int get_sequential_items_flags(ArrOfInt& flags, int line_size=1) const;
@@ -65,11 +68,23 @@ public:
   virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, TIDVect&) const = 0;
 #endif
 
+  // Used in MD_Vector_tools:
+  virtual void fill_md_vect_renum(const IntVect& renum, MD_Vector& md_vect) const = 0;
 
+  // Tool method:
   static void append_item_to_blocs(ArrOfInt& blocs, int item);
 
-  // [ABN] All the below members should be protected, but then need to fix all utils in MD_Vector_tools that access
-  // them directly ... :
+  /*! Whether algorithms in TRUSTVect_tools should use the blocks stored in members MD_Vector_mono::blocs_items_to_*
+   */
+  virtual bool use_blocks() const = 0;
+
+protected:
+  // Actual implementation of the sequential flags retrieval - overriden in MD_Vector_seq:
+  virtual int get_seq_flags_impl(ArrOfBit& flags, int line_size) const;
+
+  // Tool methods:
+  static void append_blocs(ArrOfInt& dest, const ArrOfInt& src, int offset=0, int multiplier=1);
+  static void append_items(ArrOfInt& dest, const ArrOfInt& src, int offset=0, int multiplier=1);
 
   // Nombre total d'items (reels+virtuels), utilise pour connaitre la taille des tableaux a creer
   int   nb_items_tot_ = -1;
@@ -85,28 +100,10 @@ public:
   // Nombre d'items sequentiels sur ce processeur (c'est le nombre d'items dans les blocs de blocs_items_to_sum_)
   int   nb_items_seq_local_ = -1;
 
-  // ***** Les membres suivants sont utilises pour calculer des sommes, produits scalaires, normes ******
-  // Indices de tous les items dont je suis proprietaire (ce sont les "items sequentiels", definis comme
-  //  etant tous ceux dont la valeur n'est pas recue d'un autre processeur lors d'un echange_espace_virtuel).
-  //  Pour faire une somme sur tous les items, il faut sommer les valeurs de tous les items
-  //  de ces blocs. Le tableau contient debut_bloc1, fin_bloc1, debut_bloc2, fin_bloc2, etc...
-  //  (fin_bloc est l'indice du dernier element + 1)
-  //  (structure utilisee pour les sauvegardes sequentielles (xyz ou debog), les calculs de normes de vecteurs, etc)
-  ArrOfInt blocs_items_to_sum_;
-  // Indices de tous les items pour lesquels il faut calculer une valeur
-  //  (utilise par DoubleTab::operator+=(const DoubleTab &) par exemple)
-  // En theorie, il suffirait de prendre blocs_items_to_sum_, mais ce dernier est
-  //  plein de trous et peut etre inefficace. En pratique, on calcule toutes les valeurs
-  //  reeles.
-  ArrOfInt blocs_items_to_compute_;
-
-protected:
-  // This method actually sets the flags to identify sequential items. Overriden in MD_Vect_seq:
-  virtual int get_seq_flags_(ArrOfBit& flags, int line_size) const;
-
 private:
   // This class may modify ref_count_:
   friend class MD_Vector;
+
 };
 
 #endif

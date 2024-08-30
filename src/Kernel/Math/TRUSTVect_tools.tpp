@@ -20,6 +20,38 @@
 #define HUGE_VALL 1e99
 #endif
 
+/*! Small iterator class to scan blocks of a MD vector (blocks described by integer indices) or scan a single big block (trustIdType).
+ * The important point: the operator*() always returns a trustIdType (TID), whether internal data is int* or trustIdType* :
+ *   - in sequential, we can scan a whole Big array from start to end,
+ *   - in parallel, we can scan chunks of the arrays, as defined by MD_Vector_mono::blocs_items_to_compute_ (which store int values, never long)
+ */
+template<typename _SIZE_>
+struct Block_Iter
+{
+  Block_Iter() = default;
+  Block_Iter(const Block_Iter& other) = default;  // default copy ctor, will copy all members
+  Block_Iter(const int * p) : int_ptr(p) {}
+  Block_Iter(_SIZE_ s, _SIZE_ e) : start(s), end(e) {}
+
+  _SIZE_ operator*() const
+  {
+    return start == -1 ? (_SIZE_)*int_ptr : start;  // potentially casting!
+  }
+  Block_Iter operator++(True_int)   // Postfix operator
+  {
+    Block_Iter ret = *this;
+    if(int_ptr) int_ptr++;
+    else std::swap(start, end);
+    return ret;
+  }
+  bool empty() const { return int_ptr == nullptr && start == -1; }
+
+  const int * int_ptr=nullptr;
+  _SIZE_ start=-1;
+  _SIZE_ end=-1;
+};
+
+
 /*! @brief renvoie 1 si meme strucuture parallele et egalite au sens TRUSTArray (y compris espaces virtuels) BM: faut-il etre aussi strict, comparer uniquement size() elements ?
  *
  */

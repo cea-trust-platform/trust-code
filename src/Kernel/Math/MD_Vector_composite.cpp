@@ -22,34 +22,7 @@ Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base
 
 /*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
  *
- * See MD_Vector_tools::dump_vector_with_md()
- *
- */
-Sortie& MD_Vector_composite::printOn(Sortie& os) const
-{
-  MD_Vector_base::printOn(os);
-  int np=data_.size();
-  os << np<<finl;
-  for (int p=0; p<np; p++)
-    {
-      const MD_Vector_base& md = get_desc_part(p).valeur();
-      os << md.que_suis_je() << finl;
-      os << md << finl;
-    }
-
-  os << "{" << finl;
-  os << "global_md" << finl << global_md_ << finl;
-  os << "parts_offsets" << tspace << parts_offsets_ << finl;
-  os << "shapes" << tspace << shapes_ << finl;
-  os << "names" << tspace << names_ << finl;
-  os << "}" << finl;
-  return os;
-}
-
-/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
- *
  * See MD_Vector_tools::restore_vector_with_md()
- *
  */
 Entree& MD_Vector_composite::readOn(Entree& is)
 {
@@ -73,7 +46,8 @@ Entree& MD_Vector_composite::readOn(Entree& is)
         }
     }
   Param p(que_suis_je());
-  p.ajouter("global_md", &global_md_);
+  p.ajouter("is_seq", &is_seq_);
+  p.ajouter_non_std("global_md", this);
   p.ajouter("parts_offsets", &parts_offsets_);
   p.ajouter("shapes", &shapes_);
   p.ajouter("names", &names_);
@@ -81,164 +55,64 @@ Entree& MD_Vector_composite::readOn(Entree& is)
   return is;
 }
 
-static void append_items(ArrOfInt& dest, const ArrOfInt& src, int offset = 0, int multiplier = 1)
+int MD_Vector_composite::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  int i = dest.size_array();
-  const int n = src.size_array();
-  dest.resize_array(i + n * multiplier);
-  for (int j = 0; j < n; j++)
+  if (mot == "global_md")
     {
-      int x = offset + src[j] * multiplier;
-      for (int k = 0; k < multiplier; k++)
-        dest[i++] = x++;
+      assert(is_seq_ != -1);
+      is_seq_ ? instanciate_seq() : instanciate_std();
+      is >> *global_md_;
+      return 1;
     }
+  return -1;
 }
 
-static void append_blocs(ArrOfInt& dest, const ArrOfInt& src, int offset = 0, int multiplier = 1)
-{
-  int i = dest.size_array();
-  const int n = src.size_array();
-  dest.resize_array(i + n);
-  for (int j = 0; j < n; j++, i++)
-    dest[i] = offset + src[j] * multiplier;
-}
-
-/*! @brief returns i such that a[i]==x, or -1 if x is not found
+/*! @brief method used to dump/restore a descriptor in a file Each process writes a different descriptor.
  *
+ * See MD_Vector_tools::dump_vector_with_md()
  */
-static int find_in_array(const ArrOfInt& a, int x)
+Sortie& MD_Vector_composite::printOn(Sortie& os) const
 {
-  int n;
-  for (n = a.size_array() - 1; n >= 0; n--)
-    if (a[n] == x)
-      break;
-  return n;
-}
-
-// Append all items in "src" to the "dest" descriptor, duplicating src items "multiplier" times
-//  and adding the "offset" to item indexes. Also merge pe_voisins_ lists.
-static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int offset, int multiplier)
-{
-  // List sizes for items_to_send_, items_to_recv_ and blocs_to_recv_ of new descriptor
-  ArrOfInt x_sz, y_sz, z_sz;
-  // Data of these lists:
-  ArrOfInt x_data, y_data, z_data;
-  ArrOfInt new_blocs_items_count, new_nb_items_to_items;
-  ArrOfInt tmp;
-  ArrOfInt pe_list(dest.pe_voisins_);
-
-  append_blocs(pe_list, src.pe_voisins_);
-  array_trier_retirer_doublons(pe_list);
-  const int np = pe_list.size_array();
-
-  new_blocs_items_count.resize_array(np);
-  new_nb_items_to_items.resize_array(np);
-
-  for (int i = 0; i < np; i++)
+  MD_Vector_base::printOn(os);
+  int np=data_.size();
+  os << np<<finl;
+  for (int p=0; p<np; p++)
     {
-      // Number of items to recv, send and blocs to recv for this processor:
-      int nx = 0, ny = 0, nz = 0;
-      int blocs_count = 0;
-      // Is processor pe_list[i] in initial "dest" descriptor ?
-      int j;
-
-      for (j = dest.pe_voisins_.size_array()-1; j >= 0; j--)
-        if (dest.pe_voisins_[j] == pe_list[i])
-          break;
-      const int pe = pe_list[i];
-
-      // Insert items to send and items to recv from dest
-      j = find_in_array(dest.pe_voisins_, pe);
-      if (j >= 0)
-        {
-          const int count_items_single = dest.nb_items_to_items_[j];
-          nx += count_items_single;
-          // take only single items to send
-          tmp.resize_array(0);
-          tmp.resize_array(count_items_single);
-          for (int k = 0; k < count_items_single; k++)
-            tmp[k] = dest.items_to_send_(j, k);
-          append_blocs(x_data, tmp);
-
-          ny += dest.items_to_recv_.get_list_size(j);
-          dest.items_to_recv_.copy_list_to_array(j, tmp);
-          append_blocs(y_data, tmp);
-        }
-
-      // Insert items to send and items to recv from src, with multiplier
-      j = find_in_array(src.pe_voisins_, pe);
-      if (j >= 0)
-        {
-          const int count_items_single = src.nb_items_to_items_[j];
-          nx += count_items_single * multiplier;
-          // take only single items to send
-          tmp.resize_array(0);
-          tmp.resize_array(count_items_single);
-          for (int k = 0; k < count_items_single; k++)
-            tmp[k] = src.items_to_send_(j, k);
-          append_items(x_data, tmp, offset, multiplier);
-
-          ny += src.items_to_recv_.get_list_size(j) * multiplier;
-          src.items_to_recv_.copy_list_to_array(j, tmp);
-          append_items(y_data, tmp, offset, multiplier);
-        }
-      const int single_items_count = nx;
-      // Insert blocs to send and blocs to recv from dest
-      j = find_in_array(dest.pe_voisins_, pe);
-      if (j >= 0)
-        {
-          const int count_items_tot = dest.items_to_send_.get_list_size(j);
-          const int count_items_single = dest.nb_items_to_items_[j];
-          nx += count_items_tot - count_items_single;
-          tmp.resize_array(0);
-          tmp.resize_array(count_items_tot - count_items_single);
-          for (int k = count_items_single; k < count_items_tot; k++)
-            tmp[k - count_items_single] = dest.items_to_send_(j, k);
-          append_blocs(x_data, tmp);
-
-          nz += dest.blocs_to_recv_.get_list_size(j);
-          dest.blocs_to_recv_.copy_list_to_array(j, tmp);
-          append_blocs(z_data, tmp);
-
-          blocs_count += dest.blocs_items_count_[j];
-        }
-      // Insert blocs to send and blocs to recv from src, with multiplier
-      j = find_in_array(src.pe_voisins_, pe);
-      if (j >= 0)
-        {
-          const int count_items_tot = src.items_to_send_.get_list_size(j);
-          const int count_items_single = src.nb_items_to_items_[j];
-          nx += (count_items_tot - count_items_single) * multiplier;
-          tmp.resize_array(0);
-          tmp.resize_array(count_items_tot - count_items_single);
-          for (int k = count_items_single; k < count_items_tot; k++)
-            tmp[k - count_items_single] = src.items_to_send_(j, k);
-          append_items(x_data, tmp, offset, multiplier);
-
-          nz += src.blocs_to_recv_.get_list_size(j);
-          src.blocs_to_recv_.copy_list_to_array(j, tmp);
-          append_blocs(z_data, tmp, offset, multiplier);
-
-          blocs_count += src.blocs_items_count_[j] * multiplier;
-        }
-
-      x_sz.append_array(nx);
-      y_sz.append_array(ny);
-      z_sz.append_array(nz);
-      new_blocs_items_count[i] = blocs_count;
-      new_nb_items_to_items[i] = single_items_count;
+      const MD_Vector_base& md = get_desc_part(p).valeur();
+      os << md.que_suis_je() << finl;
+      os << md << finl;
     }
 
-  dest.items_to_send_.set_list_sizes(x_sz);
-  dest.items_to_send_.set_data(x_data);
-  dest.items_to_recv_.set_list_sizes(y_sz);
-  dest.items_to_recv_.set_data(y_data);
-  dest.blocs_to_recv_.set_list_sizes(z_sz);
-  dest.blocs_to_recv_.set_data(z_data);
-  dest.pe_voisins_ = pe_list;
-  dest.blocs_items_count_ = new_blocs_items_count;
-  dest.nb_items_to_items_ = new_nb_items_to_items;
+  os << "{" << finl;
+  os << "is_seq" << tspace << is_seq_ << finl;
+  os << "global_md" << finl << *global_md_ << finl;
+  os << "parts_offsets" << tspace << parts_offsets_ << finl;
+  os << "shapes" << tspace << shapes_ << finl;
+  os << "names" << tspace << names_ << finl;
+  os << "}" << finl;
+  return os;
 }
+
+// [ABN] TODO the 2 methods below could be made more OO by using Objet_U::duplique() or sth like that ... can't be bothered ...
+void MD_Vector_composite::instanciate_std()
+{
+  if(!global_md_)
+    {
+      global_md_ = std::make_shared<MD_Vector_std>();
+      is_seq_ = 0;
+    }
+}
+
+void MD_Vector_composite::instanciate_seq()
+{
+  if(!global_md_)
+    {
+      // important: initialize with a number of 0 items - will be incremented by add_part() below:
+      global_md_ = std::make_shared<MD_Vector_seq>(0);
+      is_seq_ = 1;
+    }
+}
+
 
 /*! @brief Append the "part" descriptor to the composite vector.
  *
@@ -283,6 +157,7 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
 {
   assert(part.non_nul());
   assert(shape >= 0);
+
   if (data_.size() == 0)
     {
       nb_items_tot_ = 0;
@@ -306,45 +181,72 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
   nb_items_seq_tot_ += part->nb_items_seq_tot() * multiplier;
   nb_items_seq_local_ += part->nb_items_seq_local() * multiplier;
 
-  append_blocs(blocs_items_to_sum_, part->get_items_to_sum(), offset, multiplier);
-  append_blocs(blocs_items_to_compute_, part->get_items_to_compute(), offset, multiplier);
-
+  // Double dynamic dispatch here:
+  //  - global_md_ can be either MD_Vector_std or MD_Vector_seq
+  //  - and part.valeur() can be any child of MD_Vector_base
+  // First dispatch is made with C++ polymorphism ... and for the second, no choice, we must sub_type:
   if (sub_type(MD_Vector_std, part.valeur()))
-    append_global_md(global_md_, ref_cast(MD_Vector_std, part.valeur()), offset, multiplier);
+    {
+      assert(Process::is_parallel());
+      instanciate_std();
+      global_md_->append_from_other_std(ref_cast(MD_Vector_std, part.valeur()), offset, multiplier);
+    }
   else if (sub_type(MD_Vector_seq, part.valeur()))
     {
       assert(Process::is_sequential());
-      /* Nothing to be done - the global_md_ attribute is meaningless here, and does not need update */
+      instanciate_seq();
+      global_md_->append_from_other_seq(ref_cast(MD_Vector_seq, part.valeur()), offset, multiplier);
     }
   else if (sub_type(MD_Vector_composite, part.valeur()))
-    append_global_md(global_md_, ref_cast(MD_Vector_composite, part.valeur()).global_md_, offset, multiplier);
+    {
+      const MD_Vector_mono& oth = * ( ref_cast(MD_Vector_composite, part.valeur()).global_md_ );
+      if (sub_type(MD_Vector_std, oth))
+        {
+          instanciate_std();
+          global_md_->append_from_other_std(ref_cast(MD_Vector_std, oth), offset, multiplier);
+        }
+      else if (sub_type(MD_Vector_seq, oth))
+        {
+          instanciate_seq();
+          global_md_->append_from_other_seq(ref_cast(MD_Vector_seq, oth), offset, multiplier);
+        }
+      else
+        Process::exit("Internal error in MD_Vector_composite::add_part: should not happen. ");
+    }
   else
     {
       Cerr << "Internal error in MD_Vector_composite::add_part: unknown part type " << part->que_suis_je() << finl;
       Process::exit();
     }
+
+  // Update the block information - in sequential (MD_Vector_seq) nothing will be changed (since underlying arrays
+  // remain empty), but this is OK because all algorithsm using this data (determine_blocks() in TRUSTVect_tools for
+  // example, or get_sequential_items_flags()) are overriden for sequential cases.
+  append_blocs(global_md_->blocs_items_to_sum_, part->get_items_to_sum(), offset, multiplier);
+  append_blocs(global_md_->blocs_items_to_compute_, part->get_items_to_compute(), offset, multiplier);
 }
 
-/*! Needs override to handle composite vector of MD_Vect_seq ...
- */
-int MD_Vector_composite::get_seq_flags_(ArrOfBit& flags, int line_size) const
+void MD_Vector_composite::fill_md_vect_renum(const IntVect& renum, MD_Vector& md_vect) const
 {
-  const MD_Vector& p0 = data_[0];
-  if (sub_type(MD_Vector_seq, p0.valeur()))
+  global_md_->fill_md_vect_renum(renum, md_vect);
+}
+
+/*! Override, to avoid using the standard implementation of the method that scans the blocks 'bloc_items_to_sum_'
+ * in case of a sequential situation.
+ */
+int MD_Vector_composite::get_seq_flags_impl(ArrOfBit& flags, int line_size) const
+{
+  assert(data_.size() > 0);
+  assert(is_seq_ != -1);
+  if (is_seq_)
     {
-      trustIdType tot_sz1 = 0;
-      for (const auto& mdv: data_)
-        {
-          const MD_Vector_seq& mdvseq = ref_cast(MD_Vector_seq, mdv.valeur());
-          tot_sz1 += mdvseq.get_nb_items();
-        }
-      assert(tot_sz1 < std::numeric_limits<int>::max());
-      int tot_sz2 = static_cast<int>(tot_sz1);
-      flags.resize_array(tot_sz2);
-      flags = 1;
-      return tot_sz2;
+      assert(dynamic_cast<MD_Vector_seq *>(global_md_.get()) != nullptr);
+      return global_md_->get_seq_flags_impl(flags, line_size);
     }
-  else
-    return MD_Vector_base::get_seq_flags_(flags, line_size);
+  else  // bloc_* members are up-to-date, we can use the base implementation:
+    {
+      assert(dynamic_cast<MD_Vector_std *>(global_md_.get()) != nullptr);
+      return MD_Vector_base::get_seq_flags_impl(flags, line_size);
+    }
 }
 

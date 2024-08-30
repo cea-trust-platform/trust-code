@@ -16,12 +16,29 @@
 #include <MD_Vector_seq.h>
 #include <TRUSTTabs.h>
 #include <ArrOfBit.h>
+#include <Param.h>
 
-Implemente_instanciable_sans_constructeur(MD_Vector_seq,"MD_Vector_seq",MD_Vector_base);
+Implemente_instanciable_sans_constructeur(MD_Vector_seq,"MD_Vector_seq",MD_Vector_mono);
 
-Entree& MD_Vector_seq::readOn(Entree& is) { return is; }
+Entree& MD_Vector_seq::readOn(Entree& is)
+{
+  MD_Vector_mono::readOn(is);
+  Param p(que_suis_je());
+  p.ajouter("nb_items", &nb_items_);
+  p.lire_avec_accolades(is);
 
-Sortie& MD_Vector_seq::printOn(Sortie& os) const { return os; }
+  return is;
+}
+
+Sortie& MD_Vector_seq::printOn(Sortie& os) const
+{
+  MD_Vector_mono::printOn(os);
+  os << "{" << finl;
+  os << "nb_items" << tspace << nb_items_ << finl;
+  os << "}" << finl;
+
+  return os;
+}
 
 
 int MD_Vector_seq::get_nb_items_reels() const
@@ -49,7 +66,7 @@ int MD_Vector_seq::nb_items_seq_local() const
 }
 
 
-int MD_Vector_seq::get_seq_flags_(ArrOfBit& flags, int line_size) const
+int MD_Vector_seq::get_seq_flags_impl(ArrOfBit& flags, int line_size) const
 {
   assert(nb_items_*line_size < std::numeric_limits<int>::max());
 
@@ -59,3 +76,21 @@ int MD_Vector_seq::get_seq_flags_(ArrOfBit& flags, int line_size) const
   return sz;
 }
 
+void MD_Vector_seq::append_from_other_seq(const MD_Vector_seq& src, int offset, int multiplier)
+{
+  // Just increase the total size:
+  nb_items_ += src.nb_items_*multiplier;
+}
+
+void MD_Vector_seq::fill_md_vect_renum(const IntVect& renum, MD_Vector& md_vect) const
+{
+  // Count non -1 entries to have proper number of items in the dest descriptor:
+  assert(nb_items_ < std::numeric_limits<int>::max());
+  const int src_size = (int)nb_items_;
+  int cnt=0;
+  for (int i = 0; i < src_size; i++)
+    if (renum[i] >= 0)
+      cnt++;
+  MD_Vector_seq dest(cnt);
+  md_vect.copy(dest);
+}

@@ -57,8 +57,6 @@ public:
   static void dump_vector_with_md(const DoubleVect&, Sortie&);
   static void restore_vector_with_md(DoubleVect&, Entree&);
 
-  //etend les espaces distants de src pour contenir items et renseigne leurs nouveaux numeros dedans
-  static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
 
 #endif /* MD_Vector_tools_included */

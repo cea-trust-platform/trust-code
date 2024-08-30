@@ -19,7 +19,7 @@
 
 Implemente_instanciable_sans_constructeur(Objet_a_lire,"Objet_a_lire",Objet_U);
 
-Objet_a_lire::Objet_a_lire() : int_a_lire(nullptr), double_a_lire(nullptr), obj_a_lire(nullptr), objet_lu(nullptr),
+Objet_a_lire::Objet_a_lire() : int_a_lire(nullptr), tid_a_lire(nullptr), double_a_lire(nullptr), obj_a_lire(nullptr), objet_lu(nullptr),
   arrofint_a_lire(nullptr), arrofdouble_a_lire(nullptr), flag_a_lire(nullptr) { }
 
 Entree& Objet_a_lire::readOn(Entree& is)
@@ -36,6 +36,12 @@ void Objet_a_lire::set_entier(int *quoi)
 {
   type = INTEGER;
   int_a_lire = quoi;
+}
+
+void Objet_a_lire::set_tid(trustIdType *quoi)
+{
+  type = TRUSTID;
+  tid_a_lire = quoi;
 }
 
 void Objet_a_lire::set_double(double *quoi)
@@ -156,7 +162,6 @@ bool Objet_a_lire::is_type_simple() const
 
 double Objet_a_lire::get_value() const
 {
-
   switch(type)
     {
     case INTEGER:
@@ -202,6 +207,9 @@ void Objet_a_lire::read(Motcle const& motcle, Entree& is)
               ptr->lire_avec_accolades_depuis(is);
             }
         }
+      break;
+    case TRUSTID:
+      is >> (*tid_a_lire);
       break;
     case DOUBLE:
       is >> (*double_a_lire);
