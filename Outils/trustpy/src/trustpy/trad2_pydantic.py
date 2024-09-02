@@ -251,17 +251,18 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         from trustpy.base import *
     '''
 
-    trailer = f'''
-#
-# Register all classes found so far:
-#
-from trustpy.misc_utilities import ClassFactory
-g = globals()
-for nam in list(g):
-  val = g[nam]
-  if isinstance(val, type) and issubclass(val, trustpy.base.Base_common):
-    ClassFactory.RegisterClass(nam, val)
-'''
+    footer = f'''
+        ################################################################
+        # Register all classes found so far
+        ################################################################
+
+        from trustpy.misc_utilities import ClassFactory
+        g = globals()
+        for nam in list(g):
+            val = g[nam]
+            if isinstance(val, type) and issubclass(val, trustpy.base.Base_common):
+                ClassFactory.RegisterClass(nam, val)
+    '''
 
     if output_filename is None:
         output_filename = trad2_filename.name + ".py"
@@ -272,7 +273,7 @@ for nam in list(g):
         for block in all_blocks.values():
             write_block(block, file, all_blocks)
         file.write("\n")
-        file.write(trailer.strip())
+        file.write(textwrap.dedent(footer).strip())
         file.write("\n")
 
     if testing:
