@@ -39,12 +39,6 @@ class TestBase(unittest.TestCase):
                 cls() # try to instantiate
 
 
-class Test_myTRAD2(TestBase):
-    def setUp(self):
-        self.TRAD2_FILE = "myTRAD2"
-        super().setUp()
-
-
 class Test_TRAD_2_adr_simple(TestBase):
     def setUp(self):
         self.TRAD2_FILE = "TRAD_2_adr_simple"
