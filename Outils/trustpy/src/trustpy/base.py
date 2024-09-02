@@ -790,7 +790,7 @@ class List_int(ListOfBase):
   """
   List of ints, in the form 'N val1 val2 ...'
   """
-  _allowedClasses = ["BaseEntier"]
+  _allowedClasses = ["Base_Entier"]
   _braces = 0  # No braces for this simple list
   _comma = 0
 
