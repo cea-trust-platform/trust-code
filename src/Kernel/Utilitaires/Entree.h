@@ -188,16 +188,16 @@ Entree& Entree::operator_template(_TYPE_& ob)
               ob=(_TYPE_)pr;
             }
 #else              // Case 2
-          long pr;
+          std::int64_t pr;
           char *ptr = (char*) &pr;
-          istream_->read(ptr, sizeof(long));
-          if (pr > INT32_MAX)
+          istream_->read(ptr, sizeof(std::int64_t));
+          if (pr > std::numeric_limits<int>::max())
             {
-              std::cerr << "Can't read this int64 binary file with an int32 binary: overflow." << std::endl;
+              std::cerr << "Can't read this int64 binary file with an int32 binary: values too big, overflow!!" << std::endl;
               Process::exit();
             }
           // It's ok, we passed the check above, we can safely downcast:
-          ob = (_TYPE_)pr;
+          ob = static_cast<_TYPE_>(pr);
 #endif
         }
       else  // File has the same bit-ness as binary, or we are trying to read a non-problematic type - all OK.

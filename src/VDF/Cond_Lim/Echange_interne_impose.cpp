@@ -177,7 +177,7 @@ void Echange_interne_impose::mettre_a_jour(double tps)
   if (isVDF)
     {
       const Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext());
-      const IntTab& face_map = t_ext.face_map();
+      const IntVect& face_map = t_ext.face_map();
       const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
 
       for (int numf=0; numf < fvf.nb_faces(); numf++)

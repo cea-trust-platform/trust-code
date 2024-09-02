@@ -573,7 +573,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       if (write_system_) write_matrix(mat);
 
       // Fixe le nombre d'iterations max:
-      ls->InitMaxIter(std::min((int)nb_rows_tot_, 10000));
+      ls->InitMaxIter(std::min((int)nb_rows_tot_, (int)10000));
     }
   else
     {

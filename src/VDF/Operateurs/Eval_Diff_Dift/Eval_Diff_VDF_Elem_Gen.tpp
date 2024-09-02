@@ -131,7 +131,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
       // variable gap model). Make sure we get the most up-to-date value.
       const Echange_interne_impose& cl = ref_cast(Echange_interne_impose, la_cl);
       const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, cl.T_ext());
-      const IntTab& fmap = Text.face_map();
+      const IntVect& fmap = Text.face_map();
       int opp_face = fmap[face-num1]+num1;  // num1 is the index of the first face
       int elem1 = le_dom->face_voisins(opp_face, 0);
       elem_opp = (elem1 != -1) ? elem1 : le_dom->face_voisins(opp_face, 1);

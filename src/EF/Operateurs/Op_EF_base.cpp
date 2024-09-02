@@ -134,7 +134,7 @@ void Op_EF_base::dimensionner(const Domaine_EF& le_dom,
           const Echange_interne_global_impose& cl = ref_cast(Echange_interne_global_impose, ccl);
           bool is_parfait = sub_type(Echange_interne_global_parfait, ccl);
           const Champ_front_calc_interne& ch = ref_cast(Champ_front_calc_interne, cl.T_ext());
-          const IntTab& mp = ch.face_map();   // indices of (local) *faces*
+          const IntVect& mp = ch.face_map();   // indices of (local) *faces*
           const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
           int nfacedeb = le_bord.num_premiere_face();
           int nfacefin = nfacedeb + le_bord.nb_faces();

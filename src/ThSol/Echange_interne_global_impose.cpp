@@ -100,7 +100,7 @@ void Echange_interne_global_impose::completer()
       const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,zvf.domaine());
       const IntTab& face_voisins = zvf.face_voisins();
       const DoubleTab& xv = zvf.xv();
-      const IntTab& fmap = t_ext.face_map();
+      const IntVect& fmap = t_ext.face_map();
       for (int i=0; i<fvf.nb_faces(); i++)
         {
           int iopp = fmap(i);
