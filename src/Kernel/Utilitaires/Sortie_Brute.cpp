@@ -23,7 +23,7 @@ using std::ostringstream;
 Sortie_Brute::Sortie_Brute() :
   Sortie()
 {
-  set_bin(1);
+  set_bin(true);
 
   ostream_ = std::make_unique<std::ostringstream>();
 }
@@ -47,13 +47,12 @@ unsigned Sortie_Brute::get_size() const
   return (unsigned)os.str().size();
 }
 
-int Sortie_Brute::set_bin(int bin)
+void Sortie_Brute::set_bin(bool bin)
 {
-  if (bin != 1)
+  if (!bin)
     {
-      Cerr << "Error in Sortie_Brute::set_bin(int bin) : only binary format supported. Use SChaine otherwise." << finl;
+      Cerr << "Error in Sortie_Brute::set_bin(bool bin) : only binary format supported. Use SChaine otherwise." << finl;
       Process::exit();
     }
   Sortie::set_bin(bin);
-  return bin;
 }

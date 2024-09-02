@@ -49,7 +49,7 @@ public:
   int get_precision() override;
 
   Sortie& flush() override;
-  int set_bin(int bin) override;
+  void set_bin(bool bin) override;
 
   Sortie& operator <<(const char* ob) override;
   Sortie& operator <<(const Objet_U& ob) override;

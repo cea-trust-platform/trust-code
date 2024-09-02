@@ -57,10 +57,10 @@ public:
   int good() override;
   int fail() override;
 
-  int set_bin(int bin) override;
-  void set_check_types(int flag) override;
+  void set_bin(bool bin) override;
+  void set_check_types(bool flag) override;
 
-  void set_diffuse(int diffuse) override;
+  void set_diffuse(bool diffuse) override;
 
 protected:
   Lec_Diffuse_base();

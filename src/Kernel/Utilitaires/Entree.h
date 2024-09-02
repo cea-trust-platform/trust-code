@@ -17,6 +17,7 @@
 #define Entree_included
 
 #include <Process.h>
+#include <AbstractIO.h>
 #include <iostream>
 #include <assert.h>
 #include <stdio.h>
@@ -32,18 +33,21 @@ class TRUST_Ref_Objet_U;
 class Objet_U;
 class Nom;
 
-/*! @brief Classe de definition des operateurs et methodes pour toute lecture dans un flot d'entree (fichier, clavier, tampon de communication, etc)
+/*! @brief Class defining operators and methods for all reading operation in an input flow (file, keyboard
+ * communication buffer, etc.)
  *
  * @sa Sortie
  */
-
-class Entree
+class Entree: public AbstractIO
 {
 public:
   // Constructeurs
   Entree();
   Entree(istream& is);
   Entree(const Entree& is);
+  virtual ~Entree();
+
+  void set_bin(bool bin) override;
 
   // Operateurs d'affectation
   Entree& operator=(istream& is);
@@ -52,7 +56,6 @@ public:
   virtual istream& get_istream();
   virtual const istream& get_istream() const;
   void set_istream(istream *is);
-  void set_different_int_size(bool is_different_int_size);
 
   Entree& operator >>(Entree& (*f)(Entree&));
   Entree& operator >>(istream& (*f)(istream&));
@@ -84,20 +87,17 @@ public:
   virtual int jumpOfLines();
   virtual int fail();
   virtual int good();
-  virtual ~Entree();
-  virtual int set_bin(int bin);
-  int is_bin() const;
-  virtual void set_check_types(int flag);
-  int check_types() const;
+  virtual void set_check_types(bool flag);
+  bool check_types() const { return check_types_; }
   enum Error_Action { ERROR_EXIT, ERROR_CONTINUE, ERROR_EXCEPTION };
   virtual void set_error_action(Error_Action);
   Error_Action get_error_action();
 
   inline operator istream& () { return get_istream(); }
   inline istream& putback(char ch) { return get_istream().putback(ch); }
-  inline int get_diffuse() { return diffuse_; }
+  inline bool get_diffuse() { return diffuse_; }
 
-  virtual void set_diffuse(int diffuse);
+  virtual void set_diffuse(bool diffuse);
 
 protected:
   // methode inline pour traiter rapidement le cas trivial. Sinon, appel a la methode virtuelle error_handle_()
@@ -108,11 +108,9 @@ protected:
   }
 
   virtual int error_handle_(int fail_flag);
-  int bin_;
-  bool is_different_int_size_; // File with int32 (resp. int64) whereas binary version is int64 (resp. int32)
-  int check_types_;
+  bool check_types_;
   Error_Action error_action_;
-  int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes
+  bool diffuse_; // By default true, but some child classes (eg: LecFicDiffuse) could set temporary to false to not diffuse to other processes
 
 private:
   istream *istream_;
@@ -131,99 +129,6 @@ void convert_to(const char *s, long& ob);
 void convert_to(const char *s, long long& ob);
 void convert_to(const char *s, float& ob);
 void convert_to(const char *s, double& ob);
-
-template<typename _TYPE_>
-int Entree::get_template(_TYPE_ *ob, std::streamsize n)
-{
-  static constexpr bool IS_INT = std::is_same<_TYPE_,int>::value;
-
-  assert(istream_!=0);
-  assert(n >= 0);
-  if (bin_)
-    {
-      if (is_different_int_size_ && IS_INT)
-        {
-          for (int i = 0; i < n; i++) (*this) >> ob[i];
-        }
-      else
-        {
-          char *ptr = (char*) ob;
-          // En binaire: lecture optimisee en bloc:
-          std::streamsize sz = sizeof(_TYPE_);
-          sz *= n;
-          istream_->read(ptr, sz);
-          error_handle(istream_->fail());
-        }
-    }
-  else
-    {
-      // En ascii : on passe par operator>> pour verifier les conversions
-      // Attention : on appelle celui de cette classe, pas de la classe derivee
-      for (int i = 0; i < n; i++) Entree::operator>>(ob[i]);
-    }
-  return (!istream_->fail());
-}
-
-template <typename _TYPE_>
-Entree& Entree::operator_template(_TYPE_& ob)
-{
-  static constexpr bool IS_INT  = std::is_same<_TYPE_,True_int>::value,
-                        IS_LONG = std::is_same<_TYPE_,std::int64_t>::value;
-
-  assert(istream_!=0);
-  if (bin_)
-    {
-      // Have the current binary and the file we are trying to read the same bit-ness (not worrying about double,float,etc.) ?
-      if (is_different_int_size_ && (IS_INT || IS_LONG))
-        {
-          // No, then two cases:
-          // 1. binary is 64b and file is 32b -> this is always OK, just need True_int to make sure we really read a 32b value
-          // 2. binary is 32b and file is 64b -> only OK if read value is actually within the 32b range
-#ifdef INT_is_64_   // Case 1
-          if (IS_INT || IS_LONG)  // a 'if (constexpr ...)' really - just to make sure compiler doesn't see the following lines for _TYPE_=float or double,etc.
-            {
-              True_int pr;
-              char * ptr = (char*) &pr;
-              istream_->read(ptr, sizeof(True_int));
-              ob=(_TYPE_)pr;
-            }
-#else              // Case 2
-          std::int64_t pr;
-          char *ptr = (char*) &pr;
-          istream_->read(ptr, sizeof(std::int64_t));
-          if (pr > std::numeric_limits<int>::max())
-            {
-              std::cerr << "Can't read this int64 binary file with an int32 binary: values too big, overflow!!" << std::endl;
-              Process::exit();
-            }
-          // It's ok, we passed the check above, we can safely downcast:
-          ob = static_cast<_TYPE_>(pr);
-#endif
-        }
-      else  // File has the same bit-ness as binary, or we are trying to read a non-problematic type - all OK.
-        {
-          char *ptr = (char*) &ob;
-          istream_->read(ptr, sizeof(_TYPE_));
-          error_handle(istream_->fail());
-        }
-    }
-  else
-    {
-      if (check_types_)
-        {
-          char buffer[100];
-          int ok = Entree::get(buffer, 100); // Bien appeler get de cette classe
-          if (ok)
-            convert_to(buffer, ob);
-        }
-      else
-        {
-          (*istream_) >> ob;
-          error_handle(istream_->fail());
-        }
-    }
-  return *this;
-}
 
 // Classe renvoyee par Entree si une exception est levee lors d'une erreur
 class Entree_Sortie_Error

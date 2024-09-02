@@ -93,14 +93,13 @@ int Entree_complete::good()
  * exit()
  *
  */
-int Entree_complete::set_bin(int bin)
+void Entree_complete::set_bin(bool bin)
 {
   if (bin)
     {
-      Cerr << "Error in Entree_complete::set_bin(int bin) : not supported" << finl;
+      Cerr << "Error in Entree_complete::set_bin(bool bin) : not supported" << finl;
       Process::exit();
     }
-  return bin;
 }
 
 /*! @brief affecte le drapeau aux deux entrees sources Attention, le drapeau de entree2 est modifie !
@@ -108,7 +107,7 @@ int Entree_complete::set_bin(int bin)
  *   Voir Entree::set_check_types()
  *
  */
-void Entree_complete::set_check_types(int flag)
+void Entree_complete::set_check_types(bool flag)
 {
   Entree::set_check_types(flag);
   chaine_str_.set_check_types(flag);

@@ -29,7 +29,7 @@ public:
   Sortie_Brute();
   const char* get_data() const;
   unsigned get_size() const;
-  int set_bin(int bin) override;
+  void set_bin(bool bin) override;
 
 protected:
   mutable std::string string_;

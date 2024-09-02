@@ -18,6 +18,8 @@
 OutputCommBuffer::OutputCommBuffer()
 {
   bin_ = 1;
+  // Communication buffer should never try to convert int into long:
+  avoid_conversion_ = true;
 
   ostream_ = std::make_unique<std::ostringstream>();
   // Typed view - memory is managed by Sortie:

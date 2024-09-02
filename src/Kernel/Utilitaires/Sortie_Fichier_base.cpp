@@ -165,12 +165,14 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
       Process::exit();
     }
 
-  if (new_bin)
+  if (new_bin && is_64b_)
     {
-#ifdef INT_is_64_
+      // Put the 64b marker when requested by is_64b_ flag
+      // In the new 64b mode the save/restart files can stay in 32b (because they correspond to information saved for each proc, where only
+      // 32b is used).
+      // Lata files on the other hand definitely need this.
       Nom marq("INT64");
       (*this)<<marq;
-#endif
     }
   return 1;
 }

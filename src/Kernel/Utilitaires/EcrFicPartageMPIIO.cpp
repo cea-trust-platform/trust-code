@@ -61,11 +61,13 @@ EcrFicPartageMPIIO::~EcrFicPartageMPIIO()
 {
   close();
 }
+
 #ifdef MPI_
 EcrFicPartageMPIIO::EcrFicPartageMPIIO(const char* name,IOS_OPEN_MODE mode)
 {
   ouvrir(name, mode);
 }
+
 int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
   MPI_Comm mpi_comm;
@@ -99,6 +101,7 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     }*/
   return 1;
 }
+
 void EcrFicPartageMPIIO::close()
 {
   if (mpi_file_) MPI_File_close(&mpi_file_);
@@ -128,9 +131,44 @@ void EcrFicPartageMPIIO::check()
 // Function write used in all the operator<< to avoid to duplicate the code
 void EcrFicPartageMPIIO::write(MPI_Datatype MPI_TYPE, const void* ob)
 {
+  // See explanations in Entree::operator_template() to understand
+  // the conversions made here:
+  bool convert = false;
+  switch(MPI_TYPE)
+    {
+    case MPI_INT:
+    case MPI_UNSIGNED:
+      convert = this->must_convert<int>();
+      break;
+    default:
+      convert = false;
+    }
+
+  MPI_Datatype MPI_TYPE2 = MPI_TYPE;
+  const void * ob2 = ob;
+  long l_val = 0;
+  unsigned long u_val = 0;
+  if(convert)
+    {
+      if (MPI_TYPE == MPI_INT)
+        {
+          l_val = *(static_cast<const True_int *>(ob)); // upcast
+          MPI_TYPE2 = MPI_LONG;
+          ob2 = &l_val;
+
+        }
+      else if (MPI_TYPE == MPI_UNSIGNED)
+        {
+          u_val = *(static_cast<const unsigned *>(ob)); // upcast
+          MPI_TYPE2 = MPI_UNSIGNED_LONG;
+          ob2 = &u_val;
+        }
+      else
+        Process::exit("EcrFicPartageMPIIO::write() -- Unexpected type!!");
+    }
   True_int size;
-  MPI_Type_size(MPI_TYPE, &size);
-  MPI_File_write(mpi_file_, (void*)ob, 1, MPI_TYPE, &mpi_status_);
+  MPI_Type_size(MPI_TYPE2, &size);
+  MPI_File_write(mpi_file_, ob2, 1, MPI_TYPE2, &mpi_status_);
   disp_+=size;
   check();
 }

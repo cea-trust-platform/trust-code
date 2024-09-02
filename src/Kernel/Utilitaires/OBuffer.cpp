@@ -77,10 +77,3 @@ int OBuffer::len()
 {
   return (int)buf_->tellp();
 }
-
-int OBuffer::set_bin(int bin)
-{
-  assert(bin==0 || bin==1);
-  bin_ = bin;
-  return bin_;
-}

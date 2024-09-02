@@ -137,7 +137,12 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
   Cerr << " Done !" << finl;
 
   // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
-  entree.set_different_int_size(is_different_int_size_);
+  if(is_different_int_size_)
+#ifdef INT_is_64_
+    entree.set_64b(false);
+#else
+    entree.set_64b(true);
+#endif
   entree.set_data(dset_data, (unsigned) sz);  // data are copied into the Entree
 
   delete[] dset_data;
@@ -336,17 +341,16 @@ void  FichierHDF::check_int_size(Nom filename)
       True_int int_size_in_bits;
       H5Aread(attr_id, H5T_NATIVE_INT32, &int_size_in_bits);
       Cerr << "[HDF5] We read that "<< filename << " was written in -int" << (int)int_size_in_bits << finl;
-#ifdef INT_is_64_
-      if (int_size_in_bits == 32)
-        {
-          is_different_int_size_ = true;
-        }
-      else if (int_size_in_bits != 64)
+
+      if (!(int_size_in_bits == 32 || int_size_in_bits == 64))
         {
           Cerr << "[HDF5] We read -int"<< (int)int_size_in_bits << " in " << filename << " which is abnormal." << finl;
           H5Aclose(attr_id);
           Process::exit(-1);
         }
+
+#ifdef INT_is_64_
+      if (int_size_in_bits == 32) is_different_int_size_ = true;
 #else
       if (int_size_in_bits == 64)
         {
@@ -354,13 +358,8 @@ void  FichierHDF::check_int_size(Nom filename)
           Cerr << "Warning, HDF file " << filename << " was written with an -int64 version and you are reading it with an -int32 version."<< finl;
           Cerr << "Make sure your mesh doesn't contain more than 2^32 elements, nodes or faces." << finl;
         }
-      else if (int_size_in_bits != 32)
-        {
-          Cerr << "[HDF5] We read -int"<< (int)int_size_in_bits << " in " << filename << " which is abnormal." << finl;
-          H5Aclose(attr_id);
-          Process::exit(-1);
-        }
 #endif
+
       H5Aclose(attr_id);
     }
 }

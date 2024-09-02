@@ -21,6 +21,24 @@
 
 using std::ifstream;
 
+Entree::Entree() : AbstractIO(),
+  check_types_(false),
+  error_action_(ERROR_CONTINUE),
+  diffuse_(true),
+  istream_(nullptr)
+{
+}
+
+Entree::Entree(istream& is) : Entree()
+{
+  istream_ = new istream(is.rdbuf());
+}
+
+Entree::Entree(const Entree& is) : Entree()
+{
+  istream_ = new istream(is.get_istream().rdbuf());
+}
+
 istream& Entree::get_istream()
 {
   return *istream_;
@@ -33,11 +51,6 @@ const istream& Entree::get_istream() const
 void Entree::set_istream(istream* is)
 {
   istream_ = is;
-}
-
-void Entree::set_different_int_size(bool is_different_int_size)
-{
-  is_different_int_size_ = is_different_int_size;
 }
 
 Entree& Entree::operator >>(Entree& (*f)(Entree&))
@@ -54,36 +67,6 @@ Entree& Entree::operator >>(ios& (*f)(ios&))
 {
   (*f)(*istream_);
   return *this;
-}
-
-Entree::Entree()
-{
-  bin_=0;
-  is_different_int_size_=false;
-  istream_ = 0;
-  check_types_ = 0;
-  error_action_ = ERROR_CONTINUE;
-  diffuse_ = 1;
-}
-
-Entree::Entree(istream& is)
-{
-  bin_=0;
-  is_different_int_size_=false;
-  istream_ = new istream(is.rdbuf());
-  check_types_ = 0;
-  error_action_ = ERROR_CONTINUE;
-  diffuse_ = 1;
-}
-
-Entree::Entree(const Entree& is)
-{
-  bin_=0;
-  is_different_int_size_=false;
-  istream_ = new istream(is.get_istream().rdbuf());
-  check_types_ = 0;
-  error_action_ = ERROR_CONTINUE;
-  diffuse_ = 1;
 }
 
 // Operateurs d'affectation
@@ -288,7 +271,7 @@ Entree::~Entree()
   if(istream_)
     delete istream_;
 #endif
-  istream_=0;
+  istream_=nullptr;
 }
 
 /*! @brief Change le mode d'ecriture du fichier.
@@ -296,9 +279,8 @@ Entree::~Entree()
  * Cette methode peut etre appelee n'importe quand.
  *
  */
-int Entree::set_bin(int bin)
+void Entree::set_bin(bool bin)
 {
-  assert(bin==0 || bin==1);
   bin_ = bin;
   if (istream_)
     {
@@ -306,12 +288,6 @@ int Entree::set_bin(int bin)
       assert(0);
       Process::exit();
     }
-  return bin_;
-}
-
-int Entree::is_bin() const
-{
-  return bin_;
 }
 
 /*! @brief indique si le stream doit verifier les types des objets lus (ints et nombres flottants).
@@ -325,17 +301,9 @@ int Entree::is_bin() const
  *   Voir operator>>(int &)
  *
  */
-void Entree::set_check_types(int flag)
+void Entree::set_check_types(bool flag)
 {
   check_types_ = flag;
-}
-
-/*! @brief renvoie la valeur actuelle du drapeau, voir set_check_types()
- *
- */
-int Entree::check_types() const
-{
-  return check_types_;
 }
 
 
@@ -430,8 +398,111 @@ int is_a_binary_file(Nom& filename)
 /*! @brief ToDo TMA : commenter
  *
  */
-void Entree::set_diffuse(int diffuse)
+void Entree::set_diffuse(bool diffuse)
 {
-  // virtual method does nothing ; cf Lec_Diffuse_base
-  diffuse_ = 1;
+  // virtual method does nothing ; cf override in Lec_Diffuse_base
+  diffuse_ = true;
 }
+
+
+template<typename _TYPE_>
+int Entree::get_template(_TYPE_ *ob, std::streamsize n)
+{
+  assert(istream_!=0);
+  assert(n >= 0);
+  if (bin_)
+    {
+      if (this->must_convert<_TYPE_>())
+        {
+          // Need to cast, use '>>' operator - see doc in operator_template<>
+          for (int i = 0; i < n; i++) (*this) >> ob[i];
+        }
+      else
+        {
+          // In binary, optimized block reading:
+          char *ptr = (char*) ob;
+          std::streamsize sz = sizeof(_TYPE_);
+          sz *= n;
+          istream_->read(ptr, sz);
+          error_handle(istream_->fail());
+        }
+    }
+  else
+    {
+      // En ascii : on passe par operator>> pour verifier les conversions
+      // Attention : on appelle celui de cette classe, pas de la classe derivee
+      for (int i = 0; i < n; i++) Entree::operator>>(ob[i]);
+    }
+  return (!istream_->fail());
+}
+
+// Explicit instanciations:
+template int Entree::get_template(True_int *ob, std::streamsize n);
+template int Entree::get_template(long *ob, std::streamsize n);
+template int Entree::get_template(long long *ob, std::streamsize n);
+template int Entree::get_template(double *ob, std::streamsize n);
+template int Entree::get_template(float *ob, std::streamsize n);
+
+
+template <typename _TYPE_>
+Entree& Entree::operator_template(_TYPE_& ob)
+{
+  assert(istream_!=0);
+  if (bin_)
+    {
+      // Do we need to worry about 32b / 64b conversion?
+      if (this->must_convert<_TYPE_>())
+        {
+          // Yes, then two cases:
+          // Case 1: requested _TYPE_ is 32b and file is 64b -> only OK if read value is actually within the 32b range
+          if (is_64b_)
+            {
+              std::int64_t pr;
+              char *ptr = (char*) &pr;
+              istream_->read(ptr, sizeof(std::int64_t));
+              if (pr > std::numeric_limits<int>::max())
+                Process::exit("Can't read this int64 binary file with an int32 binary: values too big, overflow!!");
+              // It's ok, we passed the check above, we can safely downcast:
+              ob = static_cast<_TYPE_>(pr);
+            }
+          // Case 2: requested _TYPE_ is 64b and file is 32b -> this is always OK, just need True_int to make sure we really read a 32b value
+          else
+            {
+              True_int pr;
+              char * ptr = (char*) &pr;
+              istream_->read(ptr, sizeof(True_int));
+              ob=(_TYPE_)pr;
+            }
+        }
+      else  // File has the same bit-ness as binary, or we are trying to read a non-problematic type - all OK.
+        {
+          char *ptr = (char*) &ob;
+          istream_->read(ptr, sizeof(_TYPE_));
+          error_handle(istream_->fail());
+        }
+    }
+  else  // Not binary, ascii format
+    {
+      if (check_types_)
+        {
+          char buffer[100];
+          int ok = Entree::get(buffer, 100); // Bien appeler get de cette classe
+          if (ok)
+            convert_to(buffer, ob);
+        }
+      else
+        {
+          (*istream_) >> ob;
+          error_handle(istream_->fail());
+        }
+    }
+  return *this;
+}
+
+// Explicit instanciations:
+template Entree& Entree::operator_template(True_int& ob);
+template Entree& Entree::operator_template(long& ob);
+template Entree& Entree::operator_template(long long& ob);
+template Entree& Entree::operator_template(double& ob);
+template Entree& Entree::operator_template(float& ob);
+

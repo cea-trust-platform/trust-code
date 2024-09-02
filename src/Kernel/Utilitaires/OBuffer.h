@@ -31,10 +31,10 @@ public:
   int get_precision();
   const char* str();
   int len();
-  int set_bin(int bin) override;
-
   void put_null_char();
   Sortie& flush() override;
+  // Override to allow setting bin_, even if already open:
+  void set_bin(bool bin) override { bin_ = bin; }
 
 protected:
 

@@ -16,6 +16,7 @@
 #ifndef Sortie_included
 #define Sortie_included
 
+#include <AbstractIO.h>
 #include <iostream>
 #include <assert.h>
 #include <arch.h>
@@ -47,23 +48,21 @@ class Objet_U;
  * @sa Entree
  */
 
-class Sortie
+class Sortie: public AbstractIO
 {
 public:
-  Sortie()
-  {
-    // Constructor does **not** instanciate ostream_ - typically done in derived classes
-  }
-
+  Sortie();
   Sortie(ostream& os);
   Sortie(const Sortie& os);
+  virtual ~Sortie() {}
 
   Sortie& operator=(ostream& os);
   Sortie& operator=(Sortie& os);
 
+  void set_bin(bool bin) override;
+
   inline ostream& get_ostream() { return *ostream_; }
   inline const ostream& get_ostream() const { return *ostream_; }
-//  inline void set_ostream(ostream* os) { ostream_ = os; }
   inline void set_col_width(int w) { col_width_ = w; }
 
   Sortie& operator <<(ostream& (*f)(ostream&));
@@ -93,7 +92,6 @@ public:
   virtual Sortie& operator<<(const char      * ob);
   virtual Sortie& operator<<(const std::string& str);
 
-
   virtual int add_col(const double ob);
   virtual int add_col(const char * ob);
 
@@ -105,14 +103,10 @@ public:
   virtual int put(const double* ob, std::streamsize n, std::streamsize nb_colonnes=1);
   virtual int put(const long  * ob, std::streamsize n, std::streamsize nb_colonnes=1);
 
-  virtual ~Sortie() {}
-  virtual int set_bin(int bin);
-  inline int is_bin() { return bin_; }
   inline bool has_ostream() const { return ostream_ != nullptr; }
 
 protected:
-  int bin_ = 0;
-  int col_width_ = -1;
+  int col_width_;
 
   /*! A smart pointer to a std::ostream object, or any of its derived class.
    * Explicit construction might be done in derived classes of Sortie.
@@ -126,60 +120,5 @@ private:
   template <typename _TYPE_>
   Sortie& operator_template(const _TYPE_& );
 };
-
-/*! @brief Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
- *
- * Dans l'implementation de la classe de base, on ecrit dans ostream_.
- *   En binaire on utilise ostream::write(), en ascii ostream::operato<<()
- *   En ascii, on revient a la ligne chaque fois qu'on a ecrit "nb_col" valeurs et a la fin du tableau.
- *   Valeur de retour : ostream_->good()
- *
- */
-template<typename _TYPE_>
-int Sortie::put_template(const _TYPE_ *ob, std::streamsize n, std::streamsize nb_col)
-{
-  assert(n >= 0);
-  if (bin_)
-    {
-      std::streamsize sz = sizeof(_TYPE_);
-      sz *= n;
-      ostream_->write((const char*) ob, sz);
-    }
-  else
-    {
-      std::streamsize j = nb_col;
-      for (std::streamsize i = 0; i < n; i++)
-        {
-          (*ostream_) << (ob[i]) << (' ');
-          j--;
-          if (j <= 0)
-            {
-              (*ostream_) << (endl);
-              j = nb_col;
-            }
-        }
-      // Si on n'a pas fini pas un retour a la ligne, en ajouter un
-      if (j != nb_col && n > 0) (*ostream_) << (endl);
-
-      ostream_->flush();
-    }
-  return ostream_->good();
-}
-
-/*! @brief Methode de bas niveau pour ecrire un int ou flottant dans le stream.
- *
- * Dans l'implementation de la classe de base, on ecrit dans ostream_.
- *   En binaire on utilise ostream::write(), en ascii ostream::operato<<()
- *
- */
-template<typename _TYPE_>
-Sortie& Sortie::operator_template(const _TYPE_ &ob)
-{
-  if (bin_)
-    ostream_->write((char*) &ob, sizeof(_TYPE_)); /* Ecriture en mode binaire */
-  else
-    (*ostream_) << ob; /* Ecriture avec conversion en ascii */
-  return *this;
-}
 
 #endif /* Sortie_included */

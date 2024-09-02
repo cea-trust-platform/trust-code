@@ -50,9 +50,9 @@ public:
   int fail() override;
   int good() override;
 
-  int set_bin(int bin) override;
+  void set_bin(bool bin) override;
   void set_error_action(Error_Action) override;
-  void set_check_types(int flag) override;
+  void set_check_types(bool flag) override;
 
 protected:
   Entree& get_input();

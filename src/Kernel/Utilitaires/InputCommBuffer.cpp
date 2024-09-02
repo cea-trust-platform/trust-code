@@ -16,10 +16,13 @@
 #include <InputCommBuffer.h>
 #include <OutputCommBuffer.h>
 #include <assert.h>
+
 InputCommBuffer::InputCommBuffer()
 {
   set_error_action(ERROR_CONTINUE);
   bin_ = 1;
+  // Communication buffer should never try to convert int into long:
+  avoid_conversion_ = true;
   memorysize_ = 16;
   size_ = 0;
   // On alloue toujours quelque chose (create_stream a besoin d'un octet au moins

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,42 +70,31 @@ int Entree_Fichier_base::ouvrir(const char* name, IOS_OPEN_MODE mode)
   ifstream_ = new ifstream(name,ios_mod);
   int ok = ifstream_->good();
   set_istream(ifstream_);
-#ifdef INT_is_64_
+
   if (bin_)
     {
       Nom test;
       (*this) >> test;
-      if (test!="INT64")
+      if (test == "INT64")
         {
-          Cerr<<"Opening " <<name<< " which is an int32 binary file..."<<finl;
-          delete ifstream_;
-          // on recharge le fichier
-          ifstream_ = new ifstream(name,ios_mod);
-          is_different_int_size_=true;
-          ok = ifstream_->good();
-          set_istream(ifstream_);
-        }
-    }
-#else
-  if (bin_)
-    {
-      Nom test;
-      (*this) >> test;
-      if (test=="INT64")
-        {
-          Cerr<<"Opening " << name<< " which is an int64 binary file..."<<finl;
-          is_different_int_size_=true;
+          is_64b_ = true;
+#ifndef INT_is_64_
+          Cerr<<"Opening " <<name<< " which is an int64 binary file..."<<finl;
+#endif
         }
       else
         {
+          is_64b_ = false;
+#ifdef INT_is_64_
+          Cerr<<"Opening " <<name<< " which is an int32 binary file..."<<finl;
+#endif
+          // rewind, to go back at begining of file:
           delete ifstream_;
-          // on recharge le fichier
           ifstream_ = new ifstream(name,ios_mod);
           ok = ifstream_->good();
           set_istream(ifstream_);
         }
     }
-#endif
   return ok;
 }
 

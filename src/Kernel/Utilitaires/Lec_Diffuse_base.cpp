@@ -126,16 +126,15 @@ int Lec_Diffuse_base::fail()
  * set_bin(bin)
  *
  */
-int Lec_Diffuse_base::set_bin(int bin)
+void Lec_Diffuse_base::set_bin(bool bin)
 {
   if (Process::je_suis_maitre())
     {
       Entree& is = get_entree_master();
-      bin = is.set_bin(bin);
+      is.set_bin(bin);
     }
   if (diffuse_) envoyer_broadcast(bin, 0);
   Entree::set_bin(bin);
-  return bin;
 }
 
 /*! @brief appelle get_entree_master().
@@ -143,15 +142,14 @@ int Lec_Diffuse_base::set_bin(int bin)
  * set_check_types(flag)
  *
  */
-void Lec_Diffuse_base::set_check_types(int flag)
+void Lec_Diffuse_base::set_check_types(bool flag)
 {
   Entree::set_check_types(flag);
   Entree& is = get_entree_master();
   is.set_check_types(flag);
 }
 
-void Lec_Diffuse_base::set_diffuse(int diffuse)
+void Lec_Diffuse_base::set_diffuse(bool diffuse)
 {
-  assert(diffuse==0 || diffuse==1);
   diffuse_ = diffuse;
 }

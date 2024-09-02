@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,15 +33,14 @@ Entree_Brute::~Entree_Brute()
   delete[] data_;
 }
 
-int Entree_Brute::set_bin(int bin)
+void Entree_Brute::set_bin(bool bin)
 {
-  if (bin != 1)
+  if (!bin)
     {
       Cerr << "Error in Entree_Brute::set_bin(int bin) : only binary format supported. Use EChaine otherwise." << finl;
       Process::exit();
     }
   Entree::set_bin(bin);
-  return bin;
 }
 
 void Entree_Brute::set_data(const char * data, unsigned sz)

@@ -57,7 +57,7 @@ using namespace std;
 
 SChaine::SChaine()
 {
-  set_bin(0);
+  set_bin(false);
   ostream_ = std::make_unique<std::ostringstream>();
 }
 
@@ -83,13 +83,12 @@ unsigned SChaine::get_size() const
   return (unsigned)os.str().size();
 }
 
-int SChaine::set_bin(int bin)
+void SChaine::set_bin(bool bin)
 {
-  if (bin != 0)
+  if (bin)
     {
       Cerr << "Error in SChaine::set_bin(int bin) : binary format not supported" << finl;
       Process::exit();
     }
   Sortie::set_bin(bin);
-  return bin;
 }

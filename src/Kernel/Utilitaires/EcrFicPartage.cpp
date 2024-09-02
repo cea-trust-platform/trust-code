@@ -34,7 +34,7 @@ Sortie& EcrFicPartage::printOn(Sortie& s) const
 EcrFicPartage::EcrFicPartage() : SFichier()
 {
   obuffer_ptr_ = new OBuffer;
-  set_bin(0);
+  set_bin(false);
 }
 
 /*! @brief Ouvre le fichier avec les parametres mode et prot donnes Ces parametres sont les parametres de la methode open standard
@@ -43,7 +43,7 @@ EcrFicPartage::EcrFicPartage() : SFichier()
 EcrFicPartage::EcrFicPartage(const char* name,IOS_OPEN_MODE mode)
 {
   obuffer_ptr_ = new OBuffer;
-  set_bin(0);
+  set_bin(false);
 
   ouvrir(name, mode);
 }
@@ -305,12 +305,10 @@ int EcrFicPartage::put(const float* ob, std::streamsize n, std::streamsize pas) 
 int EcrFicPartage::put(const double* ob, std::streamsize n, std::streamsize pas) { return put_template<double>(ob,n,pas); }
 
 
-int EcrFicPartage::set_bin(int bin)
+void EcrFicPartage::set_bin(bool bin)
 {
-  assert(bin==0 || bin==1);
   bin_ = bin;
   get_obuffer().set_bin(bin_);
-  return bin_;
 }
 
 Sortie& EcrFicPartage::flush() { return (*this); }

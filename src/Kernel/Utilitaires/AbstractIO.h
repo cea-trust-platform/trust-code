@@ -12,30 +12,49 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
 
-/*! @brief Cette classe derivee de Sortie empile ce qu'on lui envoie dans une chaine de caracteres.
+#ifndef AbstractIO_included
+#define AbstractIO_included
+
+
+/*! @brief Base class for all input/output streams.
  *
- * On recupere le contenu de la chaine avec get_str().
+ * Holds information about binary/ascii format, and 32b/64b information.
  *
- * @sa EChaine
+ *   - bin_ indicates whether the stream is binary or ASCII
+ *   - is_64b_ incidates whether the stream is in 64b or 32b
+ *   - avoid_conversion_ is used for MPI Comm buffer, where we do not want any int/long conversion.
+ *
+ * See method must_convert() and file arch.h.in for more explanations on 32/64b.
+ *
+ * Note that the .sauv files for example are always written in 32b.
+ *
+ * @sa Entree, Sortie, and specifically the comments in operator_template<>() method.
  */
-class SChaine :  public Sortie
+class AbstractIO
 {
 public:
-  SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code) override;
-//  void self_test();   // [ABN] to be put in unit tests ...
-  void set_bin(bool bin) override;
+  bool is_64b() const                   { return is_64b_; }
+  void set_64b(bool is_64b)             { is_64b_ = is_64b;  }
+  virtual void set_bin(bool bin)        { bin_ = bin; }
+  bool is_bin()                         { return bin_; }
+  void set_avoid_conversion(bool avoid) { avoid_conversion_ = avoid; }
+  bool avoid_conversion()               { return avoid_conversion_; }
 
 protected:
-  mutable std::string string_;
+  AbstractIO();
+  virtual ~AbstractIO() { }
 
-private:
+  template<typename _TYPE_> bool must_convert() const;
 
+  bool bin_;              ///< Is this a binary flux?
+  bool is_64b_;           ///< Will we be reading/writing in 64b?
+
+  /*! If true, no hacking on int/long is performed in operator_template() methods of Entree/Sortie
+   * This is useful for CommBuffer classes (=MPI exchanges) where we always want int to be sent as int, and long to be
+   * sent as long.
+   */
+  bool avoid_conversion_;
 };
-#endif
+
+#endif /* AbstractIO_included */
