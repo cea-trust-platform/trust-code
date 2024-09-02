@@ -1725,18 +1725,30 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
   const int size = tab_valeurs.dimension(0);
   const int N = tab_valeurs.line_size();
   DoubleTrav val_post_ecrit(size, ncomp == -1 ? N : 1);
-  CDoubleTabView valeurs = tab_valeurs.view_ro();
-  DoubleTabView val_post = val_post_ecrit.view_wo();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
-  {
-    if (ncomp == -1)
-      for (int j = 0; j < N; j++)
-        val_post(i, j) = valeurs(i, j);
-    else
-      val_post(i, 0) = valeurs(i, ncomp);
-  });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-
+  if (tab_valeurs.isDataOnDevice())
+    {
+      CDoubleTabView valeurs = tab_valeurs.view_ro();
+      DoubleTabView val_post = val_post_ecrit.view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(
+                             const int i)
+      {
+        if (ncomp == -1)
+          for (int j = 0; j < N; j++)
+            val_post(i, j) = valeurs(i, j);
+        else
+          val_post(i, 0) = valeurs(i, ncomp);
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+    }
+  else
+    {
+      for (int i = 0; i < size; i++)
+        if (ncomp == -1)
+          for (int j = 0; j < N; j++)
+            val_post_ecrit(i, j) = tab_valeurs(i, j);
+        else
+          val_post_ecrit(i, 0) = tab_valeurs(i, ncomp);
+    }
   if (Motcle(format)=="XYZ")
     {
       if (localisation == "SOM")

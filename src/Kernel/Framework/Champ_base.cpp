@@ -424,14 +424,30 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
       if(sub_type(Champ_Inc_base, *this) )
         {
           const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).domaine_dis_base());
-          // Pour eviter un resize par nb_elem_tot par appel a xp()
-          CDoubleTabView xp = zvf.xp().view_ro();
-          DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem,dimension}), KOKKOS_LAMBDA(const int i, const int j)
-          {
-            centres_de_gravites_v(i,j) = xp(i,j);
-          });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          // PL: ToDo Kokkos kernel host gardes car bug difficile a trouver (cas decroissance_ktau_jdd1 avec TrioCFD):
+          // stencil.append_line() alloue de la memoire via un resize() sur une memoire HOST deja allouee sur le DEVICE !
+          // Probablement, une memoire DEVICE non correctement desallouee dans un mecanisme PolyMAC non utilise en VEF...
+          if (zvf.xp().isDataOnDevice())
+            {
+              // Pour eviter un resize par nb_elem_tot par appel a xp()
+              CDoubleTabView xp = zvf.xp().view_ro();
+              DoubleTabView centres_de_gravites_v = centres_de_gravites.view_wo();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+              Kokkos::MDRangePolicy < Kokkos::Rank < 2 >> ({ 0, 0 },
+              {nb_elem, dimension}), KOKKOS_LAMBDA(
+                const int i,
+                const int j)
+              {
+                centres_de_gravites_v(i, j) = xp(i, j);
+              });
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+            }
+          else
+            {
+              for (int i=0; i<nb_elem; i++)
+                for (int k=0; k<dimension ; k++)
+                  centres_de_gravites(i,k) = zvf.xp(i,k);
+            }
         }
       else
         dom.calculer_centres_gravite(centres_de_gravites);
