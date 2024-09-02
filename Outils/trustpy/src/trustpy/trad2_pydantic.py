@@ -76,7 +76,7 @@ def write_block(block, file, all_blocks):
             write_block(dependency, file, all_blocks)
 
     # Get base class name. If void (like for Objet_U), inherit from pydantic.BaseModel and trustpy.base.ConstrainBase:
-    base_cls_n = change_class_name(block.name_base) or "pydantic.BaseModel, trustpy.base.ConstrainBase"
+    base_cls_n = change_class_name(block.name_base) or "BaseModel, trustpy.base.ConstrainBase"
     lines = [
         f'#' * 64,
         f'',
@@ -243,9 +243,12 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         from typing_extensions import Annotated
         from typing import ClassVar, List
         import pydantic
-        from pydantic import Field
+        from pydantic import Field, ConfigDict
         import trustpy.base
         from trustpy.base import *
+
+        class BaseModel(pydantic.BaseModel):            
+            model_config = ConfigDict(validate_assignment=True)
     '''
 
     footer = f'''
