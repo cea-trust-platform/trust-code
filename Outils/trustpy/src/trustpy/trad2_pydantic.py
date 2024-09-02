@@ -81,9 +81,6 @@ def write_block(block, file, all_blocks):
         f'#' * 64,
         f'',
         f'class {change_class_name(block.nam)}({base_cls_n}):',
-        f'    _braces: ClassVar[int] = {block.mode}',
-        f'    _description: str = r"{block.desc}"',
-        f'    _synonyms: str = {block.synos}',
     ]
     lines += format_docstring(block.desc)
 
@@ -188,9 +185,9 @@ def write_block(block, file, all_blocks):
         traces[key] = (str(filename), lineno)
 
     lines += [
-        f'    __braces:int = {block.mode}',
-        f'    __synonyms: dict = {synonyms}',
-        f'    __traces: dict = {traces}',
+        f'    _braces: ClassVar[int] = {block.mode}',
+        f'    _synonyms: dict = {synonyms}',
+        f'    _traces: dict = {traces}',
     ]
 
     lines.append('\n')
