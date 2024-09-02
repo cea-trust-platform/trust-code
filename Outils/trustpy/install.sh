@@ -71,10 +71,5 @@ mkdir -p $(dirname $generated_TRAD2)
 python $install_dir/trustpy/trustpy/trad2_utilities.py $generated_TRAD2
 
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-echo "@@@ Generating Python module from TRAD2"
-echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-python $install_dir/trustpy/trustpy/trad2_code_gen.py $generated_TRAD2 $generated_py
-
-echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "@@@ All done! Bye folks."
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
