@@ -562,10 +562,14 @@ template void deleteOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab);
 template void deleteOnDevice<float>(TRUSTArray<float,trustIdType>& tab);
 
 template void deleteOnDevice<int>(int* ptr, long size);
+template void deleteOnDevice<int>(int* ptr, long long size);
 template void deleteOnDevice<trustIdType>(trustIdType* ptr, long size);
+template void deleteOnDevice<trustIdType>(trustIdType* ptr, long long size);
 template void deleteOnDevice<trustIdType>(trustIdType* ptr, int size);
 template void deleteOnDevice<float>(float* ptr, long size);
 template void deleteOnDevice<double>(double* ptr, long size);
+template void deleteOnDevice<float>(float* ptr, long long size);
+template void deleteOnDevice<double>(double* ptr, long long size);
 
 template const double* mapToDevice<double>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
 template const int* mapToDevice<int>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName, bool enabled);

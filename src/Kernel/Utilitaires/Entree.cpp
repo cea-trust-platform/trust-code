@@ -238,6 +238,9 @@ int Entree::get(float * ob, std::streamsize n) { return get_template<float>(ob,n
 Entree& Entree::operator>>(long& ob) { return operator_template<long>(ob); }
 int Entree::get(long * ob, std::streamsize n) { return get_template<long>(ob,n); }
 
+Entree& Entree::operator>>(long long& ob) { return operator_template<long long>(ob); }
+int Entree::get(long long * ob, std::streamsize n) { return get_template<long long>(ob,n); }
+
 Entree& Entree::operator >>(Objet_U& ob) { return ob.readOn(*this); }
 
 int Entree::jumpOfLines()

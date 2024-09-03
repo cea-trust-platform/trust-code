@@ -793,7 +793,7 @@ avtlataFileFormat::GetVar(int timestate, int block, const char *varname)
             const BigTIDTab & values = fld.data_;
             trustIdType ntuples = values.dimension(0);
             rv->SetNumberOfTuples(ntuples);
-            trustIdType * data = rv->GetPointer(0);
+            long * data = rv->GetPointer(0);
             for (trustIdType i = 0; i < ntuples; i++)
                 data[i] = values(i, component);
             return_value = rv;
@@ -894,7 +894,7 @@ avtlataFileFormat::GetVectorVar(int timestate, int block, const char *varname)
             int dim = (int)values.dimension(1);
             rv->SetNumberOfComponents(3);
             rv->SetNumberOfTuples(ntuples);
-            trustIdType* data= rv->WritePointer(0,3*ntuples);
+            long* data= rv->WritePointer(0,3*ntuples);
             for (trustIdType i = 0; i < ntuples; i++)
                 for (int j = 0; j < 3; j++)
                     data[i*3+j] = (j<dim) ? values(i, j) : 0;

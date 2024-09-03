@@ -51,6 +51,9 @@ int Lec_Diffuse_base::get(True_int* ob, std::streamsize n) { return get_template
 Entree& Lec_Diffuse_base::operator>>(long& ob) { return operator_template<long>(ob); }
 int Lec_Diffuse_base::get(long* ob, std::streamsize n) { return get_template<long>(ob, n); }
 
+Entree& Lec_Diffuse_base::operator>>(long long& ob) { return operator_template<long long>(ob); }
+int Lec_Diffuse_base::get(long long* ob, std::streamsize n) { return get_template<long long>(ob, n); }
+
 Entree& Lec_Diffuse_base::operator>>(float& ob) { return operator_template<float>(ob); }
 int Lec_Diffuse_base::get(float* ob, std::streamsize n) { return get_template<float>(ob, n); }
 

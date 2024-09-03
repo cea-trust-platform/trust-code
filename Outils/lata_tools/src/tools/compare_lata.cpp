@@ -939,7 +939,7 @@ int main(int argc, char **argv)
                   Nom type_case(un_ecart.name_.get_localisation());
 
                   printf("Ecarts pour %s au temps:%15.8e Erreur max:%10.3e %s seq %ld=%15.8e %s par %ld=%15.8e  gmax %15.8e composante %ld\n", (const char*) get_long_field_name(un_ecart.name_),
-                         ecarts.t, em, (const char*) type_case, ecarts.loc[c], ecarts.val[c], (const char*) type_case, ecarts.loc2[c], ecarts.val2[c], max, c);
+                         ecarts.t, em, (const char*) type_case, (long)ecarts.loc[c], ecarts.val[c], (const char*) type_case, (long)ecarts.loc2[c], ecarts.val2[c], max, (long)c);
                   gnerr_field++;
                   gnerrf++;
                   em = 0.0;

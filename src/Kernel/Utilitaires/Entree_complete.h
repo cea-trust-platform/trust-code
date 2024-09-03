@@ -35,11 +35,13 @@ public:
 
   Entree& operator>>(True_int& ob) override;
   Entree& operator>>(long& ob) override;
+  Entree& operator>>(long long& ob) override;
   Entree& operator>>(float& ob) override;
   Entree& operator>>(double& ob) override;
 
   int get(True_int *ob, std::streamsize n) override;
   int get(long *ob, std::streamsize n) override;
+  int get(long long*ob, std::streamsize n) override;
   int get(float *ob, std::streamsize n) override;
   int get(double *ob, std::streamsize n) override;
   int get(char *buf, std::streamsize bufsize) override;
