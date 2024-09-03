@@ -103,24 +103,24 @@ def write_block(block, file, all_blocks):
 
         attr_name = valid_variable_name(attr_name)
 
-        args = f'default_factory=lambda: eval("{change_class_name(attr_type)}()")'
+        args = [f'default_factory=lambda: eval("{change_class_name(attr_type)}()")']
 
         if attr_type in all_blocks:
             cls = all_blocks[attr_type]
             if isinstance(cls, TRAD2BlockList):
                 attr_type = f'Annotated[List["{change_class_name(cls.classtype)}"], {cls.comma}]'
                 attr_desc = cls.desc
-                args = f'default=[]'
+                args = [f'default=list']
             else:
                 attr_type = change_class_name(attr_type)
 
         elif attr_type == "entier":
             attr_type = "int"
-            args = f'default=0'
+            args = [f'default=0']
 
         elif attr_type == "floattant":
             attr_type = "float"
-            args = f'default=0.0'
+            args = [f'default=0.0']
 
         elif attr_type == "chaine":
             attr_type = "Chaine"   # class Chaine defined in base.py
@@ -128,58 +128,62 @@ def write_block(block, file, all_blocks):
         elif attr_type in ["list", "listf"]:
             # TODO handle difference list vs listf ?
             attr_type = "List_float"  # class ListOfFloat defined in base.py
-            args = f'default_factory=lambda: eval("List_float()")'
+            args = [f'default_factory=lambda: eval("List_float()")']
 
         elif attr_type in ["listentier", "listentierf"]:
             # TODO handle difference listentier vs listentierf ?
             attr_type = "List_int"
-            args = f'default_factory=lambda: eval("List_int()")'
+            args = [f'default_factory=lambda: eval("List_int()")']
 
         elif attr_type in ["listchaine", "listchainef"]:
             # TODO handle difference listchaine vs listchainef ?
             attr_type = "List_chaine"
-            args = f'default_factory=lambda: eval("List_chaine()")'
+            args = [f'default_factory=lambda: eval("List_chaine()")']
 
         elif attr_type.startswith("chaine(into="):
             choices = attr_type[13:].split("]")[0]
             choices = choices.split(",")
             choices = [x for x in choices if x] # remove empty strings
             attr_type = create_enum(lines, str, choices)
-            args = f'default={choices[0]}'
+            args = [f'default={choices[0]}']
 
         elif attr_type.startswith("entier(into="):
             choices = attr_type[13:].split("]")[0]
             choices = choices.split(",")
             choices = [int(x.strip('"').strip("'")) for x in choices]
             attr_type = create_enum(lines, int, choices)
-            args = f'default={choices[0]}'
+            args = [f'default={choices[0]}']
 
         elif attr_type.startswith("entier(max="):
             max_val = int(attr_type[11:-1])
             attr_type= "int"
-            args = f'default=0, le={max_val}'
+            args = [f'default=0, le={max_val}']
 
         elif attr_type == "rien":
             attr_type = "Rien"
-            args = f'default_factory=lambda: eval("Rien(0)")'
+            args = [f'default_factory=lambda: eval("Rien(0)")']
 
         elif attr_type == "suppress_param":
             # NOTE tricky
             # hide the inherited *instance* attribute by a *class* attribute with same name
             attr_type = "ClassVar[str]"
             attr_desc = "suppress_param"
-            args = 'default="suppress_param"'
+            args = ['default="suppress_param"']
 
         elif attr_type.startswith("ref_"):
             attr_type = "str"
-            args = f'default=""'
+            args = [f'default=""']
 
         else:
             message = f"unresolved type : {attr_type}"
             logger.error(message)
             raise NotImplementedError(message)
+        
+        if attr_mode and not attr_type.startswith("ClassVar"):
+            attr_type = f"Optional[{attr_type}]"
+            args[0] = 'default=None'
 
-        lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
+        lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {", ".join(args)})')
 
     for key, (filename, lineno) in traces.items():
         traces[key] = (str(filename), lineno)
@@ -241,7 +245,7 @@ def generate_pydantic(trad2_filename, output_filename, testing=False):
         import sys
         from enum import Enum
         from typing_extensions import Annotated
-        from typing import ClassVar, List
+        from typing import ClassVar, List, Optional
         import pydantic
         from pydantic import Field, ConfigDict
         import trustpy.base
