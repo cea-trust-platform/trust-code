@@ -39,7 +39,7 @@ int Poly_geom_base_32_64<_SIZE_>::get_nb_som_elem_max() const
     return nb_som_elem_max_ ;
   else
     // (int) cast - we assume high order dim in an array are always small:
-    return (int)this->mon_dom.valeur().les_elems().dimension(1);
+    return (int)this->mon_dom->les_elems().dimension(1);
 }
 
 

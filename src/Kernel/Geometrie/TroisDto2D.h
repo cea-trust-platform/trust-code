@@ -39,7 +39,7 @@ public :
   using Bord_t = Bord_32_64<_SIZE_>;
   using Faces_t = Faces_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
-  using Raccord_t = Raccord_32_64<_SIZE_>;
+  using Raccord_t = OWN_PTR(Raccord_base_32_64<_SIZE_>);
 
   Entree& interpreter_(Entree&) override;
   void extraire_2D(const Domaine_t&, Domaine_t&, const Bord_t&,const Nom& , int);

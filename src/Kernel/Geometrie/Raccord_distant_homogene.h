@@ -15,7 +15,7 @@
 #ifndef Raccord_distant_homogene_included
 #define Raccord_distant_homogene_included
 
-#include <Raccord.h>
+#include <Raccord_base.h>
 class Domaine_dis_base;
 
 template <typename _SIZE_>

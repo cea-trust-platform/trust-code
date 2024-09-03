@@ -45,7 +45,7 @@ public :
   using Bord_t = Bord_32_64<_SIZE_>;
   using Bords_t = Bords_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
-  using Raccord_t = Raccord_32_64<_SIZE_>;
+  using Raccord_t = OWN_PTR(Raccord_base_32_64<_SIZE_>);
   using Raccords_t = Raccords_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;

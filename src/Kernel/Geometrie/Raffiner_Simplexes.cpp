@@ -833,7 +833,7 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
   using Joints_t = Joints_32_64<_SIZE_>;
   using Joint_t = Joint_32_64<_SIZE_>;
   using Raccords_t = Raccords_32_64<_SIZE_>;
-  using Raccord_t = Raccord_32_64<_SIZE_>;
+  using Raccord_t = OWN_PTR(Raccord_base_32_64<_SIZE_>);
 
 
   const Nom&   cell_type          = src.type_elem()->que_suis_je();
@@ -894,7 +894,7 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
       {
         boundaries_dest.add(new_obj);
         boundaries_dest[boundary].typer(boundaries_src[boundary]->que_suis_je());
-        const Type_Face& face_type = boundaries_src[boundary].valeur().faces().type_face();
+        const Type_Face& face_type = boundaries_src[boundary]->faces().type_face();
         Impl_::build_frontier(boundaries_src[boundary].valeur(),
                               face_type,
                               nodes_of_cells_src, cells_of_nodes_src, edges_of_cells_src,

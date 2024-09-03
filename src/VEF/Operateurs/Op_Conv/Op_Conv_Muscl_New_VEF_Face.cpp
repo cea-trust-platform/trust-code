@@ -134,7 +134,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CDoubleTabView velocity = tab_velocity.view_ro();
-  CDoubleTabView vitesse = vitesse_.valeur().valeurs().view_ro();
+  CDoubleTabView vitesse = vitesse_->valeurs().view_ro();
   CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
   CDoubleArrView porosite_elem = equation().milieu().porosite_elem().view_ro();
   CIntArrView type_elem_Cl = domaine_Cl_VEF.type_elem_Cl().view_ro();
@@ -167,7 +167,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
       for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
         vsom[facei_loc*nb_dim+dim]=vs[dim]-nb_dim*velocity(face[facei_loc],dim);
 
-    //domaine_VEF.type_elem().valeur().calcul_vc(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
+    //domaine_VEF.type_elem()->calcul_vc(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
     if (nb_dim==3)
       calcul_vc_tetra_views(face,vc,vs,vsom,vitesse,itypcl,porosite_face);
     else
@@ -690,7 +690,7 @@ void Op_Conv_Muscl_New_VEF_Face::remplir_fluent() const
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
   CDoubleTabView face_normales=domaine_VEF.face_normales().view_ro();
-  CDoubleTabView velocity=vitesse_.valeur().valeurs().view_ro();
+  CDoubleTabView velocity=vitesse_->valeurs().view_ro();
   DoubleArrView fluent = fluent_.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_faces), KOKKOS_LAMBDA(

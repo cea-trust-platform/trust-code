@@ -86,7 +86,7 @@ public:
   using Groupe_Faces_t = Groupe_Faces_32_64<_SIZE_>;
   using Groupes_Faces_t = Groupes_Faces_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
-  using Raccord_t = Raccord_32_64<_SIZE_>;
+  using Raccord_t = OWN_PTR(Raccord_base_32_64<_SIZE_>);
   using Raccords_t = Raccords_32_64<_SIZE_>;
   using Joint_t = Joint_32_64<_SIZE_>;
   using Joints_t = Joints_32_64<_SIZE_>;

@@ -15,13 +15,13 @@
 
 #include <Raccords.h>
 
-Implemente_instanciable_32_64(Raccords_32_64, "Raccords", LIST(Raccord_32_64<_T_>));
+Implemente_instanciable_32_64(Raccords_32_64, "Raccords", LIST(OWN_PTR(Raccord_base_32_64<_T_>)));
 
 template <typename _SIZE_>
-Sortie& Raccords_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(Raccord_32_64<_SIZE_>)::printOn(os); }
+Sortie& Raccords_32_64<_SIZE_>::printOn(Sortie& os) const { return LIST(OWN_PTR(Raccord_base_32_64<_SIZE_>))::printOn(os); }
 
 template <typename _SIZE_>
-Entree& Raccords_32_64<_SIZE_>::readOn(Entree& is) { return LIST(Raccord_32_64<_SIZE_>)::readOn(is); }
+Entree& Raccords_32_64<_SIZE_>::readOn(Entree& is) { return LIST(OWN_PTR(Raccord_base_32_64<_SIZE_>))::readOn(is); }
 
 /*! @brief Associe un domaine a tous les raccords de la liste.
  *
@@ -49,7 +49,6 @@ typename Raccords_32_64<_SIZE_>::int_t Raccords_32_64<_SIZE_>::nb_faces() const
   return nombre;
 }
 
-
 /*! @brief Renvoie le nombre de faces du type specifie contenues dans la liste de raccords.
  *
  *     (somme des faces de ce type sur tous les
@@ -68,10 +67,7 @@ typename Raccords_32_64<_SIZE_>::int_t Raccords_32_64<_SIZE_>::nb_faces(Type_Fac
   return nombre;
 }
 
-
 template class Raccords_32_64<int>;
 #if INT_is_64_ == 2
 template class Raccords_32_64<trustIdType>;
 #endif
-
-

@@ -24,6 +24,7 @@
  *
  */
 
+#include <TRUST_Deriv.h>
 #include <arch.h>
 
 template <typename _SIZE_> class Domaine_32_64;
@@ -50,13 +51,13 @@ template <typename _SIZE_> class Bord_32_64;
 using Bord = Bord_32_64<int>;
 using Bord_64 = Bord_32_64<trustIdType>;
 
-template <typename _SIZE_> class Raccord_32_64;
-using Raccord = Raccord_32_64<int>;
-using Raccord_64 = Raccord_32_64<trustIdType>;
-
 template <typename _SIZE_> class Joint_32_64;
 using Joint = Joint_32_64<int>;
 using Joint_64 = Joint_32_64<trustIdType>;
+
+template <typename _SIZE_> class Raccord_base_32_64;
+using Raccord = OWN_PTR(Raccord_base_32_64<int>);
+using Raccord_64 = OWN_PTR(Raccord_base_32_64<trustIdType>);
 
 ////////////////////////////////
 
@@ -90,5 +91,4 @@ template <typename _SIZE_> class Elem_geom_base_32_64;
 using Elem_geom_base = Elem_geom_base_32_64<int>;
 using Elem_geom_base_64 = Elem_geom_base_32_64<trustIdType>;
 
-
-#endif
+#endif /* Domaine_forward */

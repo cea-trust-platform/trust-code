@@ -16,15 +16,16 @@
 #ifndef Raccords_included
 #define Raccords_included
 
+#include <Raccord_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
-#include <Raccord.h>
 
 /*! @brief Classe Raccords Cette represente une liste d'objets de type Raccord.
  *
  * @sa Raccord
  */
 template <typename _SIZE_>
-class Raccords_32_64 : public LIST(Raccord_32_64<_SIZE_>)
+class Raccords_32_64 : public LIST(OWN_PTR(Raccord_base_32_64<_SIZE_>))
 {
   Declare_instanciable_32_64(Raccords_32_64);
 public :
