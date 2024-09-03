@@ -33,7 +33,7 @@ then
    export MPICH_CXX=$OMPI_CXX
    export MPICH_CC=$OMPI_CC
 fi
-[ "`basename $TRUST_CC_BASE`" != crayCC ] && export CXXFLAGS="-Wno-inconsistent-missing-override" # to suppress warnings from medcoupling
+[ "`basename $TRUST_CC_BASE`" != crayCC ] && export CXXFLAGS="-Wno-inconsistent-missing-override -Wno-deprecated-declarations" # to suppress warnings from medcoupling
 
 # CMake option + implicit use of TRUST_DEFINES and EXTRA_SRCS env var:
 cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc " 
