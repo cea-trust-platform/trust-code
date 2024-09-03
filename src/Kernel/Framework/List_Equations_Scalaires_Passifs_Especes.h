@@ -57,33 +57,11 @@ public :
     return list_eq(i).valeur();
   }
 
-  const Operateur& operateur(int) const override
-  {
-    Process::exit();
-    OWN_PTR(Equation_base) bidon;;
-    return bidon->operateur(0);
-  }
+  const Operateur& operateur(int) const override { throw; }
+  Operateur& operateur(int) override { throw; }
 
-  Operateur& operateur(int) override
-  {
-    Process::exit();
-    OWN_PTR(Equation_base) bidon;
-    return bidon->operateur(0);
-  }
-
-  const Champ_Inc& inconnue() const override
-  {
-    Process::exit(); ;
-    OWN_PTR(Equation_base) bidon;
-    return bidon->inconnue();
-  }
-
-  Champ_Inc& inconnue() override
-  {
-    Process::exit();
-    OWN_PTR(Equation_base) bidon ;
-    return bidon->inconnue();
-  }
+  const Champ_Inc& inconnue() const override { throw; }
+  Champ_Inc& inconnue() override { throw; }
 
 protected :
   LIST(OWN_PTR(Equation_base)) list_eq;
