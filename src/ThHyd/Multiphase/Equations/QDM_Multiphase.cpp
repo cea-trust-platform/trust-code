@@ -297,8 +297,6 @@ void QDM_Multiphase::get_noms_champs_postraitables(Noms& noms,Option opt) const
 void QDM_Multiphase::creer_champ(const Motcle& motlu)
 {
   Navier_Stokes_std::creer_champ(motlu);
-  if (Taux_cisaillement.non_nul())
-    if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
   if (la_vorticite.non_nul())
     if (grad_u.est_nul()) creer_champ("gradient_vitesse");
   int i = noms_vit_phases_.rang(motlu);
@@ -407,18 +405,6 @@ int QDM_Multiphase::preparer_calcul()
   pression_pa().changer_temps(temps);
 
   return 1;
-}
-
-void QDM_Multiphase::update_y_plus(const DoubleTab& tab)
-{
-  if (y_plus.est_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
-  DoubleTab& tab_y_p = y_plus->valeurs();
-  if (tab.nb_dim()==2)
-    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
-      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,n);
-  if (tab.nb_dim()==3)
-    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
-      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
 }
 
 double QDM_Multiphase::alpha_res() const

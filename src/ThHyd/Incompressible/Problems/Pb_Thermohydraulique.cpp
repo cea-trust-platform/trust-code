@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,15 @@ Entree& Pb_Thermohydraulique::readOn(Entree& is) { return Pb_Hydraulique::readOn
  */
 const Equation_base& Pb_Thermohydraulique::equation(int i) const
 {
-  if (i == 1) return eq_thermique;
-  return Pb_Hydraulique::equation(i);
+  if (i == 0) return eq_hydraulique;
+  else if (i == 1) return eq_thermique;
+  else if (i < 2 + eq_opt_.size() && i > 1) return eq_opt_[i - 2].valeur();
+  else
+    {
+      Cerr << "Pb_Thermohydraulique::equation() : Wrong equation number" << i << "!" << finl;
+      Process::exit();
+    }
+  return eq_hydraulique;
 }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
@@ -53,8 +60,15 @@ const Equation_base& Pb_Thermohydraulique::equation(int i) const
  */
 Equation_base& Pb_Thermohydraulique::equation(int i)
 {
-  if (i == 1) return eq_thermique;
-  return Pb_Hydraulique::equation(i);
+  if (i == 0) return eq_hydraulique;
+  else if (i == 1) return eq_thermique;
+  else if (i < 2 + eq_opt_.size() && i > 1) return eq_opt_[i - 2].valeur();
+  else
+    {
+      Cerr << "Pb_Thermohydraulique::equation() : Wrong equation number" << i << "!" << finl;
+      Process::exit();
+    }
+  return eq_hydraulique;
 }
 
 /*! @brief Associe le milieu au probleme Le milieu doit etre de type fluide incompressible

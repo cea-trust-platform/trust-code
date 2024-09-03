@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Eval_Dift_Multiphase_VDF_included
 
 #include <Eval_Dift_VDF.h>
+#include <Pb_Multiphase.h>
 #include <Correlation.h>
 
 class Eval_Dift_Multiphase_VDF : public Eval_Dift_VDF
@@ -38,7 +39,7 @@ public:
     const int cR = rho.dimension(0) == 1;
     tab_diffusivite_turbulente = nu_t_;
 
-    if (need_alpha_rho_)
+    if (need_alpha_rho_ && sub_type(Pb_Multiphase, ref_probleme_.valeur()))
       {
         for (int e = 0; e < nu_t_->dimension(0); e++)
           for (int n = 0; n < nu_t_->dimension(1); n++)

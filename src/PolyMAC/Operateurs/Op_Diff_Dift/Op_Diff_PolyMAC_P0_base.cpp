@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -229,8 +229,9 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
-  int N = equation().inconnue().valeurs().line_size(), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N, N_nu =
-                                                                 nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
+  int N = equation().inconnue().valeurs().line_size(),
+      N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
+      N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
