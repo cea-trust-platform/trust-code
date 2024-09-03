@@ -82,8 +82,6 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Ptscotch is not compiled with this version. Use another partition tool like Tranche." << finl;
   Process::exit();
 #else
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-
   if (!ref_domaine_.non_nul())
     {
       Cerr << "Error in Partitionneur_Ptscotch::construire_partition\n";
@@ -122,7 +120,7 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
 
 
   const int n = ref_domaine_->nb_elem();
-  int* partition = new int[n];
+  SCOTCH_Num* partition = new SCOTCH_Num[n];
 
   SCOTCH_randomReset();
   SCOTCH_Dgraph scotch_graph;
@@ -150,7 +148,7 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
 
   MD_Vector_tools::creer_tableau_distribue(ref_domaine_->md_vector_elements(), elem_part);
   for (int i = 0; i < n; i++)
-    elem_part[i] = partition[i];
+    elem_part[i] = static_cast<int>(partition[i]);  // partition[i] is a a proc number...
 
   delete [] partition;
 
@@ -169,9 +167,6 @@ void Partitionneur_Ptscotch::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Correction elem0 on processor 0" << finl;
   corriger_elem0_sur_proc0(elem_part);
   elem_part.echange_espace_virtuel();
-#else
-  Process::exit("Partitionneur_Ptscotch not ported yet!! TODO.");
-#endif
 #endif
 }
 

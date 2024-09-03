@@ -79,8 +79,6 @@ void Partitionneur_Fichier_MED::initialiser(const char *filename)
  */
 void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb_parts_tot) const
 {
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-
   if (! ref_domaine_.non_nul())
     {
       Cerr << "Error in Partitionneur_Fichier_MED::construire_partition\n";
@@ -113,7 +111,9 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       DataArrayInt32 *da = field->getArray();
       const True_int *field_values = da->begin();
 
-      const mcIdType sz = field->getNumberOfTuplesExpected();
+      const mcIdType sz0 = field->getNumberOfTuplesExpected();
+      assert(sz0 < std::numeric_limits<int>::max());
+      const int sz = static_cast<int>(sz0);
       elem_part.resize(sz);
       std::copy(field_values, field_values + sz, elem_part.addr());
       // Sanity check
@@ -189,7 +189,4 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
       nb_parts_tot = 1+int(local_max_vect(partition_field_outer_domain.valeurs()));
       return;
     }
-#else
-  Process::exit("Partitionneur_Fichier_MED not ported yet!! TODO.");
-#endif
 }

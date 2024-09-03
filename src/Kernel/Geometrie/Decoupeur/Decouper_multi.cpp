@@ -66,8 +66,7 @@ int Decouper_multi::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 Entree& Decouper_multi::interpreter(Entree& is)
 {
-#if !defined(INT_is_64_) || INT_is_64_ == 1
-  int i, j, k, l, d, s, ns, count = 0;
+
   //lecture des domaines et des raccords
   Param param(que_suis_je());
   param.ajouter_non_std("domaine",(this),Param::REQUIRED);
@@ -86,10 +85,14 @@ Entree& Decouper_multi::interpreter(Entree& is)
     {
       const Domaine& dom = n_d.second.ref_domaine.valeur();
       const DoubleTab& coord = dom.coord_sommets();
-      v_proc.push_back(IntVect()), v_dec.push_back(&n_d.second), v_dom.push_back(&dom);
-      v_se.push_back(Static_Int_Lists()), v_da.push_back(DataArrayDouble::New());
+      v_proc.push_back(IntVect());
+      v_dec.push_back(&n_d.second);
+      v_dom.push_back(&dom);
+      v_se.push_back(Static_Int_Lists());
+      v_da.push_back(DataArrayDouble::New());
       v_da.back()->useExternalArrayWithRWAccess((double *) coord.addr(), coord.dimension(0), coord.dimension(1));
-      v_pda.push_back(v_da.back()), off.push_back(off.back() + coord.dimension(0));
+      v_pda.push_back(v_da.back());
+      off.push_back(off.back() + coord.dimension(0));
 
       Partitionneur_base& partitionneur = n_d.second.deriv_partitionneur.valeur();
       partitionneur.declarer_bords_periodiques(n_d.second.liste_bords_periodiques);
@@ -101,25 +104,39 @@ Entree& Decouper_multi::interpreter(Entree& is)
   /* concatenation des coordonnees et recherche de sommets coincidents */
   Cerr << "Decouper_multi: searching for coinciding vertices ... ";
   MCAuto<DataArrayDouble> da(DataArrayDouble::Aggregate(v_pda)); //tous les sommets!
-  DataArrayInt* S_i = nullptr, *S = nullptr; //groupes de sommets coincidants : S([S_i(i), S_i(i + 1)[)
+  DataArrayIdType* S_i = nullptr, *S = nullptr; //groupes de sommets coincidants : S([S_i(i), S_i(i + 1)[)
   da->findCommonTuples(tolerance, -1, S, S_i); // * heavy lifting *
 
   /* pour chaque groupe de sommets, recherche de tous les procs les touchant et ajout a chaque sommet des procs qui ne le possedent pas encore */
   std::vector<std::map<int, std::set<int>>> v_sp(v_dec.size()); //v_sp[d][s] = { processeurs supplementaires ayant besoin du sommet s du domaine d }
   std::vector<std::set<int>> procs; //processeurs possedant chaque sommet du groupe...
   std::set<int> u_procs; //et leur union
-  std::vector<std::array<int, 2>> v_ds; //liste (domaine, sommet)
-  for (i = 0; i + 1 < S_i->getNumberOfTuples(); i++)
-    if ((ns = S_i->getIJ(i + 1, 0) - S_i->getIJ(i, 0)) > 1) //pas besoin de traiter les sommets seuls
+  std::vector<std::array<int, 2>> v_ds; //liste (domaine, num sommet local)
+  int ns, l, d, count = 0;
+  mcIdType j, s;
+  for (mcIdType i = 0; i + 1 < S_i->getNumberOfTuples(); i++)
+    if ((ns = static_cast<int>(S_i->getIJ(i + 1, 0) - S_i->getIJ(i, 0))) > 1) //pas besoin de traiter les sommets seuls
       {
-        for (count++, procs.resize(ns), v_ds.resize(ns), j = S_i->getIJ(i, 0), k = 0; j < S_i->getIJ(i + 1, 0); j++, k++)
+        count++;
+        procs.resize(ns);
+        v_ds.resize(ns);
+        int k = 0;
+        for (j = S_i->getIJ(i, 0); j < S_i->getIJ(i + 1, 0); j++, k++)
           {
-            for (s = S->getIJ(j, 0), d = 0; s >= off[d + 1]; ) d++; //d : indice du domaine contenant s
-            s -= off[d], v_ds[k] = {{ d, s }}; //stockage du couple (d, s)
-            for (procs[k].clear(), l = 0; l < v_se[d].get_list_size(s); l++) procs[k].insert(v_proc[d](v_se[d](s, l))); //processeurs connectes
+            // Retrouve le numero de dom dans lequel le sommet doublon est localise:
+            for (s = S->getIJ(j, 0), d = 0; s >= off[d + 1]; )
+              d++; //d : indice du domaine contenant s
+            mcIdType som_loc0 = s - off[d]; // son numero local
+            assert(som_loc0 < std::numeric_limits<int>::max());
+            int som_loc = static_cast<int>(som_loc0);
+            v_ds[k] = {{ d, som_loc }}; //stockage du couple (d, s)
+            procs[k].clear();
+            for (l = 0; l < v_se[d].get_list_size(som_loc); l++)
+              procs[k].insert(v_proc[d](v_se[d](som_loc, l))); //processeurs connectes
           }
         for (u_procs.clear(), k = 0; k < ns; k++)
-          for (auto &&pr : procs[k]) u_procs.insert(pr); //union
+          for (auto &&pr : procs[k])
+            u_procs.insert(pr); //union
         for (k = 0; k < ns; k++)  /* on ajoute a chaque sommet les procs auxquels il n'est pas deja connecte */
           if (procs[k].size() < u_procs.size())
             {
@@ -144,11 +161,14 @@ Entree& Decouper_multi::interpreter(Entree& is)
       som_raccord.set_list_sizes(sizes);
       for (auto && s_p : v_sp[d])
         {
-          i = 0;
-          for (auto &&p : s_p.second) som_raccord.set_value(s_p.first, i, p), i++;
+          int i = 0;
+          for (auto &&p : s_p.second)
+            {
+              som_raccord.set_value(s_p.first, i, p);
+              i++;
+            }
         }
       v_dec[d]->ecrire(v_proc[d], &som_raccord); // * heavier lifting *
     }
-#endif
   return is;
 }
