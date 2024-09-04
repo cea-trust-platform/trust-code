@@ -16,7 +16,7 @@
 #include <Poly_geom_base.h>
 #include <Domaine.h>
 
-Implemente_base_32_64( Poly_geom_base_32_64, "Poly_geom_base", Elem_geom_base_32_64<_T_> );
+Implemente_base_sans_destructeur_32_64( Poly_geom_base_32_64, "Poly_geom_base", Elem_geom_base_32_64<_T_> );
 
 template <typename _SIZE_>
 Sortie& Poly_geom_base_32_64<_SIZE_>::printOn( Sortie& os ) const

@@ -37,11 +37,13 @@
 template <typename _SIZE_>
 class Poly_geom_base_32_64 : public Elem_geom_base_32_64<_SIZE_>
 {
-  Declare_base_32_64( Poly_geom_base_32_64 ) ;
+  Declare_base_sans_destructeur_32_64( Poly_geom_base_32_64 ) ;
 
 public :
   using int_t = _SIZE_;
   using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+
+  virtual ~Poly_geom_base_32_64() { }
 
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override =0;
   const ArrOfInt_t& getFacesIndex() const { return FacesIndex_; }
@@ -66,8 +68,7 @@ protected:
    */
   ArrOfInt_t FacesIndex_;
 
-  int nb_som_elem_max_;
-  int nb_face_elem_max_;
+  int nb_som_elem_max_ = -123, nb_face_elem_max_ = -123;
 };
 
 using Poly_geom_base = Poly_geom_base_32_64<int>;
