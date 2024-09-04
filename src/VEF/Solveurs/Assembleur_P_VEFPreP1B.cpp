@@ -440,7 +440,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
         int k=renum_som_perio(i);
         if((k!=i)&& b_v(nps+i)!=0.)
           {
-            printf("Pb div Som, la pression sur le sommet %d (qui est periodique) n'est pas nulle.\n",i);
+            printf("Pb div Som, la pression sur le sommet %ld (qui est periodique) n'est pas nulle.\n",(long)i);
             printf("En terme clair, le second membre n'est pas nul sur un sommet periodique.\n");
             if (b_v(nps+i)!=b_v(nps+k))
               {
