@@ -15,6 +15,7 @@
 
 #include <Champ_Generique_Statistiques_base.h>
 #include <Operateur_Statistique_tps_base.h>
+#include <TRUST_2_PDI.h>
 #include <Param.h>
 
 Implemente_base_sans_constructeur(Champ_Generique_Statistiques_base,"Champ_Generique_Statistiques_base",Champ_Gen_de_Champs_Gen);
@@ -90,8 +91,11 @@ int Champ_Generique_Statistiques_base::sauvegarder(Sortie& os) const
 int Champ_Generique_Statistiques_base::reprendre(Entree& is)
 {
   Champ_Gen_de_Champs_Gen::reprendre(is);
-  Nom bidon;
-  is >> bidon >> bidon; // On saute l'identificateur et le type des champs
+  if(!TRUST_2_PDI::PDI_restart_)
+    {
+      Nom bidon;
+      is >> bidon >> bidon; // On saute l'identificateur et le type des champs
+    }
   Operateur_Statistique().reprendre(is);
   return 1;
 }

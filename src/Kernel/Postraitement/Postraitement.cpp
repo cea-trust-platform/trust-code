@@ -29,6 +29,7 @@
 #include <Postraitement.h>
 #include <Equation_base.h>
 #include <Sous_Domaine.h>
+#include <TRUST_2_PDI.h>
 #include <Domaine_VF.h>
 #include <Operateur.h>
 #include <EFichier.h>
@@ -216,7 +217,6 @@ Nom Postraitement::get_nom_localisation(const Entity& loc)
 
 int Postraitement::champ_fonc(Motcle& nom_champ, OBS_PTR(Champ_base)& mon_champ, OBS_PTR(Operateur_Statistique_tps_base)& operateur_statistique) const
 {
-
   if (comprend_champ_post(nom_champ))
     {
       const OBS_PTR(Champ_Generique_base)& champ = get_champ_post(nom_champ);
@@ -851,7 +851,9 @@ int Postraitement::sauvegarder(Sortie& os) const
           // en mode ecriture special seul le maitre ecrit l'entete
           int a_faire,special;
           EcritureLectureSpecial::is_ecriture_special(special,a_faire);
-
+          int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
+          a_faire = a_faire && !pdi_format;
+          special = special && !pdi_format;
           if (a_faire)
             {
               //On veut retrouver le nom precedent pour relecture des statistiques (format xyz)
@@ -865,6 +867,15 @@ int Postraitement::sauvegarder(Sortie& os) const
               os << nb_champs_stat_ << finl;
               os << tstat_deb_ << finl;
               os << tstat_dernier_calcul_ << finl ;
+            }
+          else if (pdi_format)
+            {
+              TRUST_2_PDI pdi_interface;
+              int nb_champs = nb_champs_stat_;
+              double tdeb = tstat_deb_, tend =  tstat_dernier_calcul_;
+              pdi_interface.TRUST_start_sharing("stat_nb_champs", &nb_champs);
+              pdi_interface.TRUST_start_sharing("stat_tdeb", &tdeb);
+              pdi_interface.TRUST_start_sharing("stat_tend", &tend);
             }
 
           bytes += champs_post_complet_.sauvegarder(os);
@@ -893,25 +904,34 @@ int Postraitement::reprendre(Entree& is)
 
           if (nb_champs_stat_!=0)
             {
-              Nom bidon;
-              is >> bidon;
-              if (bidon=="fin")
-                {
-                  // Ce test evite un beau segmentation fault a la lecture
-                  // du deuxieme bidon lors d'une sauvegarde/reprise au format binaire
-                  Cerr << "End of the resumption file reached...." << finl;
-                  Cerr << "This file contains no statistics." << finl;
-                  Cerr << "The tinit time of resumption (= " << tinit << " ) must be less" << finl;
-                  Cerr << "than the beginning time, t_deb (= " << tstat_deb_ << " ), of statistics calculation." << finl;
-                  exit();
-                }
-              is >> bidon;
               int n;
-              is >> n;
               double tstat_deb_sauv,temps_derniere_mise_a_jour_stats;
-              is >> tstat_deb_sauv;
-              is >> temps_derniere_mise_a_jour_stats;
-
+              if (TRUST_2_PDI::PDI_restart_)
+                {
+                  TRUST_2_PDI pdi_interface;
+                  pdi_interface.read("stat_nb_champs", &n);
+                  pdi_interface.read("stat_tdeb", &tstat_deb_sauv);
+                  pdi_interface.read("stat_tend", &temps_derniere_mise_a_jour_stats);
+                }
+              else
+                {
+                  Nom bidon;
+                  is >> bidon;
+                  if (bidon=="fin")
+                    {
+                      // Ce test evite un beau segmentation fault a la lecture
+                      // du deuxieme bidon lors d'une sauvegarde/reprise au format binaire
+                      Cerr << "End of the resumption file reached...." << finl;
+                      Cerr << "This file contains no statistics." << finl;
+                      Cerr << "The tinit time of resumption (= " << tinit << " ) must be less" << finl;
+                      Cerr << "than the beginning time, t_deb (= " << tstat_deb_ << " ), of statistics calculation." << finl;
+                      exit();
+                    }
+                  is >> bidon;
+                  is >> n;
+                  is >> tstat_deb_sauv;
+                  is >> temps_derniere_mise_a_jour_stats;
+                }
               // Plusieurs cas possibles:
               if (inf_strict(tinit,temps_derniere_mise_a_jour_stats,1.e-5))
                 {
@@ -961,6 +981,12 @@ int Postraitement::reprendre(Entree& is)
             }
           else  // lecture pour sauter le bloc
             {
+              if(TRUST_2_PDI::PDI_restart_)
+                {
+                  Cerr << finl << "Problem in the resumption " << finl;
+                  Cerr << "PDI format does not require to navigate through file..." << finl;
+                  Process::exit();
+                }
               Motcle tmp;
               is >> tmp >> tmp;
               int n;
@@ -1209,6 +1235,30 @@ int Postraitement::lire_champs_stat_a_postraiter(Entree& s)
     }
 
   return 1;
+}
+
+
+/*! @brief returns a statistical source if ch contains one
+ *
+ */
+int Postraitement::get_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, REF(Champ_base)& source) const
+{
+  if (sub_type(Champ_Generique_Statistiques_base,ch))
+    {
+      const Champ_Generique_Statistiques_base& ch_source = ref_cast(Champ_Generique_Statistiques_base, ch);
+      source = ch_source.integrale().le_champ_calcule();
+      return 1;
+    }
+  for (int i=0; i<ch.get_nb_sources(); i++)
+    {
+      const Champ_Generique_base& source_i = ch.get_source(i);
+      if (sub_type(Champ_Gen_de_Champs_Gen,source_i))
+        {
+          const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,source_i);
+          return get_stat_dans_les_sources(champ_post, source);
+        }
+    }
+  return 0;
 }
 
 /*! @brief On recherche les champs statistiques dans les sources du champ courant
@@ -2034,6 +2084,8 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
         noms_champs_a_post_.add(nom_champ_a_post);
     }
 }
+
+
 
 //Creation d un champ generique en fonction des parametres qui sont passes a la methode
 //Cette methode a pour objectif de pouvoir utiliser l ancienne syntaxe dans le jeu de donnees

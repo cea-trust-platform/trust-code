@@ -60,7 +60,6 @@ public:
   void mettre_a_jour(double temps) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
-  void share_dimensions_with_PDI(int write) const;
 
   Champ_base& affecter_compo(const Champ_base&, int compo) override;
   void resetTime(double time) override;
@@ -175,6 +174,7 @@ protected:
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
   bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
+  mutable bool first_checkpoint_ = true;
 };
 
 #endif /* Champ_Inc_base_included */

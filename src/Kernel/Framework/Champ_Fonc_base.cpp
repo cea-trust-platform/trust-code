@@ -19,6 +19,7 @@
 #include <Domaine_VF.h>
 #include <Domaine.h>
 #include <TRUSTTrav.h>
+#include <TRUST_2_PDI.h>
 
 Implemente_base(Champ_Fonc_base, "Champ_Fonc_base", Champ_Don_base);
 
@@ -81,6 +82,7 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, RESIZE_OPTION
     }
 }
 
+
 /*! @brief Sauvegarde le champ sur un flot de sortie Ecrit le nom, le temps et les valeurs.
  *
  * @param (Sortie& fich) un flot de sortie
@@ -91,6 +93,9 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
   // en mode ecriture special seul le maitre ecrit l'entete
   int a_faire, special;
   EcritureLectureSpecial::is_ecriture_special(special, a_faire);
+  int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
+  a_faire = a_faire && !pdi_format;
+  special = special && !pdi_format;
 
   if (a_faire)
     {
@@ -105,6 +110,19 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
+  else if (pdi_format)
+    {
+      bytes = 8 * valeurs().size_array();
+
+      TRUST_2_PDI pdi_interface;
+      if(first_checkpoint_) // first checkpoint (no need to share this every time, PDI keeps it in memory)
+        {
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
+          first_checkpoint_ = false;
+        }
+      DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
+      pdi_interface.TRUST_start_sharing(nom_.getString(), unknwon.addr());
+    }
   else
     {
       bytes = 8 * valeurs().size_array();
@@ -133,16 +151,31 @@ int Champ_Fonc_base::reprendre(Entree& fich)
   int special = EcritureLectureSpecial::is_lecture_special();
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
-      fich >> un_temps;
       Cerr << "Resume of the field " << nom_;
-      if (special)
-        EcritureLectureSpecial::lecture_special(*this, fich);
+      if(TRUST_2_PDI::PDI_restart_)
+        {
+          TRUST_2_PDI pdi_interface;
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
+          pdi_interface.PDI_start_sharing(nom_.getChar(), valeurs().addr());
+        }
       else
-        valeurs().lit(fich);
+        {
+          fich >> un_temps;
+          if (special)
+            EcritureLectureSpecial::lecture_special(*this, fich);
+          else
+            valeurs().lit(fich);
+        }
       Cerr << " performed." << finl;
     }
   else // lecture pour sauter le bloc
     {
+      if(TRUST_2_PDI::PDI_restart_)
+        {
+          Cerr << finl << "Problem in the resumption " << finl;
+          Cerr << "PDI format does not require to navigate through file..." << finl;
+          Process::exit();
+        }
       DoubleTab tempo;
       fich >> un_temps;
       tempo.jump(fich);

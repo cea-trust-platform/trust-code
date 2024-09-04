@@ -185,7 +185,6 @@ public :
   inline double temps_init() const ;
   inline double temps_max() const ;
   inline double temps_sauv() const ;
-  inline int nb_sauvegardes() const;
   inline double temps_impr() const ;
   inline int precision_impr() const
   {
@@ -389,17 +388,6 @@ inline double Schema_Temps_base::temps_sauv() const
 {
   return dt_sauv_;
 }
-
-/*! @brief Renvoie le nb de sauvegarde realise jusque la
- *
- * @return (double&)
- */
-inline int Schema_Temps_base::nb_sauvegardes() const
-{
-  return nb_sauv_;
-}
-
-
 
 /*! @brief Renvoie une reference sur le temps maximum
  *

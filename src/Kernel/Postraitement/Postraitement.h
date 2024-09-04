@@ -170,6 +170,7 @@ public:
   inline const double& tstat_deb() const;
   inline const double& tstat_fin() const;
   int cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, Motcle nom);
+  int get_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, REF(Champ_base)& source) const;
 
   /*! Calls by postraiter_champs() and allows a derived class to write extra meshes if needed
    * @return -1 if nothing more was written, 1 otherwise.

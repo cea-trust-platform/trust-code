@@ -336,27 +336,6 @@ double Champ_Inc_base::recuperer_temps_passe(int i) const
   return la_roue.passe(i).temps();
 }
 
-void Champ_Inc_base::share_dimensions_with_PDI(int write) const
-{
-  int nb_dim = valeurs().nb_dim();
-  ArrOfInt dimensions(nb_dim);
-  for(int i=0; i< nb_dim; i++)
-    dimensions[i] = valeurs().dimension(i);
-  int glob_dim_0;
-  PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
-  Nom dim_str = Nom("dim_") + nom_;
-  Nom glob_dim_str = Nom("glob_dim_") + nom_;
-
-  TRUST_2_PDI pdi_interface;
-  std::map<std::string,void*> data_dims;
-  data_dims[dim_str.getString()] = dimensions.addr();
-  data_dims[glob_dim_str.getString()] = &glob_dim_0;
-  if(write)
-    pdi_interface.multiple_writes("dimensions", data_dims);
-  else
-    pdi_interface.multiple_reads("dimensions", data_dims);
-}
-
 /*! @brief Sauvegarde le champ inconnue sur un flot de sortie.
  *
  *  Ecrit un identifiant, les valeurs du champs, et la date (le temps au moment de la sauvegarde).
@@ -390,11 +369,14 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     {
       bytes = 8 * valeurs().size_array();
 
-      if(equation().probleme().schema_temps().nb_sauvegardes() == 1 ) // first checkpoint (no need to share this every time, PDI keeps it in memory)
-        share_dimensions_with_PDI(1 /*write mode*/);
+      TRUST_2_PDI pdi_interface;
+      if(first_checkpoint_) // first checkpoint (no need to share this every time, PDI keeps it in memory)
+        {
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
+          first_checkpoint_ = false;
+        }
 
       DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
-      TRUST_2_PDI pdi_interface;
       pdi_interface.TRUST_start_sharing(nom_.getString(), unknwon.addr());
     }
   else
@@ -433,8 +415,8 @@ int Champ_Inc_base::reprendre(Entree& fich)
       Cerr << "Resume of the field " << nom_;
       if(TRUST_2_PDI::PDI_restart_)
         {
-          share_dimensions_with_PDI(0 /*read mode*/);
           TRUST_2_PDI pdi_interface;
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
           pdi_interface.PDI_start_sharing(nom_.getChar(), valeurs().addr());
         }
       else

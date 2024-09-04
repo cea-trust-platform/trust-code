@@ -22,6 +22,7 @@
 #include <vector>
 #include <map>
 #include <assert.h>
+#include <TRUSTTab.h>
 
 /*! @brief classe TRUST_2_PDI Encapsulation of PDI methods (library used for IO operations)
  */
@@ -107,14 +108,18 @@ public:
     shared_data_.clear();
   }
 
+  // Higher level methods
   void share_node_parallelism();
+
+  void share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write);
+
 
 private:
 
   void multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write=0);
 
+  // data that are currently shared with PDI
   static std::vector<std::string> shared_data_;
-
 };
 
 #endif

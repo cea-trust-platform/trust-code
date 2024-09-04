@@ -58,7 +58,6 @@ private:
   void declare_metadata_(int save, std::string& text);
   void declare_data_(int save, std::string& text);
 
-//  void write_simple_checkpoint_(Nom fname, std::string& text);
   void write_data_(Nom fname, int simple_checkpoint, std::string& text);
   void restore_data_(Nom fname, int simple_checkpoint, std::string& text);
 
@@ -66,8 +65,11 @@ private:
   void write_time_scheme_(Nom fname, std::string& text);
   void write_format_(Nom fname, std::string& text);
 
+  void set_fields_();
+
   int indent_;
   REF(Probleme_base) pb_;
+  LIST(REF(Champ_base)) fields_; //fields to save/restore
 
 };
 

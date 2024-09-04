@@ -58,3 +58,25 @@ void TRUST_2_PDI::share_node_parallelism()
     }
 #endif
 }
+
+
+void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write)
+{
+  int nb_dim = tab.nb_dim();
+  ArrOfInt dimensions(nb_dim);
+  for(int i=0; i< nb_dim; i++)
+    dimensions[i] = tab.dimension(i);
+
+  int glob_dim_0;
+  PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
+
+  std::string name_str = name.getString();
+  std::string dim_str = "dim_" + name_str;
+  std::string glob_dim_str = "glob_dim_" + name_str;
+
+  std::map<std::string,void*> data_dims;
+  data_dims[dim_str] = dimensions.addr();
+  data_dims[glob_dim_str] = &glob_dim_0;
+  multiple_IO_("dimensions", data_dims, write);
+}
+
