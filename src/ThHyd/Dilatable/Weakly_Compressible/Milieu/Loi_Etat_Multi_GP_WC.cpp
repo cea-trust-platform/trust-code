@@ -238,7 +238,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
 {
   assert (liste_Y.size() + 1 == num_espece_);
   const int size = liste_Y(0)->valeurs().size();
-  DoubleTab phi(size), mu(size);
+  DoubleTrav phi(size), mu(size);
   mu = 0.;
   phi = 0.;
 

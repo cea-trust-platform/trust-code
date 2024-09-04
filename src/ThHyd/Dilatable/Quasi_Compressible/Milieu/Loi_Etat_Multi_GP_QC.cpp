@@ -240,7 +240,7 @@ double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
 void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 {
   const int size = liste_Y(0)->valeurs().size(), list_size = liste_Y.size();
-  DoubleTab phi(size), mu(size);
+  DoubleTrav phi(size), mu(size);
   mu = 0.;
   phi = 0.;
 

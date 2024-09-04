@@ -57,7 +57,7 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTa
 int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn,Sortie& os) const
 {
   const Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.fluide());
-  const DoubleTab& vit = eqn.vitesse()->valeurs(), rho = fluide_dil.rho_face_np1();
+  const DoubleTab& vit = eqn.vitesse()->valeurs(), &rho = fluide_dil.rho_face_np1();
   DoubleTrav mass_flux(vit);
   rho_vitesse_impl(rho,vit,mass_flux);
 
@@ -175,9 +175,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
   eqn.operateur(0).ajouter(secmem);
 
   const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());
-  const DoubleTab& tab_rho_face_np1 = fluide_dil.rho_face_np1(), tab_rho_face_n=fluide_dil.rho_face_n();
+  const DoubleTab& tab_rho_face_np1 = fluide_dil.rho_face_np1(), &tab_rho_face_n=fluide_dil.rho_face_n();
   const int nb_compo = present.line_size();
-  const IntVect& tab1 = mat_morse.get_tab1(), tab2 = mat_morse.get_tab2();
+  const IntVect& tab1 = mat_morse.get_tab1(), &tab2 = mat_morse.get_tab2();
 
   DoubleVect& coeff = mat_morse.get_set_coeff();
   ToDo_Kokkos("critical for implicit");
@@ -262,9 +262,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   eqn.operateur(0).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
 
   const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());
-  const DoubleTab& tab_rho_face_np1 = fluide_dil.rho_face_np1(), tab_rho_face_n=fluide_dil.rho_face_n();
+  const DoubleTab& tab_rho_face_np1 = fluide_dil.rho_face_np1(), &tab_rho_face_n=fluide_dil.rho_face_n();
   const int nb_compo = present.line_size();
-  const IntVect& tab1 = mat->get_tab1(), tab2 = mat->get_tab2();
+  const IntVect& tab1 = mat->get_tab1(), &tab2 = mat->get_tab2();
 
   DoubleVect& coeff = mat->get_set_coeff();
   ToDo_Kokkos("critical for implicit");
@@ -354,7 +354,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
                                                                     const Fluide_Dilatable_base& fluide_dil,
                                                                     DoubleTab& rhoU, DoubleTab& vpoint)
 {
-  const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), tab_rho_face_np1=fluide_dil.rho_face_np1();
+  const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& tab_rho = fluide_dil.rho_discvit(); // rho avec la meme discretisation que la vitesse
   const DoubleTab& vit = eqn.vitesse()->valeurs();
 
@@ -510,9 +510,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::solve_pressure_increment(Navier_Stoke
                                                                     DoubleTab& rhoU, DoubleTab& secmem,
                                                                     DoubleTab& inc_pre, DoubleTab& vpoint)
 {
-  const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), tab_rho_face_np1=fluide_dil.rho_face_np1();
+  const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& vit = eqn.vitesse()->valeurs();
-  const double dt_ = eqn.schema_temps().pas_de_temps(),t = eqn.schema_temps().temps_courant();
+  const double dt_ = eqn.schema_temps().pas_de_temps(), t = eqn.schema_temps().temps_courant();
 
   // Resolution pression
   vpoint.echange_espace_virtuel();

@@ -55,7 +55,7 @@ DoubleTab& Source_WC_Chaleur::ajouter_(DoubleTab& resu) const
   if (dt_ <= 0.) return resu; // On calcul pas ce terme source si dt<=0
 
   Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
-  DoubleTab& Ptot = FWC.pression_th_tab(), Ptot_n = FWC.pression_thn_tab(); // present & passe
+  DoubleTab& Ptot = FWC.pression_th_tab(), &Ptot_n = FWC.pression_thn_tab(); // present & passe
 
   Ptot.echange_espace_virtuel();
 
