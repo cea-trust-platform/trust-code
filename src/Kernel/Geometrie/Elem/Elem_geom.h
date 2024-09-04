@@ -19,21 +19,7 @@
 #include <Elem_geom_base.h>
 #include <TRUST_Deriv.h>
 
-/*! @brief Classe Elem_geom Classe generique de la hierarchie des elements geometriques, un objet
- *
- *      Elem_geom peut referencer n'importe quel objet derivant de
- *      Elem_geom_base.
- *      La plupart des methodes appellent les methodes de l'objet Elem_geom_base
- *      sous-jacent via la methode valeur() declaree grace a la macro
- *
- */
-template <typename _SIZE_>
-class Elem_geom_32_64 : public OWN_PTR(Elem_geom_base_32_64<_SIZE_>)
-{
-  Declare_instanciable_32_64(Elem_geom_32_64);
-};
+using Elem_geom = OWN_PTR(Elem_geom_base_32_64<int>);
+using Elem_geom_64 = OWN_PTR(Elem_geom_base_32_64<trustIdType>);
 
-using Elem_geom = Elem_geom_32_64<int>;
-using Elem_geom_64 = Elem_geom_32_64<trustIdType>;
-
-#endif
+#endif /* Elem_geom_included */

@@ -511,7 +511,7 @@ void Polyedre_32_64<_SIZE_>::ajouter_elements(const Elem_geom_base_32_64<_SIZE_>
 }
 
 template <typename _SIZE_>
-void Polyedre_32_64<_SIZE_>::build_reduced(Elem_geom_32_64<_SIZE_>& type_elem, const ArrOfInt_t& elems_sous_part) const
+void Polyedre_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const
 {
   type_elem.typer("Polyedre");
   Polyedre_32_64& reduced = ref_cast(Polyedre_32_64, type_elem.valeur());

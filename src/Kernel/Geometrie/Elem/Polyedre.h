@@ -64,7 +64,7 @@ public :
   inline const ArrOfInt_t& getElemIndex() const override  { return PolyhedronIndex_; }
   void remplir_Nodes_glob(ArrOfInt_t& Nodes_glob,const IntTab_t& les_elems ) const;
   void ajouter_elements(const Elem_geom_base_32_64<_SIZE_>& new_elem, const IntTab_t& new_elems, IntTab_t& les_elems);
-  void build_reduced(Elem_geom_32_64<_SIZE_>& type_elem, const ArrOfInt_t& elems_sous_part) const override;
+  void build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const override;
   void compute_virtual_index() override;
 
 protected:

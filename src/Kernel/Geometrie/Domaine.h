@@ -96,8 +96,8 @@ public:
   //
   Domaine_32_64() { clear(); }
   inline void typer(const Nom&);
-  inline const Elem_geom_32_64<_SIZE_>& type_elem() const { return elem_; }
-  inline Elem_geom_32_64<_SIZE_>& type_elem() {  return elem_; }
+  inline const OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem() const { return elem_; }
+  inline OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem() {  return elem_; }
   inline void reordonner() { elem_->reordonner(); }
 
 
@@ -376,7 +376,7 @@ public:
 
 protected:
   // Geometric element type of this domain
-  Elem_geom_32_64<_SIZE_> elem_;
+  OWN_PTR(Elem_geom_base_32_64<_SIZE_>) elem_;
 
   // Array of vertices
   DoubleTab_t sommets_;

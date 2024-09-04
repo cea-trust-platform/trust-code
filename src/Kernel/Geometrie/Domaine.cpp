@@ -72,7 +72,7 @@ void check_frontiere(const LIST_FRONTIERE& list, const char *msg)
 // S'il y a un proc qui a un type different de vide_OD, on type les faces sur tous
 // les processeurs avec ce type:
 template <class _SIZE_>
-void corriger_type(Faces_32_64<_SIZE_>& faces, const Elem_geom_32_64<_SIZE_>& type_elem)
+void corriger_type(Faces_32_64<_SIZE_>& faces, const OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem)
 {
   Type_Face typ = faces.type_face();
   const int pe = (faces.type_face() == Type_Face::vide_0D) ? Process::nproc() - 1 : Process::me();
@@ -104,7 +104,7 @@ void Domaine_32_64<_SZ_>::clear()
 {
   sommets_.reset();
   renum_som_perio_.reset();
-  elem_ = Elem_geom_32_64<_SZ_>();
+  elem_ = OWN_PTR(Elem_geom_base_32_64<_SZ_>)();
   mes_elems_.reset();
   aretes_som_.reset();
   elem_aretes_.reset();

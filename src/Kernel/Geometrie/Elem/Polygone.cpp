@@ -81,7 +81,7 @@ void Polygone_32_64<_SIZE_>::rebuild_index()
 }
 
 template <typename _SIZE_>
-void Polygone_32_64<_SIZE_>::build_reduced(Elem_geom_32_64<_SIZE_>& type_elem, const ArrOfInt_t& elems_sous_part) const
+void Polygone_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const
 {
   const IntTab_t& les_elems = mon_dom->les_elems();
   type_elem.typer("Polygone");

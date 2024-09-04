@@ -58,7 +58,7 @@ public :
   virtual const ArrOfInt_t& getElemIndex() const =0;
   virtual int_t get_somme_nb_faces_elem() const =0;
   virtual void calculer_un_centre_gravite(const int_t elem, DoubleVect& xp) const =0;
-  virtual void build_reduced(Elem_geom_32_64<_SIZE_>& type_elem, const ArrOfInt_t& elems_sous_part) const = 0;
+  virtual void build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const = 0;
   virtual void compute_virtual_index()=0;
 
 protected:

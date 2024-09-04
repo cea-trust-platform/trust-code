@@ -66,7 +66,7 @@ public :
   inline const ArrOfInt_t& getPolygonIndex() const        { return PolygonIndex_; }
   inline const ArrOfInt_t& getElemIndex() const override  { return PolygonIndex_; }
   void rebuild_index();
-  void build_reduced(Elem_geom_32_64<_SIZE_>& type_elem, const ArrOfInt_t& elems_sous_part) const override;
+  void build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const override;
   void compute_virtual_index() override;
 
 protected:

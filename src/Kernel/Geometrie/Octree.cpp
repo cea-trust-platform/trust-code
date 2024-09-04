@@ -1063,7 +1063,7 @@ typename OctreeFloor_32_64<_SIZE_>::int_t OctreeFloor_32_64<_SIZE_>::rang_elem_l
 {
   int_t sz=num_elem.size_array();
   int_t element=-1;
-  const Elem_geom_32_64<_SIZE_>& elemgeom=this->domaine().type_elem();
+  const OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& elemgeom=this->domaine().type_elem();
   pos[0]=x;
   pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
@@ -1097,7 +1097,7 @@ typename OctreeFloor_32_64<_SIZE_>::int_t OctreeFloor_32_64<_SIZE_>::rang_elem_d
 {
   int_t sz=num_elem.size_array();
   int_t element=-1;
-  const Elem_geom_32_64<_SIZE_>& elemgeom = this->domaine().type_elem();
+  const OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& elemgeom = this->domaine().type_elem();
   pos[0]=x;
   pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
