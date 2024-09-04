@@ -27,7 +27,7 @@
  *
  * @sa Cond_lim_base
  */
-class Cond_lim : public DERIV(Cond_lim_base)
+class Cond_lim : public OWN_PTR(Cond_lim_base)
 {
   Declare_instanciable(Cond_lim);
 public:
@@ -40,19 +40,19 @@ public:
 
 inline Cond_lim& Cond_lim::operator=(const Cond_lim_base& cl_base)
 {
-  DERIV(Cond_lim_base)::operator=(cl_base);
+  OWN_PTR(Cond_lim_base)::operator=(cl_base);
   return *this;
 }
 
 inline Cond_lim& Cond_lim::operator=(const Cond_lim& cl)
 {
-  DERIV(Cond_lim_base)::operator=(cl.valeur());
+  OWN_PTR(Cond_lim_base)::operator=(cl.valeur());
   return *this;
 }
 
 inline int Cond_lim::operator == (const Cond_lim& x) const
 {
-  return (DERIV(Cond_lim_base)&) x == (DERIV(Cond_lim_base)&) *this ;
+  return (OWN_PTR(Cond_lim_base)&) x == (OWN_PTR(Cond_lim_base)&) *this ;
 }
 
 #endif

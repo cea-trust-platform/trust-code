@@ -655,7 +655,7 @@ void MD_Vector_tools::restore_vector_with_md(DoubleVect& v, Entree& is)
 {
 
   v.reset();
-  DERIV(MD_Vector_base) md_ptr;
+  OWN_PTR(MD_Vector_base) md_ptr;
   Nom md_type;
   is >> md_type;
   md_ptr.typer(md_type);

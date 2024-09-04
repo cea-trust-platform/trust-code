@@ -398,7 +398,7 @@ protected:
   IntTab_t elem_virt_pe_num_;
 
   // L'octree est mutable: on le construit a la volee lorsqu'il est utilise dans les methodes const
-  mutable DERIV(OctreeRoot_t) deriv_octree_;
+  mutable OWN_PTR(OctreeRoot_t) deriv_octree_;
   ArrOfDouble cg_moments_;  // max dim 3
 
   // List of references to sub domains

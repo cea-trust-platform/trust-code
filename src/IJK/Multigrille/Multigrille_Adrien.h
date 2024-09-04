@@ -186,7 +186,7 @@ private:
   int ghost_size_;
 
   // Coarsening operators (read in the .data file)
-  VECT(DERIV(Coarsen_Operator_base)) coarsen_operators_;
+  VECT(OWN_PTR(Coarsen_Operator_base)) coarsen_operators_;
 
   // Data for each grid (number of grids = number of coarsening operators + 1)
   TRUST_Vector<Grid_Level_Data_template<float>> grids_data_float_;

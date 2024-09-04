@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <stat_counters.h>
 #include <Champ_base.h>
 
-Implemente_instanciable(Operateur_Conv,"Operateur_Conv",DERIV(Operateur_Conv_base));
+Implemente_instanciable(Operateur_Conv,"Operateur_Conv",OWN_PTR(Operateur_Conv_base));
 // XD convection_deriv objet_lecture convection_deriv 0 not_set
 // XD bloc_convection objet_lecture nul 0 not_set
 // XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
@@ -68,12 +68,12 @@ Entree& Operateur_Conv::readOn(Entree& is)
 void Operateur_Conv::typer()
 {
   if (Motcle(typ)==Motcle("negligeable"))
-    DERIV(Operateur_Conv_base)::typer("Op_Conv_negligeable");
+    OWN_PTR(Operateur_Conv_base)::typer("Op_Conv_negligeable");
   else
     {
       Equation_base& eqn=mon_equation.valeur();
       Nom nom_type=eqn.discretisation().get_name_of_type_for(que_suis_je(),typ,eqn,vitesse());
-      DERIV(Operateur_Conv_base)::typer(nom_type);
+      OWN_PTR(Operateur_Conv_base)::typer(nom_type);
       valeur().associer_vitesse(vitesse());
     }
   Cerr << valeur().que_suis_je() << finl;

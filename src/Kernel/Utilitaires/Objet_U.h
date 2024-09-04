@@ -53,7 +53,7 @@ class Motcle;
  *        buffer memoire, buffer de communication parallele).
  *        Il faut donc toujours implementer les methodes readOn et printOn
  *      Un Objet_U d'un type quelconque peut etre instancie grace a une
- *       chaine de caracteres qui l'identifie (que_suis_je()), voir DERIV::typer
+ *       chaine de caracteres qui l'identifie (que_suis_je()), voir OWN_PTR::typer
  *      Un Objet_U peut etre "sauvegarde" ou "repris" sur disque (au sens sauvegarde
  *       et reprise d'un calcul). Ces operations sont differentes de readOn/printOn
  *       car elles permettent eventuellement une redistribution des donnees paralleles
@@ -91,7 +91,7 @@ public:
 #ifndef LATATOOLS            // All the below is not needed in lata_tools:
   int        get_object_id() const;
 
-  // Elie Saikali : add to this to statically test if class templates are REF/DERIV or normal !
+  // Elie Saikali : add to this to statically test if class templates are REF/OWN_PTR or normal !
   static constexpr bool HAS_POINTER = false;
 
   static int dimension;

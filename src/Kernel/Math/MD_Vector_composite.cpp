@@ -58,7 +58,7 @@ Entree& MD_Vector_composite::readOn(Entree& is)
   is >> np ;
   for (int p=0; p<np; p++)
     {
-      DERIV(MD_Vector_base) md_ptr;
+      OWN_PTR(MD_Vector_base) md_ptr;
       Nom md_type;
       is >> md_type;
       md_ptr.typer(md_type);

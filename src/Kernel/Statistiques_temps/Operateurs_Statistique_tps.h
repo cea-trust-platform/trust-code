@@ -29,7 +29,7 @@ class Motcle;
  *
  * @sa Postraitement
  */
-class Operateurs_Statistique_tps: public LIST(DERIV(Operateur_Statistique_tps_base))
+class Operateurs_Statistique_tps: public LIST(OWN_PTR(Operateur_Statistique_tps_base))
 {
   Declare_instanciable(Operateurs_Statistique_tps);
 

@@ -162,7 +162,7 @@ Entree& Lata_2_Other::interpreter(Entree& is)
 
   // Creation d'un sous-groupe contenant uniquement le processeur maitre
   ArrOfInt liste_pe(1);
-  DERIV(Comm_Group) group;
+  OWN_PTR(Comm_Group) group;
   // on se met en non axi le temps de la conversion
   int axi_sa = axi;
   axi = 0;

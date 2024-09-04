@@ -204,7 +204,7 @@ protected :
   virtual void lire_solved_equations(Entree& is) { /* Do nothing */ }
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
 
-  mutable DERIV(Sortie_Fichier_base) ficsauv_;
+  mutable OWN_PTR(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_ = nullptr;
 
   bool milieu_via_associer_ = false;

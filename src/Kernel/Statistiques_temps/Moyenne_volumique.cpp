@@ -436,7 +436,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   int localisation = id_elem; // par defaut
   Motcle format_post("lata_v1");
   Nom nom_fichier_post;
-  DERIV(Format_Post_base) fichier_post;
+  OWN_PTR(Format_Post_base) fichier_post;
   param.ajouter("nom_pb", & nom_pb, Param::REQUIRED); // XD_ADD_P ref_Pb_base name of the problem where the source fields will be searched.
   param.ajouter("nom_domaine", & nom_dom, Param::REQUIRED); // XD_ADD_P ref_domaine name of the destination domain (for example, it can be a coarser mesh, but for optimal performance in parallel, the domain should be split with the same algorithm as the computation mesh, eg, same tranche parameters for example)
   param.ajouter("noms_champs", & noms_champs, Param::REQUIRED); // XD_ADD_P listchaine name of the source fields (these fields must be accessible from the postraitement) N source_field1 source_field2 ... source_fieldN

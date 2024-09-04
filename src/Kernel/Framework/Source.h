@@ -29,7 +29,7 @@ class Equation_base;
  *
  * @sa Source_base
  */
-class Source : public DERIV(Source_base)
+class Source : public OWN_PTR(Source_base)
 {
   Declare_instanciable(Source);
 public :

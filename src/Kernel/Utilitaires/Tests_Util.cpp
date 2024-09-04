@@ -41,10 +41,10 @@ int test_Deriv()
 {
   Cerr << "test_Deriv" << finl;
   DoubleVect x(5);
-  DERIV(DoubleVect) xx;                        //Constructeur par defaut.
+  OWN_PTR(DoubleVect) xx;                        //Constructeur par defaut.
   assert(xx.non_nul() == 0);
-  DERIV(DoubleVect) yy(x);                        //Constructeur par const T&.
-  DERIV(DoubleVect) zz(yy);                        //Constructeur par const T&.
+  OWN_PTR(DoubleVect) yy(x);                        //Constructeur par const T&.
+  OWN_PTR(DoubleVect) zz(yy);                        //Constructeur par const T&.
   xx=x;                                        //Operateur = const T&.
   xx=yy;                                        //Operateur = const Deriv<T>&.
   assert(xx->size() == x.size());                //Operateur ->

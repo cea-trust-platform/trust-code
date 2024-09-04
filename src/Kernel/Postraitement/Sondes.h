@@ -27,7 +27,7 @@
  *
  * @sa Sonde Postraitement
  */
-class Sondes : public LIST(DERIV(Sonde))
+class Sondes : public LIST(OWN_PTR(Sonde))
 {
   Declare_instanciable(Sondes);
 public:

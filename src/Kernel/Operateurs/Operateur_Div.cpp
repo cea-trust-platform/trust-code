@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <Operateur_Div.h>
 #include <stat_counters.h>
 
-Implemente_instanciable(Operateur_Div,"Operateur_Div",DERIV(Operateur_Div_base));
+Implemente_instanciable(Operateur_Div,"Operateur_Div",OWN_PTR(Operateur_Div_base));
 
 Sortie& Operateur_Div::printOn(Sortie& os) const
 {
@@ -39,7 +39,7 @@ void Operateur_Div::typer()
   Equation_base& eqn=mon_equation.valeur();
   Nom inut;
   Nom nom_type=eqn.discretisation().get_name_of_type_for(que_suis_je(),inut,eqn);
-  DERIV(Operateur_Div_base)::typer(nom_type);
+  OWN_PTR(Operateur_Div_base)::typer(nom_type);
   Cerr << "Construction of the divergence operator type : ";
   Cerr << valeur().que_suis_je() << finl ;
 }

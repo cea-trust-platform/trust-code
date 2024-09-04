@@ -89,7 +89,7 @@ Entree& Mailler::interpreter_(Entree& is)
     }
   Nom typ_domaine;
   std::list<Domaine*> dom_lst;  // the list of domains we will merge later when calling comprimer()
-  std::list<DERIV(Domaine)> dom_lst2; // just for memory management
+  std::list<OWN_PTR(Domaine)> dom_lst2; // just for memory management
   do
     {
       is >> typ_domaine;
@@ -116,8 +116,8 @@ Entree& Mailler::interpreter_(Entree& is)
         }
       else
         {
-          dom_lst2.push_back(DERIV(Domaine)()); // to keep them alive till the end of the method
-          DERIV(Domaine)& un_domaine = dom_lst2.back();
+          dom_lst2.push_back(OWN_PTR(Domaine)()); // to keep them alive till the end of the method
+          OWN_PTR(Domaine)& un_domaine = dom_lst2.back();
           un_domaine.typer(typ_domaine); // Most likely a Pave ...
           Domaine& ze_domaine = un_domaine.valeur();
           is >> ze_domaine;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Champ_base.h>
 #include <Champ_Don.h>
 
-Implemente_instanciable(Operateur_Diff,"Operateur_Diff",DERIV(Operateur_Diff_base));
+Implemente_instanciable(Operateur_Diff,"Operateur_Diff",OWN_PTR(Operateur_Diff_base));
 // XD diffusion_deriv objet_lecture diffusion_deriv 0 not_set
 // XD bloc_diffusion objet_lecture nul 0 not_set
 // XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
@@ -53,7 +53,7 @@ void Operateur_Diff::typer()
   Cerr << "Operateur_Diff::typer("<<typ<<")" << finl;
   if (Motcle(typ)==Motcle("negligeable"))
     {
-      DERIV(Operateur_Diff_base)::typer("Op_Diff_negligeable");
+      OWN_PTR(Operateur_Diff_base)::typer("Op_Diff_negligeable");
       valeur().associer_diffusivite(diffusivite());
     }
   else
@@ -61,7 +61,7 @@ void Operateur_Diff::typer()
       assert(la_diffusivite.non_nul());
       Equation_base& eqn=mon_equation.valeur();
       Nom nom_type= eqn.discretisation().get_name_of_type_for(que_suis_je(),typ,eqn,diffusivite());
-      DERIV(Operateur_Diff_base)::typer(nom_type);
+      OWN_PTR(Operateur_Diff_base)::typer(nom_type);
       valeur().associer_diffusivite(diffusivite());
     }
   Cerr << valeur().que_suis_je() << finl;
@@ -152,5 +152,5 @@ void  Operateur_Diff::associer_diffusivite_pour_pas_de_temps(const Champ_base& n
  */
 void Operateur_Diff::typer(const Nom& un_type)
 {
-  DERIV(Operateur_Diff_base)::typer(un_type);
+  OWN_PTR(Operateur_Diff_base)::typer(un_type);
 }

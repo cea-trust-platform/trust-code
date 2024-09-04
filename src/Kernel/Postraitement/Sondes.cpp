@@ -17,7 +17,7 @@
 #include <Postraitement.h>
 #include <Sondes.h>
 
-Implemente_instanciable(Sondes, "Sondes|Probes", LIST(DERIV(Sonde)));
+Implemente_instanciable(Sondes, "Sondes|Probes", LIST(OWN_PTR(Sonde)));
 // XD sondes listobj nul 1 sonde 0 List of probes.
 
 
@@ -65,7 +65,7 @@ Entree& Sondes::readOn(Entree& s )
   set_noms_champs_postraitables();
   while (motlu != accolade_fermee)
     {
-      DERIV(Sonde) une_sonde;
+      OWN_PTR(Sonde) une_sonde;
       une_sonde.typer("Sonde");
       une_sonde->nommer(motlu);
       une_sonde->associer_post(mon_post.valeur());

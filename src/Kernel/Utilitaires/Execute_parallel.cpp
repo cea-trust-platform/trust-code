@@ -107,7 +107,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
 
   // Creation des N groupes de processeurs
   // (les groupes sont detruits quand le VECT est detruit)
-  VECT(DERIV(Comm_Group)) groupes(n_calculs);
+  VECT(OWN_PTR(Comm_Group)) groupes(n_calculs);
   count = 0;
   Nom log_courant("");
   for (int i = 0; i < n_calculs; i++)

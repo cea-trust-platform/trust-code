@@ -65,7 +65,7 @@ const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
 /*! @brief lecture du partitionneur dans le jeu de donnees (lecture du type et des parametres et initialisation de d_part)
  *
  */
-static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
+static void lire_partitionneur(OWN_PTR(Partitionneur_base) & d_part,
                                const Domaine& domaine, Entree& is)
 {
   Nom n;

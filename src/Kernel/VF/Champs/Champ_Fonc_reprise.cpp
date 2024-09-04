@@ -148,7 +148,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   //Nom type_objet_lu;
 
   int mode_lec_sa= EcritureLectureSpecial::mode_lec;
-  DERIV(Entree_Fichier_base) fic_rep;
+  OWN_PTR(Entree_Fichier_base) fic_rep;
 
 #ifdef MPI_
   Entree_Brute input_data;

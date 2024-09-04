@@ -522,7 +522,7 @@ int is_parallel_object(const Objet_U& obj)
     }
   else
     {
-      // On envoie un objet de type DERIV..
+      // On envoie un objet de type OWN_PTR..
       DerObjU copie(obj);
       envoyer(copie, 0, 67 /* tag */);
     }

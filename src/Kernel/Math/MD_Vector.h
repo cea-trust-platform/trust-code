@@ -25,15 +25,15 @@
 //  VECT_ALL_ITEMS: compute requested operation on all items (this is equivalent to a call to the Array class operator)
 enum Mp_vect_options { VECT_SEQUENTIAL_ITEMS, VECT_REAL_ITEMS, VECT_ALL_ITEMS };
 
-/*! @brief : Cette classe est un DERIV mais l'objet pointe est partage entre plusieurs
+/*! @brief : Cette classe est un OWN_PTR mais l'objet pointe est partage entre plusieurs
  *
  *   instances de cette classe. L'objet pointe ne peut etre accede qu'en "const"
  *    et n'est accessible que par des instances de MD_Vector. Donc
  *    il n'existe pas de moyen d'y acceder en "non const" autrement qu'avec un cast.
  *   La methode attach() et le constructeur par copie rattachent le pointeur a une
  *    instance existante deja attachee a un pointeur.
- *   La methode attach_detach() s'approprie l'objet pointe par le DERIV et detache
- *    l'objet du DERIV. C'est la seule facon de "construire" les objets MD_Vector
+ *   La methode attach_detach() s'approprie l'objet pointe par le OWN_PTR et detache
+ *    l'objet du OWN_PTR. C'est la seule facon de "construire" les objets MD_Vector
  *    (evite une copie, et permet d'assurer que le MD_Vect ne peut plus etre modifie
  *     une fois que qu'il a ete attache a un MD_Vector)
  *   ATTENTION: la securite de la methode repose

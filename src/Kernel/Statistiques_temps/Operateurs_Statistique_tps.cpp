@@ -19,12 +19,12 @@
 #include <Postraitement.h>
 
 
-Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(DERIV(Operateur_Statistique_tps_base)));
+Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(OWN_PTR(Operateur_Statistique_tps_base)));
 
 Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Operateurs_Statistique_tps::readOn(Entree& s) { return s; }
 
-inline const DERIV(Operateur_Statistique_tps_base)& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
+inline const OWN_PTR(Operateur_Statistique_tps_base)& recherche(Operateurs_Statistique_tps& op, const Nom& champ, const Motcle& motlu)
 {
   for (auto &itr : op)
     {

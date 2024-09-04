@@ -29,7 +29,7 @@ class Probleme_base;
 class Entree;
 class Motcle;
 
-class Postraitements : public LIST(DERIV(Postraitement_base))
+class Postraitements : public LIST(OWN_PTR(Postraitement_base))
 {
   Declare_instanciable(Postraitements);
 

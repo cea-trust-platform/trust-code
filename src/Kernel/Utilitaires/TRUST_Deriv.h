@@ -32,8 +32,8 @@
  *   #include <Type_base.h>
  *   TRUST_Deriv<Type_base>
  *
- *   Creation d'un objet de type DERIV(Type_base) :
- *    DERIV(Type_base) deriv_type; // deriv_type est encore un pointeur nul
+ *   Creation d'un objet de type OWN_PTR(Type_base) :
+ *    OWN_PTR(Type_base) deriv_type; // deriv_type est encore un pointeur nul
  *
  *   On suppose que la classe Type_Derive derive de Type_base et est instanciable:
  *    class Type_Derive : Type_base
@@ -54,8 +54,10 @@
  *
  */
 
-// MACRO to replace DERIV(THECLASS) by Deriv_THECLASS & keep previous syntax for some developers
-#define DERIV(_TYPE_) TRUST_Deriv<_TYPE_>
+// MACRO to replace OWN_PTR(THECLASS) by Deriv_THECLASS & keep previous syntax for some developers
+#define DERIV(_TYPE_) \
+  static_assert(false, "The old DERIV MACRO is now deprecated. Please use OWN_PTR instead.")
+
 #define OWN_PTR(_TYPE_) TRUST_Deriv<_TYPE_>
 
 template<typename _CLASSE_>
@@ -198,7 +200,7 @@ public:
  * ======================================================= */
 
 /*! @brief classe TRUST_Deriv_Objet_U est quasiment identique a TRUST_Deriv<Objet_U>
- *  sauf qu'elle ne contient pas les operateurs de conversion de DERIV(Objet_U) en Objet_U.
+ *  sauf qu'elle ne contient pas les operateurs de conversion de OWN_PTR(Objet_U) en Objet_U.
  *
  *  Il existe 3 methodes supplementaires :
  *

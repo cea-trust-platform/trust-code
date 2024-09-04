@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,18 +15,18 @@
 
 #include <Elem_geom.h>
 
-Implemente_instanciable_32_64(Elem_geom_32_64, "Elem_geom",DERIV(Elem_geom_base_32_64<_T_>));
+Implemente_instanciable_32_64(Elem_geom_32_64, "Elem_geom",OWN_PTR(Elem_geom_base_32_64<_T_>));
 
 template <typename _SIZE_>
 Sortie& Elem_geom_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return DERIV(Elem_geom_base_32_64<_SIZE_>)::printOn(s);
+  return OWN_PTR(Elem_geom_base_32_64<_SIZE_>)::printOn(s);
 }
 
 template <typename _SIZE_>
 Entree& Elem_geom_32_64<_SIZE_>::readOn(Entree& s )
 {
-  return DERIV(Elem_geom_base_32_64<_SIZE_>)::readOn(s);
+  return OWN_PTR(Elem_geom_base_32_64<_SIZE_>)::readOn(s);
 }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
  *
  */
 template <typename _SIZE_>
-class Elem_geom_32_64 : public DERIV(Elem_geom_base_32_64<_SIZE_>)
+class Elem_geom_32_64 : public OWN_PTR(Elem_geom_base_32_64<_SIZE_>)
 {
   Declare_instanciable_32_64(Elem_geom_32_64);
 };

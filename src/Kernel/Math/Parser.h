@@ -159,7 +159,7 @@ private:
   std::string* str;
   Variable** les_var;
   static LIST(Constante) les_cst;
-  static LIST(DERIV(UnaryFunction)) unary_func;
+  static LIST(OWN_PTR(UnaryFunction)) unary_func;
   int maxvar,ivar;
 };
 

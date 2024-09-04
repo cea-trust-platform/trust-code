@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,27 +16,27 @@
 #include <TRUSTVect.h>
 #include <Matrice.h>
 
-Implemente_instanciable( Matrice, "Matrice", DERIV( Matrice_Base ) ) ;
+Implemente_instanciable( Matrice, "Matrice", OWN_PTR( Matrice_Base ) ) ;
 
 Sortie& Matrice::printOn( Sortie& os ) const
 {
-  return DERIV( Matrice_Base )::printOn( os );
+  return OWN_PTR( Matrice_Base )::printOn( os );
 }
 
 Entree& Matrice::readOn( Entree& is )
 {
-  return DERIV( Matrice_Base )::readOn( is );
+  return OWN_PTR( Matrice_Base )::readOn( is );
 }
 
 Matrice& Matrice::operator=( const Matrice& matrix )
 {
-  DERIV( Matrice_Base )::operator= ( matrix.valeur( ) );
+  OWN_PTR( Matrice_Base )::operator= ( matrix.valeur( ) );
   return *this;
 }
 
 Matrice& Matrice::operator=( const Matrice_Base& matrix )
 {
-  DERIV( Matrice_Base )::operator= ( matrix );
+  OWN_PTR( Matrice_Base )::operator= ( matrix );
   return *this;
 }
 

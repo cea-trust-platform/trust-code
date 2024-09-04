@@ -68,7 +68,7 @@ public:
   inline const Correlation& get_corr() const { return corr_; }
 
 protected:
-  REF(Correlation) corr_; //attention REF + DERIV => 2 valeur() deso
+  REF(Correlation) corr_; //attention REF + OWN_PTR => 2 valeur() deso
   REF(DoubleTab) nu_t_;
   bool need_alpha_rho_ = true, tab_diff_turb_first_update_ = true;
 };

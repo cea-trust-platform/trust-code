@@ -53,7 +53,7 @@ private:
   int trio_began_mpi_;
   bool apply_verification_;
   int disable_stop_;
-  DERIV(Comm_Group) groupe_trio_;
+  OWN_PTR(Comm_Group) groupe_trio_;
   Interprete_bloc interprete_principal_;
 };
 extern bool error_handlers;

@@ -16,7 +16,7 @@
 #include <Postraitements.h>
 #include <Postraitement.h>
 
-Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
+Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(OWN_PTR(Postraitement_base)));
 // XD postraitements listobj postraitements -1 un_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name).
 
 // XD type_postraitement_ft_lata objet_lecture nul 0 not_set
@@ -42,7 +42,7 @@ Sortie& Postraitements::printOn(Sortie& s) const
 {
   for (const auto& itr : *this)
     {
-      const Postraitement_base& post = itr.valeur(); // valeur() car DERIV
+      const Postraitement_base& post = itr.valeur(); // valeur() car OWN_PTR
       s << post;
     }
   return s;
@@ -118,7 +118,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
   if (lerang == 0)
     {
       // Creation et lecture d'un postraitement unique standard
-      DERIV(Postraitement_base) & post = add( DERIV(Postraitement_base)() );
+      OWN_PTR(Postraitement_base) & post = add( OWN_PTR(Postraitement_base)() );
       if (mon_pb.que_suis_je() == "Pb_STT")
         {
           post.typer("Postraitement_STT");
@@ -177,7 +177,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
             }
           list_nom_post.add_if_not(nom_du_post);
 
-          DERIV(Postraitement_base) & post = add( DERIV(Postraitement_base)() );
+          OWN_PTR(Postraitement_base) & post = add( OWN_PTR(Postraitement_base)() );
           post.typer(type);
           post->associer_nom_et_pb_base(nom_du_post, mon_pb);
           is >> post.valeur();

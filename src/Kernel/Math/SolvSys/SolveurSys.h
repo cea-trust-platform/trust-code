@@ -28,7 +28,7 @@
 #include <Matrice_Base.h>
 #include <TRUST_Deriv.h>
 
-class SolveurSys : public DERIV(SolveurSys_base)
+class SolveurSys : public OWN_PTR(SolveurSys_base)
 {
   Declare_instanciable(SolveurSys);
 public:

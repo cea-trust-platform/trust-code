@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -250,7 +250,7 @@ void Objet_U_ptr::set_Objet_U_ptr(Objet_U * ptr)
 Objet_U * Objet_U_ptr::typer(const char * type)
 {
   const Type_info * type_info = Type_info::type_info_from_name(type); // Type_info du type demande
-  const Type_info& type_base = get_info_ptr(); // Type de base du DERIV
+  const Type_info& type_base = get_info_ptr(); // Type de base du OWN_PTR
 
   if ( get_Objet_U_ptr()) detach();
 

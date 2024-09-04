@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@ class Champ_Inc_base;
 /*! @brief classe Operateur Classe generique de la hierarchie des operateurs.
  *
  *      Cette classe generique est particuliere car elle n'HERITE PAS
- *      de DERIV(Operateur_base) mais de MorEqn.
+ *      de OWN_PTR(Operateur_base) mais de MorEqn.
  *      Une reference sur un Operateur_base est renvoye par la methode
  *      Operateur::l_op_base() qui est virtuelle pure et doit etre surchargee
  *      dans ses derivees.
@@ -65,7 +65,7 @@ public :
 
   void set_fichier(const Nom& nom);
   void set_description(const Nom& nom);
-  //Methode non_nul declaree car Operateur n est pas un DERIV de Operateur_base
+  //Methode non_nul declaree car Operateur n est pas un OWN_PTR de Operateur_base
   //et n accede pas a la methode non_nul
   virtual int op_non_nul() const =0;
 

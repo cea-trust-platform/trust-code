@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
  *
  * @sa Operateur_Div_base Operateur
  */
-class Operateur_Div  : public Operateur, public DERIV(Operateur_Div_base)
+class Operateur_Div  : public Operateur, public OWN_PTR(Operateur_Div_base)
 {
   Declare_instanciable(Operateur_Div);
 public :

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ class Champ_base;
  *
  * @sa Operateur_Conv_base Operateur
  */
-class Operateur_Conv  : public Operateur, public DERIV(Operateur_Conv_base)
+class Operateur_Conv  : public Operateur, public OWN_PTR(Operateur_Conv_base)
 {
   Declare_instanciable(Operateur_Conv);
 public :
@@ -94,7 +94,7 @@ inline const Champ_base& Operateur_Conv::vitesse() const
  */
 inline void Operateur_Conv::typer(const Nom& a_type)
 {
-  DERIV(Operateur_Conv_base)::typer(a_type);
+  OWN_PTR(Operateur_Conv_base)::typer(a_type);
 }
 
 inline int Operateur_Conv::op_non_nul() const

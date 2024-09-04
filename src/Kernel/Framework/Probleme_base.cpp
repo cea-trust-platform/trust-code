@@ -426,7 +426,7 @@ void Probleme_base::init_postraitements()
 {
   for (auto& itr : les_postraitements_) // Pour chaque postraitement
     {
-      DERIV(Postraitement_base) &der_post = itr;
+      OWN_PTR(Postraitement_base) &der_post = itr;
 
       // S'il est de type Postraitement, initialiser premier/dernier _pour_nom_fich
       if (sub_type(Postraitement, der_post.valeur()))
@@ -1321,7 +1321,7 @@ void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
           if (format_rep != "xyz" && Process::force_single_file(Process::nproc(), nomfic))
             format_rep = "single_hdf";
           // Open the file:
-          DERIV(Entree_Fichier_base) fic;
+          OWN_PTR(Entree_Fichier_base) fic;
 #ifdef MPI_
           Entree_Brute input_data;
           FichierHDFPar fic_hdf; //FichierHDF fic_hdf;

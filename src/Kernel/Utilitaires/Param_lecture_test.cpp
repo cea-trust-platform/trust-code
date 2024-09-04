@@ -440,7 +440,7 @@ public:
   void testajouterderiv()
   {
     Param param("deriv");
-    DERIV(Comm_Group) deriv;
+    OWN_PTR(Comm_Group) deriv;
     param.ajouter_deriv("deriv","Comm_Group_",&deriv);
     {
       EChaine is("{ deriv MPI }");

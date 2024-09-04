@@ -21,7 +21,7 @@
 void debug(StringTokenizer*);
 
 Constante Parser::c_pi;
-LIST(DERIV(UnaryFunction)) Parser::unary_func;
+LIST(OWN_PTR(UnaryFunction)) Parser::unary_func;
 LIST(Constante) Parser::les_cst;
 
 /* Les identificateurs suivants doivent etre definis de maniere unique pour chaque fonction */
@@ -714,7 +714,7 @@ void Parser::addFunc(const UnaryFunction& f)
           Process::exit();
         }
     }
-  DERIV(UnaryFunction)& df = unary_func.add(DERIV(UnaryFunction)());
+  OWN_PTR(UnaryFunction)& df = unary_func.add(OWN_PTR(UnaryFunction)());
   df = f;
 }
 

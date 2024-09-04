@@ -15,7 +15,7 @@
 
 #include <Cond_lim.h>
 
-Implemente_instanciable(Cond_lim,"Cond_lim",DERIV(Cond_lim_base));
+Implemente_instanciable(Cond_lim,"Cond_lim",OWN_PTR(Cond_lim_base));
 
 Sortie& Cond_lim::printOn(Sortie& s ) const
 {
@@ -24,7 +24,7 @@ Sortie& Cond_lim::printOn(Sortie& s ) const
 
 Entree& Cond_lim::readOn(Entree& s )
 {
-  return DERIV(Cond_lim_base)::readOn(s) ;
+  return OWN_PTR(Cond_lim_base)::readOn(s) ;
 }
 
 /*! @brief Adopte la Cond_lim passee en parametre.

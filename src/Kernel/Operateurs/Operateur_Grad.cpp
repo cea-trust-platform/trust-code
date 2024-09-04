@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <Probleme_base.h>
 #include <stat_counters.h>
 
-Implemente_instanciable(Operateur_Grad,"Operateur_Grad",DERIV(Operateur_Grad_base));
+Implemente_instanciable(Operateur_Grad,"Operateur_Grad",OWN_PTR(Operateur_Grad_base));
 
 Sortie& Operateur_Grad::printOn(Sortie& os) const
 {
@@ -40,14 +40,14 @@ void Operateur_Grad::typer()
   Equation_base& eqn=equation();
   Nom inut;
   Nom nom_type=eqn.discretisation().get_name_of_type_for(que_suis_je(),inut,eqn);
-  DERIV(Operateur_Grad_base)::typer(nom_type);
+  OWN_PTR(Operateur_Grad_base)::typer(nom_type);
   Cerr << "Construction of the gradient operator type : ";
   Cerr << valeur().que_suis_je() << finl ;
 }
 
 void Operateur_Grad::typer_direct(const Nom& un_type)
 {
-  DERIV(Operateur_Grad_base)::typer(un_type);
+  OWN_PTR(Operateur_Grad_base)::typer(un_type);
 }
 
 /*! @brief Ajoute la contribution de l'operateur au tableau passe en parametre

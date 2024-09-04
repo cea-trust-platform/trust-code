@@ -48,7 +48,7 @@ public:
   void ecrire(IntVect& elem_part, const Static_Int_Lists *som_raccord = nullptr);
 
   Nom nom_domaine;
-  DERIV(Partitionneur_base) deriv_partitionneur;
+  OWN_PTR(Partitionneur_base) deriv_partitionneur;
   REF(Domaine) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;

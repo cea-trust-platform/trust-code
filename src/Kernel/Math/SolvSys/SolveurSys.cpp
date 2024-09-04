@@ -18,11 +18,11 @@
 #include <Motcle.h>
 #include <Param.h>
 
-Implemente_instanciable(SolveurSys, "SolveurSys", DERIV(SolveurSys_base));
+Implemente_instanciable(SolveurSys, "SolveurSys", OWN_PTR(SolveurSys_base));
 
 Sortie& SolveurSys::printOn(Sortie& s) const
 {
-  return DERIV(SolveurSys_base)::printOn(s);
+  return OWN_PTR(SolveurSys_base)::printOn(s);
 }
 
 Entree& SolveurSys::readOn(Entree& is)

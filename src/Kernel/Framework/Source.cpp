@@ -21,16 +21,16 @@
 #include <TRUSTTabs.h>
 #include <Source.h>
 
-Implemente_instanciable(Source,"Source",DERIV(Source_base));
+Implemente_instanciable(Source,"Source",OWN_PTR(Source_base));
 
 Sortie& Source::printOn(Sortie& os) const
 {
-  return DERIV(Source_base)::printOn(os);
+  return OWN_PTR(Source_base)::printOn(os);
 }
 
 Entree& Source::readOn(Entree& is)
 {
-  return DERIV(Source_base)::readOn(is);
+  return OWN_PTR(Source_base)::readOn(is);
 }
 
 
@@ -40,7 +40,7 @@ Entree& Source::readOn(Entree& is)
  */
 void Source::typer_direct(const Nom& typ)
 {
-  DERIV(Source_base)::typer(typ);
+  OWN_PTR(Source_base)::typer(typ);
 }
 
 
@@ -60,7 +60,7 @@ void Source::typer(const Nom& typ, const Equation_base& eqn)
 
   Cerr << type << finl;
   //Cout << "Dans source.cpp type source = " << type << finl;
-  DERIV(Source_base)::typer(type);
+  OWN_PTR(Source_base)::typer(type);
 }
 
 /*! @brief Appel a l'objet sous-jacent.

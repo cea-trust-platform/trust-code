@@ -44,7 +44,7 @@ int PE_Groups::check_current_group()
  *   Il faut ensuite appeler enter_group() et exit_group() (autant de fois qu'on veut)
  *
  */
-void PE_Groups::create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) & group, int force_Comm_Group_NoParallel)
+void PE_Groups::create_group(const ArrOfInt& liste_pe, OWN_PTR(Comm_Group) & group, int force_Comm_Group_NoParallel)
 {
   if (liste_pe.size_array()==1 && force_Comm_Group_NoParallel)
     {
