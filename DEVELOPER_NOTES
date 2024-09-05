@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
 -------------------------------------------------------------
+10/09/24 (TRUST) Major change : No more classes deriving from OWN_PTR of a base classe. This should only be used in private/protected attributes. Thus no more forwarded calls
+10/09/24 (TRUST) Major change : Previous DERIV macros are now deprecated. Use OWN_PTR instead
 06/09/24 (TRUST) New feature  : Introducing the new type 'trustIdType' to represent entity indices that can exceed 32b, and starting the set-up of the code to be 64b ready
 -------------------------------------------------------------
 Developer notes version 1.9.4 : Changes since version 1.9.3 :
