@@ -29,13 +29,7 @@ then
       exit 0
    fi
 
-   ROOT=$org
-   while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
-   do
-      ROOT=`dirname $ROOT`
-   done
-   # Construit le nom de la fonction instancie: instancie_rep_rep_rep
-   name=instancie`echo ${org#$ROOT} | sed "s?/?_?g" | sed "s/\.//g"`  
+   name=instancie`echo ${org#$TRUST_ROOT} | sed "s?/?_?g" | sed "s/\.//g"`  
     
    # Liste les .h du repertoire
    files=`ls *.h | grep -v Declare_Inst | sort 2>/dev/null`
