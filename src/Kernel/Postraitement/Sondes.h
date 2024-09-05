@@ -45,6 +45,7 @@ public:
   bool update_positions=false;
   void set_update_positions(bool update_positions);
   bool get_update_positions();
+  void resetTime(double time) { for (auto &itr : *this) itr->resetTime(time); };
 
 private:
   // Mecanisme de cache pour les sondes:

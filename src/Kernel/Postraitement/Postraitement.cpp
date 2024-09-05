@@ -770,6 +770,7 @@ void Postraitement::resetTime(double time, const std::string dirname)
 
   // And reset all time related members:
   format_post->resetTime(time, dirname);
+  les_sondes_.resetTime(time);
   temps_ = -1.;
   dernier_temps = -1.;
 }

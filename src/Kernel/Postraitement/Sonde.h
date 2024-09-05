@@ -70,6 +70,7 @@ public :
   void ajouter_bords(const DoubleTab& coords_bords);
   void init_bords();
   void mettre_a_jour_bords();
+  void resetTime(double time) { nb_bip = time/periode; };
 
 protected :
 
