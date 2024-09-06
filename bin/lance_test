@@ -233,6 +233,8 @@ add_test_case_from_validation()
       return
    fi
 
+   [ ! -d $Rapports_auto_root/Validation/Rapports_automatiques/ ] && echo "No Validation form found!!" && return
+
    erreur=0
    FICHES=`mktemp_`
    let NB_FICHES=0
