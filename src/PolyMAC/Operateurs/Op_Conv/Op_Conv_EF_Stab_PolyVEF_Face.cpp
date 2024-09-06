@@ -74,7 +74,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::completer()
   const DoubleTab& vfd = dom.volumes_entrelaces_dir();
   const DoubleVect& ve = dom.volumes();
   int i, j, k, e, f, s, nw, infoo = 0, rk = 0, skip, n_f, D = dimension, sgn;
-  DoubleTrav A, B, W;
+  DoubleTrav A, B, W(1);
   IntTrav piv;
   std::map<std::array<int, 2>, std::array<int, 2>> a_f; //faces connectees a chaque arete : on stocke les indices de face + 1
   for (e = 0, e_fa_d.resize(1, 2), e_fa_f.resize(0, 2); e < dom.nb_elem_tot(); e_fa_d.append_line(e_fa_f.dimension(0), e_fa_c.dimension(0)), e++)
