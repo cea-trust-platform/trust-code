@@ -291,6 +291,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                   Flux_parietal_base::output_t out;
                   DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
                   in.N = N[0], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = alpha ? &(*alpha)(e, 0) : nullptr, in.T = wall ? &v_aux[0](s, 0) : &inco[0](e, 0), in.p = press(e), in.v = nv.addr();
+                  in.y = dom[0].get().dist_norm_bord(f) / 2; //ok?
                   in.lambda = &lambda(!Clambda * e, 0), in.mu = &mu(!Cmu * e, 0), in.rho = &rho(!Crho * e, 0), in.Cp = &Cp(!Ccp * e, 0);
                   in.Tp = ech ? v_aux[o_p](o_s, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
                   out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi;
@@ -336,6 +337,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                       Flux_parietal_base::output_t out;
                       int wall = corr[o_p]->T_at_wall();
                       in.N = N[o_p], in.f = o_f, in.D_h = dh(o_e), in.D_ch = dh(o_e), in.alpha = alpha ? &(*alpha)(o_e, 0) : nullptr, in.T = wall ? &v_aux[o_p](o_s, 0) : &inco[o_p](o_e, 0), in.p = press(o_e), in.v = nv.addr();
+                      in.y = dom[o_p].get().dist_norm_bord(o_f) / 2; //ok?
                       in.Tp = v_aux[0](s, 0), in.lambda = &lambda(!Clambda * o_e, 0), in.mu = &mu(!Cmu * o_e, 0), in.rho = &rho(!Crho * o_e, 0), in.Cp = &Cp(!Ccp * o_e, 0);
                       out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTf_qpi = &dTf_qpi, out.dTp_qpi = &dTp_qpi, out.nonlinear = &j;
                       //appel : on n'est implicite qu'en les temperatures
