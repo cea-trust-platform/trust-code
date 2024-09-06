@@ -7,6 +7,9 @@
 # node (fixee a 1 elle permet d'utiliser tous les processeurs d'un noeud)
 # prod (fixee a 1 elle permet d'utiliser la queue de production)
 # Chargement d'un environnement eventuel contenu dans ld_env.sh
+
+[ "`basename $0`" = "triou" ] && echo "It is forbiden to use triou command since V1.9.5, use trust command instead" && exit -1
+
 if [ -f ld_env.sh ]
 then
    . ./ld_env.sh
