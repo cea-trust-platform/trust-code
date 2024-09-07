@@ -248,48 +248,7 @@ double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,
   return norm_vit;
 }
 
-// Kokkos function (factorize norm_2D_vit1 and norm_3D_vit1)
-KOKKOS_FUNCTION
-double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
-                 CDoubleTabView face_normale,
-                 double* val)
-{
-  // fac numero de la face a paroi fixe
-  double r[3] {};
-  double norme = 0;
-  for (int i=0; i<dim; i++)
-    {
-      r[i] = face_normale(fac, i);
-      norme += r[i] * r[i];
-    }
-  norme = sqrt(norme);
-  for(int i = 0; i < dim; i++)
-    r[i] /= norme;
 
-  double v[3] {};
-  for (int i=0; i<dim; i++)
-    {
-      v[i] = 0;
-      for (int j = 0; j < dim; j++)
-        v[i] += vit(num[j], i);
-      v[i] /= nfac;
-    }
-
-  double sum_carre=0;
-  double psc=0;
-  for (int i=0; i<dim; i++)
-    {
-      sum_carre += carre(v[i]);
-      psc += v[i] * r[i];
-    }
-  double norm_vit = sqrt(std::fabs(sum_carre-carre(psc)));
-
-  // val1,val2 val3 sont les vitesses tangentielles
-  for (int i=0; i<dim; i++)
-    val[i]=(v[i] - psc*r[i])/(norm_vit + DMINFLOAT);
-
-  return norm_vit;
-}
 
 double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,int num2,int num3,
                     const Domaine_VEF& domaine,
@@ -526,20 +485,7 @@ double distance_3D(int fac,int elem,const Domaine_VEF& domaine)
   return std::fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
 }
 
-// Kokkos function (factorize distance_2D and distance_3D functions)
-KOKKOS_FUNCTION
-double distance(int dim,int fac,int elem, CDoubleTabView xp, CDoubleTabView xv, CDoubleTabView face_normale)
-{
-  double norme=0;
-  double ps=0;
-  for (int i=0; i<dim; i++)
-    {
-      double fn_i = face_normale(fac, i);
-      norme += fn_i * fn_i;
-      ps += fn_i * (xp(elem, i) - xv(fac, i));
-    }
-  return std::fabs(ps/sqrt(norme));
-}
+
 
 DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& methode, const Domaine_VEF& domaine)
 {

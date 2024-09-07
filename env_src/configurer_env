@@ -1865,7 +1865,7 @@ case $TRUST_ARCH_CC in
            CppFlags="-Wno-openmp-mapping"
            #CppFlags=$CppFlags" -xhip" # Mode de compilation Hip incompatible avec OpenMP: https://github.com/ROCm/ROCm/discussions/2137 & https://github.com/burlen/cuda_plus_offload
         fi   
-        CppFlags=$CppFlags" -O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
+        CppFlags=$CppFlags" -O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Wno-undefined-var-template -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
         #[ "$TRUST_CC_BASE_EXTP" != "" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
 	[ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
