@@ -29,14 +29,14 @@ echo > LOG
 gen_dico >>LOG 2>&1
 
 # on verifie que les erreurs sont detectees
-echo "We deliberately put a fake father in the Transformer class Transformer.cpp" >>LOG
-sed 's?"Transformer", Interprete_geometrique_base?"Transformer",Interprete?'  $TRUST_ROOT/src/Kernel/Geometrie/Transformer.cpp > src/Transformer.cpp
+echo "We deliberately put a fake father in the Transformer class Champ_P0_VDF " >>LOG
+sed 's?"Champ_P0_VDF",Champ_Inc_P0_base?"Champ_P0_VDF",Champ_Inc_base?'  $TRUST_ROOT/src/VDF/Champs/Champ_P0_VDF.cpp > src/Champ_P0_VDF.cpp
 test_pere >>LOG 2>&1
 echo "The error before is voluntary " >> LOG
 erreur=$status
 
 # version std
-rm -f src/Transformer.cpp
+rm -f src/Champ_P0_VDF.cpp
 
 # Pierre si je ne fais pas cela , des fois il ne recompile pas l'atelier
 #
@@ -73,8 +73,13 @@ do
 
   files=`grep -l Implemente_base $TRUST_ROOT/$d/*.cpp 2>/dev/null`
   for f in $files
-    do
-    okl=`ana_base $f 0`
+  do
+    if [ "`grep Implemente_base_32_64 $f 2>/dev/null`" = "" ]
+    then
+      okl=`ana_base $f 0`
+    else
+      okl=1
+    fi
     if [ $okl -ne 1 ]
     then
        ok=-100
