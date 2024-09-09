@@ -1,5 +1,0 @@
-
-
-diff -r bin/BUILD64/patch `pwd` | grep -v "Only in `pwd`" | sed "s?`pwd`?.?g"> diff_patch
-diff diff_patch bin/BUILD64/diff_patch.ref
-#tkdiff diff_patch bin/BUILD64/diff_patch.ref

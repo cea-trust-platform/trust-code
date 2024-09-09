@@ -716,24 +716,6 @@ else
 fi
 cd $TRUST_ROOT
 
-# Gestion BUILD64
-build64_log=$REP_NUIT/Verifie_patch_$HOST.log
-echo " "
-echo "Call to "$TRUST_ROOT"/bin/BUILD64/Verifie_patch"
-echo "  See $build64_log"
-./bin/BUILD64/Verifie_patch 1>$build64_log 2>&1
-if [ -s $build64_log  ]
-then
-   echo>>$build64_log
-   echo "=> tkdiff diff_patch bin/BUILD64/diff_patch.ref ">>$build64_log
-   cat $build64_log | mail_ -s\"[lance_test_nuit] BUILD64 Verifie_patch KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL
-   cat $build64_log
-   echo "  KO"
-else
-   echo "  OK"
-   rm diff_patch
-fi
-
 # Marque la version dans MAIN.cpp et mon_main.cpp
 echo " "
 echo "Mark new version in following files:"
@@ -890,16 +872,8 @@ echo " "
       then
          git remote update
          git checkout .
-         git checkout master
-         git pull 1>tmp.log 2>&1
-         if [ $? != 0 ]
-         then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master KO \" $TRUST_MAIL
-         else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master OK \" $TRUST_MAIL
-         fi
-         cat tmp.log
-         rm tmp.log 1>/dev/null 2>&1
+         git checkout next
+         git reset --hard origin/next
       elif [[ "$Composant" == "flica5" ]]
       then
          git checkout .
@@ -954,10 +928,12 @@ echo " "
       then
          git remote update
          git checkout .
-         git reset --hard origin/next
+         git checkout portage
+         git reset --hard origin/portage
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
          git checkout .
+         git checkout master
          git reset --hard origin/master
          cd -
       else

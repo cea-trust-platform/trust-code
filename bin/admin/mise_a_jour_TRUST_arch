@@ -467,7 +467,7 @@ do
    [ "`$TRUST_ROOT/bin/admin/liste_machines "\-Semi_opt_gcov" | grep ^$HOST_BUILD"\."`" != "" ] && options="semi_opt gcov" # si Semi_opt_gcov on compile en semi_opt et gcov
    make && err_exe_compile=$? && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp
    [ "$options" != "" ] && make $options && cat compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" >> compile.tmp
-   mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
+   mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" 2>/dev/null
    err_exe_compile=1 && [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_exe_compile=0
    err_tool_compile=1
    [ $err_exe_compile = 0 ] && [ "`grep BUILD_TOOLS=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_tool_compile=0
