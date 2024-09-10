@@ -127,10 +127,9 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
 
-  Kokkos::parallel_for(
-    start_gpu_timer(__KERNEL_NAME__),
-    nb_faces_tot,
-    KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       nb_faces_tot,
+                       KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 
@@ -203,10 +202,9 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   int dimension = Objet_U::dimension;
   const int nb_comp = tab_variable.line_size();
 
-  Kokkos::parallel_for(
-    start_gpu_timer(__KERNEL_NAME__),
-    nb_faces_tot,
-    KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       nb_faces_tot,
+                       KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
 

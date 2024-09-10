@@ -110,8 +110,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
       CDoubleTabView positions_v = positions.view_ro();
       CIntArrView les_polys_v = les_polys.view_ro();
       DoubleTabView val_v = val.view_rw();
-      start_gpu_timer();
-      Kokkos::parallel_for(les_polys_size, KOKKOS_LAMBDA(
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),les_polys_size, KOKKOS_LAMBDA(
                              const int rang_poly)
       {
         // On initialise
@@ -152,7 +151,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
               }
           }
       });
-      end_gpu_timer(Objet_U::computeOnDevice, "[KOKKOS]Champ_P1iP1B_implementation::valeur_aux_elems");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else // nb_compo_ > 1
     {

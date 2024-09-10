@@ -156,7 +156,7 @@ void local_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE
           }
       copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
     }
-  end_gpu_timer(kernelOnDevice, "local_max_abs_tab(x)");
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
 template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);

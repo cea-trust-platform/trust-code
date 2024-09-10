@@ -516,8 +516,8 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
       Cerr << "Le type de OWN_PTR(Champ_Inc_base) " << ch.que_suis_je() << " n'est pas prevu en VEF\n" << finl;
       exit();
     }
-  end_gpu_timer(0, "Boundary condition on OWN_PTR(Champ_Inc_base) in Domaine_Cl_VEF::imposer_cond_lim");
-  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "OWN_PTR(Champ_Inc_base) on boundary");
+  end_gpu_timer(0, __KERNEL_NAME__);
+  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 
   // PARTIE PRESSION

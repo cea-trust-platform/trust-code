@@ -348,7 +348,7 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
       if (diag_addr[i]<1.e-12)
         x_addr[i] = y_addr[i];
     }
-  end_gpu_timer(kernelOnDevice, "Solveur_Masse_base::corriger_solution");
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return x;
 }
 

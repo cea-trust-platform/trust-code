@@ -101,7 +101,7 @@ void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int k=j; k < j_fin; k++)
         ptr[k] = valeur;
-      end_gpu_timer(kernelOnDevice, "remplir_items_non_calcules_(x)");
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
 // Explicit instanciation

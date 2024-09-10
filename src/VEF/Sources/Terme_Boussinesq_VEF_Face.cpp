@@ -73,10 +73,9 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
   const int beta_dimension0 = beta().valeur().valeurs().dimension(0);
   const int beta_nb_dim = beta().valeur().valeurs().nb_dim();
 
-  Kokkos::parallel_for(
-    start_gpu_timer(__KERNEL_NAME__),
-    nb_faces,
-    KOKKOS_LAMBDA (int face)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                       nb_faces,
+                       KOKKOS_LAMBDA (int face)
   {
     int elem1 = face_voisins(face,0);
     int elem2 = face_voisins(face,1);

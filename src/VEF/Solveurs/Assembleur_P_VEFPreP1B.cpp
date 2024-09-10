@@ -1201,5 +1201,5 @@ void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& v)
       if (_v_==vecteur::pression_inverse) v_addr[k] = alpha * v_addr[k] - beta * somme;
       if (_v_==vecteur::second_membre)    v_addr[k] *= alpha;
     }
-  end_gpu_timer(Objet_U::computeOnDevice, "Elem loop in Assembleur_P_VEFPreP1B::changer_base");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }

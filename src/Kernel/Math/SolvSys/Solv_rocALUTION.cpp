@@ -622,7 +622,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
         sol_host_addr[index_addr[i]] = x_addr[i];
         rhs_host_addr[index_addr[i]] = b_addr[i];
       }
-  end_gpu_timer(keepDataOnDevice, "Solv_rocALUTION::Update_vectors");
+  end_gpu_timer(keepDataOnDevice, __KERNEL_NAME__);
 
   if (keepDataOnDevice)
     {
@@ -731,7 +731,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
       xx_addr[i] = sol_host_addr[index_addr[i]];
-  end_gpu_timer(keepDataOnDevice, "Solv_rocALUTION::Update_solution");
+  end_gpu_timer(keepDataOnDevice, __KERNEL_NAME__);
   x.echange_espace_virtuel();
   if (first_solve_) res_final = residual(a, b, x); // Securite a la premiere resolution
 #ifndef NDEBUG

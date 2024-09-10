@@ -338,8 +338,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView vitesse = tab_vitesse.view_ro();
   DoubleTabView3 Kij = tab_Kij.view3_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -376,7 +375,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
           }//fin du for sur "face_locj"
       }//fin du for sur "face_loci"
   });//fin du for sur "elem"
-  end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   //
   // Correction des Kij pour Dirichlet !
   //
@@ -549,8 +548,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent() const
   CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
   CDoubleTabView tab_vitesse = vitesse_->valeurs().view_ro();
   DoubleArrView fluent = fluent_.view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_faces), KOKKOS_LAMBDA(
                          const int num_face)
   {
@@ -559,7 +557,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent() const
       psc+=tab_vitesse(num_face,i)*face_normales(num_face,i);
     fluent(num_face)=std::fabs(psc);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
 
 
@@ -760,8 +758,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
           CDoubleTabView vitesse = tab_vitesse.view_ro();
           CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
           DoubleTabView flux_bords = flux_bords_.view_wo();
-          start_gpu_timer();
-          Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords",
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                                  const int ind_face)
           {
@@ -773,7 +770,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
             for (int dim=0; dim<nb_comp; dim++)
               flux_bords(facei,dim)=psc*transporteV[facei*nb_comp+dim];
           });
-          end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords");
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
         }//fin du if sur "Neumann", "Neumann_homogene", "Symetrie", "Echange_impose_base"
       else
@@ -798,8 +795,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& tab_Kij, con
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
   CDoubleTabView3 Kij = tab_Kij.view3_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -823,7 +819,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& tab_Kij, con
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   return resu;
 }
 
@@ -840,8 +836,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& tab_Kij, const Doub
   CDoubleTabView3 Kij = tab_Kij.view3_ro();
   CDoubleArrView alpha_tab = alpha_tab_.view_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -869,7 +864,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& tab_Kij, const Doub
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   return resu;
 }
 
@@ -892,8 +887,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
   CDoubleArrView beta = beta_.view_ro();
   CDoubleTabView3 Kij = tab_Kij.view3_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
-  start_gpu_timer();
-  Kokkos::parallel_for("Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion",
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -959,7 +953,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
             }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, "Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion");
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
   return resu;
 }
 

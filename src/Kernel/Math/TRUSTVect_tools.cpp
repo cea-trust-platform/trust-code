@@ -261,7 +261,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
           if (IS_CARRE) p_resu += alpha * x * x;
         }
     }
-  if (timer) end_gpu_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
+  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);

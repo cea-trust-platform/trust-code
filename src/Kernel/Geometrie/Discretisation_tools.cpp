@@ -159,7 +159,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int face = 0; face < nb_faces; face++)
         tabHf_addr[face] /= vol_tot_addr[face];
-      end_gpu_timer(kernelOnDevice, "Discretisation_tools::cells_to_faces (2 loops)");
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
   else
     {

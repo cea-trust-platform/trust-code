@@ -43,8 +43,6 @@ run()
       check PAR_$jdd $gpu
    fi
 }
-# Kokkos
-[ "$TRUST_DISABLE_KOKKOS" != 1 ] && echo "Kokkos is enabled. To disable Kokkos, use TRUST_DISABLE_KOKKOS=1"
 # Liste des machines:
 [ $HOST = is157091 ] && run a6000 && run 1xa6000 2
 [ "`hostname`" = petra ] && run a5000 && run 2xa5000 2

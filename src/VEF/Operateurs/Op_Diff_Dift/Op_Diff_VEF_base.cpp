@@ -165,8 +165,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       CDoubleArrView carre_pas_maille = domaine_VEF.carre_pas_maille().view_ro();
       CDoubleArrView valeurs_diffu = static_cast<const DoubleVect&>(champ_diffu.valeurs()).view_ro();
       CDoubleArrView valeurs_rho   = static_cast<const DoubleVect&>(champ_rho.valeurs()).view_ro();
-      start_gpu_timer();
-      Kokkos::parallel_reduce("Op_Diff_VEF_base::calculer_dt_stab",
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
                               range_1D(0, nb_elem), KOKKOS_LAMBDA(
                                 const int elem, double& dtstab)
       {
@@ -176,7 +175,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
         const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
         if (dt < dtstab) dtstab = dt;
       }, Kokkos::Min<double>(dt_stab));
-      end_gpu_timer(Objet_U::computeOnDevice, "Op_Diff_VEF_base::calculer_dt_stab");
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
