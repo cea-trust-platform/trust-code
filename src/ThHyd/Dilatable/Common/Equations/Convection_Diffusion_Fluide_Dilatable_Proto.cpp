@@ -163,12 +163,13 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   // Complete with special source terms from mass equation (if any)
   DoubleTrav mass_source_term(derivee);
   mass_source_term = 0.0;
-  const Navier_Stokes_Fluide_Dilatable_base& nseq = ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation());
-  const bool has_mass_flux = nseq.has_source_masse();
+
+  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation())) ?
+                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation()).has_source_masse() : false;
 
   if (!is_thermal() && has_mass_flux) /* species equation */
     {
-      const Source_Masse_Fluide_Dilatable_base& src_masse = nseq.source_masse();
+      const Source_Masse_Fluide_Dilatable_base& src_masse = ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation()).source_masse();
       src_masse.ajouter_eq_espece(eqn, fluide_dil, is_expl, mass_source_term);
     }
 

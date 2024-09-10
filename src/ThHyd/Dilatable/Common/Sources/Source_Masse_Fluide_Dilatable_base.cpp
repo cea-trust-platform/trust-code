@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,12 +23,12 @@ Implemente_base(Source_Masse_Fluide_Dilatable_base, "Source_Masse_Fluide_Dilatab
 
 // XD mass_source objet_u mass_source -1 Mass source used in a dilatable simulation to add/reduce a mass at the boundary (volumetric source in the first cell of a given boundary).
 
-Sortie& Source_Masse_Fluide_Dilatable_base::printOn(Sortie &os) const
+Sortie& Source_Masse_Fluide_Dilatable_base::printOn(Sortie& os) const
 {
   return os;
 }
 
-Entree& Source_Masse_Fluide_Dilatable_base::readOn(Entree &is)
+Entree& Source_Masse_Fluide_Dilatable_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("bord", &nom_bord_, Param::REQUIRED); // XD_ADD_P chaine Name of the boundary where the source term is applied
@@ -43,7 +43,7 @@ Entree& Source_Masse_Fluide_Dilatable_base::readOn(Entree &is)
   return is;
 }
 
-void Source_Masse_Fluide_Dilatable_base::associer_domaine_cl(const Domaine_Cl_dis &z)
+void Source_Masse_Fluide_Dilatable_base::associer_domaine_cl(const Domaine_Cl_dis& z)
 {
   domaine_cl_dis_ = z;
 }
@@ -60,8 +60,8 @@ void Source_Masse_Fluide_Dilatable_base::completer()
   bool ok = false;
   for (int n_bord = 0; n_bord < domaine_cl_dis_->valeur().nb_cond_lim(); n_bord++)
     {
-      const Cond_lim &la_cl = domaine_cl_dis_->valeur().les_conditions_limites(n_bord);
-      const Front_VF &le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+      const Cond_lim& la_cl = domaine_cl_dis_->valeur().les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       if (le_bord.le_nom() == nom_bord_)
         {
           ch_front_source_->associer_fr_dis_base(la_cl->frontiere_dis());

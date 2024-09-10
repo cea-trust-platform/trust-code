@@ -77,47 +77,51 @@ private:
 
 inline void Fluide_Weakly_Compressible::Resoudre_EDO_PT()
 {
-  if (Pth_ > -1.)
-    {
-      Pth_n = Pth_;
-      Pth_n_tab_ = Pth_tab_;
+  if (Pth_ > -1.) Pth_n = Pth_;
+  Pth_n_tab_ = Pth_tab_;
 
-      if (traitement_PTh != 2)
+  if (traitement_PTh != 2)
+    {
+      if (Pth_ > -1.)
         {
           Pth_ = EDO_Pth_->resoudre(Pth_);
 
           if (Pth_ <= 0)
             {
               Cerr << "Error : the pressure calculated by Resoudre_EDO_PT method is negative : " << Pth_ << finl;
-              abort();
+              Process::exit();
             }
 
           if (use_hydrostatic_pressure())
             {
-              assert (a_gravite());
+              Cerr << "Fluide_Weakly_Compressible:: " << __func__ << " Not yet coded with use_hydrostatic_pressure ..." << finl;
+              Process::exit();
+
+              assert(a_gravite());
               calculer_pression_hydro();
             }
           else if (use_total_pressure())
-            remplir_champ_pression_for_EOS();
-          else // simple .. equiv QC
+            {
+              Cerr << "Fluide_Weakly_Compressible:: " << __func__ << " Not yet coded with use_total_pressure ..." << finl;
+              Process::exit();
+
+              remplir_champ_pression_for_EOS();
+            }
+          else
+            // simple .. equiv QC
             for (int i = 0; i < Pth_tab_.dimension_tot(0); i++)
               Pth_tab_(i) = Pth_;
         }
-    }
-  else
-    {
-      Cerr << "Fluide_Weakly_Compressible:: " << __func__ << " Not yet coded with pression_xyz ..." << finl;
-      Process::exit();
-
-      Pth_n_tab_ = Pth_tab_;
-
-      if (traitement_PTh != 2)
+      else
         {
+          Cerr << "Fluide_Weakly_Compressible:: " << __func__ << " Not yet coded with pression_xyz ..." << finl;
+          Process::exit();
+
           EDO_Pth_->resoudre(Pth_tab_);
           if (mp_min_vect(Pth_tab_) <= 0)
             {
               Cerr << "Error : the pressure calculated by Resoudre_EDO_PT method is negative : " << mp_min_vect(Pth_tab_) << finl;
-              abort();
+              Process::exit();
             }
         }
     }

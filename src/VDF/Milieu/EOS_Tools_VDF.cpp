@@ -156,10 +156,12 @@ void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
     tab_dZ(elem) = (tab_rhonp1P0(elem)-tab_rhonP0(elem))/dt;
 
   // Ajout des termes sources speciaux de l'equation de masse:
-  const Navier_Stokes_Fluide_Dilatable_base& nseq = ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation());
-  if (nseq.has_source_masse())
+  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation())) ?
+                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation()).has_source_masse() : false;
+
+  if (has_mass_flux)
     {
-      const Source_Masse_Fluide_Dilatable_base& src_mass = nseq.source_masse();
+      const Source_Masse_Fluide_Dilatable_base& src_mass = ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation()).source_masse();
       src_mass.ajouter_projection(le_fluide(), static_cast<DoubleTab&>(tab_dZ));
     }
 
