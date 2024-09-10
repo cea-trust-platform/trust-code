@@ -44,7 +44,7 @@ void Terme_Boussinesq_VEF_Face::associer_domaines(const Domaine_dis_base& domain
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
 }
 
-DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
+DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
 {
   ArrOfDouble T0 = getScalaire0();
   if(equation_scalaire().que_suis_je()=="Convection_Diffusion_Temperature_sensibility")
@@ -52,44 +52,53 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   // Verifie la validite de T0:
   check();
 
-  const DoubleTab& param = equation_scalaire().inconnue().valeurs();
-  int nbcomp_param = param.line_size(), nbcomp = resu.line_size();
+  const DoubleTab& tab_param = equation_scalaire().inconnue().valeurs();
+  int nbcomp_param = tab_param.line_size(), nbcomp = tab_resu.line_size();
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  const double* Scalaire0_addr = mapToDevice(Scalaire0_);
-  const double* beta_addr = mapToDevice(beta().valeurs());
-  const int beta_dimension0 = beta().valeurs().dimension(0);
-  const int beta_nb_dim = beta().valeurs().nb_dim();
-  const double* g_addr = mapToDevice(gravite().valeurs());
-  const double* xv_addr = mapToDevice(domaine_VEF.xv());
-  const double* xp_addr = mapToDevice(domaine_VEF.xp());
-  const double* porosite_surf_addr = mapToDevice(equation().milieu().porosite_face());
-  const double* face_normales_addr = mapToDevice(domaine_VEF.face_normales());
-  const double* param_addr = mapToDevice(param);
-  const int* face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
-  double* resu_addr = computeOnTheDevice(resu);
+
+  CDoubleArrView scalaire0 = Scalaire0_.view_ro();
+  CDoubleTabView beta_v = beta().valeur().valeurs().view_ro();
+  CDoubleArrView g = static_cast<const DoubleVect&>(gravite().valeurs()).view_ro();
+  CDoubleTabView xv = domaine_VEF.xv().view_ro();
+  CDoubleTabView xp = domaine_VEF.xp().view_ro();
+  CDoubleArrView porosite_surf = equation().milieu().porosite_face().view_ro();
+  CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+  CDoubleTabView param = tab_param.view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+  DoubleTabView resu = tab_resu.view_rw();
+
   // Boucle sur toutes les faces
   int nb_faces = domaine_VEF.nb_faces();
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int face=0; face<nb_faces; face++)
-    {
-      int elem1 = face_voisins_addr[2*face], elem2 = face_voisins_addr[2*face+1];
-      double delta_param = 0.0;
-      for (int compo=0; compo<nbcomp_param; compo++)
-        delta_param += valeur_addr(beta_addr,beta_dimension0,beta_nb_dim, elem1, elem2, compo, nbcomp_param)*(Scalaire0_addr[compo]-param_addr[face*nbcomp_param+compo]);
+  int dimension = Objet_U::dimension;
+  const int beta_dimension0 = beta().valeur().valeurs().dimension(0);
+  const int beta_nb_dim = beta().valeur().valeurs().nb_dim();
 
-      for (int comp=0; comp<dimension; comp++)
-        {
-          double delta_coord;
-          if (elem2==-1) // Face de bord
-            delta_coord = xv_addr[face*dimension+comp] - xp_addr[elem1*dimension+comp];
-          else
-            delta_coord = xp_addr[elem2*dimension+comp] - xp_addr[elem1*dimension+comp];
-          for (int compo=0; compo<nbcomp; compo++)
-            resu_addr[face*nbcomp+compo] += delta_param*delta_coord*face_normales_addr[face*nbcomp+compo]*g_addr[comp]*porosite_surf_addr[face];
-        }
-    }
-  end_gpu_timer(Objet_U::computeOnDevice, "Face loop in Terme_Boussinesq_VEF_Face::ajouter\n");
-  return resu;
+  Kokkos::parallel_for(
+    start_gpu_timer(__KERNEL_NAME__),
+    nb_faces,
+    KOKKOS_LAMBDA (int face)
+  {
+    int elem1 = face_voisins(face,0);
+    int elem2 = face_voisins(face,1);
+
+    double delta_param = 0.0;
+    for (int compo = 0; compo < nbcomp_param; compo++)
+      delta_param += valeur(beta_v,beta_dimension0,beta_nb_dim,elem1,elem2,compo,nbcomp_param)*(scalaire0(compo)-param(face,compo));
+
+    for (int comp = 0; comp < dimension; comp++)
+      {
+        double delta_coord;
+        if (elem2 == -1) // Face de bord
+          delta_coord = xv(face,comp) - xp(elem1,comp);
+        else
+          delta_coord = xp(elem2,comp) - xp(elem1,comp);
+
+        for (int compo = 0; compo < nbcomp; compo++)
+          resu(face,compo) += delta_param*delta_coord*face_normales(face,compo)*g(comp)*porosite_surf(face);
+      }
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+
+  return tab_resu;
 }
 

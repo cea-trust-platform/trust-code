@@ -139,18 +139,20 @@ inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const
         return 0.5*(valeurs_champ(elem1,compo)+valeurs_champ(elem2,compo));
     }
 }
-// ToDo OpenMP factorize
-inline double valeur_addr(const double* valeurs_champ, int valeurs_champ_dimension0, int nb_dim, int elem1, int elem2, const int compo, int nb_compo)
+KOKKOS_INLINE_FUNCTION
+double valeur(CDoubleTabView valeurs_champ, int valeurs_champ_dimension0, int nb_dim, int elem1, int elem2, const int compo, int nb_compo)
 {
   if (valeurs_champ_dimension0==1)
-    return valeurs_champ[compo]; // Champ uniforme
+    return valeurs_champ(compo,0); // Champ uniforme
   else
     {
-      if (elem2<0) elem2 = elem1; // face frontiere
-      if (nb_dim==1)
-        return 0.5*(valeurs_champ[elem1]+valeurs_champ[elem2]);
+      if (elem2 < 0) elem2 = elem1; // face frontiere
+      if (nb_dim == 1)
+        return 0.5*(valeurs_champ(elem1,0)+valeurs_champ(elem2,0));
       else
-        return 0.5*(valeurs_champ[elem1*nb_compo+compo]+valeurs_champ[elem2*nb_compo+compo]);
+        return 0.5*(valeurs_champ(elem1,compo)+valeurs_champ(elem2,compo));
     }
 }
+
 #endif
+
