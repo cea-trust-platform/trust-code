@@ -15,7 +15,9 @@
 
 #include <Navier_Stokes_Fluide_Dilatable_base.h>
 #include <Fluide_Dilatable_base.h>
+#include <Loi_Etat_Multi_GP_WC.h>
 #include <Schema_Temps_base.h>
+#include <Probleme_base.h>
 #include <Discret_Thyd.h>
 
 Implemente_base(Navier_Stokes_Fluide_Dilatable_base,"Navier_Stokes_Fluide_Dilatable_base",Navier_Stokes_std);
@@ -36,6 +38,32 @@ int Navier_Stokes_Fluide_Dilatable_base::impr(Sortie& os) const
 {
   Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(*this,os);
   return Navier_Stokes_std::impr(os);
+}
+
+void Navier_Stokes_Fluide_Dilatable_base::set_param(Param& param)
+{
+  Navier_Stokes_std::set_param(param);
+  param.ajouter_non_std("mass_source",(this));
+}
+
+int Navier_Stokes_Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot == "mass_source")
+    {
+      Nom typ = discretisation().que_suis_je();
+      if (typ == "VEFPreP1B") typ = "VEF";
+
+      typ = Nom("Source_Masse_Fluide_Dilatable_") + typ;
+      Cerr << "Typage de la source de masse : " << typ << finl;
+      source_masse_.typer(typ);
+      Cerr << "Lecture de la source de masse ... " << finl;
+      is >> source_masse_.valeur();
+      source_masse_->associer_domaine_cl(domaine_Cl_dis());
+    }
+  else
+    return Navier_Stokes_std::lire_motcle_non_standard(mot, is);
+
+  return 1;
 }
 
 /*! @brief Appel Equation_base::preparer_calcul() Assemblage du solveur pression et
@@ -59,11 +87,51 @@ int Navier_Stokes_Fluide_Dilatable_base::preparer_calcul()
  */
 void Navier_Stokes_Fluide_Dilatable_base::completer()
 {
-  Cerr<<"Navier_Stokes_std::completer"<<finl;
+  Cerr << "Navier_Stokes_Fluide_Dilatable_base::completer" << finl;
+  if (has_source_masse())
+    {
+      // Never use QC
+      if (probleme().que_suis_je().finit_par("_QC"))
+        {
+          Cerr << "Error in Navier_Stokes_Fluide_Dilatable_base::completer() !! " << finl;
+          Cerr << "Switch to a WC problem if you want to use the mass source term ! This source term is not available for a QC problem !" << finl;
+          Process::exit();
+        }
+
+      source_masse_->completer();
+
+      // Some verifications : in order to help the user to do what he wants, and in order to avoid any wrong use of the source term
+      // the line_size of the term source should be identical to the number of species
+      const int ncomp = source_masse_->nb_comp();
+
+      if (probleme().que_suis_je() == "Pb_Hydraulique_Melange_Binaire_WC" && ncomp != 2)
+        {
+          Cerr << "Error in Navier_Stokes_Fluide_Dilatable_base::completer() !! " << finl;
+          Cerr << "You can not define a mass source with " << ncomp << " components while using a problem of type " << probleme().que_suis_je() << finl;
+          Cerr << "Please define a mass source with 2 components !" << finl;
+          Process::exit();
+        }
+
+      if (probleme().que_suis_je() == "Pb_Thermohydraulique_Especes_WC")
+        {
+          const Fluide_Dilatable_base& fd = ref_cast(Fluide_Dilatable_base, le_fluide.valeur());
+          assert(fd.loi_etat()->que_suis_je() == "Loi_Etat_Multi_Gaz_Parfait_WC");
+          const Loi_Etat_Multi_GP_WC& loi_etat = ref_cast(Loi_Etat_Multi_GP_WC, fd.loi_etat().valeur());
+          const int nb_esp = loi_etat.masse_molaire_especes()->valeurs().line_size();
+          if (nb_esp != ncomp)
+            {
+              Cerr << "Error in Navier_Stokes_Fluide_Dilatable_base::completer() !! " << finl;
+              Cerr << "You should define " << nb_esp << " components for your mass source and not " << ncomp << " (because you have " << nb_esp << " species) !!!" << finl;
+              Process::exit();
+            }
+        }
+    }
+
+  Cerr << "Navier_Stokes_std::completer" << finl;
   Navier_Stokes_std::completer();
-  Cerr<<"Unknown field type : " << inconnue()->que_suis_je() << finl;
-  Cerr<<"Unknown field name : " << inconnue()->le_nom() << finl;
-  Cerr<<"Equation type : " << inconnue()->equation().que_suis_je() << finl;
+  Cerr << "Unknown field type : " << inconnue()->que_suis_je() << finl;
+  Cerr << "Unknown field name : " << inconnue()->le_nom() << finl;
+  Cerr << "Equation type : " << inconnue()->equation().que_suis_je() << finl;
 }
 
 const Champ_Don& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport() const
@@ -105,13 +173,29 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
 
 bool Navier_Stokes_Fluide_Dilatable_base::initTimeStep(double dt)
 {
-  DoubleTab& tab_vitesse=inconnue()->valeurs();
-  Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,le_fluide.valeur());
+  DoubleTab& tab_vitesse = inconnue()->valeurs();
+  Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base, le_fluide.valeur());
   const DoubleTab& tab_rho = fluide_dil.rho_discvit();
   DoubleTab& rhovitesse = rho_la_vitesse_->valeurs(); // will be filled
-  rho_vitesse_impl(tab_rho,tab_vitesse,rhovitesse);
+  rho_vitesse_impl(tab_rho, tab_vitesse, rhovitesse);
 
-  return  Navier_Stokes_std::initTimeStep(dt);
+  if (has_source_masse())
+    {
+      const Schema_Temps_base& sch = schema_temps();
+      // XXX : on a besoin de temps courant...
+      source_masse_->changer_temps_futur(sch.temps_courant(), 0);
+      // Pour chaque temps futur
+      for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
+        {
+          double tps = sch.temps_futur(i);
+          source_masse_->changer_temps_futur(tps, i);
+        }
+
+      // Mise a jour du temps par defaut de la source de masse
+      source_masse_->set_temps_defaut(sch.temps_defaut());
+    }
+
+  return Navier_Stokes_std::initTimeStep(dt);
 }
 
 void Navier_Stokes_Fluide_Dilatable_base::discretiser()

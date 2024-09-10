@@ -13,17 +13,19 @@
 *
 *****************************************************************************/
 
-#include <EOS_Tools_VEF.h>
-#include <Domaine.h>
-#include <Domaine_VEF.h>
-#include <Debog.h>
-#include <Navier_Stokes_std.h>
-#include <Schema_Temps_base.h>
-#include <Fluide_Dilatable_base.h>
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
+#include <Source_Masse_Fluide_Dilatable_base.h>
 #include <Loi_Etat_Melange_GP_base.h>
-#include <Porosites_champ.h>
-#include <Champ_P1NC.h>
+#include <Fluide_Dilatable_base.h>
 #include <Check_espace_virtuel.h>
+#include <Schema_Temps_base.h>
+#include <Porosites_champ.h>
+#include <EOS_Tools_VEF.h>
+#include <Domaine_VEF.h>
+#include <Champ_P1NC.h>
+#include <Domaine.h>
+#include <Debog.h>
+
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
 #include <TRUSTTab_kokkos.tpp>
@@ -32,8 +34,7 @@ Implemente_instanciable(EOS_Tools_VEF,"EOS_Tools_VEF",EOS_Tools_base);
 
 Sortie& EOS_Tools_VEF::printOn(Sortie& os) const
 {
-  os <<que_suis_je()<< finl;
-  return os;
+  return os <<que_suis_je()<< finl;
 }
 
 Entree& EOS_Tools_VEF::readOn(Entree& is)
@@ -268,6 +269,14 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   tab_dZ.echange_espace_virtuel();
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
 
+  // Ajout des termes sources speciaux de l'equation de masse:
+  const Navier_Stokes_Fluide_Dilatable_base& nseq = ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation());
+  if (nseq.has_source_masse())
+    {
+      const Source_Masse_Fluide_Dilatable_base& src_mass = nseq.source_masse();
+      src_mass.ajouter_projection(le_fluide(),tab_dZ); // attention : tab_dZ a taille comme pression
+    }
+
   DoubleTabView tab_W_v = tab_W.view_rw();
   decal=0;
   if (p_has_elem)
@@ -300,7 +309,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         {
           //pour l'instant on n'a pas calcule tab_dZ aux aretes
           assert(tab_dZ(decal + ar) == 0);
-          tab_W(decal + ar) = 0;
+          tab_W(decal + ar) = 0.;
         }
     }
   tab_W.echange_espace_virtuel();

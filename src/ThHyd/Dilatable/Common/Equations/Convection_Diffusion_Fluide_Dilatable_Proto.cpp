@@ -15,6 +15,7 @@
 
 #include <Convection_Diffusion_Fluide_Dilatable_base.h>
 #include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
 #include <Fluide_Weakly_Compressible.h>
 #include <Convection_Diffusion_std.h>
 #include <EcritureLectureSpecial.h>
@@ -134,7 +135,6 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   tab_divide_any_shape(derivee, array);
   derivee.echange_espace_virtuel();
 
-
   /*
    * SECOND TERM : convective
    * = - u grad(Y) = [ Y div (rho*u) - div( rho*u*Y ) ] / rho
@@ -160,17 +160,37 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
       tab_divide_any_shape(convection, tab_rho);
     }
 
+  // Complete with special source terms from mass equation (if any)
+  DoubleTrav mass_source_term(derivee);
+  mass_source_term = 0.0;
+  const Navier_Stokes_Fluide_Dilatable_base& nseq = ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation());
+  const bool has_mass_flux = nseq.has_source_masse();
+
+  if (!is_thermal() && has_mass_flux) /* species equation */
+    {
+      const Source_Masse_Fluide_Dilatable_base& src_masse = nseq.source_masse();
+      src_masse.ajouter_eq_espece(eqn, fluide_dil, is_expl, mass_source_term);
+    }
+
   /*
    * TOTAL TERM : diffusive + convective + sources
    */
   derivee+=convection;
 
+  // si schema implicite
+  if (!is_expl && has_mass_flux)
+    derivee += mass_source_term; // pour ça on traite le volume par le solveur de masse plus tard ...
+
   if (diffusion_implicite)
     {
       const DoubleTab& Tfutur=eqn.inconnue()->futur();
       DoubleTrav secmem(derivee);
-      secmem=derivee;
+      secmem=derivee; // sans contribution terme source
       eqn.solv_masse()->appliquer(secmem);
+
+      if (has_mass_flux)
+        secmem += mass_source_term ; // ajoute contribution terme source (deja divise par V)
+
       derivee = Tfutur;
 
       is_thermal() ? eqn.solv_masse()->set_name_of_coefficient_temporel("rho_cp_comme_T") :
@@ -184,6 +204,10 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   if (!sch.diffusion_implicite() && is_expl)
     {
       eqn.solv_masse()->appliquer(derivee);
+
+      if (has_mass_flux)
+        derivee += mass_source_term; // ajoute contribution terme source (deja divise par V)
+
       derivee.echange_espace_virtuel();
     }
 

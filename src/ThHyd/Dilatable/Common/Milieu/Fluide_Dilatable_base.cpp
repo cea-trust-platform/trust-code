@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
 #include <Fluide_Dilatable_base.h>
 #include <Neumann_sortie_libre.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Discretisation_base.h>
 #include <Champ_Fonc_Fonction.h>
-#include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
@@ -540,6 +540,22 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   inco_chaleur_ = pb.equation(1).inconnue();
   vitesse_ = pb.equation(0).inconnue();
   pression_ = ref_cast(Navier_Stokes_std, pb.equation(0)).pression();
+
+  /* si terme source masse */
+  if (ref_cast(Navier_Stokes_Fluide_Dilatable_base, pb.equation(0)).has_source_masse())
+    {
+      const Discretisation_base& dis = pb.discretisation();
+      const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
+      double temps = pb.schema_temps().temps_courant();
+
+      Champ_Don& src_esp = source_masse_espece();
+      dis.discretiser_champ("champ_elem", domaine_dis, "source_masse_espece", "Kg/m3/s", 1, temps, src_esp);
+      champs_compris_.ajoute_champ(src_esp);
+
+      Champ_Don& src_proj = source_masse_projection();
+      dis.discretiser_champ("pression", domaine_dis, "source_masse_projection", "Kg/m3/s", 1, temps, src_proj);
+      champs_compris_.ajoute_champ(src_proj);
+    }
 
   Nom typ = pb.equation(0).discretisation().que_suis_je();
   if (typ == "VEFPreP1B")
