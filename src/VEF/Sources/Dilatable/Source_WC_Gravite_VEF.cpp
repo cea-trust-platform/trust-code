@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,44 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Canal_perio_VDF_Face_included
-#define Terme_Source_Canal_perio_VDF_Face_included
+#include <Fluide_Weakly_Compressible.h>
+#include <Source_WC_Gravite_VEF.h>
 
-/*! @brief class Terme_Source_Canal_perio_VDF_Face Cette classe permet de conserver le debit dans une simulation
- *
- *   temporelle de Canal
- *
- * @sa Terme_Source_Canal_perio
- */
-#include <Terme_Source_Canal_perio.h>
-#include <TRUSTTabs_forward.h>
-#include <TRUST_Ref.h>
+Implemente_instanciable(Source_WC_Gravite_VEF,"Source_WC_Gravite_VEF",Source_Gravite_Fluide_Dilatable_base);
 
-class Domaine_Cl_VDF;
-class Domaine_VDF;
-
-class Navier_Stokes_std;
-class Probleme_base;
-
-class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
+Sortie& Source_WC_Gravite_VEF::printOn(Sortie& os) const
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
-public :
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override { return 1; }
+  os <<que_suis_je()<< finl;
+  return os;
+}
 
-protected :
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+Entree& Source_WC_Gravite_VEF::readOn(Entree& is) { return is; }
 
-  void calculer_debit(double&) const override;
-};
-
-class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
+void Source_WC_Gravite_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {
-  Declare_instanciable(Terme_Source_Canal_perio_QC_VDF_Face);
-};
+  associer_domaines_impl(domaine,domaine_cl);
+}
 
-#endif
+DoubleTab& Source_WC_Gravite_VEF::ajouter(DoubleTab& resu) const
+{
+  const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
+  ajouter_impl(mon_equation.valeur(),g,dimension,0.,tab_rho,resu);
+  return resu;
+}

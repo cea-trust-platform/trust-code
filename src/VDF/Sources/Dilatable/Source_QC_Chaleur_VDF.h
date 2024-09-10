@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,32 +14,36 @@
 *****************************************************************************/
 
 
-#ifndef Terme_Source_Canal_perio_VDF_P0_included
-#define Terme_Source_Canal_perio_VDF_P0_included
+#ifndef Source_QC_Chaleur_VDF_included
+#define Source_QC_Chaleur_VDF_included
 
+#include <Source_Fluide_Dilatable_VDF_Proto.h>
+#include <Source_QC_Chaleur.h>
 
-
-/*! @brief class Terme_Source_Canal_perio_VDF_P0 Cette classe permet de conserver le debit dans une simulation
+/*! @brief class  Source_QC_Chaleur_VDF
  *
- *   temporelle de Canal
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de la chaleur
+ *   dans le cas ou le fluide est quasi compressible et pour
+ *   une discretisation VDF
  *
  *
- * @sa Terme_Source_Canal_perio
+ * @sa Source_base Fluide_Quasi_Compressible Source_QC_Chaleur
  */
 
-#include <Terme_Source_Canal_perio_VDF_Face.h>
-
-class Terme_Source_Canal_perio_VDF_P0 : public Terme_Source_Canal_perio_VDF_Face
+class Source_QC_Chaleur_VDF : public Source_QC_Chaleur, public Source_Fluide_Dilatable_VDF_Proto
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VDF_P0);
+  Declare_instanciable(Source_QC_Chaleur_VDF);
+protected:
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override { ajouter_(secmem); }
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
-public :
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-
-protected :
-  // This one is overridden from Terme_Source_Canal_perio essentially to store source
-  // term on P0 location and not on Faces or P1NC.
-  ArrOfDouble source_convection_diffusion(double debit_e) const override;
 };
 
-#endif
+#endif /* Source_QC_Chaleur_VDF_included */
+

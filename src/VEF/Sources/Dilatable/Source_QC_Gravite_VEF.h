@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,29 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Fluide_Quasi_Compressible.h>
-#include <Source_QC_Gravite_VEF.h>
+#ifndef Source_QC_Gravite_VEF_included
+#define Source_QC_Gravite_VEF_included
 
-Implemente_instanciable(Source_QC_Gravite_VEF,"Source_QC_Gravite_VEF",Source_Gravite_Fluide_Dilatable_base);
+#include <Source_Gravite_Fluide_Dilatable_base.h>
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
 
-Sortie& Source_QC_Gravite_VEF::printOn(Sortie& os) const
+/*! @brief class  Source_QC_Gravite_VEF
+ *
+ *   Cette classe represente un terme source supplementaire a prendre en compte
+ *   dans les equations de quantite de mouvement dans le cas ou le fluide est
+ *   quasi compressible, en cas de gravite, et pour une discretisation VEF.
+ *
+ *
+ * @sa Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+ */
+
+class Source_QC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
+  public Source_Fluide_Dilatable_VEF_Proto
 {
-  os <<que_suis_je()<< finl;
-  return os;
-}
+  Declare_instanciable( Source_QC_Gravite_VEF);
 
-Entree& Source_QC_Gravite_VEF::readOn(Entree& is) { return is; }
+public:
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
-void Source_QC_Gravite_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
-{
-  associer_domaines_impl(domaine,domaine_cl);
-}
+protected :
+  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
+};
 
-DoubleTab& Source_QC_Gravite_VEF::ajouter(DoubleTab& resu) const
-{
-  const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur());
-  const DoubleTab& tab_rho = fluide.rho_discvit();
-  const double rho_m = fluide.get_traitement_rho_gravite() ? le_fluide->moyenne_vol(tab_rho) : 0.0;
-  ajouter_impl(mon_equation.valeur(),g,dimension,rho_m,tab_rho,resu);
-  return resu;
-}
+#endif /* Source_QC_Gravite_VEF_included */

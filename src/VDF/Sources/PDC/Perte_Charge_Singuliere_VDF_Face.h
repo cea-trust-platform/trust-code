@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,20 +13,42 @@
 *
 *****************************************************************************/
 
-#include <Source_QC_Chaleur_VDF.h>
 
-Implemente_instanciable(Source_QC_Chaleur_VDF,"Source_QC_Chaleur_VDF",Source_QC_Chaleur);
+#ifndef Perte_Charge_Singuliere_VDF_Face_included
+#define Perte_Charge_Singuliere_VDF_Face_included
 
-Sortie& Source_QC_Chaleur_VDF::printOn(Sortie& os) const
+#include <Perte_Charge_VDF_Face.h>
+#include <Perte_Charge_Singuliere.h>
+
+#include <Domaine_forward.h>
+#include <TRUSTList.h>
+
+/*! @brief class Perte_Charge_Singuliere_VDF_Face
+ *
+ *
+ *
+ * @sa Perte_Charge_VDF_Face
+ */
+class Perte_Charge_Singuliere_VDF_Face : public Perte_Charge_VDF_Face,
+  public Perte_Charge_Singuliere
 {
-  os <<que_suis_je()<< finl;
-  return os;
-}
 
-Entree& Source_QC_Chaleur_VDF::readOn(Entree& is) { return is; }
+  Declare_instanciable(Perte_Charge_Singuliere_VDF_Face);
 
-void Source_QC_Chaleur_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
-{
-  associer_domaines_impl(domaine,zcl);
-  associer_volume_porosite_impl(domaine,volumes,porosites);
-}
+public:
+
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+
+  void remplir_num_faces(Entree& );
+  void mettre_a_jour(double temps) override;
+
+protected:
+  IntVect sgn;
+};
+#endif

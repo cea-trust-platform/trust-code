@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,51 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Canal_RANS_LES_VEF_Face_included
-#define Terme_Source_Canal_RANS_LES_VEF_Face_included
+#ifndef Source_WC_Gravite_VEF_included
+#define Source_WC_Gravite_VEF_included
 
-#include <TRUSTTabs_forward.h>
-#include <Source_base.h>
-#include <Champ_Don.h>
-#include <TRUST_Ref.h>
+#include <Source_Gravite_Fluide_Dilatable_base.h>
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
 
-class Navier_Stokes_std;
-class Probleme_base;
-class Domaine_Cl_VEF;
-class Domaine_VEF;
-
-/*! @brief class Terme_Source_Canal_RANS_LES_VEF_Face Cette classe concerne un terme source calcule en partie grace a un calcul RANS preliminaire et applique au calcul LES en cours
+/*! @brief class  Source_WC_Gravite_VEF
  *
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de quantite de mouvement
+ *   dans le cas ou le fluide est weakly compressible, en cas de gravite, et pour
+ *   une discretisation VEF.
+ *
+ *
+ * @sa Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
  */
-class Terme_Source_Canal_RANS_LES_VEF_Face : public Source_base
+
+class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
+  public Source_Fluide_Dilatable_VEF_Proto
 {
-  Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VEF_Face);
+  Declare_instanciable(Source_WC_Gravite_VEF);
 
-public :
-  ~Terme_Source_Canal_RANS_LES_VEF_Face() override;
-
-  void associer_pb(const Probleme_base& ) override;
+public:
   DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override;
-  void init();
-  void mettre_a_jour(double ) override;
 
 protected :
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
-
-private :
-  int moyenne= 0; //type de moyenne
-  int dir = -10; //direction
-  Nom dir_nom; // axe
-  double alpha_tau = -100., Ly= -100., u_tau= -100., nu= -100., rayon= -100.;
-  double t_moy_start= -100.,f_start= 0.,f_tot= -100.;
-  int u_target= 0;
-
-  DoubleTab U_RANS;
-  DoubleTab utemp;
-  DoubleTab utemp_sum;
-
+  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
 };
-#endif
+
+#endif /* Source_WC_Gravite_VEF_included */

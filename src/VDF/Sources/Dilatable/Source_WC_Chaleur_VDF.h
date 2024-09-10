@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,48 +13,43 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Canal_perio_VEF_P1NC_included
-#define Terme_Source_Canal_perio_VEF_P1NC_included
+#ifndef Source_WC_Chaleur_VDF_included
+#define Source_WC_Chaleur_VDF_included
 
-/*! @brief class Terme_Source_Canal_perio_VEF_P1NC Cette classe permet de conserver le debit dans une simulation
+#include <Source_Fluide_Dilatable_VDF_Proto.h>
+#include <Source_WC_Chaleur.h>
+
+class Domaine_VF;
+
+/*! @brief class  Source_WC_Chaleur_VDF
  *
- *   temporelle de Canal
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de la chaleur
+ *   dans le cas ou le fluide est weakly compressible et pour
+ *   une discretisation VDF
  *
  *
- * @sa Terme_Source_Canal_perio
+ * @sa Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
  */
 
-#include <Terme_Source_Canal_perio.h>
-#include <TRUSTTabs_forward.h>
-#include <TRUST_Ref.h>
-
-class Navier_Stokes_std;
-class Probleme_base;
-class Domaine_Cl_VEF;
-class Domaine_VEF;
-
-// La classe derive de Source_base et peut etre d'un terme source
-class Terme_Source_Canal_perio_VEF_P1NC : public Terme_Source_Canal_perio
+class Source_WC_Chaleur_VDF : public Source_WC_Chaleur, public Source_Fluide_Dilatable_VDF_Proto
 {
-  Declare_instanciable(Terme_Source_Canal_perio_VEF_P1NC);
+  Declare_instanciable(Source_WC_Chaleur_VDF);
 
-public :
-  DoubleTab& ajouter(DoubleTab& ) const override;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override { ajouter_(secmem); }
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+protected:
+  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl) override;
+  void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const override;
 
-protected :
-
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  void calculer_debit(double&) const override;
-  // les attributs ont ete mis dans la classe mere
-
+private:
+  void face_to_elem(const Domaine_VF& domaine, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const;
+  // on l'utilise pas pour le moment mais bon pour debug ...
+  void compute_interpolate_gradP_old(DoubleTab& gradP, const DoubleTab& Ptot) const;
 };
 
-class Terme_Source_Canal_perio_QC_VEF_P1NC : public Terme_Source_Canal_perio_VEF_P1NC
-{
-  Declare_instanciable(Terme_Source_Canal_perio_QC_VEF_P1NC);
-};
-
-
-#endif
+#endif /* Source_WC_Chaleur_VDF_included */

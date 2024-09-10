@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,34 +13,63 @@
 *
 *****************************************************************************/
 
-#ifndef Source_WC_Chaleur_VEF_included
-#define Source_WC_Chaleur_VEF_included
+#ifndef Terme_Source_Canal_RANS_LES_VDF_Elem_included
+#define Terme_Source_Canal_RANS_LES_VDF_Elem_included
 
-#include <Source_Fluide_Dilatable_VEF_Proto.h>
-#include <Source_WC_Chaleur.h>
-class Domaine_VF;
+#include <TRUSTTabs_forward.h>
+#include <Source_base.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
 
-/*! @brief class  Source_WC_Chaleur_VEF
+class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
+
+/*! @brief class Terme_Source_Canal_RANS_LES_VDF_Elem Cette classe concerne un terme source calcule en partie grace
  *
- *  Cette classe represente un terme source supplementaire
- *  a prendre en compte dans les equations de la chaleur
- *   dans le cas ou le fluide est weakly compressible et pour
- *   une discretisation VEF
+ *   a un calcul RANS preliminaire et applique au calcul LES en cours
  *
  *
- * @sa Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
  */
-
-class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
+class Terme_Source_Canal_RANS_LES_VDF_Elem : public Source_base
 {
-  Declare_instanciable(Source_WC_Chaleur_VEF);
+  Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VDF_Elem);
 
-protected:
+public :
+  ~Terme_Source_Canal_RANS_LES_VDF_Elem() override;
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  void init();
+  void mettre_a_jour(double ) override;
+
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+
+protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const override;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
 
-private:
-  void elem_to_face(const Domaine_VF& domaine, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;
+private :
+  int moyenne = 0; //type de moyenne
+  int compteur_reprise = 0;
+  double alpha_tau = -100., Ly = -100.;
+  double f_start = 0., t_av = -1;
+
+  DoubleTab tau;
+  DoubleTab U_RANS;
+  Nom nom_pb_rans;
+
+  DoubleVect utemp_gliss, utemp, utemp_sum, umoy;
+
+  //DoubleVect U, U_RANS;
+  //DoubleVect force;
+
+
 };
-
-#endif /* Source_WC_Chaleur_VEF_included */
+#endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,33 +13,44 @@
 *
 *****************************************************************************/
 
-#ifndef Source_WC_Gravite_VEF_included
-#define Source_WC_Gravite_VEF_included
+#ifndef Terme_Source_Canal_perio_VDF_Face_included
+#define Terme_Source_Canal_perio_VDF_Face_included
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Source_Fluide_Dilatable_VEF_Proto.h>
-
-/*! @brief class  Source_WC_Gravite_VEF
+/*! @brief class Terme_Source_Canal_perio_VDF_Face Cette classe permet de conserver le debit dans une simulation
  *
- *  Cette classe represente un terme source supplementaire
- *  a prendre en compte dans les equations de quantite de mouvement
- *   dans le cas ou le fluide est weakly compressible, en cas de gravite, et pour
- *   une discretisation VEF.
+ *   temporelle de Canal
  *
- *
- * @sa Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
+ * @sa Terme_Source_Canal_perio
  */
+#include <Terme_Source_Canal_perio.h>
+#include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
 
-class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
-  public Source_Fluide_Dilatable_VEF_Proto
+class Domaine_Cl_VDF;
+class Domaine_VDF;
+
+class Navier_Stokes_std;
+class Probleme_base;
+
+class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
 {
-  Declare_instanciable(Source_WC_Gravite_VEF);
-
-public:
-  DoubleTab& ajouter(DoubleTab& ) const override;
+  Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
+public :
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 
 protected :
-  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+
+  void calculer_debit(double&) const override;
 };
 
-#endif /* Source_WC_Gravite_VEF_included */
+class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
+{
+  Declare_instanciable(Terme_Source_Canal_perio_QC_VDF_Face);
+};
+
+#endif

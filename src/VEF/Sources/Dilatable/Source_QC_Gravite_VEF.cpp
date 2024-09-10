@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,37 +13,29 @@
 *
 *****************************************************************************/
 
+#include <Fluide_Quasi_Compressible.h>
+#include <Source_QC_Gravite_VEF.h>
 
-#ifndef Source_QC_Chaleur_VDF_included
-#define Source_QC_Chaleur_VDF_included
+Implemente_instanciable(Source_QC_Gravite_VEF,"Source_QC_Gravite_VEF",Source_Gravite_Fluide_Dilatable_base);
 
-#include <Source_Fluide_Dilatable_VDF_Proto.h>
-#include <Source_QC_Chaleur.h>
-
-/*! @brief class  Source_QC_Chaleur_VDF
- *
- *  Cette classe represente un terme source supplementaire
- *  a prendre en compte dans les equations de la chaleur
- *   dans le cas ou le fluide est quasi compressible et pour
- *   une discretisation VDF
- *
- *
- * @sa Source_base Fluide_Quasi_Compressible Source_QC_Chaleur
- */
-
-class Source_QC_Chaleur_VDF : public Source_QC_Chaleur, public Source_Fluide_Dilatable_VDF_Proto
+Sortie& Source_QC_Gravite_VEF::printOn(Sortie& os) const
 {
-  Declare_instanciable(Source_QC_Chaleur_VDF);
-protected:
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
-  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override { ajouter_(secmem); }
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  os <<que_suis_je()<< finl;
+  return os;
+}
 
-};
+Entree& Source_QC_Gravite_VEF::readOn(Entree& is) { return is; }
 
-#endif /* Source_QC_Chaleur_VDF_included */
+void Source_QC_Gravite_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+{
+  associer_domaines_impl(domaine,domaine_cl);
+}
 
+DoubleTab& Source_QC_Gravite_VEF::ajouter(DoubleTab& resu) const
+{
+  const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur());
+  const DoubleTab& tab_rho = fluide.rho_discvit();
+  const double rho_m = fluide.get_traitement_rho_gravite() ? le_fluide->moyenne_vol(tab_rho) : 0.0;
+  ajouter_impl(mon_equation.valeur(),g,dimension,rho_m,tab_rho,resu);
+  return resu;
+}
