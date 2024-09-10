@@ -124,7 +124,7 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   return 1;
 }
 
-static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
+static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 {
 #ifdef MPI_
   groupe_trio.typer("Comm_Group_MPI");

@@ -39,7 +39,7 @@ void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb,
   champs_compris_.ajoute_champ(vitesse_transport.valeur());
   Milieu_base::discretiser(pb,dis);
   if (C_.non_nul())
-    vitesse_transport.valeur().affecter_(C_.valeur());
+    vitesse_transport->affecter_(C_.valeur());
   else
     {
       Cerr<<"To must read "<<que_suis_je()<<" before discretiser "<<finl;
@@ -61,15 +61,15 @@ void Constituant_Avec_Vitesse::mettre_a_jour(double temps)
 {
   Constituant::mettre_a_jour(temps);
   if (C_.non_nul())
-    C_.mettre_a_jour(temps);
-  vitesse_transport.valeur().affecter_(C_.valeur());
-  vitesse_transport.changer_temps(temps);
+    C_->mettre_a_jour(temps);
+  vitesse_transport->affecter_(C_.valeur());
+  vitesse_transport->changer_temps(temps);
 }
 
 int Constituant_Avec_Vitesse::initialiser(const double temps)
 {
   Constituant::initialiser(temps);
   if (C_.non_nul())
-    C_.initialiser(temps);
+    C_->initialiser(temps);
   return 1;
 }
