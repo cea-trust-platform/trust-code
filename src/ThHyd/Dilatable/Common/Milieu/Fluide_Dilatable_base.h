@@ -86,6 +86,10 @@ public :
   inline Champ_Don& mu_sur_Schmidt() { return mu_sur_Sc; }
   inline const Champ_Don& nu_sur_Schmidt() const { return nu_sur_Sc; }
   inline Champ_Don& nu_sur_Schmidt() { return nu_sur_Sc; }
+  inline const Champ_Don& source_masse_espece() const { assert (source_masse_esp_.non_nul()); return source_masse_esp_; }
+  inline Champ_Don& source_masse_espece() { assert (source_masse_esp_.non_nul()); return source_masse_esp_; }
+  inline const Champ_Don& source_masse_projection() const { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
+  inline Champ_Don& source_masse_projection() { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
   inline const  DoubleTab& rho_n() const { return loi_etat_->rho_n(); }
   inline const  DoubleTab& rho_np1() const { return loi_etat_->rho_np1(); }
   inline void calculer_coeff_T();
@@ -122,7 +126,8 @@ protected :
   double Pth_ = -1., Pth_n = -1., Pth1 = -1.;
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   REF(Probleme_base) le_probleme_;
-  Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
+  Champ_Don pression_tot_, mu_sur_Sc, nu_sur_Sc, rho_gaz, rho_comme_v;
+  Champ_Don source_masse_esp_, source_masse_proj_; /* si besoin */
   OWN_PTR(Loi_Etat_base) loi_etat_;
   OWN_PTR(EOS_Tools_base) eos_tools_;
   OWN_PTR(EDO_Pression_th_base) EDO_Pth_;
