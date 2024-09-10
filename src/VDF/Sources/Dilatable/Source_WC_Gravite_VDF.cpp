@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,37 +13,27 @@
 *
 *****************************************************************************/
 
+#include <Fluide_Weakly_Compressible.h>
+#include <Source_WC_Gravite_VDF.h>
 
-#ifndef Source_WC_Gravite_VDF_included
-#define Source_WC_Gravite_VDF_included
+Implemente_instanciable(Source_WC_Gravite_VDF,"Source_WC_Gravite_VDF",Source_Gravite_Fluide_Dilatable_base);
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Source_Fluide_Dilatable_VDF_Proto.h>
-
-/*! @brief class  Source_WC_Gravite_VDF
- *
- *  Cette classe represente un terme source supplementaire a prendre en compte
- *  dans les equations de quantite de mouvement dans le cas ou le fluide est
- *  weakly compressible, en cas de gravite, et pour une discretisation VDF.
- *
- *
- * @sa Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
- */
-
-class Source_WC_Gravite_VDF : public Source_Gravite_Fluide_Dilatable_base,
-  public Source_Fluide_Dilatable_VDF_Proto
+Sortie& Source_WC_Gravite_VDF::printOn(Sortie& os) const
 {
-  Declare_instanciable(Source_WC_Gravite_VDF);
+  os <<que_suis_je()<< finl;
+  return os;
+}
 
-public:
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
-protected :
-  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
-};
+Entree& Source_WC_Gravite_VDF::readOn(Entree& is) { return is; }
 
-#endif /* Source_WC_Gravite_VDF_included */
+void Source_WC_Gravite_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+{
+  associer_domaines_impl(domaine,domaine_cl);
+}
+
+void Source_WC_Gravite_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
+  ajouter_impl(g,0.,tab_rho,secmem);
+}
+

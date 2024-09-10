@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,36 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Perte_Charge_VDF_Face_included
-#define Perte_Charge_VDF_Face_included
+#ifndef Source_WC_Chaleur_VEF_included
+#define Source_WC_Chaleur_VEF_included
 
-#include <Source_dep_inco_base.h>
-#include <TRUSTTabs_forward.h>
-#include <TRUST_Ref.h>
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
+#include <Source_WC_Chaleur.h>
+class Domaine_VF;
 
-class Champ_Face_VDF;
-class Probleme_base;
-class Domaine_Cl_VDF;
-class Domaine_VDF;
-class Fluide_base;
+/*! @brief class  Source_WC_Chaleur_VEF
+ *
+ *  Cette classe represente un terme source supplementaire
+ *  a prendre en compte dans les equations de la chaleur
+ *   dans le cas ou le fluide est weakly compressible et pour
+ *   une discretisation VEF
+ *
+ *
+ * @sa Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
+ */
 
-class Perte_Charge_VDF_Face : public Source_dep_inco_base
+class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
 {
-  Declare_base(Perte_Charge_VDF_Face);
-public:
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override { }
-
-  inline int has_interface_blocs() const override { return 1; }
+  Declare_instanciable(Source_WC_Chaleur_VEF);
 
 protected:
-  REF(Champ_Face_VDF) la_vitesse;
-  REF(Fluide_base) le_fluide;
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  IntVect num_faces;
-  DoubleVect corr_front_ss;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const override;
+
+private:
+  void elem_to_face(const Domaine_VF& domaine, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;
 };
 
-#endif /* Perte_Charge_VDF_Face_included */
+#endif /* Source_WC_Chaleur_VEF_included */

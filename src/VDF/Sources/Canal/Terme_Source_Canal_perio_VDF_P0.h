@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,32 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Source_QC_Gravite_VEF_included
-#define Source_QC_Gravite_VEF_included
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Source_Fluide_Dilatable_VEF_Proto.h>
+#ifndef Terme_Source_Canal_perio_VDF_P0_included
+#define Terme_Source_Canal_perio_VDF_P0_included
 
-/*! @brief class  Source_QC_Gravite_VEF
+
+
+/*! @brief class Terme_Source_Canal_perio_VDF_P0 Cette classe permet de conserver le debit dans une simulation
  *
- *   Cette classe represente un terme source supplementaire a prendre en compte
- *   dans les equations de quantite de mouvement dans le cas ou le fluide est
- *   quasi compressible, en cas de gravite, et pour une discretisation VEF.
+ *   temporelle de Canal
  *
  *
- * @sa Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+ * @sa Terme_Source_Canal_perio
  */
 
-class Source_QC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
-  public Source_Fluide_Dilatable_VEF_Proto
-{
-  Declare_instanciable( Source_QC_Gravite_VEF);
+#include <Terme_Source_Canal_perio_VDF_Face.h>
 
-public:
-  DoubleTab& ajouter(DoubleTab& ) const override;
+class Terme_Source_Canal_perio_VDF_P0 : public Terme_Source_Canal_perio_VDF_Face
+{
+  Declare_instanciable(Terme_Source_Canal_perio_VDF_P0);
+
+public :
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 protected :
-  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
+  // This one is overridden from Terme_Source_Canal_perio essentially to store source
+  // term on P0 location and not on Faces or P1NC.
+  ArrOfDouble source_convection_diffusion(double debit_e) const override;
 };
 
-#endif /* Source_QC_Gravite_VEF_included */
+#endif

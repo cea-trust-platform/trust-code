@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,27 +13,51 @@
 *
 *****************************************************************************/
 
-#include <Fluide_Weakly_Compressible.h>
-#include <Source_WC_Gravite_VEF.h>
+#ifndef Terme_Source_Canal_RANS_LES_VEF_Face_included
+#define Terme_Source_Canal_RANS_LES_VEF_Face_included
 
-Implemente_instanciable(Source_WC_Gravite_VEF,"Source_WC_Gravite_VEF",Source_Gravite_Fluide_Dilatable_base);
+#include <TRUSTTabs_forward.h>
+#include <Source_base.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
 
-Sortie& Source_WC_Gravite_VEF::printOn(Sortie& os) const
+class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
+
+/*! @brief class Terme_Source_Canal_RANS_LES_VEF_Face Cette classe concerne un terme source calcule en partie grace a un calcul RANS preliminaire et applique au calcul LES en cours
+ *
+ */
+class Terme_Source_Canal_RANS_LES_VEF_Face : public Source_base
 {
-  os <<que_suis_je()<< finl;
-  return os;
-}
+  Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VEF_Face);
 
-Entree& Source_WC_Gravite_VEF::readOn(Entree& is) { return is; }
+public :
+  ~Terme_Source_Canal_RANS_LES_VEF_Face() override;
 
-void Source_WC_Gravite_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
-{
-  associer_domaines_impl(domaine,domaine_cl);
-}
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  void init();
+  void mettre_a_jour(double ) override;
 
-DoubleTab& Source_WC_Gravite_VEF::ajouter(DoubleTab& resu) const
-{
-  const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
-  ajouter_impl(mon_equation.valeur(),g,dimension,0.,tab_rho,resu);
-  return resu;
-}
+protected :
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+
+private :
+  int moyenne= 0; //type de moyenne
+  int dir = -10; //direction
+  Nom dir_nom; // axe
+  double alpha_tau = -100., Ly= -100., u_tau= -100., nu= -100., rayon= -100.;
+  double t_moy_start= -100.,f_start= 0.,f_tot= -100.;
+  int u_target= 0;
+
+  DoubleTab U_RANS;
+  DoubleTab utemp;
+  DoubleTab utemp_sum;
+
+};
+#endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,42 +13,27 @@
 *
 *****************************************************************************/
 
+#ifndef Source_QC_Chaleur_VEF_included
+#define Source_QC_Chaleur_VEF_included
 
-#ifndef Perte_Charge_Singuliere_VDF_Face_included
-#define Perte_Charge_Singuliere_VDF_Face_included
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
+#include <Source_QC_Chaleur.h>
 
-#include <Perte_Charge_VDF_Face.h>
-#include <Perte_Charge_Singuliere.h>
-
-#include <Domaine_forward.h>
-#include <TRUSTList.h>
-
-/*! @brief class Perte_Charge_Singuliere_VDF_Face
+/*! @brief class  Source_QC_Chaleur_VEF
+ *
+ *  Cette classe represente un terme source supplementaire a prendre en compte
+ *  dans les equations de la chaleur dans le cas ou le fluide est quasi compressible
+ *  et pour une discretisation VEF
  *
  *
- *
- * @sa Perte_Charge_VDF_Face
+ * @sa Source_base Fluide_Quasi_Compressible Source_QC_Chaleur
  */
-class Perte_Charge_Singuliere_VDF_Face : public Perte_Charge_VDF_Face,
-  public Perte_Charge_Singuliere
+
+class Source_QC_Chaleur_VEF : public Source_QC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
 {
-
-  Declare_instanciable(Perte_Charge_Singuliere_VDF_Face);
-
-public:
-
-  DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
-
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-
+  Declare_instanciable(Source_QC_Chaleur_VEF);
 protected:
-  IntVect sgn;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
-#endif
+
+#endif /* Source_QC_Chaleur_VEF_included */

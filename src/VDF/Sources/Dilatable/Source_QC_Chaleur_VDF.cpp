@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,27 +13,20 @@
 *
 *****************************************************************************/
 
-#include <Fluide_Weakly_Compressible.h>
-#include <Source_WC_Gravite_VDF.h>
+#include <Source_QC_Chaleur_VDF.h>
 
-Implemente_instanciable(Source_WC_Gravite_VDF,"Source_WC_Gravite_VDF",Source_Gravite_Fluide_Dilatable_base);
+Implemente_instanciable(Source_QC_Chaleur_VDF,"Source_QC_Chaleur_VDF",Source_QC_Chaleur);
 
-Sortie& Source_WC_Gravite_VDF::printOn(Sortie& os) const
+Sortie& Source_QC_Chaleur_VDF::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-Entree& Source_WC_Gravite_VDF::readOn(Entree& is) { return is; }
+Entree& Source_QC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-void Source_WC_Gravite_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+void Source_QC_Chaleur_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
 {
-  associer_domaines_impl(domaine,domaine_cl);
+  associer_domaines_impl(domaine,zcl);
+  associer_volume_porosite_impl(domaine,volumes,porosites);
 }
-
-void Source_WC_Gravite_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
-{
-  const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
-  ajouter_impl(g,0.,tab_rho,secmem);
-}
-
