@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+11/09/24 (TRUST) New Keyword  : Added a new correlation for Nusselt heat flux, including Nusselt parser with Reynolds (Re) and Prandtl (Pr) number dependency.
+11/09/24 (TRUST) New Feature  : Move correlation structures from Pb_Multiphase to Probleme_base (allow to use CMFD type turbulence or parietal heat transfer correlations with (thermo)hydraulic problems for example). TrioCFD needed for turbulence equations.
 26/09/24 (TRUST) Change       : mpi4py upgraded from 3.0.3 to 4.0.0.
 03/09/24 (TRUST) GPU          : A1000, A2000, H100 GPUs and Cuda 12.x supported. Add ./configure -kokkos_hip option to build on AMD with HIP Kokkos backend (still buggy) so default is still OpenMP-target backend (with performance issue on MI250)
 03/09/24 (TRUST) GPU          : VEF convection schemes muscl_new and EF_stab available
