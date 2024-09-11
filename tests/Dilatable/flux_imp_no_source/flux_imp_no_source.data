@@ -1,0 +1,142 @@
+# PARALLEL NOT #
+dimension 3
+Pb_Hydraulique_Melange_Binaire_WC pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+  Pave DOM_DOM
+  {
+    Origine 0. -5.e-3 0.
+    Nombre_de_Noeuds 2 7 2
+    Longueurs 1.e-3 30.e-3 1.e-3
+  }
+  {
+    /* Top */
+    bord wall Z = 1.e-3 0.0 <= X <= 1.e-3 -5.e-3 <= Y <= 25.e-3
+    
+    /* Bottom */
+    bord wall Z = 0.0 0.0 <= X <= 1.e-3 -5.0e-3 <= Y <= 0.e-3
+    bord ame Z = 0.0 0.0 <= X <= 1.e-3 0.0e-3 <= Y <= 20.e-3
+    bord wall Z = 0.0 0.0 <= X <= 1.e-3 20.0e-3 <= Y <= 25.e-3
+    
+    /* Left */
+    bord wall X = 0.0 -5.e-3 <= Y <= 25.e-3 0.0 <= Z <= 1.e-3
+    
+    /* Right */
+    bord wall X = 1.e-3 -5.e-3 <= Y <= 25.e-3 0.0 <= Z <= 1.e-3
+    
+    bord in Y = -5.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+    bord out Y = 25.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+  }
+}
+tetraedriser_homogene dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Tranche { tranches 1 2 1 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+vefprep1b dis
+
+Scheme_euler_explicit sch
+Lire sch
+{
+  tinit 0.
+  dt_impr 1.e-3
+  dt_start dt_calc
+  tmax 0.25
+  dt_min 1.e-6
+  dt_max 3.e-3
+  seuil_statio 1.e-15
+  facsec 1
+  diffusion_implicite 1
+  seuil_diffusion_implicite 1.e-9
+  /* nb_pas_dt_max 2 */
+}
+
+
+
+
+Associer pb dom
+Associer pb sch
+
+Discretiser pb dis
+
+Lire pb
+{
+
+   fluide_weakly_compressible {
+        gravite champ_uniforme 3 0 0. 0.0
+     pression_thermo 100000.
+     
+     loi_etat binaire_gaz_parfait_WC
+     {
+       temperature 375.
+       diffusion_coeff  3.12574e-5
+   
+       # O2 rho 1.026322938285598 #
+       molar_mass1 32e-3
+       mu1 2.32e-5
+   
+       # N2 rho 0.9519145252598922 #
+       molar_mass2 10e-3
+       mu2 1.32e-5 
+     }
+   }
+   
+     Navier_Stokes_WC
+  {
+    parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-8 impr } }
+    solveur_pression Petsc cholesky { }
+    convection { EF_stab { } }
+    diffusion { }
+    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+    conditions_limites
+    {
+      wall paroi_fixe
+      ame Symetrie
+      in frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.63 0.
+      out Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -1.026322938285598*9.81*z
+    }
+  }
+
+  Convection_Diffusion_Espece_Binaire_WC
+  {
+    parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-7 impr } }
+    convection  { EF_stab { } }
+    diffusion { }
+    conditions_initiales { fraction_massique Champ_fonc_XYZ dom 1 0.5 }
+    conditions_limites
+    {
+      wall paroi
+      ame Paroi_flux_impose Champ_front_Uniforme 1 0.00001
+      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.5
+      out frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0 
+    }
+  }
+
+  post_processing
+  {
+        format lml 
+        Champs dt_post 1.
+        {
+            fraction_massique elem
+            vitesse elem 
+            masse_volumique som
+            pression elem
+        }
+   } 
+}
+
+Resoudre pb 
+Fin
