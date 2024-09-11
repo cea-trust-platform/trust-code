@@ -37,7 +37,7 @@ Read sch
     tinit 0
     dt_max 1e-2
     dt_impr 1e-10
-    seuil_statio 1e-8
+    seuil_statio 1e-6
     solveur ice
     {
         criteres_convergence { alpha 1e-5 }
