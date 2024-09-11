@@ -210,9 +210,6 @@ protected:
   // face_virt_pe_num_(i-nb_faces_,1) = numero local de cette face sur le PE qui le possede
   IntTab face_virt_pe_num_;
 
-
-  virtual void remplir_elem_faces()=0;
-
   DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
   DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face
 

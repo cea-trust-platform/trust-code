@@ -375,10 +375,6 @@ void Domaine_VF::discretiser()
   // On cree les domaines frontieres
   ledomaine.creer_mes_domaines_frontieres(*this);
 
-  // Attention : ca ne remplit pas elem_faces, ca fait
-  // creer_faces_virtuelles_non_std() en VEF :
-  remplir_elem_faces();
-
   delete les_faces_ptr;
 
   // Fill in the table face_numero_bord

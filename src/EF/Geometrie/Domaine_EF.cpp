@@ -700,10 +700,6 @@ void Domaine_EF::calculer_volumes_entrelaces()
     }
   volumes_entrelaces_.echange_espace_virtuel();
 }
-void Domaine_EF::remplir_elem_faces()
-{
-  creer_faces_virtuelles_non_std();
-}
 
 void Domaine_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
@@ -802,69 +798,3 @@ void Domaine_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
   Domaine_VF::marquer_faces_double_contrib(conds_lim);
 }
 
-
-/*! @brief creation de l'espace distant pour les faces virtuelles; creation du tableau des faces virtuelles de bord
- *
- */
-void Domaine_EF::creer_faces_virtuelles_non_std()
-
-{
-  ind_faces_virt_non_std_.resize_array(314);
-  ind_faces_virt_non_std_ = -999;
-#if 0
-  int i,j,id_joint;
-  int nb_faces_front=premiere_face_int();
-  int nb_faces_virt=domaine().ind_faces_virt_bord().size_array();
-
-
-  // Constitution du tableau des indices de faces
-  // virtuelles non standards.
-  int prem_face_std=premiere_face_std();
-  IntVect ind_faces_nstd(nb_faces_non_std());
-  IntVect ind_faces(nb_faces_);
-  const VectEsp_Virt& vev_id_f = ind_faces.renvoi_espaces_virtuels();
-
-  for(j=0; j<nb_faces_; j++)
-    ind_faces[j]=j;
-  for(j=premiere_face_int(); j<prem_face_std; j++)
-    ind_faces_nstd[j]=j;
-
-  for(id_joint=0; id_joint<nb_joints(); id_joint++)
-    {
-      Joint& le_joint = joint(id_joint);
-      int PEvoisin=le_joint.PEvoisin();
-      const ArrOfInt& edf=le_joint.esp_dist_faces();
-
-      int nbfd = edf.size_array();
-      ind_faces.ajoute_espace_distant(PEvoisin,edf);
-      ArrOfInt tempo(nbfd);
-      int cpt=0;
-      for(i=0; i<nbfd; i++)
-        if((edf[i]<prem_face_std)&&(edf[i]>=nb_faces_front))
-          tempo[cpt++]=edf[i];
-      tempo.resize_array(cpt);
-      ind_faces_nstd.ajoute_espace_distant(PEvoisin,tempo);
-    }
-  ind_faces.echange_espace_virtuel();
-  ind_faces_nstd.echange_espace_virtuel();
-
-  const VectEsp_Virt& vev_id_fnstd =
-    ind_faces_nstd.renvoi_espaces_virtuels();
-  ind_faces_virt_non_std_.resize_array(nb_faces_virt);
-  for(id_joint=0; id_joint<nb_joints(); id_joint++)
-    {
-      int deb=vev_id_f[id_joint].deb();
-      int fin=deb+vev_id_f[id_joint].nb();
-      int deb_b=vev_id_fnstd[id_joint].deb();
-      int fin_b=deb_b+vev_id_fnstd[id_joint].nb();
-      for(i=deb_b; i<fin_b; i++)
-        {
-          for(j=deb; j<fin; j++)
-            if(ind_faces[j]==ind_faces_nstd[i])
-              break;
-          assert(j<fin);
-          ind_faces_virt_non_std_[j-nb_faces_]=i;
-        }
-    }
-#endif
-}
