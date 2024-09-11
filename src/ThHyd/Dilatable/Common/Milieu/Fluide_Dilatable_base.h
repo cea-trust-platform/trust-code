@@ -71,6 +71,7 @@ public :
 
   // Methodes de l interface des champs postraitables
   const Champ_base& get_champ(const Motcle& nom) const override;
+  void creer_champ(const Motcle& motlu) override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
   // Methodes inlines
