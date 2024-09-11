@@ -90,8 +90,12 @@ void DP_Impose::update_dp_regul(const Equation_base& eqn, double deb, DoubleVect
   if (!regul_) return;
   double t = eqn.probleme().schema_temps().temps_courant(), dt = eqn.probleme().schema_temps().pas_de_temps();
   deb_cible_.setVar(0, t), eps_.setVar(0, t);
-  double deb_cible = deb_cible_.eval(), eps = eps_.eval(), f_min = std::pow(1 - eps, dt), f_max = std::pow(1 + eps, dt); //bande de variation de K
-  if (eps > 0.0) dp_regul_ *= std::min(std::max(std::pow(deb_cible / std::fabs(deb), 2), f_min), f_max);
+  double deb_cible = deb_cible_.eval();
+  if (std::abs(deb_cible) > 1e-10)
+    {
+      const double eps = eps_.eval(), error = (deb - deb_cible) / deb_cible;
+      dp_regul_ -= dt * eps * error;
+    }
 
   //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
   if (!Process::me()) bilan(0) = dp_regul_, bilan(1) = deb, bilan(2) = deb_cible;
