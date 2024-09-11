@@ -83,25 +83,25 @@ extern char* pwd();
 /* **************************************
             32b / 64b management
   **************************************
-  Here we define 'trustIdType', type used to store all geometrical entity indices (element index, node index, ...) that might 
+  Here we define 'trustIdType', type used to store all geometrical entity indices (element index, node index, ...) that might
   exceed the 32b limit.
-  
-  All the TRUST libraries (LIBLATAFILTER notably) and all the main C++ source code can be compiled in either 32b or 64b depending 
+
+  All the TRUST libraries (LIBLATAFILTER notably) and all the main C++ source code can be compiled in either 32b or 64b depending
   on the flag set at configure time.
-  
+
   However the lata_tools and VisIt plugin are **only** 64b for simplicity, and because it will be provided to VisIt team for integration.
 
-  In the core TRUST C++ code, the strategy is as follows: all the C++ classes that are potentially used before the Scatter keyword 
-  should support both 32 or 64b mode. This is typically done by having them templatized on the SIZE parameter. In practice however 
+  In the core TRUST C++ code, the strategy is as follows: all the C++ classes that are potentially used before the Scatter keyword
+  should support both 32 or 64b mode. This is typically done by having them templatized on the SIZE parameter. In practice however
   some classes are not yet ported to 64b and will remain only functional in 32b.
   The idea is that once the computation is distributed on several processors, each proc will never need to use 64b indices. And everything
-  happening after Scatter (like the operator computations, etc.) is done on one proc only. 
+  happening after Scatter (like the operator computations, etc.) is done on one proc only.
   (note that there are some exceptions for the postprocessing).
-  
+
   At the time of writing, there are two ways to produce a 64b version of the code:
-    - either with configure flag '-with-64-bit-indices' which brutally replace all 'int' in the source code with 'long' (historical). 
+    - either with configure flag '-with-64-bit-indices' which brutally replace all 'int' in the source code with 'long' (historical).
     When done so, C++ define tag 'INT_is_64_' is set to 1.
-    - or with configure flag '-64-bit-new' (the final target), defining trustIdType to int64. In this case C++ define tag 
+    - or with configure flag '-64-bit-new' (the final target), defining trustIdType to int64. In this case C++ define tag
     'INT_is_64_' is set to 2.
 */
 
@@ -120,8 +120,8 @@ using trustIdType = std::int64_t;
 #  endif
 #else
 #  ifdef LATATOOLS
-using trustIdType = std::int64_t;   // In lata_tools and VisIt lata plugin, trustIdType is always 64b, so that the tools 
-                                    // can deal with any type of lata files (32b or 64b)
+using trustIdType = std::int64_t;   // In lata_tools and VisIt lata plugin, trustIdType is always 64b, so that the tools
+//                                  // can deal with any type of lata files (32b or 64b)
 #  else
 using trustIdType = int;
 #  endif

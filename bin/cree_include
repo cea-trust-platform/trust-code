@@ -11,6 +11,12 @@ mkdir -p $INC/backward
 # includes for external libs eos and coolprop
 mkdir -p $INC/EOS $INC/CoolProp
 
+# Create version of arch.h file to handle 32/64 bits (has to be done before updating $TRUST_ROOT/include)
+echo "Configuring include/arch.h for 64 bits ..."
+util_dir=$TRUST_ROOT/src/Kernel/Utilitaires
+sed -e "s/@TRUST_INT64@/${TRUST_INT64}/" -e "s/@TRUST_INT64_NEW@/${TRUST_INT64_NEW}/" $util_dir/arch.h.in > $TRUST_TMP/arch.h.tmp
+[ "`diff $util_dir/arch.h $TRUST_TMP/arch.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && cat $TRUST_TMP/arch.h.tmp > $util_dir/arch.h && rm -f $TRUST_TMP/arch.h.tmp
+
 # Ajout des fichiers deprecated by TRUST 1.9.0:
 for file in ArrOfDouble.h ArrOfInt.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h ConstDoubleTab_parts.h
 do
@@ -37,6 +43,9 @@ file="trust_med_utils.h"
 echo "#error File $file deprecated in TRUST 1.9.4. You SHOULD change the include to TRUST_2_MED.h" > backward/$file
 file="EcrMED.h"
 echo "#error File $file deprecated in TRUST 1.9.4. You SHOULD change the include to Ecrire_MED.h" > backward/$file
+
+file="Solveur_Implicite_Base.h"
+echo "#error File $file deprecated in TRUST 1.9.5. You SHOULD change the include to Solveur_Implicite_base.h" > backward/$file
 
 # EOS includes in EOS if 
 if [ "$TRUST_EOS_HOME_DIR" != "" ]

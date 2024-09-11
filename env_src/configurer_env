@@ -2508,15 +2508,6 @@ echo $ECHO_OPTS "done."
 # Mise a jour du fichier $TRUST_ENV/Cmake.libs
 ./mklibs
 
-######################################################
-# Create version of arch.h file to handle 32/64 bits
-#    (has to be done before updating /include)
-#####################################################
-echo "Configuring src/Kernel/Utilitaires/arch.h for 64 bits ..."
-util_dir=src/Kernel/Utilitaires
-(cd $TRUST_ROOT && sed -e "s/@TRUST_INT64@/${TRUST_INT64}/" -e "s/@TRUST_INT64_NEW@/${TRUST_INT64_NEW}/" $util_dir/arch.h.in > $util_dir/arch.h)
-
-
 # Cree le repertoire $TRUST_ROOT/include pour l'atelier
 ./cree_include
 
