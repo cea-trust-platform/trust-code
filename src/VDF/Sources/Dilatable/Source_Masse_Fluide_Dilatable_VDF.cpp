@@ -90,8 +90,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don& post_src_ch = ref_cast_non_const(Fluide_Weakly_Compressible,fluide).source_masse_espece();
-  DoubleTab& post_src = post_src_ch->valeurs();
+  Champ_Don * post_src_ch = fluide.source_masse_espece().non_nul() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
@@ -116,12 +115,16 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
               if (is_expl)
                 srcmass /= zvf.volumes(elem); // on divise par volume (pas de solveur masse dans l'equation ...)
               resu(elem) += srcmass;
-              post_src(elem) = srcmass;
+
+              if (post_src_ch)
+                (*post_src_ch)->valeurs()(elem) = srcmass;
             }
         }
     }
+
   // pour post
-  post_src_ch->mettre_a_jour(fluide.inco_chaleur()->temps());
+  if (post_src_ch)
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
 }
 
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
@@ -134,8 +137,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don& post_src_ch = ref_cast_non_const(Fluide_Weakly_Compressible,fluide).source_masse_projection();
-  DoubleTab& post_src = post_src_ch->valeurs();
+  Champ_Don * post_src_ch = fluide.source_masse_projection().non_nul() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
@@ -159,10 +161,14 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
               const double surf = zvf.surface(num_face);
               const double source_per_dv = val_flux(num_face - ndeb, 0) * surf / zvf.volumes(elem);  // TODO multiple elements!! units [kg.s-1] / zvf.volumes(elem)
               resu(elem) -= source_per_dv;  // in [kg.m-3.s-1]
-              post_src(elem) = source_per_dv;
+
+              if (post_src_ch)
+                (*post_src_ch)->valeurs()(elem) = source_per_dv;
             }
         }
     }
+
   // pour post
-  post_src_ch->mettre_a_jour(fluide.inco_chaleur()->temps());
+  if (post_src_ch)
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
 }

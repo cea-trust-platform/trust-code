@@ -42,6 +42,7 @@ Entree& Fluide_Dilatable_base::readOn(Entree& is)
 void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Cerr<<"Fluide_Dilatable_base::discretiser"<<finl;
+  if (le_probleme_.est_nul()) le_probleme_ = pb;
 
   const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   double temps=pb.schema_temps().temps_courant();
@@ -473,6 +474,32 @@ void Fluide_Dilatable_base::calculer_pression_tot()
   remplir_champ_pression_tot(n,tab_PHyd,tab_Ptot);
 }
 
+void Fluide_Dilatable_base::creer_champ(const Motcle& motlu)
+{
+  if(motlu == "source_masse_espece")
+    {
+      if (source_masse_esp_.est_nul())
+        {
+          double temps = le_probleme_->schema_temps().temps_courant();
+
+          le_probleme_->discretisation().discretiser_champ("champ_elem", le_probleme_->equation(0).domaine_dis(), "source_masse_espece", "Kg/m3/s", 1, temps, source_masse_esp_);
+          champs_compris_.ajoute_champ(source_masse_esp_);
+        }
+    }
+  else if (motlu == "source_masse_projection")
+    {
+      if (source_masse_proj_.est_nul())
+        {
+          double temps = le_probleme_->schema_temps().temps_courant();
+
+          le_probleme_->discretisation().discretiser_champ("pression", le_probleme_->equation(0).domaine_dis(), "source_masse_projection", "Kg/m3/s", 1, temps, source_masse_proj_);
+          champs_compris_.ajoute_champ(source_masse_proj_);
+        }
+    }
+  else
+    Fluide_base::creer_champ(motlu);
+}
+
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
   try
@@ -536,27 +563,10 @@ void Fluide_Dilatable_base::update_pressure_fields(double temps)
  */
 void Fluide_Dilatable_base::completer(const Probleme_base& pb)
 {
-  le_probleme_ = pb;
+  if (le_probleme_.est_nul()) le_probleme_ = pb;
   inco_chaleur_ = pb.equation(1).inconnue();
   vitesse_ = pb.equation(0).inconnue();
   pression_ = ref_cast(Navier_Stokes_std, pb.equation(0)).pression();
-
-  /* si terme source masse */
-  if (sub_type(Navier_Stokes_Fluide_Dilatable_base, pb.equation(0))) // et oui Navier_Stokes_Turbulent_QC qui derive pas de ca ... bravo
-    if (ref_cast(Navier_Stokes_Fluide_Dilatable_base, pb.equation(0)).has_source_masse())
-      {
-        const Discretisation_base& dis = pb.discretisation();
-        const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
-        double temps = pb.schema_temps().temps_courant();
-
-        Champ_Don& src_esp = source_masse_espece();
-        dis.discretiser_champ("champ_elem", domaine_dis, "source_masse_espece", "Kg/m3/s", 1, temps, src_esp);
-        champs_compris_.ajoute_champ(src_esp);
-
-        Champ_Don& src_proj = source_masse_projection();
-        dis.discretiser_champ("pression", domaine_dis, "source_masse_projection", "Kg/m3/s", 1, temps, src_proj);
-        champs_compris_.ajoute_champ(src_proj);
-      }
 
   Nom typ = pb.equation(0).discretisation().que_suis_je();
   if (typ == "VEFPreP1B")
