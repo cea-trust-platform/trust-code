@@ -296,11 +296,6 @@ void Domaine_VDF::remplir_face_normales()
     }
 }
 
-void  Domaine_VDF::remplir_elem_faces()
-{
-  // Deja fait dans la nouvelle version
-}
-
 /*! @brief remplissage des volumes entrelaces
  *
  */

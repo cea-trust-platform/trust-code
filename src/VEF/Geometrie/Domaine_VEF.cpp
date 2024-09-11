@@ -1053,11 +1053,6 @@ void Domaine_VEF::calculer_volumes_entrelaces()
   volumes_entrelaces_.echange_espace_virtuel();
 }
 
-void Domaine_VEF::remplir_elem_faces()
-{
-  creer_faces_virtuelles_non_std();
-}
-
 void Domaine_VEF::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
   Journal() << "Domaine_VEF::Modifier_pour_Cl" << finl;
@@ -1226,16 +1221,6 @@ void Domaine_VEF::typer_elem(Domaine& domaine_geom)
         }
       type_elem_.typer(type);
     }
-}
-
-/*! @brief creation de l'espace distant pour les faces virtuelles; creation du tableau des faces virtuelles de bord
- *
- */
-void Domaine_VEF::creer_faces_virtuelles_non_std()
-
-{
-  ind_faces_virt_non_std_.resize_array(314);
-  ind_faces_virt_non_std_ = -999;
 }
 
 DoubleTab& Domaine_VEF::vecteur_face_facette()

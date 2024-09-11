@@ -88,7 +88,6 @@ public:
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
   inline int oriente_normale(int face_opp, int elem2) const { return (face_voisins(face_opp, 0) == elem2) ? 1 : -1; }
-  inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
 
   inline double volume_au_sommet(int som) const { return volumes_som[som]; }
   inline const DoubleVect& volume_aux_sommets() const { return volumes_som; }
@@ -118,7 +117,6 @@ private:
   OWN_PTR(Elem_VEF_base) type_elem_;                  // type de l'element de discretisation
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
-  ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
   IntVect orientation_;
 
 
@@ -133,8 +131,6 @@ private:
   // Descripteur pour les tableaux p1b (selon alphaE, alphaS et alphaA) (construit dans Domaine_VEF::discretiser())
   MD_Vector md_vector_p1b_;
 
-  void remplir_elem_faces() override;
-  void creer_faces_virtuelles_non_std();
   Sortie& ecrit(Sortie& os) const;
 };
 

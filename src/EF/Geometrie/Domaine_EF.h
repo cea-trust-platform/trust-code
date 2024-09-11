@@ -76,7 +76,6 @@ public:
 
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
   inline int oriente_normale(int face_opp, int elem2) const;
-  inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
   void calculer_volumes_entrelaces();
   void calculer_volumes_sommets(const Domaine_Cl_dis_base& zcl);
   virtual void calculer_IPhi(const Domaine_Cl_dis_base& zcl);
@@ -110,10 +109,7 @@ private:
   DoubleVect h_carre_;			// carre du pas d'une maille
   OWN_PTR(Elem_EF_base) type_elem_;                  // type de l'element de discretisation
 
-  ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces() override;
   Sortie& ecrit(Sortie& os) const;
-  void creer_faces_virtuelles_non_std();
   IntVect orientation_;
 };
 
