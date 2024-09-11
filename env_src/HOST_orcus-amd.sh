@@ -17,8 +17,8 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
-         module="slurm                                 gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
+         module="nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
+         module="gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
          CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
       else
          echo "Not supported anymore" && exit -1
@@ -42,7 +42,7 @@ define_modules_config()
       module="openmpi/gcc_13.3.0/4.1.6" # Mise a jour des modules Orcus-AMD en 08/2024
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
-      module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
+      module="aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
       echo "module purge 1>/dev/null" >> $env
       echo "module load $module 1>/dev/null || exit -1" >> $env
       # echo ". /scratch2/rnrna/aocc/setenv_AOCC.sh" >> $env
@@ -53,7 +53,8 @@ define_modules_config()
    fi
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null || exit -1" >> $env
+   echo "module load $module" >> $env
+   echo "[ \$? != 0 ] && echo \"Error: $module not found; we exit...\" && echo \"Contat TRUST support team or system administrator\" && exit -1" >> $env
    [ "$CUDA_VERSION" != "" ] && echo "export CUDA_VERSION=$CUDA_VERSION" >> $env # Prendre desormais le CUDA de NVHPC
    echo $source >> $env
    . $env
