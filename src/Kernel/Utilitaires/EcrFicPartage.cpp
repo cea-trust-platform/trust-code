@@ -291,7 +291,7 @@ Sortie& EcrFicPartage::operator <<(const std::string& str) { return operator_tem
 Sortie& EcrFicPartage::operator <<(const Separateur& s) { return operator_template<Separateur>(s);}
 Sortie& EcrFicPartage::operator <<(const Objet_U& ob) { return operator_template<Objet_U>(ob);}
 Sortie& EcrFicPartage::operator <<(const True_int ob) { return operator_template<True_int>(ob);}
-Sortie& EcrFicPartage::operator <<(const True_uint ob) { return operator_template<True_uint>(ob);}
+Sortie& EcrFicPartage::operator <<(const unsigned ob) { return operator_template<unsigned>(ob);}
 Sortie& EcrFicPartage::operator <<(const float ob) { return operator_template<float>(ob);}
 Sortie& EcrFicPartage::operator <<(const double ob) { return operator_template<double>(ob);}
 Sortie& EcrFicPartage::operator <<(const long ob) { return operator_template<long>(ob);}

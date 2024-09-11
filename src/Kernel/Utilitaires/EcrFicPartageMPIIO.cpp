@@ -180,7 +180,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const True_int ob)
   return *this;
 }
 
-Sortie& EcrFicPartageMPIIO::operator <<(const True_uint ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const unsigned ob)
 {
   if (bin_)
     write(MPI_UNSIGNED, &ob);

@@ -57,7 +57,7 @@ public:
   Sortie& operator <<(const Separateur& ) override;
 
   Sortie& operator <<(const True_int ob) override;
-  Sortie& operator <<(const True_uint ob) override;
+  Sortie& operator <<(const unsigned ob) override;
   Sortie& operator <<(const long ob) override;
   Sortie& operator <<(const unsigned long ob) override;
   Sortie& operator <<(const float ob) override;

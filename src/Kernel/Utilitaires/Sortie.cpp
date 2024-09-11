@@ -96,7 +96,7 @@ int Sortie::put(const long * ob, std::streamsize n, std::streamsize nb_col) { re
 int Sortie::put(const float * ob, std::streamsize n, std::streamsize nb_col) { return put_template<float>(ob,n,nb_col); }
 int Sortie::put(const double * ob, std::streamsize n, std::streamsize nb_col) { return put_template<double>(ob,n,nb_col); }
 
-Sortie& Sortie::operator<<(const True_uint ob) { return operator_template<True_uint>(ob); }
+Sortie& Sortie::operator<<(const unsigned ob) { return operator_template<unsigned>(ob); }
 Sortie& Sortie::operator<<(const True_int ob) { return operator_template<True_int>(ob); }
 Sortie& Sortie::operator<<(const float ob) { return operator_template<float>(ob); }
 Sortie& Sortie::operator<<(const double ob) { return operator_template<double>(ob); }

@@ -76,7 +76,6 @@ typedef int integer;
 // This one always remain an int, even when replacing all int by long in the historical (find/replace)
 // 64b building mode:
 typedef int True_int;
-typedef unsigned int True_uint;  // Rarely used but still
 
 extern char* pwd();
 
