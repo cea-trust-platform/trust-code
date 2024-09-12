@@ -51,6 +51,8 @@ struct Block_Iter
   _SIZE_ end=-1;
 };
 
+template <typename _SIZE_>
+Block_Iter<_SIZE_> determine_blocks(Mp_vect_options opt, const MD_Vector& md, const _SIZE_ vect_size_tot, const int line_size, int& nblocs_left);
 
 /*! @brief renvoie 1 si meme strucuture parallele et egalite au sens TRUSTArray (y compris espaces virtuels) BM: faut-il etre aussi strict, comparer uniquement size() elements ?
  *

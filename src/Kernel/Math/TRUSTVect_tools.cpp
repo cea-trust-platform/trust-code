@@ -26,9 +26,6 @@ static bool timer=true;
 static bool timer=false;
 #endif
 
-namespace
-{
-
 /*! Determine which blocks of indices should be used to perform an operation.
  */
 template <typename _SIZE_>
@@ -68,8 +65,12 @@ Block_Iter<_SIZE_> determine_blocks(Mp_vect_options opt, const MD_Vector& md, co
   return Block_Iter<_SIZE_>();
 }
 
+// Explicit instanciations
+template Block_Iter<int> determine_blocks(Mp_vect_options opt, const MD_Vector& md, const int vect_size_tot, const int line_size, int& nblocs_left);
+#if INT_is_64_ == 2
+template Block_Iter<trustIdType> determine_blocks(Mp_vect_options opt, const MD_Vector& md, const trustIdType vect_size_tot, const int line_size, int& nblocs_left);
+#endif
 
-} // end anonymous NS
 
 template<typename _TYPE_, typename _SIZE_>
 void ajoute_produit_scalaire(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, Mp_vect_options opt)
