@@ -103,6 +103,8 @@ protected :
   ArrOfInt faces_bords_;                  // array containing the indices of the boundary faces hit by the probe
   IntTab rang_cl_;                        // for a given face, index of the CL that this face bears
   int nbre_points1 = -1,nbre_points2 = -1,nbre_points3 = -1;        // faire des sonde_segment,sonde_plan,etc...
+
+  virtual const Domaine& get_domaine_geom() const;
 };
 
 
