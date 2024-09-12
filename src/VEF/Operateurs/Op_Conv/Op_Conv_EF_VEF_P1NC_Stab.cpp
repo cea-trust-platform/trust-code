@@ -767,7 +767,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
           {
             int facei = num_face(ind_face);
             double psc=0.;
-            for (int dim=0; dim<nb_comp; dim++)
+            for (int dim=0; dim<Objet_U::dimension; dim++)
               psc-=vitesse(facei,dim)*face_normales(facei,dim);
 
             for (int dim=0; dim<nb_comp; dim++)
