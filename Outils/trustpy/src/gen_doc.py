@@ -41,6 +41,8 @@ class TRUSTDocGenerator:
       self.py_mod = os.path.join(os.environ["TRUST_ROOT"], "Outils", "trustpy", "install", "generated", "trustpy_gen.py")
     # Regexp to replace '\input' directives in the core of the description
     self.re_input = re.compile("\\\input{{([a-z]+)}}")
+    # Regexp to replace '\image` directives:
+    self.re_img = re.compile("\\\includepng{{([a-z]+).[a-z]+}}{{[0-9.]+}}")
     self.script_dir = os.path.dirname(os.path.realpath(__file__))
 
   def get_top_parent(self, c):
@@ -100,6 +102,21 @@ class TRUSTDocGenerator:
         doc = doc.replace(g0, s)
     return doc
 
+  def process_images(self, doc):
+    """ Find and replace all '\includepng{{triangulerh.pdf}}{{10}}' directives to replace them with proper RST syntax
+    """
+    for match in self.re_img.finditer(doc):
+      g0, g1 = match.group(0), match.group(1)
+      fil_nam = os.path.join("images", f"{g1}.png")
+      s = f"""
+.. image:: {fil_nam}
+    :alt: {fil_nam}
+    :scale: 150%
+    :align: center
+"""
+      doc = doc.replace(g0, s)
+    return doc
+
   def doc_single(self, c, parent):
     """ Generate full RST string for a single keyword """
     # Main name and synonyms
@@ -118,7 +135,7 @@ class TRUSTDocGenerator:
     # Core description
     core_doc = self.process_input_clauses(nam, c.__doc__)
     t = core_doc.split("\n")
-    t2 = [tt.lstrip() for tt in t]
+    t2 = [self.process_images(tt.lstrip()) for tt in t]
     s += "\n".join(t2)
     # If this is a list we can stop here, no attributes
     if not hasattr(c, "_attributesList"):
