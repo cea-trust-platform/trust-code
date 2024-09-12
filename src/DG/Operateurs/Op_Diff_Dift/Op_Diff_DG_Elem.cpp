@@ -205,6 +205,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
   int nb_pts_int_fac = integ_points_facets.dimension(1);
   DoubleTab val_pts_integ(nb_pts_int_fac);
   double integral;
+  const DoubleTab& face_normales = domaine.face_normales();
   //  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
   //  DoubleTab& weights_facets = quad.get_weights_facets();
 
@@ -233,14 +234,13 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
       double invh_carr[2]= {invh0*invh0, invh1*invh1} ;
       double invh12=invh0*invh1;
 
-      const DoubleTab& face_normales = domaine.face_normales();
+
 
       double eta_F=1; // TODO: Compute the penalisation coefficient
 
       if (Objet_U::dimension == 2)
         {
           // Mass matrix for the facets : TODO: Use the symmetry to compute just the upper side of the matrix
-          // TODO: Attention, dans l'ordre actuel ne marche pas, il faut ordonner le remplissage par ordre pour que le break fonctionne !
           for( int i_elem = 0; i_elem<2; i_elem++)
             {
               int elem=face_voisins(f,i_elem);
@@ -277,7 +277,9 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
           // Cross terms
           matrice(ind_elem0, ind_elem1) -= eta_F*sur_f;
           matrice(ind_elem1, ind_elem0) += matrice(ind_elem0, ind_elem1);
+
           if (nordre0 == 0) continue;
+
           matrice(ind_elem0, ind_elem1+1) -= eta_F* sur_f*invh1*(xv(f,0) - xp(elem1,0)) ; // 1,x1
           matrice(ind_elem0, ind_elem1+2) -= eta_F* sur_f*invh1*(xv(f,1) - xp(elem1,1)); // 1,y1
           matrice(ind_elem1+1, ind_elem0) = matrice(ind_elem0, ind_elem1+1); // sym
@@ -319,11 +321,11 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
           matrice(ind_elem0+2,ind_elem1+1)=(-1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,0) - xp(elem1,0));
           matrice(ind_elem0+2,ind_elem1+2)=(-1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,1) - xp(elem1,1));
           //sym
-          matrice(ind_elem1,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1);
-          matrice(ind_elem1+1,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1+1);
-          matrice(ind_elem1+2,ind_elem0+1)+=matrice(ind_elem0+1,ind_elem1+2);
-          matrice(ind_elem1+1,ind_elem0+2)+=matrice(ind_elem0+2,ind_elem1+1);
-          matrice(ind_elem1+2,ind_elem0+2)+=matrice(ind_elem0+2,ind_elem1+2);
+          matrice(ind_elem1,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1);
+          matrice(ind_elem1+1,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1+1);
+          matrice(ind_elem1+2,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1+2);
+          matrice(ind_elem1+1,ind_elem0+2)=matrice(ind_elem0+2,ind_elem1+1);
+          matrice(ind_elem1+2,ind_elem0+2)=matrice(ind_elem0+2,ind_elem1+2);
           // Stiffness Matrix for facet terms  part 2 sym
           matrice(ind_elem1+1,ind_elem0)=(+1/2)*sur_f*face_normales(f,0)*invh1;
           matrice(ind_elem1+1,ind_elem0+1)=(+1/2)*sur_f*face_normales(f,0)*invh12*(xv(f,0) - xp(elem0,0));
@@ -332,16 +334,87 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
           matrice(ind_elem1+2,ind_elem0+2)=(+1/2)*sur_f*face_normales(f,1)*invh12*(xv(f,1) - xp(elem0,1));
 
           // symmetry
-          matrice(ind_elem0,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0);
-          matrice(ind_elem0+1,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0+1);
-          matrice(ind_elem0+2,ind_elem1+1)+=matrice(ind_elem1+1,ind_elem0+2);
-          matrice(ind_elem0+1,ind_elem1+2)+=matrice(ind_elem1+2,ind_elem0+1);
-          matrice(ind_elem0+2,ind_elem1+2)+=matrice(ind_elem1+2,ind_elem0+2);
+          matrice(ind_elem0,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0);
+          matrice(ind_elem0+1,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0+1);
+          matrice(ind_elem0+2,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0+2);
+          matrice(ind_elem0+1,ind_elem1+2)=matrice(ind_elem1+2,ind_elem0+1);
+          matrice(ind_elem0+2,ind_elem1+2)=matrice(ind_elem1+2,ind_elem0+2);
 
         }
 
     }
 
+
+  /* Treatment of the boudaries conditions */
+
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+
+  for (int f = 0; f < premiere_face_int; f++) // For the boundary
+    {
+      int elem = face_voisins(f, 0); // The cell that have one facet on the boundary
+      int ind_elem = indices_glob_elem(elem);
+      double sur_f = domaine.face_surfaces(f);
+
+
+      double eta_F=1; // TODO: Compute the penalisation coefficient
+      int nordre = Option_DG::Get_order_for("temperature") ;
+      double invh = 1/domaine.carre_pas_maille(elem);
+      double invh_carr = invh*invh;
+
+      double Svec2[3]= {-invh*face_normales(f,0), -invh*face_normales(f,1), 0} ;
+      double Svec[3]= {1/2*Svec2[0], 1/2*Svec2[1],0 } ;
+
+
+      if ((ch.fcl()(f, 0)==6)||(ch.fcl()(f, 0)==7))
+        {
+          matrice(ind_elem, ind_elem) += sur_f;
+
+          if (nordre == 0)
+            continue;
+          double inte1x,inte1y,inte_xx,inte_yy,inte_xy;
+
+          inte1x = sur_f * invh * (xv(f, 0) - xp(elem, 0));
+          inte1y = sur_f * invh * (xv(f, 1) - xp(elem, 1));
+          matrice(ind_elem, ind_elem + 1) += eta_F * inte1x;
+          matrice(ind_elem, ind_elem + 2) += eta_F * inte1y;
+          // symmetry
+          matrice(ind_elem + 1, ind_elem) +=  eta_F * inte1x;
+          matrice(ind_elem + 2, ind_elem) +=  eta_F * inte1y;
+          // x x
+          for (int pts = 0; pts < nb_pts_int_fac; pts++)
+            val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 0) - xp(elem, 0));
+          inte_xx = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem + 1, ind_elem + 1) += eta_F * inte_xx;
+          // y y
+          for (int pts = 0; pts < nb_pts_int_fac; pts++)
+            val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 1) - xp(elem, 1)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
+          inte_yy = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem + 2, ind_elem + 2) += eta_F * inte_yy;
+          // x y
+          for (int pts = 0; pts < nb_pts_int_fac; pts++)
+            val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
+          inte_xy = quad.compute_integral_on_facet(f, val_pts_integ);
+          matrice(ind_elem + 1, ind_elem + 2) += eta_F * inte_xy;
+          matrice(ind_elem + 2, ind_elem + 1) += eta_F * inte_xy;
+
+
+          // Stiffness matrix // TODO: faire des boucles sur les dimensions
+          matrice(ind_elem, ind_elem + 1) += Svec[0];
+          matrice(ind_elem, ind_elem + 2) += Svec[1];
+          matrice(ind_elem + 1, ind_elem) += Svec[0];
+          matrice(ind_elem + 2, ind_elem) += Svec[1];
+          // xx yy
+          matrice(ind_elem + 1, ind_elem + 1) += inte1x*Svec2[0];
+          matrice(ind_elem + 2, ind_elem + 2) += inte1y*Svec2[1];
+          // xy
+          matrice(ind_elem + 1, ind_elem + 2) += inte1x*Svec[1]+inte1y*Svec[0];
+          matrice(ind_elem + 2, ind_elem + 1) += inte1x*Svec[1]+inte1y*Svec[0];
+
+
+          if (nordre == 1)
+            continue;
+        }
+    }
 
   //  for (int e = 0; e < domaine.nb_elem(); e++)
   //      {
@@ -532,4 +605,25 @@ void Op_Diff_DG_Elem::contribuer_termes_croises(const DoubleTab& inco, const Pro
   //            for (n = 0; n < N; n++)
   //              matrice(N * (ne_tot + f) + n, N * l + n) += cl.coeff(j, k + 1, n) - (stab_ ? std::max(delta_f(f, n), cl.delta(j, k, n)) : 0); //operateur + correction non lineaire
   //      }
+}
+
+
+
+void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
+{
+  int f=0;
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  if (ch.fcl()(f, 0)==7)
+    {
+      // Nothing to do
+    }
+  else
+    {
+      throw;
+      if (ch.fcl()(f, 0)==6) // Non-homogeneous Dirichlet
+        throw;
+    }
+
+  throw;
+
 }
