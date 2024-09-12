@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Navier_Stokes_std.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Navier_Stokes_std.h>
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC);
 
@@ -29,10 +29,8 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::mettre_a_jour(double tps)
 {
   if (temps() != tps)
     {
-      if (dimension == 2)
-        me_calculer_2D();
-      if (dimension == 3)
-        me_calculer_3D();
+      if (dimension == 2) me_calculer_2D();
+      if (dimension == 3) me_calculer_3D();
     }
   Champ_Fonc_base::mettre_a_jour(tps);
 }
@@ -52,9 +50,7 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
 
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
-      {
-        tab_rot(e, n) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
-      }
+      tab_rot(e, n) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
 
   tab_rot.echange_espace_virtuel();
 }

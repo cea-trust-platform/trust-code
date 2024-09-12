@@ -16,31 +16,21 @@
 #include <Champ_Fonc_Elem_PolyVEF_P0_rot.h>
 #include <grad_Champ_Face_PolyVEF_P0.h>
 #include <Champ_Face_PolyVEF_P0.h>
-#include <Navier_Stokes_std.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Navier_Stokes_std.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyVEF_P0_rot, "Champ_Fonc_Elem_PolyVEF_P0_rot", Champ_Fonc_Elem_PolyMAC);
+Implemente_instanciable(Champ_Fonc_Elem_PolyVEF_P0_rot, "Champ_Fonc_Elem_PolyVEF_P0_rot", Champ_Fonc_Elem_PolyMAC_P0_rot);
 
 Sortie& Champ_Fonc_Elem_PolyVEF_P0_rot::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Fonc_Elem_PolyVEF_P0_rot::readOn(Entree& s) { return s; }
-
-void Champ_Fonc_Elem_PolyVEF_P0_rot::mettre_a_jour(double tps)
-{
-  if (temps() != tps)
-    {
-      if (dimension == 2)   me_calculer_2D();
-      if (dimension == 3)   me_calculer_3D();
-    }
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
 
 void Champ_Fonc_Elem_PolyVEF_P0_rot::me_calculer_2D()
 {
   const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, champ_a_deriver());
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, vit.domaine_vf());
   int e, n;
-  int D = dimension, N = champ_a_deriver().valeurs().line_size()/D, ne = domaine.nb_elem();
+  int D = dimension, N = champ_a_deriver().valeurs().line_size() / D, ne = domaine.nb_elem();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();
@@ -49,7 +39,7 @@ void Champ_Fonc_Elem_PolyVEF_P0_rot::me_calculer_2D()
 
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
-      tab_rot(e, n) = tab_grad(e, N * ( D*1+0 ) + n ) - tab_grad(e, N * ( D*0+1 ) + n ); // dUy/dx - dUx/dy
+      tab_rot(e, n) = tab_grad(e, N * (D * 1 + 0) + n) - tab_grad(e, N * (D * 0 + 1) + n); // dUy/dx - dUx/dy
 
   tab_rot.echange_espace_virtuel();
 }
@@ -59,7 +49,7 @@ void Champ_Fonc_Elem_PolyVEF_P0_rot::me_calculer_3D()
   const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, champ_a_deriver());
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, vit.domaine_vf());
   int e, n;
-  int D = dimension, N = champ_a_deriver().valeurs().line_size()/D, ne = domaine.nb_elem();
+  int D = dimension, N = champ_a_deriver().valeurs().line_size() / D, ne = domaine.nb_elem();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();
@@ -69,9 +59,9 @@ void Champ_Fonc_Elem_PolyVEF_P0_rot::me_calculer_3D()
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
       {
-        tab_rot(e, N*0 + n) = tab_grad(e, N * ( D*2+1 ) + n ) - tab_grad(e, N * ( D*1+2 ) + n ); // dUz/dy - dUy/dz
-        tab_rot(e, N*1 + n) = tab_grad(e, N * ( D*0+2 ) + n ) - tab_grad(e, N * ( D*2+0 ) + n ); // dUx/dz - dUz/dx
-        tab_rot(e, N*2 + n) = tab_grad(e, N * ( D*1+0 ) + n ) - tab_grad(e, N * ( D*0+1 ) + n ); // dUy/dx - dUx/dy
+        tab_rot(e, N * 0 + n) = tab_grad(e, N * (D * 2 + 1) + n) - tab_grad(e, N * (D * 1 + 2) + n); // dUz/dy - dUy/dz
+        tab_rot(e, N * 1 + n) = tab_grad(e, N * (D * 0 + 2) + n) - tab_grad(e, N * (D * 2 + 0) + n); // dUx/dz - dUz/dx
+        tab_rot(e, N * 2 + n) = tab_grad(e, N * (D * 1 + 0) + n) - tab_grad(e, N * (D * 0 + 1) + n); // dUy/dx - dUx/dy
       }
 
   tab_rot.echange_espace_virtuel();
