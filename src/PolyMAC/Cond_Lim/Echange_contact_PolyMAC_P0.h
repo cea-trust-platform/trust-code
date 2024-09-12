@@ -16,18 +16,9 @@
 #ifndef Echange_contact_PolyMAC_P0_included
 #define Echange_contact_PolyMAC_P0_included
 
-#include <Echange_externe_impose.h>
+#include <Echange_contact_PolyMAC_P0P1NC.h>
 #include <Op_Diff_PolyMAC_P0_Elem.h>
-#include <Op_Diff_PolyVEF_P0_Elem.h>
-#include <TRUSTTabs_forward.h>
-#include <MD_Vector_tools.h>
-#include <TRUST_Ref.h>
-
-class Domaine_PolyMAC_P0;
-class Front_VF;
 #include <Domaine_forward.h>
-
-////////////////////////////////////////////////////////////////
 
 /*! @brief classe : Echange_contact_PolyMAC_P0 Outre le champ_front representant la temperature de paroi,
  *
@@ -35,37 +26,18 @@ class Front_VF;
  *   temporelles qui represente la temperature dans l'autre probleme.
  *
  */
-
-////////////////////////////////////////////////////////////////
-
-class Echange_contact_PolyMAC_P0  : public Echange_externe_impose
+class Echange_contact_PolyMAC_P0  : public Echange_contact_PolyMAC_P0P1NC
 {
   Declare_instanciable(Echange_contact_PolyMAC_P0);
 public :
   void init_op() const;
-  void mettre_a_jour(double temps) override { }; //non utilise
-  void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
-  mutable OBS_PTR(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
-  mutable int i_fvf = -1, i_o_fvf = -1;  //indices de frontiere de chaque cote
   mutable OBS_PTR(Op_Diff_PolyMAC_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 
   /* faces, sommets de l'autre cote de la frontiere */
   void init_fs_dist() const; //initialisation de f_dist, s_dist
-  mutable IntTab f_dist;     //face de l'autre cote de chaque face de la frontiere
   mutable std::map<int, int> s_dist; //s_dist[sommet de ce cote] = sommet de l'autre cote
   mutable int fs_dist_init_ = 0;
-
-  double invh_paroi = 1e30; //resistance thermique (1 / h) de la paroi
-
-protected :
-  Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
 };
 
-class Echange_contact_PolyVEF_P0  : public Echange_contact_PolyMAC_P0
-{
-  Declare_instanciable(Echange_contact_PolyVEF_P0);
-public:
-  mutable OBS_PTR(Op_Diff_PolyVEF_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
-};
-#endif
+#endif /* Echange_contact_PolyMAC_P0_included */

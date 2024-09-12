@@ -16,8 +16,8 @@
 #ifndef Echange_contact_PolyMAC_P0P1NC_included
 #define Echange_contact_PolyMAC_P0P1NC_included
 
-#include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_P0P1NC_Elem.h>
+#include <Echange_externe_impose.h>
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
 #include <TRUST_Ref.h>
@@ -37,8 +37,8 @@ class Echange_contact_PolyMAC_P0P1NC  : public Echange_externe_impose
   Declare_instanciable(Echange_contact_PolyMAC_P0P1NC);
 public :
   void init_op() const;
-  void mettre_a_jour(double temps) override { }; //non utilise
-  void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
+  void mettre_a_jour(double temps) override { } //non utilise
+  void verifie_ch_init_nb_comp() const override { } //pas de contrainte sur les composantes de chaque cote
 
   mutable OBS_PTR(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   mutable int i_fvf = -1 , i_o_fvf = -1;  //indices de frontiere de chaque cote
@@ -56,4 +56,4 @@ protected :
   Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
 };
 
-#endif
+#endif /* Echange_contact_PolyMAC_P0P1NC_included */
