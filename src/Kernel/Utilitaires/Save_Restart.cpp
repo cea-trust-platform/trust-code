@@ -483,12 +483,19 @@ int Save_Restart::sauver() const
       if (Motcle(restart_format_) == "formatte")
         {
           ficsauv_.typer("EcrFicCollecte");
+          //
+          // Even in 64b, a save/restart SAUV file never actually requires 64b indices since all the information
+          // saved is per proc. So we might as well save some space (not so much actually, since most of the data
+          // saved are double values).
+          //
+          ficsauv_->set_64b(false);
           ficsauv_->ouvrir(restart_file_name_);
           ficsauv_->setf(ios::scientific);
         }
       else if (Motcle(restart_format_) == "binaire")
         {
           ficsauv_.typer("EcrFicCollecteBin");
+          ficsauv_->set_64b(false); // see comment above!
           ficsauv_->ouvrir(restart_file_name_);
         }
       else if (Motcle(restart_format_) == "xyz")
