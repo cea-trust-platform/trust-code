@@ -25,7 +25,7 @@
 
 Implemente_instanciable_sans_constructeur(Format_Post_Lata,"Format_Post_Lata",Format_Post_base);
 
-#define _LATA_INT_TYPE_ int
+#define _LATA_INT_TYPE_ trustIdType
 
 /*! @brief Constructeur par defaut: format_ ASCII et options_para_ = SINGLE_FILE
  *
