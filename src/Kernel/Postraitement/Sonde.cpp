@@ -716,6 +716,10 @@ void Sonde::associer_post(const Postraitement& le_post)
     }
 }
 
+const Domaine& Sonde::get_domaine_geom() const
+{
+  return mon_champ->get_ref_domain();
+}
 
 /*! @brief Initialise la sonde.
  *
@@ -734,7 +738,7 @@ void Sonde::initialiser()
   if(elem_.size() != nbre_points_tot)
     elem_.resize(nbre_points_tot);
 
-  const Domaine& domaine_geom = mon_champ->get_ref_domain();
+  const Domaine& domaine_geom = get_domaine_geom();
 
   if (numero_elem_==-1)
     {
