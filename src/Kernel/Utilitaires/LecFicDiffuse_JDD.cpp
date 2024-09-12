@@ -89,6 +89,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
       int nb_accolade=0;
       int nb_accolade_sa=-1;
       int line=1;
+      bool petsc_format = false;
       while (1)
         {
           if (file_.eof())
@@ -135,7 +136,6 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
               for(int jump=0; jump<jol; jump++)
                 prov <<"\n";
               line += jol;
-
             }
 
           else if (motlu=="/*")
@@ -168,8 +168,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
                 prov <<"\n";
               line+=jol;
             }
-
-          else if (((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") || (motlu.find(",")!=-1 && motlu != ",")) && ! fin_lu )
+          else if (((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") || (motlu.find(",")!=-1 && motlu != "," && !petsc_format)) && ! fin_lu )
             {
               Nom msg = "Error while reading '" + motlu.getString() + "' from datafile " + name + " at line " + std::to_string(line) + ".\nCheck for missing space character.\n";
               msg+= "============================================\nExiting TRUST.";
@@ -199,6 +198,9 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
               line+=jol;
               if( apply_verif )
                 verifie(motlu);
+              petsc_format = false;
+              if ((motlu.debute_par("-pc_fieldsplit_") && motlu.finit_par("_fields")))
+                petsc_format = true;
             }
           file_>>motlu;
 
