@@ -124,7 +124,7 @@ void Op_Div_PolyMAC_P0P1NC::ajouter_blocs_ext(const DoubleTab& vit, matrices_t m
     }
 
   /* equations aux faces internes : egalite des gradients */
-  if (!has_f) return;
+  if (!has_f || matrices.size() == 0) return; // already done in assembleur_pression
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)
       if ((f = e_f(e, i)) < domaine.nb_faces() && !fcl(f, 0))
