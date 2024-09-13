@@ -48,7 +48,8 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
   if (Process::je_suis_maitre())
     {
       SFichier binary_file;
-      binary_file.set_bin(1);
+      binary_file.set_bin(true);
+      binary_file.set_64b(false);  // In IJK, nothing needs to be written in 64b:
       binary_file.ouvrir(filename);
       binary_file.put(tmp.addr(), tmp.size_array(), 1);
       binary_file.close();
@@ -98,7 +99,8 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
   if (Process::je_suis_maitre())
     {
       SFichier binary_file;
-      binary_file.set_bin(1);
+      binary_file.set_bin(true);
+      binary_file.set_64b(false);  // In IJK, nothing needs to be written in 64b:
       binary_file.ouvrir(filename);
       binary_file.put(tmp.addr(), tmp.size_array(), 1);
       binary_file.close();
@@ -133,7 +135,8 @@ long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * fi
         tmp[(k*nj+j)*ni+i] = (_OUT_TYPE_)f(i,j,k);
 
   SFichier binary_file;
-  binary_file.set_bin(1);
+  binary_file.set_bin(true);
+  binary_file.set_64b(false); // In IJK, nothing needs to be written in 64b:
   binary_file.ouvrir(filename);
   binary_file.put(tmp.addr(), tmp.size_array(), 1);
   binary_file.close();
@@ -197,7 +200,8 @@ long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * fi
     }
 
   SFichier binary_file;
-  binary_file.set_bin(1);
+  binary_file.set_bin(true);
+  binary_file.set_64b(false); // In IJK, nothing needs to be written in 64b:
   binary_file.ouvrir(filename);
   binary_file.put(tmp.addr(), tmp.size_array(), 1);
   binary_file.close();

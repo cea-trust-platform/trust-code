@@ -103,13 +103,11 @@ void dumplata_ft_field(const char *filename, const char *meshname,
       SFichier master_file;
       master_file.ouvrir(filename, ios::app);
       // NO_INDEXING car ce n'est pas un indice de sommet ou de facette
-      // (par defaut dans le format lata, les champs d'ints sont supposes etres des indices)
-      Nom format = (sizeof(int)==8 ? "INT64" : "INT32");
+      // In a IJK Lata file, the int written are typically PE numbers or connex components number, never need 64b.
+      Nom format = "INT32";
       master_file << "Champ " << field_name << " " << basename(fdfield) << " geometrie=" << meshname ;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
-      master_file << " size=" << (int)nvaltot << " composantes=1 format="<<format<<",NO_INDEXING localisation="
+      // Note: nvaltot is the only thing that might be huge
+      master_file << " size=" << nvaltot << " composantes=1 format="<<format<<",NO_INDEXING localisation="
                   << localisation << finl;
     }
 
@@ -149,10 +147,8 @@ void dumplata_ft_field(const char *filename, const char *meshname,
           nb_compo = 1;
         }
       master_file << "Champ " << field_name << " " << basename(fdfield) << " geometrie=" << meshname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
-      master_file << " size=" << (int)nvaltot/nb_compo << " composantes=" << nb_compo << " localisation="
+      // Note : nvaltot/nb_compo might be big ...
+      master_file << " size=" << nvaltot/nb_compo << " composantes=" << nb_compo << " localisation="
                   << localisation << finl;
     }
 

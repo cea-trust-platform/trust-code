@@ -114,7 +114,7 @@ void dumplata_vector(const char *filename, const char *fieldname,
 
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
 #ifdef INT_is_64_
-      master_file << " file_offset=6";
+      //master_file << " file_offset=6";
 #endif
       master_file << " size=" << CHECKLONG(n) << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }
